@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "base_name": {
+            "value": "nrx-cbs-test-nyss"
+        },
+        "tagValues": {
+            "value": {
+                "Team": "CBS",
+                "System": "Nyss",
+                "Environment": "Test"
+            }
+        },
+        "hostingEnvironment": {
+            "value": ""
+        },
+        "alwaysOn": {
+            "value": true
+        },
+        "sku": {
+            "value": "Standard"
+        },
+        "skuCode": {
+            "value": "S1"
+        },
+        "workerSize": {
+            "value": "0"
+        },
+        "workerSizeId": {
+            "value": "0"
+        },
+        "numberOfWorkers": {
+            "value": "1"
+        },
+        "currentStack": {
+            "value": "dotnetcore"
+        },
+        "serviceBusSku": {
+            "value": "Standard"
+        }
+    }
+}
