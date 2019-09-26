@@ -9,10 +9,10 @@
             "value": "SQL_Latin1_General_CP1_CI_AS"
         },
         "databaseName": {
-            "value": "nrx-csb-dev-nyss-sqldb"
+            "value": "nrx-cbs-dev-nyss-sqldb"
         },
         "testDatabaseName": {
-            "value": "nrx-csb-test-nyss-sqldb"
+            "value": "nrx-cbs-test-nyss-sqldb"
         },
         "tier": {
             "value": "Standard"
@@ -20,14 +20,11 @@
         "skuName": {
             "value": "S1"
         },
-        "location": {
-            "value": "northeurope"
-        },
         "maxSizeBytes": {
             "value": 32212254720
         },
         "serverName": {
-            "value": "nrx-csb-dev-nyss-sqlserver"
+            "value": "nrx-cbs-dev-nyss-sqlserver"
         },
         "sampleName": {
             "value": ""
@@ -59,8 +56,15 @@
         "TagValues": {
             "value": {
                 "Team": "CBS",
-                "System": "nyss",
+                "System": "Nyss",
                 "Environment": "Development"
+            }
+        },
+        "TestTagValues": {
+            "value": {
+                "Team": "CBS",
+                "System": "Nyss",
+                "Environment": "Test"
             }
         },
         "enableVA": {

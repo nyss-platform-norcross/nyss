@@ -62,13 +62,10 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('microsoft.insights/components/', variables('webapp_name'))]",
-                "[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]"
+                "[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]",
+                "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
             ],
-            "tags": {
-                "Team": "CBS",
-                "System": "nyss",
-                "Environment": "Development"
-            },
+            "tags": "[parameters('tagValues')]",
             "properties": {
                 "name": "[variables('webapp_name')]",
                 "siteConfig": {
@@ -133,11 +130,7 @@
             "name": "[variables('hostingPlanName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [],
-            "tags": {
-                "Team": "CBS",
-                "System": "nyss",
-                "Environment": "Development"
-            },
+            "tags": "[parameters('tagValues')]",
             "sku": {
                 "Tier": "[parameters('sku')]",
                 "Name": "[parameters('skuCode')]"
@@ -155,12 +148,8 @@
             "type": "microsoft.insights/components",
             "apiVersion": "2015-05-01",
             "name": "[variables('webapp_name')]",
-            "location": "northeurope",
-            "tags": {
-                "Team": "CBS",
-                "System": "nyss",
-                "Environment": "Development"
-            },
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tagValues')]",
             "properties": {
                 "ApplicationId": "[variables('webapp_name')]",
                 "Request_Source": "IbizaWebAppExtensionCreate"
@@ -170,7 +159,7 @@
             "type": "Microsoft.ServiceBus/namespaces",
             "apiVersion": "2017-04-01",
             "name": "[variables('serviceBusNamespaceName')]",
-            "location": "northeurope",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('serviceBusSku')]"
             }

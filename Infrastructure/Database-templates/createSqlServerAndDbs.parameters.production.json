@@ -5,14 +5,11 @@
         "administratorLogin": {
             "value": "nrx-cbs-dbadmin"
         },
-        "administratorLoginPassword": {
-            "value": null
-        },
         "collation": {
             "value": "SQL_Latin1_General_CP1_CI_AS"
         },
         "databaseName": {
-            "value": "nrx-csb-dev-nyss-sqldb"
+            "value": "nrx-cbs-prod-nyss-sqldb"
         },
         "tier": {
             "value": "Standard"
@@ -20,14 +17,11 @@
         "skuName": {
             "value": "S1"
         },
-        "location": {
-            "value": "northeurope"
-        },
         "maxSizeBytes": {
             "value": 32212254720
         },
         "serverName": {
-            "value": "nrx-csb-dev-nyss-sqlserver"
+            "value": "nrx-cbs-prod-nyss-sqlserver"
         },
         "sampleName": {
             "value": ""
@@ -59,9 +53,12 @@
         "TagValues": {
             "value": {
                 "Team": "CBS",
-                "System": "nyss",
+                "System": "Nyss",
                 "Environment": "Development"
             }
+        },
+        "TestTagValues": {
+            "value": {}
         },
         "enableVA": {
             "value": false
