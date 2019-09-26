@@ -1,9 +1,9 @@
 <#
  .SYNOPSIS
-    Deploys CBS reporter application to Azure
+    Deploys CBS nyss application to Azure
 
  .DESCRIPTION
-    Deploys CBS reporter application using Azure Resource Manager template including parameters from selected environment
+    Deploys CBS nyss application using Azure Resource Manager template including parameters from selected environment
 
  .PARAMETER subscriptionId
     Optional. The subscription id where the template will be deployed.
@@ -55,8 +55,8 @@ if ($complete) {
     New-AzResourceGroupDeployment `
         -Mode "Complete" `
         -ResourceGroupName $resourceGroupName `
-        -TemplateFile "$PSScriptRoot\azuredeploy.json" `
-        -TemplateParameterFile "$PSScriptRoot\azuredeploy.parameters.$environment.json";
+        -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
+        -TemplateParameterFile "$PSScriptRoot\Application-templates\createApplication.parameters.$environment.json";
 }
 else 
 {
@@ -64,6 +64,6 @@ else
     New-AzResourceGroupDeployment `
         -Mode "Incremental" `
         -ResourceGroupName $resourceGroupName `
-        -TemplateFile "$PSScriptRoot\azuredeploy.json" `
-        -TemplateParameterFile "$PSScriptRoot\azuredeploy.parameters.$environment.json";
+        -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
+        -TemplateParameterFile "$PSScriptRoot\Application-templates\createApplication.parameters.$environment.json";
 }
