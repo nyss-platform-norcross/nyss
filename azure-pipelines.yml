@@ -1,0 +1,48 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-2019'
+
+steps:
+
+- task: PowerShell@2
+  displayName: 'GitVersion'
+  inputs:
+    targetType: 'inline'
+    script: 'gitversion /l console /output buildserver /updateAssemblyInfo'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore'
+  inputs:
+    command: restore
+    projects: '*.sln'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    projects: '*.sln'
+    arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)" --no-restore'
+
+- task: CmdLine@2
+  displayName: 'Insert test task here...'
+  inputs:
+    script: 'echo Insert test task here...'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" --no-restore --no-build'
+    zipAfterPublish: true
+    modifyOutputPath: false
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: 'Infrastructure'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/Infrastructure'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
