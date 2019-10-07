@@ -1,74 +1,63 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { actionCreators } from '../store/WeatherForecasts';
+import authService from './api-authorization/AuthorizeService'
 
-class FetchData extends Component {
+export class FetchData extends Component {
+  static displayName = FetchData.name;
+
+  constructor(props) {
+    super(props);
+    this.state = { forecasts: [], loading: true };
+  }
+
   componentDidMount() {
-    // This method is called when the component is first added to the document
-    this.ensureDataFetched();
+    this.populateWeatherData();
   }
 
-  componentDidUpdate() {
-    // This method is called when the route parameters change
-    this.ensureDataFetched();
-  }
-
-  ensureDataFetched() {
-    const startDateIndex = parseInt(this.props.match.params.startDateIndex, 10) || 0;
-    this.props.requestWeatherForecasts(startDateIndex);
+  static renderForecastsTable(forecasts) {
+    return (
+      <table className='table table-striped' aria-labelledby="tabelLabel">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Temp. (C)</th>
+            <th>Temp. (F)</th>
+            <th>Summary</th>
+          </tr>
+        </thead>
+        <tbody>
+          {forecasts.map(forecast =>
+            <tr key={forecast.date}>
+              <td>{forecast.date}</td>
+              <td>{forecast.temperatureC}</td>
+              <td>{forecast.temperatureF}</td>
+              <td>{forecast.summary}</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    );
   }
 
   render() {
+    let contents = this.state.loading
+      ? <p><em>Loading...</em></p>
+      : FetchData.renderForecastsTable(this.state.forecasts);
+
     return (
       <div>
-        <h1>Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server and working with URL parameters.</p>
-        {renderForecastsTable(this.props)}
-        {renderPagination(this.props)}
+        <h1 id="tabelLabel" >Weather forecast</h1>
+        <p>This component demonstrates fetching data from the server.</p>
+        {contents}
       </div>
     );
   }
+
+  async populateWeatherData() {
+    const token = await authService.getAccessToken();
+    const response = await fetch('weatherforecast', {
+      headers: !token ? {} : { 'Authorization': `Bearer ${token}` }
+    });
+    const data = await response.json();
+    this.setState({ forecasts: data, loading: false });
+  }
 }
-
-function renderForecastsTable(props) {
-  return (
-    <table className='table table-striped'>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Temp. (C)</th>
-          <th>Temp. (F)</th>
-          <th>Summary</th>
-        </tr>
-      </thead>
-      <tbody>
-        {props.forecasts.map(forecast =>
-          <tr key={forecast.dateFormatted}>
-            <td>{forecast.dateFormatted}</td>
-            <td>{forecast.temperatureC}</td>
-            <td>{forecast.temperatureF}</td>
-            <td>{forecast.summary}</td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  );
-}
-
-function renderPagination(props) {
-  const prevStartDateIndex = (props.startDateIndex || 0) - 5;
-  const nextStartDateIndex = (props.startDateIndex || 0) + 5;
-
-  return <p className='clearfix text-center'>
-    <Link className='btn btn-default pull-left' to={`/fetch-data/${prevStartDateIndex}`}>Previous</Link>
-    <Link className='btn btn-default pull-right' to={`/fetch-data/${nextStartDateIndex}`}>Next</Link>
-    {props.isLoading ? <span>Loading...</span> : []}
-  </p>;
-}
-
-export default connect(
-  state => state.weatherForecasts,
-  dispatch => bindActionCreators(actionCreators, dispatch)
-)(FetchData);
