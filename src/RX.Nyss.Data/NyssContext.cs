@@ -1,30 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Data
 {
     public class NyssContext : DbContext
     {
-        public DbSet<NationalSociety> NationalSocieties { get; set; }
-
         public NyssContext(DbContextOptions<NyssContext> options)
             : base(options)
         {
         }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<NationalSociety>().HasIndex(ns => ns.Name).IsUnique();
-        }
-    }
+        public DbSet<NationalSociety> NationalSocieties { get; set; }
+        public DbSet<ContentLanguage> ContentLanguages { get; set; }
 
-    public class NationalSociety
-    {
-        public int NationalSocietyId { get; set; }
-
-        [MaxLength(250)]
-        public string Name { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyConfigurationsFromAssembly(typeof(NyssContext).Assembly);
     }
 }

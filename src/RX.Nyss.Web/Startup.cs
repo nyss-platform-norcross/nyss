@@ -31,7 +31,8 @@ namespace RX.Nyss.Web
             //    options.UseSqlite("DataSource=app.db"));
 
             services.AddDbContext<NyssContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase")));
+                options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase"),
+                    x => x.UseNetTopologySuite()));
 
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
