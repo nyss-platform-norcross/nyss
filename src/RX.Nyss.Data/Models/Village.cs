@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace RX.Nyss.Data.Models
+﻿namespace RX.Nyss.Data.Models
 {
     public class Village
     {
@@ -8,6 +6,6 @@ namespace RX.Nyss.Data.Models
 
         public string Name { get; set; }
 
-        public District District { get; set; }
+        public virtual District District { get; set; }
     }
 }

@@ -3,8 +3,9 @@
     public class Region
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
 
-        public NationalSociety NationalSociety{ get; set; }
+        public virtual NationalSociety NationalSociety { get; set; }
     }
 }

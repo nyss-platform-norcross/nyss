@@ -10,6 +10,6 @@ namespace RX.Nyss.Data.Models
 
         public DateTime? ConsentedAt { get; set; }
 
-        public NationalSociety NationalSociety { get; set; }
+        public virtual NationalSociety NationalSociety { get; set; }
     }
 }

@@ -12,6 +12,6 @@ namespace RX.Nyss.Data.Models
 
         public int HealthRiskCode { get; set; }
 
-        public AlertRule AlertRule { get; set; }
+        public virtual AlertRule AlertRule { get; set; }
     }
 }

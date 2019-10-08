@@ -4,8 +4,8 @@
     {
         public int Id { get; set; }
 
-        public AlertRule AlertRule { get; set; }
-
         public string EmailAddress { get; set; }
+        
+        public virtual AlertRule AlertRule { get; set; }
     }
 }

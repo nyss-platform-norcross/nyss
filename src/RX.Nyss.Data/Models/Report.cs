@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data.Concepts;
 
@@ -34,8 +36,10 @@ namespace RX.Nyss.Data.Models
 
         public DataCollectionPointCase DataCollectionPointCase { get; set; }
 
-        public ProjectHealthRisk ProjectHealthRisk { get; set; }
+        public virtual ProjectHealthRisk ProjectHealthRisk { get; set; }
 
-        public DataCollector DataCollector { get; set; }
+        public virtual DataCollector DataCollector { get; set; }
+
+        public virtual ICollection<AlertReport> ReportAlerts { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
@@ -13,6 +14,8 @@ namespace RX.Nyss.Data.Models
 
         public string Comments { get; set; }
 
-        public ProjectHealthRisk ProjectHealthRisk { get; set; }
+        public virtual ProjectHealthRisk ProjectHealthRisk { get; set; }
+
+        public virtual ICollection<AlertReport> AlertReports { get; set; }
     }
 }

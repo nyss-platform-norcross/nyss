@@ -6,6 +6,6 @@
 
         public string Name { get; set; }
 
-        public Village Village { get; set; }
+        public virtual Village Village { get; set; }
     }
 }

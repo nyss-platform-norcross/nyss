@@ -4,12 +4,12 @@
     {
         public string Sex { get; set; }
 
-        public NationalSociety NationalSociety { get; set; }
+        public virtual NationalSociety NationalSociety { get; set; }
 
-        public Village Village { get; set; }
+        public virtual Village Village { get; set; }
 
-        public Zone Zone { get; set; }
+        public virtual Zone Zone { get; set; }
 
-        public DataManagerUser DataManagerUser { get; set; }
+        public virtual DataManagerUser DataManagerUser { get; set; }
     }
 }

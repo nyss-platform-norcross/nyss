@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Data.Models
+﻿using System.Collections.Generic;
+
+namespace RX.Nyss.Data.Models
 {
     public class NationalSociety
     {
@@ -16,6 +18,8 @@
 
         public string ZoneCustomName { get; set; }
 
-        public ContentLanguage ContentLanguage { get; set; }
+        public virtual ContentLanguage ContentLanguage { get; set; }
+
+        public virtual ICollection<UserNationalSociety> NationalSocietyUsers { get; set; }
     }
 }

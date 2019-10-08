@@ -48,6 +48,36 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Alert");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.AlertEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AlertId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Operation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlertId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("AlertEvent");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertRecipient", b =>
                 {
                     b.Property<int>("Id")
@@ -67,6 +97,21 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("AlertRuleId");
 
                     b.ToTable("AlertRecipient");
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.AlertReport", b =>
+                {
+                    b.Property<int>("AlertId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReportId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AlertId", "ReportId");
+
+                    b.HasIndex("ReportId");
+
+                    b.ToTable("AlertReport");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertRule", b =>
@@ -219,6 +264,38 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("District");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.GatewaySetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApiKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("GatewayType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("NationalSocietyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NationalSocietyId");
+
+                    b.ToTable("GatewaySetting");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRisk", b =>
                 {
                     b.Property<int>("Id")
@@ -246,6 +323,38 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("AlertRuleId");
 
                     b.ToTable("HealthRisk");
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.HealthRiskLanguageContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CaseDefinition")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<int>("ContentLanguageId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FeedbackMessage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(160)")
+                        .HasMaxLength(160);
+
+                    b.Property<int>("HealthRiskId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContentLanguageId");
+
+                    b.HasIndex("HealthRiskId");
+
+                    b.ToTable("HealthRiskLanguageContent");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Localization", b =>
@@ -324,6 +433,39 @@ namespace RX.Nyss.Data.Migrations
                         .HasFilter("[Name] IS NOT NULL");
 
                     b.ToTable("NationalSocieties");
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(500)")
+                        .HasMaxLength(500);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsOpened")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NotificationType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>
@@ -526,6 +668,21 @@ namespace RX.Nyss.Data.Migrations
                     b.HasDiscriminator<string>("Role").HasValue("User");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.UserNationalSociety", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NationalSocietyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "NationalSocietyId");
+
+                    b.HasIndex("NationalSocietyId");
+
+                    b.ToTable("UserNationalSociety");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.Village", b =>
                 {
                     b.Property<int>("Id")
@@ -601,7 +758,9 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Sex")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
 
                     b.Property<int?>("VillageId")
                         .HasColumnType("int");
@@ -625,7 +784,22 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
                         .WithMany()
                         .HasForeignKey("ProjectHealthRiskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.AlertEvent", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.Alert", "Alert")
+                        .WithMany()
+                        .HasForeignKey("AlertId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -634,7 +808,22 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.AlertRule", "AlertRule")
                         .WithMany()
                         .HasForeignKey("AlertRuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.AlertReport", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.Alert", "Alert")
+                        .WithMany("AlertReports")
+                        .HasForeignKey("AlertId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.Report", "Report")
+                        .WithMany("ReportAlerts")
+                        .HasForeignKey("ReportId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -643,24 +832,25 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.SupervisorUser", "Supervisor")
                         .WithMany()
                         .HasForeignKey("SupervisorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.Village", "Village")
                         .WithMany()
                         .HasForeignKey("VillageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.Zone", "Zone")
                         .WithMany()
-                        .HasForeignKey("ZoneId");
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.District", b =>
@@ -668,7 +858,16 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.Region", "Region")
                         .WithMany()
                         .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.GatewaySetting", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
+                        .WithMany()
+                        .HasForeignKey("NationalSocietyId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -676,7 +875,23 @@ namespace RX.Nyss.Data.Migrations
                 {
                     b.HasOne("RX.Nyss.Data.Models.AlertRule", "AlertRule")
                         .WithMany()
-                        .HasForeignKey("AlertRuleId");
+                        .HasForeignKey("AlertRuleId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.HealthRiskLanguageContent", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.ContentLanguage", "ContentLanguage")
+                        .WithMany()
+                        .HasForeignKey("ContentLanguageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.HealthRisk", "HealthRisk")
+                        .WithMany()
+                        .HasForeignKey("HealthRiskId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Localization", b =>
@@ -684,7 +899,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ApplicationLanguage", "ApplicationLanguage")
                         .WithMany()
                         .HasForeignKey("ApplicationLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -693,7 +908,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ApplicationLanguage", "ApplicationLanguage")
                         .WithMany()
                         .HasForeignKey("ApplicationLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -701,7 +916,17 @@ namespace RX.Nyss.Data.Migrations
                 {
                     b.HasOne("RX.Nyss.Data.Models.ContentLanguage", "ContentLanguage")
                         .WithMany()
-                        .HasForeignKey("ContentLanguageId");
+                        .HasForeignKey("ContentLanguageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.Notification", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>
@@ -709,13 +934,13 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ContentLanguage", "ContentLanguage")
                         .WithMany()
                         .HasForeignKey("ContentLanguageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
                         .HasForeignKey("NationalSocietyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -723,18 +948,19 @@ namespace RX.Nyss.Data.Migrations
                 {
                     b.HasOne("RX.Nyss.Data.Models.AlertRule", "AlertRule")
                         .WithMany()
-                        .HasForeignKey("AlertRuleId");
+                        .HasForeignKey("AlertRuleId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.HealthRisk", "HealthRisk")
                         .WithMany()
                         .HasForeignKey("HealthRiskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -743,7 +969,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
                         .HasForeignKey("NationalSocietyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -752,13 +978,13 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.DataCollector", "DataCollector")
                         .WithMany()
                         .HasForeignKey("DataCollectorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
                         .WithMany()
                         .HasForeignKey("ProjectHealthRiskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.OwnsOne("RX.Nyss.Data.Models.DataCollectionPointCase", "DataCollectionPointCase", b1 =>
@@ -844,7 +1070,23 @@ namespace RX.Nyss.Data.Migrations
                 {
                     b.HasOne("RX.Nyss.Data.Models.ApplicationLanguage", "ApplicationLanguage")
                         .WithMany()
-                        .HasForeignKey("ApplicationLanguageId");
+                        .HasForeignKey("ApplicationLanguageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.UserNationalSociety", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
+                        .WithMany("NationalSocietyUsers")
+                        .HasForeignKey("NationalSocietyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.User", "User")
+                        .WithMany("UserNationalSocieties")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Village", b =>
@@ -852,7 +1094,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.District", "District")
                         .WithMany()
                         .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -861,7 +1103,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.Village", "Village")
                         .WithMany()
                         .HasForeignKey("VillageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -869,26 +1111,31 @@ namespace RX.Nyss.Data.Migrations
                 {
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
-                        .HasForeignKey("NationalSocietyId");
+                        .HasForeignKey("NationalSocietyId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUser", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.DataManagerUser", "DataManagerUser")
                         .WithMany()
-                        .HasForeignKey("DataManagerUserId");
+                        .HasForeignKey("DataManagerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
-                        .HasForeignKey("NationalSocietyId");
+                        .HasForeignKey("NationalSocietyId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.Village", "Village")
                         .WithMany()
-                        .HasForeignKey("VillageId");
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.Zone", "Zone")
                         .WithMany()
-                        .HasForeignKey("ZoneId");
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

@@ -4,10 +4,9 @@
     {
         public string Key { get; set; }
 
-        public ApplicationLanguage ApplicationLanguage { get; set; }
+        public string Value { get; set; }
 
         public int ApplicationLanguageId { get; set; }
-
-        public string Value { get; set; }
+        public virtual ApplicationLanguage ApplicationLanguage { get; set; }
     }
 }

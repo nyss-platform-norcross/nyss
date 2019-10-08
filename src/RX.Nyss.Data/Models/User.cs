@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Data.Models
+﻿using System.Collections.Generic;
+
+namespace RX.Nyss.Data.Models
 {
     public class User
     {
@@ -20,6 +22,8 @@
 
         public bool IsFirstLogin { get; set; }
         
-        public ApplicationLanguage ApplicationLanguage { get; set; }
+        public virtual ApplicationLanguage ApplicationLanguage { get; set; }
+
+        public virtual ICollection<UserNationalSociety> UserNationalSocieties { get; set; }
     }
 }
