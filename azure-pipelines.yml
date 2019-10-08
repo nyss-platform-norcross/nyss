@@ -13,16 +13,10 @@ steps:
     script: 'gitversion /l console /output buildserver /updateAssemblyInfo'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: restore
-    projects: '*.sln'
-
-- task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
     projects: '*.sln'
-    arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)" --no-restore'
+    arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)" -r win-x86'
 
 - task: CmdLine@2
   displayName: 'Insert test task here...'
@@ -34,7 +28,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" --no-restore --no-build'
+    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" --no-build --self-contained -r win-x86'
     zipAfterPublish: true
     modifyOutputPath: false
 
