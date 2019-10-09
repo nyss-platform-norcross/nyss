@@ -38,14 +38,7 @@
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Migrations\20191009073652_InitialMigration.cs" />
-    <Compile Remove="Migrations\20191009073652_InitialMigration.Designer.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\RX.Nyss.Data\RX.Nyss.Data.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
