@@ -11,7 +11,7 @@ using RX.Nyss.Data;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191008105844_InitialMigration")]
+    [Migration("20191009103802_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,7 +47,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("ProjectHealthRiskId");
 
-                    b.ToTable("Alert");
+                    b.ToTable("Alerts");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertEvent", b =>
@@ -77,7 +77,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AlertEvent");
+                    b.ToTable("AlertEvents");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertRecipient", b =>
@@ -98,7 +98,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("AlertRuleId");
 
-                    b.ToTable("AlertRecipient");
+                    b.ToTable("AlertRecipients");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertReport", b =>
@@ -113,7 +113,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("ReportId");
 
-                    b.ToTable("AlertReport");
+                    b.ToTable("AlertReports");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertRule", b =>
@@ -134,7 +134,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AlertRule");
+                    b.ToTable("AlertRules");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.ApplicationLanguage", b =>
@@ -158,7 +158,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("DisplayName")
                         .IsUnique();
 
-                    b.ToTable("ApplicationLanguage");
+                    b.ToTable("ApplicationLanguages");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.ContentLanguage", b =>
@@ -242,7 +242,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("ZoneId");
 
-                    b.ToTable("DataCollector");
+                    b.ToTable("DataCollectors");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.District", b =>
@@ -263,7 +263,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("RegionId");
 
-                    b.ToTable("District");
+                    b.ToTable("Districts");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.GatewaySetting", b =>
@@ -295,7 +295,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("NationalSocietyId");
 
-                    b.ToTable("GatewaySetting");
+                    b.ToTable("GatewaySettings");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRisk", b =>
@@ -324,7 +324,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("AlertRuleId");
 
-                    b.ToTable("HealthRisk");
+                    b.ToTable("HealthRisks");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRiskLanguageContent", b =>
@@ -356,7 +356,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("HealthRiskId");
 
-                    b.ToTable("HealthRiskLanguageContent");
+                    b.ToTable("HealthRiskLanguageContents");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Localization", b =>
@@ -373,7 +373,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasKey("ApplicationLanguageId", "Key");
 
-                    b.ToTable("Localization");
+                    b.ToTable("Localizations");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.LocalizedTemplate", b =>
@@ -390,7 +390,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasKey("ApplicationLanguageId", "Key");
 
-                    b.ToTable("LocalizedTemplate");
+                    b.ToTable("LocalizedTemplates");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.NationalSociety", b =>
@@ -467,7 +467,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notification");
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>
@@ -502,7 +502,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("NationalSocietyId");
 
-                    b.ToTable("Project");
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.ProjectHealthRisk", b =>
@@ -533,7 +533,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectHealthRisk");
+                    b.ToTable("ProjectHealthRisks");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Region", b =>
@@ -554,7 +554,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("NationalSocietyId");
 
-                    b.ToTable("Region");
+                    b.ToTable("Regions");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Report", b =>
@@ -614,7 +614,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("ProjectHealthRiskId");
 
-                    b.ToTable("Report");
+                    b.ToTable("Reports");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.User", b =>
@@ -665,7 +665,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("ApplicationLanguageId");
 
-                    b.ToTable("User");
+                    b.ToTable("Users");
 
                     b.HasDiscriminator<string>("Role").HasValue("User");
                 });
@@ -682,7 +682,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("NationalSocietyId");
 
-                    b.ToTable("UserNationalSociety");
+                    b.ToTable("UserNationalSocieties");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Village", b =>
@@ -703,7 +703,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("DistrictId");
 
-                    b.ToTable("Village");
+                    b.ToTable("Villages");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Zone", b =>
@@ -724,7 +724,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("VillageId");
 
-                    b.ToTable("Zone");
+                    b.ToTable("Zones");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.DataManagerUser", b =>
@@ -1007,7 +1007,7 @@ namespace RX.Nyss.Data.Migrations
 
                             b1.HasKey("ReportId");
 
-                            b1.ToTable("Report");
+                            b1.ToTable("Reports");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReportId");
@@ -1034,7 +1034,7 @@ namespace RX.Nyss.Data.Migrations
 
                             b1.HasKey("ReportId");
 
-                            b1.ToTable("Report");
+                            b1.ToTable("Reports");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReportId");
@@ -1061,7 +1061,7 @@ namespace RX.Nyss.Data.Migrations
 
                             b1.HasKey("ReportId");
 
-                            b1.ToTable("Report");
+                            b1.ToTable("Reports");
 
                             b1.WithOwner()
                                 .HasForeignKey("ReportId");

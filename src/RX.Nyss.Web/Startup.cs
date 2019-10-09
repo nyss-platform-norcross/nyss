@@ -5,8 +5,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Web.Data;
@@ -16,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Data;
+using RX.Nyss.Web.Features.Authorization;
+using RX.Nyss.Web.Features.HealthRisk;
 
 namespace RX.Nyss.Web
 {
@@ -31,9 +31,6 @@ namespace RX.Nyss.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<NyssContext>(options =>
-            //    options.UseSqlite("DataSource=app.db"));
-
             services.AddDbContext<NyssContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase"),
                     x => x.UseNetTopologySuite()));
@@ -42,6 +39,7 @@ namespace RX.Nyss.Web
                 options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase")));
 
             services.AddDefaultIdentity<ApplicationUser>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
@@ -66,6 +64,10 @@ namespace RX.Nyss.Web
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddScoped<IHealthRiskService, HealthRiskService>();
+
+            services.SeedAdministratorAccount().GetAwaiter().GetResult();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,8 +94,7 @@ namespace RX.Nyss.Web
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nyss API V1");
             });
-
-
+            
             app.UseRouting();
 
             app.UseAuthentication();

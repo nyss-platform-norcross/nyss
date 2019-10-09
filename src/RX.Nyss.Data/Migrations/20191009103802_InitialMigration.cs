@@ -9,7 +9,7 @@ namespace RX.Nyss.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AlertRule",
+                name: "AlertRules",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -20,11 +20,11 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AlertRule", x => x.Id);
+                    table.PrimaryKey("PK_AlertRules", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApplicationLanguage",
+                name: "ApplicationLanguages",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -34,7 +34,7 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApplicationLanguage", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationLanguages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -52,7 +52,7 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AlertRecipient",
+                name: "AlertRecipients",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -62,17 +62,17 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AlertRecipient", x => x.Id);
+                    table.PrimaryKey("PK_AlertRecipients", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AlertRecipient_AlertRule_AlertRuleId",
+                        name: "FK_AlertRecipients_AlertRules_AlertRuleId",
                         column: x => x.AlertRuleId,
-                        principalTable: "AlertRule",
+                        principalTable: "AlertRules",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "HealthRisk",
+                name: "HealthRisks",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -84,17 +84,17 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HealthRisk", x => x.Id);
+                    table.PrimaryKey("PK_HealthRisks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_HealthRisk_AlertRule_AlertRuleId",
+                        name: "FK_HealthRisks_AlertRules_AlertRuleId",
                         column: x => x.AlertRuleId,
-                        principalTable: "AlertRule",
+                        principalTable: "AlertRules",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Localization",
+                name: "Localizations",
                 columns: table => new
                 {
                     Key = table.Column<string>(nullable: false),
@@ -103,17 +103,17 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Localization", x => new { x.ApplicationLanguageId, x.Key });
+                    table.PrimaryKey("PK_Localizations", x => new { x.ApplicationLanguageId, x.Key });
                     table.ForeignKey(
-                        name: "FK_Localization_ApplicationLanguage_ApplicationLanguageId",
+                        name: "FK_Localizations_ApplicationLanguages_ApplicationLanguageId",
                         column: x => x.ApplicationLanguageId,
-                        principalTable: "ApplicationLanguage",
+                        principalTable: "ApplicationLanguages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocalizedTemplate",
+                name: "LocalizedTemplates",
                 columns: table => new
                 {
                     Key = table.Column<string>(nullable: false),
@@ -122,11 +122,11 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_LocalizedTemplate", x => new { x.ApplicationLanguageId, x.Key });
+                    table.PrimaryKey("PK_LocalizedTemplates", x => new { x.ApplicationLanguageId, x.Key });
                     table.ForeignKey(
-                        name: "FK_LocalizedTemplate_ApplicationLanguage_ApplicationLanguageId",
+                        name: "FK_LocalizedTemplates_ApplicationLanguages_ApplicationLanguageId",
                         column: x => x.ApplicationLanguageId,
-                        principalTable: "ApplicationLanguage",
+                        principalTable: "ApplicationLanguages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -157,7 +157,7 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "HealthRiskLanguageContent",
+                name: "HealthRiskLanguageContents",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -169,23 +169,23 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HealthRiskLanguageContent", x => x.Id);
+                    table.PrimaryKey("PK_HealthRiskLanguageContents", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_HealthRiskLanguageContent_ContentLanguages_ContentLanguageId",
+                        name: "FK_HealthRiskLanguageContents_ContentLanguages_ContentLanguageId",
                         column: x => x.ContentLanguageId,
                         principalTable: "ContentLanguages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_HealthRiskLanguageContent_HealthRisk_HealthRiskId",
+                        name: "FK_HealthRiskLanguageContents_HealthRisks_HealthRiskId",
                         column: x => x.HealthRiskId,
-                        principalTable: "HealthRisk",
+                        principalTable: "HealthRisks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "GatewaySetting",
+                name: "GatewaySettings",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -197,9 +197,9 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GatewaySetting", x => x.Id);
+                    table.PrimaryKey("PK_GatewaySettings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GatewaySetting_NationalSocieties_NationalSocietyId",
+                        name: "FK_GatewaySettings_NationalSocieties_NationalSocietyId",
                         column: x => x.NationalSocietyId,
                         principalTable: "NationalSocieties",
                         principalColumn: "Id",
@@ -207,7 +207,7 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Project",
+                name: "Projects",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -220,15 +220,15 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Project", x => x.Id);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Project_ContentLanguages_ContentLanguageId",
+                        name: "FK_Projects_ContentLanguages_ContentLanguageId",
                         column: x => x.ContentLanguageId,
                         principalTable: "ContentLanguages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Project_NationalSocieties_NationalSocietyId",
+                        name: "FK_Projects_NationalSocieties_NationalSocietyId",
                         column: x => x.NationalSocietyId,
                         principalTable: "NationalSocieties",
                         principalColumn: "Id",
@@ -236,7 +236,7 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Region",
+                name: "Regions",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -246,9 +246,9 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Region", x => x.Id);
+                    table.PrimaryKey("PK_Regions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Region_NationalSocieties_NationalSocietyId",
+                        name: "FK_Regions_NationalSocieties_NationalSocietyId",
                         column: x => x.NationalSocietyId,
                         principalTable: "NationalSocieties",
                         principalColumn: "Id",
@@ -256,7 +256,7 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectHealthRisk",
+                name: "ProjectHealthRisks",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -268,29 +268,29 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectHealthRisk", x => x.Id);
+                    table.PrimaryKey("PK_ProjectHealthRisks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectHealthRisk_AlertRule_AlertRuleId",
+                        name: "FK_ProjectHealthRisks_AlertRules_AlertRuleId",
                         column: x => x.AlertRuleId,
-                        principalTable: "AlertRule",
+                        principalTable: "AlertRules",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProjectHealthRisk_HealthRisk_HealthRiskId",
+                        name: "FK_ProjectHealthRisks_HealthRisks_HealthRiskId",
                         column: x => x.HealthRiskId,
-                        principalTable: "HealthRisk",
+                        principalTable: "HealthRisks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_ProjectHealthRisk_Project_ProjectId",
+                        name: "FK_ProjectHealthRisks_Projects_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Project",
+                        principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "District",
+                name: "Districts",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -300,17 +300,17 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_District", x => x.Id);
+                    table.PrimaryKey("PK_Districts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_District_Region_RegionId",
+                        name: "FK_Districts_Regions_RegionId",
                         column: x => x.RegionId,
-                        principalTable: "Region",
+                        principalTable: "Regions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Alert",
+                name: "Alerts",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -322,17 +322,17 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Alert", x => x.Id);
+                    table.PrimaryKey("PK_Alerts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Alert_ProjectHealthRisk_ProjectHealthRiskId",
+                        name: "FK_Alerts_ProjectHealthRisks_ProjectHealthRiskId",
                         column: x => x.ProjectHealthRiskId,
-                        principalTable: "ProjectHealthRisk",
+                        principalTable: "ProjectHealthRisks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Village",
+                name: "Villages",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -342,17 +342,17 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Village", x => x.Id);
+                    table.PrimaryKey("PK_Villages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Village_District_DistrictId",
+                        name: "FK_Villages_Districts_DistrictId",
                         column: x => x.DistrictId,
-                        principalTable: "District",
+                        principalTable: "Districts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Zone",
+                name: "Zones",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -362,17 +362,17 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Zone", x => x.Id);
+                    table.PrimaryKey("PK_Zones", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Zone_Village_VillageId",
+                        name: "FK_Zones_Villages_VillageId",
                         column: x => x.VillageId,
-                        principalTable: "Village",
+                        principalTable: "Villages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "User",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -398,47 +398,47 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_User", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_User_NationalSocieties_NationalSocietyId",
+                        name: "FK_Users_NationalSocieties_NationalSocietyId",
                         column: x => x.NationalSocietyId,
                         principalTable: "NationalSocieties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_User_User_DataManagerUserId",
+                        name: "FK_Users_Users_DataManagerUserId",
                         column: x => x.DataManagerUserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_User_NationalSocieties_SupervisorUser_NationalSocietyId",
+                        name: "FK_Users_NationalSocieties_SupervisorUser_NationalSocietyId",
                         column: x => x.SupervisorUser_NationalSocietyId,
                         principalTable: "NationalSocieties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_User_Village_VillageId",
+                        name: "FK_Users_Villages_VillageId",
                         column: x => x.VillageId,
-                        principalTable: "Village",
+                        principalTable: "Villages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_User_Zone_ZoneId",
+                        name: "FK_Users_Zones_ZoneId",
                         column: x => x.ZoneId,
-                        principalTable: "Zone",
+                        principalTable: "Zones",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_User_ApplicationLanguage_ApplicationLanguageId",
+                        name: "FK_Users_ApplicationLanguages_ApplicationLanguageId",
                         column: x => x.ApplicationLanguageId,
-                        principalTable: "ApplicationLanguage",
+                        principalTable: "ApplicationLanguages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AlertEvent",
+                name: "AlertEvents",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -450,23 +450,23 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AlertEvent", x => x.Id);
+                    table.PrimaryKey("PK_AlertEvents", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AlertEvent_Alert_AlertId",
+                        name: "FK_AlertEvents_Alerts_AlertId",
                         column: x => x.AlertId,
-                        principalTable: "Alert",
+                        principalTable: "Alerts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AlertEvent_User_UserId",
+                        name: "FK_AlertEvents_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataCollector",
+                name: "DataCollectors",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -484,35 +484,35 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataCollector", x => x.Id);
+                    table.PrimaryKey("PK_DataCollectors", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_DataCollector_Project_ProjectId",
+                        name: "FK_DataCollectors_Projects_ProjectId",
                         column: x => x.ProjectId,
-                        principalTable: "Project",
+                        principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DataCollector_User_SupervisorId",
+                        name: "FK_DataCollectors_Users_SupervisorId",
                         column: x => x.SupervisorId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DataCollector_Village_VillageId",
+                        name: "FK_DataCollectors_Villages_VillageId",
                         column: x => x.VillageId,
-                        principalTable: "Village",
+                        principalTable: "Villages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_DataCollector_Zone_ZoneId",
+                        name: "FK_DataCollectors_Zones_ZoneId",
                         column: x => x.ZoneId,
-                        principalTable: "Zone",
+                        principalTable: "Zones",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notification",
+                name: "Notifications",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -525,17 +525,17 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Notification", x => x.Id);
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Notification_User_UserId",
+                        name: "FK_Notifications_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserNationalSociety",
+                name: "UserNationalSocieties",
                 columns: table => new
                 {
                     UserId = table.Column<int>(nullable: false),
@@ -543,23 +543,23 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserNationalSociety", x => new { x.UserId, x.NationalSocietyId });
+                    table.PrimaryKey("PK_UserNationalSocieties", x => new { x.UserId, x.NationalSocietyId });
                     table.ForeignKey(
-                        name: "FK_UserNationalSociety_NationalSocieties_NationalSocietyId",
+                        name: "FK_UserNationalSocieties_NationalSocieties_NationalSocietyId",
                         column: x => x.NationalSocietyId,
                         principalTable: "NationalSocieties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserNationalSociety_User_UserId",
+                        name: "FK_UserNationalSocieties_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "User",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Report",
+                name: "Reports",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -590,23 +590,23 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Report", x => x.Id);
+                    table.PrimaryKey("PK_Reports", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Report_DataCollector_DataCollectorId",
+                        name: "FK_Reports_DataCollectors_DataCollectorId",
                         column: x => x.DataCollectorId,
-                        principalTable: "DataCollector",
+                        principalTable: "DataCollectors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Report_ProjectHealthRisk_ProjectHealthRiskId",
+                        name: "FK_Reports_ProjectHealthRisks_ProjectHealthRiskId",
                         column: x => x.ProjectHealthRiskId,
-                        principalTable: "ProjectHealthRisk",
+                        principalTable: "ProjectHealthRisks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AlertReport",
+                name: "AlertReports",
                 columns: table => new
                 {
                     AlertId = table.Column<int>(nullable: false),
@@ -614,49 +614,49 @@ namespace RX.Nyss.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AlertReport", x => new { x.AlertId, x.ReportId });
+                    table.PrimaryKey("PK_AlertReports", x => new { x.AlertId, x.ReportId });
                     table.ForeignKey(
-                        name: "FK_AlertReport_Alert_AlertId",
+                        name: "FK_AlertReports_Alerts_AlertId",
                         column: x => x.AlertId,
-                        principalTable: "Alert",
+                        principalTable: "Alerts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AlertReport_Report_ReportId",
+                        name: "FK_AlertReports_Reports_ReportId",
                         column: x => x.ReportId,
-                        principalTable: "Report",
+                        principalTable: "Reports",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Alert_ProjectHealthRiskId",
-                table: "Alert",
-                column: "ProjectHealthRiskId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AlertEvent_AlertId",
-                table: "AlertEvent",
+                name: "IX_AlertEvents_AlertId",
+                table: "AlertEvents",
                 column: "AlertId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AlertEvent_UserId",
-                table: "AlertEvent",
+                name: "IX_AlertEvents_UserId",
+                table: "AlertEvents",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AlertRecipient_AlertRuleId",
-                table: "AlertRecipient",
+                name: "IX_AlertRecipients_AlertRuleId",
+                table: "AlertRecipients",
                 column: "AlertRuleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AlertReport_ReportId",
-                table: "AlertReport",
+                name: "IX_AlertReports_ReportId",
+                table: "AlertReports",
                 column: "ReportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ApplicationLanguage_DisplayName",
-                table: "ApplicationLanguage",
+                name: "IX_Alerts_ProjectHealthRiskId",
+                table: "Alerts",
+                column: "ProjectHealthRiskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApplicationLanguages_DisplayName",
+                table: "ApplicationLanguages",
                 column: "DisplayName",
                 unique: true);
 
@@ -667,49 +667,49 @@ namespace RX.Nyss.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataCollector_ProjectId",
-                table: "DataCollector",
+                name: "IX_DataCollectors_ProjectId",
+                table: "DataCollectors",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataCollector_SupervisorId",
-                table: "DataCollector",
+                name: "IX_DataCollectors_SupervisorId",
+                table: "DataCollectors",
                 column: "SupervisorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataCollector_VillageId",
-                table: "DataCollector",
+                name: "IX_DataCollectors_VillageId",
+                table: "DataCollectors",
                 column: "VillageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataCollector_ZoneId",
-                table: "DataCollector",
+                name: "IX_DataCollectors_ZoneId",
+                table: "DataCollectors",
                 column: "ZoneId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_District_RegionId",
-                table: "District",
+                name: "IX_Districts_RegionId",
+                table: "Districts",
                 column: "RegionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GatewaySetting_NationalSocietyId",
-                table: "GatewaySetting",
+                name: "IX_GatewaySettings_NationalSocietyId",
+                table: "GatewaySettings",
                 column: "NationalSocietyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HealthRisk_AlertRuleId",
-                table: "HealthRisk",
-                column: "AlertRuleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_HealthRiskLanguageContent_ContentLanguageId",
-                table: "HealthRiskLanguageContent",
+                name: "IX_HealthRiskLanguageContents_ContentLanguageId",
+                table: "HealthRiskLanguageContents",
                 column: "ContentLanguageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_HealthRiskLanguageContent_HealthRiskId",
-                table: "HealthRiskLanguageContent",
+                name: "IX_HealthRiskLanguageContents_HealthRiskId",
+                table: "HealthRiskLanguageContents",
                 column: "HealthRiskId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HealthRisks_AlertRuleId",
+                table: "HealthRisks",
+                column: "AlertRuleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_NationalSocieties_ContentLanguageId",
@@ -724,163 +724,163 @@ namespace RX.Nyss.Data.Migrations
                 filter: "[Name] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notification_UserId",
-                table: "Notification",
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Project_ContentLanguageId",
-                table: "Project",
-                column: "ContentLanguageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Project_NationalSocietyId",
-                table: "Project",
-                column: "NationalSocietyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectHealthRisk_AlertRuleId",
-                table: "ProjectHealthRisk",
+                name: "IX_ProjectHealthRisks_AlertRuleId",
+                table: "ProjectHealthRisks",
                 column: "AlertRuleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectHealthRisk_HealthRiskId",
-                table: "ProjectHealthRisk",
+                name: "IX_ProjectHealthRisks_HealthRiskId",
+                table: "ProjectHealthRisks",
                 column: "HealthRiskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectHealthRisk_ProjectId",
-                table: "ProjectHealthRisk",
+                name: "IX_ProjectHealthRisks_ProjectId",
+                table: "ProjectHealthRisks",
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Region_NationalSocietyId",
-                table: "Region",
+                name: "IX_Projects_ContentLanguageId",
+                table: "Projects",
+                column: "ContentLanguageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_NationalSocietyId",
+                table: "Projects",
                 column: "NationalSocietyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Report_DataCollectorId",
-                table: "Report",
+                name: "IX_Regions_NationalSocietyId",
+                table: "Regions",
+                column: "NationalSocietyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_DataCollectorId",
+                table: "Reports",
                 column: "DataCollectorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Report_ProjectHealthRiskId",
-                table: "Report",
+                name: "IX_Reports_ProjectHealthRiskId",
+                table: "Reports",
                 column: "ProjectHealthRiskId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_NationalSocietyId",
-                table: "User",
+                name: "IX_UserNationalSocieties_NationalSocietyId",
+                table: "UserNationalSocieties",
                 column: "NationalSocietyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_DataManagerUserId",
-                table: "User",
+                name: "IX_Users_NationalSocietyId",
+                table: "Users",
+                column: "NationalSocietyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_DataManagerUserId",
+                table: "Users",
                 column: "DataManagerUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_SupervisorUser_NationalSocietyId",
-                table: "User",
+                name: "IX_Users_SupervisorUser_NationalSocietyId",
+                table: "Users",
                 column: "SupervisorUser_NationalSocietyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_VillageId",
-                table: "User",
+                name: "IX_Users_VillageId",
+                table: "Users",
                 column: "VillageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_ZoneId",
-                table: "User",
+                name: "IX_Users_ZoneId",
+                table: "Users",
                 column: "ZoneId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_User_ApplicationLanguageId",
-                table: "User",
+                name: "IX_Users_ApplicationLanguageId",
+                table: "Users",
                 column: "ApplicationLanguageId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserNationalSociety_NationalSocietyId",
-                table: "UserNationalSociety",
-                column: "NationalSocietyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Village_DistrictId",
-                table: "Village",
+                name: "IX_Villages_DistrictId",
+                table: "Villages",
                 column: "DistrictId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Zone_VillageId",
-                table: "Zone",
+                name: "IX_Zones_VillageId",
+                table: "Zones",
                 column: "VillageId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AlertEvent");
+                name: "AlertEvents");
 
             migrationBuilder.DropTable(
-                name: "AlertRecipient");
+                name: "AlertRecipients");
 
             migrationBuilder.DropTable(
-                name: "AlertReport");
+                name: "AlertReports");
 
             migrationBuilder.DropTable(
-                name: "GatewaySetting");
+                name: "GatewaySettings");
 
             migrationBuilder.DropTable(
-                name: "HealthRiskLanguageContent");
+                name: "HealthRiskLanguageContents");
 
             migrationBuilder.DropTable(
-                name: "Localization");
+                name: "Localizations");
 
             migrationBuilder.DropTable(
-                name: "LocalizedTemplate");
+                name: "LocalizedTemplates");
 
             migrationBuilder.DropTable(
-                name: "Notification");
+                name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "UserNationalSociety");
+                name: "UserNationalSocieties");
 
             migrationBuilder.DropTable(
-                name: "Alert");
+                name: "Alerts");
 
             migrationBuilder.DropTable(
-                name: "Report");
+                name: "Reports");
 
             migrationBuilder.DropTable(
-                name: "DataCollector");
+                name: "DataCollectors");
 
             migrationBuilder.DropTable(
-                name: "ProjectHealthRisk");
+                name: "ProjectHealthRisks");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "HealthRisk");
+                name: "HealthRisks");
 
             migrationBuilder.DropTable(
-                name: "Project");
+                name: "Projects");
 
             migrationBuilder.DropTable(
-                name: "Zone");
+                name: "Zones");
 
             migrationBuilder.DropTable(
-                name: "ApplicationLanguage");
+                name: "ApplicationLanguages");
 
             migrationBuilder.DropTable(
-                name: "AlertRule");
+                name: "AlertRules");
 
             migrationBuilder.DropTable(
-                name: "Village");
+                name: "Villages");
 
             migrationBuilder.DropTable(
-                name: "District");
+                name: "Districts");
 
             migrationBuilder.DropTable(
-                name: "Region");
+                name: "Regions");
 
             migrationBuilder.DropTable(
                 name: "NationalSocieties");
