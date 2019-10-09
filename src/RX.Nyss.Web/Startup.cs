@@ -38,6 +38,9 @@ namespace RX.Nyss.Web
                 options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase"),
                     x => x.UseNetTopologySuite()));
 
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase")));
+
             services.AddDefaultIdentity<ApplicationUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
