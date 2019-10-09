@@ -1,8 +1,8 @@
 ﻿namespace RX.Nyss.Data.Concepts
 {
-    public static class Roles
+    public static class Role
     {
-        public const string Administrator = "Administrator";
+        public const string SystemAdministrator = "SystemAdministrator";
         public const string GlobalCoordinator = "GlobalCoordinator";
         public const string TechnicalAdvisor = "TechnicalAdvisor";
         public const string DataConsumer = "DataConsumer";

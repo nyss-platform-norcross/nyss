@@ -12,15 +12,15 @@ namespace RX.Nyss.Web.Features.Authorization
 {
     public static class UserSeed
     {
-        private const string AdministratorUserName = "admin@fabres.pl";
-        private const string AdministratorPasswordConfigKey = "AdministratorPassword";
+        private const string SystemAdministratorUserName = "admin@fabres.pl";
+        private const string SystemAdministratorPasswordConfigKey = "AdministratorPassword";
 
         public static async Task SeedAdministratorAccount(this IServiceCollection serviceCollection)
         {
             var serviceProvider = serviceCollection.BuildServiceProvider();
             //var loggerAdapter = serviceProvider.GetService<ILoggerAdapter>();
 
-            //loggerAdapter.Debug("Seeding administrator user to the database.");
+            //loggerAdapter.Debug("Seeding System Administrator account to the database.");
 
             var config = serviceProvider.GetRequiredService<IConfiguration>();
 
@@ -28,20 +28,20 @@ namespace RX.Nyss.Web.Features.Authorization
             {
                 try
                 {
-                    await EnsureRoleExists(serviceProvider, Role.Administrator);
+                    await EnsureRoleExists(serviceProvider, Role.SystemAdministrator);
 
-                    var administratorPassword = config[AdministratorPasswordConfigKey];
-                    await EnsureUserWithRoleExists(serviceProvider, AdministratorUserName, administratorPassword, Role.Administrator);
+                    var systemAdministratorPassword = config[SystemAdministratorPasswordConfigKey];
+                    await EnsureUserWithRoleExists(serviceProvider, SystemAdministratorUserName, systemAdministratorPassword, Role.SystemAdministrator);
 
-                    //SeedDB(dbContext, administratorId);
+                    //SeedDB(dbContext, systemAdministratorId);
                 }
                 catch (Exception e)
                 {
-                    //loggerAdapter.Error($"Error occurred during seeding of administrator account.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
+                    //loggerAdapter.Error($"Error occurred during seeding of System Administrator account.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
                     throw;
                 }
 
-                //loggerAdapter.Debug("Administrator account was seeded successfully.");
+                //loggerAdapter.Debug("System Administrator account was seeded successfully.");
             }
         }
 
@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.Authorization
                 if (!roleCreationResult.Succeeded)
                 {
                     var errorMessages = string.Join(",", roleCreationResult.Errors.Select(x => x.Description));
-                    throw new Exception($"The administrator role could not be created. {errorMessages}");
+                    throw new Exception($"The System Administrator role could not be created. {errorMessages}");
                 }
             }
         }
@@ -82,7 +82,7 @@ namespace RX.Nyss.Web.Features.Authorization
             if (!userCreationResult.Succeeded)
             {
                 var errorMessages = string.Join(",", userCreationResult.Errors.Select(x => x.Description));
-                throw new Exception($"The administrator user could not be created. {errorMessages}");
+                throw new Exception($"The System Administrator user could not be created. {errorMessages}");
             }
 
             var assignmentToRoleResult = await userManager.AddToRoleAsync(user, userRole);
@@ -90,7 +90,7 @@ namespace RX.Nyss.Web.Features.Authorization
             if (!assignmentToRoleResult.Succeeded)
             {
                 var errorMessages = string.Join(",", assignmentToRoleResult.Errors.Select(x => x.Description));
-                throw new Exception($"The administrator role could not be assigned. {errorMessages}");
+                throw new Exception($"The System Administrator role could not be assigned. {errorMessages}");
             }
         }
     }
