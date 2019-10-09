@@ -1,0 +1,28 @@
+.layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    .sideMenu {
+        flex: 0;
+        flex-basis: 300px;
+        background: #FAFAFA;
+        padding-top: 40px;
+        margin: 0 20px;
+    }
+
+    .mainContent {
+        flex: 1;
+        display: flex;
+    }
+
+    .pageContent {
+        flex: 1;
+        display: flex;
+        padding: 20px;
+    }
+}
+
+.breadcrumb {
+
+}

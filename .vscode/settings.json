@@ -1,0 +1,24 @@
+{
+  "editor.tabSize": 2,
+  "files.exclude": {
+    ".git": true,
+    ".vs": true,
+    "**/*-lock.json": true,
+    "**/*.DotSettings": true,
+    "**/*.user": true,
+    "**/bin": true,
+    "**/node_modules": true,
+    "**/obj": true,
+    "**/wwwroot/dist": true,
+    "packages": true
+  },
+  "search.exclude": {
+    "**/*.js.map": true,
+    "**/*.log": true,
+    "**/bower_components": true,
+    "**/dist": true,
+    "**/node_modules": true
+  },
+  "editor.detectIndentation": false,
+  "eslint.workingDirectories": ["./src/RX.Nyss.Web/ClientApp/src"]
+}
