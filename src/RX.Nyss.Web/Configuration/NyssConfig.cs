@@ -1,14 +1,16 @@
-﻿namespace RX.Nyss.Web
+﻿namespace RX.Nyss.Web.Configuration
 {
     public class NyssConfig
     {
         public LoggingOptions Logging { get; set; }
+
         public ConnectionStringOptions ConnectionStrings { get; set; }
 
         public interface ILoggingOptions
         {
             string LogsLocation { get; set; }
         }
+
         public interface IConnectionStringOptions
         {
              string NyssDatabase { get; set; }

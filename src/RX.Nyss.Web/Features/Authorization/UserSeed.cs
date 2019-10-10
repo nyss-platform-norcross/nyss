@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.User;
 
 namespace RX.Nyss.Web.Features.Authorization

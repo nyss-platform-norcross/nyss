@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.DataContract;
 

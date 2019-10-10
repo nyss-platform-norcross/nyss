@@ -15,36 +15,36 @@ using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Models;
 using Serilog;
 
-namespace RX.Nyss.Web
+namespace RX.Nyss.Web.Configuration
 {
     public static class DependencyConfiguration
     {
         public static void ConfigureDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             var config = configuration.Get<NyssConfig>();
-            GlobalLoggerConfiguration.ConfigureLogger(config.Logging);
-            RegisterLogger(serviceCollection);
-            RegisterDatabases(serviceCollection, configuration);
+            RegisterLogger(serviceCollection, config.Logging);
+            RegisterDatabases(serviceCollection, config.ConnectionStrings);
             RegisterAuth(serviceCollection);
             RegisterWebFramework(serviceCollection);
             RegisterSwagger(serviceCollection);
             RegisterServiceCollection(serviceCollection);
         }
 
-        private static void RegisterLogger(IServiceCollection serviceCollection)
+        private static void RegisterLogger(IServiceCollection serviceCollection, NyssConfig.ILoggingOptions loggingOptions)
         {
+            GlobalLoggerConfiguration.ConfigureLogger(loggingOptions);
             serviceCollection.AddSingleton(x => Log.Logger); // must be func, as the static logger is configured (changed reference) after DI registering
             serviceCollection.AddSingleton<ILoggerAdapter, SerilogLoggerAdapter>();
         }
 
-        private static void RegisterDatabases(IServiceCollection serviceCollection, IConfiguration configuration)
+        private static void RegisterDatabases(IServiceCollection serviceCollection, NyssConfig.IConnectionStringOptions connectionStringOptions)
         {
             serviceCollection.AddDbContext<NyssContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("NyssDatabase"),
+                options.UseSqlServer(connectionStringOptions.NyssDatabase,
                     x => x.UseNetTopologySuite()));
 
             serviceCollection.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("NyssDatabase")));
+                options.UseSqlServer(connectionStringOptions.NyssDatabase));
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection)

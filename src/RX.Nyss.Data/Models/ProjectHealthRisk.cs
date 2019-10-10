@@ -1,6 +1,4 @@
-﻿using RX.Nyss.Data.Concepts;
-
-namespace RX.Nyss.Data.Models
+﻿namespace RX.Nyss.Data.Models
 {
     public class ProjectHealthRisk
     {
