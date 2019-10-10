@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace RX.Nyss.Web.Features.User
@@ -14,5 +15,7 @@ namespace RX.Nyss.Web.Features.User
         {
             _userService = userService;
         }
+
+        //public async Task<Result>
     }
 }

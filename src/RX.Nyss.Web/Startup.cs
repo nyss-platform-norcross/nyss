@@ -1,21 +1,10 @@
-using System;
-using System.IO;
-using System.Reflection;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using Microsoft.EntityFrameworkCore;
-using RX.Nyss.Web.Data;
-using RX.Nyss.Web.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using RX.Nyss.Data;
 using RX.Nyss.Web.Features.Authorization;
-using RX.Nyss.Web.Features.HealthRisk;
 
 namespace RX.Nyss.Web
 {
@@ -31,42 +20,7 @@ namespace RX.Nyss.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<NyssContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase"),
-                    x => x.UseNetTopologySuite()));
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase")));
-
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddDefaultUI()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
-
-            services.AddControllersWithViews();
-            services.AddRazorPages();
-
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Nyss API", Version = "v1" });
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-            });
-
-            // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
-
-            services.AddScoped<IHealthRiskService, HealthRiskService>();
-
+            services.ConfigureDependencies(Configuration);
             services.SeedAdministratorAccount().GetAwaiter().GetResult();
         }
 

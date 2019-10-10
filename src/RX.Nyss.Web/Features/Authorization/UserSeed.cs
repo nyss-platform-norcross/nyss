@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Data;
-using RX.Nyss.Web.Models;
+using RX.Nyss.Web.Features.User;
 
 namespace RX.Nyss.Web.Features.Authorization
 {
     public static class UserSeed
     {
-        private const string SystemAdministratorUserName = "admin@fabres.pl";
-        private const string SystemAdministratorPasswordConfigKey = "AdministratorPassword";
+        private const string SystemAdministratorEmail = "admin@domain.com";
+        private const string SystemAdministratorPasswordConfigKey = "SystemAdministratorPassword";
 
         public static async Task SeedAdministratorAccount(this IServiceCollection serviceCollection)
         {
@@ -23,17 +21,21 @@ namespace RX.Nyss.Web.Features.Authorization
             //loggerAdapter.Debug("Seeding System Administrator account to the database.");
 
             var config = serviceProvider.GetRequiredService<IConfiguration>();
-
-            await using var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+            var userService = serviceProvider.GetRequiredService<IUserService>();
 
             try
             {
-                //await EnsureRoleExists(serviceProvider, Role.SystemAdministrator.ToString());
+                await userService.EnsureRoleExists(Role.SystemAdministrator.ToString());
+                await userService.EnsureRoleExists(Role.GlobalCoordinator.ToString());
+                await userService.EnsureRoleExists(Role.TechnicalAdvisor.ToString());
+                await userService.EnsureRoleExists(Role.DataConsumer.ToString());
+                await userService.EnsureRoleExists(Role.DataManager.ToString());
+                await userService.EnsureRoleExists(Role.Supervisor.ToString());
 
                 var systemAdministratorPassword = config[SystemAdministratorPasswordConfigKey];
-                //await EnsureUserWithRoleExists(serviceProvider, SystemAdministratorUserName, systemAdministratorPassword, Role.SystemAdministrator.ToString(), true);
 
-                //SeedDB(dbContext, systemAdministratorId);
+                await userService.AddUser(SystemAdministratorEmail,systemAdministratorPassword, true);
+                await userService.AssignRole(SystemAdministratorEmail, Role.SystemAdministrator.ToString());
             }
             catch (Exception e)
             {
