@@ -39,6 +39,7 @@ namespace RX.Nyss.Web
                 options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
