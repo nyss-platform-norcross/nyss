@@ -3,14 +3,17 @@ Most resources are put into the same resource group per environment, except for 
 
 The following resources are per environment (`dev`, `test`, or `production`):
 
-| Type                      | Name                                  | Remarks                               |
-| ---                       | ---                                   | ---                                   |
-| Resource group            | `nrx-cbs-<env>-rg`                    |                                       |
-| App Service               | `nrx-cbs-<env>-nyss-webapp`           | TODO: Slots config                    |
-| AppInsights               | `nrx-cbs-<env>-nyss-webapp`           |                                       |
-| App Service Plan          | `nrx-cbs-<env>-nyss-webapp-sp`        |                                       |
-| ServiceBus Namespace      | `nrx-cbs-<env>-nyss-bus`              |                                       |
-| Function App              | `nrx-cbs-<env>-nyss-func`             | TODO                                  |
+| Type                          | Name                                          | Remarks                               |
+| ---                           | ---                                           | ---                                   |
+| Resource group                | `nrx-cbs-<env>-rg`                            |                                       |
+| App Service                   | `nrx-cbs-<env>-nyss-webapp`                   | TODO: Slots config                    |
+| AppInsights                   | `nrx-cbs-<env>-nyss-webapp`                   |                                       |
+| App Service Plan              | `nrx-cbs-<env>-nyss-webapp-sp`                |                                       |
+| ServiceBus Namespace          | `nrx-cbs-<env>-nyss-bus`                      |                                       |
+| Function App                  | `nrx-cbs-<env>-nyss-func`                     |                                       |
+| AppInsights for funcapp       | `nrx-cbs-<env>-nyss-funcapp`                  |                                       |
+| Storage account for funcapp   | `nrxcbsdevnyssfuncappst`                      |                                       |
+| Service Plan for funcapp      | `nrx-cbs-<env>-nyss-webapp-consumption-sp`    | Consumption plan                      |
 
 The database resources consists of two Database servers (one for staging envs and one for production) and one Database per environment.
 
