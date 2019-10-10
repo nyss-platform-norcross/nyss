@@ -16,7 +16,7 @@
         },
         "testDatabaseName": {
             "type": "String",
-            "defaultValue": ""
+            "defaultValue": "testdb"
         },
         "tier": {
             "type": "String"
@@ -137,7 +137,7 @@
                 },
                 {
                     "type": "databases",
-                    "condition": "[equals(resourceGroup().name, 'nrx-cbsdb-dev-rg')]",
+                    "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
                     "apiVersion": "2017-10-01-preview",
                     "name": "[parameters('testDatabaseName')]",
                     "location": "[resourceGroup().location]",
