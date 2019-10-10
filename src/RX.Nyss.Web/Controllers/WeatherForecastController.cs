@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Authorization;
 
 namespace RX.Nyss.Web.Controllers
 {
@@ -26,6 +28,7 @@ namespace RX.Nyss.Web.Controllers
         }
 
         [HttpGet]
+        [Roles(Role.GlobalCoordinator, Role.SystemAdministrator)]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();

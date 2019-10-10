@@ -28,10 +28,10 @@ namespace RX.Nyss.Web.Features.Authorization
             {
                 try
                 {
-                    await EnsureRoleExists(serviceProvider, Role.SystemAdministrator);
+                    await EnsureRoleExists(serviceProvider, Role.SystemAdministrator.ToString());
 
                     var systemAdministratorPassword = config[SystemAdministratorPasswordConfigKey];
-                    await EnsureUserWithRoleExists(serviceProvider, SystemAdministratorUserName, systemAdministratorPassword, Role.SystemAdministrator);
+                    await EnsureUserWithRoleExists(serviceProvider, SystemAdministratorUserName, systemAdministratorPassword, Role.SystemAdministrator.ToString());
 
                     //SeedDB(dbContext, systemAdministratorId);
                 }

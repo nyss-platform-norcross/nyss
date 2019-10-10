@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
 {
@@ -10,7 +11,7 @@ namespace RX.Nyss.Data.Models
 
         public string Name { get; set; }
 
-        public string Role { get; set; }
+        public Role Role { get; set; }
 
         public string EmailAddress { get; set; }
 

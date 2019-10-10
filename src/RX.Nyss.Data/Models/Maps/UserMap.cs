@@ -16,7 +16,7 @@ namespace RX.Nyss.Data.Models.Maps
             
             builder.Property(u => u.Name).HasMaxLength(100).IsRequired();
             builder.Property(u => u.IdentityUserId);
-            builder.Property(u => u.Role).HasMaxLength(50).IsRequired();
+            builder.Property(u => u.Role).HasConversion<string>().HasMaxLength(50).IsRequired();
             builder.Property(u => u.EmailAddress).HasMaxLength(100).IsRequired();
             builder.Property(u => u.PhoneNumber).HasMaxLength(20).IsRequired();
             builder.Property(u => u.AdditionalPhoneNumber).HasMaxLength(20);
