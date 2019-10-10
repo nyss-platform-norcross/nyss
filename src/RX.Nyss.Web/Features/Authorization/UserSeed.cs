@@ -24,74 +24,24 @@ namespace RX.Nyss.Web.Features.Authorization
 
             var config = serviceProvider.GetRequiredService<IConfiguration>();
 
-            using (var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>())
+            await using var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+            try
             {
-                try
-                {
-                    await EnsureRoleExists(serviceProvider, Role.SystemAdministrator.ToString());
+                //await EnsureRoleExists(serviceProvider, Role.SystemAdministrator.ToString());
 
-                    var systemAdministratorPassword = config[SystemAdministratorPasswordConfigKey];
-                    await EnsureUserWithRoleExists(serviceProvider, SystemAdministratorUserName, systemAdministratorPassword, Role.SystemAdministrator.ToString());
+                var systemAdministratorPassword = config[SystemAdministratorPasswordConfigKey];
+                //await EnsureUserWithRoleExists(serviceProvider, SystemAdministratorUserName, systemAdministratorPassword, Role.SystemAdministrator.ToString(), true);
 
-                    //SeedDB(dbContext, systemAdministratorId);
-                }
-                catch (Exception e)
-                {
-                    //loggerAdapter.Error($"Error occurred during seeding of System Administrator account.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
-                    throw;
-                }
-
-                //loggerAdapter.Debug("System Administrator account was seeded successfully.");
+                //SeedDB(dbContext, systemAdministratorId);
             }
-        }
-
-        private static async Task EnsureRoleExists(IServiceProvider serviceProvider, string role)
-        {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            if (!await roleManager.RoleExistsAsync(role))
+            catch (Exception e)
             {
-                var roleCreationResult = await roleManager.CreateAsync(new IdentityRole(role));
-
-                if (!roleCreationResult.Succeeded)
-                {
-                    var errorMessages = string.Join(",", roleCreationResult.Errors.Select(x => x.Description));
-                    throw new Exception($"The System Administrator role could not be created. {errorMessages}");
-                }
-            }
-        }
-
-        private static async Task EnsureUserWithRoleExists(IServiceProvider serviceProvider, string userName, string userPassword, string userRole)
-        {
-            var userManager = serviceProvider.GetService<UserManager<ApplicationUser>>();
-            var user = await userManager.FindByNameAsync(userName);
-
-            if (user != null)
-            {
-                return;
-            }
-            
-            user = new ApplicationUser
-            {
-                UserName = userName,
-                EmailConfirmed = true
-            };
-
-            var userCreationResult = await userManager.CreateAsync(user, userPassword);
-
-            if (!userCreationResult.Succeeded)
-            {
-                var errorMessages = string.Join(",", userCreationResult.Errors.Select(x => x.Description));
-                throw new Exception($"The System Administrator user could not be created. {errorMessages}");
+                //loggerAdapter.Error($"Error occurred during seeding of System Administrator account.{Environment.NewLine}{e.Message}{Environment.NewLine}{e.StackTrace}");
+                throw;
             }
 
-            var assignmentToRoleResult = await userManager.AddToRoleAsync(user, userRole);
-
-            if (!assignmentToRoleResult.Succeeded)
-            {
-                var errorMessages = string.Join(",", assignmentToRoleResult.Errors.Select(x => x.Description));
-                throw new Exception($"The System Administrator role could not be assigned. {errorMessages}");
-            }
+            //loggerAdapter.Debug("System Administrator account was seeded successfully.");
         }
     }
 }
