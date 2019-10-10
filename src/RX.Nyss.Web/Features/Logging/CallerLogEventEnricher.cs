@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.Logging
             // Get Caller and put it to Log Context
             stack = new StackFrame(SerilogNestLevel + 1);
             method = stack.GetMethod();
-            var caller = $"{method.DeclaringType.FullName}.{method.Name}";
+            var caller = $"{method.DeclaringType?.FullName}.{method.Name}";
             logEvent.AddPropertyIfAbsent(new LogEventProperty(CallerPropertyName, new ScalarValue(caller)));
         }
 

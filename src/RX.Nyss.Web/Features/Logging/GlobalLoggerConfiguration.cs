@@ -10,15 +10,9 @@ namespace RX.Nyss.Web.Features.Logging
     {
         public static void ConfigureLogger(NyssConfig.ILoggingOptions loggingOptions) =>
             Log.Logger = new LoggerConfiguration()
-                .WithBasicConnectorConfiguration()
+                .WithBasicConfiguration()
                 .WithLoggingExceptions(loggingOptions.LogsLocation)
-                .WithLoggingRepositories(loggingOptions.LogsLocation)
-                .WithLoggingMassTransit(loggingOptions.LogsLocation)
-                .WithStandardLogging(loggingOptions.LogsLocation, new List<Func<LogEvent, bool>>
-                {
-                    LogEventChecks.IsRepositoryCall,
-                    LogEventChecks.IsMassTransit
-                })
+                .WithStandardLogging(loggingOptions.LogsLocation, new List<Func<LogEvent, bool>>())
                 .CreateLogger();
     }
 }

@@ -17,5 +17,7 @@ namespace RX.Nyss.Web.Features.DataContract
 
         public static void Throw(string messageKey, object messageData = null)
             => throw new ResultException(messageKey, messageData);
+
+        public override string ToString() => $"{base.ToString()}, {nameof(Result)}: {Result}";
     }
 }

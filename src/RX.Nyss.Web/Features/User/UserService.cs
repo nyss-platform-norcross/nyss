@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.DataContract;
-
+using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Models;
 
 namespace RX.Nyss.Web.Features.User
@@ -13,11 +13,13 @@ namespace RX.Nyss.Web.Features.User
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILoggerAdapter _loggerAdapter;
 
-        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerAdapter loggerAdapter)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _loggerAdapter = loggerAdapter;
         }
 
         public async Task<Result> RegisterUser(string email, Role role)
@@ -33,7 +35,7 @@ namespace RX.Nyss.Web.Features.User
             }
             catch (ResultException e)
             {
-                //ToDo: Add log
+                _loggerAdapter.Debug(e);
                 return e.Result;
             }
         }
@@ -79,11 +81,10 @@ namespace RX.Nyss.Web.Features.User
                     ResultException.Throw(ResultKey.User.Registration.PasswordTooWeak);
                 }
 
-                ResultException.Throw(ResultKey.User.Registration.UnknownError);
+                var errorMessages = string.Join(",", userCreationResult.Errors.Select(x => x.Description));
+                _loggerAdapter.Debug($"A user {email} could not be created. {errorMessages}");
 
-                //ToDo: add logger
-                //var errorMessages = string.Join(",", userCreationResult.Errors.Select(x => x.Description));
-                //throw new Exception($"The {email} user could not be created. {errorMessages}");
+                ResultException.Throw(ResultKey.User.Registration.UnknownError);
             }
         }
 
@@ -105,11 +106,11 @@ namespace RX.Nyss.Web.Features.User
                     ResultException.Throw(ResultKey.User.Registration.UserAlreadyInRole);
                 }
 
+                var errorMessages = string.Join(",", assignmentToRoleResult.Errors.Select(x => x.Description));
+                _loggerAdapter.Debug($"A role {role} could not be assigned. {errorMessages}");
+
                 ResultException.Throw(ResultKey.User.Registration.UnknownError);
             }
-            //ToDo: add logger
-            //var errorMessages = string.Join(",", assignmentToRoleResult.Errors.Select(x => x.Description));
-            //throw new Exception($"The {role} role could not be assigned. {errorMessages}");
         }
     }
 }

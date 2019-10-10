@@ -17,5 +17,7 @@
 
         public static Result Success(string messageKey, object messageData = null) => new Result(true, messageKey, messageData);
         public static Result Error(string messageKey, object messageData = null) => new Result(false, messageKey, messageData);
+
+        public override string ToString() => $"{nameof(IsSuccess)}: {IsSuccess}, {nameof(MessageKey)}: {MessageKey}, {nameof(MessageData)}: {MessageData}";
     }
 }

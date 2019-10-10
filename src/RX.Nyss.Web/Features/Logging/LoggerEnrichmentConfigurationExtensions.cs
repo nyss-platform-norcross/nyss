@@ -4,9 +4,6 @@ namespace RX.Nyss.Web.Features.Logging
 {
     public static class LoggerEnrichmentConfigurationExtensions
     {
-        public static Serilog.LoggerConfiguration WithCaller(this LoggerEnrichmentConfiguration enrichmentConfiguration)
-        {
-            return enrichmentConfiguration.With<CallerLogEventEnricher>();
-        }
+        public static Serilog.LoggerConfiguration WithCaller(this LoggerEnrichmentConfiguration enrichmentConfiguration) => enrichmentConfiguration.With<CallerLogEventEnricher>();
     }
 }
