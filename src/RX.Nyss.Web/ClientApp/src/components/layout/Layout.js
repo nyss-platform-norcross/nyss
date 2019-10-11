@@ -1,12 +1,14 @@
 import React from 'react';
-import styles from './Layout.module.scss';
 import { Header } from './Header';
 import { Breadcrumb } from './Breadcrumb';
 import { SideMenu } from './SideMenu';
+import { BaseLayout } from './BaseLayout';
+
+import styles from './Layout.module.scss';
 
 export const Layout = ({ children }) => {
     return (
-        <div className={styles.layout}>
+        <BaseLayout>
             <div className={`${styles.header}`}>
                 <Header />
             </div>
@@ -21,6 +23,6 @@ export const Layout = ({ children }) => {
                     {children}
                 </div>
             </div>
-        </div>
+        </BaseLayout>
     );
 }

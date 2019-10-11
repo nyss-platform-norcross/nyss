@@ -1,24 +1,30 @@
 import 'react-app-polyfill/ie11';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
 import App from './components/app/App';
+import { createBrowserHistory } from 'history'
+import { Provider } from "react-redux";
+import { configureStore } from './store/configureStore';
+import { initialState } from './initialState';
+import * as appActions from './components/app/logic/appActions';
 
-const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
-const rootElement = document.getElementById('root');
+const history = createBrowserHistory();
+const store = configureStore(history, initialState);
+
+store.dispatch(appActions.initializeApplication());
 
 const render = () => {
-  return ReactDOM.render(
-    <BrowserRouter basename={baseUrl}>
-      <App />
-    </BrowserRouter>,
-    rootElement
-  );
+    return ReactDOM.render(
+        <Provider store={store}>
+            <App history={history} />
+        </Provider>,
+        document.getElementById('root')
+    );
 };
 
-render(App);
+render();
 
 
 if (module.hot) {
-  module.hot.accept("./components/app/App", () => render());
+    module.hot.accept("./components/app/App", () => render());
 }

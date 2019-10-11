@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './Header.module.scss';
 import { TopMenu } from './TopMenu';
+import { UserStatus } from './UserStatus';
 
 export const Header = () => {
     return (
@@ -12,7 +13,7 @@ export const Header = () => {
                 <TopMenu />
             </div>
             <div className={styles.user}>
-
+                <UserStatus />
             </div>
         </div>
     );
