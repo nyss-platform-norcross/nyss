@@ -17,19 +17,27 @@ steps:
   inputs:
     projects: '*.sln'
     arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)" -r win-x86'
-
 - task: CmdLine@2
   displayName: 'Insert test task here...'
   inputs:
     script: 'echo Insert test task here...'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet publish'
+  displayName: 'Publish WebApp'
   inputs:
     command: publish
     publishWebProjects: false
     arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" --no-build --self-contained -r win-x86'
     zipAfterPublish: true
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish ConsoleApp for DB migration'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: './src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" --no-build -r win-x86'
+    zipAfterPublish: false
     modifyOutputPath: false
 
 - task: CopyFiles@2
