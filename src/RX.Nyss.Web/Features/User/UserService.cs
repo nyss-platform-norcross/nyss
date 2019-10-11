@@ -52,6 +52,7 @@ namespace RX.Nyss.Web.Features.User
                 PhoneNumber = globalCoordinatorInDto.PhoneNumber,
                 Role = Role.GlobalCoordinator
             };
+
             await _dataContext.AddAsync(globalCoordinator);
             await _dataContext.SaveChangesAsync();
         }
@@ -73,8 +74,8 @@ namespace RX.Nyss.Web.Features.User
 
                 if (!roleCreationResult.Succeeded)
                 {
-                    ResultException.Throw(ResultKey.User.Seeding.RoleCouldNotBeCreated, 
-                        new {RoleName=role, ErrorMessages = roleCreationResult.Errors });
+                    throw new ResultException(ResultKey.User.Seeding.RoleCouldNotBeCreated,
+                        new { RoleName = role, ErrorMessages = roleCreationResult.Errors });
                 }
             }
         }
@@ -85,7 +86,7 @@ namespace RX.Nyss.Web.Features.User
 
             if (user != null)
             {
-                ResultException.Throw(ResultKey.User.Registration.UserAlreadyExists);
+                throw new ResultException(ResultKey.User.Registration.UserAlreadyExists);
             }
 
             user = new IdentityUser
@@ -103,13 +104,13 @@ namespace RX.Nyss.Web.Features.User
                 var isPasswordTooWeak = userCreationResult.Errors.Any(x => x.IsPasswordTooWeak());
                 if (isPasswordTooWeak)
                 {
-                    ResultException.Throw(ResultKey.User.Registration.PasswordTooWeak);
+                    throw new ResultException(ResultKey.User.Registration.PasswordTooWeak);
                 }
 
                 var errorMessages = string.Join(",", userCreationResult.Errors.Select(x => x.Description));
                 _loggerAdapter.Debug($"A user {email} could not be created. {errorMessages}");
 
-                ResultException.Throw(ResultKey.User.Registration.UnknownError);
+                throw new ResultException(ResultKey.User.Registration.UnknownError);
             }
 
             return user;
@@ -121,7 +122,7 @@ namespace RX.Nyss.Web.Features.User
 
             if (user == null)
             {
-                ResultException.Throw(ResultKey.User.Registration.UserNotFound);
+                throw new ResultException(ResultKey.User.Registration.UserNotFound);
             }
 
             var assignmentToRoleResult = await _userManager.AddToRoleAsync(user, role);
@@ -130,13 +131,13 @@ namespace RX.Nyss.Web.Features.User
             { 
                 if (assignmentToRoleResult.Errors.Any(x => x.Code == IdentityErrorCode.UserAlreadyInRole.ToString()))
                 {
-                    ResultException.Throw(ResultKey.User.Registration.UserAlreadyInRole);
+                    throw new ResultException(ResultKey.User.Registration.UserAlreadyInRole);
                 }
 
                 var errorMessages = string.Join(",", assignmentToRoleResult.Errors.Select(x => x.Description));
                 _loggerAdapter.Debug($"A role {role} could not be assigned. {errorMessages}");
 
-                ResultException.Throw(ResultKey.User.Registration.UnknownError);
+                throw new ResultException(ResultKey.User.Registration.UnknownError);
             }
         }
     }
