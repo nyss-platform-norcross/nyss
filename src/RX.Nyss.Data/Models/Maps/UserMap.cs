@@ -12,7 +12,11 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasOne(u => u.ApplicationLanguage);
             builder.HasDiscriminator(u => u.Role)
                 .HasValue<SupervisorUser>(Role.Supervisor)
-                .HasValue<DataManagerUser>(Role.DataManager);
+                .HasValue<DataManagerUser>(Role.DataManager)
+                .HasValue<SystemAdministratorUser>(Role.SystemAdministrator)
+                .HasValue<GlobalCoordinatorUser>(Role.GlobalCoordinator)
+                .HasValue<DataConsumerUser>(Role.DataConsumer)
+                .HasValue<TechnicalAdvisorUser>(Role.TechnicalAdvisor);
             
             builder.Property(u => u.Name).HasMaxLength(100).IsRequired();
             builder.Property(u => u.IdentityUserId);

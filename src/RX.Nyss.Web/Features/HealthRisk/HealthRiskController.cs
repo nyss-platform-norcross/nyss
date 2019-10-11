@@ -4,13 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Authorization;
+using RX.Nyss.Web.Features.Base;
 
 namespace RX.Nyss.Web.Features.HealthRisk
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [Authorize]
-    public class HealthRiskController : ControllerBase
+    public class HealthRiskController : BaseController
     {
         private readonly IHealthRiskService _healthRiskService;
 

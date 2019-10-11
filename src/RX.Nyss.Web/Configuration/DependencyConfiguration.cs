@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +14,6 @@ using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Features.User;
-using RX.Nyss.Web.Models;
 using Serilog;
 
 namespace RX.Nyss.Web.Configuration
@@ -49,15 +50,38 @@ namespace RX.Nyss.Web.Configuration
 
         private static void RegisterAuth(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddIdentity<ApplicationUser, IdentityRole>()
+            serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             serviceCollection.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<IdentityUser, ApplicationDbContext>();
 
             serviceCollection.AddAuthentication()
                 .AddIdentityServerJwt();
+
+            serviceCollection.ConfigureApplicationCookie(options =>
+            {
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    if (IsAjaxRequest(context.Request) ||
+                        IsApiRequest(context.Request))
+                    {
+                        context.Response.Clear();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        return Task.CompletedTask;
+                    }
+
+                    context.Response.Redirect(context.RedirectUri);
+                    return Task.CompletedTask;
+                };
+            });
+
+            bool IsApiRequest(HttpRequest request) => request.Path.StartsWithSegments("/api");
+
+            bool IsAjaxRequest(HttpRequest request) =>
+                string.Equals(request.Query["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal) ||
+                string.Equals(request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal);
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

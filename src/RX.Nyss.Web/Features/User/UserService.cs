@@ -1,36 +1,38 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.DataContract;
 using RX.Nyss.Web.Features.Logging;
-using RX.Nyss.Web.Models;
+using RX.Nyss.Web.Features.User.Dto;
+
 
 namespace RX.Nyss.Web.Features.User
 {
     public class UserService : IUserService
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly NyssContext _dataContext;
 
-        public UserService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerAdapter loggerAdapter)
+        public UserService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerAdapter loggerAdapter, NyssContext dataContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _loggerAdapter = loggerAdapter;
+            _dataContext = dataContext;
         }
 
-        public async Task<Result> RegisterUser(string email, Role role)
+        public async Task<Result> RegisterGlobalCoordinator(GlobalCoordinatorInDto globalCoordinatorInDto)
         {
             try
             {
-                var randomPassword = Guid.NewGuid().ToString();
-                await AddUser(email, randomPassword);
-                await AssignRole(email, role.ToString());
+                var identityUser = await CreateIdentityUser(globalCoordinatorInDto.Email, Role.GlobalCoordinator);
+                await CreateGlobalCoordinator(identityUser, globalCoordinatorInDto);
 
-                //ToDo: send an email with a link to set a password
                 return Result.Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
@@ -38,6 +40,29 @@ namespace RX.Nyss.Web.Features.User
                 _loggerAdapter.Debug(e);
                 return e.Result;
             }
+        }
+
+        private async Task CreateGlobalCoordinator(IdentityUser identityUser, GlobalCoordinatorInDto globalCoordinatorInDto)
+        {
+            var globalCoordinator = new GlobalCoordinatorUser
+            {
+                IdentityUserId = identityUser.Id,
+                EmailAddress = identityUser.Email,
+                Name = globalCoordinatorInDto.Name,
+                PhoneNumber = globalCoordinatorInDto.PhoneNumber,
+                Role = Role.GlobalCoordinator
+            };
+            await _dataContext.AddAsync(globalCoordinator);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        private async Task<IdentityUser> CreateIdentityUser(string email, Role role)
+        {
+            var identityUser = await AddIdentityUser(email);
+            await AssignRole(email, role.ToString());
+
+            return identityUser;
+            //ToDo: send an email with a link to set a password
         }
 
         public async Task EnsureRoleExists(string role)
@@ -54,7 +79,7 @@ namespace RX.Nyss.Web.Features.User
             }
         }
 
-        public async Task AddUser(string email, string password, bool emailConfirmed = false)
+        public async Task<IdentityUser> AddIdentityUser(string email, bool emailConfirmed = false)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -63,7 +88,7 @@ namespace RX.Nyss.Web.Features.User
                 ResultException.Throw(ResultKey.User.Registration.UserAlreadyExists);
             }
 
-            user = new ApplicationUser
+            user = new IdentityUser
             {
                 //ToDo: random number / guid or real email address?
                 UserName = email,
@@ -71,7 +96,7 @@ namespace RX.Nyss.Web.Features.User
                 EmailConfirmed = emailConfirmed
             };
 
-            var userCreationResult = await _userManager.CreateAsync(user, password);
+            var userCreationResult = await _userManager.CreateAsync(user);
 
             if (!userCreationResult.Succeeded)
             {
@@ -86,6 +111,8 @@ namespace RX.Nyss.Web.Features.User
 
                 ResultException.Throw(ResultKey.User.Registration.UnknownError);
             }
+
+            return user;
         }
 
         public async Task AssignRole(string email, string role)

@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
+using RX.Nyss.Web.Features.DataContract;
+using RX.Nyss.Web.Features.User.Dto;
 
 namespace RX.Nyss.Web.Features.User
 {
     public interface IUserService
     {
-        Task AddUser(string email, string password, bool emailConfirmed = false);
-        Task AssignRole(string email, string role);
-        Task EnsureRoleExists(string role);
+        Task<Result> RegisterGlobalCoordinator(GlobalCoordinatorInDto globalCoordinatorInDto);
     }
 }
