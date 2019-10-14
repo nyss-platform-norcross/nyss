@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace RX.Nyss.Web.Utils
+namespace RX.Nyss.Web.Utils.MultiContextTransactions
 {
-    public class MultiContextTransaction<TFirstContext, TSecondContext>: IDisposable
+    public class MultiContextTransaction<TFirstContext, TSecondContext>: IMultiContextTransaction<TFirstContext, TSecondContext>
         where TFirstContext: DbContext
         where TSecondContext: DbContext
     {
@@ -30,21 +29,10 @@ namespace RX.Nyss.Web.Utils
 
         public void Dispose() => _transaction?.Dispose();
 
-        public static async Task<MultiContextTransaction<TFirstContext, TSecondContext>> Begin(TFirstContext firstContext, TSecondContext secondContext)
+        public static async Task<IMultiContextTransaction<TFirstContext, TSecondContext>> Begin(TFirstContext firstContext, TSecondContext secondContext)
         {
             var multiContextTransaction = new MultiContextTransaction<TFirstContext, TSecondContext>(firstContext, secondContext);
             return await multiContextTransaction.Initialize();
-        }
-    }
-
-    public static class MultiContextTransaction
-    {
-        public static async Task<MultiContextTransaction<TFirstContext, TSecondContext>> Begin<TFirstContext, TSecondContext>(
-            TFirstContext firstContext, TSecondContext secondContext)
-            where TFirstContext : DbContext
-            where TSecondContext : DbContext
-        {
-            return await MultiContextTransaction<TFirstContext, TSecondContext>.Begin(firstContext, secondContext);
         }
     }
 }

@@ -4,7 +4,7 @@ using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Data
 {
-    public class NyssContext : DbContext
+    public class NyssContext : DbContext, INyssContext
     {
         public NyssContext(DbContextOptions<NyssContext> options)
             : base(options)
@@ -59,6 +59,7 @@ namespace RX.Nyss.Data
 
         public DbSet<Zone> Zones { get; set; }
 
+       
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(NyssContext).Assembly);

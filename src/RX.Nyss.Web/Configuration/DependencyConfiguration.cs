@@ -15,6 +15,7 @@ using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Features.User;
+using RX.Nyss.Web.Utils.MultiContextTransactions;
 using Serilog;
 
 namespace RX.Nyss.Web.Configuration
@@ -109,6 +110,8 @@ namespace RX.Nyss.Web.Configuration
         {
             serviceCollection.AddScoped<IHealthRiskService, HealthRiskService>();
             serviceCollection.AddScoped<IUserService, UserService>();
+            serviceCollection.AddScoped<INyssContext>(x => x.GetService<NyssContext>());
+            serviceCollection.AddScoped<IDbTransactionFactory, DbTransactionFactory>();
         }
     }
 }
