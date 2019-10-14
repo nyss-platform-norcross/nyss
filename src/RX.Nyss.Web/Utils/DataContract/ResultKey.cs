@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.DataContract
+﻿namespace RX.Nyss.Web.Utils.DataContract
 {
     public static class ResultKey
     {

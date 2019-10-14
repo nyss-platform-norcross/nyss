@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RX.Nyss.Web.Features.DataContract
+namespace RX.Nyss.Web.Utils.DataContract
 {
     public class ResultException : Exception
     {

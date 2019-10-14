@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.Authorization
+namespace RX.Nyss.Web.Utils
 {
     public class RolesAttribute : AuthorizeAttribute
     {

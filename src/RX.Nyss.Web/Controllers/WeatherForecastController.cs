@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Authorization;
+using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Controllers
 {

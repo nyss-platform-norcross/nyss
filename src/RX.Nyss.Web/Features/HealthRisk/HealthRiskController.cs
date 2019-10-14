@@ -3,8 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Authorization;
-using RX.Nyss.Web.Features.Base;
+using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.HealthRisk
 {

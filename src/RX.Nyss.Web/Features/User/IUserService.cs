@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using RX.Nyss.Web.Features.DataContract;
 using RX.Nyss.Web.Features.User.Dto;
+using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.User
 {

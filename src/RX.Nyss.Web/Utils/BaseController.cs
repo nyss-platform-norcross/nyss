@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace RX.Nyss.Web.Features.Base
+namespace RX.Nyss.Web.Utils
 {
     [Route("api/[controller]")]
     [ApiController]

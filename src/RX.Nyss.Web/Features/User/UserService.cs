@@ -5,10 +5,10 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Data;
-using RX.Nyss.Web.Features.DataContract;
 using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils;
+using RX.Nyss.Web.Utils.DataContract;
 
 
 namespace RX.Nyss.Web.Features.User
