@@ -16,15 +16,13 @@ namespace RX.Nyss.Web.Features.User
     public class UserService : IUserService
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly NyssContext _dataContext;
         private readonly ApplicationDbContext _applicationDbContext;
 
-        public UserService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerAdapter loggerAdapter, NyssContext dataContext, ApplicationDbContext applicationDbContext)
+        public UserService(UserManager<IdentityUser> userManager,  ILoggerAdapter loggerAdapter, NyssContext dataContext, ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _loggerAdapter = loggerAdapter;
             _dataContext = dataContext;
             _applicationDbContext = applicationDbContext;
@@ -72,20 +70,6 @@ namespace RX.Nyss.Web.Features.User
 
             return identityUser;
             //ToDo: send an email with a link to set a password
-        }
-
-        public async Task EnsureRoleExists(string role)
-        {
-            if (!await _roleManager.RoleExistsAsync(role))
-            {
-                var roleCreationResult = await _roleManager.CreateAsync(new IdentityRole(role));
-
-                if (!roleCreationResult.Succeeded)
-                {
-                    throw new ResultException(ResultKey.User.Seeding.RoleCouldNotBeCreated,
-                        new { RoleName = role, ErrorMessages = roleCreationResult.Errors });
-                }
-            }
         }
 
         public async Task<IdentityUser> AddIdentityUser(string email, bool emailConfirmed = false)
