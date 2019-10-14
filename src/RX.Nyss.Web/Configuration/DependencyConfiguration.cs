@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,12 +41,14 @@ namespace RX.Nyss.Web.Configuration
 
         private static void RegisterDatabases(IServiceCollection serviceCollection, NyssConfig.IConnectionStringOptions connectionStringOptions)
         {
+            var databaseConnection = new SqlConnection(connectionStringOptions.NyssDatabase);
+
             serviceCollection.AddDbContext<NyssContext>(options =>
-                options.UseSqlServer(connectionStringOptions.NyssDatabase,
+                options.UseSqlServer(databaseConnection,
                     x => x.UseNetTopologySuite()));
 
             serviceCollection.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionStringOptions.NyssDatabase));
+                options.UseSqlServer(databaseConnection));
         }
 
         private static void RegisterAuth(IServiceCollection serviceCollection)

@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.DataContract;
 using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Features.User.Dto;
+using RX.Nyss.Web.Utils;
 
 
 namespace RX.Nyss.Web.Features.User
@@ -17,21 +19,27 @@ namespace RX.Nyss.Web.Features.User
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly NyssContext _dataContext;
+        private readonly ApplicationDbContext _applicationDbContext;
 
-        public UserService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerAdapter loggerAdapter, NyssContext dataContext)
+        public UserService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerAdapter loggerAdapter, NyssContext dataContext, ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _loggerAdapter = loggerAdapter;
             _dataContext = dataContext;
+            _applicationDbContext = applicationDbContext;
         }
 
         public async Task<Result> RegisterGlobalCoordinator(GlobalCoordinatorInDto globalCoordinatorInDto)
         {
             try
             {
+                using var dbTransaction = await MultiContextTransaction.Begin(_applicationDbContext, _dataContext);
+
                 var identityUser = await CreateIdentityUser(globalCoordinatorInDto.Email, Role.GlobalCoordinator);
                 await CreateGlobalCoordinator(identityUser, globalCoordinatorInDto);
+
+                await dbTransaction.Commit();
 
                 return Result.Success(ResultKey.User.Registration.Success);
             }
