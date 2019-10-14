@@ -26,25 +26,25 @@ namespace RX.Nyss.Web.Utils
             return this;
         }
 
-        public Task Commit() => _transaction.CommitAsync();
+        public async Task Commit() => await _transaction.CommitAsync();
 
         public void Dispose() => _transaction?.Dispose();
 
-        public static Task<MultiContextTransaction<TFirstContext, TSecondContext>> Begin(TFirstContext firstContext, TSecondContext secondContext)
+        public static async Task<MultiContextTransaction<TFirstContext, TSecondContext>> Begin(TFirstContext firstContext, TSecondContext secondContext)
         {
             var multiContextTransaction = new MultiContextTransaction<TFirstContext, TSecondContext>(firstContext, secondContext);
-            return multiContextTransaction.Initialize();
+            return await multiContextTransaction.Initialize();
         }
     }
 
     public static class MultiContextTransaction
     {
-        public static Task<MultiContextTransaction<TFirstContext, TSecondContext>> Begin<TFirstContext, TSecondContext>(
+        public static async Task<MultiContextTransaction<TFirstContext, TSecondContext>> Begin<TFirstContext, TSecondContext>(
             TFirstContext firstContext, TSecondContext secondContext)
             where TFirstContext : DbContext
             where TSecondContext : DbContext
         {
-            return MultiContextTransaction<TFirstContext, TSecondContext>.Begin(firstContext, secondContext);
+            return await MultiContextTransaction<TFirstContext, TSecondContext>.Begin(firstContext, secondContext);
         }
     }
 }
