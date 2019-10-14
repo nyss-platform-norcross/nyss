@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import Button from '@material-ui/core/Button';
-import { wrapLayout } from '../../utils/layout';
+import { useLayout } from '../../utils/layout';
 import { AnonymousLayout } from '../layout/AnonymousLayout';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -48,6 +48,7 @@ class LoginPageComponent extends PureComponent {
                     <div className={styles.loginPaperContent}>
                         <Typography variant="h1" className={styles.paperHeader}>Welcome to Nyss</Typography>
                         <Typography variant="h2">Log in</Typography>
+
                         <form onSubmit={this.handleSubmit}>
                             <TextInputField
                                 label="User name"
@@ -67,6 +68,7 @@ class LoginPageComponent extends PureComponent {
                                     {strings["login.forgotPassword"]}
                                 </Link>
                             </div>
+
                             <div className={styles.actions}>
                                 <Button variant="outlined" color="primary" style={{ padding: "10px 55px" }}>
                                     {strings["login.signIn"]}
@@ -80,4 +82,4 @@ class LoginPageComponent extends PureComponent {
     }
 }
 
-export const LoginPage = wrapLayout(AnonymousLayout, LoginPageComponent);
+export const LoginPage = useLayout(AnonymousLayout, LoginPageComponent);

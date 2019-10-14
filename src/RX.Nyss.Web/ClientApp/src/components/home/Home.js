@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout } from '../layout/Layout';
-import { wrapLayout } from '../../utils/layout';
+import { useLayout } from '../../utils/layout';
 import Typography from '@material-ui/core/Typography';
 
 const HomeComponent = () => {
@@ -11,4 +11,4 @@ const HomeComponent = () => {
     );
 }
 
-export const Home = wrapLayout(Layout, HomeComponent);
+export const Home = useLayout(Layout, HomeComponent);

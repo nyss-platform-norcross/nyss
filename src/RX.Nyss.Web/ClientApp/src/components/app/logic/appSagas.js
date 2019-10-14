@@ -1,4 +1,4 @@
-import { call, put, select, takeEvery, delay } from "redux-saga/effects";
+import { call, put, takeEvery, delay } from "redux-saga/effects";
 import * as actions from "./appConstans";
 import { updateStrings } from "../../../strings";
 

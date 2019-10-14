@@ -1,4 +1,4 @@
 import React from "react";
 
-export const wrapLayout = (Layout, Component) => (props) =>
+export const useLayout = (Layout, Component) => (props) =>
     <Layout><Component {...props} /></Layout>;

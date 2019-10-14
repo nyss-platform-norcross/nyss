@@ -56,8 +56,13 @@ export const theme = createMuiTheme({
         MuiInput: {
             root: {
                 border: "1px solid #E4E1E0",
-                padding: "5px 10px",
                 backgroundColor: "#fff"
+            },
+            input: {
+                padding: "10px",
+                '&:-webkit-autofill': {
+                    transitionDelay: '9999s'
+                },
             },
             underline: {
                 "&:before": {

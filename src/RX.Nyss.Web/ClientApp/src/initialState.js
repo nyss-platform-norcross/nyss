@@ -3,6 +3,10 @@ export const initialState = {
         pendingRequests: {}
     },
     appData: {
-        appReady: false
+        appReady: false,
+        user: {
+            userName: null,
+            role: null
+        }
     }
 };
