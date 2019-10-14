@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
@@ -19,7 +19,7 @@ namespace RX.Nyss.Web.Features.User
         }
 
         [HttpPost("RegisterGlobalCoordinator")]
-        [Roles(Role.SystemAdministrator)]
+        [Roles(Role.Administrator)]
         public async Task<Result> RegisterGlobalCoordinator([FromBody]GlobalCoordinatorInDto globalCoordinatorInDto)
         {
             return await _userService.RegisterGlobalCoordinator(globalCoordinatorInDto);

@@ -13,7 +13,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasDiscriminator(u => u.Role)
                 .HasValue<SupervisorUser>(Role.Supervisor)
                 .HasValue<DataManagerUser>(Role.DataManager)
-                .HasValue<SystemAdministratorUser>(Role.SystemAdministrator)
+                .HasValue<AdministratorUser>(Role.Administrator)
                 .HasValue<GlobalCoordinatorUser>(Role.GlobalCoordinator)
                 .HasValue<DataConsumerUser>(Role.DataConsumer)
                 .HasValue<TechnicalAdvisorUser>(Role.TechnicalAdvisor);

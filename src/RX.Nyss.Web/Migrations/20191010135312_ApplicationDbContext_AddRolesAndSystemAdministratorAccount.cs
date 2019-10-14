@@ -6,7 +6,7 @@ namespace RX.Nyss.Web.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("INSERT [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'b0091a03-ffaf-44f4-ac70-df9fcd295457', N'SystemAdministrator', N'SYSTEMADMINISTRATOR', N'd22b1211-071e-4e29-8b73-9264cd5dc187')");
+            migrationBuilder.Sql("INSERT [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'b0091a03-ffaf-44f4-ac70-df9fcd295457', N'Administrator', N'ADMINISTRATOR', N'd22b1211-071e-4e29-8b73-9264cd5dc187')");
             migrationBuilder.Sql("INSERT [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'b583d8c9-3feb-4e08-834c-c604e7481fae', N'DataConsumer', N'DATACONSUMER', N'adc021a7-51c9-4a29-918e-8a562253074c')");
             migrationBuilder.Sql("INSERT [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'cca2c07b-c90f-46d2-8413-1dc6ee51e63a', N'GlobalCoordinator', N'GLOBALCOORDINATOR', N'f0f67ee3-a803-4d1d-af27-966db72d5746')");
             migrationBuilder.Sql("INSERT [dbo].[AspNetRoles] ([Id], [Name], [NormalizedName], [ConcurrencyStamp]) VALUES (N'cef5482a-383c-4eaa-a23f-16577fc8d34b', N'Supervisor', N'SUPERVISOR', N'dd7ea34c-cffe-47ec-aa98-2dd668668070')");

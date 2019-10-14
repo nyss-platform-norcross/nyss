@@ -806,11 +806,11 @@ namespace RX.Nyss.Data.Migrations
                     b.HasDiscriminator().HasValue("Supervisor");
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.SystemAdministratorUser", b =>
+            modelBuilder.Entity("RX.Nyss.Data.Models.AdministratorUser", b =>
                 {
                     b.HasBaseType("RX.Nyss.Data.Models.User");
 
-                    b.HasDiscriminator().HasValue("SystemAdministrator");
+                    b.HasDiscriminator().HasValue("Administrator");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.TechnicalAdvisorUser", b =>

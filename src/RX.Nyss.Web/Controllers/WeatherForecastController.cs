@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Controllers
         }
 
         [HttpGet]
-        [Roles(Role.GlobalCoordinator, Role.SystemAdministrator)]
+        [Roles(Role.GlobalCoordinator, Role.Administrator)]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();

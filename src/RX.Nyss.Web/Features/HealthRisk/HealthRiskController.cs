@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// </summary>
         /// <returns>A list of health risks</returns>
         [HttpGet]
-        [Roles(Role.SystemAdministrator, Role.GlobalCoordinator)]
+        [Roles(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRisks() => await _healthRiskService.GetHealthRisks();
     }
 }

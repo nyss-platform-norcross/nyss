@@ -2,7 +2,7 @@
 {
     public enum Role
     {
-        SystemAdministrator,
+        Administrator,
         GlobalCoordinator,
         TechnicalAdvisor,
         DataConsumer,
