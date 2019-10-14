@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.IO;
+using Microsoft.ApplicationInsights.Extensibility;
 using RX.Nyss.Web.Configuration;
 using Serilog;
 using Serilog.Events;
@@ -10,9 +10,16 @@ namespace RX.Nyss.Web.Features.Logging
     {
         public static void ConfigureLogger(NyssConfig.ILoggingOptions loggingOptions) =>
             Log.Logger = new LoggerConfiguration()
-                .WithBasicConfiguration()
-                .WithLoggingExceptions(loggingOptions.LogsLocation)
-                .WithStandardLogging(loggingOptions.LogsLocation, new List<Func<LogEvent, bool>>())
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console(outputTemplate: loggingOptions.LogMessageTemplate)
+                .WriteTo.Logger(l => l
+                    .WriteTo.File(
+                        Path.Combine(loggingOptions.LogsLocation, "nyss-logs-.txt"),
+                        rollingInterval: RollingInterval.Day,
+                        outputTemplate: loggingOptions.LogMessageTemplate))
+                .WriteTo.ApplicationInsights(loggingOptions.ApplicationInsightsInstrumentationKey, TelemetryConverter.Traces)
                 .CreateLogger();
     }
 }
