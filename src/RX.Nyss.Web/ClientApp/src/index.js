@@ -1,25 +1,30 @@
-import 'bootstrap/dist/css/bootstrap.css';
+import 'react-app-polyfill/ie11';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-//import registerServiceWorker from './registerServiceWorker';
+import App from './components/app/App';
+import { createBrowserHistory } from 'history'
+import { Provider } from "react-redux";
+import { configureStore } from './store/configureStore';
+import { initialState } from './initialState';
+import * as appActions from './components/app/logic/appActions';
 
-const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
-const rootElement = document.getElementById('root');
+const history = createBrowserHistory();
+const store = configureStore(history, initialState);
 
-ReactDOM.render(
-  <BrowserRouter basename={baseUrl}>
-    <App />
-  </BrowserRouter>,
-  rootElement);
+store.dispatch(appActions.initializeApplication());
 
-// Uncomment the line above that imports the registerServiceWorker function
-// and the line below to register the generated service worker.
-// By default create-react-app includes a service worker to improve the
-// performance of the application by caching static assets. This service
-// worker can interfere with the Identity UI, so it is
-// disabled by default when Identity is being used.
-//
-//registerServiceWorker();
+const render = () => {
+    return ReactDOM.render(
+        <Provider store={store}>
+            <App history={history} />
+        </Provider>,
+        document.getElementById('root')
+    );
+};
 
+render();
+
+
+if (module.hot) {
+    module.hot.accept("./components/app/App", () => render());
+}

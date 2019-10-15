@@ -276,3 +276,4 @@ yarn-debug.log*
 yarn-error.log*
 /src/RX.Nyss.Web/*.db
 /src/RX.Nyss.Web/RX.Nyss.Web.xml
+**/ClientApp/build

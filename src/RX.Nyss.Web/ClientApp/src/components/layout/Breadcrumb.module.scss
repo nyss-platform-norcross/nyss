@@ -1,0 +1,26 @@
+.container {
+    padding: 20px;
+
+    .item {
+        padding: 10px 20px;
+        background-color: #FAFAFA;
+
+        .title {
+            font-size: 20px;
+            color: #333;
+            line-height: 1em;
+            margin-bottom: 3px;
+        }
+
+        .label {
+            font-size: 12px;
+            color: #6F6F6F;
+        }
+
+        &.selected {
+            .title {
+                border-bottom: 2px solid #C02C2C;
+            }
+        }
+    }
+}
