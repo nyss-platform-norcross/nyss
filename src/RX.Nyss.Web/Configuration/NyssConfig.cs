@@ -10,7 +10,6 @@
         {
             string LogsLocation { get; set; }
             string LogMessageTemplate { get; set; }
-            string ApplicationInsightsInstrumentationKey { get; set; }
         }
 
         public interface IConnectionStringOptions
@@ -22,7 +21,6 @@
         {
             public string LogsLocation { get; set; }
             public string LogMessageTemplate { get; set; }
-            public string ApplicationInsightsInstrumentationKey { get; set; }
         }
 
         public class ConnectionStringOptions : IConnectionStringOptions

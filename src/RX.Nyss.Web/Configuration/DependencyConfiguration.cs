@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Configuration
         public static void ConfigureDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
             var config = configuration.Get<NyssConfig>();
-            RegisterLogger(serviceCollection, config.Logging);
+            RegisterLogger(serviceCollection, config.Logging, configuration);
             RegisterDatabases(serviceCollection, config.ConnectionStrings);
             RegisterAuth(serviceCollection);
             RegisterWebFramework(serviceCollection);
@@ -33,9 +33,12 @@ namespace RX.Nyss.Web.Configuration
             RegisterServiceCollection(serviceCollection);
         }
 
-        private static void RegisterLogger(IServiceCollection serviceCollection, NyssConfig.ILoggingOptions loggingOptions)
+        private static void RegisterLogger(IServiceCollection serviceCollection,
+            NyssConfig.ILoggingOptions loggingOptions, IConfiguration configuration)
         {
-            GlobalLoggerConfiguration.ConfigureLogger(loggingOptions);
+            const string applicationInsightsEnvironmentVariable = "APPINSIGHTS_INSTRUMENTATIONKEY";
+            var appInsightsInstrumentationKey = configuration[applicationInsightsEnvironmentVariable];
+            GlobalLoggerConfiguration.ConfigureLogger(loggingOptions, appInsightsInstrumentationKey);
             serviceCollection.AddSingleton(x => Log.Logger); // must be func, as the static logger is configured (changed reference) after DI registering
             serviceCollection.AddSingleton<ILoggerAdapter, SerilogLoggerAdapter>();
         }
