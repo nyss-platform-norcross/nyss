@@ -1,17 +1,10 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
-using Microsoft.EntityFrameworkCore;
-using RX.Nyss.Web.Data;
-using RX.Nyss.Web.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using RX.Nyss.Data;
+using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web
 {
@@ -27,30 +20,7 @@ namespace RX.Nyss.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<NyssContext>(options =>
-            //    options.UseSqlite("DataSource=app.db"));
-
-            services.AddDbContext<NyssContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("NyssDatabase"),
-                    x => x.UseNetTopologySuite()));
-
-            services.AddDefaultIdentity<ApplicationUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
-            services.AddAuthentication()
-                .AddIdentityServerJwt();
-
-            services.AddControllersWithViews();
-            services.AddRazorPages();
-
-            // In production, the React files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/build";
-            });
+            services.ConfigureDependencies(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,6 +42,12 @@ namespace RX.Nyss.Web
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nyss API V1");
+            });
+            
             app.UseRouting();
 
             app.UseAuthentication();

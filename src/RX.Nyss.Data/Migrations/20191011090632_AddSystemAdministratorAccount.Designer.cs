@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20191011090632_AddSystemAdministratorAccount")]
+    partial class AddSystemAdministratorAccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,18 +265,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("RegionId");
 
                     b.ToTable("Districts");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.DummyClass", b =>
-                {
-                    b.Property<int>("DummyColumn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.HasKey("DummyColumn");
-
-                    b.ToTable("DummyClass");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.GatewaySetting", b =>
@@ -678,7 +668,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.ToTable("Users");
 
-                    b.HasDiscriminator<string>("Role");
+                    b.HasDiscriminator<string>("Role").HasValue("TechnicalAdvisor");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.UserNationalSociety", b =>
@@ -738,13 +728,6 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Zones");
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.DataConsumerUser", b =>
-                {
-                    b.HasBaseType("RX.Nyss.Data.Models.User");
-
-                    b.HasDiscriminator().HasValue("DataConsumer");
-                });
-
             modelBuilder.Entity("RX.Nyss.Data.Models.DataManagerUser", b =>
                 {
                     b.HasBaseType("RX.Nyss.Data.Models.User");
@@ -764,13 +747,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("NationalSocietyId");
 
                     b.HasDiscriminator().HasValue("DataManager");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.GlobalCoordinatorUser", b =>
-                {
-                    b.HasBaseType("RX.Nyss.Data.Models.User");
-
-                    b.HasDiscriminator().HasValue("GlobalCoordinator");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUser", b =>
@@ -804,20 +780,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("ZoneId");
 
                     b.HasDiscriminator().HasValue("Supervisor");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.AdministratorUser", b =>
-                {
-                    b.HasBaseType("RX.Nyss.Data.Models.User");
-
-                    b.HasDiscriminator().HasValue("Administrator");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.TechnicalAdvisorUser", b =>
-                {
-                    b.HasBaseType("RX.Nyss.Data.Models.User");
-
-                    b.HasDiscriminator().HasValue("TechnicalAdvisor");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Alert", b =>

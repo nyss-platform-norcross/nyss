@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
 {
-    public class User
+    public abstract class User
     {
         public int Id { get; set; }
 
@@ -10,7 +11,7 @@ namespace RX.Nyss.Data.Models
 
         public string Name { get; set; }
 
-        public string Role { get; set; }
+        public Role Role { get; set; }
 
         public string EmailAddress { get; set; }
 
@@ -20,7 +21,7 @@ namespace RX.Nyss.Data.Models
 
         public string Organization  { get; set; }
 
-        public bool IsFirstLogin { get; set; }
+        public bool IsFirstLogin { get; set; } = true;
         
         public virtual ApplicationLanguage ApplicationLanguage { get; set; }
 
