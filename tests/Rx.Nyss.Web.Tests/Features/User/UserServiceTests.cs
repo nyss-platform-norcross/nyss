@@ -34,7 +34,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
         public async Task RegisterGlobalCoordinator_WhenEmptyUserList_ShouldReturnSuccessfulResult()
         {
             var userEmail = "emailTest1@domain.com";
-            var existingUserList = new List<IdentityUser> {};
+            var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
             var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
 
@@ -47,7 +47,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
         public async Task RegisterGlobalCoordinator_WhenEmptyUserList_NyssContextAddAsyncIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var existingUserList = new List<IdentityUser> { };
+            var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
             var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
 
@@ -60,7 +60,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
         public async Task RegisterGlobalCoordinator_WhenEmptyUserList_NyssContextSaveChangesIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var existingUserList = new List<IdentityUser> { };
+            var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
             var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
 
@@ -91,7 +91,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
             _nyssContextMock.When(c => c.SaveChangesAsync())
                 .Do(x => throw new ResultException(ResultKey.User.Registration.UnknownError));
 
-            var existingUserList = new List<IdentityUser> {};
+            var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
             var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
 
@@ -109,7 +109,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
             _nyssContextMock.When(c => c.SaveChangesAsync())
                 .Do(x => throw new Exception());
 
-            var existingUserList = new List<IdentityUser> { };
+            var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
             var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
 
