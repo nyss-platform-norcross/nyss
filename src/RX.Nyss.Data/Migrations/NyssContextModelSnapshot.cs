@@ -265,18 +265,6 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Districts");
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.DummyClass", b =>
-                {
-                    b.Property<int>("DummyColumn")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.HasKey("DummyColumn");
-
-                    b.ToTable("DummyClass");
-                });
-
             modelBuilder.Entity("RX.Nyss.Data.Models.GatewaySetting", b =>
                 {
                     b.Property<int>("Id")
