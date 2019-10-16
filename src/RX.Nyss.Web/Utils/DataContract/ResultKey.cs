@@ -19,5 +19,10 @@
                 public const string RoleCouldNotBeCreated = "user.seeding.roleCouldNotBeCreated";
             }
         }
+
+        public static class Validation
+        {
+            public const string ValidationError = "validation.validationError";
+        }
     }
 }
