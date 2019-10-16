@@ -46,7 +46,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: './src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" --no-build -r win-x86'
+    arguments: './src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" --self-contained -r win-x86'
     zipAfterPublish: false
     modifyOutputPath: false
 
