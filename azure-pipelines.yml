@@ -32,6 +32,15 @@ steps:
     modifyOutputPath: false
 
 - task: DotNetCoreCLI@2
+  displayName: 'dotnet publish'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: './src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/funcapp" --no-build'
+    zipAfterPublish: true
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2
   displayName: 'Publish ConsoleApp for DB migration'
   inputs:
     command: publish
