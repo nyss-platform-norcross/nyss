@@ -5,12 +5,13 @@
         public bool IsSuccess { get; set; }
 
         public Message Message { get; set; }
+
         private Result() { }
 
         private Result(bool isSuccess, string messageKey, object messageData)
         {
             IsSuccess = isSuccess;
-            Message = new Message() { Key = messageKey, Data = messageData};
+            Message = new Message { Key = messageKey, Data = messageData};
         }
 
         public static Result Success(string messageKey, object messageData = null) => new Result(true, messageKey, messageData);
