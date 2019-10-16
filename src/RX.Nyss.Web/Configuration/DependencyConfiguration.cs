@@ -45,6 +45,8 @@ namespace RX.Nyss.Web.Configuration
             GlobalLoggerConfiguration.ConfigureLogger(loggingOptions, appInsightsInstrumentationKey);
             serviceCollection.AddSingleton(x => Log.Logger); // must be func, as the static logger is configured (changed reference) after DI registering
             serviceCollection.AddSingleton<ILoggerAdapter, SerilogLoggerAdapter>();
+
+            serviceCollection.AddApplicationInsightsTelemetry();
         }
 
         private static void RegisterDatabases(IServiceCollection serviceCollection, NyssConfig.IConnectionStringOptions connectionStringOptions)
