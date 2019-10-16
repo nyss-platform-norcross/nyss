@@ -64,6 +64,7 @@
         "webAppPlanName": "[concat(parameters('base_name'), '-sp')]",
         "funcAppPlanName": "[concat(parameters('base_name'), '-consumption-sp')]",
         "serviceBusNamespaceName": "[concat(parameters('base_name'), '-bus')]",
+        "reportQueueName": "[concat(variables('serviceBusNamespaceName'), '-report-queue')]",
         "defaultSASKeyName": "RootManageSharedAccessKey",
         "defaultAuthRuleResourceId": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespaceName'), variables('defaultSASKeyName'))]",
         "sbVersion": "2017-04-01",
@@ -178,7 +179,30 @@
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('serviceBusSku')]"
-            }
+            },
+            "resources": [
+              {
+                "apiVersion": "2017-04-01",
+                "name": "[variables('reportQueueName')]",
+                "type": "Queues",
+                "dependsOn": [
+                  "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+                ],
+                "properties": {
+                  "lockDuration": "PT1M",
+                  "maxSizeInMegabytes": "1024",
+                  "requiresDuplicateDetection": "false",
+                  "requiresSession": "false",
+                  "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+                  "duplicateDetectionHistoryTimeWindow": "PT10M",
+                  "deadLetteringOnMessageExpiration": "false",
+                  "maxDeliveryCount": "100",
+                  "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+                  "enablePartitioning": "false",
+                  "enableExpress": "false"
+                }
+              }
+            ]
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
