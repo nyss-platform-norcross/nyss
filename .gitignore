@@ -278,3 +278,4 @@ yarn-error.log*
 /src/RX.Nyss.Web/RX.Nyss.Web.xml
 **/ClientApp/build
 **/Logs/*.txt
+src/RX.Nyss.Web/RX.Nyss.Web.xml
