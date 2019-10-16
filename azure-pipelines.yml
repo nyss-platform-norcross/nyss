@@ -16,7 +16,7 @@ steps:
   displayName: 'dotnet build'
   inputs:
     projects: '*.sln'
-    arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)" -r win-x86'
+    arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)"'
 
 - task: CmdLine@2
   displayName: 'Insert test task here...'
