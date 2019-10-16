@@ -17,6 +17,11 @@ namespace RX.Nyss.Web.Features.User
             _userService = userService;
         }
 
+        /// <summary>
+        /// Register a global coordinator user
+        /// </summary>
+        /// <param name="globalCoordinatorInDto"></param>
+        /// <returns></returns>
         [HttpPost("RegisterGlobalCoordinator")]
         [Roles(Role.Administrator)]
         public async Task<Result> RegisterGlobalCoordinator([FromBody]GlobalCoordinatorInDto globalCoordinatorInDto)

@@ -10,8 +10,8 @@
     <UserSecretsId>a53b196f-5472-4183-8faa-92af93f592f4</UserSecretsId>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>RX.Nyss.Web.xml</DocumentationFile>
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
