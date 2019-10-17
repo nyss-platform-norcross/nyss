@@ -60,7 +60,7 @@ namespace RX.Nyss.FuncApp
 
             if (!string.IsNullOrEmpty(instrumentationKey))
             {
-                loggerConfiguration = loggerConfiguration.WriteTo.ApplicationInsights(TelemetryConfiguration.Active, TelemetryConverter.Traces);
+                loggerConfiguration = loggerConfiguration.WriteTo.ApplicationInsights(instrumentationKey, TelemetryConverter.Traces);
             }
 
             var logger = loggerConfiguration.CreateLogger();
