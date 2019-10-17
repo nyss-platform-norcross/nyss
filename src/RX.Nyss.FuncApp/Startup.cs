@@ -66,6 +66,8 @@ namespace RX.Nyss.FuncApp
             var logger = loggerConfiguration.CreateLogger();
 
             builder.Services.AddSingleton<ILogger>(logger);
+
+            logger.Debug("Serilog configured");
         }
     }
 }
