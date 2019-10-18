@@ -281,3 +281,5 @@ yarn-error.log*
 src/RX.Nyss.Web/RX.Nyss.Web.xml
 
 src/RX.Nyss.FuncApp/Properties/PublishProfiles/
+
+src/RX.Nyss.Web/appsettings.Development.json
