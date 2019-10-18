@@ -121,10 +121,6 @@
                         {
                             "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
                             "value": "disabled"
-                        },
-                        {
-                            "name": "ServiceBusConnectionString",
-                            "value": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]"
                         }
                     ],
                     "metadata": [
@@ -286,7 +282,9 @@
                         "FUNCTIONS_EXTENSION_VERSION": "~2",
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('funcapp_name')), '2015-05-01').InstrumentationKey]",
                         "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
-                        "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]"
+                        "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]",
+                        "SERVICEBUS_REPORTQUEUE": "variables('reportQueueName')",
+                        "InternalApiReportUrl": "[concat('https://', variables('funcapp_name'), '.azurewebsites.net/api/report')]"
                     }
                 }
             ]
