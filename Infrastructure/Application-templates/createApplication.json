@@ -283,7 +283,7 @@
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('funcapp_name')), '2015-05-01').InstrumentationKey]",
                         "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
                         "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]",
-                        "SERVICEBUS_REPORTQUEUE": "variables('reportQueueName')",
+                        "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
                         "InternalApiReportUrl": "[concat('https://', variables('funcapp_name'), '.azurewebsites.net/api/report')]"
                     }
                 }
