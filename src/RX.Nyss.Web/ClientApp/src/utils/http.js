@@ -17,9 +17,13 @@ export const ensureResponseIsSuccess = (response, message) => {
 };
 
 const callApi = (path, method, data, headers = {}, authenticate = false) => {
-    return new Promise((resolve, reject) => {
+    let init = { method, headers: new Headers(headers) };
+    if (data) {
+        init.body = JSON.stringify(data);
+    }
 
-        fetch(path)
+    return new Promise((resolve, reject) => {
+        return fetch(path, init)
             .then(response => {
                 if (response.ok) {
                     if (response.status === 204) {

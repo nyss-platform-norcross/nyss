@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.User.Dto;

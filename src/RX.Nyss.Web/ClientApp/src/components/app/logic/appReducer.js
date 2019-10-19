@@ -9,6 +9,18 @@ export function appReducer(state = initialState.appData, action) {
                 appReady: true
             };
 
+        case actions.GET_USER.SUCCESS:
+            return {
+                ...state,
+                user: action.user
+                    ? {
+                        name: action.user.name,
+                        email: action.user.email,
+                        roles: action.user.roles
+                    }
+                    : null
+                }
+
         default:
             return state;
     }

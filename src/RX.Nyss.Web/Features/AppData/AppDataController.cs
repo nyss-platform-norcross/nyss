@@ -1,0 +1,17 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using RX.Nyss.Web.Utils;
+
+namespace RX.Nyss.Web.Features.AppData
+{
+    public class AppDataController : BaseController
+    {
+        [Route("get")]
+        public IActionResult Get() =>
+            Ok(new
+            {
+                User = User.Identity.IsAuthenticated 
+                    ? new { User.Identity.Name } 
+                    : null
+            });
+    }
+}

@@ -15,6 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
+using RX.Nyss.Web.Features.Authentication;
 using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Features.User;
@@ -61,7 +62,6 @@ namespace RX.Nyss.Web.Configuration
         private static void RegisterAuth(IServiceCollection serviceCollection)
         {
             serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
-                .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             serviceCollection.AddIdentityServer()
@@ -130,6 +130,7 @@ namespace RX.Nyss.Web.Configuration
         {
             serviceCollection.AddScoped<IHealthRiskService, HealthRiskService>();
             serviceCollection.AddScoped<IUserService, UserService>();
+            serviceCollection.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
             serviceCollection.AddScoped<INyssContext>(x => x.GetService<NyssContext>());
         }
     }

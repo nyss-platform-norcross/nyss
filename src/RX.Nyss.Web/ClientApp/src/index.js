@@ -11,7 +11,7 @@ import * as appActions from './components/app/logic/appActions';
 const history = createBrowserHistory();
 const store = configureStore(history, initialState);
 
-store.dispatch(appActions.initializeApplication());
+store.dispatch(appActions.initApplication.invoke());
 
 const render = () => {
     return ReactDOM.render(
