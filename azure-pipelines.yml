@@ -28,9 +28,9 @@ steps:
     arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)"' # Azure Functions do not support -r parameter
 
 - task: CmdLine@2
-  displayName: 'Insert test task here...'
+  displayName: 'Run unit tests'
   inputs:
-    script: 'echo Insert test task here...'
+    script: 'dotnet test ./Rx.Nyss.Web.Tests/Rx.Nyss.Web.Tests.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish RX.Nyss.Web'
