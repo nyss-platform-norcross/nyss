@@ -23,6 +23,7 @@ steps:
   inputs:
     command: test
     projects: './tests/Rx.Nyss.Web.Tests/Rx.Nyss.Web.Tests.csproj'
+    arguments: '--no-build'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish WebApp'
