@@ -27,10 +27,11 @@ steps:
     projects: 'src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj'
     arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)"' # Azure Functions do not support -r parameter
 
-- task: CmdLine@2
+- task: DotNetCoreCLI@2
   displayName: 'Run unit tests'
   inputs:
-    script: 'dotnet test ./Rx.Nyss.Web.Tests/Rx.Nyss.Web.Tests.csproj'
+    command: test
+    projects: './Rx.Nyss.Web.Tests/*.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish RX.Nyss.Web'
