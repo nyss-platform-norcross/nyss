@@ -12,7 +12,6 @@ using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.MultiContextTransactions;
 using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Features.User
@@ -21,13 +20,11 @@ namespace Rx.Nyss.Web.Tests.Features.User
     {
         private readonly ILoggerAdapter _loggerAdapterMock;
         private readonly INyssContext _nyssContextMock;
-        private readonly IDbTransactionFactory _dbTransactionFactoryMock;
 
         public UserServiceTests()
         {
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _nyssContextMock = Substitute.For<INyssContext>();
-            _dbTransactionFactoryMock = Substitute.For<IDbTransactionFactory>();
         }
 
         [Fact]
@@ -120,7 +117,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
         {
             var userManager = MockUserManager(users);
             
-            var userService = new UserService(userManager, _loggerAdapterMock, _nyssContextMock, _dbTransactionFactoryMock);
+            var userService = new UserService(userManager, _loggerAdapterMock, _nyssContextMock);
             return userService;
         }
 
