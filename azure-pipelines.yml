@@ -22,7 +22,7 @@ steps:
   displayName: 'Run unit tests'
   inputs:
     command: test
-    projects: './Rx.Nyss.Web.Tests/Rx.Nyss.Web.Tests.csproj'
+    projects: './tests/Rx.Nyss.Web.Tests/Rx.Nyss.Web.Tests.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish WebApp'
