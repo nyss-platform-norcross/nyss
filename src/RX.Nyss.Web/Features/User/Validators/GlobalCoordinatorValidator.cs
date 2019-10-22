@@ -1,8 +1,9 @@
 ﻿using FluentValidation;
+using RX.Nyss.Web.Features.User.Requests;
 
-namespace RX.Nyss.Web.Features.User.Dto
+namespace RX.Nyss.Web.Features.User.Validators
 {
-    public class GlobalCoordinatorValidator : AbstractValidator<GlobalCoordinatorInDto>
+    public class GlobalCoordinatorValidator : AbstractValidator<RegisterGlobalCoordinatorRequest>
     {
         public GlobalCoordinatorValidator()
         {

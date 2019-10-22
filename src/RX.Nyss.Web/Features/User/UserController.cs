@@ -1,13 +1,13 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.User.Dto;
+using RX.Nyss.Web.Features.User.Requests;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.User
 {
-    [Route("api/user")]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
@@ -20,12 +20,13 @@ namespace RX.Nyss.Web.Features.User
         /// <summary>
         /// Register a global coordinator user
         /// </summary>
-        /// <param name="globalCoordinatorInDto"></param>
+        /// <param name="registerGlobalCoordinatorRequest"></param>
         /// <returns></returns>
-        [Route("registerGlobalCoordinator"), HttpPost, Roles(Role.Administrator)]
-        public async Task<Result> RegisterGlobalCoordinator([FromBody]GlobalCoordinatorInDto globalCoordinatorInDto)
+        [HttpPost("RegisterGlobalCoordinator")]
+        [Roles(Role.Administrator)]
+        public async Task<Result> RegisterGlobalCoordinator([FromBody]RegisterGlobalCoordinatorRequest registerGlobalCoordinatorRequest)
         {
-            return await _userService.RegisterGlobalCoordinator(globalCoordinatorInDto);
+            return await _userService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequest);
         }
     }
 }

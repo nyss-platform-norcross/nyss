@@ -9,7 +9,7 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.User;
-using RX.Nyss.Web.Features.User.Dto;
+using RX.Nyss.Web.Features.User.Requests;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Xunit;
@@ -33,7 +33,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
             var userEmail = "emailTest1@domain.com";
             var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
-            var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
+            var globalManagerInDto = new RegisterGlobalCoordinatorRequest { Name = userEmail, Email = userEmail };
 
             var result = await userService.RegisterGlobalCoordinator(globalManagerInDto);
 
@@ -46,7 +46,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
             var userEmail = "emailTest1@domain.com";
             var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
-            var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
+            var globalManagerInDto = new RegisterGlobalCoordinatorRequest { Name = userEmail, Email = userEmail };
 
             await userService.RegisterGlobalCoordinator(globalManagerInDto);
 
@@ -59,7 +59,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
             var userEmail = "emailTest1@domain.com";
             var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
-            var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
+            var globalManagerInDto = new RegisterGlobalCoordinatorRequest { Name = userEmail, Email = userEmail };
 
             await userService.RegisterGlobalCoordinator(globalManagerInDto);
 
@@ -72,7 +72,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
             var userEmail = "emailTest1@domain.com";
             var existingUserList = new List<IdentityUser> { new IdentityUser(){ UserName = userEmail , Email = userEmail } };
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
-            var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
+            var globalManagerInDto = new RegisterGlobalCoordinatorRequest { Name = userEmail, Email = userEmail };
 
             var result = await userService.RegisterGlobalCoordinator(globalManagerInDto);
 
@@ -90,7 +90,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
 
             var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
-            var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
+            var globalManagerInDto = new RegisterGlobalCoordinatorRequest { Name = userEmail, Email = userEmail };
 
             var result = await userService.RegisterGlobalCoordinator(globalManagerInDto);
 
@@ -108,7 +108,7 @@ namespace Rx.Nyss.Web.Tests.Features.User
 
             var existingUserList = new List<IdentityUser>();
             var userService = GetUserServiceWithMockedDependencies(existingUserList);
-            var globalManagerInDto = new GlobalCoordinatorInDto { Name = userEmail, Email = userEmail };
+            var globalManagerInDto = new RegisterGlobalCoordinatorRequest { Name = userEmail, Email = userEmail };
 
             await Assert.ThrowsAsync<Exception>(() => userService.RegisterGlobalCoordinator(globalManagerInDto));
         }
