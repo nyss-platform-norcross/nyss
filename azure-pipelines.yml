@@ -18,10 +18,11 @@ steps:
     projects: '*.sln'
     arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)" -r win-x86'
 
-- task: CmdLine@2
+- task: DotNetCoreCLI@2
   displayName: 'Run unit tests'
   inputs:
-    script: 'dotnet test ./Rx.Nyss.Web.Tests/Rx.Nyss.Web.Tests.csproj'
+    command: test
+    projects: './Rx.Nyss.Web.Tests/*.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish WebApp'
