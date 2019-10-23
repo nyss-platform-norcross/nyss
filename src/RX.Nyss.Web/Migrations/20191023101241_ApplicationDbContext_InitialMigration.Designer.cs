@@ -10,13 +10,14 @@ using RX.Nyss.Web.Data;
 namespace RX.Nyss.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191023073259_ApplicationDbContext_InitialMigration")]
+    [Migration("20191023101241_ApplicationDbContext_InitialMigration")]
     partial class ApplicationDbContext_InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("identity")
                 .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);

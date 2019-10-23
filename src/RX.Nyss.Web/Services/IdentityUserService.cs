@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 
 namespace RX.Nyss.Web.Services
 {

@@ -21,7 +21,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// </summary>
         /// <returns>A list of health risks</returns>
         [Route("getHealthRisks")]
-        [Roles(Role.Administrator, Role.GlobalCoordinator)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRisks() => await _healthRiskService.GetHealthRisks();
     }
 }

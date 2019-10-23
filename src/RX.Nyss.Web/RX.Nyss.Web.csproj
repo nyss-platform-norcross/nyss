@@ -41,18 +41,19 @@
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Compile Remove="Features\NationalSociety\**" />
+    <Compile Remove="Features\User\**" />
     <Content Remove="$(SpaRoot)**" />
     <Content Remove="Features\NationalSociety\**" />
+    <Content Remove="Features\User\**" />
     <EmbeddedResource Remove="Features\NationalSociety\**" />
+    <EmbeddedResource Remove="Features\User\**" />
     <None Remove="$(SpaRoot)**" />
     <None Remove="Features\NationalSociety\**" />
+    <None Remove="Features\User\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RX.Nyss.Data\RX.Nyss.Data.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Features\User\" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
