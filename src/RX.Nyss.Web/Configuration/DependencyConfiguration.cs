@@ -141,7 +141,7 @@ namespace RX.Nyss.Web.Configuration
 
         public static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssConfig config)
         {
-            serviceCollection.AddSingleton(config);
+            serviceCollection.AddSingleton<IConfig>(config);
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 

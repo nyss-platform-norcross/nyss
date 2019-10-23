@@ -24,12 +24,12 @@ namespace RX.Nyss.Web.Services
     {
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly INyssConfig _config;
+        private readonly IConfig _config;
 
         public UserIdentityService(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
-            INyssConfig config)
+            IConfig config)
         {
             _signInManager = signInManager;
             _userManager = userManager;

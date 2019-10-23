@@ -1,13 +1,13 @@
 ﻿namespace RX.Nyss.Web.Configuration
 {
-    public interface INyssConfig
+    public interface IConfig
     {
         NyssConfig.LoggingOptions Logging { get; set; }
         NyssConfig.ConnectionStringOptions ConnectionStrings { get; set; }
         NyssConfig.AuthenticationOptions Authentication { get; set; }
     }
 
-    public class NyssConfig : INyssConfig
+    public class NyssConfig : IConfig
     {
         public LoggingOptions Logging { get; set; }
 
