@@ -29,12 +29,13 @@ namespace RX.Nyss.FuncApp
 
             var configurationBuilder = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
-                .AddJsonFile(localSettingsFile, optional: true, reloadOnChange: true)
+                .AddJsonFile(localSettingsFile, true, true)
                 .AddConfiguration(configuration);
             
             var newConfiguration = configurationBuilder.Build();
 
             builder.Services.AddSingleton<IConfiguration>(newConfiguration);
+            builder.Services.AddHttpClient();
             builder.Services.AddLogging();
         }
     }

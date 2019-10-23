@@ -12,7 +12,7 @@ The following resources are per environment (`dev`, `test`, or `production`):
 | ServiceBus Namespace          | `nrx-cbs-<env>-nyss-bus`                      |                                       |
 | Function App                  | `nrx-cbs-<env>-nyss-func`                     |                                       |
 | AppInsights for funcapp       | `nrx-cbs-<env>-nyss-funcapp`                  |                                       |
-| Storage account for funcapp   | `nrxcbsdevnyssfuncappst`                      |                                       |
+| Storage account for funcapp   | `nrxcbs<env>nyssfuncappst`                    |                                       |
 | Service Plan for funcapp      | `nrx-cbs-<env>-nyss-webapp-consumption-sp`    | Consumption plan                      |
 
 The database resources consists of two Database servers (one for staging envs and one for production) and one Database per environment.
