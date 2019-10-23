@@ -4,19 +4,16 @@ import { Route, Redirect } from "react-router";
 
 export const AuthRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={props => {
-    if (!auth.isAuthorized()) {
+    if (!auth.isAccessTokenSet()) {
       auth.setRedirectUrl(window.location.pathname);
-      return <Redirect to="/login" />;
+      return <Redirect to={auth.loginUrl} />;
     }
 
-    const redirectUri = auth.getRedirectUrl();
+    const redirectUrl = auth.getRedirectUrl();
 
-    if (redirectUri) {
+    if (redirectUrl) {
       auth.removeRedirectUrl();
-      if (redirectUri.replace(/\/$/, "") !== window.location.origin) {
-        const returnUrl = redirectUri.replace(window.location.origin, "");
-        return <Redirect to={returnUrl} />;
-      }
+      return <Redirect to={redirectUrl} />;
     }
 
     return <Component {...props} />;
@@ -25,8 +22,8 @@ export const AuthRoute = ({ component: Component, ...rest }) => (
 );
 
 export const UnauthorizedRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={props => auth.isAuthorized()
-    ? <Redirect to="/" />
+  <Route {...rest} render={props => auth.isAccessTokenSet()
+    ? <Redirect to={auth.rootUrl} />
     : <Component {...props} />
   } />
 );

@@ -8,6 +8,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+import Icon from "@material-ui/core/Icon";
 import * as authActions from '../../authentication/authActions';
 
 export const UserStatusComponent = ({ user, logout }) => {
@@ -30,16 +31,16 @@ export const UserStatusComponent = ({ user, logout }) => {
       <Menu
         anchorEl={anchorEl}
         open={!!anchorEl}
-        onClose={handleClose}
-        className={styles.authButton}>
-        <List>
+        onClose={handleClose}>
+        <List className={styles.popover}>
           <ListItem
             onClick={handleClose}
             disabled
             className={styles.authCaption}>
-            <ListItemText primary={user.name} secondary={user.unique_name} />
+            <ListItemText primary={user.name} secondary={user.name} />
           </ListItem>
-          <MenuItem onClick={logout}>
+          <MenuItem onClick={logout} className={styles.authButton}>
+            <Icon className={styles.logoutIcon}>exit_to_app</Icon>
             Log out
           </MenuItem>
         </List>
@@ -53,7 +54,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = {
-  logout: authActions.logout
+  logout: authActions.logout.invoke
 };
 
 UserStatusComponent.propTypes = {

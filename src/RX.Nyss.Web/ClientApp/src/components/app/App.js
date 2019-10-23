@@ -5,7 +5,7 @@ import { Route } from 'react-router'
 import { ConnectedRouter } from 'connected-react-router'
 import { ThemeProvider } from '@material-ui/styles';
 import { theme } from './theme';
-import { Home } from '../home/Home';
+import { Home } from '../homePage/Home';
 import { LoginPage } from '../loginPage/LoginPage';
 import { AuthRoute } from './AuthRoute';
 

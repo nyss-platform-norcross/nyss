@@ -8,7 +8,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import styles from './LoginPage.module.scss';
-import strings from '../../strings';
+import { strings, stringKeys } from '../../strings';
 import { createForm, validators } from '../../utils/forms';
 import TextInputField from '../forms/TextInputField';
 import PasswordInputField from '../forms/PasswordInputField';
@@ -19,14 +19,14 @@ class LoginPageComponent extends PureComponent {
   constructor(props) {
     super(props);
 
-    const validation = {
-      userName: [validators.required, validators.email],
-      password: [validators.required, validators.minLength(8)]
-    };
-
     const fields = {
       userName: "",
       password: ""
+    };
+
+    const validation = {
+      userName: [validators.required, validators.email],
+      password: [validators.required, validators.minLength(4)]
     };
 
     this.form = createForm(fields, validation);
@@ -44,11 +44,7 @@ class LoginPageComponent extends PureComponent {
 
     const values = this.form.getValues();
 
-    this.props.login({
-      userName: values.userName,
-      password: values.password,
-      redirectUrl: getRedirectUrl()
-    });
+    this.props.login(values.userName, values.password, getRedirectUrl());
   };
 
   render() {
@@ -68,20 +64,20 @@ class LoginPageComponent extends PureComponent {
               />
 
               <PasswordInputField
-                label="Password"
+                label={strings(stringKeys.login.password)}
                 name="password"
                 field={this.form.fields.password}
               />
 
               <div className={styles.forgotPasswordLink}>
                 <Link color="secondary" href={"#"}>
-                  {strings["login.forgotPassword"]}
+                  {strings(stringKeys.login.forgotPassword)}
                 </Link>
               </div>
 
               <div className={styles.actions}>
                 <Button type="submit" variant="outlined" color="primary" style={{ padding: "10px 55px" }}>
-                  {strings["login.signIn"]}
+                  {strings(stringKeys.login.signIn)}
                 </Button>
               </div>
             </form>
@@ -91,7 +87,6 @@ class LoginPageComponent extends PureComponent {
     );
   }
 }
-
 
 const mapStateToProps = state => ({
 
