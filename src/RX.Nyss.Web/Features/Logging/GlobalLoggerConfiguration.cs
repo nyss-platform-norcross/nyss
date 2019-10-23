@@ -7,7 +7,7 @@ namespace RX.Nyss.Web.Features.Logging
 {
     public static class GlobalLoggerConfiguration
     {
-        public static void ConfigureLogger(NyssConfig.ILoggingOptions loggingOptions, string appInsightsInstrumentationKey)
+        public static void ConfigureLogger(NyssConfig.LoggingOptions loggingOptions, string appInsightsInstrumentationKey)
         {
             var loggerConfiguration = new LoggerConfiguration()
                 .MinimumLevel.Debug()

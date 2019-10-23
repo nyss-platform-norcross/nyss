@@ -10,8 +10,8 @@ using RX.Nyss.Web.Data;
 namespace RX.Nyss.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191009074625_ApplicationDbContext_InitialMigration")]
-    partial class ApplicationDbContext_InitialMigration
+    [Migration("20191023135312_ApplicationDbContext_AddRolesAndSystemAdministratorAccount")]
+    partial class ApplicationDbContext_AddRolesAndSystemAdministratorAccount
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -1,9 +1,10 @@
-import React from 'react';
 import styles from './Header.module.scss';
+
+import React from 'react';
 import { TopMenu } from './TopMenu';
 import { UserStatus } from './UserStatus';
 
-export const Header = () => {
+export const Header = ({ user }) => {
     return (
         <div className={styles.header}>
             <div className={styles.logo}>

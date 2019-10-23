@@ -2,4 +2,23 @@
     padding-top: 53px;
     margin-left: 100px;
     margin-right: 50px;
+    cursor: pointer;
+}
+
+.popover {
+  min-width: 200px;
+  padding-top: 0;
+}
+
+.authCaption {
+  opacity: 1 !important;
+  padding: 0 !important;
+
+  > div {
+    margin: 0;
+  }
+}
+
+.logoutIcon {
+  margin-right: 5px;
 }

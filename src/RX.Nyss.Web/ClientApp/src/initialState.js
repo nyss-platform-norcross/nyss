@@ -1,12 +1,9 @@
 export const initialState = {
-    requestData: {
-        pendingRequests: {}
-    },
-    appData: {
-        appReady: false,
-        user: {
-            userName: null,
-            role: null
-        }
-    }
+  appData: {
+    appReady: false,
+    user: null
+  },
+  auth: {
+    loginResponse: null
+  }
 };
