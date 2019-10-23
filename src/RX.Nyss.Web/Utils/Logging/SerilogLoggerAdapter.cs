@@ -1,4 +1,5 @@
 ﻿using System;
+using RX.Nyss.Web.Features.Logging;
 using Serilog;
 
 namespace RX.Nyss.Web.Utils.Logging

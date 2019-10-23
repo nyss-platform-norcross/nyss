@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Features.Services
