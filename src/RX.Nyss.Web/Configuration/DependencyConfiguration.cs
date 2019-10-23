@@ -63,7 +63,11 @@ namespace RX.Nyss.Web.Configuration
 
         private static void RegisterAuth(IServiceCollection serviceCollection, NyssConfig.AuthenticationOptions authenticationOptions)
         {
-            serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
+            serviceCollection.AddIdentity<IdentityUser, IdentityRole>(config =>
+                {
+                    config.SignIn.RequireConfirmedEmail = true;
+                    config.User.RequireUniqueEmail = true;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             serviceCollection.Configure<IdentityOptions>(options =>
