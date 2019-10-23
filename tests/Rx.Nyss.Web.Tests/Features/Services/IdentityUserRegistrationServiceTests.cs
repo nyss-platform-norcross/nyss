@@ -13,11 +13,11 @@ using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Features.Services
 {
-    public class IdentityUserServiceTests
+    public class IdentityUserRegistrationServiceTests
     {
         private readonly ILoggerAdapter _loggerAdapterMock;
 
-        public IdentityUserServiceTests()
+        public IdentityUserRegistrationServiceTests()
         {
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
         }
@@ -27,9 +27,9 @@ namespace Rx.Nyss.Web.Tests.Features.Services
         {
             var userEmail = "emailTest1@domain.com";
             var existingUserList = new List<IdentityUser>();
-            var identityUserService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
+            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
 
-            var identityUser = await identityUserService.CreateIdentityUser(userEmail, Role.GlobalCoordinator);
+            var identityUser = await identityUserRegistrationService.CreateIdentityUser(userEmail, Role.GlobalCoordinator);
 
             Assert.NotNull(identityUser);
         }
@@ -39,16 +39,16 @@ namespace Rx.Nyss.Web.Tests.Features.Services
         {
             var userEmail = "emailTest1@domain.com";
             var existingUserList = new List<IdentityUser> { new IdentityUser() { UserName = userEmail, Email = userEmail } };
-            var identityUserService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
+            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
 
-            await Assert.ThrowsAsync<ResultException>(() => identityUserService.CreateIdentityUser(userEmail, Role.GlobalCoordinator));
+            await Assert.ThrowsAsync<ResultException>(() => identityUserRegistrationService.CreateIdentityUser(userEmail, Role.GlobalCoordinator));
         }
 
-        private IIdentityUserService GetIdentityUserServiceWithMockedDependencies(List<IdentityUser> users)
+        private IIdentityUserRegistrationService GetIdentityUserServiceWithMockedDependencies(List<IdentityUser> users)
         {
             var userManager = MockUserManager(users);
 
-            var userService = new IdentityUserService(userManager, _loggerAdapterMock);
+            var userService = new IdentityUserRegistrationRegistrationService(userManager, _loggerAdapterMock);
             return userService;
         }
 

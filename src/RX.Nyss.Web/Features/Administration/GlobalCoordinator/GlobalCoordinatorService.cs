@@ -20,11 +20,11 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
     {
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssContext _dataContext;
-        private readonly IIdentityUserService _identityUserService;
+        private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
 
-        public GlobalCoordinatorService(IIdentityUserService identityUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter)
+        public GlobalCoordinatorService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext, ILoggerAdapter loggerAdapter)
         {
-            _identityUserService = identityUserService;
+            _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
         }
@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
             {
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                var identityUser = await _identityUserService.CreateIdentityUser(registerGlobalCoordinatorRequestDto.Email, Role.GlobalCoordinator);
+                var identityUser = await _identityUserRegistrationService.CreateIdentityUser(registerGlobalCoordinatorRequestDto.Email, Role.GlobalCoordinator);
                 await CreateGlobalCoordinator(identityUser, registerGlobalCoordinatorRequestDto);
 
                 transactionScope.Complete();

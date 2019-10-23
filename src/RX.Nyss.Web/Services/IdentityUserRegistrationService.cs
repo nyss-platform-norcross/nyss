@@ -7,17 +7,17 @@ using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Services
 {
-    public interface IIdentityUserService
+    public interface IIdentityUserRegistrationService
     {
         Task<IdentityUser> CreateIdentityUser(string email, Role role);
     }
 
-    public class IdentityUserService : IIdentityUserService
+    public class IdentityUserRegistrationRegistrationService : IIdentityUserRegistrationService
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILoggerAdapter _loggerAdapter;
 
-        public IdentityUserService(UserManager<IdentityUser> userManager, 
+        public IdentityUserRegistrationRegistrationService(UserManager<IdentityUser> userManager, 
             ILoggerAdapter loggerAdapter)
         {
             _userManager = userManager;
