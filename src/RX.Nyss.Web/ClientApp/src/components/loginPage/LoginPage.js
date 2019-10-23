@@ -14,6 +14,7 @@ import TextInputField from '../forms/TextInputField';
 import PasswordInputField from '../forms/PasswordInputField';
 import * as authActions from '../../authentication/authActions';
 import { getRedirectUrl } from '../../authentication/auth';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 
 class LoginPageComponent extends PureComponent {
   constructor(props) {
@@ -55,6 +56,12 @@ class LoginPageComponent extends PureComponent {
             <Typography variant="h1" className={styles.paperHeader}>Welcome to Nyss</Typography>
             <Typography variant="h2">Log in</Typography>
 
+            {this.props.loginResponse &&
+              <SnackbarContent
+                message={this.props.loginResponse}
+              />
+            }
+
             <form onSubmit={this.handleSubmit}>
               <TextInputField
                 label="User name"
@@ -89,7 +96,7 @@ class LoginPageComponent extends PureComponent {
 }
 
 const mapStateToProps = state => ({
-
+  loginResponse: state.auth.loginResponse
 });
 
 const mapDispatchToProps = {
@@ -97,7 +104,8 @@ const mapDispatchToProps = {
 };
 
 LoginPageComponent.propTypes = {
-  login: PropTypes.func
+  login: PropTypes.func,
+  loginResponse: PropTypes.string
 };
 
 export const LoginPage = useLayout(

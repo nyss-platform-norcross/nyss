@@ -1,14 +1,16 @@
 let stringList = {
   "login.signIn": "Log innnn",
   "login.password": "Password",
-  "login.forgotPassword": "Forgot password?"
+  "login.forgotPassword": "Forgot password?",
+  "login.notSucceeded": "Invalid user name or password"
 };
 
 export const stringKeys = {
   login: {
     signIn: "login.signIn",
     password: "login.password",
-    forgotPassword: "login.forgotPassword"
+    forgotPassword: "login.forgotPassword",
+    notSucceeded: "login.notSucceeded"
   }
 };
 

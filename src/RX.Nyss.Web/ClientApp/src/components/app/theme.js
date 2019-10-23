@@ -2,6 +2,7 @@ import { createMuiTheme } from "@material-ui/core/styles";
 
 export const theme = createMuiTheme({
   typography: {
+    fontSize: 14,
     fontFamily: ["Poppins", '"Helvetica Neue"', 'Arial'].join(','),
     body1: {
       color: "#333333"
@@ -56,11 +57,13 @@ export const theme = createMuiTheme({
     },
     MuiFormControl: {
       root: {
-        marginBottom: 35
+        marginTop: 20,
+        marginBottom: 20
       }
     },
     MuiInput: {
       root: {
+        fontSize: "1rem",
         border: "1px solid #E4E1E0",
         backgroundColor: "#fff"
       },

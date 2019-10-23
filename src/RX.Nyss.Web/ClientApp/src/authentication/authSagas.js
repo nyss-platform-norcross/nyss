@@ -3,6 +3,7 @@ import * as consts from "../authentication/authConstants";
 import * as actions from "../authentication/authActions";
 import * as http from "../utils/http";
 import * as auth from "./auth";
+import { strings, stringKeys } from "../strings";
 
 export const authSagas = () => [
   takeEvery(consts.LOGIN.INVOKE, login),
@@ -15,7 +16,7 @@ function* login({ userName, password, redirectUrl }) {
     const data = yield call(http.post, "/api/authentication/login", { userName, password }, true);
 
     if (!data.isSuccess) {
-      throw new Error("Problem with logging in");
+      throw new Error(strings(stringKeys.login.notSucceeded));
     }
 
     auth.setAccessToken(data.value.accessToken)
