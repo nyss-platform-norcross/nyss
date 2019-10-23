@@ -5,12 +5,10 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,10 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Web.Data;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Features.Authentication;
-using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.Logging;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using Serilog;
 
@@ -42,7 +37,7 @@ namespace RX.Nyss.Web.Configuration
         }
 
         private static void RegisterLogger(IServiceCollection serviceCollection,
-            NyssConfig.ILoggingOptions loggingOptions, IConfiguration configuration)
+            NyssConfig.LoggingOptions loggingOptions, IConfiguration configuration)
         {
             const string applicationInsightsEnvironmentVariable = "APPINSIGHTS_INSTRUMENTATIONKEY";
             var appInsightsInstrumentationKey = configuration[applicationInsightsEnvironmentVariable];
@@ -53,7 +48,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddApplicationInsightsTelemetry();
         }
 
-        private static void RegisterDatabases(IServiceCollection serviceCollection, NyssConfig.IConnectionStringOptions connectionStringOptions)
+        private static void RegisterDatabases(IServiceCollection serviceCollection, NyssConfig.ConnectionStringOptions connectionStringOptions)
         {
             serviceCollection.AddDbContext<NyssContext>(options =>
                 options.UseSqlServer(connectionStringOptions.NyssDatabase,
@@ -63,7 +58,7 @@ namespace RX.Nyss.Web.Configuration
                 options.UseSqlServer(connectionStringOptions.NyssDatabase));
         }
 
-        private static void RegisterAuth(IServiceCollection serviceCollection, NyssConfig.IAuthenticationOptions authenticationOptions)
+        private static void RegisterAuth(IServiceCollection serviceCollection, NyssConfig.AuthenticationOptions authenticationOptions)
         {
             serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
