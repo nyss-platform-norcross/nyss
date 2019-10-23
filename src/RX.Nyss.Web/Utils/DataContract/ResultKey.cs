@@ -25,5 +25,17 @@
         {
             public const string ValidationError = "validation.validationError";
         }
+
+        public static class NationalSociety
+        {
+            public static class Creation
+            {
+                public const string Success = "nationalSociety.creation.success";
+                public const string NationalSocietyAlreadyExists = "nationalSociety.creation.nationalSocietyAlreadyExists";
+                public const string NameNotDefined = "nationalSociety.creation.nameNotDefined";
+                public const string CountryNotDefined = "nationalSociety.creation.countryNotDefined";
+                public const string LanguageNotDefined = "nationalSociety.creation.languageNotDefined";
+            }
+        }
     }
 }
