@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.Web.Features.Authentication.Dto
 {
-    public class LoginInDto
+    public class LoginRequestDto
     {
         public string UserName { get; set; }
 

@@ -7,6 +7,7 @@ using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.User
 {
+    [Route("api/user")]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
@@ -21,8 +22,7 @@ namespace RX.Nyss.Web.Features.User
         /// </summary>
         /// <param name="globalCoordinatorInDto"></param>
         /// <returns></returns>
-        [HttpPost("RegisterGlobalCoordinator")]
-        [Roles(Role.Administrator)]
+        [Route("registerGlobalCoordinator"), HttpPost, Roles(Role.Administrator)]
         public async Task<Result> RegisterGlobalCoordinator([FromBody]GlobalCoordinatorInDto globalCoordinatorInDto)
         {
             return await _userService.RegisterGlobalCoordinator(globalCoordinatorInDto);

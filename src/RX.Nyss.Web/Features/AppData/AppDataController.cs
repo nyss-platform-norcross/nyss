@@ -3,6 +3,7 @@ using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.AppData
 {
+    [Route("api/appdata")]
     public class AppDataController : BaseController
     {
         [Route("get")]

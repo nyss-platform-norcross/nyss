@@ -1,4 +1,5 @@
 ﻿using System;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Utils.DataContract
 {
@@ -10,10 +11,13 @@ namespace RX.Nyss.Web.Utils.DataContract
 
         public ResultException(string messageKey, object messageData = null)
         {
-            Result = Result.Error(messageKey, messageData);
+            Result = Error(messageKey, messageData);
         }
 
         public Result Result { get; set; }
+
+        public Result<T> GetResult<T>() =>
+            Error<T>(Result.Message.Key, Result.Message.Data);
 
         public override string ToString() => $"{base.ToString()}, {nameof(Result)}: {Result}";
     }
