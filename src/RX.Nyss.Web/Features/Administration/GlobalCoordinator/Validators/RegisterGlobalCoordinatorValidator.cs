@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
-using RX.Nyss.Web.Features.User.Requests;
+using RX.Nyss.Web.Features.Administration.GlobalCoordinator.Dto;
 
 namespace RX.Nyss.Web.Features.User.Validators
 {
-    public class GlobalCoordinatorValidator : AbstractValidator<RegisterGlobalCoordinatorRequest>
+    public class RegisterGlobalCoordinatorValidator : AbstractValidator<RegisterGlobalCoordinatorRequestDto>
     {
-        public GlobalCoordinatorValidator()
+        public RegisterGlobalCoordinatorValidator()
         {
             RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
             RuleFor(x => x.Email).NotEmpty().MaximumLength(100).EmailAddress();
