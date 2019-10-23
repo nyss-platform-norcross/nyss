@@ -50,7 +50,7 @@ function* getAndVerifyUser() {
 function* getUserStatus() {
   yield put(actions.getUser.request());
   try {
-    const status = yield call(http.post, "/api/authentication/status");
+    const status = yield call(http.get, "/api/authentication/status");
 
     const user = status.isAuthenticated
       ? { name: status.data.name, roles: status.data.roles }
