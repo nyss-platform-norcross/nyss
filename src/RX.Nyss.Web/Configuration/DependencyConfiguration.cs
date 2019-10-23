@@ -2,9 +2,11 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +14,11 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
+using RX.Nyss.Data;
 using RX.Nyss.Web.Features.Authentication;
 using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.Logging;
@@ -31,10 +35,10 @@ namespace RX.Nyss.Web.Configuration
             var config = configuration.Get<NyssConfig>();
             RegisterLogger(serviceCollection, config.Logging, configuration);
             RegisterDatabases(serviceCollection, config.ConnectionStrings);
-            RegisterAuth(serviceCollection);
+            RegisterAuth(serviceCollection, config.Authentication);
             RegisterWebFramework(serviceCollection);
             RegisterSwagger(serviceCollection);
-            RegisterServiceCollection(serviceCollection);
+            RegisterServiceCollection(serviceCollection, config);
         }
 
         private static void RegisterLogger(IServiceCollection serviceCollection,
@@ -59,16 +63,30 @@ namespace RX.Nyss.Web.Configuration
                 options.UseSqlServer(connectionStringOptions.NyssDatabase));
         }
 
-        private static void RegisterAuth(IServiceCollection serviceCollection)
+        private static void RegisterAuth(IServiceCollection serviceCollection, NyssConfig.IAuthenticationOptions authenticationOptions)
         {
             serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            serviceCollection.AddIdentityServer()
-                .AddApiAuthorization<IdentityUser, ApplicationDbContext>();
-
-            serviceCollection.AddAuthentication()
-                .AddIdentityServerJwt();
+            serviceCollection.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = authenticationOptions.Audience,
+                        ValidIssuer = authenticationOptions.Issuer,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationOptions.Secret))
+                    };
+                });
 
             serviceCollection.ConfigureApplicationCookie(options =>
             {
@@ -126,12 +144,24 @@ namespace RX.Nyss.Web.Configuration
                 c.IncludeXmlComments(xmlPath);
             });
 
-        public static void RegisterServiceCollection(IServiceCollection serviceCollection)
+        public static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssConfig config)
         {
-            serviceCollection.AddScoped<IHealthRiskService, HealthRiskService>();
-            serviceCollection.AddScoped<IUserService, UserService>();
-            serviceCollection.AddScoped<IUserAuthenticationService, UserAuthenticationService>();
-            serviceCollection.AddScoped<INyssContext>(x => x.GetService<NyssContext>());
+            serviceCollection.AddSingleton(config);
+            RegisterTypes(serviceCollection, "RX.Nyss");
         }
+
+        private static void RegisterTypes(IServiceCollection serviceCollection, string namePrefix) =>
+            GetAssemblies(namePrefix: namePrefix)
+                .SelectMany(assembly => assembly.GetExportedTypes())
+                .Select(type => new { implementationType = type, interfaceType = type.GetInterfaces().FirstOrDefault(i => i.Name == $"I{type.Name}") })
+                .Where(x => x.interfaceType != null)
+                .ToList()
+                .ForEach(i => serviceCollection.AddScoped(i.interfaceType, i.implementationType));
+
+        private static Assembly[] GetAssemblies(string namePrefix) =>
+            DependencyContext.Default.GetDefaultAssemblyNames()
+                .Where(name => name.Name.StartsWith(namePrefix))
+                .Select(Assembly.Load)
+                .ToArray();
     }
 }
