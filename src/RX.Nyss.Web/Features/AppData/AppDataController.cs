@@ -6,7 +6,7 @@ namespace RX.Nyss.Web.Features.AppData
     [Route("api/appdata")]
     public class AppDataController : BaseController
     {
-        [HttpGet, Route("get")]
+        [Route("get"), HttpGet]
         public IActionResult Get() =>
             Ok(new
             {
