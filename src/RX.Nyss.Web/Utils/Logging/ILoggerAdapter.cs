@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RX.Nyss.Web.Features.Logging
+namespace RX.Nyss.Web.Utils.Logging
 {
     public interface ILoggerAdapter
     {

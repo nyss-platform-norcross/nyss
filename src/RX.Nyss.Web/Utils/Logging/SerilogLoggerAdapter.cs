@@ -1,7 +1,7 @@
 ﻿using System;
 using Serilog;
 
-namespace RX.Nyss.Web.Features.Logging
+namespace RX.Nyss.Web.Utils.Logging
 {
     public class SerilogLoggerAdapter : ILoggerAdapter
     {

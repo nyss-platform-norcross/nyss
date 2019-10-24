@@ -8,10 +8,10 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Logging;
 using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Features.User

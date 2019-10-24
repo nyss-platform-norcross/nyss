@@ -16,7 +16,7 @@ function* login({ userName, password, redirectUrl }) {
     const data = yield call(http.post, "/api/authentication/login", { userName, password }, true);
 
     if (!data.isSuccess) {
-      throw new Error(strings(stringKeys.login.notSucceeded));
+      throw new Error(strings(data.message.key));
     }
 
     auth.setAccessToken(data.value.accessToken)

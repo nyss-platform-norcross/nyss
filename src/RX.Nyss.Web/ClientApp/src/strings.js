@@ -2,7 +2,8 @@ let stringList = {
   "login.signIn": "Log innnn",
   "login.password": "Password",
   "login.forgotPassword": "Forgot password?",
-  "login.notSucceeded": "Invalid user name or password"
+  "login.notSucceeded": "Invalid user name or password",
+  "login.lockedOut": "Your account has been locked for 5 minutes. Please reset your password or try again later."
 };
 
 export const stringKeys = {
@@ -10,7 +11,8 @@ export const stringKeys = {
     signIn: "login.signIn",
     password: "login.password",
     forgotPassword: "login.forgotPassword",
-    notSucceeded: "login.notSucceeded"
+    notSucceeded: "login.notSucceeded",
+    lockedOut: "login.lockedOut"
   }
 };
 
