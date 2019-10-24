@@ -3,7 +3,7 @@ using RX.Nyss.Web.Configuration;
 using Serilog;
 using Serilog.Events;
 
-namespace RX.Nyss.Web.Features.Logging
+namespace RX.Nyss.Web.Utils.Logging
 {
     public static class GlobalLoggerConfiguration
     {

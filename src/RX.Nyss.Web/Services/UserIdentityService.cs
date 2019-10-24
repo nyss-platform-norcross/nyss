@@ -38,14 +38,19 @@ namespace RX.Nyss.Web.Services
 
         public async Task<IdentityUser> Login(string userName, string password)
         {
-            var signInResult = await _signInManager.PasswordSignInAsync(userName, password, true, false);
+            var signInResult = await _signInManager.PasswordSignInAsync(userName, password, true, true);
 
-            if (!signInResult.Succeeded)
+            if (signInResult.Succeeded)
             {
-                throw new ResultException("login.notSucceeded");
+                return await _userManager.FindByEmailAsync(userName);
             }
 
-            return await _userManager.FindByEmailAsync(userName);
+            if (signInResult.IsLockedOut)
+            {
+                throw new ResultException(ResultKey.Login.LockedOut);
+            }
+
+            throw new ResultException(ResultKey.Login.NotSucceeded);
         }
         
         public async Task Logout() =>

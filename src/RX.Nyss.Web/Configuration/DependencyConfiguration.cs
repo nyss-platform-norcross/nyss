@@ -17,8 +17,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Web.Data;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Logging;
 using Serilog;
 
 namespace RX.Nyss.Web.Configuration
@@ -62,6 +62,13 @@ namespace RX.Nyss.Web.Configuration
         {
             serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            serviceCollection.Configure<IdentityOptions>(options =>
+            {
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                options.Lockout.MaxFailedAccessAttempts = 5;
+                options.Lockout.AllowedForNewUsers = false;
+            });
 
             serviceCollection.AddAuthentication(options =>
                 {

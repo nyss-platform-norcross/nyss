@@ -1,14 +1,13 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Logging;
 
 namespace RX.Nyss.Web.Features.User
 {
