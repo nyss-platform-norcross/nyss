@@ -45,6 +45,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 {
                     Name = nationalSocietyReq.Name,
                     ContentLanguage = await GetLanguageByCode(nationalSocietyReq.ContentLanguage.LanguageCode),
+                    CountryCode = nationalSocietyReq.Country.CountryCode,
+                    CountryName = nationalSocietyReq.Country.Name,
                     IsArchived = false
                 };
 
@@ -53,6 +55,11 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     throw new ResultException(ResultKey.NationalSociety.Creation.LanguageNotDefined);
                 }
 
+                if (string.IsNullOrEmpty(nationalSociety.CountryName))
+                {
+                    throw new ResultException(ResultKey.NationalSociety.Creation.CountryNotDefined);
+                }
+                
                 await _nyssContext.AddAsync(nationalSociety);
                 await _nyssContext.SaveChangesAsync();
                 _loggerAdapter.Info($"A national society {nationalSociety} was created");

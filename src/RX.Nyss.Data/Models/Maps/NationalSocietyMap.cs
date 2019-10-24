@@ -10,6 +10,10 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasKey(ns => ns.Id);
             builder.HasIndex(ns => ns.Name).IsUnique();
             builder.Property(ns => ns.Name).HasMaxLength(100);
+            builder.Property(ns => ns.CountryCode).IsRequired();
+            builder.Property(ns => ns.CountryCode).HasMaxLength(10);
+            builder.Property(ns => ns.CountryName).IsRequired();
+            builder.Property(ns => ns.CountryName).HasMaxLength(100);
             builder.Property(ns => ns.IsArchived).IsRequired();
             builder.Property(ns => ns.RegionCustomName).HasMaxLength(100);
             builder.Property(ns => ns.DistrictCustomName).HasMaxLength(100);
