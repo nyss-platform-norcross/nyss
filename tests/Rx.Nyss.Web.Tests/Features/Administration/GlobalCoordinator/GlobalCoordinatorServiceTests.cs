@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -11,7 +14,7 @@ using RX.Nyss.Web.Features.Administration.GlobalCoordinator.Dto;
 using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
+using Shouldly;
 using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
@@ -51,7 +54,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
             await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Is<(string email, string name)>(x => x.email == userEmail && x.name == userName), Arg.Any<string>(), Arg.Any<string>());
-            Assert.True(result.IsSuccess);
+            result.IsSuccess.ShouldBeTrue();
         }
 
         [Fact]
@@ -64,7 +67,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
 
-            await _nyssContextMock.Received().AddAsync(Arg.Any<GlobalCoordinatorUser>());
+            await _nyssContext.Received().AddAsync(Arg.Any<GlobalCoordinatorUser>());
         }
 
         [Fact]
@@ -77,7 +80,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
 
-            await _nyssContextMock.Received().SaveChangesAsync();
+            await _nyssContext.Received().SaveChangesAsync();
         }
 
 
@@ -95,8 +98,8 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
 
-            Assert.False(result.IsSuccess);
-            Assert.Equal(exception.Result.Message.Key, result.Message.Key);
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(exception.Result.Message.Key);
         }
 
         [Fact]
@@ -109,6 +112,146 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
             Assert.ThrowsAsync<Exception>(() => _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto));
+            _identityUserRegistrationService.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
+
+            _identityUserRegistrationService.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
+                .Do(x => throw new Exception());
+
+            var globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationService, _nyssContext, _loggerAdapter);
+            var userEmail = "emailTest1@domain.com";
+            var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+
+
+            globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto).ShouldThrowAsync<Exception>();
+        }
+
+
+        [Fact]
+        public async Task EditGlobalCoordinator_WhenEditingNonExistingUser_ReturnsErrorResult()
+        {
+            var nyssUsers = new List<User>();
+            var usersDbSet = nyssUsers.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users.Returns(usersDbSet);
+
+            var globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationService, _nyssContext, _loggerAdapter);
+
+            var result = await globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() {Id = 123});
+
+
+            result.IsSuccess.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task EditGlobalCoordinator_WhenEditingUserThatIsNotGlobalCoordinator_ReturnsErrorResult()
+        {
+            var globalCoordinatorService = ArrangeGlobalCoordinatorServiceWithOneAdministratorUser();
+
+            var result = await globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() { Id = 123 });
+
+            result.IsSuccess.ShouldBeFalse();
+        }
+
+        private GlobalCoordinatorService ArrangeGlobalCoordinatorServiceWithOneAdministratorUser() =>
+            ArrangeGlobalCoordinatorServiceWithExistingUsers(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
+
+        private GlobalCoordinatorService ArrangeGlobalCoordinatorServiceWithExistingUsers(IEnumerable<User> existingUsers)
+        {
+            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users.Returns(usersDbSet);
+            var globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationService, _nyssContext, _loggerAdapter);
+            return globalCoordinatorService;
+        }
+
+        [Fact]
+        public async Task EditGlobalCoordinator_WhenEditingUserThatIsNotGlobalCoordinator_SaveChangesShouldNotBeCalled()
+        {
+            var globalCoordinatorService = ArrangeGlobalCoordinatorServiceWithOneAdministratorUser();
+
+            var result = await globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() { Id = 123 });
+
+            await _nyssContext.DidNotReceive().SaveChangesAsync();
+        }
+
+
+        [Fact]
+        public async Task EditGlobalCoordinator_WhenEditingExistingGlobalCoordinator_ReturnsSuccess()
+        {
+            var globalCoordinatorService = ArrangeGlobalCoordinatorServiceWithOneGlobalCoordinator();
+
+            var result = await globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() { Id = 123 });
+
+            result.IsSuccess.ShouldBeTrue();
+        }
+
+        private GlobalCoordinatorService ArrangeGlobalCoordinatorServiceWithOneGlobalCoordinator() =>
+            ArrangeGlobalCoordinatorServiceWithExistingUsers(new List<User> 
+            { 
+                new GlobalCoordinatorUser
+                {
+                    Id = 123,
+                    Role = Role.GlobalCoordinator,
+                    EmailAddress = "emailTest1@domain.com",
+                    Name = "emailTest1@domain.com",
+                    Organization = "org org",
+                    PhoneNumber = "123"
+                }
+            });
+
+
+        [Fact]
+        public async Task EditGlobalCoordinator_WhenEditingExistingGlobalCoordinator_SaveChangesAsyncIsCalled()
+        {
+            var globalCoordinatorService = ArrangeGlobalCoordinatorServiceWithOneGlobalCoordinator();
+
+            await globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() { Id = 123 });
+
+            await _nyssContext.Received().SaveChangesAsync();
+        }
+
+
+        [Fact]
+        public async Task EditGlobalCoordinator_WhenEditingExistingUser_ExpectedFieldsGetEdited()
+        {
+            var globalCoordinatorService = ArrangeGlobalCoordinatorServiceWithOneGlobalCoordinator();
+
+            var existingUserEmail = _nyssContext.Users.Single(u => u.Id == 123)?.EmailAddress;
+
+            var editRequest = new EditGlobalCoordinatorRequestDto()
+            {
+                Id = 123, Name = "New name", Organization = "New organization", PhoneNumber = "432432"
+            };
+
+            await globalCoordinatorService.UpdateGlobalCoordinator(editRequest);
+
+            var editedUser = _nyssContext.Users.Single(u => u.Id == 123) as GlobalCoordinatorUser;
+
+            editedUser.ShouldNotBeNull();
+            editedUser.Name.ShouldBe(editRequest.Name);
+            editedUser.Organization.ShouldBe(editRequest.Organization);
+            editedUser.PhoneNumber.ShouldBe(editRequest.PhoneNumber);
+            editedUser.EmailAddress.ShouldBe(existingUserEmail);
+        }
+
+        [Fact]
+        public async Task GetGlobalCoordinators_OnlyGlobalCoordinatorsAreReturned()
+        {
+            var nyssUsers = new List<User>()
+            {
+                new GlobalCoordinatorUser() { Id = 1, Role = Role.GlobalCoordinator },
+                new GlobalCoordinatorUser() { Id = 2, Role = Role.GlobalCoordinator },
+                new GlobalCoordinatorUser() { Id = 3, Role = Role.Administrator },
+                new GlobalCoordinatorUser() { Id = 4, Role = Role.Supervisor},
+                new GlobalCoordinatorUser() { Id = 5, Role = Role.TechnicalAdvisor },
+                new GlobalCoordinatorUser() { Id = 6, Role = Role.DataConsumer },
+                new GlobalCoordinatorUser() { Id = 7, Role = Role.Supervisor },
+                new GlobalCoordinatorUser() { Id = 8, Role = Role.Supervisor },
+                new GlobalCoordinatorUser() { Id = 9, Role = Role.Supervisor }
+            };
+            var globalCoordinatorService = ArrangeGlobalCoordinatorServiceWithExistingUsers(nyssUsers);
+
+            var result = await globalCoordinatorService.GetGlobalCoordinators();
+
+            result.Value.Count.ShouldBe(2);
         }
     }
 }

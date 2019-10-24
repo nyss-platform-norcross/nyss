@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -17,6 +20,9 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
     public interface IGlobalCoordinatorService
     {
         Task<Result> RegisterGlobalCoordinator(RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto);
+        Task<Result> UpdateGlobalCoordinator(EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto);
+        Task<Result> GetGlobalCoordinator(int globalCoordinatorId);
+        Task<Result<List<GetGlobalCoordinatorsResponseDto>>> GetGlobalCoordinators();
     }
 
     public class GlobalCoordinatorService : IGlobalCoordinatorService
@@ -77,6 +83,68 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
             transactionScope.Complete();
             return identityUser;
         }
+        
+        public async Task<Result> UpdateGlobalCoordinator(EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto)
+        {
+            var globalCoordinator = await _dataContext.Users
+                .Where(u => u.Role == Role.GlobalCoordinator)
+                .Where(u => u.Id == editGlobalCoordinatorRequestDto.Id)
+                .SingleOrDefaultAsync();
+            
+            if (globalCoordinator == null)
+            {
+                _loggerAdapter.Debug($"Global coordinator with id {editGlobalCoordinatorRequestDto.Id} was not found");
+                return Result.Error(ResultKey.User.Common.UserNotFound);
+            }
+
+            globalCoordinator.Name = editGlobalCoordinatorRequestDto.Name;
+            globalCoordinator.PhoneNumber = editGlobalCoordinatorRequestDto.PhoneNumber;
+            globalCoordinator.Organization = editGlobalCoordinatorRequestDto.Organization;
+
+            await _dataContext.SaveChangesAsync();
+            return Result.Success();
+        }
+
+        public async Task<Result> GetGlobalCoordinator(int globalCoordinatorId)
+        {
+            var globalCoordinator = await _dataContext.Users
+                .Where(u => u.Role == Role.GlobalCoordinator)
+                .Where(u => u.Id == globalCoordinatorId)
+                .Select(u => new GetGlobalCoordinatorsResponseDto
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    EmailAddress = u.EmailAddress,
+                    PhoneNumber = u.PhoneNumber,
+                    Organization = u.Organization
+                })
+                .SingleOrDefaultAsync();
+
+            if (globalCoordinator == null)
+            {
+                _loggerAdapter.Debug($"Global coordinator with id {globalCoordinatorId} was not found");
+                return Result.Error(ResultKey.User.Common.UserNotFound);
+            }
+
+            return new Result<GetGlobalCoordinatorsResponseDto>(globalCoordinator, true);
+        }
+
+        public async Task<Result<List<GetGlobalCoordinatorsResponseDto>>> GetGlobalCoordinators()
+        {
+            var globalCoordinators = await _dataContext.Users
+                .Where(u => u.Role == Role.GlobalCoordinator)
+                .Select(u => new GetGlobalCoordinatorsResponseDto
+                {
+                    Id =  u.Id,
+                    Name = u.Name,
+                    EmailAddress = u.EmailAddress,
+                    PhoneNumber = u.PhoneNumber,
+                    Organization = u.Organization
+                })
+                .ToListAsync();
+
+            return new Result<List<GetGlobalCoordinatorsResponseDto>>(globalCoordinators, true);
+        }
 
         private async Task CreateGlobalCoordinator(IdentityUser identityUser, RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto)
         {
@@ -86,6 +154,7 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
                 EmailAddress = identityUser.Email,
                 Name = registerGlobalCoordinatorRequestDto.Name,
                 PhoneNumber = registerGlobalCoordinatorRequestDto.PhoneNumber,
+                Organization =  registerGlobalCoordinatorRequestDto.Organization,
                 Role = Role.GlobalCoordinator
             };
 

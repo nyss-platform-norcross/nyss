@@ -8,6 +8,11 @@
         }
         public static class User
         {
+            public static class Common
+            {
+                public const string UserNotFound = "user.common.userNotFound";
+            }
+
             public static class Registration
             {
                 public const string Success = "user.registration.success";

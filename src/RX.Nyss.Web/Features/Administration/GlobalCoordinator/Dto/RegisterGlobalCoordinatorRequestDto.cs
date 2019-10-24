@@ -5,7 +5,8 @@
         public string Email { get; set; }
         public string Name { get; set; }
         public string PhoneNumber { get; set; }
+        public string Organization { get; set; }
 
-        public override string ToString() => $"{nameof(Email)}: {Email}, {nameof(Name)}: {Name}, {nameof(PhoneNumber)}: {PhoneNumber}";
+        public override string ToString() => $"{nameof(Email)}: {Email}, {nameof(Name)}: {Name}, {nameof(PhoneNumber)}: {PhoneNumber}, {nameof(Organization)}: {Organization}";
     }
 }

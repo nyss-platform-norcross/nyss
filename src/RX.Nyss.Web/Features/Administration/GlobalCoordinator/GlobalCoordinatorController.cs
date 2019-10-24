@@ -25,8 +25,35 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
         /// </summary>
         /// <param name="dto">The global coordinator to be created</param>
         /// <returns></returns>
-        [HttpPost("registerGlobalCoordinator")]
-        [NeedsRole(Role.Administrator)]
-        public async Task<Result> RegisterGlobalCoordinator([FromBody] RegisterGlobalCoordinatorRequestDto dto) => await _globalCoordinatorService.RegisterGlobalCoordinator(dto);
+        [HttpPost("create"), NeedsRole(Role.Administrator)]
+        public async Task<Result> Create([FromBody]RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto) => 
+            await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
+
+        /// <summary>
+        /// Get the data of a global coordinator user
+        /// </summary>
+        /// <param name="id">The ID of the requested global coordinator</param>
+        /// <returns></returns>
+        [HttpGet("get"), NeedsRole(Role.Administrator)]
+        public async Task<Result> Get(int id) =>
+            await _globalCoordinatorService.GetGlobalCoordinator(id);
+
+        /// <summary>
+        /// Edit a global coordinator user
+        /// </summary>
+        /// <param name="editGlobalCoordinatorRequestDto"></param>
+        /// <returns></returns>
+        [HttpPost("edit"), NeedsRole(Role.Administrator)]
+        public async Task<Result> Edit([FromBody]EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto) =>
+            await _globalCoordinatorService.UpdateGlobalCoordinator(editGlobalCoordinatorRequestDto);
+
+
+        /// <summary>
+        /// Lists all global coordinators available in the system
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("list"), NeedsRole(Role.Administrator)]
+        public async Task<Result> List() =>
+            await _globalCoordinatorService.GetGlobalCoordinators();
     }
 }
