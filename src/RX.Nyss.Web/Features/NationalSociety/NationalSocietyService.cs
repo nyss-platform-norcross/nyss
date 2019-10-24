@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using RX.Nyss.Data;
@@ -43,13 +44,15 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 var nationalSociety = new RX.Nyss.Data.Models.NationalSociety()
                 {
                     Name = nationalSocietyReq.Name,
-                    ContentLanguage = new ContentLanguage()
-                    {
-                        DisplayName = nationalSocietyReq.ContentLanguage.DisplayName,
-                        LanguageCode = nationalSocietyReq.ContentLanguage.LanguageCode
-                    },
+                    ContentLanguage = await GetLanguageByCode(nationalSocietyReq.ContentLanguage.LanguageCode),
                     IsArchived = false
                 };
+
+                if (nationalSociety.ContentLanguage == null)
+                {
+                    throw new ResultException(ResultKey.NationalSociety.Creation.LanguageNotDefined);
+                }
+
                 await _nyssContext.AddAsync(nationalSociety);
                 await _nyssContext.SaveChangesAsync();
                 _loggerAdapter.Info($"A national society {nationalSociety} was created");
@@ -62,8 +65,16 @@ namespace RX.Nyss.Web.Features.NationalSociety
             }
             catch (Exception e)
             {
+                _loggerAdapter.Debug(e);
+                if (e.InnerException is SqlException)
+                {
+                    return Result.Error(ResultKey.NationalSociety.Creation.NationalSocietyAlreadyExists);
+                }
                 return Result.Error(e.Message);
             }
         }
+
+        public async Task<ContentLanguage> GetLanguageByCode(string languageCode) =>
+            await _nyssContext.ContentLanguages.FirstOrDefaultAsync(_ => _.LanguageCode == languageCode);
     }
 }
