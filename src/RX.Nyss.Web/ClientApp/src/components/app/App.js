@@ -1,26 +1,25 @@
 import './App.scss'
 
-import React, { Component, Fragment } from 'react';
-import { Route } from 'react-router'
-import { ConnectedRouter } from 'connected-react-router'
+import React from 'react';
+import { Route, Switch } from 'react-router'
 import { ThemeProvider } from '@material-ui/styles';
 import { theme } from './theme';
 import { Home } from '../homePage/Home';
 import { LoginPage } from '../loginPage/LoginPage';
 import { AuthRoute } from './AuthRoute';
+import { ConnectedRouter } from 'connected-react-router'
+import { NationalSocietiesListPage } from '../nationalSocieties/list/NationalSocietiesListPage';
 
-export default class App extends Component {
-  render() {
-    return (
-      <ThemeProvider theme={theme}>
-        <ConnectedRouter history={this.props.history}>
-          <Fragment>
-            <Route exact path='/login' component={LoginPage} />
-            <AuthRoute exact path='/' component={Home} />
-            <AuthRoute exact path='/test' component={Home} />
-          </Fragment>
-        </ConnectedRouter>
-      </ThemeProvider>
-    );
-  }
-}
+export const App = ({ history }) => (
+  <ThemeProvider theme={theme}>
+    <ConnectedRouter history={history}>
+      <Switch>
+        <Route exact path='/login' component={LoginPage} />
+        <AuthRoute exact path='/' component={Home} />
+        <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} />
+      </Switch>
+    </ConnectedRouter>
+  </ThemeProvider>
+);
+
+export default App;
