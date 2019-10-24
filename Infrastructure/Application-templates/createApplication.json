@@ -316,6 +316,7 @@
                         "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
                         "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]",
                         "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
+                        "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
                         "InternalApiReportUrl": "[concat('https://', variables('funcapp_name'), '.azurewebsites.net/api/report')]",
                         "AuthorizedApiKeysBlobPath": "[concat(variables('smsGatewayBlobContainerName'),'/',variables('authorizedApiKeysBlobObjectName'))]"
                     }

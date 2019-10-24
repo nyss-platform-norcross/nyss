@@ -6,6 +6,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "SERVICEBUS_CONNECTIONSTRING": "",
     "SERVICEBUS_REPORTQUEUE": "",
+    "SERVICEBUS_SENDEMAILQUEUE": "",
     "InternalApiReportUrl": "http://localhost:7071/api/report",
     "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys"
   }
