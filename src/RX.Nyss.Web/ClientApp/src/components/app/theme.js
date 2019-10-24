@@ -17,8 +17,8 @@ export const theme = createMuiTheme({
       marginBottom: 20
     },
     h2: {
-      fontSize: "24px",
-      fontWeight: "bold",
+      fontSize: 22,
+      fontWeight: 400,
       marginBottom: 50
     }
   },
@@ -42,6 +42,14 @@ export const theme = createMuiTheme({
         borderRadius: 0,
         border: "2px solid #C02C2C !important",
         padding: "10px 15px"
+      }
+    },
+    MuiBreadcrumbs: {
+      root: {
+        fontSize: 16
+      },
+      separator: {
+        paddingBottom: 2
       }
     },
     MuiPaper: {
@@ -106,13 +114,16 @@ export const theme = createMuiTheme({
       root: {
         paddingLeft: 20,
         "&$selected": {
-          backgroundColor: "#fff"
+          backgroundColor: "rgba(0, 0, 0, 0.06)",
         },
       }
     },
     MuiListItemText: {
       root: {
-        padding: "8px 20px"
+        padding: "12px 20px"
+      },
+      primary: {
+        fontSize: 16,
       }
     }
   },

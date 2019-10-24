@@ -1,16 +1,11 @@
 .header {
-    border-bottom: 2px solid #C02C2C;
-
-    padding-left: 40px;
-    padding-bottom: 5px;
     display: flex;
+    align-items: center;
+    height: 100px;
+    padding-left: 40px;
+    border-bottom: 1px solid #E0E0E0;
 
-    .logo {
+    .placeholder {
         flex: 1;
-        margin-top: 40px;
-
-        img {
-            height: 50px;
-        }
     }
 }
