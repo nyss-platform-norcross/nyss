@@ -1,4 +1,5 @@
 using System.IO;
+using System.Reflection;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,7 @@ namespace RX.Nyss.FuncApp
             var configurationBuilder = new ConfigurationBuilder()
                 .AddEnvironmentVariables()
                 .AddJsonFile(localSettingsFile, true, true)
+                .AddUserSecrets(Assembly.GetExecutingAssembly(), false)
                 .AddConfiguration(configuration);
             
             var newConfiguration = configurationBuilder.Build();
