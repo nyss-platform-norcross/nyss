@@ -103,7 +103,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
         }
 
         [Fact]
-        public async Task RegisterGlobalCoordinator_WhenNonResultExceptionIsThrown_ShouldPassThroughWithoutBeingCaught()
+        public void RegisterGlobalCoordinator_WhenNonResultExceptionIsThrown_ShouldPassThroughWithoutBeingCaught()
         {
             var identityUserRegistrationService = Substitute.For<IIdentityUserRegistrationService>();
             identityUserRegistrationService.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
@@ -116,7 +116,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
-            await Assert.ThrowsAsync<Exception>(() => globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto));
+            Assert.ThrowsAsync<Exception>(() => globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto));
         }
     }
 }
