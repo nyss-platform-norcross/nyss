@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.Logging
                         rollingInterval: RollingInterval.Day,
                         outputTemplate: loggingOptions.LogMessageTemplate));
 
-            if (appInsightsInstrumentationKey != null)
+            if (!string.IsNullOrEmpty(appInsightsInstrumentationKey))
             {
                 loggerConfiguration.WriteTo.ApplicationInsights(appInsightsInstrumentationKey, TelemetryConverter.Traces);
             }

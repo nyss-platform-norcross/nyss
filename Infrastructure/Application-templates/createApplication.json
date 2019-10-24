@@ -43,16 +43,34 @@
         },
         "tagValues": {
             "type": "object"
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS"
+        },
+        "storageAccessTier": {
+            "type": "string",
+            "defaultValue": "Hot"
+        },
+        "storageKind": {
+            "type": "string",
+            "defaultValue": "StorageV2"
         }
     },
     "variables": {
         "subscriptionId": "[subscription().subscriptionId]",
         "webapp_name": "[concat(parameters('base_name'), '-webapp')]",
-        "hostingPlanName": "[concat(parameters('base_name'), '-sp')]",
+        "funcapp_name": "[concat(parameters('base_name'), '-funcapp')]",
+        "webAppPlanName": "[concat(parameters('base_name'), '-sp')]",
+        "funcAppPlanName": "[concat(parameters('base_name'), '-consumption-sp')]",
         "serviceBusNamespaceName": "[concat(parameters('base_name'), '-bus')]",
+        "reportQueueName": "[concat(variables('serviceBusNamespaceName'), '-report-queue')]",
         "defaultSASKeyName": "RootManageSharedAccessKey",
         "defaultAuthRuleResourceId": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespaceName'), variables('defaultSASKeyName'))]",
-        "sbVersion": "2017-04-01"
+        "sbVersion": "2017-04-01",
+        "storageAccountName": "[concat(replace(variables('funcapp_name'),'-',''),'st')]",
+        "smsGatewayBlobContainerName": "sms-gateway",
+        "authorizedApiKeysBlobObjectName": "authorized-api-keys"
     },
     "resources": [
         {
@@ -62,7 +80,7 @@
             "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[concat('microsoft.insights/components/', variables('webapp_name'))]",
-                "[concat('Microsoft.Web/serverfarms/', variables('hostingPlanName'))]",
+                "[concat('Microsoft.Web/serverfarms/', variables('webAppPlanName'))]",
                 "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
             ],
             "tags": "[parameters('tagValues')]",
@@ -105,10 +123,6 @@
                         {
                             "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
                             "value": "disabled"
-                        },
-                        {
-                            "name": "ServiceBusConnectionString",
-                            "value": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]"
                         }
                     ],
                     "metadata": [
@@ -119,7 +133,7 @@
                     ],
                     "alwaysOn": "[parameters('alwaysOn')]"
                 },
-                "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', variables('hostingPlanName'))]",
+                "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', variables('webAppPlanName'))]",
                 "hostingEnvironment": "[parameters('hostingEnvironment')]",
                 "clientAffinityEnabled": true
             }
@@ -127,7 +141,7 @@
         {
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2018-02-01",
-            "name": "[variables('hostingPlanName')]",
+            "name": "[variables('webAppPlanName')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [],
             "tags": "[parameters('tagValues')]",
@@ -137,7 +151,7 @@
             },
             "kind": "",
             "properties": {
-                "name": "[variables('hostingPlanName')]",
+                "name": "[variables('webAppPlanName')]",
                 "workerSize": "[parameters('workerSize')]",
                 "workerSizeId": "[parameters('workerSizeId')]",
                 "numberOfWorkers": "[parameters('numberOfWorkers')]",
@@ -162,7 +176,129 @@
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('serviceBusSku')]"
+            },
+            "resources": [
+                {
+                    "apiVersion": "2017-04-01",
+                    "name": "[variables('reportQueueName')]",
+                    "type": "Queues",
+                    "dependsOn": [
+                        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+                    ],
+                    "properties": {
+                        "lockDuration": "PT1M",
+                        "maxSizeInMegabytes": "1024",
+                        "requiresDuplicateDetection": "false",
+                        "requiresSession": "false",
+                        "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+                        "duplicateDetectionHistoryTimeWindow": "PT10M",
+                        "deadLetteringOnMessageExpiration": "true",
+                        "maxDeliveryCount": "5",
+                        "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+                        "enablePartitioning": "false",
+                        "enableExpress": "false"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('storageAccountName')]",
+            "apiVersion": "2018-07-01",
+            "location": "[resourceGroup().location]",
+            "kind": "[parameters('storageKind')]",
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "tags": "[parameters('tagValues')]",
+            "properties": {
+                "accessTier": "[parameters('storageAccessTier')]",
+                "supportsHttpsTrafficOnly": true,
+                "networkAcls": {
+                    "bypass": "AzureServices"
+                }
+            },
+            "resources": [
+                {
+                    "name": "[concat('default/', variables('smsGatewayBlobContainerName'))]",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2018-07-01",
+                    "dependsOn": [
+                        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2015-04-01",
+            "name": "[variables('funcAppPlanName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "name": "[variables('funcAppPlanName')]",
+                "computeMode": "Dynamic",
+                "sku": "Dynamic"
             }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2015-05-01",
+            "name": "[variables('funcapp_name')]",
+            "location": "[resourceGroup().location]",
+            "tags": "[parameters('tagValues')]",
+            "properties": {
+                "ApplicationId": "[variables('funcapp_name')]",
+                "Request_Source": "IbizaWebAppExtensionCreate"
+            }
+        },
+        {
+            "apiVersion": "2015-04-01",
+            "type": "Microsoft.Web/sites",
+            "name": "[variables('funcapp_name')]",
+            "location": "[resourceGroup().location]",
+            "kind": "functionapp",
+            "tags": "[parameters('tagValues')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "name": "[variables('funcapp_name')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('funcAppPlanName'))]",
+                "siteConfig": {
+                    "cors": {
+                        "allowedOrigins": []
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Web/serverfarms', variables('funcAppPlanName'))]",
+                "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2016-03-01",
+                    "name": "appsettings",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/sites', variables('funcapp_name'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                    ],
+                    "properties": {
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]",
+                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]",
+                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]",
+                        "WEBSITE_CONTENTSHARE": "rxcbsfuncapp01",
+                        "FUNCTIONS_EXTENSION_VERSION": "~2",
+                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('funcapp_name')), '2015-05-01').InstrumentationKey]",
+                        "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
+                        "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]",
+                        "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
+                        "InternalApiReportUrl": "[concat('https://', variables('funcapp_name'), '.azurewebsites.net/api/report')]",
+                        "AuthorizedApiKeysBlobPath": "[concat(variables('smsGatewayBlobContainerName'),'/',variables('authorizedApiKeysBlobObjectName'))]"
+                    }
+                }
+            ]
         }
     ]
 }

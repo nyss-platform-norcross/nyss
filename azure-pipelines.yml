@@ -13,30 +13,49 @@ steps:
     script: 'gitversion /l console /output buildserver /updateAssemblyInfo'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
+  displayName: 'Build RX.Nyss.Web and RX.Nyss.Data.MigrationApp'
   inputs:
-    projects: '*.sln'
+    command: 'build'
+    projects: |
+      src/RX.Nyss.Web/RX.Nyss.Web.csproj 
+      src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj
     arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)" -r win-x86'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build RX.Nyss.FuncApp'
+  inputs:
+    projects: 'src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj'
+    arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)"' # Azure Functions do not support -r parameter
+
 - task: CmdLine@2
   displayName: 'Insert test task here...'
   inputs:
     script: 'echo Insert test task here...'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Publish WebApp'
+  displayName: 'Publish RX.Nyss.Web'
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" --no-build --self-contained -r win-x86'
+    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" -r win-x86 --self-contained --no-build /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true /p:PublishReadyToRunShowWarnings=true'
     zipAfterPublish: true
     modifyOutputPath: false
 
 - task: DotNetCoreCLI@2
-  displayName: 'Publish ConsoleApp for DB migration'
+  displayName: 'Publish RX.Nyss.FuncApp'
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: './src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" --no-build -r win-x86'
+    arguments: './src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/funcapp" --no-build'
+    zipAfterPublish: true
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish RX.Nyss.Data.MigrationApp'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: './src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" -r win-x86 --self-contained --no-build'
     zipAfterPublish: false
     modifyOutputPath: false
 
