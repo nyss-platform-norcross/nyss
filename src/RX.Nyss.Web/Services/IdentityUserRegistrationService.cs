@@ -13,12 +13,12 @@ namespace RX.Nyss.Web.Services
         Task<IdentityUser> CreateIdentityUser(string email, Role role);
     }
 
-    public class IdentityUserRegistrationRegistrationService : IIdentityUserRegistrationService
+    public class IdentityUserRegistrationService : IIdentityUserRegistrationService
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILoggerAdapter _loggerAdapter;
 
-        public IdentityUserRegistrationRegistrationService(UserManager<IdentityUser> userManager, 
+        public IdentityUserRegistrationService(UserManager<IdentityUser> userManager, 
             ILoggerAdapter loggerAdapter)
         {
             _userManager = userManager;

@@ -48,7 +48,7 @@ namespace Rx.Nyss.Web.Tests.Features.Services
         {
             var userManager = MockUserManager(users);
 
-            var userService = new IdentityUserRegistrationRegistrationService(userManager, _loggerAdapterMock);
+            var userService = new IdentityUserRegistrationService(userManager, _loggerAdapterMock);
             return userService;
         }
 
