@@ -36,6 +36,11 @@
                 public const string CountryNotDefined = "nationalSociety.creation.countryNotDefined";
                 public const string LanguageNotDefined = "nationalSociety.creation.languageNotDefined";
             }
+
+            public static class Edit
+            {
+                public const string Success = "nationalSociety.edit.success";
+            }
         }
     }
 }

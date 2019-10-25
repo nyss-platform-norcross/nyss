@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
             return await _nyssContext.ContentLanguages.ToListAsync();
         }
 
-        public async Task<Result> CreateAndSaveNationalSociety(NationalSocietyRequest nationalSocietyReq)
+        public async Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSocietyReq)
         {
             try
             {
@@ -56,14 +56,34 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 _loggerAdapter.Info($"A national society {nationalSociety} was created");
                 return Result.Success(ResultKey.NationalSociety.Creation.Success);
             }
-            catch (ResultException e)
-            {
-                _loggerAdapter.Debug(e);
-                return e.Result;
-            }
             catch (Exception e)
             {
                 _loggerAdapter.Debug(e);
+                return HandleException(e);
+            }
+        }
+
+        public async Task<Result> EditNationalSociety(EditNationalSocietyRequestDto nationalSocietyDto)
+        {
+            try
+            {
+                var nationalSociety = new RX.Nyss.Data.Models.NationalSociety()
+                {
+                    Id = nationalSocietyDto.Id,
+                    Name = nationalSocietyDto.Name,
+                    ContentLanguage = await GetLanguageById(nationalSocietyDto.ContentLanguageId),
+                    Country = await GetCountryById(nationalSocietyDto.CountryId),
+                    IsArchived = false,
+                    StartDate = DateTime.Now
+                };
+
+                await _nyssContext.AddAsync(nationalSociety);
+                await _nyssContext.SaveChangesAsync();
+
+                return Result.Success(ResultKey.NationalSociety.Edit.Success);
+            }
+            catch (Exception e)
+            {
                 return HandleException(e);
             }
         }

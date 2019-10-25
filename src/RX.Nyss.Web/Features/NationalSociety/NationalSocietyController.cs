@@ -40,7 +40,16 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <param name="nationalSociety"></param>
         /// <returns></returns>
         [Route("createNationalSociety"), HttpPost, Roles(Role.GlobalCoordinator, Role.Administrator)]
-        public async Task<Result> CreateNationalSociety([FromBody]NationalSocietyRequest nationalSociety) => 
-            await _nationalSocietyService.CreateAndSaveNationalSociety(nationalSociety);
+        public async Task<Result> CreateNationalSociety([FromBody]CreateNationalSocietyRequestDto nationalSociety) => 
+            await _nationalSocietyService.CreateNationalSociety(nationalSociety);
+
+        /// <summary>
+        /// Edits an existing National Society
+        /// </summary>
+        /// <param name="nationalSociety"></param>
+        /// <returns></returns>
+        [Route("editNationalSociety"), HttpPost, Roles(Role.GlobalCoordinator, Role.Administrator)]
+        public async Task<Result> EditNationalSociety([FromBody]EditNationalSocietyRequestDto nationalSociety) => 
+            await _nationalSocietyService.EditNationalSociety(nationalSociety);
     }
 }

@@ -9,6 +9,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
     {
         Task<IEnumerable<Country>> GetCountries();
         Task<IEnumerable<ContentLanguage>> GetLanguages();
-        Task<Result> CreateAndSaveNationalSociety(NationalSocietyRequest nationalSociety);
+        Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
+        Task<Result> EditNationalSociety(EditNationalSocietyRequestDto nationalSociety);
     }
 }
