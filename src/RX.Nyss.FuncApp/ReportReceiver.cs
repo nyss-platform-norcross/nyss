@@ -27,7 +27,6 @@ namespace RX.Nyss.FuncApp
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "enqueueReport")] HttpRequestMessage httpRequest,
             [ServiceBus("%SERVICEBUS_REPORTQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] IAsyncCollector<string> reportQueue,
             [Blob("%AuthorizedApiKeysBlobPath%", FileAccess.Read)] string authorizedApiKeys)
-            
         {
             if ((httpRequest.Content.Headers.ContentLength ?? int.MaxValue) > MaxContentLength)
             {

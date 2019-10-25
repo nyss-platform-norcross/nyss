@@ -8,7 +8,7 @@ namespace RX.Nyss.Web.Services
 {
     public interface IEmailPublisherService
     {
-        Task SendEmail(string to, string subject, string body);
+        Task SendEmail((string email, string name) to, string subject, string body);
     }
 
     public class EmailPublisherService : IEmailPublisherService
@@ -22,9 +22,9 @@ namespace RX.Nyss.Web.Services
             _queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, _config.ServiceBusQueues.SendEmailQueue);
         }
         
-        public async Task SendEmail(string to, string subject, string body)
+        public async Task SendEmail((string email, string name) to, string subject, string body)
         {
-            var sendEmail = new SendEmailMessage {To = to, Body = body, Subject = subject,};
+            var sendEmail = new SendEmailMessage {To = new Contact{Email = to.email, Name = to.name}, Body = body, Subject = subject,};
 
             var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail)))
             {
@@ -37,12 +37,17 @@ namespace RX.Nyss.Web.Services
 
     public class SendEmailMessage
     {
-        public string To { get; set; }
-
-        // Todo: Maybe it should be possible to optionally specify from email
+        public Contact To { get; set; }
 
         public string Subject { get; set; }
 
         public string Body { get; set; }
+    }
+
+    public class Contact
+    {
+        public string Name { get; set; }
+
+        public string Email { get; set; }
     }
 }

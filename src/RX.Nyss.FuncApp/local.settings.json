@@ -8,6 +8,13 @@
     "SERVICEBUS_REPORTQUEUE": "",
     "SERVICEBUS_SENDEMAILQUEUE": "",
     "InternalApiReportUrl": "http://localhost:7071/api/report",
-    "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys"
+    "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys",
+    "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses",
+    "MailjetApiKey": "",
+    "MailjetApiSecret": "",
+    "MailjetFromAddress": "",
+    "MailjetFromName": "Nyss Platform",
+    "MailjetSendToAll": "False",
+    "MailjetSendMailUrl": "https://api.mailjet.com/v3.1/send"
   }
 }
