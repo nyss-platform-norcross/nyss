@@ -1,4 +1,5 @@
 import * as localStorage from "../utils/localStorage";
+import jwt_decode from "jwt-decode";
 
 const localStorageKeys = {
   accessToken: "accessToken",
@@ -20,6 +21,25 @@ export const isAccessTokenSet = () => !!localStorage.get(localStorageKeys.access
 export const setAccessToken = (token) => localStorage.set(localStorageKeys.accessToken, token);
 
 export const getAccessToken = () => localStorage.get(localStorageKeys.accessToken);
+
+export const getAccessTokenData = () => {
+  const accessToken = getAccessToken();
+
+  if (!accessToken) {
+    return null;
+  }
+
+  var tokenData = jwt_decode(accessToken);
+
+  if (!tokenData) {
+    throw new Error("Unexpected token data structure");
+  }
+
+  return {
+    name: tokenData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+    role: tokenData["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+  }
+};
 
 export const removeAccessToken = () => localStorage.remove(localStorageKeys.accessToken);
 
