@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Logging;
 using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Features.Services
@@ -27,7 +27,7 @@ namespace Rx.Nyss.Web.Tests.Features.Services
         {
             var userEmail = "emailTest1@domain.com";
             var existingUserList = new List<IdentityUser>();
-            var identityUserService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
+            var identityUserService = GetIdentityUserRegistrationServiceWithMockedDependencies(existingUserList);
 
             var identityUser = await identityUserService.CreateIdentityUser(userEmail, Role.GlobalCoordinator);
 
@@ -39,16 +39,16 @@ namespace Rx.Nyss.Web.Tests.Features.Services
         {
             var userEmail = "emailTest1@domain.com";
             var existingUserList = new List<IdentityUser> { new IdentityUser() { UserName = userEmail, Email = userEmail } };
-            var identityUserService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
+            var identityUserService = GetIdentityUserRegistrationServiceWithMockedDependencies(existingUserList);
 
             await Assert.ThrowsAsync<ResultException>(() => identityUserService.CreateIdentityUser(userEmail, Role.GlobalCoordinator));
         }
 
-        private IIdentityUserService GetIdentityUserServiceWithMockedDependencies(List<IdentityUser> users)
+        private IdentityUserRegistrationService GetIdentityUserRegistrationServiceWithMockedDependencies(List<IdentityUser> users)
         {
             var userManager = MockUserManager(users);
 
-            var userService = new IdentityUserService(userManager, _loggerAdapterMock);
+            var userService = new IdentityUserRegistrationService(userManager, _loggerAdapterMock);
             return userService;
         }
 

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
+using RX.Nyss.Web.Utils.Logging;
 
 namespace RX.Nyss.Web.Services
 {
