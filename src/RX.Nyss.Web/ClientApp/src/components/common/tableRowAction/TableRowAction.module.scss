@@ -1,0 +1,13 @@
+.tableRowAction {
+  margin-left: 15px;
+  display: inline-block;
+  color: #454545;
+  cursor: pointer;
+  opacity: 0.2;
+}
+
+tr:hover {
+  .tableRowAction {
+    opacity: 1;
+  }
+}

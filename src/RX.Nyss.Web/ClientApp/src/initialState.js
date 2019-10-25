@@ -5,5 +5,11 @@ export const initialState = {
   },
   auth: {
     loginResponse: null
+  },
+  nationalSocieties: {
+    list: {
+      isFetching: false,
+      data: []
+    }
   }
 };

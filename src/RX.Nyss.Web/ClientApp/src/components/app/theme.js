@@ -19,7 +19,7 @@ export const theme = createMuiTheme({
     h2: {
       fontSize: 22,
       fontWeight: 400,
-      marginBottom: 50
+      marginBottom: 20
     }
   },
   palette: {
@@ -41,7 +41,9 @@ export const theme = createMuiTheme({
       root: {
         borderRadius: 0,
         border: "2px solid #C02C2C !important",
-        padding: "10px 15px"
+        padding: "10px 15px",
+        textTransform: "none",
+        fontSize: 16
       }
     },
     MuiBreadcrumbs: {
@@ -124,6 +126,12 @@ export const theme = createMuiTheme({
       },
       primary: {
         fontSize: 16,
+      }
+    },
+    MuiTableCell: {
+      head: {
+        fontWeight: 600,
+        borderBottomColor: "#8C8C8C"
       }
     }
   },
