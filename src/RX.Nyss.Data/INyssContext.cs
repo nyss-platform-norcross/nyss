@@ -16,6 +16,7 @@ namespace RX.Nyss.Data
         DbSet<AlertRule> AlertRules { get; set; }
         DbSet<ApplicationLanguage> ApplicationLanguages { get; set; }
         DbSet<ContentLanguage> ContentLanguages { get; set; }
+        DbSet<Country> Countries { get; set; }
         DbSet<DataCollector> DataCollectors { get; set; }
         DbSet<District> Districts { get; set; }
         DbSet<GatewaySetting> GatewaySettings { get; set; }

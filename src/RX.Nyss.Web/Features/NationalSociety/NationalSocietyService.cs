@@ -25,11 +25,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
         public async Task<IEnumerable<Country>> GetCountries()
         {
-            using (StreamReader r = new StreamReader("Features/NationalSociety/CountryData/countries.json"))
-            {
-                string json = await r.ReadToEndAsync();
-                return JsonConvert.DeserializeObject<List<Country>>(json);
-            }
+            return await _nyssContext.Countries.ToListAsync();
         }
 
         public async Task<IEnumerable<ContentLanguage>> GetLanguages()
@@ -44,21 +40,15 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 var nationalSociety = new RX.Nyss.Data.Models.NationalSociety()
                 {
                     Name = nationalSocietyReq.Name,
-                    ContentLanguage = await GetLanguageByCode(nationalSocietyReq.ContentLanguage.LanguageCode),
-                    CountryCode = nationalSocietyReq.Country.CountryCode,
-                    CountryName = nationalSocietyReq.Country.Name,
+                    ContentLanguage = await GetLanguageById(nationalSocietyReq.ContentLanguageId),
+                    Country = await GetCountryById(nationalSocietyReq.CountryId),
                     IsArchived = false,
                     StartDate = DateTime.Now
                 };
 
                 if (nationalSociety.ContentLanguage == null)
                 {
-                    throw new ResultException(ResultKey.NationalSociety.Creation.LanguageNotDefined);
-                }
-
-                if (string.IsNullOrEmpty(nationalSociety.CountryName))
-                {
-                    throw new ResultException(ResultKey.NationalSociety.Creation.CountryNotDefined);
+                    return Result.Error(ResultKey.NationalSociety.Creation.LanguageNotDefined);
                 }
 
                 await _nyssContext.AddAsync(nationalSociety);
@@ -78,8 +68,11 @@ namespace RX.Nyss.Web.Features.NationalSociety
             }
         }
 
-        public async Task<ContentLanguage> GetLanguageByCode(string languageCode) =>
-            await _nyssContext.ContentLanguages.FirstOrDefaultAsync(_ => _.LanguageCode == languageCode);
+        public async Task<ContentLanguage> GetLanguageById(int id) =>
+            await _nyssContext.ContentLanguages.FindAsync(id);
+
+        public async Task<Country> GetCountryById(int id) => 
+            await _nyssContext.Countries.FindAsync(id);
 
         public Result HandleException(Exception e)
         {

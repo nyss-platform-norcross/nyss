@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Data.Migrations
 {
-    public partial class SeedContentLanguage : Migration
+    public partial class AddLanguageSeedData : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
