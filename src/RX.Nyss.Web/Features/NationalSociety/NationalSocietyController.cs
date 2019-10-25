@@ -27,14 +27,6 @@ namespace RX.Nyss.Web.Features.NationalSociety
             await _nationalSocietyService.GetCountries();
 
         /// <summary>
-        /// Gets all languages.
-        /// </summary>
-        /// <returns></returns>
-        [Route("getLanguages"), HttpGet, Roles(Role.GlobalCoordinator, Role.Administrator)]
-        public async Task<IEnumerable<ContentLanguage>> GetLanguages() => 
-            await _nationalSocietyService.GetLanguages();
-
-        /// <summary>
         /// Creates a new National Society
         /// </summary>
         /// <param name="nationalSociety"></param>
