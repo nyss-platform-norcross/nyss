@@ -52,7 +52,7 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         [Fact]
         public async Task Login_WhenSuccessful_ReturnsToken()
         {
-            var nyssUsers = new List<User>().AsQueryable();
+            var nyssUsers = new List<User>();
             var usersDbSet = nyssUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
 
