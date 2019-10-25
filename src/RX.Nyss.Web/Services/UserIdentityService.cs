@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Services
@@ -16,7 +17,7 @@ namespace RX.Nyss.Web.Services
     {
         Task<IdentityUser> Login(string userName, string password);
         Task<ICollection<string>> GetRoles(IdentityUser user);
-        string CreateToken(string userName, IEnumerable<string> roles);
+        string CreateToken(string userName, IEnumerable<string> roles, IEnumerable<Claim> additionalClaims);
         Task Logout();
     }
 
@@ -59,7 +60,7 @@ namespace RX.Nyss.Web.Services
         public async Task<ICollection<string>> GetRoles(IdentityUser user) =>
             await _userManager.GetRolesAsync(user);
 
-        public string CreateToken(string userName, IEnumerable<string> roles)
+        public string CreateToken(string userName, IEnumerable<string> roles, IEnumerable<Claim> additionalClaims)
         {
             var key = Encoding.ASCII.GetBytes(_config.Authentication.Secret);
 
@@ -72,7 +73,7 @@ namespace RX.Nyss.Web.Services
                 issuer: _config.Authentication.Issuer,
                 audience: _config.Authentication.Audience,
                 expires: DateTime.UtcNow.AddDays(7),
-                claims: nameClaims.Union(roleClaims),
+                claims: nameClaims.Union(roleClaims).Union(additionalClaims),
                 signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
             );
 

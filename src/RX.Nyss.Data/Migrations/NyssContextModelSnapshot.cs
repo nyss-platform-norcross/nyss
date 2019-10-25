@@ -17,6 +17,7 @@ namespace RX.Nyss.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("nyss")
                 .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -726,6 +727,13 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Zones");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.AdministratorUser", b =>
+                {
+                    b.HasBaseType("RX.Nyss.Data.Models.User");
+
+                    b.HasDiscriminator().HasValue("Administrator");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.DataConsumerUser", b =>
                 {
                     b.HasBaseType("RX.Nyss.Data.Models.User");
@@ -792,13 +800,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("ZoneId");
 
                     b.HasDiscriminator().HasValue("Supervisor");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.AdministratorUser", b =>
-                {
-                    b.HasBaseType("RX.Nyss.Data.Models.User");
-
-                    b.HasDiscriminator().HasValue("Administrator");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.TechnicalAdvisorUser", b =>

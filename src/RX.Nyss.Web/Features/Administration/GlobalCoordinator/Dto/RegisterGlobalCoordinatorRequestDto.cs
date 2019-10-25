@@ -1,6 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.User.Dto
+﻿namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator.Dto
 {
-    public class GlobalCoordinatorInDto
+    public class RegisterGlobalCoordinatorRequestDto
     {
         public string Email { get; set; }
         public string Name { get; set; }

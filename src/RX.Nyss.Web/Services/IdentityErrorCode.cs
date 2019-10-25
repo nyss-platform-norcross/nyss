@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.User
+﻿namespace RX.Nyss.Web.Services
 {
     public enum IdentityErrorCode
     {

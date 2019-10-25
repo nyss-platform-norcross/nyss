@@ -4,9 +4,9 @@ using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Utils
 {
-    public class RolesAttribute : AuthorizeAttribute
+    public class NeedsRoleAttribute : AuthorizeAttribute
     {
-        public RolesAttribute(params Role[] roles)
+        public NeedsRoleAttribute(params Role[] roles)
         {
             var stringRoles = roles.Select(r => r.ToString());
             Roles = string.Join(",", stringRoles);

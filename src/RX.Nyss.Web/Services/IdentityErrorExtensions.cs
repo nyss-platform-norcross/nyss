@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Identity;
 
-namespace RX.Nyss.Web.Features.User
+namespace RX.Nyss.Web.Services
 {
     public static class IdentityErrorExtensions
     {

@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using MockQueryable.NSubstitute;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
+using RX.Nyss.Data;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication;
 using RX.Nyss.Web.Features.Authentication.Dto;
 using RX.Nyss.Web.Services;
@@ -19,12 +23,14 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         private const string UserEmail = "user@user.com";
         private const string Password = "password";
         private readonly IUserIdentityService _userIdentityService;
+        private readonly INyssContext _nyssContext;
         private readonly AuthenticationService _authenticationService;
 
         public AuthenticationServiceTests()
         {
             _userIdentityService = Substitute.For<IUserIdentityService>();
-            _authenticationService = new AuthenticationService(_userIdentityService);
+            _nyssContext = Substitute.For<INyssContext>();
+            _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
         }
 
         [Fact]
@@ -46,13 +52,18 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         [Fact]
         public async Task Login_WhenSuccessful_ReturnsToken()
         {
+            var nyssUsers = new List<User>();
+            var usersDbSet = nyssUsers.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users.Returns(usersDbSet);
+
             var user = new IdentityUser { UserName = UserName };
             var roles = new List<string> { "Admin" };
+            var additionalClaims = new List<Claim>();
             const string expectedToken = "token1";
 
             _userIdentityService.Login(UserName, Password).Returns(user);
             _userIdentityService.GetRoles(user).Returns(roles);
-            _userIdentityService.CreateToken(UserName, roles).Returns(expectedToken);
+            _userIdentityService.CreateToken(UserName, roles, Arg.Any<IEnumerable<Claim>>()).Returns(expectedToken);
 
             var result = await _authenticationService.Login(new LoginRequestDto
             {

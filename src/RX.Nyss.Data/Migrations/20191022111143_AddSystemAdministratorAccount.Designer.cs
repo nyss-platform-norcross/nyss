@@ -7,17 +7,19 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191009103802_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20191022111143_AddSystemAdministratorAccount")]
+    partial class AddSystemAdministratorAccount
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("nyss")
                 .HasAnnotation("ProductVersion", "3.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -667,7 +669,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.ToTable("Users");
 
-                    b.HasDiscriminator<string>("Role").HasValue("User");
+                    b.HasDiscriminator<string>("Role");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.UserNationalSociety", b =>
@@ -727,6 +729,20 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Zones");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.AdministratorUser", b =>
+                {
+                    b.HasBaseType("RX.Nyss.Data.Models.User");
+
+                    b.HasDiscriminator().HasValue("Administrator");
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.DataConsumerUser", b =>
+                {
+                    b.HasBaseType("RX.Nyss.Data.Models.User");
+
+                    b.HasDiscriminator().HasValue("DataConsumer");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.DataManagerUser", b =>
                 {
                     b.HasBaseType("RX.Nyss.Data.Models.User");
@@ -746,6 +762,13 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("NationalSocietyId");
 
                     b.HasDiscriminator().HasValue("DataManager");
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.GlobalCoordinatorUser", b =>
+                {
+                    b.HasBaseType("RX.Nyss.Data.Models.User");
+
+                    b.HasDiscriminator().HasValue("GlobalCoordinator");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUser", b =>
@@ -779,6 +802,13 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("ZoneId");
 
                     b.HasDiscriminator().HasValue("Supervisor");
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.TechnicalAdvisorUser", b =>
+                {
+                    b.HasBaseType("RX.Nyss.Data.Models.User");
+
+                    b.HasDiscriminator().HasValue("TechnicalAdvisor");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Alert", b =>
