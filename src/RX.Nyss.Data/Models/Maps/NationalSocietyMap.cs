@@ -14,6 +14,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(ns => ns.CountryCode).HasMaxLength(10);
             builder.Property(ns => ns.CountryName).IsRequired();
             builder.Property(ns => ns.CountryName).HasMaxLength(100);
+            builder.Property(ns => ns.StartDate).IsRequired();
             builder.Property(ns => ns.IsArchived).IsRequired();
             builder.Property(ns => ns.RegionCustomName).HasMaxLength(100);
             builder.Property(ns => ns.DistrictCustomName).HasMaxLength(100);

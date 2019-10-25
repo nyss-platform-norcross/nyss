@@ -47,7 +47,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     ContentLanguage = await GetLanguageByCode(nationalSocietyReq.ContentLanguage.LanguageCode),
                     CountryCode = nationalSocietyReq.Country.CountryCode,
                     CountryName = nationalSocietyReq.Country.Name,
-                    IsArchived = false
+                    IsArchived = false,
+                    StartDate = DateTime.Now
                 };
 
                 if (nationalSociety.ContentLanguage == null)

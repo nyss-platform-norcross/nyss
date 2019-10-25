@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace RX.Nyss.Data.Models
 {
@@ -7,6 +8,7 @@ namespace RX.Nyss.Data.Models
         public int Id { get; set; }
 
         public string Name { get; set; }
+        public DateTime StartDate { get; set; }
         public string CountryName { get; set; }
         public string CountryCode { get; set; }
 
