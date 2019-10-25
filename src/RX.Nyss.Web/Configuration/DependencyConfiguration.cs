@@ -95,10 +95,10 @@ namespace RX.Nyss.Web.Configuration
 
             serviceCollection.AddAuthorization(options =>
             {
-                options.AddPolicy(Policy.IsDataOwner.ToString(), policy =>
+                options.AddPolicy(AuthenticationPolicy.IsDataOwner.ToString(), policy =>
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
-                            c.Type == Policy.IsDataOwner.ToString() &&
+                            c.Type == AuthenticationPolicy.IsDataOwner.ToString() &&
                             c.Value == "true" )));
             });
 

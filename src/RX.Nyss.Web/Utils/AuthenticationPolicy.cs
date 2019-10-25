@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.Web.Utils
 {
-    public enum Policy
+    public enum AuthenticationPolicy
     {
         IsDataOwner
     }
