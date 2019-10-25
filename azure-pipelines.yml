@@ -13,6 +13,13 @@ steps:
     script: 'gitversion /l console /output buildserver /updateAssemblyInfo'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Run unit tests'
+  inputs:
+    command: test
+    projects: 'tests/**/*.csproj'
+    arguments: '--collect "Code coverage"'
+
+- task: DotNetCoreCLI@2
   displayName: 'Build RX.Nyss.Web and RX.Nyss.Data.MigrationApp'
   inputs:
     command: 'build'
@@ -26,13 +33,6 @@ steps:
   inputs:
     projects: 'src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj'
     arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)"' # Azure Functions do not support -r parameter
-
-- task: DotNetCoreCLI@2
-  displayName: 'Run unit tests'
-  inputs:
-    command: test
-    projects: './tests/Rx.Nyss.Web.Tests/Rx.Nyss.Web.Tests.csproj'
-    arguments: '--no-build'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish RX.Nyss.Web'
