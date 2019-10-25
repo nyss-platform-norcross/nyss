@@ -5,9 +5,9 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Administration.GlobalCoordinator.Dto;
-using RX.Nyss.Web.Features.Logging;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Logging;
 
 namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
 {
