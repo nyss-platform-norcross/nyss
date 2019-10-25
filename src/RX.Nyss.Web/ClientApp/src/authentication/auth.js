@@ -6,6 +6,8 @@ const localStorageKeys = {
   redirectUrl: "redirect-url"
 }
 
+let cachedUser = null;
+
 export const rootUrl = "/";
 
 export const loginUrl = "/login";
@@ -23,6 +25,10 @@ export const setAccessToken = (token) => localStorage.set(localStorageKeys.acces
 export const getAccessToken = () => localStorage.get(localStorageKeys.accessToken);
 
 export const getAccessTokenData = () => {
+  if (cachedUser) {
+    return cachedUser;
+  }
+
   const accessToken = getAccessToken();
 
   if (!accessToken) {
@@ -35,10 +41,12 @@ export const getAccessTokenData = () => {
     throw new Error("Unexpected token data structure");
   }
 
-  return {
+  cachedUser = {
     name: tokenData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
     role: tokenData["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
   }
+
+  return cachedUser;
 };
 
 export const removeAccessToken = () => localStorage.remove(localStorageKeys.accessToken);

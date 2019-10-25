@@ -1,48 +1,82 @@
+import { Administrator, GlobalCoordinator, DataManager, DataConsumer } from "./authentication/roles";
+import { getAccessTokenData } from "./authentication/auth";
+import { accessMap } from "./authentication/accessMap";
+
+export const placeholders = {
+  topMenu: "topMenu",
+  leftMenu: "leftMenu"
+};
+
 const siteMap = [
   {
-    parentPath: null,
+    parentPath: "/",
     path: "/nationalsocieties",
     title: "National societies",
-    placeholder: "topMenu"
+    placeholder: placeholders.topMenu,
+    access: accessMap.nationalSocieties.list
+  },
+  {
+    parentPath: "/nationalsocieties",
+    path: "/nationalsocieties/add",
+    title: "Add National Society",
+    access: accessMap.nationalSocieties.add
   },
   {
     parentPath: "/nationalsocieties",
     path: "/nationalsocieties/:nationalSocietyId",
     title: "{nationalSocietyName} ({nationalSocietyCountry})",
+    access: [Administrator, GlobalCoordinator, DataConsumer]
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
     path: "/projects/:projectId",
-    title: "{projectName}"
+    title: "{projectName}",
+    access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
   },
   {
-    parentPath: null,
+    parentPath: "/",
     path: "/healthrisks",
     title: "Health risks",
-    placeholder: "topMenu"
+    placeholder: placeholders.topMenu,
+    access: accessMap.healthRisks.list
   },
 ];
 
-export const getMenu = (path, siteMapParameters, placeholder) => siteMap
-  .filter(item => item.parentPath === path && item.placeholder && item.placeholder === placeholder)
-  .map(item => ({
-    title: item.title,
-    url: item.path
-  }));
+export const getMenu = (path, siteMapParameters, placeholder) => {
+  if (!path) {
+    return [];
+  }
+
+  return siteMap
+    .filter(item => item.parentPath === path && item.placeholder && item.placeholder === placeholder)
+    .map(item => ({
+      title: item.title,
+      url: item.path
+    }))
+};
 
 export const getBreadcrumb = (path, siteMapParameters) => {
+  const authUser = getAccessTokenData();
+
+  if (!authUser) {
+    return [];
+  }
+
+  const role = authUser.role;
   const mapItem = findSiteMapItem(path);
 
   let currentItem = mapItem;
   let hierarchy = [];
 
   while (true) {
-    hierarchy.splice(0, 0, {
-      title: currentItem.title,
-      url: currentItem.path
-    });
+    if (!currentItem.access || !currentItem.access.length || (currentItem.access.some(item => item === role))) {
+      hierarchy.splice(0, 0, {
+        title: currentItem.title,
+        url: currentItem.path
+      });
+    }
 
-    if (!currentItem.parentPath) {
+    if (currentItem.parentPath === "/") {
       break;
     }
 

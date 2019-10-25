@@ -2,6 +2,7 @@ export const initialState = {
   appData: {
     appReady: false,
     user: null,
+    contentLanguages: [],
     siteMap: {
       path: null,
       parameters: {}

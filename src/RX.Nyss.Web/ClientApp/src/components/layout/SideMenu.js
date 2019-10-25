@@ -7,10 +7,10 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom'
-import { getMenu } from '../../siteMap';
+import { getMenu, placeholders } from '../../siteMap';
 
 const SideMenuComponent = ({ siteMap }) => {
-  const currentMap = siteMap.path ? getMenu(siteMap.path, siteMap.parameters) : [];
+  const menu = getMenu(siteMap.path, siteMap.parameters, placeholders.leftMenu);
 
   const onItemClick = (item) => {
 
@@ -25,9 +25,9 @@ const SideMenuComponent = ({ siteMap }) => {
         </Link>
       </div>
 
-      {currentMap.length !== 0 && (
+      {menu.length !== 0 && (
         <List component="nav" className={styles.list}>
-          {currentMap.map(item => (
+          {menu.map(item => (
             <ListItem button onClick={() => onItemClick(item)}>
               <ListItemText primary={item.title} />
             </ListItem>

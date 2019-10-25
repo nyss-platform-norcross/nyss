@@ -40,10 +40,15 @@ export const theme = createMuiTheme({
     MuiButton: {
       root: {
         borderRadius: 0,
-        border: "2px solid #C02C2C !important",
         padding: "10px 15px",
         textTransform: "none",
         fontSize: 16
+      },
+      outlinedPrimary: {
+        border: "2px solid #C02C2C !important"
+      },
+      text: {
+        textDecoration: "underline"
       }
     },
     MuiBreadcrumbs: {
@@ -129,9 +134,12 @@ export const theme = createMuiTheme({
       }
     },
     MuiTableCell: {
+      root: {
+        fontSize: "1rem"
+      },
       head: {
         fontWeight: 600,
-        borderBottomColor: "#8C8C8C"
+        borderBottomColor: "#8C8C8C",
       }
     }
   },

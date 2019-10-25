@@ -4,10 +4,27 @@
   color: #454545;
   cursor: pointer;
   opacity: 0.2;
+  position: relative;
+
+  &.fetching {
+    opacity: 1;
+
+    .icon {
+      opacity: 0.5;
+    }
+  }
 }
 
 tr:hover {
   .tableRowAction {
     opacity: 1;
   }
+}
+
+.loader {
+  position: absolute;
+}
+
+.icon {
+  display: inline-block;
 }

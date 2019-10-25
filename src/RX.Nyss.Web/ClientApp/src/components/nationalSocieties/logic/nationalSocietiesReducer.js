@@ -30,6 +30,15 @@ export function nationalSocietiesReducer(state = initialState.nationalSocieties,
         }
       };
 
+    case actions.CREATE_NATIONAL_SOCIETY.SUCCESS:
+      return {
+        ...state,
+        list: {
+          isFetching: false,
+          data: []
+        }
+      };
+
     default:
       return state;
   }
