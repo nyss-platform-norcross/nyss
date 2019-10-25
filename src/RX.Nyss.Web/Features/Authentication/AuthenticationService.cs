@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Features.Authentication
         private async Task<Claim> GetIsDataOwnerClaim(IdentityUser identityUser)
         {
             var isDataOwner = await IsDataOwner(identityUser);
-            return new Claim(AuthenticationPolicy.IsDataOwner.ToString(), isDataOwner ? bool.TrueString : bool.FalseString);
+            return new Claim(AuthenticationPolicy.IsDataOwner.ToString(), isDataOwner.ToString());
         }
 
         private async Task<bool> IsDataOwner(IdentityUser identityUser)

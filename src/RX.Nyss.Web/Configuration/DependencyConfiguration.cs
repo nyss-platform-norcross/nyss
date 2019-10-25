@@ -99,7 +99,7 @@ namespace RX.Nyss.Web.Configuration
                     policy.RequireAssertion(context =>
                         context.User.HasClaim(c =>
                             c.Type == AuthenticationPolicy.IsDataOwner.ToString() &&
-                            c.Value == "true" )));
+                            c.Value == bool.TrueString )));
             });
 
             serviceCollection.ConfigureApplicationCookie(options =>
