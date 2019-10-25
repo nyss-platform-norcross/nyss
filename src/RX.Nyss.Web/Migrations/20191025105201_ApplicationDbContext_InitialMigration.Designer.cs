@@ -10,7 +10,7 @@ using RX.Nyss.Web.Data;
 namespace RX.Nyss.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191023101241_ApplicationDbContext_InitialMigration")]
+    [Migration("20191025105201_ApplicationDbContext_InitialMigration")]
     partial class ApplicationDbContext_InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
