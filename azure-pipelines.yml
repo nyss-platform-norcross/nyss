@@ -19,7 +19,7 @@ steps:
     projects: |
       src/RX.Nyss.Web/RX.Nyss.Web.csproj 
       src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj
-    arguments: '-c Release "/p:Version=$(GitVersion.MajorMinorPatch)" -r win-x86'
+    arguments: '-c Release -r win-x86 "/p:Version=$(GitVersion.MajorMinorPatch)"'
 
 - task: DotNetCoreCLI@2
   displayName: 'Build RX.Nyss.FuncApp'
@@ -37,7 +37,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" -r win-x86 --self-contained --no-build /p:PublishSingleFile=true /p:PublishTrimmed=true /p:PublishReadyToRun=true /p:PublishReadyToRunShowWarnings=true'
+    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -r win-x86 --self-contained --no-build /p:PublishTrimmed=true /p:PublishReadyToRun=true /p:PublishReadyToRunShowWarnings=true -o "$(Build.ArtifactStagingDirectory)/webapp"'
     zipAfterPublish: true
     modifyOutputPath: false
 
@@ -46,7 +46,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: './src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/funcapp" --no-build'
+    arguments: './src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj -c Release --no-build -o "$(Build.ArtifactStagingDirectory)/funcapp" '
     zipAfterPublish: true
     modifyOutputPath: false
 
@@ -55,7 +55,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: './src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" -r win-x86 --self-contained --no-build'
+    arguments: './src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -r win-x86 --self-contained --no-build -o "$(Build.ArtifactStagingDirectory)/migrationapp"'
     zipAfterPublish: false
     modifyOutputPath: false
 
