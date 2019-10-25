@@ -1,12 +1,21 @@
 import styles from './SideMenu.module.scss';
 
 import React from 'react';
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom'
+import { getMenu } from '../../siteMap';
 
-export const SideMenu = () => {
+const SideMenuComponent = ({ siteMap }) => {
+  const currentMap = siteMap.path ? getMenu(siteMap.path, siteMap.parameters) : [];
+
+  const onItemClick = (item) => {
+
+  };
+
   return (
     <div className={styles.sideMenu}>
       <div className={styles.sideMenuHeader}>
@@ -15,17 +24,26 @@ export const SideMenu = () => {
           <div className={styles.headerDescription}>Community Based Surveillance</div>
         </Link>
       </div>
-      <List component="nav" className={styles.list}>
-        <ListItem button>
-          <ListItemText primary="Dashboard" />
-        </ListItem>
-        <ListItem button selected>
-          <ListItemText primary="Projects" className={styles.selected} />
-        </ListItem>
-        <ListItem button>
-          <ListItemText primary="Drafts" />
-        </ListItem>
-      </List>
+
+      {currentMap.length !== 0 && (
+        <List component="nav" className={styles.list}>
+          {currentMap.map(item => (
+            <ListItem button onClick={() => onItemClick(item)}>
+              <ListItemText primary={item.title} />
+            </ListItem>
+          ))}
+        </List>
+      )}
     </div>
   );
 }
+
+SideMenuComponent.propTypes = {
+  appReady: PropTypes.bool
+};
+
+const mapStateToProps = state => ({
+  siteMap: state.appData.siteMap
+});
+
+export const SideMenu = connect(mapStateToProps)(SideMenuComponent);

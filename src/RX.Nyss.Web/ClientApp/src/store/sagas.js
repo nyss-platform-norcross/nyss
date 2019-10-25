@@ -2,13 +2,15 @@ import { all } from "redux-saga/effects";
 import { autoRestart } from "../utils/sagaEffects";
 import { appSagas } from "../components/app/logic/appSagas";
 import { authSagas } from "../authentication/authSagas";
+import { nationalSocietiesSagas } from "../components/nationalSocieties/logic/nationalSocietiesSagas";
 
 function* rootSaga() {
-    yield all([
-        ...appSagas(),
-        ...authSagas(),
-    ]);
+  yield all([
+    ...appSagas(),
+    ...authSagas(),
+    ...nationalSocietiesSagas()
+  ]);
 }
 
 export const getRootSaga = () =>
-    autoRestart(rootSaga);
+  autoRestart(rootSaga);

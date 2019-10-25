@@ -28,3 +28,5 @@ export const getStrings = {
     success: () => actions.GET_STRINGS.success(),
     failure: (message) => actions.GET_STRINGS.failure({ message })
 };
+
+export const updateSiteMap = (path, parameters) => actions.UPDATE_SITEMAP.invoke({ path, parameters });
