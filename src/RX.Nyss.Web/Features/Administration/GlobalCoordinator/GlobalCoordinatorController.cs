@@ -17,9 +17,9 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
         }
 
         /// <summary>
-        /// Register a global coordinator user
+        /// Register a global coordinator user.
         /// </summary>
-        /// <param name="registerGlobalCoordinatorRequestDto"></param>
+        /// <param name="registerGlobalCoordinatorRequestDto">The global coordinator to be created</param>
         /// <returns></returns>
         [HttpPost("registerGlobalCoordinator")]
         [NeedsRole(Role.Administrator)]

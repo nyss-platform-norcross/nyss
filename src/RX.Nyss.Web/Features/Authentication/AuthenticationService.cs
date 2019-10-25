@@ -70,9 +70,8 @@ namespace RX.Nyss.Web.Features.Authentication
         private async Task<bool> GetUserIsDataOwner(IdentityUser identityUser)
         {
             var nyssDataManagerUser = await _nyssContext.Users
+                .OfType<DataManagerUser>()
                 .Where(u =>u.IdentityUserId == identityUser.Id)
-                .Where(u => u is DataManagerUser)
-                .Cast<DataManagerUser>()
                 .SingleOrDefaultAsync();
 
             return nyssDataManagerUser != null && nyssDataManagerUser.IsDataOwner;
