@@ -11,7 +11,6 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication;
 using RX.Nyss.Web.Features.Authentication.Dto;
 using RX.Nyss.Web.Services;
-using Rx.Nyss.Web.Tests.TestData;
 using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
