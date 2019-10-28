@@ -40,7 +40,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
 
             var (result, _) = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
-
+            await _identityUserRegistrationService.Received(1).GenerateEmailVerification(userEmail);
             Assert.True(result.IsSuccess);
         }
 

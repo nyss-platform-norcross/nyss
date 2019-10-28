@@ -17,6 +17,29 @@
                 public const string PasswordTooWeak = "user.registration.passwordTooWeak";
                 public const string UnknownError = "user.registration.unknownError";
             }
+
+        }
+
+        public static class Password
+        {
+            public static class Reset
+            {
+                public const string Success = "password.reset.success";
+                public static string Failed = "password.reset.failed";
+            }
+            public static class Add
+            {
+                public const string Success = "password.add.success";
+                public static string Failed = "password.add.failed";
+            }
+        }
+        public static class Email
+        {
+            public static class Verification
+            {
+                public const string Success = "email.verification.success";
+                public static string Failed = "email.verification.failed";
+            }
         }
 
         public static class Login

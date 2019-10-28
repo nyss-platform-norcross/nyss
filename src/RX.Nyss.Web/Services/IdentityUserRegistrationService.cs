@@ -10,9 +10,9 @@ namespace RX.Nyss.Web.Services
 {
     public interface IIdentityUserRegistrationService
     {
-        Task<Result> VerifyEmail(string email, string verificationToken);
         Task<IdentityUser> CreateIdentityUser(string email, Role role);
         Task<string> GenerateEmailVerification(string email);
+        Task<Result> VerifyEmail(string email, string verificationToken);
         Task<string> GeneratePasswordResetToken(string email);
         Task<Result> ResetPassword(string email, string verificationToken, string newPassword);
         Task<Result> AddPassword(string email, string newPassword);
@@ -51,10 +51,10 @@ namespace RX.Nyss.Web.Services
 
             if (!confirmationResult.Succeeded)
             {
-                throw new ResultException("Email.Verification.Failed", confirmationResult);
+                throw new ResultException(ResultKey.Email.Verification.Failed, confirmationResult);
             }
 
-            return new Result(true, "emailVerification.success", confirmationResult);
+            return new Result(true, ResultKey.Email.Verification.Success, confirmationResult);
         }
 
         public async Task<string> GeneratePasswordResetToken(string email)
@@ -70,10 +70,10 @@ namespace RX.Nyss.Web.Services
 
             if (!passwordAddResult.Succeeded)
             {
-                throw new ResultException("Password.Add.Failed", passwordAddResult);
+                throw new ResultException(ResultKey.Password.Add.Failed, passwordAddResult);
             }
 
-            return new Result(true, "Password.Add.Success", passwordAddResult);
+            return new Result(true, ResultKey.Password.Add.Success, passwordAddResult);
         }
 
         public async Task<Result> ResetPassword(string email, string verificationToken, string newPassword)
@@ -83,10 +83,10 @@ namespace RX.Nyss.Web.Services
 
             if (!passwordChangeResult.Succeeded)
             {
-                throw new ResultException("Password.Reset.Failed", passwordChangeResult);
+                throw new ResultException(ResultKey.Password.Reset.Failed, passwordChangeResult);
             }
 
-            return new Result(true, "Password.Reset.Success", passwordChangeResult);
+            return new Result(true, ResultKey.Password.Reset.Success, passwordChangeResult);
         }
 
         private async Task<IdentityUser> AddIdentityUser(string email, bool emailConfirmed = false)
