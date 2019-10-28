@@ -1,4 +1,5 @@
-export const action = (name) => ({
+export const action = (name) => {
+  return {
     INVOKE: `${name}_INVOKE`,
     REQUEST: `${name}_REQUEST`,
     SUCCESS: `${name}_SUCCESS`,
@@ -9,4 +10,5 @@ export const action = (name) => ({
     request: (args) => ({ type: `${name}_REQUEST`, ...args }),
     success: (args) => ({ type: `${name}_SUCCESS`, ...args }),
     failure: (args) => ({ type: `${name}_FAILURE`, ...args }),
-});
+  };
+};

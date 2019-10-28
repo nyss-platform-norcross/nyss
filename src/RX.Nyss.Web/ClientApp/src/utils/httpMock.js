@@ -10,7 +10,14 @@ const endpoints = {
     { id: 2, name: "Sierra Leone Red Cross Society", country: "Sierra Leone", startDate: "2018-10-10T00:00:00Z", dataOwner: "John", technicalAdvisor: "Karine" },
   ]),
 
+  "/api/nationalSocieties/1/get": () => delaySuccessCall(1000, {
+    id: 1, name: "Sierra Leone Red Cross Society", country: "Sierra Leone", countryId: 1, contentLanguageId: 1
+  }),
+
   "/api/nationalSocieties/create": (dto) => delaySuccessCall(2000),
+
+  "/api/nationalSocieties/1/edit": (dto) => delaySuccessCall(2000),
+
   "/api/nationalSocieties/1/remove": (dto) => delaySuccessCall(2000),
 };
 

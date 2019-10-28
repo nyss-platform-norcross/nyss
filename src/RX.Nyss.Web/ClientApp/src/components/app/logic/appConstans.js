@@ -6,4 +6,6 @@ export const GET_STRINGS = action("GET_STRINGS");
 export const GO_TO_LOGIN = action("GO_TO_LOGIN");
 export const GET_USER = action("GET_USER");
 export const UPDATE_SITEMAP = action("UPDATE_SITEMAP");
+export const UPDATE_SITEMAP_PATH = action("UPDATE_SITEMAP_PATH");
+export const OPEN_MODULE = action("OPEN_MODULE");
 

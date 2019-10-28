@@ -5,26 +5,24 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Typography from '@material-ui/core/Typography';
 import { Link } from 'react-router-dom'
-import { getMenu, placeholders } from '../../siteMap';
 
-const TopMenuComponent = ({ siteMap }) => {
-  const menu = getMenu("/", siteMap.parameters, placeholders.topMenu);
+const TopMenuComponent = ({ topMenu }) => (
+  <Typography className={styles.topMenu}>
+    {topMenu.length !== 0 && topMenu.map((item, index) => (
+      <Link key={`topMenu${index}`} to={item.url} className={item.isActive ? styles.active : ""}>
+        <span>{item.title}</span>
+      </Link>
+    ))}
+  </Typography>
+);
 
-  return (
-    <Typography className={styles.topMenu}>
-      {menu.length !== 0 && menu.map((item, index) => (
-        <Link key={`topMenu${index}`} to={item.url}>{item.title}</Link>
-      ))}
-    </Typography>
-  );
-}
 
 TopMenuComponent.propTypes = {
-  siteMap: PropTypes.object
+  topMenu: PropTypes.array
 };
 
 const mapStateToProps = state => ({
-  siteMap: state.appData.siteMap
+  topMenu: state.appData.siteMap.topMenu
 });
 
 export const TopMenu = connect(mapStateToProps)(TopMenuComponent);

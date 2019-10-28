@@ -8,3 +8,5 @@ export const FormActions = ({ children }) => {
     </div>
   );
 };
+
+export default FormActions;

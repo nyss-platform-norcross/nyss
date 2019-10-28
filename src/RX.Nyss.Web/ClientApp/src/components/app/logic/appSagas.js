@@ -5,9 +5,11 @@ import { updateStrings } from "../../../strings";
 import * as http from "../../../utils/http";
 import {  removeAccessToken, isAccessTokenSet } from "../../../authentication/auth";
 import { push } from "connected-react-router";
+import { getBreadcrumb, getMenu, placeholders } from "../../../siteMap";
 
 export const appSagas = () => [
-  takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication)
+  takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
+  takeEvery(consts.OPEN_MODULE.INVOKE, openModule),
 ];
 
 function* initApplication() {
@@ -25,6 +27,14 @@ function* initApplication() {
     yield put(actions.initApplication.failure(error.message));
   }
 };
+
+function* openModule({ path, params }) {
+  const breadcrumb = getBreadcrumb(path, params);
+  const topMenu = getMenu("/", params, placeholders.topMenu, path);
+  const sideMenu = getMenu(path, params, placeholders.sideMenu);
+
+  yield put(actions.openModule.success(path, params, breadcrumb, topMenu, sideMenu))
+}
 
 function* reloadPage() {
   const pathname = yield select(state => state.router.location.pathname);

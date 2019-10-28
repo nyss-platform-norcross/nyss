@@ -1,17 +1,20 @@
 import { call, put, takeEvery, select } from "redux-saga/effects";
 import * as consts from "./nationalSocietiesConstants";
 import * as actions from "./nationalSocietiesActions";
+import * as appActions from "../../app/logic/appActions";
 import * as httpMock from "../../../utils/httpMock";
 import { push } from "connected-react-router";
 
 export const nationalSocietiesSagas = () => [
   takeEvery(consts.GET_NATIONAL_SOCIETIES.INVOKE, getNationalSocieties),
+  takeEvery(consts.OPEN_EDITION_NATIONAL_SOCIETY.INVOKE, openNationalSocietyEdition),
+  takeEvery(consts.EDIT_NATIONAL_SOCIETY.INVOKE, editNationalSociety),
   takeEvery(consts.CREATE_NATIONAL_SOCIETY.INVOKE, createNationalSociety),
   takeEvery(consts.REMOVE_NATIONAL_SOCIETY.INVOKE, removeNationalSociety)
 ];
 
 function* getNationalSocieties() {
-  const currentData = yield select(state => state.nationalSocieties.list.data)
+  const currentData = yield select(state => state.nationalSocieties.listData)
 
   if (currentData.length) {
     return;
@@ -27,6 +30,22 @@ function* getNationalSocieties() {
   }
 };
 
+function* openNationalSocietyEdition({ path, params }) {
+  yield put(actions.openEdition.request());
+  try {
+    const response = yield call(httpMock.get, `/api/nationalSocieties/${params.nationalSocietyId}/get`);
+
+    yield put(appActions.openModule.invoke(path, {
+      nationalSocietyCountry: response.value.country,
+      nationalSocietyName: response.value.name
+    }));
+
+    yield put(actions.openEdition.success(response.value));
+  } catch (error) {
+    yield put(actions.openEdition.failure(error.message));
+  }
+};
+
 function* createNationalSociety(data) {
   yield put(actions.create.request());
   try {
@@ -35,6 +54,17 @@ function* createNationalSociety(data) {
     yield put(push("/nationalsocieties"));
   } catch (error) {
     yield put(actions.create.failure(error.message));
+  }
+};
+
+function* editNationalSociety(data) {
+  yield put(actions.edit.request());
+  try {
+    const response = yield call(httpMock.post, `/api/nationalSocieties/${data.id}/edit`, data);
+    yield put(actions.edit.success(response.value));
+    yield put(push("/nationalsocieties"));
+  } catch (error) {
+    yield put(actions.edit.failure(error.message));
   }
 };
 

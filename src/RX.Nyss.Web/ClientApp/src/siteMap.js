@@ -29,6 +29,12 @@ const siteMap = [
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
+    path: "/nationalsocieties/:nationalSocietyId/edit",
+    title: "Edit",
+    access: [Administrator, GlobalCoordinator, DataConsumer]
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId",
     path: "/projects/:projectId",
     title: "{projectName}",
     access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
@@ -42,16 +48,19 @@ const siteMap = [
   },
 ];
 
-export const getMenu = (path, siteMapParameters, placeholder) => {
+export const getMenu = (path, siteMapParameters, placeholder, currentPath) => {
   if (!path) {
     return [];
   }
+
+  const breadcrumb = currentPath ? getBreadcrumb(currentPath, siteMapParameters) : [];
 
   return siteMap
     .filter(item => item.parentPath === path && item.placeholder && item.placeholder === placeholder)
     .map(item => ({
       title: item.title,
-      url: item.path
+      url: item.path,
+      isActive: breadcrumb.some(b => b.path === item.path)
     }))
 };
 
@@ -59,6 +68,10 @@ export const getBreadcrumb = (path, siteMapParameters) => {
   const authUser = getAccessTokenData();
 
   if (!authUser) {
+    return [];
+  }
+
+  if (path === "/") {
     return [];
   }
 
@@ -71,8 +84,10 @@ export const getBreadcrumb = (path, siteMapParameters) => {
   while (true) {
     if (!currentItem.access || !currentItem.access.length || (currentItem.access.some(item => item === role))) {
       hierarchy.splice(0, 0, {
-        title: currentItem.title,
-        url: currentItem.path
+        path: currentItem.path,
+        title: getTitle(currentItem.title, siteMapParameters),
+        url: currentItem.path,
+        isActive: currentItem.path === path
       });
     }
 
@@ -84,6 +99,14 @@ export const getBreadcrumb = (path, siteMapParameters) => {
   }
 
   return hierarchy;
+}
+
+const getTitle = (template, params) => {
+  let result = template;
+  for (let key in params) {
+    result = result.replace(`{${key}}`, params[key])
+  }
+  return result;
 }
 
 const findSiteMapItem = (path) => {

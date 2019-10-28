@@ -8,9 +8,10 @@ import { Home } from '../homePage/Home';
 import { LoginPage } from '../loginPage/LoginPage';
 import { AuthRoute } from './AuthRoute';
 import { ConnectedRouter } from 'connected-react-router'
-import { NationalSocietiesListPage } from '../nationalSocieties/list/NationalSocietiesListPage';
+import { NationalSocietiesListPage } from '../nationalSocieties/NationalSocietiesListPage';
 import { accessMap } from '../../authentication/accessMap';
-import { NationalSocietiesCreatePage } from '../nationalSocieties/add/NationalSocietiesCreatePage';
+import { NationalSocietiesCreatePage } from '../nationalSocieties/NationalSocietiesCreatePage';
+import { NationalSocietiesEditPage } from '../nationalSocieties/NationalSocietiesEditPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -21,6 +22,7 @@ export const App = ({ history }) => (
         <AuthRoute exact path='/' component={Home} />
         <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />
         <AuthRoute path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />
+        <AuthRoute path='/nationalsocieties/:nationalSocietyId/edit' component={NationalSocietiesEditPage} roles={accessMap.nationalSocieties.edit} />
       </Switch>
     </ConnectedRouter>
   </ThemeProvider>

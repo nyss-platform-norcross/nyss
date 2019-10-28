@@ -6,3 +6,5 @@ export const TableActions = ({ children }) => (
     {children}
   </div>
 );
+
+export default TableActions;

@@ -13,3 +13,5 @@ export const Form = ({ onSubmit, children }) => {
 Form.propTypes = {
   onSubmit: PropTypes.func
 };
+
+export default Form;

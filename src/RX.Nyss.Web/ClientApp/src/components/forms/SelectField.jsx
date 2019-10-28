@@ -9,7 +9,7 @@ import { createFieldComponent } from "./FieldBase";
 const SelectInput = ({ error, name, label, value, controlProps, customProps, children }) => {
     return (
         <FormControl error={!!error} {...customProps} fullWidth>
-            <InputLabel htmlFor={name}>{label}</InputLabel>
+            <InputLabel htmlFor={name} shrink>{label}</InputLabel>
             <Select
                 value={value}
                 {...controlProps}

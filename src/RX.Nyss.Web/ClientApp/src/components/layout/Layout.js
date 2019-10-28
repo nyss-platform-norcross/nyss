@@ -21,9 +21,13 @@ export const Layout = ({ children }) => (
         <div className={styles.pageContent}>
           <Breadcrumb />
 
-          {children}
+          <div>
+            {children}
+          </div>
         </div>
       </div>
     </div>
   </BaseLayout>
 );
+
+export default Layout;

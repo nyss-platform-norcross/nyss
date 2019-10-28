@@ -8,12 +8,11 @@ import TableRow from '@material-ui/core/TableRow';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import dayjs from "dayjs"
-import { TableRowAction } from '../../common/tableRowAction/TableRowAction';
-import { Loading } from '../../common/loading/Loading';
-import * as consts from "../logic/nationalSocietiesConstants";
+import { TableRowAction } from '../common/tableRowAction/TableRowAction';
+import { Loading } from '../common/loading/Loading';
 
-export const NationalSocietiesTable = ({ isFetching, remove, list, pendingRequests }) => {
-  if (pendingRequests[consts.GET_NATIONAL_SOCIETIES.name]) {
+export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
+  if (isListFetching) {
     return <Loading />
   }
 
@@ -38,8 +37,8 @@ export const NationalSocietiesTable = ({ isFetching, remove, list, pendingReques
             <TableCell>{row.dataOwner}</TableCell>
             <TableCell>{row.technicalAdvisor}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} icon={<ClearIcon />} title={"Delete"} isFetching={pendingRequests[consts.REMOVE_NATIONAL_SOCIETY.getId(row.id)]} />
+              <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+              <TableRowAction onClick={() => remove(row.id)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}
@@ -52,3 +51,5 @@ NationalSocietiesTable.propTypes = {
   isFetching: PropTypes.bool,
   list: PropTypes.array
 };
+
+export default NationalSocietiesTable;

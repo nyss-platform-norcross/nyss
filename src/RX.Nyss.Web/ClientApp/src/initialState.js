@@ -5,7 +5,10 @@ export const initialState = {
     contentLanguages: [],
     siteMap: {
       path: null,
-      parameters: {}
+      parameters: {},
+      breadcrumb: [],
+      topMenu: [],
+      sideMenu: []
     }
   },
   requests: {
@@ -16,9 +19,11 @@ export const initialState = {
     loginResponse: null
   },
   nationalSocieties: {
-    list: {
-      isFetching: false,
-      data: []
-    }
+    listFetching: false,
+    listRemoving: {},
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formData: null
   }
 };

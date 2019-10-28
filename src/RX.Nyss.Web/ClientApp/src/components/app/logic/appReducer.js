@@ -21,12 +21,39 @@ export function appReducer(state = initialState.appData, action) {
           : null
       }
 
-    case actions.UPDATE_SITEMAP.INVOKE:
+    case "@@router/LOCATION_CHANGE":
+      return {
+        ...state,
+        siteMap: {
+          path: "/",
+          parameters: {},
+          breadcrumb: [],
+          topMenu: [],
+          sideMenu: []
+        }
+      }
+
+    case actions.OPEN_MODULE.INVOKE:
       return {
         ...state,
         siteMap: {
           path: action.path,
-          parameters: action.parameters
+          parameters: {},
+          breadcrumb: [],
+          topMenu: [],
+          sideMenu: []
+        }
+      }
+
+    case actions.OPEN_MODULE.SUCCESS:
+      return {
+        ...state,
+        siteMap: {
+          path: action.path,
+          parameters: action.parameters,
+          breadcrumb: action.breadcrumb,
+          topMenu: action.topMenu,
+          sideMenu: action.sideMenu
         }
       }
 

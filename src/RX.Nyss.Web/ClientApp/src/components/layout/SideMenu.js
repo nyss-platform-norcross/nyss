@@ -9,9 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom'
 import { getMenu, placeholders } from '../../siteMap';
 
-const SideMenuComponent = ({ siteMap }) => {
-  const menu = getMenu(siteMap.path, siteMap.parameters, placeholders.leftMenu);
-
+const SideMenuComponent = ({ sideMenu }) => {
   const onItemClick = (item) => {
 
   };
@@ -25,9 +23,9 @@ const SideMenuComponent = ({ siteMap }) => {
         </Link>
       </div>
 
-      {menu.length !== 0 && (
+      {sideMenu.length !== 0 && (
         <List component="nav" className={styles.list}>
-          {menu.map(item => (
+          {sideMenu.map(item => (
             <ListItem button onClick={() => onItemClick(item)}>
               <ListItemText primary={item.title} />
             </ListItem>
@@ -39,11 +37,12 @@ const SideMenuComponent = ({ siteMap }) => {
 }
 
 SideMenuComponent.propTypes = {
-  appReady: PropTypes.bool
+  appReady: PropTypes.bool,
+  sideMenu: PropTypes.array
 };
 
 const mapStateToProps = state => ({
-  siteMap: state.appData.siteMap
+  sideMenu: state.appData.siteMap.sideMenu
 });
 
 export const SideMenu = connect(mapStateToProps)(SideMenuComponent);

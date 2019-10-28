@@ -7,7 +7,9 @@
         .title {
             color: #333;
             line-height: 1em;
-            margin-bottom: 3px;
+            padding-bottom: 3px;
+            padding-top: 3px;
+            border-bottom: 2px solid transparent;
         }
 
         .label {
