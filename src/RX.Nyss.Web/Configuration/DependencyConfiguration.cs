@@ -68,13 +68,15 @@ namespace RX.Nyss.Web.Configuration
                     config.SignIn.RequireConfirmedEmail = true;
                     config.User.RequireUniqueEmail = true;
                 })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             serviceCollection.Configure<IdentityOptions>(options =>
             {
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = false;
+                options.SignIn.RequireConfirmedEmail = true;
             });
 
             serviceCollection.AddAuthentication(options =>

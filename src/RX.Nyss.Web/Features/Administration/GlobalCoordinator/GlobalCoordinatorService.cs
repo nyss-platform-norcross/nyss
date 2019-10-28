@@ -13,7 +13,7 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
 {
     public interface IGlobalCoordinatorService
     {
-        Task<Result> RegisterGlobalCoordinator(RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto);
+        Task<(Result, string emailVerificationCode)> RegisterGlobalCoordinator(RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto);
     }
 
     public class GlobalCoordinatorService: IGlobalCoordinatorService
@@ -29,7 +29,7 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<Result> RegisterGlobalCoordinator(RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto)
+        public async Task<(Result, string emailVerificationCode)> RegisterGlobalCoordinator(RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto)
         {
             try
             {
@@ -37,15 +37,16 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
 
                 var identityUser = await _identityUserRegistrationService.CreateIdentityUser(registerGlobalCoordinatorRequestDto.Email, Role.GlobalCoordinator);
                 await CreateGlobalCoordinator(identityUser, registerGlobalCoordinatorRequestDto);
+                var emailVerificationCode = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
                 transactionScope.Complete();
 
-                return Result.Success(ResultKey.User.Registration.Success);
+                return (Result.Success(ResultKey.User.Registration.Success), emailVerificationCode);
             }
             catch (ResultException e)
             {
                 _loggerAdapter.Debug(e);
-                return e.Result;
+                return (e.Result, null);
             }
         }
 

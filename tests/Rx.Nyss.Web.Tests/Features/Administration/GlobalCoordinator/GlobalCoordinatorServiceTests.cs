@@ -38,7 +38,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
-            var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
+            var (result, _) = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
 
             Assert.True(result.IsSuccess);
@@ -82,7 +82,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
             
 
-            var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
+            var (result, _) = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
 
             Assert.False(result.IsSuccess);
