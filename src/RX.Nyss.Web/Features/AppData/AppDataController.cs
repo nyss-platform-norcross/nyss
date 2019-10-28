@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.AppData
         /// Gets all languages.
         /// </summary>
         /// <returns></returns>
-        [Route("getLanguages"), HttpGet, Roles(Role.GlobalCoordinator, Role.Administrator)]
+        [Route("getLanguages"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<IEnumerable<ContentLanguage>> GetLanguages() => 
             await _appDataService.GetLanguages();
     }

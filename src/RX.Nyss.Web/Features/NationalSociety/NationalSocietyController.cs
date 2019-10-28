@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Gets all countries with country codes.
         /// </summary>
         /// <returns></returns>
-        [Route("getCountries"), HttpGet, Roles(Role.GlobalCoordinator, Role.Administrator)]
+        [Route("getCountries"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<IEnumerable<Country>> GetCountries() => 
             await _nationalSocietyService.GetCountries();
 
@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// </summary>
         /// <param name="nationalSociety"></param>
         /// <returns></returns>
-        [Route("createNationalSociety"), HttpPost, Roles(Role.GlobalCoordinator, Role.Administrator)]
+        [Route("createNationalSociety"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<Result> CreateNationalSociety([FromBody]CreateNationalSocietyRequestDto nationalSociety) => 
             await _nationalSocietyService.CreateNationalSociety(nationalSociety);
 
@@ -40,7 +40,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// </summary>
         /// <param name="nationalSociety"></param>
         /// <returns></returns>
-        [Route("editNationalSociety"), HttpPost, Roles(Role.GlobalCoordinator, Role.Administrator)]
+        [Route("editNationalSociety"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<Result> EditNationalSociety([FromBody]EditNationalSocietyRequestDto nationalSociety) => 
             await _nationalSocietyService.EditNationalSociety(nationalSociety);
     }
