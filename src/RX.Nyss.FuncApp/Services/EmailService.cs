@@ -30,7 +30,7 @@ namespace RX.Nyss.FuncApp.Services
         {
             if (!bool.TryParse(_config["MailjetSendToAll"], out var sendMailToAll))
             {
-                _logger.LogWarning($"Failed parsing SendToAll config, will only send to whitelisted emails");
+                _logger.LogWarning("Failed parsing SendToAll config, will only send to whitelisted emails");
             }
 
             var sandboxMode = false;
@@ -50,7 +50,9 @@ namespace RX.Nyss.FuncApp.Services
                 return false;
             }
 
-            var whitelist = whitelistedEmailAddresses.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            var whitelist = whitelistedEmailAddresses
+                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim());
 
             var isWhitelisted = whitelist.Contains(email);
             if (isWhitelisted)
