@@ -8,17 +8,20 @@ namespace RX.Nyss.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
+                schema: "nyss",
                 name: "CountryId",
                 table: "NationalSocieties",
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
+                schema: "nyss",
                 name: "StartDate",
                 table: "NationalSocieties",
                 nullable: false,
                 defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
 
             migrationBuilder.CreateTable(
+                schema: "nyss",
                 name: "Countries",
                 columns: table => new
                 {
@@ -32,25 +35,18 @@ namespace RX.Nyss.Data.Migrations
                     table.PrimaryKey("PK_Countries", x => x.Id);
                 });
 
-            migrationBuilder.InsertData(
-                table: "ContentLanguages",
-                columns: new[] { "Id", "DisplayName", "LanguageCode" },
-                values: new object[] { 1, "English", "EN" });
-
-            migrationBuilder.InsertData(
-                table: "ContentLanguages",
-                columns: new[] { "Id", "DisplayName", "LanguageCode" },
-                values: new object[] { 2, "Français", "FR" });
-
             migrationBuilder.CreateIndex(
+                schema: "nyss",
                 name: "IX_NationalSocieties_CountryId",
                 table: "NationalSocieties",
                 column: "CountryId");
 
             migrationBuilder.AddForeignKey(
+                schema: "nyss",
                 name: "FK_NationalSocieties_Countries_CountryId",
                 table: "NationalSocieties",
                 column: "CountryId",
+                principalSchema: "nyss",
                 principalTable: "Countries",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
@@ -59,31 +55,26 @@ namespace RX.Nyss.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                schema: "nyss",
                 name: "FK_NationalSocieties_Countries_CountryId",
                 table: "NationalSocieties");
 
             migrationBuilder.DropTable(
+                schema: "nyss",
                 name: "Countries");
 
             migrationBuilder.DropIndex(
+                schema: "nyss",
                 name: "IX_NationalSocieties_CountryId",
                 table: "NationalSocieties");
 
-            migrationBuilder.DeleteData(
-                table: "ContentLanguages",
-                keyColumn: "Id",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "ContentLanguages",
-                keyColumn: "Id",
-                keyValue: 2);
-
             migrationBuilder.DropColumn(
+                schema: "nyss",
                 name: "CountryId",
                 table: "NationalSocieties");
 
             migrationBuilder.DropColumn(
+                schema: "nyss",
                 name: "StartDate",
                 table: "NationalSocieties");
         }

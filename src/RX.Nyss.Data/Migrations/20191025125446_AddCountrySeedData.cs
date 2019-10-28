@@ -7,6 +7,7 @@ namespace RX.Nyss.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.InsertData(
+                schema: "nyss",
                 table: "Countries",
                 columns: new[] { "Id", "CountryCode", "Name" },
                 values: new object[,]
@@ -259,6 +260,7 @@ namespace RX.Nyss.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                schema: "nyss",
                 name: "Countries");
         }
     }

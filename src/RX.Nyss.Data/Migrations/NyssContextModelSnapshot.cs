@@ -183,20 +183,6 @@ namespace RX.Nyss.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ContentLanguages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DisplayName = "English",
-                            LanguageCode = "EN"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DisplayName = "Français",
-                            LanguageCode = "FR"
-                        });
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Country", b =>
