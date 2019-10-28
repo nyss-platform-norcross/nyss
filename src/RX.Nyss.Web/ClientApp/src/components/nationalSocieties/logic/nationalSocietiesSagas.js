@@ -3,6 +3,7 @@ import * as consts from "./nationalSocietiesConstants";
 import * as actions from "./nationalSocietiesActions";
 import * as appActions from "../../app/logic/appActions";
 import * as httpMock from "../../../utils/httpMock";
+import * as http from "../../../utils/http";
 import { push } from "connected-react-router";
 
 export const nationalSocietiesSagas = () => [
@@ -22,7 +23,7 @@ function* getNationalSocieties() {
 
   yield put(actions.getList.request());
   try {
-    const response = yield call(httpMock.get, "/api/nationalSocieties/get");
+    const response = yield call(http.get, "/api/nationalSociety/list");
 
     yield put(actions.getList.success(response.value));
   } catch (error) {
@@ -33,10 +34,10 @@ function* getNationalSocieties() {
 function* openNationalSocietyEdition({ path, params }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(httpMock.get, `/api/nationalSocieties/${params.nationalSocietyId}/get`);
+    const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
-      nationalSocietyCountry: response.value.country,
+      nationalSocietyCountry: response.value.countryName,
       nationalSocietyName: response.value.name
     }));
 
@@ -46,21 +47,21 @@ function* openNationalSocietyEdition({ path, params }) {
   }
 };
 
-function* createNationalSociety(data) {
+function* createNationalSociety({ data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(httpMock.post, "/api/nationalSocieties/create", data);
+    const response = yield call(http.post, "/api/nationalSociety/create", data);
     yield put(actions.create.success(response.value));
-    yield put(push("/nationalsocieties"));
+  yield put(push("/nationalsocieties"));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
 };
 
-function* editNationalSociety(data) {
+function* editNationalSociety({ data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(httpMock.post, `/api/nationalSocieties/${data.id}/edit`, data);
+    const response = yield call(http.post, `/api/nationalSociety/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(push("/nationalsocieties"));
   } catch (error) {

@@ -26,7 +26,7 @@ export function nationalSocietiesReducer(state = initialState.nationalSocieties,
       return { ...state, formSaving: true };
 
     case actions.CREATE_NATIONAL_SOCIETY.SUCCESS:
-      return { ...state, formSaving: false, };
+      return { ...state, formSaving: false, listData: [] };
 
     case actions.CREATE_NATIONAL_SOCIETY.FAILURE:
       return { ...state, formSaving: false };
@@ -35,7 +35,7 @@ export function nationalSocietiesReducer(state = initialState.nationalSocieties,
       return { ...state, formSaving: true };
 
     case actions.EDIT_NATIONAL_SOCIETY.SUCCESS:
-      return { ...state, formSaving: false };
+      return { ...state, formSaving: false, listData: [] };
 
     case actions.EDIT_NATIONAL_SOCIETY.FAILURE:
       return { ...state, formSaving: false };

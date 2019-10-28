@@ -45,7 +45,11 @@ const NationalSocietiesCreatePageComponent = (props) => {
     };
 
     const values = form.getValues();
-    props.create(values);
+    props.create({
+      name: values.name,
+      contentLanguageId: parseInt(values.contentLanguageId),
+      countryId: parseInt(values.countryId)
+    });
   };
 
   return (

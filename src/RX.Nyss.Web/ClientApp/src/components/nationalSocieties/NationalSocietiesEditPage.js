@@ -22,7 +22,7 @@ const NationalSocietiesEditPageComponent = (props) => {
 
   useEffect(() => {
     props.openEdition(props.match);
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (!props.data) {
@@ -54,7 +54,12 @@ const NationalSocietiesEditPageComponent = (props) => {
     };
 
     const values = form.getValues();
-    props.edit(values);
+    props.edit({
+      id: props.data.id,
+      name: values.name,
+      contentLanguageId: parseInt(values.contentLanguageId),
+      countryId: parseInt(values.countryId)
+    });
   };
 
   if (props.isFetching || !form) {
