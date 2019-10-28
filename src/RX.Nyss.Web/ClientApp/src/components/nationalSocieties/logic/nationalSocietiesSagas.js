@@ -2,7 +2,6 @@ import { call, put, takeEvery, select } from "redux-saga/effects";
 import * as consts from "./nationalSocietiesConstants";
 import * as actions from "./nationalSocietiesActions";
 import * as appActions from "../../app/logic/appActions";
-import * as httpMock from "../../../utils/httpMock";
 import * as http from "../../../utils/http";
 import { push } from "connected-react-router";
 
@@ -14,10 +13,10 @@ export const nationalSocietiesSagas = () => [
   takeEvery(consts.REMOVE_NATIONAL_SOCIETY.INVOKE, removeNationalSociety)
 ];
 
-function* getNationalSocieties() {
+function* getNationalSocieties(force) {
   const currentData = yield select(state => state.nationalSocieties.listData)
 
-  if (currentData.length) {
+  if (!force && currentData.length) {
     return;
   }
 
@@ -72,8 +71,9 @@ function* editNationalSociety({ data }) {
 function* removeNationalSociety({ id }) {
   yield put(actions.remove.request(id));
   try {
-    const response = yield call(httpMock.post, `/api/nationalSocieties/1/remove`);
+    yield call(http.post, `/api/nationalSociety/${id}/remove`);
     yield put(actions.remove.success(id));
+    yield call(getNationalSocieties, true);
   } catch (error) {
     yield put(actions.remove.failure(id, error.message));
   }

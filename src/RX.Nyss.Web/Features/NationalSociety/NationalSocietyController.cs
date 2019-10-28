@@ -59,5 +59,14 @@ namespace RX.Nyss.Web.Features.NationalSociety
         [Route("{id}/edit"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<Result> Edit(int id, [FromBody]EditNationalSocietyRequestDto nationalSociety) => 
             await _nationalSocietyService.EditNationalSociety(nationalSociety);
+
+        /// <summary>
+        /// Edits an existing National Society
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("{id}/remove"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
+        public async Task<Result> Remove(int id) =>
+            await _nationalSocietyService.RemoveNationalSociety(id);
     }
 }

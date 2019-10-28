@@ -20,6 +20,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<IEnumerable<ContentLanguage>> GetLanguages();
         Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
         Task<Result> EditNationalSociety(EditNationalSocietyRequestDto nationalSociety);
+        Task<Result> RemoveNationalSociety(int id);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -125,7 +126,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         {
             try
             {
-                var nationalSociety = _nyssContext.NationalSocieties.Find(nationalSocietyDto.Id);
+                var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyDto.Id);
 
                 nationalSociety.Name = nationalSocietyDto.Name;
                 nationalSociety.ContentLanguage = await GetLanguageById(nationalSocietyDto.ContentLanguageId);
@@ -134,6 +135,21 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 await _nyssContext.SaveChangesAsync();
 
                 return Success(ResultKey.NationalSociety.Edit.Success);
+            }
+            catch (Exception e)
+            {
+                return HandleException(e);
+            }
+        }
+
+        public async Task<Result> RemoveNationalSociety(int id)
+        {
+            try
+            {
+                var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(id);
+                _nyssContext.NationalSocieties.Remove(nationalSociety);
+                await _nyssContext.SaveChangesAsync();
+                return Success(ResultKey.NationalSociety.Remove.Success);
             }
             catch (Exception e)
             {

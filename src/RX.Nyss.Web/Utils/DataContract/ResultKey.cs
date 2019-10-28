@@ -41,6 +41,11 @@
             {
                 public const string Success = "nationalSociety.edit.success";
             }
+
+            public static class Remove
+            {
+                public const string Success = "nationalSociety.remove.success";
+            }
         }
     }
 }
