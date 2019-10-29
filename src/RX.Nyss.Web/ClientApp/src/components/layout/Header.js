@@ -7,9 +7,7 @@ import { UserStatus } from './UserStatus';
 export const Header = ({ user }) => {
     return (
         <div className={styles.header}>
-            <div className={styles.logo}>
-                <img src="/images/logo.png" alt="" />
-            </div>
+            <div className={styles.placeholder} />
             <div className={styles.topMenu}>
                 <TopMenu />
             </div>

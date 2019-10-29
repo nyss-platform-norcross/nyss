@@ -1,30 +1,67 @@
 import * as actions from "./appConstans";
 
+export const showMessage = (message) => ({ type: actions.SHOW_MESSAGE.INVOKE, message });
+export const closeMessage = () => ({ type: actions.CLOSE_MESSAGE.INVOKE });
+
 export const initApplication = {
-    invoke: () => actions.INIT_APPLICATION.invoke(),
-    request: () => actions.INIT_APPLICATION.request(),
-    success: () => actions.INIT_APPLICATION.success(),
-    failure: (message) => actions.INIT_APPLICATION.failure({ message })
+  invoke: () =>
+    ({ type: actions.INIT_APPLICATION.INVOKE }),
+  request: () =>
+
+    ({ type: actions.INIT_APPLICATION.REQUEST }),
+
+  success: () =>
+    ({ type: actions.INIT_APPLICATION.SUCCESS }),
+
+  failure: (message) =>
+    ({ type: actions.INIT_APPLICATION.FAILURE, message })
 };
 
 export const getUser = {
-    invoke: () => actions.GET_USER.invoke(),
-    request: () => actions.GET_USER.request(),
-    success: (isAuthenticated, { name, email, roles }, session) =>
-        actions.GET_USER.success({ isAuthenticated, user: { name, email, roles }, session }),
-    failure: (message) => actions.GET_USER.failure({ message })
+  invoke: () =>
+    ({ type: actions.GET_USER.INVOKE }),
+
+  request: () =>
+    ({ type: actions.GET_USER.REQUEST }),
+
+  success: (isAuthenticated, { name, email, roles }, session) =>
+    ({ type: actions.GET_USER.SUCCESS, isAuthenticated, user: { name, email, roles }, session }),
+
+  failure: (message) => ({ type: actions.GET_USER.FAILURE, message })
 };
 
 export const getAppData = {
-    invoke: () => actions.GET_APP_DATA.invoke(),
-    request: () => actions.GET_APP_DATA.request(),
-    success: () => actions.GET_APP_DATA.success(),
-    failure: (message) => actions.GET_APP_DATA.failure({ message })
+  invoke: () =>
+    ({ type: actions.GET_APP_DATA.INVOKE }),
+
+  request: () =>
+    ({ type: actions.GET_APP_DATA.REQUEST }),
+
+  success: (contentLanguages, countries) =>
+    ({ type: actions.GET_APP_DATA.SUCCESS, contentLanguages, countries }),
+
+  failure: (message) =>
+    ({ type: actions.GET_APP_DATA.FAILURE, message })
 };
 
 export const getStrings = {
-    invoke: () => actions.GET_STRINGS.invoke(),
-    request: () => actions.GET_STRINGS.request(),
-    success: () => actions.GET_STRINGS.success(),
-    failure: (message) => actions.GET_STRINGS.failure({ message })
+  invoke: () =>
+    ({ type: actions.GET_STRINGS.INVOKE }),
+
+  request: () =>
+    ({ type: actions.GET_STRINGS.REQUEST }),
+
+  success: () =>
+    ({ type: actions.GET_STRINGS.SUCCESS }),
+
+  failure: (message) =>
+    ({ type: actions.GET_STRINGS.FAILURE, message })
+};
+
+export const openModule = {
+  invoke: (path, params) =>
+    ({ type: actions.OPEN_MODULE.INVOKE, path, params }),
+
+  success: (path, parameters, breadcrumb, topMenu, sideMenu) =>
+    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, topMenu, sideMenu })
 };

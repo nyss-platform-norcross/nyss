@@ -126,6 +126,7 @@ const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-
 const textRegex = /^[a-zA-Z\s]+$/;
 
 export const validators = {
+    not: ["Value is incorrect", (value) => !!value],
     required: ["Value is required", (value) => !!value],
     greatherThanField: (fieldGetter) => ["The value is to low", (value, fields) => value > fieldGetter(fields)],
     integer: ["Value has to be an integer", (value) => !isNaN(Number(value))],

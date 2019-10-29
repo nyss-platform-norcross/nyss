@@ -21,6 +21,8 @@
         public static Result<T> Success<T>(T value, string messageKey = null, object messageData = null) => new Result<T>(value, true, messageKey, messageData);
         public static Result<T> Error<T>(string messageKey, object messageData = null) => new Result<T>(default, false, messageKey, messageData);
 
+        public Result<T> Cast<T>() => Error<T>(Message.Key, Message.Data);
+
         public override string ToString() => $"{nameof(IsSuccess)}: {IsSuccess}, {nameof(Message)}: {Message}";
     }
 

@@ -7,30 +7,30 @@ import Select from "@material-ui/core/Select";
 import { createFieldComponent } from "./FieldBase";
 
 const SelectInput = ({ error, name, label, value, controlProps, customProps, children }) => {
-    return (
-        <FormControl error={!!error} {...customProps}>
-            <InputLabel htmlFor={name}>{label}</InputLabel>
-            <Select
-                value={value}
-                {...controlProps}
-                inputProps={{
-                    name: name,
-                    id: name
-                }}
-            >
-                {children}
-            </Select>
-            {error && <FormHelperText>{error}</FormHelperText>}
-        </FormControl>
-    );
+  return (
+    <FormControl error={!!error} {...customProps} fullWidth>
+      <InputLabel htmlFor={name} shrink>{label}</InputLabel>
+      <Select
+        value={value}
+        {...controlProps}
+        inputProps={{
+          name: name,
+          id: name
+        }}
+      >
+        {children}
+      </Select>
+      {error && <FormHelperText>{error}</FormHelperText>}
+    </FormControl>
+  );
 };
 
 SelectInput.propTypes = {
-    label: PropTypes.string,
-    controlProps: PropTypes.object,
-    value: PropTypes.string,
-    name: PropTypes.string,
-    error: PropTypes.string
+  label: PropTypes.string,
+  controlProps: PropTypes.object,
+  value: PropTypes.string,
+  name: PropTypes.string,
+  error: PropTypes.string
 };
 
 export const SelectField = createFieldComponent(SelectInput);

@@ -185,6 +185,26 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("ContentLanguages");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.Country", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CountryCode")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Countries");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.DataCollector", b =>
                 {
                     b.Property<int>("Id")
@@ -403,6 +423,9 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int?>("ContentLanguageId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CountryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DistrictCustomName")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
@@ -418,6 +441,9 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("VillageCustomName")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
@@ -429,6 +455,8 @@ namespace RX.Nyss.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ContentLanguageId");
+
+                    b.HasIndex("CountryId");
 
                     b.HasIndex("Name")
                         .IsUnique()
@@ -947,6 +975,11 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ContentLanguage", "ContentLanguage")
                         .WithMany()
                         .HasForeignKey("ContentLanguageId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RX.Nyss.Data.Models.Country", "Country")
+                        .WithMany()
+                        .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

@@ -5,9 +5,11 @@ import { updateStrings } from "../../../strings";
 import * as http from "../../../utils/http";
 import {  removeAccessToken, isAccessTokenSet } from "../../../authentication/auth";
 import { push } from "connected-react-router";
+import { getBreadcrumb, getMenu, placeholders } from "../../../siteMap";
 
 export const appSagas = () => [
-  takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication)
+  takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
+  takeEvery(consts.OPEN_MODULE.INVOKE, openModule),
 ];
 
 function* initApplication() {
@@ -25,6 +27,14 @@ function* initApplication() {
     yield put(actions.initApplication.failure(error.message));
   }
 };
+
+function* openModule({ path, params }) {
+  const breadcrumb = getBreadcrumb(path, params);
+  const topMenu = getMenu("/", params, placeholders.topMenu, path);
+  const sideMenu = getMenu(path, params, placeholders.leftMenu, path);
+
+  yield put(actions.openModule.success(path, params, breadcrumb, topMenu, sideMenu))
+}
 
 function* reloadPage() {
   const pathname = yield select(state => state.router.location.pathname);
@@ -52,11 +62,11 @@ function* getUserStatus() {
   try {
     const status = yield call(http.get, "/api/authentication/status");
 
-    const user = status.isAuthenticated
-      ? { name: status.data.name, roles: status.data.roles }
+    const user = status.value.isAuthenticated
+      ? { name: status.value.data.name, roles: status.value.data.roles }
       : null;
 
-    yield put(actions.getUser.success(status.isAuthenticated, user));
+    yield put(actions.getUser.success(status.value.isAuthenticated, user));
     return user;
   } catch (error) {
     yield put(actions.getUser.failure(error.message));
@@ -66,7 +76,8 @@ function* getUserStatus() {
 function* getAppData() {
   yield put(actions.getAppData.request());
   try {
-    yield put(actions.getAppData.success());
+    const appData = yield call(http.get, "/api/appData/get");
+    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries));
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }

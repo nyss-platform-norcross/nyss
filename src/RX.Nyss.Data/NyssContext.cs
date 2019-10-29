@@ -24,6 +24,7 @@ namespace RX.Nyss.Data
         public DbSet<ApplicationLanguage> ApplicationLanguages { get; set; }
 
         public DbSet<ContentLanguage> ContentLanguages { get; set; }
+        public DbSet<Country> Countries { get; set; }
 
         public DbSet<DataCollector> DataCollectors { get; set; }
 

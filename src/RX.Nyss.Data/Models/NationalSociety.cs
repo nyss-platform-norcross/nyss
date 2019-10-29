@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace RX.Nyss.Data.Models
 {
@@ -7,6 +8,8 @@ namespace RX.Nyss.Data.Models
         public int Id { get; set; }
 
         public string Name { get; set; }
+
+        public DateTime StartDate { get; set; }
 
         public bool IsArchived { get; set; }
 
@@ -19,6 +22,8 @@ namespace RX.Nyss.Data.Models
         public string ZoneCustomName { get; set; }
 
         public virtual ContentLanguage ContentLanguage { get; set; }
+
+        public virtual Country Country { get; set; }
 
         public virtual ICollection<UserNationalSociety> NationalSocietyUsers { get; set; }
     }

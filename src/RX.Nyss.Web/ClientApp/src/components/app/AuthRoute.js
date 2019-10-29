@@ -2,9 +2,11 @@ import React from "react";
 import * as auth from "../../authentication/auth";
 import { Route, Redirect } from "react-router";
 
-export const AuthRoute = ({ component: Component, ...rest }) => (
+export const AuthRoute = ({ component: Component, roles, ...rest }) => (
   <Route {...rest} render={props => {
-    if (!auth.isAccessTokenSet()) {
+    var tokenData = auth.getAccessTokenData();
+
+    if (!tokenData) {
       auth.setRedirectUrl(window.location.pathname);
       return <Redirect to={auth.loginUrl} />;
     }
@@ -14,6 +16,10 @@ export const AuthRoute = ({ component: Component, ...rest }) => (
     if (redirectUrl) {
       auth.removeRedirectUrl();
       return <Redirect to={redirectUrl} />;
+    }
+
+    if (roles && roles.length && !roles.some(r => r === tokenData.role)) {
+      return <div>Not authorized</div>;
     }
 
     return <Component {...props} />;

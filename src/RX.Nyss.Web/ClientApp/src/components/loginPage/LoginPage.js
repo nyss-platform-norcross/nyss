@@ -35,10 +35,7 @@ class LoginPageComponent extends PureComponent {
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.onSubmit();
-  };
 
-  onSubmit = () => {
     if (!this.form.isValid()) {
       return;
     };
@@ -95,17 +92,17 @@ class LoginPageComponent extends PureComponent {
   }
 }
 
+LoginPageComponent.propTypes = {
+  login: PropTypes.func,
+  loginResponse: PropTypes.string
+};
+
 const mapStateToProps = state => ({
   loginResponse: state.auth.loginResponse
 });
 
 const mapDispatchToProps = {
   login: authActions.login.invoke
-};
-
-LoginPageComponent.propTypes = {
-  login: PropTypes.func,
-  loginResponse: PropTypes.string
 };
 
 export const LoginPage = useLayout(

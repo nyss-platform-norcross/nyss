@@ -1,15 +1,16 @@
 .container {
-    padding: 20px;
+    margin-bottom: 10px !important;
 
     .item {
-        padding: 10px 20px;
-        background-color: #FAFAFA;
+        padding: 10px 0px;
 
         .title {
-            font-size: 20px;
             color: #333;
             line-height: 1em;
-            margin-bottom: 3px;
+            padding-bottom: 3px;
+            padding-top: 3px;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
         }
 
         .label {
@@ -20,6 +21,7 @@
         &.selected {
             .title {
                 border-bottom: 2px solid #C02C2C;
+                cursor: default;
             }
         }
     }

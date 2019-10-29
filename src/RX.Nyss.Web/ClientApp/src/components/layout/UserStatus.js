@@ -10,6 +10,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Icon from "@material-ui/core/Icon";
 import * as authActions from '../../authentication/authActions';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 
 export const UserStatusComponent = ({ user, logout }) => {
   const [anchorEl, setAnchorEl] = useState();
@@ -25,7 +26,8 @@ export const UserStatusComponent = ({ user, logout }) => {
   return (
     <div>
       <div className={styles.userStatus} onClick={handleClick}>
-        {user.name}
+        <div className={styles.userName}>{user.name}</div>
+        <ArrowDropDownIcon color="primary" className={styles.arrow} />
       </div>
 
       <Menu

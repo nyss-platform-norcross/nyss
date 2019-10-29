@@ -1,15 +1,29 @@
-import * as actions from "./authConstants";
+import { LOGIN, LOGOUT } from "./authConstants";
 
 export const login = {
-  invoke: (userName, password, redirectUrl) => actions.LOGIN.invoke({ userName, password, redirectUrl }),
-  request: () => actions.LOGIN.request(),
-  success: () => actions.LOGIN.success(),
-  failure: (message) => actions.LOGIN.failure({ message })
+  invoke: (userName, password, redirectUrl) =>
+    ({ type: LOGIN.INVOKE, userName, password, redirectUrl }),
+
+  request: () =>
+    ({ type: LOGIN.REQUEST }),
+
+  success: () =>
+    ({ type: LOGIN.SUCCESS }),
+
+  failure: (message) =>
+    ({ type: LOGIN.FAILURE, message })
 };
 
 export const logout = {
-  invoke: () => actions.LOGOUT.invoke(),
-  request: () => actions.LOGOUT.request(),
-  success: () => actions.LOGOUT.success(),
-  failure: (message) => actions.LOGOUT.failure({ message })
+  invoke: () =>
+    ({ type: LOGOUT.INVOKE }),
+
+  request: () =>
+    ({ type: LOGOUT.REQUEST }),
+
+  success: () =>
+    ({ type: LOGOUT.SUCCESS }),
+
+  failure: (message) =>
+    ({ type: LOGOUT.FAILURE, message })
 };

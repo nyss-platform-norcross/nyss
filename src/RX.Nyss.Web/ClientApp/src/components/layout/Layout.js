@@ -5,24 +5,31 @@ import { SideMenu } from './SideMenu';
 import { BaseLayout } from './BaseLayout';
 
 import styles from './Layout.module.scss';
+import { MessagePopup } from './MessagePopup';
 
-export const Layout = ({ children }) => {
-    return (
-        <BaseLayout>
-            <div className={`${styles.header}`}>
-                <Header />
-            </div>
-            <div className={`${styles.breadcrumb}`}>
-                <Breadcrumb />
-            </div>
-            <div className={styles.mainContent}>
-                <div className={styles.sideMenu}>
-                    <SideMenu />
-                </div>
-                <div className={styles.pageContent}>
-                    {children}
-                </div>
-            </div>
-        </BaseLayout>
-    );
-}
+export const Layout = ({ children }) => (
+  <BaseLayout>
+    <div className={styles.sideMenu}>
+      <SideMenu />
+    </div>
+    <div className={styles.mainContent}>
+
+      <div className={`${styles.header}`}>
+        <Header />
+      </div>
+
+      <div className={styles.pageContentContainer}>
+        <div className={styles.pageContent}>
+          <Breadcrumb />
+
+          <div>
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+    <MessagePopup />
+  </BaseLayout>
+);
+
+export default Layout;

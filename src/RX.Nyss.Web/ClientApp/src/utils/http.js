@@ -1,20 +1,28 @@
 import { getOrRenewToken } from "../authentication/auth";
+import { strings } from "../strings";
 
 export const post = (path, data, anonymous) => {
   const headers = {
     "Accept": "application/json",
     "Content-Type": "application/json"
   };
-  return callApi(path, "POST", data || {}, headers, !anonymous);
+  return callApi(path, "POST", data || {}, headers, !anonymous)
+    .then(response => {
+      ensureResponseIsSuccess(response);
+      return response;
+    });
 }
 
 export const get = (path) => {
-  return callApi(path, "GET", undefined, {}, true);
+  return callApi(path, "GET", undefined, {}, true).then(response => {
+    ensureResponseIsSuccess(response);
+    return response;
+  });
 }
 
 export const ensureResponseIsSuccess = (response, message) => {
   if (!response.isSuccess) {
-    throw new Error((message || "An error has occured") + ". " + getResponseErrorMessage(response.error));
+    throw new Error(message || getResponseErrorMessage(response.message));
   }
 };
 
@@ -48,7 +56,7 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
   });
 }
 
-const getResponseErrorMessage = (error) =>
-  (error && (error.message || error.key))
-    ? (error.message || error.key).substring(0, 150)
+const getResponseErrorMessage = (message) =>
+  (message && message.key)
+    ? strings(message.key)
     : "";

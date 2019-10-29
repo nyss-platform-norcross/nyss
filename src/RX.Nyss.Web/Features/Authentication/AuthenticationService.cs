@@ -21,7 +21,7 @@ namespace RX.Nyss.Web.Features.Authentication
     {
         Task<Result<LoginResponseDto>> Login(LoginRequestDto dto);
         Task<Result> Logout();
-        StatusResponseDto GetStatus(ClaimsPrincipal user);
+        Result<StatusResponseDto> GetStatus(ClaimsPrincipal user);
     }
 
     public class AuthenticationService : IAuthenticationService
@@ -55,6 +55,26 @@ namespace RX.Nyss.Web.Features.Authentication
             }
         }
 
+        public Result<StatusResponseDto> GetStatus(ClaimsPrincipal user) =>
+            Success(new StatusResponseDto
+            {
+                IsAuthenticated = user.Identity.IsAuthenticated,
+                Data = user.Identity.IsAuthenticated
+                    ? new StatusResponseDto.DataDto
+                    {
+                        Name = user.Identity.Name,
+                        Email = user.FindFirstValue(ClaimTypes.Email),
+                        Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray()
+                    }
+                    : null
+            });
+
+        public async Task<Result> Logout()
+        {
+            await _userIdentityService.Logout();
+            return Success();
+        }
+
         private async Task<IEnumerable<Claim>> GetAdditionalClaims(IdentityUser identityUser)
         {
             var isDataOwnerClaim = await GetIsDataOwnerClaim(identityUser);
@@ -75,26 +95,6 @@ namespace RX.Nyss.Web.Features.Authentication
                 .SingleOrDefaultAsync();
 
             return nyssDataManagerUser != null && nyssDataManagerUser.IsDataOwner;
-        }
-
-        public StatusResponseDto GetStatus(ClaimsPrincipal user) =>
-            new StatusResponseDto
-            {
-                IsAuthenticated = user.Identity.IsAuthenticated,
-                Data = user.Identity.IsAuthenticated
-                    ? new StatusResponseDto.DataDto
-                    {
-                        Name = user.Identity.Name,
-                        Email = user.FindFirstValue(ClaimTypes.Email),
-                        Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray()
-                    }
-                    : null
-            };
-
-        public async Task<Result> Logout()
-        {
-            await _userIdentityService.Logout();
-            return Success();
         }
     }
 }
