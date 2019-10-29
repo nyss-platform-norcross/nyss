@@ -10,6 +10,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.FuncApp", "src\RX.Nyss.FuncApp\RX.Nyss.FuncApp.csproj", "{124D4B8B-2B51-4492-AEBF-039C0E1D4A41}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.Data.MigrationApp", "src\RX.Nyss.Data.MigrationApp\RX.Nyss.Data.MigrationApp.csproj", "{BAF4D1A8-D007-4C96-80F9-7F8D39BCD742}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rx.Nyss.Web.Tests", "tests\Rx.Nyss.Web.Tests\Rx.Nyss.Web.Tests.csproj", "{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}"
 EndProject
 Global

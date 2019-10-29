@@ -134,7 +134,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
                 await _nyssContext.SaveChangesAsync();
 
-                return Success(ResultKey.NationalSociety.Edit.Success);
+                return SuccessMessage(ResultKey.NationalSociety.Edit.Success);
             }
             catch (Exception e)
             {
@@ -149,7 +149,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(id);
                 _nyssContext.NationalSocieties.Remove(nationalSociety);
                 await _nyssContext.SaveChangesAsync();
-                return Success(ResultKey.NationalSociety.Remove.Success);
+                return SuccessMessage(ResultKey.NationalSociety.Remove.Success);
             }
             catch (Exception e)
             {
