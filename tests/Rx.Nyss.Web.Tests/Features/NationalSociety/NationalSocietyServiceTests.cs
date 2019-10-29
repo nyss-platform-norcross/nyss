@@ -8,7 +8,9 @@ using Shouldly;
 using Xunit;
 using NSubstitute.ExceptionExtensions;
 using System;
-using RX.Nyss.Web.Tests.Common;
+using System.Collections.Generic;
+using System.Linq;
+using MockQueryable.NSubstitute;
 
 namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 {
@@ -64,7 +66,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         }
 
         [Fact]
-        public async Task CreateNationalSociety_WhenNationalSocietyAlreadyExists_ReturnError()
+        public async Task CreateNationalSociety_WhenNameAlreadyExists_ReturnError()
         {
             var nationalSocietyReq = new CreateNationalSocietyRequestDto()
             {
@@ -73,14 +75,18 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
                 ContentLanguageId = ContentLanguageId
             };
 
-            var duplicateKeyEntryException = new Exception("", SqlExceptionCreator.NewDuplicateKeyEntrySqlException());
+            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>()
+            {
+                new RX.Nyss.Data.Models.NationalSociety() { Name = NationalSocietyName }
+            };
 
-            _nyssContext.SaveChangesAsync().Throws(duplicateKeyEntryException);
+            var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
 
             var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Creation.NationalSocietyAlreadyExists);
+            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Creation.NameAlreadyExists);
         }
 
         [Fact]
