@@ -29,6 +29,13 @@ const siteMap = [
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
+    path: "/nationalsocieties/:nationalSocietyId/dashboard",
+    title: "Dashboard",
+    access: [Administrator, GlobalCoordinator, DataConsumer],
+    placeholder: placeholders.leftMenu,
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/overview",
     path: "/nationalsocieties/:nationalSocietyId/edit",
     title: "Edit",
     access: [Administrator, GlobalCoordinator, DataConsumer]
@@ -43,7 +50,7 @@ const siteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
     path: "/nationalsocieties/:nationalSocietyId/overview",
-    title: "Settings",
+    title: "Overview",
     placeholder: placeholders.leftMenu,
     access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
   },
@@ -63,8 +70,19 @@ export const getMenu = (path, siteMapParameters, placeholder, currentPath) => {
 
   const breadcrumb = currentPath ? getBreadcrumb(currentPath, siteMapParameters) : [];
 
+  let menuPath = path;
+
+  if (path !== "/") {
+    for (let i = breadcrumb.length - 1; i >= 0; i--) {
+      if (breadcrumb[i].placeholder === placeholder) {
+        menuPath = breadcrumb[i].parentPath;
+        break;
+      }
+    }
+  }
+
   return siteMap
-    .filter(item => item.parentPath === path && item.placeholder && item.placeholder === placeholder)
+    .filter(item => item.parentPath === menuPath && item.placeholder && item.placeholder === placeholder)
     .map(item => ({
       title: item.title,
       url: getUrl(item.path, siteMapParameters),
@@ -95,7 +113,9 @@ export const getBreadcrumb = (path, siteMapParameters) => {
         path: currentItem.path,
         title: getTitle(currentItem.title, siteMapParameters),
         url: getUrl(currentItem.path, siteMapParameters),
-        isActive: currentItem.path === path
+        isActive: currentItem.path === path,
+        placeholder: currentItem.placeholder,
+        parentPath: currentItem.parentPath
       });
     }
 

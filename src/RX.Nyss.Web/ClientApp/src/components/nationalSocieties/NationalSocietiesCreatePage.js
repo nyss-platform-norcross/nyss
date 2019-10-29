@@ -75,7 +75,9 @@ const NationalSocietiesCreatePageComponent = (props) => {
           name="country"
           field={form.fields.countryId}
         >
-          <MenuItem value="1">Norway</MenuItem>
+          {props.countries.map(country => (
+            <MenuItem key={`country${country.id}`} value={country.id.toString()}>{country.name}</MenuItem>
+          ))}
         </SelectField>
 
         <SelectField
@@ -83,7 +85,9 @@ const NationalSocietiesCreatePageComponent = (props) => {
           name="contentLanguage"
           field={form.fields.contentLanguageId}
         >
-          <MenuItem value="1">Norwegian</MenuItem>
+          {props.contentLanguages.map(language => (
+            <MenuItem key={`contentLanguage${language.id}`} value={language.id.toString()}>{language.name}</MenuItem>
+          ))}
         </SelectField>
 
         <FormActions>
@@ -108,6 +112,7 @@ NationalSocietiesCreatePageComponent.propTypes = {
 
 const mapStateToProps = state => ({
   contentLanguages: state.appData.contentLanguages,
+  countries: state.appData.countries,
   error: state.nationalSocieties.formError,
   isSaving: state.nationalSocieties.formSaving
 });

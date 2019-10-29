@@ -9,6 +9,7 @@ export const nationalSocietiesSagas = () => [
   takeEvery(consts.GET_NATIONAL_SOCIETIES.INVOKE, getNationalSocieties),
   takeEvery(consts.OPEN_EDITION_NATIONAL_SOCIETY.INVOKE, openNationalSocietyEdition),
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_DASHBOARD.INVOKE, openNationalSocietyDashboard),
+  takeEvery(consts.OPEN_NATIONAL_SOCIETY_OVERVIEW.INVOKE, openNationalSocietyOverview),
   takeEvery(consts.EDIT_NATIONAL_SOCIETY.INVOKE, editNationalSociety),
   takeEvery(consts.CREATE_NATIONAL_SOCIETY.INVOKE, createNationalSociety),
   takeEvery(consts.REMOVE_NATIONAL_SOCIETY.INVOKE, removeNationalSociety)
@@ -38,12 +39,30 @@ function* openNationalSocietyEdition({ path, params }) {
 
     yield put(appActions.openModule.invoke(path, {
       nationalSocietyCountry: response.value.countryName,
-      nationalSocietyName: response.value.name
+      nationalSocietyName: response.value.name,
+      nationalSocietyId: response.value.id
     }));
 
     yield put(actions.openEdition.success(response.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
+  }
+};
+
+function* openNationalSocietyOverview({ path, params }) {
+  yield put(actions.openOverview.request());
+  try {
+    const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
+
+    yield put(appActions.openModule.invoke(path, {
+      nationalSocietyCountry: response.value.countryName,
+      nationalSocietyName: response.value.name,
+      nationalSocietyId: response.value.id
+    }));
+
+    yield put(actions.openOverview.success(response.value));
+  } catch (error) {
+    yield put(actions.openOverview.failure(error.message));
   }
 };
 
@@ -71,6 +90,7 @@ function* createNationalSociety({ data }) {
     http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
     yield put(push(`/nationalsocieties/${response.value}`));
+    yield put(appActions.showMessage("The National Society was added successfully"));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -82,7 +102,7 @@ function* editNationalSociety({ data }) {
     const response = yield call(http.post, `/api/nationalSociety/${data.id}/edit`, data);
     http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
-    yield put(push("/nationalsocieties"));
+    yield put(push(`/nationalsocieties/${data.id}/overview`));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }

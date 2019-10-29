@@ -35,6 +35,7 @@
                 public const string NameNotDefined = "nationalSociety.creation.nameNotDefined";
                 public const string CountryNotDefined = "nationalSociety.creation.countryNotDefined";
                 public const string LanguageNotDefined = "nationalSociety.creation.languageNotDefined";
+                public const string NameAlreadyExists = "nationalSociety.creation.nameAlreadyExists ";
             }
 
             public static class Edit

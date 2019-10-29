@@ -22,14 +22,6 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Gets all countries with country codes.
         /// </summary>
         /// <returns></returns>
-        [Route("getCountries"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
-        public async Task<IEnumerable<Country>> GetCountries() => 
-            await _nationalSocietyService.GetCountries();
-
-        /// <summary>
-        /// Gets all countries with country codes.
-        /// </summary>
-        /// <returns></returns>
         [Route("{id}/get"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<Result<NationalSocietyResponseDto>> Get(int id) =>
             await _nationalSocietyService.GetNationalSociety(id);
@@ -61,7 +53,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
             await _nationalSocietyService.EditNationalSociety(nationalSociety);
 
         /// <summary>
-        /// Edits an existing National Society
+        /// Removes an existing National Society
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

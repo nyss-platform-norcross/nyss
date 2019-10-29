@@ -1,5 +1,8 @@
 import * as actions from "./appConstans";
 
+export const showMessage = (message) => ({ type: actions.SHOW_MESSAGE.INVOKE, message });
+export const closeMessage = () => ({ type: actions.CLOSE_MESSAGE.INVOKE });
+
 export const initApplication = {
   invoke: () =>
     ({ type: actions.INIT_APPLICATION.INVOKE }),
@@ -34,8 +37,8 @@ export const getAppData = {
   request: () =>
     ({ type: actions.GET_APP_DATA.REQUEST }),
 
-  success: () =>
-    ({ type: actions.GET_APP_DATA.SUCCESS }),
+  success: (contentLanguages, countries) =>
+    ({ type: actions.GET_APP_DATA.SUCCESS, contentLanguages, countries }),
 
   failure: (message) =>
     ({ type: actions.GET_APP_DATA.FAILURE, message })

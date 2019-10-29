@@ -31,7 +31,7 @@ function* initApplication() {
 function* openModule({ path, params }) {
   const breadcrumb = getBreadcrumb(path, params);
   const topMenu = getMenu("/", params, placeholders.topMenu, path);
-  const sideMenu = getMenu(path, params, placeholders.leftMenu);
+  const sideMenu = getMenu(path, params, placeholders.leftMenu, path);
 
   yield put(actions.openModule.success(path, params, breadcrumb, topMenu, sideMenu))
 }
@@ -76,7 +76,8 @@ function* getUserStatus() {
 function* getAppData() {
   yield put(actions.getAppData.request());
   try {
-    yield put(actions.getAppData.success());
+    const appData = yield call(http.get, "/api/appData/get");
+    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries));
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }

@@ -26,7 +26,7 @@ const SideMenuComponent = ({ sideMenu, push }) => {
       {sideMenu.length !== 0 && (
         <List component="nav" className={styles.list}>
           {sideMenu.map((item, index) => (
-            <ListItem key={`sideMenuItem_${index}`} button onClick={() => onItemClick(item)}>
+            <ListItem key={`sideMenuItem_${index}`} className={item.isActive ? styles.active : ""} button onClick={() => onItemClick(item)}>
               <ListItemText primary={item.title} />
             </ListItem>
           ))}

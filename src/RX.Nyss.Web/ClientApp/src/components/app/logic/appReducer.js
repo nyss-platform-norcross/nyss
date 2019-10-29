@@ -21,6 +21,13 @@ export function appReducer(state = initialState.appData, action) {
           : null
       }
 
+    case actions.GET_APP_DATA.SUCCESS:
+      return {
+        ...state,
+        contentLanguages: action.contentLanguages,
+        countries: action.countries
+      }
+
     case actions.OPEN_MODULE.INVOKE:
       return {
         ...state,
@@ -43,6 +50,18 @@ export function appReducer(state = initialState.appData, action) {
           topMenu: action.topMenu,
           sideMenu: action.sideMenu
         }
+      }
+
+    case actions.SHOW_MESSAGE.INVOKE:
+      return {
+        ...state,
+        message: action.message
+      }
+
+    case actions.CLOSE_MESSAGE.INVOKE:
+      return {
+        ...state,
+        message: null
       }
 
     default:

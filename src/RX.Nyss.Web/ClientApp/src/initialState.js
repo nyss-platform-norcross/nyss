@@ -9,7 +9,8 @@ export const initialState = {
       breadcrumb: [],
       topMenu: [],
       sideMenu: []
-    }
+    },
+    message: null
   },
   requests: {
     isFetching: false,
@@ -25,6 +26,8 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null,
+    overviewData: null,
+    overviewFetching: false,
     dashboard: {
       name: null,
       isFetching: false

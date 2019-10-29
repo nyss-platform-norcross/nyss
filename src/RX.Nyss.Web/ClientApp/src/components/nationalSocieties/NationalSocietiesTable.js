@@ -17,16 +17,26 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
     return <Loading />
   }
 
+  const onRemove = (e, id) => {
+    e.stopPropagation();
+    remove(id);
+  };
+
+  const onEdit = (e, id) => {
+    e.stopPropagation();
+    goToEdition(id);
+  };
+
   return (
     <Table>
       <TableHead>
         <TableRow>
           <TableCell>Name</TableCell>
-          <TableCell style={{ width: 140 }}>Country</TableCell>
-          <TableCell style={{ width: 80 }}>Start date</TableCell>
-          <TableCell style={{ width: 130 }}>Data owner</TableCell>
-          <TableCell style={{ width: 130 }}>Technical advisor</TableCell>
-          <TableCell style={{ width: 100 }} />
+          <TableCell style={{ width: "16%", minWidth: 100 }}>Country</TableCell>
+          <TableCell style={{ width: "8%", minWidth: 75 }}>Start date</TableCell>
+          <TableCell style={{ width: "16%" }}>Data owner</TableCell>
+          <TableCell style={{ width: "16%" }}>Technical advisor</TableCell>
+          <TableCell style={{ width: "16%", minWidth: 75 }} />
         </TableRow>
       </TableHead>
       <TableBody>
@@ -38,8 +48,8 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
             <TableCell>{row.dataOwner}</TableCell>
             <TableCell>{row.technicalAdvisor}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={e => onEdit(e, row.id)} icon={<EditIcon />} title={"Edit"} />
+              <TableRowAction onClick={e => onRemove(e, row.id)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}

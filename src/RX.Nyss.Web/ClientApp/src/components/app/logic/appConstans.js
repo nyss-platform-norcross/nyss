@@ -8,4 +8,5 @@ export const GET_USER = action("GET_USER");
 export const UPDATE_SITEMAP = action("UPDATE_SITEMAP");
 export const UPDATE_SITEMAP_PATH = action("UPDATE_SITEMAP_PATH");
 export const OPEN_MODULE = action("OPEN_MODULE");
-
+export const SHOW_MESSAGE = action("SHOW_MESSAGE");
+export const CLOSE_MESSAGE = action("CLOSE_MESSAGE");

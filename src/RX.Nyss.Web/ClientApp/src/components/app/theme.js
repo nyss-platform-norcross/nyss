@@ -51,6 +51,11 @@ export const theme = createMuiTheme({
         textDecoration: "underline"
       }
     },
+    MuiMenu: {
+      paper: {
+        maxHeight: 200
+      }
+    },
     MuiBreadcrumbs: {
       root: {
         fontSize: 16

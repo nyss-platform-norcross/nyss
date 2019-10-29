@@ -88,7 +88,9 @@ const NationalSocietiesEditPageComponent = (props) => {
           name="country"
           field={form.fields.countryId}
         >
-          <MenuItem value="1">Norway</MenuItem>
+          {props.countries.map(country => (
+            <MenuItem key={`country${country.id}`} value={country.id.toString()}>{country.name}</MenuItem>
+          ))}
         </SelectField>
 
         <SelectField
@@ -96,11 +98,13 @@ const NationalSocietiesEditPageComponent = (props) => {
           name="contentLanguage"
           field={form.fields.contentLanguageId}
         >
-          <MenuItem value="1">Norwegian</MenuItem>
+          {props.contentLanguages.map(language => (
+            <MenuItem key={`contentLanguage${language.id}`} value={language.id.toString()}>{language.name}</MenuItem>
+          ))}
         </SelectField>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>
+          <Button onClick={() => props.goToOverview(props.data.id)}>
             Cancel
           </Button>
 
@@ -120,6 +124,7 @@ NationalSocietiesEditPageComponent.propTypes = {
 
 const mapStateToProps = state => ({
   contentLanguages: state.appData.contentLanguages,
+  countries: state.appData.countries,
   isFetching: state.nationalSocieties.formFetching,
   isSaving: state.nationalSocieties.formSaving,
   data: state.nationalSocieties.formData
@@ -128,7 +133,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   openEdition: nationalSocietiesActions.openEdition.invoke,
   edit: nationalSocietiesActions.edit.invoke,
-  goToList: nationalSocietiesActions.goToList
+  goToOverview: nationalSocietiesActions.goToOverview
 };
 
 export const NationalSocietiesEditPage = useLayout(

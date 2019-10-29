@@ -25,6 +25,15 @@ export function nationalSocietiesReducer(state = initialState.nationalSocieties,
     case actions.OPEN_EDITION_NATIONAL_SOCIETY.FAILURE:
       return { ...state, formFetching: false };
 
+    case actions.OPEN_NATIONAL_SOCIETY_OVERVIEW.REQUEST:
+      return { ...state, overviewFetching: true, overviewData: null };
+
+    case actions.OPEN_NATIONAL_SOCIETY_OVERVIEW.SUCCESS:
+      return { ...state, overviewFetching: false, overviewData: action.data };
+
+    case actions.OPEN_NATIONAL_SOCIETY_OVERVIEW.FAILURE:
+      return { ...state, overviewFetching: false };
+
     case actions.CREATE_NATIONAL_SOCIETY.REQUEST:
       return { ...state, formSaving: true };
 

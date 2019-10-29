@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.AppData.Dtos;
 using RX.Nyss.Web.Utils;
+using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.AppData
 {
@@ -20,8 +22,8 @@ namespace RX.Nyss.Web.Features.AppData
         /// Gets all languages.
         /// </summary>
         /// <returns></returns>
-        [Route("getLanguages"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
-        public async Task<IEnumerable<ContentLanguage>> GetLanguages() => 
-            await _appDataService.GetLanguages();
+        [Route("get"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
+        public async Task<Result<AppDataResponseDto>> GetAppData() => 
+            await _appDataService.GetAppData();
     }
 }

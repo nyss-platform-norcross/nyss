@@ -19,7 +19,7 @@ export const stringKeys = {
 
 export const strings = (key) => {
   const value = stringList[key];
-  return value === undefined ? "String not defined" : value;
+  return value === undefined ? key : value;
 }
 
 export function updateStrings(strings) {

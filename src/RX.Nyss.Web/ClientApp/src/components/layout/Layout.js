@@ -5,6 +5,7 @@ import { SideMenu } from './SideMenu';
 import { BaseLayout } from './BaseLayout';
 
 import styles from './Layout.module.scss';
+import { MessagePopup } from './MessagePopup';
 
 export const Layout = ({ children }) => (
   <BaseLayout>
@@ -27,6 +28,7 @@ export const Layout = ({ children }) => (
         </div>
       </div>
     </div>
+    <MessagePopup />
   </BaseLayout>
 );
 

@@ -13,5 +13,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         public string CountryName { get; set; }
 
         public int ContentLanguageId { get; set; }
+
+        public string ContentLanguageName { get; set; }
     }
 }
