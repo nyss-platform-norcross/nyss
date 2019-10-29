@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Features.Authentication
         private async Task<Claim> GetIsDataOwnerClaim(IdentityUser identityUser)
         {
             var isDataOwner = await IsDataOwner(identityUser);
-            return new Claim(AuthenticationPolicy.IsDataOwner.ToString(), isDataOwner.ToString());
+            return new Claim(ClaimType.IsDataOwner.ToString(), isDataOwner.ToString());
         }
 
         private async Task<bool> IsDataOwner(IdentityUser identityUser)
@@ -95,6 +95,28 @@ namespace RX.Nyss.Web.Features.Authentication
                 .SingleOrDefaultAsync();
 
             return nyssDataManagerUser != null && nyssDataManagerUser.IsDataOwner;
+        }
+
+        private async Task<List<Claim>> GetNationalSocietyClaims(IdentityUser identityUser, IEnumerable<string> possessedRoles)
+        {
+            var hasFullAccess = HasAccessToAllNationalSocieties(possessedRoles);
+
+            if (hasFullAccess)
+            {
+                return new List<Claim> { new Claim(ClaimType.AllNationalSocieties.ToString(), bool.TrueString) };
+            }
+
+            return await _nyssContext.UserNationalSocieties
+                .IgnoreQueryFilters()
+                .Where(uns => uns.User.IdentityUserId == identityUser.Id)
+                .Select(uns => new Claim(ClaimType.NationalSociety.ToString(), uns.NationalSocietyId.ToString()))
+                .ToListAsync();
+        }
+
+        private static bool HasAccessToAllNationalSocieties(IEnumerable<string> possessedRoles)
+        {
+            var rolesWithAccessToAllNationalSocieties = new[] {Role.Administrator.ToString()};
+            return rolesWithAccessToAllNationalSocieties.Intersect(possessedRoles).Any();
         }
     }
 }
