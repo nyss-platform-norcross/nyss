@@ -10,6 +10,7 @@ namespace RX.Nyss.Data.Models.Maps
         {
             builder.HasKey(u => u.Id);
             builder.HasOne(u => u.ApplicationLanguage).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(u => u.UserNationalSocieties);
             builder.HasDiscriminator(u => u.Role)
                 .HasValue<SupervisorUser>(Role.Supervisor)
                 .HasValue<DataManagerUser>(Role.DataManager)
