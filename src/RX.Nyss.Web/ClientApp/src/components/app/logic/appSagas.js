@@ -31,7 +31,7 @@ function* initApplication() {
 function* openModule({ path, params }) {
   const breadcrumb = getBreadcrumb(path, params);
   const topMenu = getMenu("/", params, placeholders.topMenu, path);
-  const sideMenu = getMenu(path, params, placeholders.sideMenu);
+  const sideMenu = getMenu(path, params, placeholders.leftMenu);
 
   yield put(actions.openModule.success(path, params, breadcrumb, topMenu, sideMenu))
 }
@@ -62,11 +62,11 @@ function* getUserStatus() {
   try {
     const status = yield call(http.get, "/api/authentication/status");
 
-    const user = status.isAuthenticated
-      ? { name: status.data.name, roles: status.data.roles }
+    const user = status.value.isAuthenticated
+      ? { name: status.value.data.name, roles: status.value.data.roles }
       : null;
 
-    yield put(actions.getUser.success(status.isAuthenticated, user));
+    yield put(actions.getUser.success(status.value.isAuthenticated, user));
     return user;
   } catch (error) {
     yield put(actions.getUser.failure(error.message));

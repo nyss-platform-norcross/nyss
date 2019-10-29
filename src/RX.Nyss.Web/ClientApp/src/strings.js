@@ -3,6 +3,7 @@ let stringList = {
   "login.password": "Password",
   "login.forgotPassword": "Forgot password?",
   "login.notSucceeded": "Invalid user name or password",
+  "validation.validationError": "There was a problem with validation",
   "login.lockedOut": "Your account has been locked for 5 minutes due to too many failed login attempts. Please reset your password or try again later."
 };
 

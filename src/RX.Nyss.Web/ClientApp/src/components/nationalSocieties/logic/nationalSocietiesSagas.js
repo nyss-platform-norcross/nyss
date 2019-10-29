@@ -8,6 +8,7 @@ import { push } from "connected-react-router";
 export const nationalSocietiesSagas = () => [
   takeEvery(consts.GET_NATIONAL_SOCIETIES.INVOKE, getNationalSocieties),
   takeEvery(consts.OPEN_EDITION_NATIONAL_SOCIETY.INVOKE, openNationalSocietyEdition),
+  takeEvery(consts.OPEN_NATIONAL_SOCIETY_DASHBOARD.INVOKE, openNationalSocietyDashboard),
   takeEvery(consts.EDIT_NATIONAL_SOCIETY.INVOKE, editNationalSociety),
   takeEvery(consts.CREATE_NATIONAL_SOCIETY.INVOKE, createNationalSociety),
   takeEvery(consts.REMOVE_NATIONAL_SOCIETY.INVOKE, removeNationalSociety)
@@ -46,12 +47,30 @@ function* openNationalSocietyEdition({ path, params }) {
   }
 };
 
+function* openNationalSocietyDashboard({ path, params }) {
+  yield put(actions.openDashbaord.request());
+  try {
+    const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
+
+    yield put(appActions.openModule.invoke(path, {
+      nationalSocietyCountry: response.value.countryName,
+      nationalSocietyName: response.value.name,
+      nationalSocietyId: response.value.id
+    }));
+
+    yield put(actions.openDashbaord.success(response.value.name));
+  } catch (error) {
+    yield put(actions.openDashbaord.failure(error.message));
+  }
+};
+
 function* createNationalSociety({ data }) {
   yield put(actions.create.request());
   try {
     const response = yield call(http.post, "/api/nationalSociety/create", data);
+    http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
-  yield put(push("/nationalsocieties"));
+    yield put(push(`/nationalsocieties/${response.value}`));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -61,6 +80,7 @@ function* editNationalSociety({ data }) {
   yield put(actions.edit.request());
   try {
     const response = yield call(http.post, `/api/nationalSociety/${data.id}/edit`, data);
+    http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
     yield put(push("/nationalsocieties"));
   } catch (error) {

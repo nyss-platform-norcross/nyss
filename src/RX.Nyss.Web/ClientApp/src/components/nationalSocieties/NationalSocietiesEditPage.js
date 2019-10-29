@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
-import * as appActions from '../app/logic/appActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
@@ -25,7 +24,7 @@ const NationalSocietiesEditPageComponent = (props) => {
   }, []);
 
   useEffect(() => {
-    if (!props.data) {
+    if (!props.data || props.data.id.toString() !== props.match.params.nationalSocietyId) {
       return;
     }
 
@@ -44,7 +43,7 @@ const NationalSocietiesEditPageComponent = (props) => {
     };
 
     setForm(createForm(fields, validation));
-  }, [props.data]);
+  }, [props.data, props.match]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -70,13 +69,13 @@ const NationalSocietiesEditPageComponent = (props) => {
     <Fragment>
       <Typography variant="h2">Edit National Society</Typography>
 
-      {props.loginResponse &&
-        <SnackbarContent
-          message={props.loginResponse}
-        />
-      }
-
       <Form onSubmit={handleSubmit}>
+        {props.loginResponse &&
+          <SnackbarContent
+            message={props.loginResponse}
+          />
+        }
+
         <TextInputField
           label="National Society name"
           name="name"

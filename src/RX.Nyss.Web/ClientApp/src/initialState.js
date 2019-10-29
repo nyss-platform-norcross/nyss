@@ -24,6 +24,10 @@ export const initialState = {
     listData: [],
     formFetching: false,
     formSaving: false,
-    formData: null
+    formData: null,
+    dashboard: {
+      name: null,
+      isFetching: false
+    }
   }
 };

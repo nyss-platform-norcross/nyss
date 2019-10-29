@@ -12,6 +12,7 @@ import { NationalSocietiesListPage } from '../nationalSocieties/NationalSocietie
 import { accessMap } from '../../authentication/accessMap';
 import { NationalSocietiesCreatePage } from '../nationalSocieties/NationalSocietiesCreatePage';
 import { NationalSocietiesEditPage } from '../nationalSocieties/NationalSocietiesEditPage';
+import { NationalSocietiesDashboardPage } from '../nationalSocieties/NationalSocietiesDashboardPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -21,8 +22,9 @@ export const App = ({ history }) => (
 
         <AuthRoute exact path='/' component={Home} />
         <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />
-        <AuthRoute path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />
-        <AuthRoute path='/nationalsocieties/:nationalSocietyId/edit' component={NationalSocietiesEditPage} roles={accessMap.nationalSocieties.edit} />
+        <AuthRoute exact path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />
+        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId' component={NationalSocietiesDashboardPage} roles={accessMap.nationalSocieties.add} />
+        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/edit' component={NationalSocietiesEditPage} roles={accessMap.nationalSocieties.edit} />
       </Switch>
     </ConnectedRouter>
   </ThemeProvider>

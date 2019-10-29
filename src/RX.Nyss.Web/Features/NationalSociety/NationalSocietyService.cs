@@ -18,7 +18,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties();
         Task<Result<NationalSocietyResponseDto>> GetNationalSociety(int id);
         Task<IEnumerable<ContentLanguage>> GetLanguages();
-        Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
+        Task<Result<int>> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
         Task<Result> EditNationalSociety(EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
     }
@@ -92,7 +92,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
             }
         }
 
-        public async Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSocietyReq)
+        public async Task<Result<int>> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSocietyReq)
         {
             try
             {
@@ -107,18 +107,18 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
                 if (nationalSociety.ContentLanguage == null)
                 {
-                    return Error(ResultKey.NationalSociety.Creation.LanguageNotDefined);
+                    return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotDefined);
                 }
 
-                await _nyssContext.AddAsync(nationalSociety);
+                var entity = await _nyssContext.AddAsync(nationalSociety);
                 await _nyssContext.SaveChangesAsync();
                 _loggerAdapter.Info($"A national society {nationalSociety} was created");
-                return Success(ResultKey.NationalSociety.Creation.Success);
+                return Success(entity.Entity.Id);
             }
             catch (Exception e)
             {
                 _loggerAdapter.Debug(e);
-                return HandleException(e);
+                return HandleException(e).Cast<int>();
             }
         }
 

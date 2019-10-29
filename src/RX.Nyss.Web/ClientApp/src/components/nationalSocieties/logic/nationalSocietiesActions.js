@@ -1,10 +1,11 @@
 import { push } from "connected-react-router";
-import { GET_NATIONAL_SOCIETIES, CREATE_NATIONAL_SOCIETY, REMOVE_NATIONAL_SOCIETY } from "./nationalSocietiesConstants";
+import { GET_NATIONAL_SOCIETIES, CREATE_NATIONAL_SOCIETY, REMOVE_NATIONAL_SOCIETY, OPEN_NATIONAL_SOCIETY_DASHBOARD } from "./nationalSocietiesConstants";
 import { OPEN_EDITION_NATIONAL_SOCIETY, EDIT_NATIONAL_SOCIETY } from "./nationalSocietiesConstants";
 
 export const goToCreation = () => push("/nationalsocieties/add");
 export const goToList = () => push("/nationalsocieties");
 export const goToEdition = (id) => push(`/nationalsocieties/${id}/edit`);
+export const goToDashboard = (id) => push(`/nationalsocieties/${id}`);
 
 export const getList = {
   invoke: (userName, password, redirectUrl) => ({ type: GET_NATIONAL_SOCIETIES.INVOKE, userName, password, redirectUrl }),
@@ -30,8 +31,15 @@ export const edit = {
 export const openEdition = {
   invoke: ({ path, params }) => ({ type: OPEN_EDITION_NATIONAL_SOCIETY.INVOKE, path, params }),
   request: () => ({ type: OPEN_EDITION_NATIONAL_SOCIETY.REQUEST }),
-  success: (data) => ({ type: OPEN_EDITION_NATIONAL_SOCIETY.SUCCESS, data }),
+  success: (name) => ({ type: OPEN_EDITION_NATIONAL_SOCIETY.SUCCESS, name }),
   failure: (message) => ({ type: OPEN_EDITION_NATIONAL_SOCIETY.FAILURE, message })
+};
+
+export const openDashbaord = {
+  invoke: (path, params) => ({ type: OPEN_NATIONAL_SOCIETY_DASHBOARD.INVOKE, path, params }),
+  request: () => ({ type: OPEN_NATIONAL_SOCIETY_DASHBOARD.REQUEST }),
+  success: (name) => ({ type: OPEN_NATIONAL_SOCIETY_DASHBOARD.SUCCESS, name }),
+  failure: (message) => ({ type: OPEN_NATIONAL_SOCIETY_DASHBOARD.FAILURE, message })
 };
 
 export const remove = {

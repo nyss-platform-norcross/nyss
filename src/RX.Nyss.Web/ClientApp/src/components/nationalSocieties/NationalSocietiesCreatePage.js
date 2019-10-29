@@ -25,10 +25,10 @@ const NationalSocietiesCreatePageComponent = (props) => {
     };
 
     const validation = {
-      name: [validators.required, validators.minLength(3)],
+      name: [validators.required, validators.minLength(1)],
       contentLanguageId: [validators.required],
       countryId: [validators.required]
-  };
+    };
 
     return createForm(fields, validation);
   });
@@ -56,9 +56,9 @@ const NationalSocietiesCreatePageComponent = (props) => {
     <Fragment>
       <Typography variant="h2">Add National Society</Typography>
 
-      {props.loginResponse &&
+      {props.error &&
         <SnackbarContent
-          message={props.loginResponse}
+          message={props.error}
         />
       }
 
@@ -108,6 +108,7 @@ NationalSocietiesCreatePageComponent.propTypes = {
 
 const mapStateToProps = state => ({
   contentLanguages: state.appData.contentLanguages,
+  error: state.nationalSocieties.formError,
   isSaving: state.nationalSocieties.formSaving
 });
 

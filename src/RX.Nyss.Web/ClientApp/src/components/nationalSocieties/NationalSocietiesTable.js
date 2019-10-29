@@ -1,3 +1,4 @@
+import styles from '../common/table/Table.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
@@ -11,7 +12,7 @@ import dayjs from "dayjs"
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 
-export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
+export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition, goToDashboard, remove, list }) => {
   if (isListFetching) {
     return <Loading />
   }
@@ -30,7 +31,7 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
       </TableHead>
       <TableBody>
         {list.map(row => (
-          <TableRow key={row.id} hover>
+          <TableRow key={row.id} hover onClick={() => goToDashboard(row.id)} className={styles.clickableRow}>
             <TableCell>{row.name}</TableCell>
             <TableCell>{row.country}</TableCell>
             <TableCell>{dayjs(row.startDate).format("YYYY-MM-DD")}</TableCell>

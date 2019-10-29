@@ -30,6 +30,7 @@ const NationalSocietiesListPageComponent = (props) => {
       <NationalSocietiesTable
         list={props.list}
         goToEdition={props.goToEdition}
+        goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
         isRemoving={props.isRemoving}
         remove={props.remove}
@@ -57,6 +58,7 @@ const mapDispatchToProps = {
   getList: nationalSocietiesActions.getList.invoke,
   goToCreation: nationalSocietiesActions.goToCreation,
   goToEdition: nationalSocietiesActions.goToEdition,
+  goToDashboard: nationalSocietiesActions.goToDashboard,
   remove: nationalSocietiesActions.remove.invoke,
   openModule: appActions.openModule.invoke
 };

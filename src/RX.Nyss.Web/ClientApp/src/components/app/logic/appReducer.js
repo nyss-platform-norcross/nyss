@@ -21,18 +21,6 @@ export function appReducer(state = initialState.appData, action) {
           : null
       }
 
-    case "@@router/LOCATION_CHANGE":
-      return {
-        ...state,
-        siteMap: {
-          path: "/",
-          parameters: {},
-          breadcrumb: [],
-          topMenu: [],
-          sideMenu: []
-        }
-      }
-
     case actions.OPEN_MODULE.INVOKE:
       return {
         ...state,
