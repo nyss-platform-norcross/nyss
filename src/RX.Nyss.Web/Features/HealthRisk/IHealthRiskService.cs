@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using RX.Nyss.Web.Features.HealthRisk.Dto;
+using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.HealthRisk
 {

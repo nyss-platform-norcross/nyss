@@ -89,6 +89,12 @@
             }
         }
 
+        public static class HealthRisk
+        {
+            public const string CreationSuccess = "healthRisk.create.success";
+            public const string CreationError = "healthRisk.create.error";
+        }
+
         public const string UnexpectedError = "unexpectedError";
     }
 }
