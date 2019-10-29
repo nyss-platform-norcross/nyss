@@ -21,10 +21,13 @@ namespace RX.Nyss.Web.Features.UserVerification
         [HttpPost, Route("verifyEmailAndAddPassword"), AllowAnonymous]
         public async Task<Result> VerifyAndStorePassword([FromBody] VerifyAndStorePasswordRequestDto request)
         {
-            var verificationResult = await _identityUserRegistrationService.VerifyEmail(request.Email, request.VerificationToken);
-            var passwordAddResult = await _identityUserRegistrationService.AddPassword(request.Email, request.NewPassword);
+            var verificationResult = await _identityUserRegistrationService.VerifyEmail(request.Email, request.Token);
+            if (!verificationResult.IsSuccess)
+            {
+                return verificationResult;
+            }
 
-            return new Result(true, "VerifyEmailAndAddPassword.Success", new { verificationResult, passwordAddResult });
+            return await _identityUserRegistrationService.AddPassword(request.Email, request.Password);
         }
     }
 }

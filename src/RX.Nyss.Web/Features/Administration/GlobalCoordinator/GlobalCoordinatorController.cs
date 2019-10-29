@@ -40,10 +40,8 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
                 return result;
             }
 
-            var verificationUrl = new Uri(_config.VerificationCallbackUrl + 
-                                          $"?verificationToken={WebUtility.UrlEncode(securityStamp)}" + 
-                                          $"&email={WebUtility.UrlEncode(dto.Email)}", 
-                UriKind.Absolute).ToString();
+            var baseUrl = new Uri(_config.BaseUrl);
+            var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(dto.Email)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
 
             var (emailSubject, emailBody) = EmailTextGenerator.GenerateEmailVerificationEmail(
                 Role.GlobalCoordinator.ToString(),

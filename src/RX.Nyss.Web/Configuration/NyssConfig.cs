@@ -2,7 +2,7 @@
 {
     public interface IConfig
     {
-        string VerificationCallbackUrl { get; set; }
+        string BaseUrl { get; set; }
         NyssConfig.LoggingOptions Logging { get; set; }
         NyssConfig.ConnectionStringOptions ConnectionStrings { get; set; }
         NyssConfig.AuthenticationOptions Authentication { get; set; }
@@ -11,7 +11,7 @@
 
     public class NyssConfig : IConfig
     {
-        public string VerificationCallbackUrl { get; set; }
+        public string BaseUrl { get; set; }
         public LoggingOptions Logging { get; set; }
         public ConnectionStringOptions ConnectionStrings { get; set; }
         public AuthenticationOptions Authentication { get; set; }

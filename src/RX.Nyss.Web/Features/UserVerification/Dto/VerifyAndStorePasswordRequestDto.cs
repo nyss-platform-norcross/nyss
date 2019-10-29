@@ -3,7 +3,7 @@
     public class VerifyAndStorePasswordRequestDto
     {
         public string Email { get; set; }
-        public string VerificationToken { get; set; }
-        public string NewPassword { get; set; }
+        public string Token { get; set; }
+        public string Password { get; set; }
     }
 }

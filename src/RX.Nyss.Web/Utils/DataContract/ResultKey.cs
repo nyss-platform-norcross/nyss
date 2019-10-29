@@ -18,30 +18,22 @@
                 public const string UnknownError = "user.registration.unknownError";
             }
 
-        }
+            public static class ResetPassword
+            {
+                public const string Success = "user.resetPassword.success";
+                public const string Failed = "user.resetPassword.failed";
+            }
 
-        public static class Password
-        {
-            public static class Reset
+            public static class VerifyEmail
             {
-                public const string Success = "password.reset.success";
-                public static string Failed = "password.reset.failed";
-            }
-            public static class Add
-            {
-                public const string Success = "password.add.success";
-                public static string Failed = "password.add.failed";
+                public const string Success = "user.verifyEmail.success";
+                public const string Failed = "user.verifyEmail.failed";
+                public const string NotFound = "user.verifyEmail.notfound";
+                public const string AddPasswordSuccess = "user.verifyEmail.passwordAddedSuccess";
+                public const string AddPasswordFailed = "user.verifyEmail.passwordAddedFailed";
             }
         }
-        public static class Email
-        {
-            public static class Verification
-            {
-                public const string Success = "email.verification.success";
-                public static string Failed = "email.verification.failed";
-            }
-        }
-
+        
         public static class Login
         {
             public const string NotSucceeded = "login.notSucceeded";

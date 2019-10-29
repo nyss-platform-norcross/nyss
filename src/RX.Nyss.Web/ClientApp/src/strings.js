@@ -1,10 +1,18 @@
+import { verifyEmail } from "./authentication/authActions";
+
 let stringList = {
   "login.signIn": "Log innnn",
   "login.password": "Password",
   "login.forgotPassword": "Forgot password?",
   "login.notSucceeded": "Invalid user name or password",
   "validation.validationError": "There was a problem with validation",
-  "login.lockedOut": "Your account has been locked for 5 minutes due to too many failed login attempts. Please reset your password or try again later."
+  "login.lockedOut": "Your account has been locked for 5 minutes due to too many failed login attempts. Please reset your password or try again later.",
+  "user.verifyEmail.setPassword": "Please set your password",
+  "user.verifyEmail.welcome": "Welcome to Nyss",
+  "user.verifyEmail.signIn": "Log in",
+  "user.verifyEmail.password": "Password",
+  "user.verifyEmail.failed": "Could not verify email address",
+  "user.registration.passwordTooWeak": "Password is too weak"
 };
 
 export const stringKeys = {
@@ -14,6 +22,18 @@ export const stringKeys = {
     forgotPassword: "login.forgotPassword",
     notSucceeded: "login.notSucceeded",
     lockedOut: "login.lockedOut"
+  },
+  user: {
+    verifyEmail: {
+      setPassword: "user.verifyEmail.setPassword",
+      welcome: "user.verifyEmail.welcome",
+      signIn: "user.verifyEmail.signIn",
+      password: "user.verifyEmail.password",
+      failed: "user.verifyEmail.failed"
+    },
+    registration: {
+      passwordTooWeak: "user.registration.passwordTooWeak"
+    }
   }
 };
 
