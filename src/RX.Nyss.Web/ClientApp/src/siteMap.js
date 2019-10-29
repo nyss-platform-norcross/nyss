@@ -35,8 +35,16 @@ const siteMap = [
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
-    path: "/projects/:projectId",
-    title: "{projectName}",
+    path: "/nationalsocieties/:nationalSocietyId/projects",
+    title: "Projects",
+    placeholder: placeholders.leftMenu,
+    access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId",
+    path: "/nationalsocieties/:nationalSocietyId/overview",
+    title: "Settings",
+    placeholder: placeholders.leftMenu,
     access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
   },
   {
@@ -59,7 +67,7 @@ export const getMenu = (path, siteMapParameters, placeholder, currentPath) => {
     .filter(item => item.parentPath === path && item.placeholder && item.placeholder === placeholder)
     .map(item => ({
       title: item.title,
-      url: item.path,
+      url: getUrl(item.path, siteMapParameters),
       isActive: breadcrumb.some(b => b.path === item.path)
     }))
 };
@@ -86,7 +94,7 @@ export const getBreadcrumb = (path, siteMapParameters) => {
       hierarchy.splice(0, 0, {
         path: currentItem.path,
         title: getTitle(currentItem.title, siteMapParameters),
-        url: currentItem.path,
+        url: getUrl(currentItem.path, siteMapParameters),
         isActive: currentItem.path === path
       });
     }
@@ -105,6 +113,14 @@ const getTitle = (template, params) => {
   let result = template;
   for (let key in params) {
     result = result.replace(`{${key}}`, params[key])
+  }
+  return result;
+}
+
+const getUrl = (template, params) => {
+  let result = template;
+  for (let key in params) {
+    result = result.replace(`:${key}`, params[key])
   }
   return result;
 }

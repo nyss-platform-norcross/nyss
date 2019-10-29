@@ -7,11 +7,11 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom'
-import { getMenu, placeholders } from '../../siteMap';
+import { push } from "connected-react-router";
 
-const SideMenuComponent = ({ sideMenu }) => {
+const SideMenuComponent = ({ sideMenu, push }) => {
   const onItemClick = (item) => {
-
+    push(item.url);
   };
 
   return (
@@ -25,8 +25,8 @@ const SideMenuComponent = ({ sideMenu }) => {
 
       {sideMenu.length !== 0 && (
         <List component="nav" className={styles.list}>
-          {sideMenu.map(item => (
-            <ListItem button onClick={() => onItemClick(item)}>
+          {sideMenu.map((item, index) => (
+            <ListItem key={`sideMenuItem_${index}`} button onClick={() => onItemClick(item)}>
               <ListItemText primary={item.title} />
             </ListItem>
           ))}
@@ -45,4 +45,8 @@ const mapStateToProps = state => ({
   sideMenu: state.appData.siteMap.sideMenu
 });
 
-export const SideMenu = connect(mapStateToProps)(SideMenuComponent);
+const mapDispatchToProps = {
+  push: push
+};
+
+export const SideMenu = connect(mapStateToProps, mapDispatchToProps)(SideMenuComponent);
