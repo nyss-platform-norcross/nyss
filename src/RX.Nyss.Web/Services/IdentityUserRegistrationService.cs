@@ -81,10 +81,10 @@ namespace RX.Nyss.Web.Services
 
             if (!passwordAddResult.Succeeded)
             {
-                return Result.Error(ResultKey.User.VerifyEmail.AddPasswordFailed);
+                return Result.Error(ResultKey.User.VerifyEmail.AddPassword.Failed);
             }
 
-            return new Result(true, ResultKey.User.VerifyEmail.AddPasswordSuccess, passwordAddResult);
+            return new Result(true, ResultKey.User.VerifyEmail.AddPassword.Success, passwordAddResult);
         }
 
         public async Task<Result> ResetPassword(string email, string verificationToken, string newPassword)

@@ -8,7 +8,7 @@ using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.UserVerification
 {
-    [Route("api/userverification")]
+    [Route("api/userVerification")]
     public class UserVerificationController : BaseController
     {
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
@@ -18,7 +18,7 @@ namespace RX.Nyss.Web.Features.UserVerification
             _identityUserRegistrationService = identityUserRegistrationService;
         }
 
-        [HttpPost, Route("verifyEmailAndAddPassword"), AllowAnonymous]
+        [HttpPost("verifyEmailAndAddPassword"), AllowAnonymous]
         public async Task<Result> VerifyAndStorePassword([FromBody] VerifyAndStorePasswordRequestDto request)
         {
             var verificationResult = await _identityUserRegistrationService.VerifyEmail(request.Email, request.Token);

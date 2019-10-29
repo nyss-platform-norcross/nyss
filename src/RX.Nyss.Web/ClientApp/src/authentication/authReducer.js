@@ -11,7 +11,7 @@ export function authReducer(state = initialState.auth, action) {
     case actions.VERIFY_EMAIL.FAILURE:
       return {
         ...state,
-        errorMessage: action.message
+        verifyEmailErrorMessage: action.message
       };
 
     default:

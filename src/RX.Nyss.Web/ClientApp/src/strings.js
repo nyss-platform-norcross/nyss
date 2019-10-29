@@ -12,7 +12,11 @@ let stringList = {
   "user.verifyEmail.signIn": "Log in",
   "user.verifyEmail.password": "Password",
   "user.verifyEmail.failed": "Could not verify email address",
-  "user.registration.passwordTooWeak": "Password is too weak"
+  "user.verifyEmail.addPassword.failed": "There was a problem with creating password",
+  "user.verifyEmail.addPassword.success": "Password has been created",
+  "user.registration.passwordTooWeak": "Password is too weak",
+  "user.resetPassword.success": "Password has been reset, please check your email", 
+  "user.resetPassword.failed": "Password reset failed"
 };
 
 export const stringKeys = {
@@ -33,6 +37,10 @@ export const stringKeys = {
     },
     registration: {
       passwordTooWeak: "user.registration.passwordTooWeak"
+    },
+    resetPassword: {
+      success: "user.resetPassword.success",
+      failed: "user.resetPassword.failed"
     }
   }
 };

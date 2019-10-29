@@ -7,6 +7,7 @@ namespace RX.Nyss.FuncApp.Contracts
         public bool SandboxMode { get; set; }
         public List<MailjetEmail> Messages { get; set; }
     }
+
     public class MailjetEmail
     {
         public MailjetContact From { get; set; }

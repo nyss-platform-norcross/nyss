@@ -53,9 +53,9 @@ class VerifyEmailPageComponent extends PureComponent {
             <Typography variant="h1" className={styles.paperHeader}>{strings(stringKeys.user.verifyEmail.welcome)}</Typography>
             <Typography variant="h2">{strings(stringKeys.user.verifyEmail.setPassword)}</Typography>
 
-            {this.props.errorMessage &&
+            {this.props.verifyEmailErrorMessage &&
               <SnackbarContent
-                message={this.props.errorMessage}
+                message={this.props.verifyEmailErrorMessage}
               />
             }
 
@@ -82,11 +82,11 @@ class VerifyEmailPageComponent extends PureComponent {
 
 VerifyEmailPageComponent.propTypes = {
   verifyEmail: PropTypes.func,
-  errorMessage: PropTypes.string
+  verifyEmailErrorMessage: PropTypes.string
 };
 
 const mapStateToProps = state => ({
-  errorMessage: state.auth.errorMessage
+  verifyEmailErrorMessage: state.auth.verifyEmailErrorMessage
 });
 
 const mapDispatchToProps = {

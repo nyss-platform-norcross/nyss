@@ -63,11 +63,7 @@ namespace RX.Nyss.Web.Configuration
 
         private static void RegisterAuth(IServiceCollection serviceCollection, NyssConfig.AuthenticationOptions authenticationOptions)
         {
-            serviceCollection.AddIdentity<IdentityUser, IdentityRole>(config =>
-                {
-                    config.SignIn.RequireConfirmedEmail = true;
-                    config.User.RequireUniqueEmail = true;
-                })
+            serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -77,6 +73,7 @@ namespace RX.Nyss.Web.Configuration
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = false;
                 options.SignIn.RequireConfirmedEmail = true;
+                options.User.RequireUniqueEmail = true;
             });
 
             serviceCollection.AddAuthentication(options =>

@@ -28,9 +28,13 @@
             {
                 public const string Success = "user.verifyEmail.success";
                 public const string Failed = "user.verifyEmail.failed";
-                public const string NotFound = "user.verifyEmail.notfound";
-                public const string AddPasswordSuccess = "user.verifyEmail.passwordAddedSuccess";
-                public const string AddPasswordFailed = "user.verifyEmail.passwordAddedFailed";
+                public const string NotFound = "user.verifyEmail.notFound";
+
+                public static class AddPassword
+                {
+                    public const string Success = "user.verifyEmail.addPassword.success";
+                    public const string Failed = "user.verifyEmail.addPassword.failed";
+                }
             }
         }
         

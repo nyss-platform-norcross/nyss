@@ -39,6 +39,7 @@ namespace RX.Nyss.FuncApp.Services
                 sandboxMode = !IsWhitelisted(whitelistedEmailAddresses, message.To.Email);
             }
 
+            _logger.LogDebug($"Sending email to '{message.To.Email.Substring(0, Math.Min(message.To.Email.Length, 4))}...' SandboxMode: {sandboxMode}");
             return await _emailClient.SendEmail(message, sandboxMode);
         }
 
