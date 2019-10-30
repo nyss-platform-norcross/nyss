@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
     public class NationalSocietyAccessHandler : AuthorizationHandler<NationalSocietyAccessRequirement>
     {
         private const string RouteValueName = "nationalSocietyId";
-        private const string ClaimTemplate = "nationalSociety:{nationalSocietyId}";
+        public static readonly ResourceType ResourceType = ResourceType.NationalSociety;
 
         private readonly IEnumerable<string> _rolesWithAccessToAllNationalSocieties;
         protected readonly IHttpContextAccessor _httpContextAccessor;
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
         }
 
         private bool HasAccessToSpecificNationalSociety(AuthorizationHandlerContext context, string routeValue) => 
-            context.User.Claims.Any(c => c.Type == ClaimType.ResourceAccess && c.Value == ClaimTemplate.Replace($"{{{RouteValueName}}}", routeValue));
+            context.User.Claims.Any(c => c.Type == ClaimType.ResourceAccess && c.Value == $"{ResourceType}:{routeValue}");
 
         private bool HasAccessToAllNationalSocieties(AuthorizationHandlerContext context) => 
             context.User.Claims.Any(c => c.Type == ClaimTypes.Role && _rolesWithAccessToAllNationalSocieties.Contains(c.Value));

@@ -2,14 +2,12 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication.Dto;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
@@ -96,7 +94,7 @@ namespace RX.Nyss.Web.Features.Authentication
         private async Task<List<Claim>> GetNationalSocietyClaims(IdentityUser identityUser) =>
             await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.User.IdentityUserId == identityUser.Id)
-                .Select(uns => new Claim(ClaimType.ResourceAccess, $"nationalSociety:{uns.NationalSocietyId}"))
+                .Select(uns => new Claim(ClaimType.ResourceAccess, $"{ResourceType.NationalSociety}:{uns.NationalSocietyId}"))
                 .ToListAsync();
     }
 }

@@ -5,7 +5,7 @@ namespace RX.Nyss.Web.Utils
 {
     public class NeedsPolicyAttribute : AuthorizeAttribute
     {
-        public NeedsPolicyAttribute(Policies policy)
+        public NeedsPolicyAttribute(Policy policy)
         {
             Policy = policy.ToString();
         }

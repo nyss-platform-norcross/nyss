@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.Web.Features.Authentication.Policies
 {
-    public enum Policies
+    public enum Policy
     {
         NationalSocietyAccess
     }

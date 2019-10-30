@@ -95,7 +95,7 @@ namespace RX.Nyss.Web.Configuration
             
             serviceCollection.AddAuthorization(options =>
             {
-                options.AddPolicy(Policies.NationalSocietyAccess.ToString(),
+                options.AddPolicy(Policy.NationalSocietyAccess.ToString(),
                     policy => policy.Requirements.Add(new NationalSocietyAccessRequirement()));
             });
 
