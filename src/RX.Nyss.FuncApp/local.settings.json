@@ -9,12 +9,14 @@
     "SERVICEBUS_SENDEMAILQUEUE": "nrx-cbs-dev-nyss-bus-send-email-queue",
     "InternalApiReportUrl": "http://localhost:7071/api/report",
     "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys",
-    "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses",
-    "MailjetApiKey": "",
-    "MailjetApiSecret": "",
-    "MailjetFromAddress": "",
-    "MailjetFromName": "Nyss Platform",
-    "MailjetSendToAll": "False",
-    "MailjetSendMailUrl": "https://api.mailjet.com/v3.1/send"
+    "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses"
+  },
+  "MailjetConfig": {
+    "ApiKey": "",
+    "ApiSecret": "",
+    "FromAddress": "",
+    "FromName": "Nyss Platform",
+    "SendToAll": "False",
+    "SendMailUrl": "https://api.mailjet.com/v3.1/send"
   }
 }

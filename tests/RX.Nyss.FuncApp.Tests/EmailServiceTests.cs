@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 using RX.Nyss.FuncApp.Services;
 using Xunit;
@@ -13,13 +14,14 @@ namespace RX.Nyss.FuncApp.Tests
     {
         private readonly IEmailService _emailService;
         private readonly ILogger<EmailService> _loggerMock;
-        private readonly IConfiguration _configurationMock;
+        private readonly INyssFuncappConfig _configurationMock;
         private readonly IMailjetEmailClient _mailjetEmailClientMock;
 
         public EmailServiceTests()
         {
             _loggerMock = Substitute.For<ILogger<EmailService>>();
-            _configurationMock = Substitute.For<IConfiguration>();
+            _configurationMock = Substitute.For<INyssFuncappConfig>();
+            _configurationMock.MailjetConfig = new NyssFuncappConfig.MailjetConfigOptions();
             _mailjetEmailClientMock = Substitute.For<IMailjetEmailClient>();
             _emailService = new EmailService(
                 _loggerMock, 
@@ -31,17 +33,10 @@ namespace RX.Nyss.FuncApp.Tests
         [InlineData("user@example.com")]
         public async Task SendEmailWithMailjet_WhenSendToAllFlagIsMissing_ShouldUseSandboxModeAndLogWarning(string email)
         {
-            // Actual
+            // Act
             var result = await _emailService.SendEmailWithMailjet(new SendEmailMessage{To = new Contact{ Email = email }}, "hey@example.com");
 
             // Assert
-            _loggerMock.Received(1).Log(
-                LogLevel.Warning,
-                Arg.Any<EventId>(),
-                Arg.Is<object>(o => o.ToString() == "Failed parsing SendToAll config, will only send to whitelisted emails"),
-                null,
-                Arg.Any<Func<object, Exception, string>>());
-
             await _mailjetEmailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true));
         }
 
@@ -49,7 +44,7 @@ namespace RX.Nyss.FuncApp.Tests
         [InlineData("user@example.com")]
         public async Task SendEmailWithMailjet_WhenSendToAllIsFalse_ShouldUseSandboxMode(string email)
         {
-            // Actual
+            // Act
             var result = await _emailService.SendEmailWithMailjet(new SendEmailMessage{To = new Contact{ Email = email }}, "");
 
             // Assert
@@ -68,7 +63,7 @@ namespace RX.Nyss.FuncApp.Tests
             donald.duck@example.com
             some@email.no";
 
-            // Actual
+            // Act
             var result = await _emailService.SendEmailWithMailjet(new SendEmailMessage{To = new Contact{ Email = email }}, whitelist);
 
             // Assert
@@ -82,13 +77,13 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmailWithMailjet_WhenSendToAllIsTrue_ShouldSendToAll(string email)
         {
             // Arrange
-            _configurationMock["MailjetSendToAll"].Returns("True");
+            _configurationMock.MailjetConfig.SendToAll = true;
             var whitelist = @"
             user@example.com
             donald.duck@example.com
             some@email.no";
 
-            // Actual
+            // Act
             var result = await _emailService.SendEmailWithMailjet(new SendEmailMessage{To = new Contact{ Email = email }}, whitelist);
 
             // Assert

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 
 namespace RX.Nyss.FuncApp.Services
@@ -17,9 +17,9 @@ namespace RX.Nyss.FuncApp.Services
     public class MailjetEmailClient : IMailjetEmailClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IConfiguration _config;
+        private readonly INyssFuncappConfig _config;
 
-        public MailjetEmailClient(IHttpClientFactory httpClientFactory, IConfiguration config)
+        public MailjetEmailClient(IHttpClientFactory httpClientFactory, INyssFuncappConfig config)
         {
             _httpClientFactory = httpClientFactory;
             _config = config;
@@ -35,16 +35,16 @@ namespace RX.Nyss.FuncApp.Services
                     new MailjetEmail
                     {
                         To = new List<MailjetContact> {new MailjetContact {Email = message.To.Email, Name = message.To.Name}},
-                        From = new MailjetContact {Email = _config["MailjetFromAddress"], Name = _config["MailjetFromName"]},
+                        From = new MailjetContact {Email = _config.MailjetConfig.FromAddress, Name = _config.MailjetConfig.FromName},
                         Subject = message.Subject,
                         HTMLPart = message.Body
                     }
                 }
             };
 
-            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config["MailjetApiKey"]}:{_config["MailjetApiSecret"]}"));
+            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
 
-            return await PostJsonAsync(new Uri(_config["MailjetSendMailUrl"], UriKind.Absolute), mailjetRequest, new[]
+            return await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
             {
                 ("Authorization", basicAuthHeader)
             });

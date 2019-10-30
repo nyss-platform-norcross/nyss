@@ -1,14 +1,14 @@
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyModel;
 using RX.Nyss.FuncApp;
+using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Services;
 
 [assembly: FunctionsStartup(typeof(Startup))]
+
 namespace RX.Nyss.FuncApp
 {
     public class Startup : FunctionsStartup
@@ -38,10 +38,11 @@ namespace RX.Nyss.FuncApp
                 .AddJsonFile(localSettingsFile, true, true)
                 .AddUserSecrets(Assembly.GetExecutingAssembly(), false)
                 .AddConfiguration(configuration);
-            
-            var newConfiguration = configurationBuilder.Build();
 
+            var newConfiguration = configurationBuilder.Build();
+            var nyssFuncAppConfig = newConfiguration.Get<NyssFuncappConfig>();
             builder.Services.AddSingleton<IConfiguration>(newConfiguration);
+            builder.Services.AddSingleton<INyssFuncappConfig>(nyssFuncAppConfig);
             builder.Services.AddHttpClient();
             builder.Services.AddLogging();
         }
