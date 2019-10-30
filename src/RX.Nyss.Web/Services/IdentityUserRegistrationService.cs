@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using RX.Nyss.Data.Concepts;
-
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Services
 {
@@ -49,17 +49,17 @@ namespace RX.Nyss.Web.Services
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return Result.Error(ResultKey.User.VerifyEmail.NotFound);
+                return Error(ResultKey.User.VerifyEmail.NotFound);
             }
 
             var confirmationResult = await _userManager.ConfirmEmailAsync(user, verificationToken);
 
             if (!confirmationResult.Succeeded)
             {
-                return Result.Error(ResultKey.User.VerifyEmail.Failed, string.Join(", " ,confirmationResult.Errors.Select(x => x.Description)));
+                return Error(ResultKey.User.VerifyEmail.Failed, string.Join(", " ,confirmationResult.Errors.Select(x => x.Description)));
             }
 
-            return new Result(true, ResultKey.User.VerifyEmail.Success, confirmationResult);
+            return Success(true, ResultKey.User.VerifyEmail.Success, confirmationResult);
         }
 
         public async Task<string> GeneratePasswordResetToken(string email)
@@ -76,15 +76,15 @@ namespace RX.Nyss.Web.Services
             var isPasswordTooWeak = passwordAddResult.Errors.Any(x => x.IsPasswordTooWeak());
             if (isPasswordTooWeak)
             { 
-                return Result.Error(ResultKey.User.Registration.PasswordTooWeak, string.Join(", ", passwordAddResult.Errors.Select(x => x.Description)));
+                return Error(ResultKey.User.Registration.PasswordTooWeak, string.Join(", ", passwordAddResult.Errors.Select(x => x.Description)));
             }
 
             if (!passwordAddResult.Succeeded)
             {
-                return Result.Error(ResultKey.User.VerifyEmail.AddPassword.Failed);
+                return Error(ResultKey.User.VerifyEmail.AddPassword.Failed);
             }
 
-            return new Result(true, ResultKey.User.VerifyEmail.AddPassword.Success, passwordAddResult);
+            return Success(true, ResultKey.User.VerifyEmail.AddPassword.Success, passwordAddResult);
         }
 
         public async Task<Result> ResetPassword(string email, string verificationToken, string newPassword)
@@ -97,7 +97,7 @@ namespace RX.Nyss.Web.Services
                 throw new ResultException(ResultKey.User.ResetPassword.Failed, passwordChangeResult);
             }
 
-            return new Result(true, ResultKey.User.ResetPassword.Success, passwordChangeResult);
+            return Success(true, ResultKey.User.ResetPassword.Success, passwordChangeResult);
         }
 
         private async Task<IdentityUser> AddIdentityUser(string email, bool emailConfirmed = false)
