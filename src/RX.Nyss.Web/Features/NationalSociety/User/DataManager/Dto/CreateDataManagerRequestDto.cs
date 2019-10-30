@@ -1,6 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.NationalSociety.User.Dto.Create
+﻿namespace RX.Nyss.Web.Features.NationalSociety.User.DataManager.Dto
 {
-    public abstract class CreateNationalSocietyUserRequestDto
+    public class CreateDataManagerRequestDto :ICreateNationalSocietyUserRequestDto
     {
         public string Email { get; set; }
         public string Name { get; set; }

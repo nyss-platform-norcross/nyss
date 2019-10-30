@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
-using RX.Nyss.Web.Features.NationalSociety.User.Dto.Create;
+using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.NationalSociety.User.DataManager.Dto;
 
-namespace RX.Nyss.Web.Features.NationalSociety.User.Validators.Create
+namespace RX.Nyss.Web.Features.NationalSociety.User.DataManager.Validators
 {
-    public class CreateNationalSocietyUserValidator : AbstractValidator<CreateNationalSocietyUserRequestDto>
+    public class CreateDataManagerValidator : AbstractValidator<CreateDataManagerRequestDto>
     {
-        public CreateNationalSocietyUserValidator()
+        public CreateDataManagerValidator()
         {
             RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
             RuleFor(m => m.Email).NotEmpty().MaximumLength(100).EmailAddress();

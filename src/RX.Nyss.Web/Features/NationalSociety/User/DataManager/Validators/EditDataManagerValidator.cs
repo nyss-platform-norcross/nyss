@@ -1,11 +1,11 @@
 ﻿using FluentValidation;
-using RX.Nyss.Web.Features.NationalSociety.User.Dto.Edit;
+using RX.Nyss.Data.Models;
 
-namespace RX.Nyss.Web.Features.NationalSociety.User.Validators.Edit
+namespace RX.Nyss.Web.Features.NationalSociety.User.DataManager.Validators
 {
-    public class EditNationalSocietyUserValidator : AbstractValidator<EditNationalSocietyUserRequestDto>
+    public class EditDataManagerValidator : AbstractValidator<DataManagerUser>
     {
-        public EditNationalSocietyUserValidator()
+        public EditDataManagerValidator()
         {
             RuleFor(m => m.Id).NotEmpty();
             RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
