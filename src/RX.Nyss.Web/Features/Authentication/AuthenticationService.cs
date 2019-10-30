@@ -2,15 +2,12 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication.Dto;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
@@ -40,7 +37,7 @@ namespace RX.Nyss.Web.Features.Authentication
             try
             {
                 var user = await _userIdentityService.Login(dto.UserName, dto.Password);
-                var roles = await _userIdentityService.GetRoles(user);
+                var roles = await GetRoles(user);
                 var additionalClaims = await GetAdditionalClaims(user);
                 var accessToken = _userIdentityService.CreateToken(user.UserName, roles, additionalClaims);
 
@@ -53,6 +50,15 @@ namespace RX.Nyss.Web.Features.Authentication
             {
                 return exception.GetResult<LoginResponseDto>();
             }
+        }
+
+        private async Task<IEnumerable<string>> GetRoles(IdentityUser user)
+        {
+            var userRoles = await _userIdentityService.GetRoles(user);
+
+            return await IsDataOwner(user)
+                ? userRoles.Union(new[] { FunctionalRole.DataOwner.ToString() })
+                : userRoles;
         }
 
         public Result<StatusResponseDto> GetStatus(ClaimsPrincipal user) =>
@@ -77,24 +83,18 @@ namespace RX.Nyss.Web.Features.Authentication
 
         private async Task<IEnumerable<Claim>> GetAdditionalClaims(IdentityUser identityUser)
         {
-            var isDataOwnerClaim = await GetIsDataOwnerClaim(identityUser);
-            return new[] { isDataOwnerClaim };
+            return await GetNationalSocietyClaims(identityUser);
         }
 
-        private async Task<Claim> GetIsDataOwnerClaim(IdentityUser identityUser)
-        {
-            var isDataOwner = await IsDataOwner(identityUser);
-            return new Claim(AuthenticationPolicy.IsDataOwner.ToString(), isDataOwner.ToString());
-        }
-
-        private async Task<bool> IsDataOwner(IdentityUser identityUser)
-        {
-            var nyssDataManagerUser = await _nyssContext.Users
+        private async Task<bool> IsDataOwner(IdentityUser identityUser) =>
+            await _nyssContext.Users
                 .OfType<DataManagerUser>()
-                .Where(u =>u.IdentityUserId == identityUser.Id)
-                .SingleOrDefaultAsync();
+                .AnyAsync(u => u.IdentityUserId == identityUser.Id && u.IsDataOwner);
 
-            return nyssDataManagerUser != null && nyssDataManagerUser.IsDataOwner;
-        }
+        private async Task<List<Claim>> GetNationalSocietyClaims(IdentityUser identityUser) =>
+            await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.User.IdentityUserId == identityUser.Id)
+                .Select(uns => new Claim(ClaimType.ResourceAccess, $"{ResourceType.NationalSociety}:{uns.NationalSocietyId}"))
+                .ToListAsync();
     }
 }

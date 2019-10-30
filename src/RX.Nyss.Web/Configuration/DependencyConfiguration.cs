@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +14,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
-using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using RX.Nyss.Web.Data;
 using RX.Nyss.Data;
+using RX.Nyss.Web.Data;
+using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -92,15 +92,14 @@ namespace RX.Nyss.Web.Configuration
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationOptions.Secret))
                     };
                 });
-
+            
             serviceCollection.AddAuthorization(options =>
             {
-                options.AddPolicy(AuthenticationPolicy.IsDataOwner.ToString(), policy =>
-                    policy.RequireAssertion(context =>
-                        context.User.HasClaim(c =>
-                            c.Type == AuthenticationPolicy.IsDataOwner.ToString() &&
-                            c.Value == bool.TrueString )));
+                options.AddPolicy(Policy.NationalSocietyAccess.ToString(),
+                    policy => policy.Requirements.Add(new NationalSocietyAccessRequirement()));
             });
+
+            serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
 
             serviceCollection.ConfigureApplicationCookie(options =>
             {
