@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
                 return Task.CompletedTask;
             }
 
-            if (HasAccessToSpecificNationalSociety(context, routeValue) || HasAccessToAllNationalSocieties(context))
+            if (HasAccessToSpecificNationalSociety(context, routeValue.ToString()) || HasAccessToAllNationalSocieties(context))
             {
                 context.Succeed(requirement);
             }
@@ -43,8 +43,8 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
             return Task.CompletedTask;
         }
 
-        private bool HasAccessToSpecificNationalSociety(AuthorizationHandlerContext context, object routeValue) => 
-            context.User.Claims.Any(c => c.Type == ClaimType.ResourceAccess && c.Value == ClaimTemplate.Replace(RouteValueName, $"{{{routeValue}}}"));
+        private bool HasAccessToSpecificNationalSociety(AuthorizationHandlerContext context, string routeValue) => 
+            context.User.Claims.Any(c => c.Type == ClaimType.ResourceAccess && c.Value == ClaimTemplate.Replace($"{{{RouteValueName}}}", routeValue));
 
         private bool HasAccessToAllNationalSocieties(AuthorizationHandlerContext context) => 
             context.User.Claims.Any(c => c.Type == ClaimTypes.Role && _rolesWithAccessToAllNationalSocieties.Contains(c.Value));
