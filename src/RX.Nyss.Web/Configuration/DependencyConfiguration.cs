@@ -18,8 +18,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
+using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Utils;
-using RX.Nyss.Web.Utils.AuthorizationHandler;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Serilog;
@@ -92,10 +92,14 @@ namespace RX.Nyss.Web.Configuration
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationOptions.Secret))
                     };
                 });
-
             
-            RegisterAuthorizationPolicies(serviceCollection);
+            serviceCollection.AddAuthorization(options =>
+            {
+                options.AddPolicy(Policies.NationalSocietyAccess.ToString(),
+                    policy => policy.Requirements.Add(new NationalSocietyAccessRequirement()));
+            });
 
+            serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
 
             serviceCollection.ConfigureApplicationCookie(options =>
             {
@@ -119,21 +123,6 @@ namespace RX.Nyss.Web.Configuration
             bool IsAjaxRequest(HttpRequest request) =>
                 string.Equals(request.Query["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal) ||
                 string.Equals(request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal);
-        }
-
-        private static void RegisterAuthorizationPolicies(IServiceCollection serviceCollection)
-        {
-            serviceCollection.AddAuthorization(options =>
-            {
-                options.AddPolicy(NyssAuthorizationPolicy.IsDataOwner.ToString(),
-                    policy => policy.Requirements.Add(new IsDataOwnerRequirement()));
-
-                options.AddPolicy(NyssAuthorizationPolicy.AccessToNationalSociety.ToString(),
-                    policy => policy.Requirements.Add(new AccessToNationalSocietyRequirement()));
-            });
-
-            serviceCollection.AddScoped<IAuthorizationHandler, AccessToNationalSocietyHandler>();
-            serviceCollection.AddScoped<IAuthorizationHandler, IsDataOwnerHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

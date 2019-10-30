@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Services
