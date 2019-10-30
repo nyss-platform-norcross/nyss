@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MockQueryable.NSubstitute;
+using Microsoft.EntityFrameworkCore;
+using Rx.Nyss.Web.Tests.Common;
 
 namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 {
@@ -18,8 +20,8 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
     {
         private readonly INationalSocietyService _nationalSocietyService;
 
-        private readonly INyssContext _nyssContext;
-        private readonly ILoggerAdapter _loggerAdapter;
+        private readonly INyssContext _nyssContextMock;
+        private readonly ILoggerAdapter _loggerAdapterMock;
         private const string NationalSocietyName = "Norway";
         private const int NationalSocietyId = 1;
         private const int CountryId = 1;
@@ -27,14 +29,39 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 
         public NationalSocietyServiceTests()
         {
-            _nyssContext = Substitute.For<INyssContext>();
-            _loggerAdapter = Substitute.For<ILoggerAdapter>();
-            _nationalSocietyService = new NationalSocietyService(_nyssContext, _loggerAdapter);
+            _nyssContextMock = Substitute.For<INyssContext>();
+            _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
+            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, _loggerAdapterMock);
+
+            // Arrange
+
+            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>();
+            var contentLanguages = new List<RX.Nyss.Data.Models.ContentLanguage>()
+            {
+                new RX.Nyss.Data.Models.ContentLanguage() { Id = ContentLanguageId }
+            };
+            var countries = new List<RX.Nyss.Data.Models.Country>()
+            {
+                new RX.Nyss.Data.Models.Country() { Id = CountryId }
+            };
+
+            var contentLanguageDb = Substitute.For<DbSet<RX.Nyss.Data.Models.ContentLanguage>, IQueryable<RX.Nyss.Data.Models.ContentLanguage>>();
+            DbSetInitializer.InitDb(contentLanguageDb, contentLanguages);
+            
+            var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
+            //var contentLanguagesMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ContentLanguages.Returns(contentLanguageDb);
+            var countriesMockDbSet = countries.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Countries.Returns(countriesMockDbSet);
+            // _nyssContextMock.ContentLanguages.FindAsync(1).Returns(contentLanguages[0]);
+            // _nyssContextMock.Countries.FindAsync(1).Returns(countries[0]);
         }
 
         [Fact]
         public async Task CreateNationalSociety_WhenSuccessful_ReturnSuccess()
         {
+            // Arrange
             var nationalSocietyReq = new CreateNationalSocietyRequestDto()
             {
                 Name = NationalSocietyName,
@@ -42,15 +69,39 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
                 CountryId = CountryId
             };
 
+            // Actual
             var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
 
+            // Assert
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.Creation.Success);
+        }
+
+        [Theory]
+        [InlineData(CountryId, 2)]
+        [InlineData(2, ContentLanguageId)]
+        public async Task CreateNationalSociety_WhenRequiredParamsAreMissing_ShouldReturnError(int countryId, int contentLanguageId)
+        {
+            // Arrange
+            var nationalSocietyReq = new CreateNationalSocietyRequestDto
+            {
+                Name = NationalSocietyName,
+                CountryId = countryId,
+                ContentLanguageId = contentLanguageId
+            };
+
+            // Actual
+            var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBeOneOf(ResultKey.NationalSociety.Creation.CountryNotDefined, ResultKey.NationalSociety.Creation.LanguageNotDefined);
         }
 
         [Fact]
         public async Task CreateNationalSociety_WhenSavingFails_ReturnError()
         {
+            // Arrange
             var nationalSocietyReq = new CreateNationalSocietyRequestDto()
             {
                 Name = NationalSocietyName,
@@ -58,16 +109,20 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
                 ContentLanguageId = ContentLanguageId
             };
 
-            _nyssContext.SaveChangesAsync().Throws(new Exception());
+            _nyssContextMock.SaveChangesAsync().Throws(new Exception());
 
+            // Actual
             var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
 
+            // Assert
             result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Creation.Error);
         }
 
         [Fact]
         public async Task CreateNationalSociety_WhenNameAlreadyExists_ReturnError()
         {
+            // Arrange
             var nationalSocietyReq = new CreateNationalSocietyRequestDto()
             {
                 Name = NationalSocietyName,
@@ -80,11 +135,13 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
                 new RX.Nyss.Data.Models.NationalSociety() { Name = NationalSocietyName }
             };
 
-            var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
-            _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
+            var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
+            // Actual
             var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
 
+            // Assert
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.Creation.NameAlreadyExists);
         }
@@ -92,6 +149,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         [Fact]
         public async Task EditNationalSociety_WhenSuccessful_ReturnSuccess()
         {
+            // Arrange
             var nationalSocietyReq = new EditNationalSocietyRequestDto()
             {
                 Id = NationalSocietyId,
@@ -100,8 +158,10 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
                 ContentLanguageId = ContentLanguageId
             };
 
+            // Actual
             var result = await _nationalSocietyService.EditNationalSociety(nationalSocietyReq);
 
+            // Assert
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.Edit.Success);
         }
@@ -109,6 +169,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         [Fact]
         public async Task EditNationalSociety_WhenSavingFails_ReturnError()
         {
+            // Arrange
             var nationalSocietyReq = new EditNationalSocietyRequestDto()
             {
                 Id = NationalSocietyId,
@@ -117,29 +178,39 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
                 ContentLanguageId = ContentLanguageId
             };
 
-            _nyssContext.SaveChangesAsync().Throws(new Exception());
+            _nyssContextMock.SaveChangesAsync().Throws(new Exception());
 
+            // Actual
             var result = await _nationalSocietyService.EditNationalSociety(nationalSocietyReq);
 
+            // Assert
             result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Edit.Error);
         }
 
         [Fact]
         public async Task RemoveNationalSociety_WhenSuccessful_ReturnSuccess()
         {
+            // Actual
             var result = await _nationalSocietyService.RemoveNationalSociety(NationalSocietyId);
 
+            // Assert
             result.IsSuccess.ShouldBeTrue();
+            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Remove.Success);
         }
 
         [Fact]
         public async Task RemoveNationalSociety_WhenRemovingFails_ReturnError()
         {
-            _nyssContext.SaveChangesAsync().Throws(new Exception());
+            // Arrange
+            _nyssContextMock.SaveChangesAsync().Throws(new Exception());
 
+            // Actual
             var result = await _nationalSocietyService.RemoveNationalSociety(NationalSocietyId);
 
+            // Assert
             result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Remove.Error);
         }
     }
 }

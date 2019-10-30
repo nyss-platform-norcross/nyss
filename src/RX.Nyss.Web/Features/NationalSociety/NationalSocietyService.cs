@@ -169,10 +169,10 @@ namespace RX.Nyss.Web.Features.NationalSociety
             {
                 if (sqlException.Number == 2627 || sqlException.Number == 2601) // national society name already exists
                 {
-                    return Error(ResultKey.NationalSociety.Creation.NationalSocietyAlreadyExists);                
+                    return Error(ResultKey.NationalSociety.Creation.NameAlreadyExists);                
                 }
             }
-            return Error(e.Message);
+            return Error(ResultKey.NationalSociety.Creation.Error);
         }
     }
 }
