@@ -2,6 +2,10 @@
 {
     public static class ResultKey
     {
+        public static class Shared
+        {
+            public const string GeneralErrorMessage = "shared.error";
+        }
         public static class User
         {
             public static class Registration
@@ -31,23 +35,19 @@
             public static class Creation
             {
                 public const string Success = "nationalSociety.creation.success";
-                public const string NameNotDefined = "nationalSociety.creation.nameNotDefined";
-                public const string CountryNotDefined = "nationalSociety.creation.countryNotDefined";
-                public const string LanguageNotDefined = "nationalSociety.creation.languageNotDefined";
+                public const string CountryNotFound = "nationalSociety.creation.countryNotFound";
+                public const string LanguageNotFound = "nationalSociety.creation.languageNotFound";
                 public const string NameAlreadyExists = "nationalSociety.creation.nameAlreadyExists ";
-                public const string Error = "nationalSociety.creation.error";
             }
 
             public static class Edit
             {
                 public const string Success = "nationalSociety.edit.success";
-                public const string Error = "nationalSociety.edit.error";
             }
 
             public static class Remove
             {
                 public const string Success = "nationalSociety.remove.success";
-                public const string Error = "nationalSociety.remove.error";
             }
         }
     }

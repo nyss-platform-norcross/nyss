@@ -102,13 +102,18 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
                 if (nationalSociety.ContentLanguage == null)
                 {
-                    return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotDefined);
+                    return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotFound);
+                }
+
+                if (nationalSociety.Country == null)
+                {
+                    return Error<int>(ResultKey.NationalSociety.Creation.CountryNotFound);
                 }
 
                 var entity = await _nyssContext.AddAsync(nationalSociety);
                 await _nyssContext.SaveChangesAsync();
                 _loggerAdapter.Info($"A national society {nationalSociety} was created");
-                return Success(entity.Entity.Id);
+                return Success(entity.Entity.Id, ResultKey.NationalSociety.Creation.Success);
             }
             catch (Exception e)
             {
@@ -172,7 +177,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     return Error(ResultKey.NationalSociety.Creation.NameAlreadyExists);                
                 }
             }
-            return Error(ResultKey.NationalSociety.Creation.Error);
+            return Error(ResultKey.Shared.GeneralErrorMessage);
         }
     }
 }
