@@ -130,7 +130,7 @@ export const validators = {
     required: ["Value is required", (value) => !!value],
     greatherThanField: (fieldGetter) => ["The value is to low", (value, fields) => value > fieldGetter(fields)],
     integer: ["Value has to be an integer", (value) => !isNaN(Number(value))],
-    minLength: (minLength) => [`Length has to be at least ${minLength} characters`, (value) => value && value.length >= minLength],
+    minLength: (minLength) => [`Length has to be at least ${minLength} characters`, (value) => !value || value.length >= minLength],
     length: (minLength, maxLength) => [`Length has to be at least ${minLength} and maximum ${maxLength} characters`, (value) => value && value.length >= minLength && value.length <= maxLength],
     email: ["Value has to be an email address", (value) => emailRegex.test(value)],
     points: ["Value has to be a number and be more than zero", (value) => !isNaN(Number(value)) && value > 0],

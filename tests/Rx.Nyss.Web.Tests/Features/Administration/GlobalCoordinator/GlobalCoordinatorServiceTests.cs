@@ -9,8 +9,8 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Features.Administration.GlobalCoordinator;
-using RX.Nyss.Web.Features.Administration.GlobalCoordinator.Dto;
+using RX.Nyss.Web.Features.GlobalCoordinator;
+using RX.Nyss.Web.Features.GlobalCoordinator.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -48,6 +48,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
         {
             var userEmail = "emailTest1@domain.com";
             var userName = "Mickey Mouse";
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
             var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userName, Email = userEmail };
 
 
@@ -62,7 +63,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
         public async Task RegisterGlobalCoordinator_WhenIdentityUserCreationSuccessful_NyssContextAddIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
@@ -75,7 +76,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
         public async Task RegisterGlobalCoordinator_WhenIdentityUserCreationSuccessful_NyssContextSaveChangesIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
@@ -92,7 +93,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
                 .Do(x => throw exception);
 
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
             
 
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
@@ -109,7 +110,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
                 .Do(x => throw new Exception());
 
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
             _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto).ShouldThrowAsync<Exception>();

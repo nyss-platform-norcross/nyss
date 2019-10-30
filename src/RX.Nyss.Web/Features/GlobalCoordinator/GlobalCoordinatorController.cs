@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Features.Administration.GlobalCoordinator.Dto;
+using RX.Nyss.Web.Features.GlobalCoordinator.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
-namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
+namespace RX.Nyss.Web.Features.GlobalCoordinator
 {
+    [Route("api/globalcoordinator")]
     public class GlobalCoordinatorController : BaseController
     {
         private readonly IGlobalCoordinatorService _globalCoordinatorService;
@@ -26,15 +27,15 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
         /// <param name="dto">The global coordinator to be created</param>
         /// <returns></returns>
         [HttpPost("create"), NeedsRole(Role.Administrator)]
-        public async Task<Result> Create([FromBody]RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto) => 
-            await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
+        public async Task<Result> Create([FromBody]CreateGlobalCoordinatorRequestDto createGlobalCoordinatorRequestDto) => 
+            await _globalCoordinatorService.RegisterGlobalCoordinator(createGlobalCoordinatorRequestDto);
 
         /// <summary>
         /// Get the data of a global coordinator user
         /// </summary>
         /// <param name="id">The ID of the requested global coordinator</param>
         /// <returns></returns>
-        [HttpGet("get"), NeedsRole(Role.Administrator)]
+        [HttpGet("{id:int}/get"), NeedsRole(Role.Administrator)]
         public async Task<Result> Get(int id) =>
             await _globalCoordinatorService.GetGlobalCoordinator(id);
 
@@ -43,10 +44,18 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
         /// </summary>
         /// <param name="editGlobalCoordinatorRequestDto">The global coordinator user to be edited</param>
         /// <returns></returns>
-        [HttpPost("edit"), NeedsRole(Role.Administrator)]
+        [HttpPost("{id:int}/edit"), NeedsRole(Role.Administrator)]
         public async Task<Result> Edit([FromBody]EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto) =>
             await _globalCoordinatorService.UpdateGlobalCoordinator(editGlobalCoordinatorRequestDto);
 
+        /// <summary>
+        /// Remove a global coordinator user
+        /// </summary>
+        /// <param name="id">The global coordinator user's ID to be removed</param>
+        /// <returns></returns>
+        [HttpPost("{id:int}/remove"), NeedsRole(Role.Administrator)]
+        public async Task<Result> Remove(int id) =>
+            await _globalCoordinatorService.RemoveGlobalCoordinator(id);
 
         /// <summary>
         /// Lists all global coordinators available in the system.

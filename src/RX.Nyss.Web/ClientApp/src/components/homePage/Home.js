@@ -15,7 +15,6 @@ const HomeComponent = ({ push }) => {
   );
 }
 
-
 const mapStateToProps = state => ({
 });
 

@@ -32,5 +32,13 @@ export const initialState = {
       name: null,
       isFetching: false
     }
+  },
+  globalCoordinators: {
+    listFetching: false,
+    listRemoving: {},
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formData: null
   }
 };

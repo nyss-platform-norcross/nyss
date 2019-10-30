@@ -132,10 +132,12 @@ export const theme = createMuiTheme({
     },
     MuiListItemText: {
       root: {
-        padding: "12px 20px"
+        padding: "12px 20px",
+        textAlign: "center"
       },
       primary: {
         fontSize: 16,
+        color: "#737373"
       }
     },
     MuiTableCell: {

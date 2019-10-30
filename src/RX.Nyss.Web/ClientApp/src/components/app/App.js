@@ -15,6 +15,9 @@ import { NationalSocietiesEditPage } from '../nationalSocieties/NationalSocietie
 import { NationalSocietiesDashboardPage } from '../nationalSocieties/NationalSocietiesDashboardPage';
 import { NationalSocietiesOverviewPage } from '../nationalSocieties/NationalSocietiesOverviewPage';
 import { VerifyEmailPage } from '../verifyEmailPage/VerifyEmailPage';
+import { GlobalCoordinatorsListPage } from '../globalCoordinators/GlobalCoordinatorsListPage';
+import { GlobalCoordinatorsCreatePage } from '../globalCoordinators/GlobalCoordinatorsCreatePage';
+import { GlobalCoordinatorsEditPage } from '../globalCoordinators/GlobalCoordinatorsEditPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -30,6 +33,9 @@ export const App = ({ history }) => (
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/dashboard' component={NationalSocietiesDashboardPage} roles={accessMap.nationalSocieties.add} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/overview' component={NationalSocietiesOverviewPage} roles={accessMap.nationalSocieties.add} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/edit' component={NationalSocietiesEditPage} roles={accessMap.nationalSocieties.edit} />
+        <AuthRoute exact path='/globalcoordinators' component={GlobalCoordinatorsListPage} roles={accessMap.globalCoordinators.list} />
+        <AuthRoute exact path='/globalcoordinators/add' component={GlobalCoordinatorsCreatePage} roles={accessMap.globalCoordinators.add} />
+        <AuthRoute exact path='/globalcoordinators/:globalCoordinatorId/edit' component={GlobalCoordinatorsEditPage} roles={accessMap.globalCoordinators.edit} />
       </Switch>
     </ConnectedRouter>
   </ThemeProvider>
