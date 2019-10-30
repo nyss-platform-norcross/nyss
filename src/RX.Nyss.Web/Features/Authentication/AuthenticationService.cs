@@ -106,11 +106,12 @@ namespace RX.Nyss.Web.Features.Authentication
                 return new List<Claim> { new Claim(ClaimType.AllNationalSocieties.ToString(), bool.TrueString) };
             }
 
-            return await _nyssContext.UserNationalSocieties
-                .IgnoreQueryFilters()
+            var nationalSocietyClaims = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.User.IdentityUserId == identityUser.Id)
                 .Select(uns => new Claim(ClaimType.NationalSociety.ToString(), uns.NationalSocietyId.ToString()))
                 .ToListAsync();
+
+            return nationalSocietyClaims;
         }
 
         private static bool HasAccessToAllNationalSocieties(IEnumerable<string> possessedRoles)

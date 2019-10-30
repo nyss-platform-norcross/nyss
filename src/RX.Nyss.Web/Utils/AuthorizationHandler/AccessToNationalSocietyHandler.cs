@@ -24,7 +24,6 @@ namespace RX.Nyss.Web.Utils.AuthorizationHandler
             var routeValue = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueName];
             if (routeValue == null)
             {
-                context.Fail();
                 return Task.CompletedTask;
             }
 

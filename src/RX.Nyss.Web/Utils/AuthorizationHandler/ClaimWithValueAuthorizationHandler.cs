@@ -7,17 +7,17 @@ namespace RX.Nyss.Web.Utils.AuthorizationHandler
     public abstract class ClaimWithValueAuthorizationHandler<T> : AuthorizationHandler<T> where T : IAuthorizationRequirement
     {
         private readonly ClaimType _claimType;
-        private readonly string _claimValue;
+        private readonly string _requiredClaimValue;
 
-        protected ClaimWithValueAuthorizationHandler(ClaimType claimType, string claimValue)
+        protected ClaimWithValueAuthorizationHandler(ClaimType claimType, string requiredClaimValue)
         {
             _claimType = claimType;
-            _claimValue = claimValue;
+            _requiredClaimValue = requiredClaimValue;
         }
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, T requirement)
         {
-            var hasClaimWithValue = context.User.Claims.Any(c => c.Type == _claimType.ToString() && c.Value == _claimValue);
+            var hasClaimWithValue = context.User.Claims.Any(c => c.Type == _claimType.ToString() && c.Value == _requiredClaimValue);
             if (hasClaimWithValue)
             {
                 context.Succeed(requirement);
