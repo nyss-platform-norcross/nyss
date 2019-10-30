@@ -94,17 +94,7 @@ namespace RX.Nyss.Web.Configuration
                 });
 
             
-            serviceCollection.AddAuthorization(options =>
-            {
-                options.AddPolicy(NyssAuthorizationPolicy.IsDataOwner.ToString(),
-                    policy => policy.Requirements.Add(new IsDataOwnerRequirement()));
-
-                options.AddPolicy(NyssAuthorizationPolicy.AccessToNationalSociety.ToString(),
-                    policy => policy.Requirements.Add(new AccessToNationalSocietyRequirement()));
-            });
-
-            serviceCollection.AddScoped<IAuthorizationHandler, AccessToNationalSocietyHandler>();
-            serviceCollection.AddScoped<IAuthorizationHandler, IsDataOwnerHandler>();
+            RegisterAuthorizationPolicies(serviceCollection);
 
 
             serviceCollection.ConfigureApplicationCookie(options =>
@@ -129,6 +119,21 @@ namespace RX.Nyss.Web.Configuration
             bool IsAjaxRequest(HttpRequest request) =>
                 string.Equals(request.Query["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal) ||
                 string.Equals(request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal);
+        }
+
+        private static void RegisterAuthorizationPolicies(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddAuthorization(options =>
+            {
+                options.AddPolicy(NyssAuthorizationPolicy.IsDataOwner.ToString(),
+                    policy => policy.Requirements.Add(new IsDataOwnerRequirement()));
+
+                options.AddPolicy(NyssAuthorizationPolicy.AccessToNationalSociety.ToString(),
+                    policy => policy.Requirements.Add(new AccessToNationalSocietyRequirement()));
+            });
+
+            serviceCollection.AddScoped<IAuthorizationHandler, AccessToNationalSocietyHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, IsDataOwnerHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)
