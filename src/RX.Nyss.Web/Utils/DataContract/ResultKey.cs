@@ -73,6 +73,18 @@
             {
                 public const string Success = "nationalSociety.remove.success";
             }
+
+            public static class SmsGateway
+            {
+                public const string SuccessfullyAdded = "nationalSociety.smsGateway.successfullyAdded";
+                public const string SuccessfullyUpdated = "nationalSociety.smsGateway.successfullyUpdated";
+                public const string SuccessfullyDeleted = "nationalSociety.smsGateway.successfullyDeleted";
+                public const string ApiKeyAlreadyExists = "nationalSociety.smsGateway.apiKeyAlreadyExists";
+                public const string SettingDoesNotExist = "nationalSociety.smsGateway.settingDoesNotExist";
+                public const string NationalSocietyDoesNotExist = "nationalSociety.smsGateway.nationalSocietyDoesNotExist";
+            }
         }
+
+        public const string UnexpectedError = "unexpectedError";
     }
 }

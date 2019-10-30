@@ -71,7 +71,7 @@
         "sbVersion": "2017-04-01",
         "storageAccountName": "[concat(replace(variables('funcapp_name'),'-',''),'st')]",
         "smsGatewayBlobContainerName": "sms-gateway",
-        "authorizedApiKeysBlobObjectName": "authorized-api-keys"
+        "authorizedApiKeysBlobObjectName": "authorized-api-keys.txt"
     },
     "resources": [
         {
@@ -124,6 +124,14 @@
                         {
                             "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
                             "value": "disabled"
+                        },
+                        {
+                            "name": "SmsGatewayBlobContainerName",
+                            "value": "[variables('smsGatewayBlobContainerName')]"
+                        },
+                        {
+                            "name": "AuthorizedApiKeysBlobObjectName",
+                            "value": "[variables('authorizedApiKeysBlobObjectName')]"
                         }
                     ],
                     "metadata": [

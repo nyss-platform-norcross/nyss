@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Web.Features.HealthRisk.Dto;
 
 namespace RX.Nyss.Web.Features.HealthRisk
 {

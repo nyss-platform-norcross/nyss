@@ -19,7 +19,6 @@ using Microsoft.OpenApi.Models;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.Authentication.Policies;
-using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Serilog;
