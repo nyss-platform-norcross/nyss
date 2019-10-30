@@ -53,8 +53,11 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         public async Task Login_WhenSuccessful_ReturnsToken()
         {
             var nyssUsers = new List<User>();
+            var userNationalSocieties = new List<UserNationalSociety>();
             var usersDbSet = nyssUsers.AsQueryable().BuildMockDbSet();
+            var usersNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
+            _nyssContext.UserNationalSocieties.Returns(usersNationalSocietiesDbSet);
 
             var user = new IdentityUser { UserName = UserName };
             var roles = new List<string> { "Admin" };
