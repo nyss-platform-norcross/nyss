@@ -34,7 +34,7 @@ export const ConfirmationAction = ({ children, icon, confirmationText, onClick }
         open={Boolean(anchorEl)}
       >
         <MenuItem onClick={handleMenuClick} data-automationid="confirmationButton_confirm">
-          <ListItemIcon>{icon}</ListItemIcon>
+          {icon && <ListItemIcon>{icon}</ListItemIcon>}
           {confirmationText}
         </MenuItem>
       </Menu>

@@ -34,11 +34,10 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             _nyssContext = Substitute.For<INyssContext>();
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _configMock = Substitute.For<IConfig>();
-            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationService, _nyssContext, _loggerAdapter);
             _configMock.BaseUrl = "http://hello";
             _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
-            
-            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContextMock, _loggerAdapterMock, _configMock, _emailPublisherServiceMock);
+
+            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _configMock, _emailPublisherServiceMock);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
         }
@@ -48,9 +47,11 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
         {
             var userEmail = "emailTest1@domain.com";
             var userName = "Mickey Mouse";
-            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
-            var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userName, Email = userEmail };
-
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto
+            {
+                Name = userName, 
+                Email = userEmail
+            };
 
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 

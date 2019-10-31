@@ -28,16 +28,17 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
     const fields = {
       id: props.data.id,
       name: props.data.name,
-      phoneNumber: props.data.phoneNumber,
+      phoneNumber: [validators.required, validators.phoneNumber],
       additionalPhoneNumber: props.data.additionalPhoneNumber,
       organization: props.data.organization
     };
 
     const validation = {
-      name: [validators.required, validators.minLength(5)],
-      phoneNumber: [validators.required, validators.minLength(8)],
-      additionalPhoneNumber: [validators.minLength(8)],
-      organization: [validators.minLength(3)]
+      name: [validators.required, validators.maxLength(100)],
+      email: [validators.required, validators.email].maxLength(100),
+      phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
+      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
+      organization: [validators.maxLength(100)]
     };
 
     setForm(createForm(fields, validation));

@@ -12,7 +12,7 @@ export const TableRowAction = ({ icon, onClick, title, isFetching, confirmationT
   if (confirmationText) {
     return (
       <div className={`${styles.tableRowAction} ${(isFetching ? styles.fetching : "")}`} title={title}>
-        <ConfirmationAction confirmationText={confirmationText} onClick={onClick} icon={icon}>
+        <ConfirmationAction confirmationText={confirmationText} onClick={onClick}>
           {isFetching && <CircularProgress size={20} className={styles.loader} />}
           <div className={styles.icon}>
             {icon}

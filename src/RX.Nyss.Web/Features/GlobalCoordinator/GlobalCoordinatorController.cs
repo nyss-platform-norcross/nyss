@@ -1,11 +1,7 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.GlobalCoordinator.Dto;
-using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
@@ -27,8 +23,8 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         /// <param name="dto">The global coordinator to be created</param>
         /// <returns></returns>
         [HttpPost("create"), NeedsRole(Role.Administrator)]
-        public async Task<Result> Create([FromBody]CreateGlobalCoordinatorRequestDto createGlobalCoordinatorRequestDto) => 
-            await _globalCoordinatorService.RegisterGlobalCoordinator(createGlobalCoordinatorRequestDto);
+        public async Task<Result> Create([FromBody]CreateGlobalCoordinatorRequestDto dto) => 
+            await _globalCoordinatorService.RegisterGlobalCoordinator(dto);
 
         /// <summary>
         /// Get the data of a global coordinator user
@@ -42,11 +38,11 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         /// <summary>
         /// Edit a global coordinator user
         /// </summary>
-        /// <param name="editGlobalCoordinatorRequestDto">The global coordinator user to be edited</param>
+        /// <param name="dto">The global coordinator user to be edited</param>
         /// <returns></returns>
         [HttpPost("{id:int}/edit"), NeedsRole(Role.Administrator)]
-        public async Task<Result> Edit([FromBody]EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto) =>
-            await _globalCoordinatorService.UpdateGlobalCoordinator(editGlobalCoordinatorRequestDto);
+        public async Task<Result> Edit([FromBody]EditGlobalCoordinatorRequestDto dto) =>
+            await _globalCoordinatorService.UpdateGlobalCoordinator(dto);
 
         /// <summary>
         /// Remove a global coordinator user

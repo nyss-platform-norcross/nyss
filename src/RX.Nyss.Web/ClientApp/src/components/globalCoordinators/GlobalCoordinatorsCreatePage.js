@@ -26,11 +26,11 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
     };
 
     const validation = {
-      name: [validators.required, validators.minLength(5)],
-      email: [validators.required, validators.email],
-      phoneNumber: [validators.required, validators.minLength(8)],
-      additionalPhoneNumber: [validators.minLength(8)],
-      organization: [validators.minLength(3)]
+      name: [validators.required, validators.maxLength(100)],
+      email: [validators.required, validators.email].maxLength(100),
+      phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
+      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
+      organization: [validators.maxLength(100)]
     };
 
     return createForm(fields, validation);
@@ -53,7 +53,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Add National Society</Typography>
+      <Typography variant="h2">Add Global Coordinator</Typography>
 
       {props.error &&
         <SnackbarContent
