@@ -14,24 +14,23 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataManager
     {
         Task<Result> CreateDataManager(int nationalSocietyId, CreateDataManagerRequestDto createDataManagerRequestDto);
         Task<Result> GetDataManager(int dataManagerId);
-        Task<Result> UpdateDataManager(EditDataManagerRequestDto editDataManagerRequestDto); 
+        Task<Result> UpdateDataManager(int dataManagerId, EditDataManagerRequestDto editDataManagerRequestDto); 
         Task<Result> DeleteDataManager(int dataManagerId);
     }
 
-    public class DataManagerService : IDataManagerService
+    public class DataManagerService : BaseUserService<DataManagerUser>, IDataManagerService
     {
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
-        private readonly ICommonUserService<DataManagerUser> _commonUserService;
 
-        public DataManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext, ILoggerAdapter loggerAdapter, ICommonUserService<DataManagerUser> commonUserService)
+        public DataManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext, ILoggerAdapter loggerAdapter)
+            :base(dataContext, loggerAdapter)
             
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
-            _commonUserService = commonUserService;
         }
 
         public async Task<Result> CreateDataManager(int nationalSocietyId, CreateDataManagerRequestDto createDataManagerRequestDto)
@@ -41,7 +40,7 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataManager
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataManagerRequestDto.Email, Role.DataManager);
-                await _commonUserService.CreateNationalSocietyUser(identityUser, nationalSocietyId, createDataManagerRequestDto);
+                await CreateNationalSocietyUser(identityUser, nationalSocietyId, createDataManagerRequestDto);
 
                 transactionScope.Complete();
                 return Result.Success(ResultKey.User.Registration.Success);
@@ -54,14 +53,30 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataManager
         }
 
         public Task<Result> GetDataManager(int dataManagerId) =>
-            _commonUserService.GetNationalSocietyUser(dataManagerId);
+            GetNationalSocietyUser(dataManagerId);
 
-        public Task<Result> UpdateDataManager(EditDataManagerRequestDto editDataManagerRequestDto) =>
-            _commonUserService.UpdateNationalSocietyUser(editDataManagerRequestDto);
+        public Task<Result> UpdateDataManager(int dataManagerId, EditDataManagerRequestDto editDataManagerRequestDto) =>
+            UpdateNationalSocietyUser(dataManagerId, editDataManagerRequestDto);
 
 
-        public Task<Result> DeleteDataManager(int dataManagerId) =>
-            _commonUserService.DeleteNationalSocietyUser(dataManagerId);
+        public async Task<Result> DeleteDataManager(int dataManagerId)
+        {
+            try
+            {
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                var deletedDataManager = await DeleteNationalSocietyUser(dataManagerId);
+                await _identityUserRegistrationService.DeleteIdentityUser(deletedDataManager.IdentityUserId);
+
+                transactionScope.Complete();
+                return Result.Success(ResultKey.User.Registration.Success);
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result;
+            }
+        }
     }
 }
 

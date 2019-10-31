@@ -24,8 +24,9 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataConsumer
         /// <param name="nationalSocietyId">The ID of the national society the data consumer should be registered in</param>
         /// <param name="createDataConsumerRequestDto">The data consumer to be created</param>
         /// <returns></returns>
-        [HttpPost("create"), NeedsRole(Role.GlobalCoordinator, Role.DataManager), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> CreateDataConsumer([FromQuery]int nationalSocietyId, [FromBody]CreateDataConsumerRequestDto createDataConsumerRequestDto) =>
+        [HttpPost("/api/nationalSociety/{nationalSocietyId:int}/dataConsumer/create")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result> CreateDataConsumer(int nationalSocietyId, [FromBody]CreateDataConsumerRequestDto createDataConsumerRequestDto) =>
             await _dataConsumerService.CreateDataConsumer(nationalSocietyId, createDataConsumerRequestDto);
 
         /// <summary>
@@ -33,27 +34,31 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataConsumer
         /// </summary>
         /// <param name="id">The ID of the requested data consumer</param>
         /// <returns></returns>
-        [HttpGet("get"), NeedsRole(Role.GlobalCoordinator, Role.DataManager), NeedsPolicy(Policy.DataConsumerAccess)]
-        public async Task<Result> Get(int id) =>
-            await _dataConsumerService.GetDataConsumer(id);
+        [HttpGet("/api/nationalSociety/dataConsumer/{dataConsumerId:int}/get")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
+        public async Task<Result> Get(int dataConsumerId) =>
+            await _dataConsumerService.GetDataConsumer(dataConsumerId);
 
         /// <summary>
         /// Update a data consumer.
         /// </summary>
-        /// <param name="editDataConsumerRequestDto">The data consumer to be updated</param>
+        /// <param name="dataConsumerId">The id of the data consumer to be edited</param>
+        /// <param name="editDataConsumerRequestDto">The data used to update the specified data consumer</param>
         /// <returns></returns>
-        [HttpPost("edit"), NeedsRole(Role.GlobalCoordinator, Role.DataManager), NeedsPolicy(Policy.DataConsumerAccess)]
-        public async Task<Result> Edit([FromBody]EditDataConsumerRequestDto editDataConsumerRequestDto) =>
-            await _dataConsumerService.UpdateDataConsumer(editDataConsumerRequestDto);
+        [HttpPost("/api/nationalSociety/dataConsumer/{dataConsumerId:int}/edit")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
+        public async Task<Result> Edit(int dataConsumerId, [FromBody]EditDataConsumerRequestDto editDataConsumerRequestDto) =>
+            await _dataConsumerService.UpdateDataConsumer(dataConsumerId, editDataConsumerRequestDto);
 
         /// <summary>
         /// Delete a data consumer.
         /// </summary>
         /// <param name="id">The ID of the data consumer to be deleted</param>
         /// <returns></returns>
-        [HttpGet("delete"), NeedsRole(Role.GlobalCoordinator, Role.DataManager), NeedsPolicy(Policy.DataConsumerAccess)]
-        public async Task<Result> Delete(int id) =>
-            await _dataConsumerService.DeleteDataConsumer(id);
+        [HttpGet("/api/nationalSociety/dataConsumer/{dataConsumerId:int}/delete")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
+        public async Task<Result> Delete(int dataConsumerId) =>
+            await _dataConsumerService.DeleteDataConsumer(dataConsumerId);
     }
 }
 

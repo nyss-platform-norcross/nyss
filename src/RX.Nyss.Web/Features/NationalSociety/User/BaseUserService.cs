@@ -11,26 +11,18 @@ using RX.Nyss.Web.Utils.Logging;
 
 namespace RX.Nyss.Web.Features.NationalSociety.User
 {
-    public interface ICommonUserService<T> where T: Nyss.Data.Models.User, new()
-    {
-        Task CreateNationalSocietyUser(IdentityUser identityUser, int nationalSocietyId, ICreateNationalSocietyUserRequestDto createNationalSocietyUserRequestDto);
-        Task<Result> GetNationalSocietyUser(int nationalSocietyUserId);
-        Task<Result> UpdateNationalSocietyUser(IEditNationalSocietyUserRequestDto editNationalSocietyUserRequestDto);
-        Task<Result> DeleteNationalSocietyUser(int nationalSocietyUserId);
-    }
-
-    public class CommonUserService<T>: ICommonUserService<T> where T : Nyss.Data.Models.User, new()
+    public abstract class BaseUserService<T> where T : Nyss.Data.Models.User, new()
     {
         private readonly INyssContext _dataContext;
         private readonly ILoggerAdapter _loggerAdapter;
 
-        public CommonUserService(INyssContext dataContext, ILoggerAdapter loggerAdapter)
+        protected BaseUserService(INyssContext dataContext, ILoggerAdapter loggerAdapter)
         {
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task CreateNationalSocietyUser(IdentityUser identityUser, int nationalSocietyId, ICreateNationalSocietyUserRequestDto createNationalSocietyUserRequestDto)
+        protected async Task CreateNationalSocietyUser(IdentityUser identityUser, int nationalSocietyId, ICreateNationalSocietyUserRequestDto createNationalSocietyUserRequestDto)
         {
             var nationalSociety = _dataContext.NationalSocieties.FirstOrDefault(ns => ns.Id == nationalSocietyId);
             if (nationalSociety == null)
@@ -63,7 +55,7 @@ namespace RX.Nyss.Web.Features.NationalSociety.User
             nationalSocietyUser.Organization = createNationalSocietyUserRequestDto.Organization;
         }
 
-        public async Task<Result> GetNationalSocietyUser(int nationalSocietyUserId)
+        protected async Task<Result> GetNationalSocietyUser(int nationalSocietyUserId)
         {
             var nationalSocietyLevelUser = await _dataContext.Users
                 .Where(u => u.Id == nationalSocietyUserId)
@@ -87,28 +79,7 @@ namespace RX.Nyss.Web.Features.NationalSociety.User
             return new Result<GetNationalSocietyUserResponseDto>(nationalSocietyLevelUser, true);
         }
 
-        public async Task<Result> UpdateNationalSocietyUser(IEditNationalSocietyUserRequestDto editNationalSocietyUserRequestDto) 
-        {
-            var nationalSocietyUser = await _dataContext.Users
-                .OfType<T>()
-                .Where(u => u.Id == editNationalSocietyUserRequestDto.Id)
-                .SingleOrDefaultAsync();
-
-            if (nationalSocietyUser == null)
-            {
-                _loggerAdapter.Debug($"User with id {editNationalSocietyUserRequestDto.Id} and the role {typeof(T).ToString()} was not found");
-                return Result.Error(ResultKey.User.Common.UserNotFound);
-            }
-
-            nationalSocietyUser.Name = editNationalSocietyUserRequestDto.Name;
-            nationalSocietyUser.PhoneNumber = editNationalSocietyUserRequestDto.PhoneNumber;
-            nationalSocietyUser.Organization = editNationalSocietyUserRequestDto.Organization;
-
-            await _dataContext.SaveChangesAsync();
-            return Result.Success();
-        }
-
-        public async Task<Result> DeleteNationalSocietyUser(int nationalSocietyUserId) 
+        protected async Task<Result> UpdateNationalSocietyUser(int nationalSocietyUserId, IEditNationalSocietyUserRequestDto editNationalSocietyUserRequestDto) 
         {
             var nationalSocietyUser = await _dataContext.Users
                 .OfType<T>()
@@ -121,9 +92,36 @@ namespace RX.Nyss.Web.Features.NationalSociety.User
                 return Result.Error(ResultKey.User.Common.UserNotFound);
             }
 
-            _dataContext.Users.Remove(nationalSocietyUser);
+            nationalSocietyUser.Name = editNationalSocietyUserRequestDto.Name;
+            nationalSocietyUser.PhoneNumber = editNationalSocietyUserRequestDto.PhoneNumber;
+            nationalSocietyUser.Organization = editNationalSocietyUserRequestDto.Organization;
+
             await _dataContext.SaveChangesAsync();
             return Result.Success();
+        }
+
+        protected async Task<Nyss.Data.Models.User> DeleteNationalSocietyUser(int nationalSocietyUserId) 
+        {
+            var nationalSocietyUser = await _dataContext.Users
+                .OfType<T>()
+                .Where(u => u.Id == nationalSocietyUserId)
+                .SingleOrDefaultAsync();
+
+            if (nationalSocietyUser == null)
+            {
+                _loggerAdapter.Debug($"User with id {nationalSocietyUserId} and the role {typeof(T).ToString()} was not found");
+                throw new ResultException(ResultKey.User.Common.UserNotFound);
+            }
+
+            var userNationalSocieties = await _dataContext.UserNationalSocieties
+                .Where(uns => uns.UserId == nationalSocietyUserId)
+                .ToListAsync();
+
+            _dataContext.UserNationalSocieties.RemoveRange(userNationalSocieties);
+            _dataContext.Users.Remove(nationalSocietyUser);
+            await _dataContext.SaveChangesAsync();
+
+            return nationalSocietyUser;
         }
     }
 }

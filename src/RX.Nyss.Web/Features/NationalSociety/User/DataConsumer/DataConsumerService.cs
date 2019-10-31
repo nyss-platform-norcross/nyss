@@ -14,23 +14,22 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataConsumer
     {
         Task<Result> CreateDataConsumer(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
         Task<Result> GetDataConsumer(int dataConsumerId);
-        Task<Result> UpdateDataConsumer(EditDataConsumerRequestDto editDataConsumerRequestDto);
-        Task<Result> DeleteDataConsumer(int id);
+        Task<Result> UpdateDataConsumer(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
+        Task<Result> DeleteDataConsumer(int dataConsumerId);
     }
 
-    public class DataConsumerService : IDataConsumerService
+    public class DataConsumerService : BaseUserService<DataConsumerUser>, IDataConsumerService
     {
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
-        private readonly ICommonUserService<DataConsumerUser> _commonUserService;
 
-        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext, ILoggerAdapter loggerAdapter, ICommonUserService<DataConsumerUser> commonUserService)
+        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext, ILoggerAdapter loggerAdapter) 
+            : base(dataContext, loggerAdapter)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
-            _commonUserService = commonUserService;
         }
 
         public async Task<Result> CreateDataConsumer(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto)
@@ -40,7 +39,7 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataConsumer
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataConsumerRequestDto.Email, Role.DataConsumer);
-                await _commonUserService.CreateNationalSocietyUser(identityUser, nationalSocietyId, createDataConsumerRequestDto);
+                await CreateNationalSocietyUser(identityUser, nationalSocietyId, createDataConsumerRequestDto);
 
                 transactionScope.Complete();
                 return Result.Success(ResultKey.User.Registration.Success);
@@ -52,13 +51,29 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataConsumer
             }
         }
         public Task<Result> GetDataConsumer(int dataConsumerId) =>
-            _commonUserService.GetNationalSocietyUser(dataConsumerId);
+            GetNationalSocietyUser(dataConsumerId);
 
-        public Task<Result> UpdateDataConsumer(EditDataConsumerRequestDto editDataConsumerRequestDto) =>
-            _commonUserService.UpdateNationalSocietyUser(editDataConsumerRequestDto);
+        public Task<Result> UpdateDataConsumer(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto) =>
+            UpdateNationalSocietyUser(dataConsumerId, editDataConsumerRequestDto);
 
-        public Task<Result> DeleteDataConsumer(int id) =>
-            _commonUserService.DeleteNationalSocietyUser(id);
+        public async Task<Result> DeleteDataConsumer(int dataConsumerId)
+        {
+            try
+            {
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                var deletedDataConsumer = await DeleteNationalSocietyUser(dataConsumerId);
+                await _identityUserRegistrationService.DeleteIdentityUser(deletedDataConsumer.IdentityUserId);
+
+                transactionScope.Complete();
+                return Result.Success(ResultKey.User.Registration.Success);
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result;
+            }
+        }
     }
 }
 

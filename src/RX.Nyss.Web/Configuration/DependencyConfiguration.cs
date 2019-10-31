@@ -101,16 +101,7 @@ namespace RX.Nyss.Web.Configuration
                     };
                 });
             
-            serviceCollection.AddAuthorization(options =>
-            {
-                options.AddPolicy(Policy.NationalSocietyAccess.ToString(),
-                    policy => policy.Requirements.Add(new NationalSocietyAccessRequirement()));
-                options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
-                    policy => policy.Requirements.Add(new SmsGatewayAccessRequirement()));
-            });
-
-            serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
-            serviceCollection.AddScoped<IAuthorizationHandler, SmsGatewayAccessHandler>();
+            RegisterAuthorizationPolicies(serviceCollection);
 
             serviceCollection.ConfigureApplicationCookie(options =>
             {
@@ -134,6 +125,34 @@ namespace RX.Nyss.Web.Configuration
             bool IsAjaxRequest(HttpRequest request) =>
                 string.Equals(request.Query["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal) ||
                 string.Equals(request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal);
+        }
+
+        private static void RegisterAuthorizationPolicies(IServiceCollection serviceCollection)
+        {
+            //ToDo: make some kind of automatic  registration of policies for all requirements in the assembly
+            serviceCollection.AddAuthorization(options =>
+            {
+                options.AddPolicy(Policy.NationalSocietyAccess.ToString(),
+                    policy => policy.Requirements.Add(new NationalSocietyAccessRequirement()));
+
+                options.AddPolicy(Policy.DataManagerAccess.ToString(),
+                    policy => policy.Requirements.Add(new DataManagerAccessRequirement()));
+
+                options.AddPolicy(Policy.DataConsumerAccess.ToString(),
+                    policy => policy.Requirements.Add(new DataConsumerAccessRequirement()));
+
+                options.AddPolicy(Policy.TechnicalAdvisorAccess.ToString(),
+                    policy => policy.Requirements.Add(new TechnicalAdvisorAccessRequirement()));
+                    
+                options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
+                    policy => policy.Requirements.Add(new SmsGatewayAccessRequirement()));
+            });
+
+            serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, DataManagerAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, DataConsumerAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, TechnicalAdvisorAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, SmsGatewayAccessHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

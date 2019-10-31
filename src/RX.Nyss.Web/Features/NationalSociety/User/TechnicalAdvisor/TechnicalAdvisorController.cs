@@ -21,30 +21,34 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.TechnicalAdvisor
         /// <summary>
         /// Register a technical advisor.
         /// </summary>
-        /// <param name="createTechnicalAdvisorRequestDto">The technical advisor to be created</param>
         /// <param name="nationalSocietyId">The ID of the national society the technical advisor should be registered in</param>
+        /// <param name="createTechnicalAdvisorRequestDto">The technical advisor to be created</param>
         /// <returns></returns>
-        [HttpPost("create"), NeedsRole(Role.GlobalCoordinator, Role.DataManager, Role.DataManager), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> CreateTechnicalAdvisor([FromQuery]int nationalSocietyId, [FromBody]CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto) =>
+        [HttpPost("/api/nationalSociety{nationalSocietyId:int}/technicalAdvisor/create")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.DataManager), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, [FromBody]CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto) =>
             await _technicalAdvisorService.CreateTechnicalAdvisor(nationalSocietyId, createTechnicalAdvisorRequestDto);
 
         /// <summary>
         /// Get a technical advisor.
         /// </summary>
-        /// <param name="id">The ID of the requested technical advisor</param>
+        /// <param name="technicalAdvisorId">The ID of the requested technical advisor</param>
         /// <returns></returns>
-        [HttpGet("get"), NeedsRole(Role.GlobalCoordinator, Role.DataManager), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
-        public async Task<Result> Get(int id) =>
-            await _technicalAdvisorService.GetTechnicalAdvisor(id);
+        [HttpGet("/api/nationalSociety/technicalAdvisor/{technicalAdvisorId:int}/get")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.DataManager), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
+        public async Task<Result> Get(int technicalAdvisorId) =>
+            await _technicalAdvisorService.GetTechnicalAdvisor(technicalAdvisorId);
 
         /// <summary>
         /// Update a technical advisor.
         /// </summary>
-        /// <param name="editTechnicalAdvisorRequestDto">The technical advisor to be updated</param>
+        /// /// <param name="technicalAdvisorId">The ID of the technical advisor to be edited</param>
+        /// <param name="editTechnicalAdvisorRequestDto">The data used to update the specified technical advisor</param>
         /// <returns></returns>
-        [HttpPost("edit"), NeedsRole(Role.GlobalCoordinator, Role.DataManager), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
-        public async Task<Result> Edit([FromBody]EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto) =>
-            await _technicalAdvisorService.UpdateTechnicalAdvisor(editTechnicalAdvisorRequestDto);
+        [HttpPost("/api/nationalSociety/technicalAdvisor/{technicalAdvisorId:int}/edit")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.DataManager), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
+        public async Task<Result> Edit(int technicalAdvisorId, [FromBody]EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto) =>
+            await _technicalAdvisorService.UpdateTechnicalAdvisor(technicalAdvisorId, editTechnicalAdvisorRequestDto);
 
 
         /// <summary>
@@ -52,9 +56,10 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.TechnicalAdvisor
         /// </summary>
         /// <param name="id">The ID of the technical advisor to be deleted</param>
         /// <returns></returns>
-        [HttpGet("delete"), NeedsRole(Role.GlobalCoordinator, Role.DataManager), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
-        public async Task<Result> Delete(int id) =>
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(id);
+        [HttpGet("/api/nationalSociety/technicalAdvisor/{technicalAdvisorId:int}/delete")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.DataManager), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
+        public async Task<Result> Delete(int technicalAdvisorId) =>
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(technicalAdvisorId);
     }
 }
 
