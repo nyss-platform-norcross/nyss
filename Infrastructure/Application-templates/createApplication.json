@@ -65,6 +65,7 @@
         "funcAppPlanName": "[concat(parameters('base_name'), '-consumption-sp')]",
         "serviceBusNamespaceName": "[concat(parameters('base_name'), '-bus')]",
         "reportQueueName": "[concat(variables('serviceBusNamespaceName'), '-report-queue')]",
+        "sendEmailQueueName": "[concat(variables('serviceBusNamespaceName'), '-send-email-queue')]",
         "defaultSASKeyName": "RootManageSharedAccessKey",
         "defaultAuthRuleResourceId": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespaceName'), variables('defaultSASKeyName'))]",
         "sbVersion": "2017-04-01",
@@ -198,6 +199,27 @@
                         "enablePartitioning": "false",
                         "enableExpress": "false"
                     }
+                },
+                {
+                    "apiVersion": "2017-04-01",
+                    "name": "[variables('sendEmailQueueName')]",
+                    "type": "Queues",
+                    "dependsOn": [
+                        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+                    ],
+                    "properties": {
+                        "lockDuration": "PT1M",
+                        "maxSizeInMegabytes": "1024",
+                        "requiresDuplicateDetection": "false",
+                        "requiresSession": "false",
+                        "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+                        "duplicateDetectionHistoryTimeWindow": "PT10M",
+                        "deadLetteringOnMessageExpiration": "true",
+                        "maxDeliveryCount": "5",
+                        "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+                        "enablePartitioning": "false",
+                        "enableExpress": "false"
+                    }
                 }
             ]
         },
@@ -294,6 +316,7 @@
                         "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
                         "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]",
                         "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
+                        "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
                         "InternalApiReportUrl": "[concat('https://', variables('funcapp_name'), '.azurewebsites.net/api/report')]",
                         "AuthorizedApiKeysBlobPath": "[concat(variables('smsGatewayBlobContainerName'),'/',variables('authorizedApiKeysBlobObjectName'))]"
                     }

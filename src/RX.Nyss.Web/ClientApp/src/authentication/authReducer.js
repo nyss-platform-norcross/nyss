@@ -8,6 +8,11 @@ export function authReducer(state = initialState.auth, action) {
         ...state,
         loginResponse: action.message
       };
+    case actions.VERIFY_EMAIL.FAILURE:
+      return {
+        ...state,
+        verifyEmailErrorMessage: action.message
+      };
 
     default:
       return state;

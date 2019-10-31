@@ -14,12 +14,14 @@ import { NationalSocietiesCreatePage } from '../nationalSocieties/NationalSociet
 import { NationalSocietiesEditPage } from '../nationalSocieties/NationalSocietiesEditPage';
 import { NationalSocietiesDashboardPage } from '../nationalSocieties/NationalSocietiesDashboardPage';
 import { NationalSocietiesOverviewPage } from '../nationalSocieties/NationalSocietiesOverviewPage';
+import { VerifyEmailPage } from '../verifyEmailPage/VerifyEmailPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
     <ConnectedRouter history={history}>
       <Switch>
         <Route path='/login' component={LoginPage} />
+        <Route path='/verifyEmail' component={VerifyEmailPage} />
 
         <AuthRoute exact path='/' component={Home} />
         <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />

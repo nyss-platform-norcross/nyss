@@ -7,7 +7,8 @@ import { strings, stringKeys } from "../strings";
 
 export const authSagas = () => [
   takeEvery(consts.LOGIN.INVOKE, login),
-  takeEvery(consts.LOGOUT.INVOKE, logout)
+  takeEvery(consts.LOGOUT.INVOKE, logout),
+  takeEvery(consts.VERIFY_EMAIL.INVOKE, verifyEmail)
 ];
 
 function* login({ userName, password, redirectUrl }) {
@@ -41,5 +42,16 @@ function* logout() {
     auth.redirectToLogin();
   } catch (error) {
     yield put(actions.logout.failure(error.message));
+  }
+};
+
+function* verifyEmail({password, email, token}) {
+  yield put(actions.verifyEmail.request());
+  try {
+    yield call(http.post, "/api/userverification/verifyEmailAndAddPassword", {password, email, token}, true);
+    yield put(actions.verifyEmail.success());
+    auth.redirectToLogin();
+  } catch (error) {
+    yield put(actions.verifyEmail.failure(error.message));
   }
 };

@@ -5,8 +5,18 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "SERVICEBUS_CONNECTIONSTRING": "",
-    "SERVICEBUS_REPORTQUEUE": "",
+    "SERVICEBUS_REPORTQUEUE": "nrx-cbs-dev-nyss-bus-report-queue",
+    "SERVICEBUS_SENDEMAILQUEUE": "nrx-cbs-dev-nyss-bus-send-email-queue",
     "InternalApiReportUrl": "http://localhost:7071/api/report",
-    "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys"
+    "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys",
+    "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses"
+  },
+  "MailjetConfig": {
+    "ApiKey": "",
+    "ApiSecret": "",
+    "FromAddress": "",
+    "FromName": "Nyss Platform",
+    "SendToAll": "False",
+    "SendMailUrl": "https://api.mailjet.com/v3.1/send"
   }
 }

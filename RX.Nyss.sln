@@ -7,11 +7,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.Data", "src\RX.Nyss
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.Web", "src\RX.Nyss.Web\RX.Nyss.Web.csproj", "{A969CE53-9CC9-4E05-B6F7-7AE95C944C6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.FuncApp", "src\RX.Nyss.FuncApp\RX.Nyss.FuncApp.csproj", "{124D4B8B-2B51-4492-AEBF-039C0E1D4A41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.FuncApp", "src\RX.Nyss.FuncApp\RX.Nyss.FuncApp.csproj", "{124D4B8B-2B51-4492-AEBF-039C0E1D4A41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.Data.MigrationApp", "src\RX.Nyss.Data.MigrationApp\RX.Nyss.Data.MigrationApp.csproj", "{BAF4D1A8-D007-4C96-80F9-7F8D39BCD742}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.Data.MigrationApp", "src\RX.Nyss.Data.MigrationApp\RX.Nyss.Data.MigrationApp.csproj", "{BAF4D1A8-D007-4C96-80F9-7F8D39BCD742}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rx.Nyss.Web.Tests", "tests\Rx.Nyss.Web.Tests\Rx.Nyss.Web.Tests.csproj", "{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Rx.Nyss.Web.Tests", "tests\Rx.Nyss.Web.Tests\Rx.Nyss.Web.Tests.csproj", "{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.FuncApp.Tests", "tests\RX.Nyss.FuncApp.Tests\RX.Nyss.FuncApp.Tests.csproj", "{5942E7A2-04FB-4377-BACD-DC7C841AE62D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2F1385A2-1016-46FA-A306-3AF8FFE25A48}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,9 +43,17 @@ Global
 		{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5942E7A2-04FB-4377-BACD-DC7C841AE62D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5942E7A2-04FB-4377-BACD-DC7C841AE62D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5942E7A2-04FB-4377-BACD-DC7C841AE62D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5942E7A2-04FB-4377-BACD-DC7C841AE62D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4749EB19-ED6F-4AC4-9B9B-E382B5853B97} = {2F1385A2-1016-46FA-A306-3AF8FFE25A48}
+		{5942E7A2-04FB-4377-BACD-DC7C841AE62D} = {2F1385A2-1016-46FA-A306-3AF8FFE25A48}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {93804247-38BB-4F83-9685-950DD6319B7D}

@@ -5,6 +5,7 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Administration.GlobalCoordinator;
 using RX.Nyss.Web.Features.Administration.GlobalCoordinator.Dto;
 using RX.Nyss.Web.Services;
@@ -16,31 +17,39 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
 {
     public class GlobalCoordinatorServiceTests
     {
+        private readonly GlobalCoordinatorService _globalCoordinatorService;
         private readonly ILoggerAdapter _loggerAdapterMock;
         private readonly INyssContext _nyssContextMock;
-        private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
-        private readonly GlobalCoordinatorService _globalCoordinatorService;
+        private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
+        private readonly IConfig _configMock;
+        private readonly IEmailPublisherService _emailPublisherServiceMock;
 
         public GlobalCoordinatorServiceTests()
         {
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _nyssContextMock = Substitute.For<INyssContext>();
-            _identityUserRegistrationService = Substitute.For<IIdentityUserRegistrationService>();
-            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationService, _nyssContextMock, _loggerAdapterMock);
+            _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
+            _configMock = Substitute.For<IConfig>();
+            _configMock.BaseUrl = "http://hello";
+            _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
+            
+            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContextMock, _loggerAdapterMock, _configMock, _emailPublisherServiceMock);
 
-            _identityUserRegistrationService.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
+            _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
         }
 
         [Fact]
         public async Task RegisterGlobalCoordinator_WhenIdentityUserCreationSuccessful_ShouldReturnSuccessResult()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var userName = "Mickey Mouse";
+            var registerGlobalCoordinatorRequestDto = new RegisterGlobalCoordinatorRequestDto { Name = userName, Email = userEmail };
 
 
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
-
+            await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
+            await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Is<(string email, string name)>(x => x.email == userEmail && x.name == userName), Arg.Any<string>(), Arg.Any<string>());
             Assert.True(result.IsSuccess);
         }
 
@@ -75,7 +84,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
         public async Task RegisterGlobalCoordinator_WhenIdentityUserServiceThrowsResultException_ShouldReturnErrorResultWithAppropriateKey()
         {
             var exception = new ResultException(ResultKey.User.Registration.UserAlreadyExists);
-            _identityUserRegistrationService.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
+            _identityUserRegistrationServiceMock.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
                 .Do(x => throw exception);
 
             var userEmail = "emailTest1@domain.com";
@@ -92,7 +101,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
         [Fact]
         public void RegisterGlobalCoordinator_WhenNonResultExceptionIsThrown_ShouldPassThroughWithoutBeingCaught()
         {
-            _identityUserRegistrationService.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
+            _identityUserRegistrationServiceMock.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
                 .Do(x => throw new Exception());
 
             var userEmail = "emailTest1@domain.com";

@@ -1,9 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Administration.GlobalCoordinator.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
@@ -16,29 +19,44 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
         Task<Result> RegisterGlobalCoordinator(RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto);
     }
 
-    public class GlobalCoordinatorService: IGlobalCoordinatorService
+    public class GlobalCoordinatorService : IGlobalCoordinatorService
     {
-        private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IConfig _config;
         private readonly INyssContext _dataContext;
+        private readonly IEmailPublisherService _emailPublisherService;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
+        private readonly ILoggerAdapter _loggerAdapter;
 
-        public GlobalCoordinatorService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext, ILoggerAdapter loggerAdapter)
+        public GlobalCoordinatorService(
+            IIdentityUserRegistrationService identityUserRegistrationService,
+            INyssContext dataContext,
+            ILoggerAdapter loggerAdapter,
+            IConfig config,
+            IEmailPublisherService emailPublisherService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
+            _config = config;
+            _emailPublisherService = emailPublisherService;
         }
 
         public async Task<Result> RegisterGlobalCoordinator(RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto)
         {
             try
             {
-                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                var identityUser = await CreateUser(registerGlobalCoordinatorRequestDto);
+                var securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
-                var identityUser = await _identityUserRegistrationService.CreateIdentityUser(registerGlobalCoordinatorRequestDto.Email, Role.GlobalCoordinator);
-                await CreateGlobalCoordinator(identityUser, registerGlobalCoordinatorRequestDto);
+                var baseUrl = new Uri(_config.BaseUrl);
+                var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(registerGlobalCoordinatorRequestDto.Email)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
 
-                transactionScope.Complete();
+                var (emailSubject, emailBody) = EmailTextGenerator.GenerateEmailVerificationEmail(
+                    Role.GlobalCoordinator.ToString(),
+                    verificationUrl,
+                    registerGlobalCoordinatorRequestDto.Name);
+
+                await _emailPublisherService.SendEmail((registerGlobalCoordinatorRequestDto.Email, registerGlobalCoordinatorRequestDto.Name), emailSubject, emailBody);
 
                 return Result.Success(ResultKey.User.Registration.Success);
             }
@@ -47,6 +65,17 @@ namespace RX.Nyss.Web.Features.Administration.GlobalCoordinator
                 _loggerAdapter.Debug(e);
                 return e.Result;
             }
+        }
+
+        private async Task<IdentityUser> CreateUser(RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto)
+        {
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            var identityUser = await _identityUserRegistrationService.CreateIdentityUser(registerGlobalCoordinatorRequestDto.Email, Role.GlobalCoordinator);
+            await CreateGlobalCoordinator(identityUser, registerGlobalCoordinatorRequestDto);
+
+            transactionScope.Complete();
+            return identityUser;
         }
 
         private async Task CreateGlobalCoordinator(IdentityUser identityUser, RegisterGlobalCoordinatorRequestDto registerGlobalCoordinatorRequestDto)

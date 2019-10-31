@@ -17,8 +17,27 @@
                 public const string PasswordTooWeak = "user.registration.passwordTooWeak";
                 public const string UnknownError = "user.registration.unknownError";
             }
-        }
 
+            public static class ResetPassword
+            {
+                public const string Success = "user.resetPassword.success";
+                public const string Failed = "user.resetPassword.failed";
+            }
+
+            public static class VerifyEmail
+            {
+                public const string Success = "user.verifyEmail.success";
+                public const string Failed = "user.verifyEmail.failed";
+                public const string NotFound = "user.verifyEmail.notFound";
+
+                public static class AddPassword
+                {
+                    public const string Success = "user.verifyEmail.addPassword.success";
+                    public const string Failed = "user.verifyEmail.addPassword.failed";
+                }
+            }
+        }
+        
         public static class Login
         {
             public const string NotSucceeded = "login.notSucceeded";

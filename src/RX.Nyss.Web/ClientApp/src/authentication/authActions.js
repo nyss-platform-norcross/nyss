@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT } from "./authConstants";
+import { LOGIN, LOGOUT, VERIFY_EMAIL } from "./authConstants";
 
 export const login = {
   invoke: (userName, password, redirectUrl) =>
@@ -26,4 +26,18 @@ export const logout = {
 
   failure: (message) =>
     ({ type: LOGOUT.FAILURE, message })
+};
+
+export const verifyEmail = {
+  invoke: (password, email, token) =>
+    ({ type: VERIFY_EMAIL.INVOKE, password, email, token }),
+
+  request: () =>
+    ({ type: VERIFY_EMAIL.REQUEST }),
+
+  success: () =>
+    ({ type: VERIFY_EMAIL.SUCCESS }),
+
+  failure: (message) =>
+    ({ type: VERIFY_EMAIL.FAILURE, message })
 };
