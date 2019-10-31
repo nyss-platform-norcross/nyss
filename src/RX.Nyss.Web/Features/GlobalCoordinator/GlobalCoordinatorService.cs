@@ -152,18 +152,38 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
 
         public async Task<Result> RemoveGlobalCoordinator(int id)
         {
+            try
+            {
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                var deletedGlobalCoordinator = await DeleteGlobalCoordinator(id);
+                await _identityUserRegistrationService.DeleteIdentityUser(deletedGlobalCoordinator.IdentityUserId);
+                
+                transactionScope.Complete();
+
+                return Success();
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result;
+            }
+        }
+
+        private async Task<User> DeleteGlobalCoordinator(int id)
+        {
             var globalCoordinator = await _dataContext.Users.FindAsync(id);
 
             if (globalCoordinator == null)
             {
                 _loggerAdapter.Debug($"Global coordinator with id {id} was not found");
-                return Error(ResultKey.User.Common.UserNotFound);
+                throw new ResultException(ResultKey.User.Common.UserNotFound);
             }
 
             _dataContext.Users.Remove(globalCoordinator);
-
             await _dataContext.SaveChangesAsync();
-            return Success();
+
+            return globalCoordinator;
         }
 
         private async Task CreateGlobalCoordinator(IdentityUser identityUser, CreateGlobalCoordinatorRequestDto createGlobalCoordinatorRequestDto)
