@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Web.Features.HealthRisk.Dto
 {
-    public class HealthRiskDto
+    public class HealthRiskResponseDto
     {
         public int Id { get; set; }
 

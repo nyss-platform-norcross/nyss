@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.HealthRisk.Dto;
+using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.HealthRisk
 {
@@ -23,7 +23,20 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// <returns>A list of health risks</returns>
         [HttpGet, Route("getHealthRisks")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public Task<IEnumerable<HealthRiskDto>> GetHealthRisks() => 
-            _healthRiskService.GetHealthRisks();
+        public async Task<IEnumerable<HealthRiskResponseDto>> GetHealthRisks() => 
+            await _healthRiskService.GetHealthRisks();
+
+        /// <summary>
+        /// Creates a global health risk.
+        /// </summary>
+        /// <param name="healthRisk"></param>
+        /// <returns></returns>
+        [HttpPost, Route("create"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
+        public async Task<Result> Create([FromBody]CreateHealthRiskRequestDto healthRisk) => 
+            await _healthRiskService.CreateHealthRisk(healthRisk);
+
+        [HttpPost, Route("edit"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
+        public async Task<Result> Edit([FromBody]EditHealthRiskRequestDto healthRisk) =>
+            await _healthRiskService.EditHealthRisk(healthRisk);
     }
 }
