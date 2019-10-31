@@ -102,13 +102,18 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
                 if (nationalSociety.ContentLanguage == null)
                 {
-                    return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotDefined);
+                    return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotFound);
+                }
+
+                if (nationalSociety.Country == null)
+                {
+                    return Error<int>(ResultKey.NationalSociety.Creation.CountryNotFound);
                 }
 
                 var entity = await _nyssContext.AddAsync(nationalSociety);
                 await _nyssContext.SaveChangesAsync();
                 _loggerAdapter.Info($"A national society {nationalSociety} was created");
-                return Success(entity.Entity.Id);
+                return Success(entity.Entity.Id, ResultKey.NationalSociety.Creation.Success);
             }
             catch (Exception e)
             {
@@ -134,7 +139,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
                 await _nyssContext.SaveChangesAsync();
 
-                return Success(ResultKey.NationalSociety.Edit.Success);
+                return SuccessMessage(ResultKey.NationalSociety.Edit.Success);
             }
             catch (Exception e)
             {
@@ -149,7 +154,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(id);
                 _nyssContext.NationalSocieties.Remove(nationalSociety);
                 await _nyssContext.SaveChangesAsync();
-                return Success(ResultKey.NationalSociety.Remove.Success);
+                return SuccessMessage(ResultKey.NationalSociety.Remove.Success);
             }
             catch (Exception e)
             {
@@ -169,10 +174,10 @@ namespace RX.Nyss.Web.Features.NationalSociety
             {
                 if (sqlException.Number == 2627 || sqlException.Number == 2601) // national society name already exists
                 {
-                    return Error(ResultKey.NationalSociety.Creation.NationalSocietyAlreadyExists);                
+                    return Error(ResultKey.NationalSociety.Creation.NameAlreadyExists);                
                 }
             }
-            return Error(e.Message);
+            return Error(ResultKey.Shared.GeneralErrorMessage);
         }
     }
 }

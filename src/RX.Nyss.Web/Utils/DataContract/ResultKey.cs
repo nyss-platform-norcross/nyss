@@ -2,6 +2,10 @@
 {
     public static class ResultKey
     {
+        public static class Shared
+        {
+            public const string GeneralErrorMessage = "shared.error";
+        }
         public static class User
         {
             public static class Registration
@@ -31,10 +35,8 @@
             public static class Creation
             {
                 public const string Success = "nationalSociety.creation.success";
-                public const string NationalSocietyAlreadyExists = "nationalSociety.creation.nationalSocietyAlreadyExists";
-                public const string NameNotDefined = "nationalSociety.creation.nameNotDefined";
-                public const string CountryNotDefined = "nationalSociety.creation.countryNotDefined";
-                public const string LanguageNotDefined = "nationalSociety.creation.languageNotDefined";
+                public const string CountryNotFound = "nationalSociety.creation.countryNotFound";
+                public const string LanguageNotFound = "nationalSociety.creation.languageNotFound";
                 public const string NameAlreadyExists = "nationalSociety.creation.nameAlreadyExists ";
             }
 
