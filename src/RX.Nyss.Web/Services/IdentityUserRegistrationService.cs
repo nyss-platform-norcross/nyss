@@ -1,7 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 using RX.Nyss.Web.Utils.Logging;
@@ -14,7 +19,7 @@ namespace RX.Nyss.Web.Services
         Task<string> GenerateEmailVerification(string email);
         Task DeleteIdentityUser(string identityUserId);
         Task<Result> VerifyEmail(string email, string verificationToken);
-        Task<string> GeneratePasswordResetToken(string email);
+        Task<Result> TriggerPasswordReset(string email);
         Task<Result> ResetPassword(string email, string verificationToken, string newPassword);
         Task<Result> AddPassword(string email, string newPassword);
     }
@@ -22,13 +27,19 @@ namespace RX.Nyss.Web.Services
     public class IdentityUserRegistrationService : IIdentityUserRegistrationService
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IConfig _config;
+        private readonly IEmailPublisherService _emailPublisherService;
 
         public IdentityUserRegistrationService(UserManager<IdentityUser> userManager, 
-            ILoggerAdapter loggerAdapter)
+            ILoggerAdapter loggerAdapter, IConfig config, IEmailPublisherService emailPublisherService, INyssContext nyssContext)
         {
             _userManager = userManager;
             _loggerAdapter = loggerAdapter;
+            _config = config;
+            _emailPublisherService = emailPublisherService;
+            _nyssContext = nyssContext;
         }
 
         public async Task<IdentityUser> CreateIdentityUser(string email, Role role)
@@ -63,10 +74,27 @@ namespace RX.Nyss.Web.Services
             return Success(true, ResultKey.User.VerifyEmail.Success, confirmationResult);
         }
 
-        public async Task<string> GeneratePasswordResetToken(string email)
+        public async Task<Result> TriggerPasswordReset(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            return await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            if (user == null)
+            {
+                return Error(ResultKey.User.ResetPassword.UserNotFound);
+            }
+            
+            var nyssUser = await _nyssContext.Users.SingleAsync(x => x.IdentityUserId == user.Id);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            var baseUrl = new Uri(_config.BaseUrl);
+            var resetUrl = new Uri(baseUrl, $"resetPasswordCallback?email={WebUtility.UrlEncode(email)}&token={WebUtility.UrlEncode(token)}").ToString();
+
+            var (emailSubject, emailBody) = EmailTextGenerator.GenerateResetPasswordEmail(resetUrl, nyssUser.Name);
+
+            await _emailPublisherService.SendEmail((email, nyssUser.Name), emailSubject, emailBody);
+
+
+            return Success(ResultKey.User.ResetPassword.Success);
         }
 
         public async Task<Result> AddPassword(string email, string newPassword)
@@ -91,11 +119,16 @@ namespace RX.Nyss.Web.Services
         public async Task<Result> ResetPassword(string email, string verificationToken, string newPassword)
         {
             var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return Error(ResultKey.User.ResetPassword.UserNotFound);
+            }
+
             var passwordChangeResult = await _userManager.ResetPasswordAsync(user, verificationToken, newPassword);
 
             if (!passwordChangeResult.Succeeded)
             {
-                throw new ResultException(ResultKey.User.ResetPassword.Failed, passwordChangeResult);
+                return Error(ResultKey.User.ResetPassword.Failed, passwordChangeResult);
             }
 
             return Success(true, ResultKey.User.ResetPassword.Success, passwordChangeResult);

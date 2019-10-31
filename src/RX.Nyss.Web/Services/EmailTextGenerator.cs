@@ -2,6 +2,22 @@
 {
     public static class EmailTextGenerator
     {
+        public static (string subject, string body) GenerateResetPasswordEmail(string resetUrl, string name)
+        {
+            var subject = "Reset you password";
+            var body = @"
+                <h1>Dear {{name}}</h1>
+                <p>To reset your password, click the link below:</p>
+                <a href=""{{resetUrl}}"">Reset password</a>
+                <p>Kind regards from to the NYSS platform</p>";
+
+            body = body
+                .Replace("{{name}}", name)
+                .Replace("{{resetUrl}}", resetUrl);
+
+            return (subject, body);
+        }
+
         public static (string subject, string body) GenerateEmailVerificationEmail(string role, string callbackUrl, string name)
         {
             // ToDo: Add support for multiple languages
