@@ -4,13 +4,15 @@ using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.HealthRisk
 {
-    public class CreateHealthRiskRequestDto
+    public class EditHealthRiskRequestDto
     {
+        public int Id { get; set; }
         public int HealthRiskCode { get; set; }
 
         public string Name { get; set; }
 
         public HealthRiskType HealthRiskType { get; set; }
+        public int AlertRuleId { get; set; }
 
         public int AlertRuleCountThreshold { get; set; }
 
@@ -19,10 +21,11 @@ namespace RX.Nyss.Web.Features.HealthRisk
         public int AlertRuleMetersThreshold { get; set; }
         public List<HealthRiskDescriptions> Descriptions { get; set; }
 
-        public class Validator : AbstractValidator<CreateHealthRiskRequestDto>
+        public class Validator : AbstractValidator<EditHealthRiskRequestDto>
         {
             public Validator()
             {
+                RuleFor(hr => hr.Id).GreaterThan(0);
                 RuleFor(hr => hr.Name).NotEmpty().MaximumLength(100);
                 RuleFor(hr => hr.HealthRiskCode).GreaterThan(0);
                 RuleFor(hr => hr.HealthRiskType).IsInEnum();

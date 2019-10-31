@@ -6,6 +6,9 @@ namespace RX.Nyss.Web.Features.HealthRisk
 {
     public interface IHealthRiskService
     {
-        Task<IEnumerable<HealthRiskDto>> GetHealthRisks();
+        Task<IEnumerable<HealthRiskResponseDto>> GetHealthRisks();
+
+        Task<Result<int>> CreateHealthRisk(CreateHealthRiskRequestDto createHealthRiskDto);
+        Task<Result> EditHealthRisk(EditHealthRiskRequestDto editHealthRiskDto);
     }
 }

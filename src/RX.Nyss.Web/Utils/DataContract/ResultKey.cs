@@ -93,6 +93,10 @@
         {
             public const string CreationSuccess = "healthRisk.create.success";
             public const string CreationError = "healthRisk.create.error";
+            public const string EditSuccess = "healthRisk.edit.success";
+            public const string EditError = "healthRisk.edit.error";
+            public const string HealthRiskNotFound = "healthRisk.notFound";
+            public const string HealthRiskNumberAlreadyExists = "healthRisk.healthRiskNumberAlreadyExists";
         }
 
         public const string UnexpectedError = "unexpectedError";
