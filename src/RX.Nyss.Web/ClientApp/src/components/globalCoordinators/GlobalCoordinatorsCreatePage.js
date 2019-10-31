@@ -27,7 +27,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
     const validation = {
       name: [validators.required, validators.maxLength(100)],
-      email: [validators.required, validators.email].maxLength(100),
+      email: [validators.required, validators.email, validators.maxLength(100)],
       phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
       organization: [validators.maxLength(100)]
