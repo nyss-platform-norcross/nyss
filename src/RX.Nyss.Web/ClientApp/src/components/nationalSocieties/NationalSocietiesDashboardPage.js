@@ -7,18 +7,18 @@ import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
 import { Loading } from '../common/loading/Loading';
 
-const NationalSocietiesDashboardPageComponent = (props) => {
+const NationalSocietiesDashboardPageComponent = ({ openDashbaord, isFetching, match, name }) => {
   useEffect(() => {
-    props.openDashbaord(props.match.path, props.match.params);
-  }, [])
+    openDashbaord(match.path, match.params);
+  }, [openDashbaord, match])
 
-  if (props.isFetching) {
+  if (isFetching) {
     return <Loading />;
   }
 
   return (
     <Fragment>
-      <Typography variant="h2">Dashboard - {props.name}</Typography>
+      <Typography variant="h2">Dashboard - {name}</Typography>
     </Fragment>
   );
 }

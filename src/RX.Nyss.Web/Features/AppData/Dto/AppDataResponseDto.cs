@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RX.Nyss.Web.Features.AppData.Dtos
+namespace RX.Nyss.Web.Features.AppData.Dto
 {
     public class AppDataResponseDto
     {

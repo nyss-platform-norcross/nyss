@@ -1,9 +1,13 @@
 import * as actions from "./nationalSocietiesConstants";
 import { initialState } from "../../../initialState";
 import { setProperty } from "../../../utils/immutable";
+import { LOCATION_CHANGE } from "connected-react-router";
 
 export function nationalSocietiesReducer(state = initialState.nationalSocieties, action) {
   switch (action.type) {
+    case LOCATION_CHANGE: // cleanup
+      return { ...state, formData: null }
+
     case actions.GET_NATIONAL_SOCIETIES.REQUEST:
       return { ...state, listFetching: true, listData: [] };
 

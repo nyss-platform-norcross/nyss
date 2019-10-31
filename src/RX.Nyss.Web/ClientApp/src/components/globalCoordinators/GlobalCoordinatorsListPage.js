@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
+import * as globalCoordinatorsActions from './logic/globalCoordinatorsActions';
 import * as appActions from '../app/logic/appActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
@@ -9,26 +9,26 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
-import NationalSocietiesTable from './NationalSocietiesTable';
+import GlobalCoordinatorsTable from './GlobalCoordinatorsTable';
 import { useMount } from '../../utils/lifecycle';
 
-const NationalSocietiesListPageComponent = ({ match, openModule, getList, ...props }) => {
+const GlobalCoordinatorsListPageComponent = (props) => {
   useMount(() => {
-    openModule(match.path, match.params);
-    getList();
-  })
+    props.openModule(props.match.path, props.match.params);
+    props.getList();
+  });
 
   return (
     <Fragment>
-      <Typography variant="h2">National Societies</Typography>
+      <Typography variant="h2">Global Coordinators</Typography>
 
       <TableActions>
         <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          Add national society
+          Add Global Coordinator
        </Button>
       </TableActions>
 
-      <NationalSocietiesTable
+      <GlobalCoordinatorsTable
         list={props.list}
         goToEdition={props.goToEdition}
         goToDashboard={props.goToDashboard}
@@ -40,8 +40,8 @@ const NationalSocietiesListPageComponent = ({ match, openModule, getList, ...pro
   );
 }
 
-NationalSocietiesListPageComponent.propTypes = {
-  getNationalSocieties: PropTypes.func,
+GlobalCoordinatorsListPageComponent.propTypes = {
+  getGlobalCoordinators: PropTypes.func,
   goToCreation: PropTypes.func,
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
@@ -50,21 +50,20 @@ NationalSocietiesListPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  list: state.nationalSocieties.listData,
-  isListFetching: state.nationalSocieties.listFetching,
-  isRemoving: state.nationalSocieties.listRemoving
+  list: state.globalCoordinators.listData,
+  isListFetching: state.globalCoordinators.listFetching,
+  isRemoving: state.globalCoordinators.listRemoving
 });
 
 const mapDispatchToProps = {
-  getList: nationalSocietiesActions.getList.invoke,
-  goToCreation: nationalSocietiesActions.goToCreation,
-  goToEdition: nationalSocietiesActions.goToEdition,
-  goToDashboard: nationalSocietiesActions.goToDashboard,
-  remove: nationalSocietiesActions.remove.invoke,
+  getList: globalCoordinatorsActions.getList.invoke,
+  goToCreation: globalCoordinatorsActions.goToCreation,
+  goToEdition: globalCoordinatorsActions.goToEdition,
+  remove: globalCoordinatorsActions.remove.invoke,
   openModule: appActions.openModule.invoke
 };
 
-export const NationalSocietiesListPage = useLayout(
+export const GlobalCoordinatorsListPage = useLayout(
   Layout,
-  connect(mapStateToProps, mapDispatchToProps)(NationalSocietiesListPageComponent)
+  connect(mapStateToProps, mapDispatchToProps)(GlobalCoordinatorsListPageComponent)
 );

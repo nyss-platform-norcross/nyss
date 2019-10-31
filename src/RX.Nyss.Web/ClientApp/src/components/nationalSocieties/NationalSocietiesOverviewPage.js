@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, {  Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
@@ -6,16 +6,16 @@ import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
 import { Loading } from '../common/loading/Loading';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import ReadOnlyField from '../forms/ReadOnlyField';
+import { useMount } from '../../utils/lifecycle';
 
 const NationalSocietiesOverviewPageComponent = (props) => {
-  useEffect(() => {
+  useMount(() => {
     props.openOverview(props.match);
-  }, []);
+  });
 
   if (props.isFetching || !props.data) {
     return <Loading />;

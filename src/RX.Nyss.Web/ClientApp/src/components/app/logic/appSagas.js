@@ -5,7 +5,8 @@ import { updateStrings } from "../../../strings";
 import * as http from "../../../utils/http";
 import {  removeAccessToken, isAccessTokenSet } from "../../../authentication/auth";
 import { push } from "connected-react-router";
-import { getBreadcrumb, getMenu, placeholders } from "../../../siteMap";
+import { placeholders } from "../../../siteMapPlaceholders";
+import { getBreadcrumb, getMenu } from "../../../utils/siteMapService";
 
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),

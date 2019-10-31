@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, {  useState, Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
@@ -15,6 +15,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
+import { useMount } from '../../utils/lifecycle';
 
 const NationalSocietiesCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -33,9 +34,9 @@ const NationalSocietiesCreatePageComponent = (props) => {
     return createForm(fields, validation);
   });
 
-  useEffect(() => {
+  useMount(() => {
     props.openModule(props.match.path, props.match.params)
-  }, [])
+  })
 
   const handleSubmit = (e) => {
     e.preventDefault();

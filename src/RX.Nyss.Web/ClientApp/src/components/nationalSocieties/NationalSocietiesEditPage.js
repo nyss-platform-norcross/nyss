@@ -15,16 +15,17 @@ import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
+import { useMount } from '../../utils/lifecycle';
 
 const NationalSocietiesEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
-  useEffect(() => {
+  useMount(() => {
     props.openEdition(props.match);
-  }, []);
+  });
 
   useEffect(() => {
-    if (!props.data || props.data.id.toString() !== props.match.params.nationalSocietyId) {
+    if (!props.data) {
       return;
     }
 

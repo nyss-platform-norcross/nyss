@@ -2,7 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Features.AppData.Dtos;
+using RX.Nyss.Web.Features.AppData.Dto;
 using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.AppData

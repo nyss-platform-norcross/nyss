@@ -33,7 +33,7 @@
             get;
         }
 
-        internal Result(T value, bool isSuccess, string messageKey, object messageData)
+        internal Result(T value, bool isSuccess, string messageKey = null, object messageData = null)
             : base(isSuccess, messageKey, messageData)
         {
             Value = value;

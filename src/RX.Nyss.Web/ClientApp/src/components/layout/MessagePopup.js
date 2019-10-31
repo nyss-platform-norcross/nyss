@@ -1,9 +1,6 @@
-import styles from './SideMenu.module.scss';
-
 import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { push } from "connected-react-router";
 import Snackbar from "@material-ui/core/Snackbar";
 import Icon from "@material-ui/core/Icon";
 import * as appActions from '../app/logic/appActions';

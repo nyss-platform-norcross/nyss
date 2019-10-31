@@ -14,10 +14,11 @@ export const post = (path, data, anonymous) => {
 }
 
 export const get = (path) => {
-  return callApi(path, "GET", undefined, {}, true).then(response => {
-    ensureResponseIsSuccess(response);
-    return response;
-  });
+  return callApi(path, "GET", undefined, {}, true)
+    .then(response => {
+      ensureResponseIsSuccess(response);
+      return response;
+    });
 }
 
 export const ensureResponseIsSuccess = (response, message) => {

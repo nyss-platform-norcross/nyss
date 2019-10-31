@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
+using RX.Nyss.Web.Utils.Logging;
 
 namespace RX.Nyss.Web.Services
 {
@@ -12,6 +12,7 @@ namespace RX.Nyss.Web.Services
     {
         Task<IdentityUser> CreateIdentityUser(string email, Role role);
         Task<string> GenerateEmailVerification(string email);
+        Task DeleteIdentityUser(string identityUserId);
         Task<Result> VerifyEmail(string email, string verificationToken);
         Task<string> GeneratePasswordResetToken(string email);
         Task<Result> ResetPassword(string email, string verificationToken, string newPassword);
@@ -155,6 +156,26 @@ namespace RX.Nyss.Web.Services
 
                 var errorMessages = string.Join(",", assignmentToRoleResult.Errors.Select(x => x.Description));
                 _loggerAdapter.Debug($"A role {role} could not be assigned. {errorMessages}");
+
+                throw new ResultException(ResultKey.User.Registration.UnknownError);
+            }
+        }
+
+        public async Task DeleteIdentityUser(string identityUserId)
+        {
+            var user = await _userManager.FindByIdAsync(identityUserId);
+
+            if (user == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.UserNotFound);
+            }
+
+            var userDeletionResult = await _userManager.DeleteAsync(user);
+
+            if (!userDeletionResult.Succeeded)
+            {
+                var errorMessages = string.Join(",", userDeletionResult.Errors.Select(x => x.Description));
+                _loggerAdapter.Debug($"A user with id {identityUserId} could not be deleted. {errorMessages}");
 
                 throw new ResultException(ResultKey.User.Registration.UnknownError);
             }
