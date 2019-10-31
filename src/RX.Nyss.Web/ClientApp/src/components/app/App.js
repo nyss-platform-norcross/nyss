@@ -21,6 +21,7 @@ import { VerifyEmailPage } from '../verifyEmailPage/VerifyEmailPage';
 import { GlobalCoordinatorsListPage } from '../globalCoordinators/GlobalCoordinatorsListPage';
 import { GlobalCoordinatorsCreatePage } from '../globalCoordinators/GlobalCoordinatorsCreatePage';
 import { GlobalCoordinatorsEditPage } from '../globalCoordinators/GlobalCoordinatorsEditPage';
+import { ResetPasswordPage } from '../resetPasswordPage/ResetPasswordPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -28,6 +29,7 @@ export const App = ({ history }) => (
       <Switch>
         <Route path='/login' component={LoginPage} />
         <Route path='/verifyEmail' component={VerifyEmailPage} />
+        <Route path='/resetPassword' component={ResetPasswordPage} />
 
         <AuthRoute exact path='/' component={Home} />
         <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />

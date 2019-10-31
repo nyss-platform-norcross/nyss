@@ -74,7 +74,7 @@ class LoginPageComponent extends PureComponent {
               />
 
               <div className={styles.forgotPasswordLink}>
-                <Link color="secondary" href={"#"}>
+                <Link color="secondary" href="/resetPassword">
                   {strings(stringKeys.login.forgotPassword)}
                 </Link>
               </div>
