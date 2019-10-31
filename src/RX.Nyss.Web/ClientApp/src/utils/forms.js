@@ -128,7 +128,7 @@ const phoneNumberRegex = /^\+[0-9]{6}[0-9]*$/;
 
 export const validators = {
   not: ["Value is incorrect", (value) => !!value],
-  phoneNumber: ["Not a valid phone number", (value) => phoneNumberRegex.test(value)],
+  phoneNumber: ["Not a valid phone number", (value) => !value || phoneNumberRegex.test(value)],
   required: ["Value is required", (value) => !!value],
   greatherThanField: (fieldGetter) => ["The value is to low", (value, fields) => value > fieldGetter(fields)],
   integer: ["Value has to be an integer", (value) => !isNaN(Number(value))],

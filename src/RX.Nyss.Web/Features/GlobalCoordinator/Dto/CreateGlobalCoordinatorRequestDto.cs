@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.GlobalCoordinator.Dto
 {
@@ -22,7 +23,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator.Dto
             {
                 RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
                 RuleFor(x => x.Email).NotEmpty().MaximumLength(100).EmailAddress();
-                RuleFor(x => x.PhoneNumber).NotEmpty().MaximumLength(20);
+                RuleFor(x => x.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
                 RuleFor(x => x.AdditionalPhoneNumber).MaximumLength(20);
                 RuleFor(x => x.Organization).MaximumLength(100);
             }
