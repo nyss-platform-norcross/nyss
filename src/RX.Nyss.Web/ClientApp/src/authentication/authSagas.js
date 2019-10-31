@@ -3,7 +3,7 @@ import * as consts from "../authentication/authConstants";
 import * as actions from "../authentication/authActions";
 import * as http from "../utils/http";
 import * as auth from "./auth";
-import { strings, stringKeys } from "../strings";
+import { strings } from "../strings";
 
 export const authSagas = () => [
   takeEvery(consts.LOGIN.INVOKE, login),

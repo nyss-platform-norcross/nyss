@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
@@ -10,12 +10,13 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietiesTable from './NationalSocietiesTable';
+import { useMount } from '../../utils/lifecycle';
 
-const NationalSocietiesListPageComponent = (props) => {
-  useEffect(() => {
-    props.openModule(props.match.path, props.match.params);
-    props.getList();
-  }, [])
+const NationalSocietiesListPageComponent = ({ match, openModule, getList, ...props }) => {
+  useMount(() => {
+    openModule(match.path, match.params);
+    getList();
+  })
 
   return (
     <Fragment>

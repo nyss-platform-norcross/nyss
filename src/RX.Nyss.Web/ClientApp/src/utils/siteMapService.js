@@ -1,63 +1,48 @@
 import { siteMap } from "../siteMap";
 import { getAccessTokenData } from "../authentication/auth";
 
-export const getMenu = (path, siteMapParameters, placeholder, currentPath) => {
-  if (!path) {
-    return [];
-  }
-
-  const breadcrumb = currentPath ? getBreadcrumb(currentPath, siteMapParameters) : [];
-
-  let menuPath = path;
-
-  if (path !== "/") {
-    for (let i = breadcrumb.length - 1; i >= 0; i--) {
-      if (breadcrumb[i].placeholder === placeholder) {
-        menuPath = breadcrumb[i].parentPath;
-        break;
-      }
+const findClosestMenu = (breadcrumb, placeholder, pathForMenu) => {
+  for (let i = breadcrumb.length - 1; i >= 0; i--) {
+    if (breadcrumb[i].siteMapData.placeholder === placeholder) {
+      return breadcrumb[i].siteMapData.parentPath;
     }
   }
+};
+
+export const getMenu = (pathForMenu, parameters, placeholder, currentPath) => {
+  const breadcrumb = getBreadcrumb(currentPath, parameters);
+  const closestMenuPath = findClosestMenu(breadcrumb, placeholder, pathForMenu);
 
   return siteMap
-    .filter(item => item.parentPath === menuPath && item.placeholder && item.placeholder === placeholder)
+    .filter(item => item.parentPath === closestMenuPath && item.placeholder && item.placeholder === placeholder)
     .map(item => ({
       title: item.title,
-      url: getUrl(item.path, siteMapParameters),
-      isActive: breadcrumb.some(b => b.path === item.path)
+      url: getUrl(item.path, parameters),
+      isActive: breadcrumb.some(b => b.siteMapData.path === item.path)
     }))
 };
 
 export const getBreadcrumb = (path, siteMapParameters) => {
   const authUser = getAccessTokenData();
 
-  if (!authUser) {
+  if (!authUser || !path) {
     return [];
   }
 
-  if (path === "/") {
-    return [];
-  }
-
-  const role = authUser.role;
-  const mapItem = findSiteMapItem(path);
-
-  let currentItem = mapItem;
+  let currentItem = findSiteMapItem(path);
   let hierarchy = [];
 
   while (true) {
-    if (!currentItem.access || !currentItem.access.length || (currentItem.access.some(item => item === role))) {
+    if (!currentItem.access || !currentItem.access.length || currentItem.access.some(role => role === authUser.role)) {
       hierarchy.splice(0, 0, {
-        path: currentItem.path,
         title: getTitle(currentItem.title, siteMapParameters),
         url: getUrl(currentItem.path, siteMapParameters),
         isActive: currentItem.path === path,
-        placeholder: currentItem.placeholder,
-        parentPath: currentItem.parentPath
+        siteMapData: { ...currentItem }
       });
     }
 
-    if (currentItem.parentPath === "/") {
+    if (!currentItem.parentPath) {
       break;
     }
 
@@ -67,21 +52,11 @@ export const getBreadcrumb = (path, siteMapParameters) => {
   return hierarchy;
 }
 
-const getTitle = (template, params) => {
-  let result = template;
-  for (let key in params) {
-    result = result.replace(`{${key}}`, params[key])
-  }
-  return result;
-}
+const getTitle = (template, params) =>
+  Object.keys(params).reduce((result, key) => result.replace(`{${key}}`, params[key]), template);
 
-const getUrl = (template, params) => {
-  let result = template;
-  for (let key in params) {
-    result = result.replace(`:${key}`, params[key])
-  }
-  return result;
-}
+const getUrl = (template, params) =>
+  Object.keys(params).reduce((result, key) => result.replace(`:${key}`, params[key]), template);
 
 const findSiteMapItem = (path) => {
   const item = siteMap.find(item => item.path === path);

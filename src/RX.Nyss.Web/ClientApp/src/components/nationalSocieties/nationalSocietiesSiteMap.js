@@ -4,7 +4,6 @@ import { Administrator, GlobalCoordinator, DataConsumer, DataManager } from "../
 
 export const nationalSocietiesSiteMap = [
   {
-    parentPath: "/",
     path: "/nationalsocieties",
     title: "National societies",
     placeholder: placeholders.topMenu,

@@ -4,7 +4,6 @@ import { Administrator, GlobalCoordinator } from "../../authentication/roles";
 
 export const globalCoordinatorsSiteMap = [
   {
-    parentPath: "/",
     path: "/globalcoordinators",
     title: "Global Coordinators",
     placeholder: placeholders.topMenu,
@@ -15,12 +14,6 @@ export const globalCoordinatorsSiteMap = [
     path: "/globalcoordinators/add",
     title: "Add Global Coordinator",
     access: accessMap.globalCoordinators.add
-  },
-  {
-    parentPath: "/globalcoordinators",
-    path: "/globalcoordinators/:globalCoordinatorId",
-    title: "{globalCoordinatorName}",
-    access: [Administrator, GlobalCoordinator]
   },
   {
     parentPath: "/globalcoordinators",

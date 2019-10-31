@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as globalCoordinatorsActions from './logic/globalCoordinatorsActions';
@@ -10,12 +10,13 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import GlobalCoordinatorsTable from './GlobalCoordinatorsTable';
+import { useMount } from '../../utils/lifecycle';
 
 const GlobalCoordinatorsListPageComponent = (props) => {
-  useEffect(() => {
+  useMount(() => {
     props.openModule(props.match.path, props.match.params);
     props.getList();
-  }, []);
+  });
 
   return (
     <Fragment>

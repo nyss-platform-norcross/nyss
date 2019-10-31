@@ -1,9 +1,13 @@
 import * as actions from "./globalCoordinatorsConstants";
 import { initialState } from "../../../initialState";
 import { setProperty } from "../../../utils/immutable";
+import { LOCATION_CHANGE } from 'connected-react-router'
 
 export function globalCoordinatorsReducer(state = initialState.globalCoordinators, action) {
   switch (action.type) {
+    case LOCATION_CHANGE: // cleanup
+      return { ...state, formData: null }
+
     case actions.GET_GLOBAL_COORDINATORS.REQUEST:
       return { ...state, listFetching: true, listData: [] };
 

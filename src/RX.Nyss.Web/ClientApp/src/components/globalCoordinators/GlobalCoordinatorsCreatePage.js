@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useState, Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
+import { useMount } from '../../utils/lifecycle';
 
 const GlobalCoordinatorsCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -35,9 +36,9 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
     return createForm(fields, validation);
   });
 
-  useEffect(() => {
+  useMount(() => {
     props.openModule(props.match.path, props.match.params)
-  }, [])
+  })
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -12,16 +11,17 @@ import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
+import { useMount } from '../../utils/lifecycle';
 
 const GlobalCoordinatorsEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
-  useEffect(() => {
+  useMount(() => {
     props.openEdition(props.match);
-  }, []);
+  });
 
   useEffect(() => {
-    if (!props.data || props.data.id.toString() !== props.match.params.globalCoordinatorId) {
+    if (!props.data) {
       return;
     }
 
