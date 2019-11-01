@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <returns>A SMS Gateway</returns>
         [HttpGet("smsGateways/{gatewaySettingId:int}/get")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
-        [NeedsPolicy(Policy.NationalSocietyAccess)]
+        //[NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int gatewaySettingId) =>
             _nationalSocietyService.GetSmsGateway(gatewaySettingId);
 
@@ -78,7 +78,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <returns>A list of SMS Gateways assigned to the National Society</returns>
         [HttpGet("{nationalSocietyId:int}/smsGateways/list")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
-        [NeedsPolicy(Policy.NationalSocietyAccess)]
+        //[NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<GatewaySettingResponseDto>>> GetSmsGateways(int nationalSocietyId) =>
             _nationalSocietyService.GetSmsGateways(nationalSocietyId);
 
@@ -90,7 +90,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <returns>An identifier of a created SMS Gateway setting</returns>
         [HttpPost("{nationalSocietyId:int}/smsGateways/add")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
-        [NeedsPolicy(Policy.NationalSocietyAccess)]
+        //[NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<int>> AddSmsGateway(int nationalSocietyId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
             _nationalSocietyService.AddSmsGateway(nationalSocietyId, gatewaySettingRequestDto);
 
@@ -102,7 +102,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <returns></returns>
         [HttpPost("smsGateways/{gatewaySettingId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
-        [NeedsPolicy(Policy.NationalSocietyAccess)]
+        //[NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result> UpdateSmsGateway(int gatewaySettingId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
             _nationalSocietyService.UpdateSmsGateway(gatewaySettingId, gatewaySettingRequestDto);
 
@@ -113,7 +113,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <returns></returns>
         [HttpPost("smsGateways/{gatewaySettingId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
-        [NeedsPolicy(Policy.NationalSocietyAccess)]
+        //[NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result> UpdateSmsGateway(int gatewaySettingId) =>
             _nationalSocietyService.DeleteSmsGateway(gatewaySettingId);
     }

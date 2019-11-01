@@ -19,16 +19,6 @@ Nyss is a Norwegian word and means to "get the wind of something". The first Nor
 * [C# for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp)
 * [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
 
-### How to run the function app (_RX.Nyss.FuncApp_) locally
-
-1. Set _SERVICEBUS_CONNECTIONSTRING_ and _SERVICEBUS_REPORTQUEUE_ variables in `local.settings.json` file.
-2. Open Microsoft Azure Storage Explorer.
-3. Add a new blob container called "sms-gateway" to the Local Storage Account Emulator.
-4. Create a new text file `authorized-api-keys.txt` with a content "api-key" and upload it to _sms-gateway_ container.
-5. Open Visual Studio.
-6. In _Solution Explorer_ window, set _RX.Nyss.FuncApp_ as a startup project.
-7. Debug &rarr; Start Debugging.
-
 ### How to run the web application (_RX.Nyss.Web_) locally
 
 1. Open command prompt (`cmd`) in the root of the application repository.
@@ -47,12 +37,12 @@ Nyss is a Norwegian word and means to "get the wind of something". The first Nor
 
 ### How to run the function app (_RX.Nyss.FuncApp_) locally
 
-1. Set _SERVICEBUS_CONNECTIONSTRING_, _MailjetApiKey_, _MailjetApiSecret_ and _MailjetFromAddress_ in your `local.settings.json` or in the user secrets (`secrets.json`) file. 
+1. Set _SERVICEBUS_CONNECTIONSTRING_, _SERVICEBUS_REPORTQUEUE_, _MailjetApiKey_, _MailjetApiSecret_ and _MailjetFromAddress_ in your `local.settings.json` or in the user secrets (`secrets.json`) file. 
     * The user secrets file is the same for the FuncApp as for the WebApp. 
     * To access it: In VS2019, right-clicking either the FuncApp or WebApp project, and click "Manage User Secrets". If you are using Linux/MacOs, it should be located here: `~/.microsoft/usersecrets/<user_secrets_id>/secrets.json` (the _user_secrets_id_ can be found in the .csproj files)
 2. Open Microsoft Azure Storage Explorer.
 3. Add a new blob container called "sms-gateway" to the Local Storage Account Emulator. If you are not running on Windows, you need to use another emulator called [Azurite](https://github.com/azure/azurite).
-4. Create a new text file `authorized-api-keys` with a content "api-key" and upload it to _sms-gateway_ container.
+4. Create a new text file `authorized-api-keys.txt` with a content "api-key" and upload it to _sms-gateway_ container.
 4. If you want to test sending emails locally, create a new text file `whitelisted-email-addresses` with a list of email addresses that you want to use (separated by newline) and upload it to the _sms-gateway_ container.
 5. Open Visual Studio.
 6. In _Solution Explorer_ window, set _RX.Nyss.FuncApp_ as a startup project.

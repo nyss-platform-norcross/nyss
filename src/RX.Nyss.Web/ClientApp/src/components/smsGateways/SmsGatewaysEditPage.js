@@ -16,13 +16,14 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { SmsGatewayTypes } from "./logic/smsGatewayTypes";
+import { useMount } from '../../utils/lifecycle';
 
 const SmsGatewaysEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
-  useEffect(() => {
+  useMount(() => {
     props.openEdition(props.match.path, props.match.params);
-  }, []);
+  });
 
   useEffect(() => {
     if (!props.data) {

@@ -189,6 +189,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     return Error(ResultKey.NationalSociety.Creation.NameAlreadyExists);                
                 }
             }
+
             return Error(ResultKey.Shared.GeneralErrorMessage);
         }
 

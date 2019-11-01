@@ -1,8 +1,7 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as smsGatewaysActions from './logic/smsGatewaysActions';
-import * as appActions from '../app/logic/appActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
@@ -10,11 +9,12 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import SmsGatewaysTable from './SmsGatewaysTable';
+import { useMount } from '../../utils/lifecycle';
 
 const SmsGatewaysListPageComponent = (props) => {
-  useEffect(() => {
+  useMount(() => {
     props.openSmsGatewaysList(props.match.path, props.match.params);
-  }, []);
+  });
 
   return (
     <Fragment>

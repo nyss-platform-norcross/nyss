@@ -6,6 +6,7 @@
         {
             public const string GeneralErrorMessage = "shared.error";
         }
+
         public static class User
         {
             public static class Common

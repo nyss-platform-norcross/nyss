@@ -35,7 +35,7 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
             <TableCell>{SmsGatewayTypes[row.gatewayType]}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id, nationalSocietyId)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => remove(row.id, nationalSocietyId)} confirmationText="Confirm removing the item" icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}

@@ -15,6 +15,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { SmsGatewayTypes } from "./logic/smsGatewayTypes";
+import { useMount } from '../../utils/lifecycle';
 
 const SmsGatewaysCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -33,9 +34,9 @@ const SmsGatewaysCreatePageComponent = (props) => {
     return createForm(fields, validation);
   });
 
-  useEffect(() => {
+  useMount(() => {
     props.openCreation(props.match.path, props.match.params);
-  }, [])
+  })
 
   const handleSubmit = (e) => {
     e.preventDefault();

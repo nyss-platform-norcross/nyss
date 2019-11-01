@@ -8,7 +8,7 @@
     "SERVICEBUS_REPORTQUEUE": "nrx-cbs-dev-nyss-bus-report-queue",
     "SERVICEBUS_SENDEMAILQUEUE": "nrx-cbs-dev-nyss-bus-send-email-queue",
     "InternalApiReportUrl": "http://localhost:7071/api/report",
-    "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys.txt"
+    "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys.txt",
     "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses"
   },
   "MailjetConfig": {
