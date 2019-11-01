@@ -8,10 +8,10 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<HealthRisk> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Name).HasMaxLength(100);
             builder.Property(x => x.HealthRiskType).HasMaxLength(20).HasConversion<string>();
             builder.Property(x => x.HealthRiskCode).IsRequired();
             builder.HasOne(x => x.AlertRule).WithMany().IsRequired(false);
+            builder.HasMany(x => x.LanguageContents).WithOne(x => x.HealthRisk);
         }
     }
 }

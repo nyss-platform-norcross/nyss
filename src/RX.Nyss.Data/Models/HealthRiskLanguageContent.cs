@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
 
+        public string Name { get; set; }
+
         public string CaseDefinition { get; set; }
 
         public string FeedbackMessage { get; set; }
