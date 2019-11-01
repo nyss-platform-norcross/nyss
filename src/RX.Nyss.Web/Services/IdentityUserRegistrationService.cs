@@ -77,7 +77,6 @@ namespace RX.Nyss.Web.Services
         public async Task<Result> TriggerPasswordReset(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-
             if (user == null)
             {
                 return Error(ResultKey.User.ResetPassword.UserNotFound);
@@ -100,6 +99,10 @@ namespace RX.Nyss.Web.Services
         public async Task<Result> AddPassword(string email, string newPassword)
         { 
             var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return Error(ResultKey.User.ResetPassword.UserNotFound);
+            }
             var passwordAddResult = await _userManager.AddPasswordAsync(user, newPassword);
             
             var isPasswordTooWeak = passwordAddResult.Errors.Any(x => x.IsPasswordTooWeak());
@@ -125,6 +128,12 @@ namespace RX.Nyss.Web.Services
             }
 
             var passwordChangeResult = await _userManager.ResetPasswordAsync(user, verificationToken, newPassword);
+
+            var isPasswordTooWeak = passwordChangeResult.Errors.Any(x => x.IsPasswordTooWeak());
+            if (isPasswordTooWeak)
+            {
+                return Error(ResultKey.User.Registration.PasswordTooWeak, string.Join(", ", passwordChangeResult.Errors.Select(x => x.Description)));
+            }
 
             if (!passwordChangeResult.Succeeded)
             {

@@ -11,6 +11,7 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
+using Shouldly;
 using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Features.Services
@@ -90,6 +91,26 @@ namespace Rx.Nyss.Web.Tests.Features.Services
             var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
 
             await Assert.ThrowsAsync<ResultException>(() => identityUserRegistrationService.CreateIdentityUser(userEmail, Role.GlobalCoordinator));
+        }
+
+        [Fact]
+        public async Task ResetPassword_WhenUserNotFound_ShouldReturnNotFound()
+        {
+            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(new List<IdentityUser>());
+
+            var result = await identityUserRegistrationService.ResetPassword("missingUser", "something", "newPass");
+
+            result.Message.Key.ShouldBe(ResultKey.User.ResetPassword.UserNotFound);
+        }
+
+        [Fact]
+        public async Task TriggerPasswordReset_WhenUserNotFound_ShouldReturnNotFound()
+        {
+            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(new List<IdentityUser>());
+
+            var result = await identityUserRegistrationService.TriggerPasswordReset("missingUser");
+
+            result.Message.Key.ShouldBe(ResultKey.User.ResetPassword.UserNotFound);
         }
     }
 }
