@@ -3,6 +3,7 @@ import { BaseLayout } from './BaseLayout';
 
 import globalLayoutStyles from './Layout.module.scss';
 import styles from './AnonymousLayout.module.scss';
+import { MessagePopup } from './MessagePopup';
 
 export const AnonymousLayout = ({ children }) => {
     return (
@@ -13,6 +14,7 @@ export const AnonymousLayout = ({ children }) => {
             <div className={styles.content}>
                 {children}
             </div>
+            <MessagePopup />
         </BaseLayout>
     );
 }

@@ -1,4 +1,4 @@
-import { LOGIN, LOGOUT, VERIFY_EMAIL } from "./authConstants";
+import { LOGIN, LOGOUT, VERIFY_EMAIL, RESET_PASSWORD, RESET_PASSWORD_CALLBACK } from "./authConstants";
 
 export const login = {
   invoke: (userName, password, redirectUrl) =>
@@ -40,4 +40,32 @@ export const verifyEmail = {
 
   failure: (message) =>
     ({ type: VERIFY_EMAIL.FAILURE, message })
+};
+
+export const resetPassword = {
+  invoke: (email) =>
+    ({ type: RESET_PASSWORD.INVOKE, email }),
+
+  request: () =>
+    ({ type: RESET_PASSWORD.REQUEST }),
+
+  success: () =>
+    ({ type: RESET_PASSWORD.SUCCESS }),
+
+  failure: (message) =>
+    ({ type: RESET_PASSWORD.FAILURE, message })
+};
+
+export const resetPasswordCallback = {
+  invoke: (password, email, token) =>
+    ({ type: RESET_PASSWORD_CALLBACK.INVOKE, password, email, token }),
+
+  request: () =>
+    ({ type: RESET_PASSWORD_CALLBACK.REQUEST }),
+
+  success: () =>
+    ({ type: RESET_PASSWORD_CALLBACK.SUCCESS }),
+
+  failure: (message) =>
+    ({ type: RESET_PASSWORD_CALLBACK.FAILURE, message })
 };

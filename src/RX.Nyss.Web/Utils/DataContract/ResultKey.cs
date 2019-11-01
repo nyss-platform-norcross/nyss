@@ -28,6 +28,7 @@
             {
                 public const string Success = "user.resetPassword.success";
                 public const string Failed = "user.resetPassword.failed";
+                public const string UserNotFound = "user.resetPassword.notFound";
             }
 
             public static class VerifyEmail

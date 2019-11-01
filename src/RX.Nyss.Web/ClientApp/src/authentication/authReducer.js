@@ -13,6 +13,16 @@ export function authReducer(state = initialState.auth, action) {
         ...state,
         verifyEmailErrorMessage: action.message
       };
+    case actions.RESET_PASSWORD.FAILURE:
+      return {
+        ...state,
+        resetPasswordErrorMessage: action.message
+      };
+    case actions.RESET_PASSWORD_CALLBACK.FAILURE:
+      return {
+        ...state,
+        resetPasswordCallbackErrorMessage: action.message
+      };
 
     default:
       return state;

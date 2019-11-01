@@ -6,28 +6,24 @@ import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
-import styles from './LoginPage.module.scss';
+import styles from './ResetPasswordCallbackPage.module.scss';
 import { strings, stringKeys } from '../../strings';
 import { createForm, validators } from '../../utils/forms';
-import TextInputField from '../forms/TextInputField';
 import PasswordInputField from '../forms/PasswordInputField';
 import * as authActions from '../../authentication/authActions';
-import { getRedirectUrl } from '../../authentication/auth';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import queryString from 'query-string';
 
-class LoginPageComponent extends PureComponent {
+class ResetPasswordCallbackPageComponent extends PureComponent {
   constructor(props) {
     super(props);
 
     const fields = {
-      userName: "",
       password: ""
     };
 
     const validation = {
-      userName: [validators.required, validators.email],
-      password: [validators.required, validators.minLength(4)]
+      password: [validators.required, validators.minLength(8)]
     };
 
     this.form = createForm(fields, validation);
@@ -40,9 +36,13 @@ class LoginPageComponent extends PureComponent {
       return;
     };
 
-    const values = this.form.getValues();
+    const queryStrings = queryString.parse(this.props.location.search);
 
-    this.props.login(values.userName, values.password, getRedirectUrl());
+    const values = this.form.getValues();
+    const email = queryStrings.email;
+    const token = queryStrings.token;
+
+    this.props.resetPasswordCallback(values.password, email, token);
   };
 
   render() {
@@ -50,38 +50,25 @@ class LoginPageComponent extends PureComponent {
       <div className={styles.loginContent}>
         <Paper className={styles.loginPaper}>
           <div className={styles.loginPaperContent}>
-            <Typography variant="h1" className={styles.paperHeader}>Welcome to Nyss</Typography>
-            <Typography variant="h2">Log in</Typography>
+            <Typography variant="h2">{strings(stringKeys.user.resetPassword.enterNewPassword)}</Typography>
 
-            {this.props.loginResponse &&
+            {this.props.resetPasswordCallbackErrorMessage &&
               <SnackbarContent
-                message={this.props.loginResponse}
+                message={this.props.resetPasswordCallbackErrorMessage}
               />
             }
 
             <form onSubmit={this.handleSubmit}>
-              <TextInputField
-                label="User name"
-                name="userName"
-                field={this.form.fields.userName}
-                autoFocus
-              />
-
+              
               <PasswordInputField
-                label={strings(stringKeys.login.password)}
+                label={strings(stringKeys.user.verifyEmail.password)}
                 name="password"
                 field={this.form.fields.password}
               />
 
-              <div className={styles.forgotPasswordLink}>
-                <Link color="secondary" href="/resetPassword">
-                  {strings(stringKeys.login.forgotPassword)}
-                </Link>
-              </div>
-
               <div className={styles.actions}>
-                <Button type="submit" variant="outlined" color="primary" style={{ padding: "10px 55px" }}>
-                  {strings(stringKeys.login.signIn)}
+                <Button type="submit" variant="outlined" color="primary">
+                  {strings(stringKeys.user.verifyEmail.signIn)}
                 </Button>
               </div>
             </form>
@@ -92,20 +79,20 @@ class LoginPageComponent extends PureComponent {
   }
 }
 
-LoginPageComponent.propTypes = {
-  login: PropTypes.func,
-  loginResponse: PropTypes.string
+ResetPasswordCallbackPageComponent.propTypes = {
+  resetPasswordCallback: PropTypes.func,
+  resetPasswordCallbackErrorMessage: PropTypes.string
 };
 
 const mapStateToProps = state => ({
-  loginResponse: state.auth.loginResponse
+  resetPasswordCallbackErrorMessage: state.auth.resetPasswordCallbackErrorMessage
 });
 
 const mapDispatchToProps = {
-  login: authActions.login.invoke
+  resetPasswordCallback: authActions.resetPasswordCallback.invoke
 };
 
-export const LoginPage = useLayout(
+export const ResetPasswordCallbackPage = useLayout(
   AnonymousLayout,
-  connect(mapStateToProps, mapDispatchToProps)(LoginPageComponent)
+  connect(mapStateToProps, mapDispatchToProps)(ResetPasswordCallbackPageComponent)
 );

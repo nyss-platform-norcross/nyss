@@ -29,5 +29,11 @@ namespace RX.Nyss.Web.Features.UserVerification
 
             return await _identityUserRegistrationService.AddPassword(request.Email, request.Password);
         }
+
+        [HttpPost("resetPassword"), AllowAnonymous]
+        public async Task<Result> ResetPassword([FromBody] ResetPasswordRequestDto request) => await _identityUserRegistrationService.TriggerPasswordReset(request.Email);
+
+        [HttpPost("resetPasswordCallback"), AllowAnonymous]
+        public async Task<Result> ResetPasswordCallback([FromBody] ResetPasswordCallbackRequestDto request) => await _identityUserRegistrationService.ResetPassword(request.Email, request.Token, request.Password);
     }
 }

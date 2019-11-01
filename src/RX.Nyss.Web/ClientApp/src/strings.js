@@ -1,5 +1,3 @@
-import { verifyEmail } from "./authentication/authActions";
-
 let stringList = {
   "login.signIn": "Log innnn",
   "login.password": "Password",
@@ -16,7 +14,12 @@ let stringList = {
   "user.verifyEmail.addPassword.success": "Password has been created",
   "user.registration.passwordTooWeak": "Password is too weak",
   "user.resetPassword.success": "Password has been reset, please check your email", 
-  "user.resetPassword.failed": "Password reset failed"
+  "user.resetPassword.failed": "Password reset failed",
+  "user.resetPassword.enterEmail": "Please enter your email address",
+  "user.resetPassword.emailAddress": "Email address",
+  "user.resetPassword.submit": "Reset my password",
+  "user.resetPassword.enterNewPassword": "Please set your new password",
+  "user.resetPassword.notFound": "The user was not found"
 };
 
 export const stringKeys = {
@@ -40,7 +43,12 @@ export const stringKeys = {
     },
     resetPassword: {
       success: "user.resetPassword.success",
-      failed: "user.resetPassword.failed"
+      failed: "user.resetPassword.failed",
+      enterEmail: "user.resetPassword.enterEmail",
+      emailAddress: "user.resetPassword.emailAddress",
+      submit: "user.resetPassword.submit",
+      enterNewPassword: "user.resetPassword.enterNewPassword",
+      notFound: "user.resetPassword.notFound"
     }
   }
 };

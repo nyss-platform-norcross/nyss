@@ -5,50 +5,37 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
+using Shouldly;
 using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Features.Services
 {
     public class IdentityUserRegistrationServiceTests
     {
-        private readonly ILoggerAdapter _loggerAdapterMock;
-
         public IdentityUserRegistrationServiceTests()
         {
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
+            _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
+            _configMock = new NyssConfig {BaseUrl = "https://testurl"};
+            _nyssContext = Substitute.For<INyssContext>();
         }
 
-        [Fact]
-        public async Task CreateIdentityUser_WhenEmptyUserList_ShouldReturnNewUser()
-        {
-            var userEmail = "emailTest1@domain.com";
-            var existingUserList = new List<IdentityUser>();
-            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
-
-            var identityUser = await identityUserRegistrationService.CreateIdentityUser(userEmail, Role.GlobalCoordinator);
-
-            Assert.NotNull(identityUser);
-        }
-
-        [Fact]
-        public async Task CreateIdentityUser_WhenUserAlreadyExists_ShouldThrowException()
-        {
-            var userEmail = "emailTest1@domain.com";
-            var existingUserList = new List<IdentityUser> { new IdentityUser() { UserName = userEmail, Email = userEmail } };
-            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
-
-            await Assert.ThrowsAsync<ResultException>(() => identityUserRegistrationService.CreateIdentityUser(userEmail, Role.GlobalCoordinator));
-        }
+        private readonly ILoggerAdapter _loggerAdapterMock;
+        private readonly IEmailPublisherService _emailPublisherServiceMock;
+        private readonly IConfig _configMock;
+        private readonly INyssContext _nyssContext;
 
         private IIdentityUserRegistrationService GetIdentityUserServiceWithMockedDependencies(List<IdentityUser> users)
         {
             var userManager = MockUserManager(users);
 
-            var userService = new IdentityUserRegistrationService(userManager, _loggerAdapterMock);
+            var userService = new IdentityUserRegistrationService(userManager, _loggerAdapterMock, _configMock, _emailPublisherServiceMock, _nyssContext);
             return userService;
         }
 
@@ -82,6 +69,48 @@ namespace Rx.Nyss.Web.Tests.Features.Services
                 .Returns(IdentityResult.Success);
 
             return store;
+        }
+
+        [Fact]
+        public async Task CreateIdentityUser_WhenEmptyUserList_ShouldReturnNewUser()
+        {
+            var userEmail = "emailTest1@domain.com";
+            var existingUserList = new List<IdentityUser>();
+            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
+
+            var identityUser = await identityUserRegistrationService.CreateIdentityUser(userEmail, Role.GlobalCoordinator);
+
+            Assert.NotNull(identityUser);
+        }
+
+        [Fact]
+        public async Task CreateIdentityUser_WhenUserAlreadyExists_ShouldThrowException()
+        {
+            var userEmail = "emailTest1@domain.com";
+            var existingUserList = new List<IdentityUser> {new IdentityUser {UserName = userEmail, Email = userEmail}};
+            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
+
+            await Assert.ThrowsAsync<ResultException>(() => identityUserRegistrationService.CreateIdentityUser(userEmail, Role.GlobalCoordinator));
+        }
+
+        [Fact]
+        public async Task ResetPassword_WhenUserNotFound_ShouldReturnNotFound()
+        {
+            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(new List<IdentityUser>());
+
+            var result = await identityUserRegistrationService.ResetPassword("missingUser", "something", "newPass");
+
+            result.Message.Key.ShouldBe(ResultKey.User.ResetPassword.UserNotFound);
+        }
+
+        [Fact]
+        public async Task TriggerPasswordReset_WhenUserNotFound_ShouldReturnNotFound()
+        {
+            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(new List<IdentityUser>());
+
+            var result = await identityUserRegistrationService.TriggerPasswordReset("missingUser");
+
+            result.Message.Key.ShouldBe(ResultKey.User.ResetPassword.UserNotFound);
         }
     }
 }
