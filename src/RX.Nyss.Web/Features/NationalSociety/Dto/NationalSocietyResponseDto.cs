@@ -1,6 +1,4 @@
-using System;
-
-namespace RX.Nyss.Web.Features.NationalSociety
+namespace RX.Nyss.Web.Features.NationalSociety.Dto
 {
     public class NationalSocietyResponseDto
     {

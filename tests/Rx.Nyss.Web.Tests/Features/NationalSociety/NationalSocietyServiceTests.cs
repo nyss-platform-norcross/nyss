@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MockQueryable.NSubstitute;
+using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.NationalSociety.Dto;
 
 namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 {
@@ -20,6 +22,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 
         private readonly INyssContext _nyssContextMock;
         private readonly ILoggerAdapter _loggerAdapterMock;
+        private readonly IConfig _configMock;
         private const string NationalSocietyName = "Norway";
         private const string ExistingNationalSocietyName = "Poland";
         private const int NationalSocietyId = 1;
@@ -30,7 +33,8 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         {
             _nyssContextMock = Substitute.For<INyssContext>();
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, _loggerAdapterMock);
+            _configMock = Substitute.For<IConfig>();
+            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, _loggerAdapterMock, _configMock);
 
             // Arrange
 

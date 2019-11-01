@@ -3,6 +3,7 @@ import { authReducer } from "../authentication/authReducer";
 import { connectRouter } from 'connected-react-router'
 import { combineReducers } from "redux";
 import { nationalSocietiesReducer } from "../components/nationalSocieties/logic/nationalSocietiesReducer";
+import { smsGatewaysReducer } from "../components/smsGateways/logic/smsGatewaysReducer";
 import { requestReducer } from "../components/app/logic/requestReducer";
 import { globalCoordinatorsReducer } from "../components/globalCoordinators/logic/globalCoordinatorsReducer";
 
@@ -12,5 +13,6 @@ export const createRootReducer = (history) => combineReducers({
   requests: requestReducer,
   auth: authReducer,
   nationalSocieties: nationalSocietiesReducer,
+  smsGateways: smsGatewaysReducer,
   globalCoordinators: globalCoordinatorsReducer
 });

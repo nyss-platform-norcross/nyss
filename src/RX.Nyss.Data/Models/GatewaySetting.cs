@@ -12,6 +12,7 @@ namespace RX.Nyss.Data.Models
 
         public GatewayType GatewayType { get; set; }
 
+        public int NationalSocietyId { get; set; }
         public virtual NationalSociety NationalSociety { get; set; }
     }
 }

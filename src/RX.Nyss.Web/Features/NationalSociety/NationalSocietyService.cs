@@ -6,6 +6,8 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.NationalSociety.Dto;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -25,11 +27,13 @@ namespace RX.Nyss.Web.Features.NationalSociety
     {
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IConfig _config;
 
-        public NationalSocietyService(INyssContext context, ILoggerAdapter loggerAdapter)
+        public NationalSocietyService(INyssContext context, ILoggerAdapter loggerAdapter, IConfig config)
         {
             _nyssContext = context;
             _loggerAdapter = loggerAdapter;
+            _config = config;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties()
@@ -177,6 +181,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     return Error(ResultKey.NationalSociety.Creation.NameAlreadyExists);                
                 }
             }
+
             return Error(ResultKey.Shared.GeneralErrorMessage);
         }
     }

@@ -25,22 +25,24 @@ Nyss is a Norwegian word and means to "get the wind of something". The first Nor
 2. Navigate to the web application directory:
    1. `cd src/RX.Nyss.Web`
 3. Run database migrations:
-   1. Make sure that connection string for _NyssDatabase_ set in `appsettings.Development.json` is correct. By default, [SQL Server Express LocalDB](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) instance is used.
+   1. Make sure that a connection string for _NyssDatabase_ set in `appsettings.Development.json` is correct. By default, [SQL Server Express LocalDB](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) instance is used.
    2. `dotnet ef database update --context NyssContext`
    3. `dotnet ef database update --context ApplicationDbContext`
-4. Start the application:
+4. Set up Blob Object connection string
+   1. Make sure that a shared access signature for _SmsGatewayBlobContainer_ set in `appsettings.Development.json` is correct. You can generate a new one by opening Microsoft Azure Storage Explorer, then clicking right mouse button on _Local & Attached &rarr; Storage Accounts &rarr; (Emulator - Default Ports)(Key) &rarr; Blob Containers &rarr; sms-gateway_ node and selecting _Get Shared Access Signature..._ In a pop-up window ensure that the _Expiry time_ is set far in the future enough and _Write_ checkbox on the _Permissions_ list is selected. The _SmsGatewayBlobContainer_ should have the following format: `BlobEndpoint=https://{Environment URL}/sms-gateway;SharedAccessSignature={Query string without question mark at the beginning}`.
+5. Start the application:
    1. `dotnet run` - the first build may take up to 5 minutes, the applicatiion is ready to open when you see _Compiled successfully!_ in the _npm_ command prompt.
    2. Open page [https://localhost:5001/](https://localhost:5001/).
    3. A default login of System Administrator is "admin@domain.com" and a password is "P@ssw0rd".
 
 ### How to run the function app (_RX.Nyss.FuncApp_) locally
 
-1. Set _SERVICEBUS_CONNECTIONSTRING_, _MailjetApiKey_, _MailjetApiSecret_ and _MailjetFromAddress_ in your `local.settings.json` or in the user secrets (`secrets.json`) file. 
+1. Set _SERVICEBUS_CONNECTIONSTRING_, _SERVICEBUS_REPORTQUEUE_, _MailjetApiKey_, _MailjetApiSecret_ and _MailjetFromAddress_ in your `local.settings.json` or in the user secrets (`secrets.json`) file. 
     * The user secrets file is the same for the FuncApp as for the WebApp. 
     * To access it: In VS2019, right-clicking either the FuncApp or WebApp project, and click "Manage User Secrets". If you are using Linux/MacOs, it should be located here: `~/.microsoft/usersecrets/<user_secrets_id>/secrets.json` (the _user_secrets_id_ can be found in the .csproj files)
 2. Open Microsoft Azure Storage Explorer.
 3. Add a new blob container called "sms-gateway" to the Local Storage Account Emulator. If you are not running on Windows, you need to use another emulator called [Azurite](https://github.com/azure/azurite).
-4. Create a new text file `authorized-api-keys` with a content "api-key" and upload it to _sms-gateway_ container.
+4. Create a new text file `authorized-api-keys.txt` with a content "api-key" and upload it to _sms-gateway_ container.
 4. If you want to test sending emails locally, create a new text file `whitelisted-email-addresses` with a list of email addresses that you want to use (separated by newline) and upload it to the _sms-gateway_ container.
 5. Open Visual Studio.
 6. In _Solution Explorer_ window, set _RX.Nyss.FuncApp_ as a startup project.
@@ -86,9 +88,9 @@ References: [Code and test Azure Functions locally](https://docs.microsoft.com/e
 
 * [Git Commit Best Practices](https://github.com/trein/dev-best-practices/wiki/Git-Commit-Best-Practices)
 * Commit often and push if you feel for it. Squash them if a lot of them doesn't add value
-* Branch name format: `feature or bugfix/`-`workitem number`-`workitem name`, eg:
-  * `feature/-23-add-system-administrator`
-  * `bugfix/-73-add-missing-margins-in-project-dashboard`
+* Branch name format: `feature or bugfix/workitem-number`-`workitem-name`, eg:
+  * `feature/23-add-system-administrator`
+  * `bugfix/73-add-missing-margins-in-project-dashboard`
 * Commit messages: Imperative style: Write what the code now does and not what the developer has done. Example:
 
 ```

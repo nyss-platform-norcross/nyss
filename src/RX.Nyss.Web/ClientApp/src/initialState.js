@@ -33,6 +33,14 @@ export const initialState = {
       isFetching: false
     }
   },
+  smsGateways: {
+    listFetching: false,
+    listRemoving: {},
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formData: null
+  },
   globalCoordinators: {
     listFetching: false,
     listRemoving: {},

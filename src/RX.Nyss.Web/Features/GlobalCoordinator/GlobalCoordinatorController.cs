@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         /// <param name="dto">The global coordinator to be created</param>
         /// <returns></returns>
         [HttpPost("create"), NeedsRole(Role.Administrator)]
-        public async Task<Result> Create([FromBody]CreateGlobalCoordinatorRequestDto dto) => 
+        public async Task<Result> Create([FromBody]CreateGlobalCoordinatorRequestDto dto) =>
             await _globalCoordinatorService.RegisterGlobalCoordinator(dto);
 
         /// <summary>

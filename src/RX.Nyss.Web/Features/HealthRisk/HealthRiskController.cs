@@ -3,10 +3,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.HealthRisk.Dto;
 
 namespace RX.Nyss.Web.Features.HealthRisk
 {
-    [Route("api/healthrisk")]
+    [Route("api/healthRisk")]
     public class HealthRiskController : BaseController
     {
         private readonly IHealthRiskService _healthRiskService;

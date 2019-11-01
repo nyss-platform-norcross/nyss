@@ -5,6 +5,8 @@ namespace RX.Nyss.Web.Utils.DataContract
 {
     public class ResultException : Exception
     {
+        public Result Result { get; set; }
+
         private ResultException()
         {
         }
@@ -14,10 +16,7 @@ namespace RX.Nyss.Web.Utils.DataContract
             Result = Error(messageKey, messageData);
         }
 
-        public Result Result { get; set; }
-
-        public Result<T> GetResult<T>() =>
-            Error<T>(Result.Message.Key, Result.Message.Data);
+        public Result<T> GetResult<T>() => Error<T>(Result.Message.Key, Result.Message.Data);
 
         public override string ToString() => $"{base.ToString()}, {nameof(Result)}: {Result}";
     }

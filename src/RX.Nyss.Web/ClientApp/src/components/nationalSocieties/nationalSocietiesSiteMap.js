@@ -47,5 +47,12 @@ export const nationalSocietiesSiteMap = [
     title: "Overview",
     placeholder: placeholders.leftMenu,
     access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId",
+    path: "/nationalsocieties/:nationalSocietyId/smsgateways",
+    title: "SMS Gateways",
+    placeholder: placeholders.leftMenu,
+    access: accessMap.smsGateways.list
   }
 ];
