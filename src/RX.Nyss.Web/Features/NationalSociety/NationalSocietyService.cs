@@ -23,6 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result<int>> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
         Task<Result> EditNationalSociety(EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
+        Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int gatewaySettingId);
         Task<Result<List<GatewaySettingResponseDto>>> GetSmsGateways(int nationalSocietyId);
         Task<Result<int>> AddSmsGateway(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto);
         Task<Result> UpdateSmsGateway(int gatewaySettingId, GatewaySettingRequestDto gatewaySettingRequestDto);
@@ -189,6 +190,28 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 }
             }
             return Error(ResultKey.Shared.GeneralErrorMessage);
+        }
+
+        public async Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int gatewaySettingId)
+        {
+            var gatewaySetting = await _nyssContext.GatewaySettings
+                .Select(gs => new GatewaySettingResponseDto
+                {
+                    Id = gs.Id,
+                    Name = gs.Name,
+                    ApiKey = gs.ApiKey,
+                    GatewayType = gs.GatewayType
+                })
+                .FirstOrDefaultAsync(gs => gs.Id == gatewaySettingId);
+
+            if (gatewaySetting == null)
+            {
+                return Error<GatewaySettingResponseDto>(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
+            }
+            
+            var result = Success(gatewaySetting);
+
+            return result;
         }
 
         public async Task<Result<List<GatewaySettingResponseDto>>> GetSmsGateways(int nationalSocietyId)

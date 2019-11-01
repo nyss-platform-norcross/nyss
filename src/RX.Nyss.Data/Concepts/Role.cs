@@ -7,6 +7,6 @@
         TechnicalAdvisor,
         DataConsumer,
         DataManager,
-        Supervisor,
+        Supervisor
     }
 }

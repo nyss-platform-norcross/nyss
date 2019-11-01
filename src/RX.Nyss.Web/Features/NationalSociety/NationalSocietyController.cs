@@ -63,10 +63,20 @@ namespace RX.Nyss.Web.Features.NationalSociety
             await _nationalSocietyService.RemoveNationalSociety(id);
 
         /// <summary>
-        /// Gets a list of SMS Gateways assigned to a specified National Society.
+        /// Gets a SMS Gateway.
+        /// </summary>
+        /// <returns>A SMS Gateway</returns>
+        [HttpGet("smsGateways/{gatewaySettingId:int}/get")]
+        [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.NationalSocietyAccess)]
+        public Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int gatewaySettingId) =>
+            _nationalSocietyService.GetSmsGateway(gatewaySettingId);
+
+        /// <summary>
+        /// Lists SMS Gateways assigned to a specified National Society.
         /// </summary>
         /// <returns>A list of SMS Gateways assigned to the National Society</returns>
-        [HttpGet("{nationalSocietyId:int}/getSmsGateways")]
+        [HttpGet("{nationalSocietyId:int}/smsGateways/list")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<GatewaySettingResponseDto>>> GetSmsGateways(int nationalSocietyId) =>
@@ -78,7 +88,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <param name="nationalSocietyId">An identifier of a National Society</param>
         /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
         /// <returns>An identifier of a created SMS Gateway setting</returns>
-        [HttpPost("{nationalSocietyId:int}/addSmsGateway")]
+        [HttpPost("{nationalSocietyId:int}/smsGateways/add")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<int>> AddSmsGateway(int nationalSocietyId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
@@ -87,26 +97,24 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <summary>
         /// Updates a specified SMS Gateway.
         /// </summary>
-        /// <param name="nationalSocietyId">An identifier of a National Society</param>
         /// <param name="gatewaySettingId">An identifier of SMS Gateway to be updated</param>
         /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
         /// <returns></returns>
-        [HttpPost("{nationalSocietyId:int}/updateSmsGateway/{gatewaySettingId:int}")]
+        [HttpPost("smsGateways/{gatewaySettingId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result> UpdateSmsGateway(int nationalSocietyId, int gatewaySettingId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
+        public Task<Result> UpdateSmsGateway(int gatewaySettingId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
             _nationalSocietyService.UpdateSmsGateway(gatewaySettingId, gatewaySettingRequestDto);
 
         /// <summary>
-        /// Deletes a specified SMS Gateway.
+        /// Removes a specified SMS Gateway.
         /// </summary>
-        /// <param name="nationalSocietyId">An identifier of a National Society</param>
-        /// <param name="gatewaySettingId">An identifier of SMS Gateway to be deleted</param>
+        /// <param name="gatewaySettingId">An identifier of SMS Gateway to be removed</param>
         /// <returns></returns>
-        [HttpPost("{nationalSocietyId:int}/deleteSmsGateway/{gatewaySettingId:int}")]
+        [HttpPost("smsGateways/{gatewaySettingId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.DataManager, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result> UpdateSmsGateway(int nationalSocietyId, int gatewaySettingId) =>
+        public Task<Result> UpdateSmsGateway(int gatewaySettingId) =>
             _nationalSocietyService.DeleteSmsGateway(gatewaySettingId);
     }
 }
