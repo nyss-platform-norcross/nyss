@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// <returns>A list of health risks</returns>
         [HttpGet, Route("getHealthRisks")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<IEnumerable<HealthRiskResponseDto>> GetHealthRisks(int languageId) => 
+        public async Task<Result<IEnumerable<HealthRiskResponseDto>>> GetHealthRisks(int languageId) => 
             await _healthRiskService.GetHealthRisks(languageId);
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// <returns></returns>
         [HttpGet, Route("getHealthRisk")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<EditHealthRiskRequestDto> GetHealthRisk(int id) => 
+        public async Task<Result<EditHealthRiskRequestDto>> GetHealthRisk(int id) => 
             await _healthRiskService.GetHealthRisk(id);
 
         /// <summary>
