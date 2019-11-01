@@ -17,7 +17,8 @@ let stringList = {
   "user.resetPassword.failed": "Password reset failed",
   "user.resetPassword.enterEmail": "Please enter your email address",
   "user.resetPassword.emailAddress": "Email address",
-  "user.resetPassword.submit": "Reset my password"
+  "user.resetPassword.submit": "Reset my password",
+  "user.resetPassword.enterNewPassword": "Please set your new password"
 };
 
 export const stringKeys = {
@@ -44,7 +45,8 @@ export const stringKeys = {
       failed: "user.resetPassword.failed",
       enterEmail: "user.resetPassword.enterEmail",
       emailAddress: "user.resetPassword.emailAddress",
-      submit: "user.resetPassword.submit"
+      submit: "user.resetPassword.submit",
+      enterNewPassword: "user.resetPassword.enterNewPassword"
     }
   }
 };
