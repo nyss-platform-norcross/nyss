@@ -22,42 +22,59 @@ namespace RX.Nyss.Web.Features.HealthRisk
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<IEnumerable<HealthRiskResponseDto>> GetHealthRisks(int languageId)
+        public async Task<Result<IEnumerable<HealthRiskResponseDto>>> GetHealthRisks(int languageId)
         {
-            var healthRisks = new List<HealthRiskResponseDto>();
-
-            foreach (var healthRisk in await _nyssContext.HealthRisks.ToListAsync())
+            try
             {
-                var languageContent = await _nyssContext.HealthRiskLanguageContents.FirstOrDefaultAsync(x => x.HealthRisk == healthRisk && x.ContentLanguage.Id == languageId);
-                healthRisks.Add(new HealthRiskResponseDto
+                var healthRisks = new List<HealthRiskResponseDto>();
+
+                foreach (var healthRisk in await _nyssContext.HealthRisks.ToListAsync())
+                {
+                    var languageContent = await _nyssContext.HealthRiskLanguageContents.FirstOrDefaultAsync(x => x.HealthRisk == healthRisk && x.ContentLanguage.Id == languageId);
+                    healthRisks.Add(new HealthRiskResponseDto
+                    {
+                        Id = healthRisk.Id,
+                        HealthRiskCode = healthRisk.HealthRiskCode,
+                        HealthRiskType = healthRisk.HealthRiskType,
+                        Name = languageContent.Name
+                    });
+                }
+
+                return Success<IEnumerable<HealthRiskResponseDto>>(healthRisks);
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Debug(e);
+                return Error(ResultKey.Shared.GeneralErrorMessage).Cast<IEnumerable<HealthRiskResponseDto>>();
+            }
+        }
+
+        public async Task<Result<EditHealthRiskRequestDto>> GetHealthRisk(int id)
+        {
+            try
+            {
+                var healthRisk = await _nyssContext.HealthRisks.FindAsync(id);
+                var languageContents = _nyssContext.HealthRiskLanguageContents.Where(x => x.HealthRisk.Id == id);
+                var healthRiskResponse = new EditHealthRiskRequestDto
                 {
                     Id = healthRisk.Id,
                     HealthRiskCode = healthRisk.HealthRiskCode,
                     HealthRiskType = healthRisk.HealthRiskType,
-                    Name = languageContent.Name
-                });
+                    LanguageContent = languageContents.Select(l => new HealthRiskLanguageContentDto
+                    {
+                        LanguageId = l.ContentLanguage.Id,
+                        CaseDefinition = l.CaseDefinition,
+                        FeedbackMessage = l.FeedbackMessage,
+                        Name = l.Name
+                    })
+                };
+                return Success<EditHealthRiskRequestDto>(healthRiskResponse);
             }
-
-            return healthRisks;
-        }
-
-        public async Task<EditHealthRiskRequestDto> GetHealthRisk(int id)
-        {
-            var healthRisk = await _nyssContext.HealthRisks.FindAsync(id);
-            var languageContents = _nyssContext.HealthRiskLanguageContents.Where(x => x.HealthRisk.Id == id);
-            return new EditHealthRiskRequestDto
+            catch (Exception e)
             {
-                Id = healthRisk.Id,
-                HealthRiskCode = healthRisk.HealthRiskCode,
-                HealthRiskType = healthRisk.HealthRiskType,
-                LanguageContent = languageContents.Select(l => new HealthRiskLanguageContentDto
-                {
-                    LanguageId = l.ContentLanguage.Id,
-                    CaseDefinition = l.CaseDefinition,
-                    FeedbackMessage = l.FeedbackMessage,
-                    Name = l.Name
-                })
-            };
+                _loggerAdapter.Debug(e);
+                return Error(ResultKey.Shared.GeneralErrorMessage).Cast<EditHealthRiskRequestDto>();
+            }
         }
 
         public async Task<Result<int>> CreateHealthRisk(CreateHealthRiskRequestDto createHealthRiskDto)
