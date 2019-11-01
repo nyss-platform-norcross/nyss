@@ -18,8 +18,13 @@ export const theme = createMuiTheme({
     },
     h2: {
       fontSize: 22,
-      fontWeight: 400,
-      marginBottom: 20
+      fontWeight: 600,
+      margin: "10px 0 30px"
+    },
+    h3: {
+      fontSize: 16,
+      fontWeight: 600,
+      margin: "10px 0 20px"
     }
   },
   palette: {
@@ -77,8 +82,6 @@ export const theme = createMuiTheme({
     },
     MuiFormControl: {
       root: {
-        marginTop: 20,
-        marginBottom: 20
       }
     },
     MuiInput: {
@@ -92,6 +95,9 @@ export const theme = createMuiTheme({
         '&:-webkit-autofill': {
           transitionDelay: '9999s'
         },
+      },
+      formControl: {
+        marginTop: "30px !important"
       },
       underline: {
         "&:before": {
@@ -107,14 +113,13 @@ export const theme = createMuiTheme({
     },
     MuiInputLabel: {
       root: {
-        padding: "5px 10px",
-        zIndex: 1,
-        fontWeight: 600
+        //padding: "5px 10px",
+        zIndex: 1
       },
       shrink: {
-        padding: 0,
+        //padding: 0,
         color: "#000000 !important",
-        transform: "translate(0, -6px);"
+        transform: "translate(0, 6px);"
       }
     },
     MuiLink: {

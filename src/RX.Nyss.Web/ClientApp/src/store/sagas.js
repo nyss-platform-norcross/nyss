@@ -5,6 +5,7 @@ import { authSagas } from "../authentication/authSagas";
 import { nationalSocietiesSagas } from "../components/nationalSocieties/logic/nationalSocietiesSagas";
 import { smsGatewaysSagas } from "../components/smsGateways/logic/smsGatewaysSagas";
 import { globalCoordinatorsSagas } from "../components/globalCoordinators/logic/globalCoordinatorsSagas";
+import { healthRisksSagas } from "../components/healthRisks/logic/healthRisksSagas";
 
 function* rootSaga() {
   yield all([
@@ -12,7 +13,8 @@ function* rootSaga() {
     ...authSagas(),
     ...nationalSocietiesSagas(),
     ...smsGatewaysSagas(),
-    ...globalCoordinatorsSagas()
+    ...globalCoordinatorsSagas(),
+    ...healthRisksSagas()
   ]);
 }
 
