@@ -17,16 +17,6 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
     return <Loading />
   }
 
-  const onRemove = (e, id) => {
-    e.stopPropagation();
-    remove(id);
-  };
-
-  const onEdit = (e, id) => {
-    e.stopPropagation();
-    goToEdition(id);
-  };
-
   return (
     <Table>
       <TableHead>
@@ -48,8 +38,8 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
             <TableCell>{row.dataOwner}</TableCell>
             <TableCell>{row.technicalAdvisor}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction onClick={e => onEdit(e, row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={e => onRemove(e, row.id)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+              <TableRowAction onClick={() => remove(row.id)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}
