@@ -51,5 +51,13 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null
+  },
+  healthRisks: {
+    listFetching: false,
+    listRemoving: {},
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formData: null
   }
 };
