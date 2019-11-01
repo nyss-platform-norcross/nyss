@@ -1,5 +1,5 @@
 export const Administrator = "Administrator";
-export const GlobalCoordinator = "GlobalCoordinators";
+export const GlobalCoordinator = "GlobalCoordinator";
 export const TechnicalAdvisor = "TechnicalAdvisor";
 export const DataConsumer = "DataConsumer";
 export const DataManager = "DataManager";

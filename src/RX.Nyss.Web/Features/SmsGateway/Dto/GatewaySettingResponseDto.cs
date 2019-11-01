@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.NationalSociety.Dto
+﻿namespace RX.Nyss.Web.Features.SmsGateway.Dto
 {
     public class GatewaySettingResponseDto : GatewaySettingRequestDto
     {

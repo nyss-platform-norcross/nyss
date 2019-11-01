@@ -41,7 +41,7 @@ function* getSmsGateways(force, nationalSocietyId) {
 
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/smsGateways/list`);
+    const response = yield call(http.get, `/api/smsGateway/list/nationalSociety/${nationalSocietyId}`);
 
     yield put(actions.getList.success(response.value));
   } catch (error) {
@@ -69,7 +69,7 @@ function* openSmsGatewayCreation({ path, params }) {
 function* createSmsGateway({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/smsGateways/add`, data);
+    const response = yield call(http.post, `/api/smsGateway/add/nationalSociety/${nationalSocietyId}`, data);
     http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
@@ -82,7 +82,7 @@ function* createSmsGateway({ nationalSocietyId, data }) {
 function* openSmsGatewayEdition({ path, params }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/nationalSociety/smsGateways/${params.smsGatewayId}/get`);
+    const response = yield call(http.get, `/api/smsGateway/${params.smsGatewayId}/get`);
     const nationalSocietyResponse = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
@@ -100,7 +100,7 @@ function* openSmsGatewayEdition({ path, params }) {
 function* editSmsGateway({ data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/nationalSociety/smsGateways/${data.id}/edit`, data);
+    const response = yield call(http.post, `/api/smsGateway/${data.id}/edit`, data);
     http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(data.nationalSocietyId));
@@ -112,7 +112,7 @@ function* editSmsGateway({ data }) {
 function* removeSmsGateway({ smsGatewayId, nationalSocietyId }) {
   yield put(actions.remove.request(smsGatewayId));
   try {
-    yield call(http.post, `/api/nationalSociety/smsGateways/${smsGatewayId}/remove`);
+    yield call(http.post, `/api/smsGateway/${smsGatewayId}/remove`);
     yield put(actions.remove.success(smsGatewayId));
     yield call(getSmsGateways, true, nationalSocietyId);
   } catch (error) {

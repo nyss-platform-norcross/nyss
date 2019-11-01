@@ -1,9 +1,13 @@
 import * as actions from "./smsGatewaysConstants";
 import { initialState } from "../../../initialState";
 import { setProperty } from "../../../utils/immutable";
+import { LOCATION_CHANGE } from "connected-react-router";
 
 export function smsGatewaysReducer(state = initialState.smsGateways, action) {
   switch (action.type) {
+    case LOCATION_CHANGE: // cleanup
+      return { ...state, formData: null }
+
     case actions.GET_SMS_GATEWAYS.REQUEST:
       return { ...state, listFetching: true, listData: [] };
 
