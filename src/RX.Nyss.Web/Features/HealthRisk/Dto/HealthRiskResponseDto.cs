@@ -1,6 +1,6 @@
 ﻿using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.HealthRisk.Dto
+namespace RX.Nyss.Web.Features.HealthRisk
 {
     public class HealthRiskResponseDto
     {
