@@ -62,7 +62,7 @@ class ResetPasswordPageComponent extends PureComponent {
                 autoFocus
               />
               <div className={styles.actions}>
-                <Button type="submit" variant="outlined" color="primary" style={{ padding: "10px 55px" }}>
+                <Button type="submit" variant="outlined" color="primary">
                   {strings(stringKeys.user.resetPassword.submit)}
                 </Button>
               </div>

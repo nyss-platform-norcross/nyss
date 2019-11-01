@@ -1,6 +1,7 @@
 import { call, put, takeEvery } from "redux-saga/effects";
 import * as consts from "../authentication/authConstants";
-import * as actions from "../authentication/authActions";
+import * as authActions from "../authentication/authActions";
+import * as appActions from "../components/app/logic/appActions";
 import * as http from "../utils/http";
 import * as auth from "./auth";
 import { strings } from "../strings";
@@ -14,7 +15,7 @@ export const authSagas = () => [
 ];
 
 function* login({ userName, password, redirectUrl }) {
-  yield put(actions.login.request());
+  yield put(authActions.login.request());
   try {
     const data = yield call(http.post, "/api/authentication/login", { userName, password }, true);
 
@@ -23,7 +24,7 @@ function* login({ userName, password, redirectUrl }) {
     }
 
     auth.setAccessToken(data.value.accessToken)
-    yield put(actions.login.success());
+    yield put(authActions.login.success());
 
     if (redirectUrl) {
       auth.redirectTo(redirectUrl);
@@ -31,50 +32,51 @@ function* login({ userName, password, redirectUrl }) {
       auth.redirectToRoot();
     }
   } catch (error) {
-    yield put(actions.login.failure(error.message));
+    yield put(authActions.login.failure(error.message));
   }
 };
 
 function* logout() {
-  yield put(actions.logout.request());
+  yield put(authActions.logout.request());
   try {
     yield call(http.post, "/api/authentication/logout");
     auth.removeAccessToken();
-    yield put(actions.logout.success());
+    yield put(authActions.logout.success());
     auth.redirectToLogin();
   } catch (error) {
-    yield put(actions.logout.failure(error.message));
+    yield put(authActions.logout.failure(error.message));
   }
 };
 
 function* verifyEmail({ password, email, token }) {
-  yield put(actions.verifyEmail.request());
+  yield put(authActions.verifyEmail.request());
   try {
     yield call(http.post, "/api/userverification/verifyEmailAndAddPassword", { password, email, token }, true);
-    yield put(actions.verifyEmail.success());
+    yield put(authActions.verifyEmail.success());
     auth.redirectToLogin();
   } catch (error) {
-    yield put(actions.verifyEmail.failure(error.message));
+    yield put(authActions.verifyEmail.failure(error.message));
   }
 };
 
 function* resetPassword({ email }) {
-  yield put(actions.resetPassword.request());
+  yield put(authActions.resetPassword.request());
   try {
     yield call(http.post, "/api/userverification/resetPassword", { email }, true);
-    yield put(actions.resetPassword.success());
+    yield put(authActions.resetPassword.success());
+    yield put(appActions.showMessage("An e-mail with a link to reset your password has been sent."));
   } catch (error) {
-    yield put(actions.resetPassword.failure(error.message));
+    yield put(authActions.resetPassword.failure(error.message));
   }
 };
 
 function* resetPasswordCallback({ password, email, token }) {
-  yield put(actions.resetPasswordCallback.request());
+  yield put(authActions.resetPasswordCallback.request());
   try {
     yield call(http.post, "/api/userverification/resetPasswordCallback", { password, email, token }, true);
-    yield put(actions.resetPasswordCallback.success());
+    yield put(authActions.resetPasswordCallback.success());
     auth.redirectToLogin();
   } catch (error) {
-    yield put(actions.resetPasswordCallback.failure(error.message));
+    yield put(authActions.resetPasswordCallback.failure(error.message));
   }
 };
