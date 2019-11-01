@@ -1,4 +1,5 @@
-﻿using RX.Nyss.Data.Concepts;
+﻿using System.Collections.Generic;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
 {
@@ -6,12 +7,12 @@ namespace RX.Nyss.Data.Models
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
-
         public HealthRiskType HealthRiskType { get; set; }
 
         public int HealthRiskCode { get; set; }
 
         public virtual AlertRule AlertRule { get; set; }
+
+        public virtual ICollection<HealthRiskLanguageContent> LanguageContents { get; set; }
     }
 }
