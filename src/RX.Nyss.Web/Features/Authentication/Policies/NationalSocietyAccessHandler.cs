@@ -29,6 +29,11 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, NationalSocietyAccessRequirement requirement)
         {
+            if (!context.User.Identity.IsAuthenticated)
+            {
+                return Task.CompletedTask;
+            }
+
             var routeValue = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueName];
             if (routeValue == null)
             {

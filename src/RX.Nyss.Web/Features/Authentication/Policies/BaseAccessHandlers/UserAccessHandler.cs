@@ -6,7 +6,7 @@ using RX.Nyss.Data.Models;
 namespace RX.Nyss.Web.Features.Authentication.Policies.BaseAccessHandlers
 {
     public abstract class UserAccessHandler<TUser, TRequirement> : RouteBasedAccessHandler<TRequirement> 
-        where TUser: User
+        where TUser: Nyss.Data.Models.User
         where TRequirement : IAuthorizationRequirement
     {
         private readonly INationalSocietyAccessService _nationalSocietyAccessService;

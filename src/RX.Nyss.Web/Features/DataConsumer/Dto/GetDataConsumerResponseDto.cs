@@ -1,6 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.NationalSociety.User.Dto
+﻿namespace RX.Nyss.Web.Features.DataConsumer.Dto
 {
-    public class GetNationalSocietyUserResponseDto
+    public class GetDataConsumerResponseDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

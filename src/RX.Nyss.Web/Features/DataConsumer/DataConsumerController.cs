@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Authentication.Policies;
-using RX.Nyss.Web.Features.NationalSociety.User.DataConsumer.Dto;
+using RX.Nyss.Web.Features.DataConsumer.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
-namespace RX.Nyss.Web.Features.NationalSociety.User.DataConsumer
+namespace RX.Nyss.Web.Features.DataConsumer
 {
     [Route("api/nationalSociety/dataConsumer")]
-    public class DataConsumerController
+    public class DataConsumerController : BaseController
     {
         private readonly IDataConsumerService _dataConsumerService;
 
@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataConsumer
         /// </summary>
         /// <param name="id">The ID of the data consumer to be deleted</param>
         /// <returns></returns>
-        [HttpGet("/api/nationalSociety/dataConsumer/{dataConsumerId:int}/delete")]
+        [HttpPost("/api/nationalSociety/dataConsumer/{dataConsumerId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
         public async Task<Result> Delete(int dataConsumerId) =>
             await _dataConsumerService.DeleteDataConsumer(dataConsumerId);

@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Authentication.Policies;
-using RX.Nyss.Web.Features.NationalSociety.User.TechnicalAdvisor.Dto;
+using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
-namespace RX.Nyss.Web.Features.NationalSociety.User.TechnicalAdvisor
+namespace RX.Nyss.Web.Features.TechnicalAdvisor
 {
     [Route("api/nationalSociety/technicalAdvisor")]
-    public class TechnicalAdvisorController
+    public class TechnicalAdvisorController : BaseController
     {
         private readonly ITechnicalAdvisorService _technicalAdvisorService;
 
@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.TechnicalAdvisor
         /// </summary>
         /// <param name="id">The ID of the technical advisor to be deleted</param>
         /// <returns></returns>
-        [HttpGet("/api/nationalSociety/technicalAdvisor/{technicalAdvisorId:int}/delete")]
+        [HttpPost("/api/nationalSociety/technicalAdvisor/{technicalAdvisorId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.DataManager), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
         public async Task<Result> Delete(int technicalAdvisorId) =>
             await _technicalAdvisorService.DeleteTechnicalAdvisor(technicalAdvisorId);

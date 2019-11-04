@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Authentication.Policies;
-using RX.Nyss.Web.Features.NationalSociety.User.DataManager.Dto;
+using RX.Nyss.Web.Features.DataManager.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
-namespace RX.Nyss.Web.Features.NationalSociety.User.DataManager
+namespace RX.Nyss.Web.Features.DataManager
 {
     [Route("api/nationalSociety/dataManager")]
-    public class DataManagerController
+    public class DataManagerController : BaseController
     {
         private readonly IDataManagerService _dataManagerService;
 
@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Features.NationalSociety.User.DataManager
         /// </summary>
         /// <param name="dataManagerId">The ID of the data manager to be deleted</param>
         /// <returns></returns>
-        [HttpGet("/api/nationalSociety/dataManager/{dataManagerId:int}/delete")]
+        [HttpPost("/api/nationalSociety/dataManager/{dataManagerId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataManagerAccess)]
         public async Task<Result> Delete(int dataManagerId) =>
             await _dataManagerService.DeleteDataManager(dataManagerId);

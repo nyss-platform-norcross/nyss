@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
     public interface INationalSocietyAccessService
     {
         Task<bool> HasAccessToAnyOfResourceNationalSocieties(ClaimsPrincipal user, List<int> resourceNationalSocietyIds);
-        Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T: User;
+        Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T: Nyss.Data.Models.User;
     }
 
     public class NationalSocietyAccessService : INationalSocietyAccessService
@@ -38,7 +37,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
             return hasAccessToAnyOfResourceNationalSocieties || HasAccessToAllNationalSocieties(user);
         }
 
-        public Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T: User =>
+        public Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T: Nyss.Data.Models.User =>
             _nyssContext.Users
                 .OfType<T>()
                 .Where(u => u.Id == userId)

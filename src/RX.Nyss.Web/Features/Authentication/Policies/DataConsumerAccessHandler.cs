@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication.Policies.BaseAccessHandlers;
 
@@ -20,8 +19,17 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
         {
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DataConsumerAccessRequirement requirement) => 
-            HandleUserResourceRequirement(context, requirement);
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+            DataConsumerAccessRequirement requirement)
+        {
+            if (!context.User.Identity.IsAuthenticated)
+            {
+                return Task.CompletedTask;
+            }
+            return HandleUserResourceRequirement(context, requirement);
+        }
+
+        
     }
 
 }
