@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication.Policies.BaseAccessHandlers;
+using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
@@ -10,7 +11,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
     {
     }
 
-    public class DataManagerAccessHandler : UserAccessHandler<DataManagerUser, DataManagerAccessRequirement>
+    public class DataManagerAccessHandler : BaseUserAccessHandler<DataManagerUser, DataManagerAccessRequirement>
     {
         private const string RouteParameterName = "dataManagerId";
 
