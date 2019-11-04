@@ -1,4 +1,4 @@
-import React, {  Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
@@ -11,6 +11,7 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import ReadOnlyField from '../forms/ReadOnlyField';
 import { useMount } from '../../utils/lifecycle';
+import Grid from '@material-ui/core/Grid';
 
 const NationalSocietiesOverviewPageComponent = (props) => {
   useMount(() => {
@@ -27,20 +28,28 @@ const NationalSocietiesOverviewPageComponent = (props) => {
 
 
       <Form>
-        <ReadOnlyField
-          label={"National Society name"}
-          value={props.data.name}
-        />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <ReadOnlyField
+              label={"National Society name"}
+              value={props.data.name}
+            />
+          </Grid>
 
-        <ReadOnlyField
-          label={"Country"}
-          value={props.data.countryName}
-        />
+          <Grid item xs={12}>
+            <ReadOnlyField
+              label={"Country"}
+              value={props.data.countryName}
+            />
+          </Grid>
 
-        <ReadOnlyField
-          label={"Content language"}
-          value={props.data.contentLanguageName}
-        />
+          <Grid item xs={12}>
+            <ReadOnlyField
+              label={"Content language"}
+              value={props.data.contentLanguageName}
+            />
+          </Grid>
+        </Grid>
 
         <FormActions>
           <Button variant="outlined" color="primary" onClick={() => props.openEdition(props.data.id)}>Edit National Society</Button>

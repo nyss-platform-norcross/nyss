@@ -15,6 +15,7 @@ import PasswordInputField from '../forms/PasswordInputField';
 import * as authActions from '../../authentication/authActions';
 import { getRedirectUrl } from '../../authentication/auth';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import Grid from '@material-ui/core/Grid';
 
 class LoginPageComponent extends PureComponent {
   constructor(props) {
@@ -60,18 +61,25 @@ class LoginPageComponent extends PureComponent {
             }
 
             <form onSubmit={this.handleSubmit}>
-              <TextInputField
-                label="User name"
-                name="userName"
-                field={this.form.fields.userName}
-                autoFocus
-              />
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
 
-              <PasswordInputField
-                label={strings(stringKeys.login.password)}
-                name="password"
-                field={this.form.fields.password}
-              />
+                  <TextInputField
+                    label="User name"
+                    name="userName"
+                    field={this.form.fields.userName}
+                    autoFocus
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <PasswordInputField
+                    label={strings(stringKeys.login.password)}
+                    name="password"
+                    field={this.form.fields.password}
+                  />
+                </Grid>
+              </Grid>
 
               <div className={styles.forgotPasswordLink}>
                 <Link color="secondary" href="/resetPassword">

@@ -12,6 +12,7 @@ import TextInputField from '../forms/TextInputField';
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
+import Grid from '@material-ui/core/Grid';
 
 const GlobalCoordinatorsEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -63,29 +64,39 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
       <Typography variant="h2">Edit Global Coordinator</Typography>
 
       <Form onSubmit={handleSubmit}>
-        <TextInputField
-          label="Name"
-          name="name"
-          field={form.fields.name}
-        />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextInputField
+              label="Name"
+              name="name"
+              field={form.fields.name}
+            />
+          </Grid>
 
-        <TextInputField
-          label="Phone number"
-          name="phoneNumber"
-          field={form.fields.phoneNumber}
-        />
+          <Grid item xs={12}>
+            <TextInputField
+              label="Phone number"
+              name="phoneNumber"
+              field={form.fields.phoneNumber}
+            />
+          </Grid>
 
-        <TextInputField
-          label="Additional phone number (optional)"
-          name="additionalPhoneNumber"
-          field={form.fields.additionalPhoneNumber}
-        />
+          <Grid item xs={12}>
+            <TextInputField
+              label="Additional phone number (optional)"
+              name="additionalPhoneNumber"
+              field={form.fields.additionalPhoneNumber}
+            />
+          </Grid>
 
-        <TextInputField
-          label="Organization"
-          name="organization"
-          field={form.fields.organization}
-        />
+          <Grid item xs={12}>
+            <TextInputField
+              label="Organization"
+              name="organization"
+              field={form.fields.organization}
+            />
+          </Grid>
+        </Grid>
 
         <FormActions>
           <Button onClick={() => props.goToList()}>
@@ -96,7 +107,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
             Save Global Coordinator
           </SubmitButton>
         </FormActions>
-    </Form>
+      </Form>
     </Fragment>
   );
 }
