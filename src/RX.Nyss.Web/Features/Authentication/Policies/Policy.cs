@@ -2,6 +2,7 @@
 {
     public enum Policy
     {
-        NationalSocietyAccess
+        NationalSocietyAccess,
+        SmsGatewayAccess
     }
 }

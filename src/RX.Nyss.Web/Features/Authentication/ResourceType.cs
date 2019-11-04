@@ -3,5 +3,6 @@
     public enum ResourceType
     {
         NationalSociety,
+        SmsGateway
     }
 }

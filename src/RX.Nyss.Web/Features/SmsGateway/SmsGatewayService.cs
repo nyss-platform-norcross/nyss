@@ -17,11 +17,11 @@ namespace RX.Nyss.Web.Features.SmsGateway
 {
     public interface ISmsGatewayService
     {
-        Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int gatewaySettingId);
+        Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int smsGatewayId);
         Task<Result<List<GatewaySettingResponseDto>>> GetSmsGateways(int nationalSocietyId);
         Task<Result<int>> AddSmsGateway(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto);
-        Task<Result> UpdateSmsGateway(int gatewaySettingId, GatewaySettingRequestDto gatewaySettingRequestDto);
-        Task<Result> DeleteSmsGateway(int gatewaySettingId);
+        Task<Result> UpdateSmsGateway(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto);
+        Task<Result> DeleteSmsGateway(int smsGatewayId);
         Task UpdateAuthorizedApiKeys();
     }
 
@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
             _config = config;
         }
 
-        public async Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int gatewaySettingId)
+        public async Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int smsGatewayId)
         {
             var gatewaySetting = await _nyssContext.GatewaySettings
                 .Select(gs => new GatewaySettingResponseDto
@@ -49,7 +49,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
                     GatewayType = gs.GatewayType,
                     NationalSocietyId = gs.NationalSociety.Id
                 })
-                .FirstOrDefaultAsync(gs => gs.Id == gatewaySettingId);
+                .FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
             if (gatewaySetting == null)
             {
@@ -120,18 +120,18 @@ namespace RX.Nyss.Web.Features.SmsGateway
             }
         }
 
-        public async Task<Result> UpdateSmsGateway(int gatewaySettingId, GatewaySettingRequestDto gatewaySettingRequestDto)
+        public async Task<Result> UpdateSmsGateway(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto)
         {
             try
             {
-                var apiKeyExists = await _nyssContext.GatewaySettings.AnyAsync(gs => gs.ApiKey == gatewaySettingRequestDto.ApiKey && gs.Id != gatewaySettingId);
+                var apiKeyExists = await _nyssContext.GatewaySettings.AnyAsync(gs => gs.ApiKey == gatewaySettingRequestDto.ApiKey && gs.Id != smsGatewayId);
 
                 if (apiKeyExists)
                 {
                     return Error<int>(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
                 }
 
-                var gatewaySettingToUpdate = await _nyssContext.GatewaySettings.FindAsync(gatewaySettingId);
+                var gatewaySettingToUpdate = await _nyssContext.GatewaySettings.FindAsync(smsGatewayId);
 
                 if (gatewaySettingToUpdate == null)
                 {
@@ -155,11 +155,11 @@ namespace RX.Nyss.Web.Features.SmsGateway
             }
         }
 
-        public async Task<Result> DeleteSmsGateway(int gatewaySettingId)
+        public async Task<Result> DeleteSmsGateway(int smsGatewayId)
         {
             try
             {
-                var gatewaySettingToDelete = await _nyssContext.GatewaySettings.FirstOrDefaultAsync(gs => gs.Id == gatewaySettingId);
+                var gatewaySettingToDelete = await _nyssContext.GatewaySettings.FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
                 if (gatewaySettingToDelete == null)
                 {
