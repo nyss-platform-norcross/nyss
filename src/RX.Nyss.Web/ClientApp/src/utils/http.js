@@ -1,5 +1,6 @@
 import { getOrRenewToken } from "../authentication/auth";
 import { strings } from "../strings";
+import * as cache from "./cache";
 
 export const post = (path, data, anonymous) => {
   const headers = {
@@ -20,6 +21,13 @@ export const get = (path) => {
       return response;
     });
 }
+
+export const getCached = ({ path, dependencies }) =>
+  cache.retrieve({
+    key: path,
+    setter: () => get(path),
+    dependencies: dependencies
+  });
 
 export const ensureResponseIsSuccess = (response, message) => {
   if (!response.isSuccess) {

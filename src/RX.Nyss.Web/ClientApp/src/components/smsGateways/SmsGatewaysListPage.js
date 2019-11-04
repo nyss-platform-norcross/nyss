@@ -13,7 +13,7 @@ import { useMount } from '../../utils/lifecycle';
 
 const SmsGatewaysListPageComponent = (props) => {
   useMount(() => {
-    props.openSmsGatewaysList(props.match.path, props.match.params);
+    props.openSmsGatewaysList(props.nationalSocietyId);
   });
 
   return (
@@ -21,7 +21,7 @@ const SmsGatewaysListPageComponent = (props) => {
       <Typography variant="h2">SMS Gateways</Typography>
 
       <TableActions>
-        <Button onClick={() => props.goToCreation(props.match.params.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+        <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
           Add SMS Gateway
        </Button>
       </TableActions>
@@ -33,7 +33,7 @@ const SmsGatewaysListPageComponent = (props) => {
         isListFetching={props.isListFetching}
         isRemoving={props.isRemoving}
         remove={props.remove}
-        nationalSocietyId={props.match.params.nationalSocietyId}
+        nationalSocietyId={props.nationalSocietyId}
       />
     </Fragment>
   );
@@ -45,12 +45,11 @@ SmsGatewaysListPageComponent.propTypes = {
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
   isFetching: PropTypes.bool,
-  list: PropTypes.array,
-  //ToDo
-  //match: PropTypes.shape()
+  list: PropTypes.array
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state, ownProps) => ({
+  nationalSocietyId: ownProps.match.params.nationalSocietyId,
   list: state.smsGateways.listData,
   isListFetching: state.smsGateways.listFetching,
   isRemoving: state.smsGateways.listRemoving

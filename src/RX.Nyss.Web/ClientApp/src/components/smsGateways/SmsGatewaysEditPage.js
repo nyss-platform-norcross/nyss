@@ -1,5 +1,4 @@
 import React, { useEffect, useState, Fragment } from 'react';
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -22,7 +21,7 @@ const SmsGatewaysEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
   useMount(() => {
-    props.openEdition(props.match.path, props.match.params);
+    props.openEdition(props.smsGatewayId);
   });
 
   useEffect(() => {
@@ -54,12 +53,11 @@ const SmsGatewaysEditPageComponent = (props) => {
     };
 
     const values = form.getValues();
-    props.edit({
+    props.edit(props.nationalSocietyId, {
       id: values.id,
       name: values.name,
       apiKey: values.apiKey,
-      gatewayType: parseInt(values.gatewayType),
-      nationalSocietyId: props.match.params.nationalSocietyId
+      gatewayType: parseInt(values.gatewayType)
     });
   };
 
@@ -106,7 +104,7 @@ const SmsGatewaysEditPageComponent = (props) => {
         </SelectInput>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.match.params.nationalSocietyId)}>
+          <Button onClick={() => props.goToList(props.nationalSocietyId)}>
             Cancel
           </Button>
 
@@ -122,7 +120,9 @@ const SmsGatewaysEditPageComponent = (props) => {
 SmsGatewaysEditPageComponent.propTypes = {
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state, ownProps) => ({
+  smsGatewayId: ownProps.match.params.smsGatewayId,
+  nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isFetching: state.smsGateways.formFetching,
   isSaving: state.smsGateways.formSaving,
   data: state.smsGateways.formData,
@@ -132,7 +132,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   openEdition: smsGatewaysActions.openEdition.invoke,
   edit: smsGatewaysActions.edit.invoke,
-  goToList: smsGatewaysActions.goToList  
+  goToList: smsGatewaysActions.goToList
 };
 
 export const SmsGatewaysEditPage = useLayout(

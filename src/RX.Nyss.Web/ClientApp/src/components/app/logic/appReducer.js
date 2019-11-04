@@ -1,8 +1,25 @@
 import { initialState } from "../../../initialState";
 import * as actions from "./appConstans";
+import { LOCATION_CHANGE } from "connected-react-router";
 
 export function appReducer(state = initialState.appData, action) {
   switch (action.type) {
+    case LOCATION_CHANGE:
+      return {
+        ...state,
+        moduleError: null
+      };
+
+    case actions.ROUTE_CHANGED:
+      return {
+        ...state,
+        route: {
+          url: action.url,
+          path: action.path,
+          params: action.params
+        }
+      };
+
     case actions.INIT_APPLICATION.SUCCESS:
       return {
         ...state,
@@ -50,6 +67,12 @@ export function appReducer(state = initialState.appData, action) {
           topMenu: action.topMenu,
           sideMenu: action.sideMenu
         }
+      }
+
+    case actions.OPEN_MODULE.FAILURE:
+      return {
+        ...state,
+        moduleError: action.message
       }
 
     case actions.SHOW_MESSAGE.INVOKE:

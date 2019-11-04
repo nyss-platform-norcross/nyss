@@ -1,5 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
-import PropTypes from "prop-types";
+import React, { useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -35,7 +34,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
   });
 
   useMount(() => {
-    props.openCreation(props.match.path, props.match.params);
+    props.openCreation(props.nationalSocietyId);
   })
 
   const handleSubmit = (e) => {
@@ -46,7 +45,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
     };
 
     const values = form.getValues();
-    props.create(props.match.params.nationalSocietyId, {
+    props.create(props.nationalSocietyId, {
       name: values.name,
       apiKey: values.apiKey,
       gatewayType: parseInt(values.gatewayType)
@@ -91,7 +90,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
         </SelectInput>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.match.params.nationalSocietyId)}>
+          <Button onClick={() => props.goToList(props.nationalSocietyId)}>
             Cancel
           </Button>
 
@@ -107,15 +106,16 @@ const SmsGatewaysCreatePageComponent = (props) => {
 SmsGatewaysCreatePageComponent.propTypes = {
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state, ownProps) => ({
+  nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isSaving: state.smsGateways.formSaving,
-  error: state.smsGateways.formError  
+  error: state.smsGateways.formError
 });
 
 const mapDispatchToProps = {
   openCreation: smsGatewaysActions.openCreation.invoke,
   create: smsGatewaysActions.create.invoke,
-  goToList: smsGatewaysActions.goToList  
+  goToList: smsGatewaysActions.goToList
 };
 
 export const SmsGatewaysCreatePage = useLayout(

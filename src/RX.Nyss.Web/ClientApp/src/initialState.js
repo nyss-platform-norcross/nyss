@@ -10,10 +10,12 @@ export const initialState = {
       topMenu: [],
       sideMenu: []
     },
-    message: null
+    message: null,
+    moduleError: null
   },
   requests: {
     isFetching: false,
+    errorMessage: null,
     pending: {}
   },
   auth: {
@@ -36,6 +38,7 @@ export const initialState = {
   smsGateways: {
     listFetching: false,
     listRemoving: {},
+    listStale: true,
     listData: [],
     formFetching: false,
     formSaving: false,

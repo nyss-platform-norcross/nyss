@@ -1,31 +1,53 @@
+import styles from './Layout.module.scss';
+
 import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-
-import styles from './Layout.module.scss';
 import { Loading } from '../common/loading/Loading';
+import Typography from '@material-ui/core/Typography';
+import Button from "@material-ui/core/Button";
+import { push } from 'connected-react-router';
 
-const BaseLayoutComponent = ({ appReady, children }) => {
-    if (!appReady) {
-        return (
-            <div className={styles.loader}>
-                <Loading />
-            </div>);
-    }
-
+const BaseLayoutComponent = ({ appReady, children, moduleError, push }) => {
+  if (!appReady) {
     return (
-        <div className={styles.layout}>
-            {children}
+      <div className={styles.loader}>
+        <Loading />
+      </div>);
+  }
+
+  return (
+    <div className={styles.layout}>
+      {moduleError && (
+        <div className={styles.centeredLayoutMessage}>
+          <Typography variant="h2">
+            We're sorry, but there was a problem with accessing the page.
+          </Typography>
+          <Typography variant="subtitle1">
+            {moduleError}
+          </Typography>
+          <br />
+          <Button variant="outlined" color="primary" onClick={() => push("/")}>
+            Go back to the main page
+          </Button>
         </div>
-    );
+      )}
+      {!moduleError && children}
+    </div>
+  );
 }
 
-const mapStateToProps = state => ({
-    appReady: state.appData.appReady
+const mapStateToProps = (state, ownProps) => ({
+  appReady: state.appData.appReady,
+  moduleError: state.appData.moduleError || ownProps.authError
 });
 
-BaseLayoutComponent.propTypes = {
-    appReady: PropTypes.bool
+const mapDispatchToProps = {
+  push: push
 };
 
-export const BaseLayout = connect(mapStateToProps)(BaseLayoutComponent);
+BaseLayoutComponent.propTypes = {
+  appReady: PropTypes.bool
+};
+
+export const BaseLayout = connect(mapStateToProps, mapDispatchToProps)(BaseLayoutComponent);

@@ -1,9 +1,9 @@
 import { push } from "connected-react-router";
-import { 
+import {
   OPEN_SMS_GATEWAYS_LIST, GET_SMS_GATEWAYS,
-  OPEN_CREATION_SMS_GATEWAY, CREATE_SMS_GATEWAY,
-  OPEN_EDITION_SMS_GATEWAY, EDIT_SMS_GATEWAY,
-  REMOVE_SMS_GATEWAY 
+  OPEN_SMS_GATEWAY_CREATION, CREATE_SMS_GATEWAY,
+  OPEN_SMS_GATEWAY_EDITION, EDIT_SMS_GATEWAY,
+  REMOVE_SMS_GATEWAY
 } from "./smsGatewaysConstants";
 
 export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/smsgateways`);
@@ -11,7 +11,7 @@ export const goToCreation = (nationalSocietyId) => push(`/nationalsocieties/${na
 export const goToEdition = (nationalSocietyId, smsGatewayId) => push(`/nationalsocieties/${nationalSocietyId}/smsgateways/${smsGatewayId}/edit`);
 
 export const openList = {
-  invoke: (path, params) => ({ type: OPEN_SMS_GATEWAYS_LIST.INVOKE, path, params }),
+  invoke: (nationalSocietyId) => ({ type: OPEN_SMS_GATEWAYS_LIST.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_SMS_GATEWAYS_LIST.REQUEST }),
   success: () => ({ type: OPEN_SMS_GATEWAYS_LIST.SUCCESS }),
   failure: (message) => ({ type: OPEN_SMS_GATEWAYS_LIST.FAILURE, message })
@@ -25,10 +25,10 @@ export const getList = {
 };
 
 export const openCreation = {
-  invoke: (path, params) => ({ type: OPEN_CREATION_SMS_GATEWAY.INVOKE, path, params }),
-  request: () => ({ type: OPEN_CREATION_SMS_GATEWAY.REQUEST }),
-  success: () => ({ type: OPEN_CREATION_SMS_GATEWAY.SUCCESS }),
-  failure: (message) => ({ type: OPEN_CREATION_SMS_GATEWAY.FAILURE, message })
+  invoke: (nationalSocietyId) => ({ type: OPEN_SMS_GATEWAY_CREATION.INVOKE, nationalSocietyId }),
+  request: () => ({ type: OPEN_SMS_GATEWAY_CREATION.REQUEST }),
+  success: () => ({ type: OPEN_SMS_GATEWAY_CREATION.SUCCESS }),
+  failure: (message) => ({ type: OPEN_SMS_GATEWAY_CREATION.FAILURE, message })
 };
 
 export const create = {
@@ -39,21 +39,21 @@ export const create = {
 };
 
 export const openEdition = {
-  invoke: (path, params) => ({ type: OPEN_EDITION_SMS_GATEWAY.INVOKE, path, params }),
-  request: () => ({ type: OPEN_EDITION_SMS_GATEWAY.REQUEST }),
-  success: (data) => ({ type: OPEN_EDITION_SMS_GATEWAY.SUCCESS, data }),
-  failure: (message) => ({ type: OPEN_EDITION_SMS_GATEWAY.FAILURE, message })
+  invoke: (smsGatewayId) => ({ type: OPEN_SMS_GATEWAY_EDITION.INVOKE, smsGatewayId }),
+  request: () => ({ type: OPEN_SMS_GATEWAY_EDITION.REQUEST }),
+  success: (data) => ({ type: OPEN_SMS_GATEWAY_EDITION.SUCCESS, data }),
+  failure: (message) => ({ type: OPEN_SMS_GATEWAY_EDITION.FAILURE, message })
 };
 
 export const edit = {
-  invoke: (data) => ({ type: EDIT_SMS_GATEWAY.INVOKE, data }),
+  invoke: (nationalSocietyId, data) => ({ type: EDIT_SMS_GATEWAY.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: EDIT_SMS_GATEWAY.REQUEST }),
   success: () => ({ type: EDIT_SMS_GATEWAY.SUCCESS }),
   failure: (message) => ({ type: EDIT_SMS_GATEWAY.FAILURE, message })
 };
 
 export const remove = {
-  invoke: (smsGatewayId, nationalSocietyId) => ({ type: REMOVE_SMS_GATEWAY.INVOKE, smsGatewayId, nationalSocietyId }),
+  invoke: (smsGatewayId) => ({ type: REMOVE_SMS_GATEWAY.INVOKE, smsGatewayId }),
   request: (id) => ({ type: REMOVE_SMS_GATEWAY.REQUEST, id }),
   success: (id) => ({ type: REMOVE_SMS_GATEWAY.SUCCESS, id }),
   failure: (id, message) => ({ type: REMOVE_SMS_GATEWAY.FAILURE, id, message })

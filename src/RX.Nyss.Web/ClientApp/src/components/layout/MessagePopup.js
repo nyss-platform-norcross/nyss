@@ -24,7 +24,7 @@ MessagePopupComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  message: state.appData.message
+  message: state.appData.message || state.requests.errorMessage
 });
 
 const mapDispatchToProps = {

@@ -77,6 +77,11 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     })
                     .FirstOrDefaultAsync(n => n.Id == id);
 
+                if (nationalSociety == null)
+                {
+                    return Error<NationalSocietyResponseDto>(ResultKey.NationalSociety.NotFound);
+                }
+
                 return Success(nationalSociety);
             }
             catch (Exception e)
@@ -169,7 +174,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         public async Task<ContentLanguage> GetLanguageById(int id) =>
             await _nyssContext.ContentLanguages.FindAsync(id);
 
-        public async Task<Country> GetCountryById(int id) => 
+        public async Task<Country> GetCountryById(int id) =>
             await _nyssContext.Countries.FindAsync(id);
 
         public Result HandleException(Exception e)
@@ -178,7 +183,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
             {
                 if (sqlException.Number == 2627 || sqlException.Number == 2601) // national society name already exists
                 {
-                    return Error(ResultKey.NationalSociety.Creation.NameAlreadyExists);                
+                    return Error(ResultKey.NationalSociety.Creation.NameAlreadyExists);
                 }
             }
 
