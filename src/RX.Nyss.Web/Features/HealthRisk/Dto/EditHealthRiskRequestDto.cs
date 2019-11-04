@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using FluentValidation;
 using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.HealthRisk
+namespace RX.Nyss.Web.Features.HealthRisk.Dto
 {
     public class EditHealthRiskRequestDto
     {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Features.HealthRisk.Dto;
 
 namespace RX.Nyss.Web.Features.HealthRisk
 {
@@ -21,19 +22,19 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// Gets a list of all health risks.
         /// </summary>
         /// <returns>A list of health risks</returns>
-        [HttpGet, Route("getHealthRisks")]
+        [HttpGet, Route("list")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result<IEnumerable<HealthRiskResponseDto>>> GetHealthRisks(int languageId) => 
-            await _healthRiskService.GetHealthRisks(languageId);
+        public async Task<Result<IEnumerable<HealthRiskResponseDto>>> GetHealthRisks() => 
+            await _healthRiskService.GetHealthRisks(User.Identity.Name);
 
         /// <summary>
         /// Gets a health risk with all values for editing.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet, Route("getHealthRisk")]
+        [HttpGet, Route("get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result<EditHealthRiskRequestDto>> GetHealthRisk(int id) => 
+        public async Task<Result<GetHealthRiskResponseDto>> GetHealthRisk(int id) => 
             await _healthRiskService.GetHealthRisk(id);
 
         /// <summary>
