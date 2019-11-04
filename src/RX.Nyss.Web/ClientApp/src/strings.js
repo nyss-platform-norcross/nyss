@@ -13,13 +13,14 @@ let stringList = {
   "user.verifyEmail.addPassword.failed": "There was a problem with creating password",
   "user.verifyEmail.addPassword.success": "Password has been created",
   "user.registration.passwordTooWeak": "Password is too weak",
-  "user.resetPassword.success": "Password has been reset, please check your email", 
+  "user.resetPassword.success": "Password has been reset, please check your email",
   "user.resetPassword.failed": "Password reset failed",
   "user.resetPassword.enterEmail": "Please enter your email address",
   "user.resetPassword.emailAddress": "Email address",
   "user.resetPassword.submit": "Reset my password",
   "user.resetPassword.enterNewPassword": "Please set your new password",
-  "user.resetPassword.notFound": "The user was not found"
+  "user.resetPassword.notFound": "The user was not found",
+  "shared.error": "There was a problem with executing this operation"
 };
 
 export const stringKeys = {

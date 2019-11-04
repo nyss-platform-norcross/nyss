@@ -7,10 +7,12 @@ import {  removeAccessToken, isAccessTokenSet } from "../../../authentication/au
 import { push } from "connected-react-router";
 import { placeholders } from "../../../siteMapPlaceholders";
 import { getBreadcrumb, getMenu } from "../../../utils/siteMapService";
+import * as cache from "../../../utils/cache";
 
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
   takeEvery(consts.OPEN_MODULE.INVOKE, openModule),
+  takeEvery(consts.ENTITY_UPDATED, entityUpdated)
 ];
 
 function* initApplication() {
@@ -30,6 +32,8 @@ function* initApplication() {
 };
 
 function* openModule({ path, params }) {
+  path = path || (yield select(state => state.appData.route && state.appData.route.path));
+
   const breadcrumb = getBreadcrumb(path, params);
   const topMenu = getMenu("/", params, placeholders.topMenu, path);
   const sideMenu = getMenu(path, params, placeholders.leftMenu, path);
@@ -93,4 +97,8 @@ function* getStrings() {
   } catch (error) {
     yield put(actions.getStrings.failure(error.message));
   }
+};
+
+function entityUpdated({ entities }) {
+  cache.cleanCacheForDependencies(entities);
 };

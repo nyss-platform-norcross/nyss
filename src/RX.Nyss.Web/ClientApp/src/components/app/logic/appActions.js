@@ -2,6 +2,7 @@ import * as actions from "./appConstans";
 
 export const showMessage = (message) => ({ type: actions.SHOW_MESSAGE.INVOKE, message });
 export const closeMessage = () => ({ type: actions.CLOSE_MESSAGE.INVOKE });
+export const entityUpdated = (entity) => ({ type: actions.ENTITY_UPDATED, entities: [entity] });
 
 export const initApplication = {
   invoke: () =>
@@ -63,5 +64,8 @@ export const openModule = {
     ({ type: actions.OPEN_MODULE.INVOKE, path, params }),
 
   success: (path, parameters, breadcrumb, topMenu, sideMenu) =>
-    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, topMenu, sideMenu })
+    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, topMenu, sideMenu }),
+
+  failure: (message) =>
+    ({ type: actions.OPEN_MODULE.FAILURE, message })
 };

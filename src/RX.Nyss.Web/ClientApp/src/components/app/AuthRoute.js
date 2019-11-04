@@ -1,8 +1,10 @@
 import React from "react";
 import * as auth from "../../authentication/auth";
 import { Route, Redirect } from "react-router";
+import { BaseLayout } from "../layout/BaseLayout";
+import { ReactReduxContext } from 'react-redux'
 
-export const AuthRoute = ({ component: Component, roles, ...rest }) => (
+export const AuthRoute = ({ component: Component, roles, computedMatch, ...rest }) => (
   <Route {...rest} render={props => {
     var tokenData = auth.getAccessTokenData();
 
@@ -19,10 +21,15 @@ export const AuthRoute = ({ component: Component, roles, ...rest }) => (
     }
 
     if (roles && roles.length && !roles.some(r => r === tokenData.role)) {
-      return <div>Not authorized</div>;
+      return <BaseLayout authError={"Not authorized"}></BaseLayout>;
     }
 
-    return <Component {...props} />;
+    return <ReactReduxContext.Consumer>
+      {({ store }) => {
+        store.dispatch({ type: "ROUTE_CHANGED", url: computedMatch.url, path: computedMatch.path, params: computedMatch.params })
+        return <Component {...props} />;
+      }}
+    </ReactReduxContext.Consumer>;
   }
   } />
 );

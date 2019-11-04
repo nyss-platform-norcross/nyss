@@ -1,5 +1,6 @@
 import { call, put, takeEvery, select } from "redux-saga/effects";
 import * as consts from "./nationalSocietiesConstants";
+import { entityTypes } from "./nationalSocietiesConstants";
 import * as actions from "./nationalSocietiesActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
@@ -87,7 +88,6 @@ function* createNationalSociety({ data }) {
   yield put(actions.create.request());
   try {
     const response = yield call(http.post, "/api/nationalSociety/create", data);
-    http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
     yield put(push(`/nationalsocieties/${response.value}`));
     yield put(appActions.showMessage("The National Society was added successfully"));
@@ -100,8 +100,8 @@ function* editNationalSociety({ data }) {
   yield put(actions.edit.request());
   try {
     const response = yield call(http.post, `/api/nationalSociety/${data.id}/edit`, data);
-    http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
+    yield put(appActions.entityUpdated(entityTypes.nationalSociety(data.id)));
     yield put(push(`/nationalsocieties/${data.id}/overview`));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
@@ -113,6 +113,7 @@ function* removeNationalSociety({ id }) {
   try {
     yield call(http.post, `/api/nationalSociety/${id}/remove`);
     yield put(actions.remove.success(id));
+    yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
     yield call(getNationalSocieties, true);
   } catch (error) {
     yield put(actions.remove.failure(id, error.message));

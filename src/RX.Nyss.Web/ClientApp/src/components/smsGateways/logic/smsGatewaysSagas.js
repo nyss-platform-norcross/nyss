@@ -3,28 +3,25 @@ import * as consts from "./smsGatewaysConstants";
 import * as actions from "./smsGatewaysActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
+import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 
 export const smsGatewaysSagas = () => [
   takeEvery(consts.OPEN_SMS_GATEWAYS_LIST.INVOKE, openSmsGatewaysList),
-  takeEvery(consts.GET_SMS_GATEWAYS.INVOKE, getSmsGateways),
-  takeEvery(consts.OPEN_CREATION_SMS_GATEWAY.INVOKE, openSmsGatewayCreation),
+  takeEvery(consts.OPEN_SMS_GATEWAY_CREATION.INVOKE, openSmsGatewayCreation),
+  takeEvery(consts.OPEN_SMS_GATEWAY_EDITION.INVOKE, openSmsGatewayEdition),
   takeEvery(consts.CREATE_SMS_GATEWAY.INVOKE, createSmsGateway),
-  takeEvery(consts.OPEN_EDITION_SMS_GATEWAY.INVOKE, openSmsGatewayEdition),
   takeEvery(consts.EDIT_SMS_GATEWAY.INVOKE, editSmsGateway),
   takeEvery(consts.REMOVE_SMS_GATEWAY.INVOKE, removeSmsGateway)
 ];
 
-function* openSmsGatewaysList({ path, params }) {
+function* openSmsGatewaysList({ nationalSocietyId }) {
   yield put(actions.openList.request());
   try {
-    yield call(getSmsGateways, false, params.nationalSocietyId);
-    const nationalSocietyResponse = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
+    yield openSmsGatewaysModule(nationalSocietyId);
 
-    yield put(appActions.openModule.invoke(path, {
-      nationalSocietyId: nationalSocietyResponse.value.id,
-      nationalSocietyName: nationalSocietyResponse.value.name,
-      nationalSocietyCountry: nationalSocietyResponse.value.countryName
-    }));
+    if (yield select(state => state.smsGateways.listStale)) {
+      yield call(getSmsGateways, nationalSocietyId);
+    }
 
     yield put(actions.openList.success());
   } catch (error) {
@@ -32,37 +29,24 @@ function* openSmsGatewaysList({ path, params }) {
   }
 };
 
-function* getSmsGateways(force, nationalSocietyId) {
-  const currentData = yield select(state => state.smsGateways.listData)
-
-  if (!force && currentData.length) {
-    return;
-  }
-
-  yield put(actions.getList.request());
-  try {
-    const response = yield call(http.get, `/api/smsGateway/list/nationalSociety/${nationalSocietyId}`);
-
-    yield put(actions.getList.success(response.value));
-  } catch (error) {
-    yield put(actions.getList.failure(error.message));
-  }
-};
-
-function* openSmsGatewayCreation({ path, params }) {
+function* openSmsGatewayCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
-    const nationalSocietyResponse = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
-
-    yield put(appActions.openModule.invoke(path, {
-      nationalSocietyId: nationalSocietyResponse.value.id,
-      nationalSocietyName: nationalSocietyResponse.value.name,
-      nationalSocietyCountry: nationalSocietyResponse.value.countryName
-    }));
-
+    yield openSmsGatewaysModule(nationalSocietyId);
     yield put(actions.openCreation.success());
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
+  }
+};
+
+function* openSmsGatewayEdition({ smsGatewayId }) {
+  yield put(actions.openEdition.request());
+  try {
+    const response = yield call(http.get, `/api/smsGateway/${smsGatewayId}/get`);
+    yield openSmsGatewaysModule(response.value.nationalSocietyId);
+    yield put(actions.openEdition.success(response.value));
+  } catch (error) {
+    yield put(actions.openEdition.failure(error.message));
   }
 };
 
@@ -70,7 +54,6 @@ function* createSmsGateway({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
     const response = yield call(http.post, `/api/smsGateway/add/nationalSociety/${nationalSocietyId}`, data);
-    http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage("The SMS Gateway was added successfully"));
@@ -79,43 +62,48 @@ function* createSmsGateway({ nationalSocietyId, data }) {
   }
 };
 
-function* openSmsGatewayEdition({ path, params }) {
-  yield put(actions.openEdition.request());
-  try {
-    const response = yield call(http.get, `/api/smsGateway/${params.smsGatewayId}/get`);
-    const nationalSocietyResponse = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
-
-    yield put(appActions.openModule.invoke(path, {
-      nationalSocietyId: nationalSocietyResponse.value.id,
-      nationalSocietyName: nationalSocietyResponse.value.name,
-      nationalSocietyCountry: nationalSocietyResponse.value.countryName
-    }));
-
-    yield put(actions.openEdition.success(response.value));
-  } catch (error) {
-    yield put(actions.openEdition.failure(error.message));
-  }
-};
-
-function* editSmsGateway({ data }) {
+function* editSmsGateway({ nationalSocietyId, data }) {
   yield put(actions.edit.request());
   try {
     const response = yield call(http.post, `/api/smsGateway/${data.id}/edit`, data);
-    http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
-    yield put(actions.goToList(data.nationalSocietyId));
+    yield put(actions.goToList(nationalSocietyId));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
 };
 
-function* removeSmsGateway({ smsGatewayId, nationalSocietyId }) {
+function* removeSmsGateway({ smsGatewayId }) {
   yield put(actions.remove.request(smsGatewayId));
   try {
+    const smsGateway = yield call(http.get, `/api/smsGateway/${smsGatewayId}/get`);
     yield call(http.post, `/api/smsGateway/${smsGatewayId}/remove`);
     yield put(actions.remove.success(smsGatewayId));
-    yield call(getSmsGateways, true, nationalSocietyId);
+    yield call(getSmsGateways, smsGateway.value.nationalSocietyId);
   } catch (error) {
     yield put(actions.remove.failure(smsGatewayId, error.message));
   }
 };
+
+function* getSmsGateways(nationalSocietyId) {
+  yield put(actions.getList.request());
+  try {
+    const response = yield call(http.get, `/api/smsGateway/list/nationalSociety/${nationalSocietyId}`);
+    yield put(actions.getList.success(response.value));
+  } catch (error) {
+    yield put(actions.getList.failure(error.message));
+  }
+};
+
+function* openSmsGatewaysModule(nationalSocietyId) {
+  const nationalSociety = yield call(http.getCached, {
+    path: `/api/nationalSociety/${nationalSocietyId}/get`,
+    dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
+  });
+
+  yield put(appActions.openModule.invoke(null, {
+    nationalSocietyId: nationalSociety.value.id,
+    nationalSocietyName: nationalSociety.value.name,
+    nationalSocietyCountry: nationalSociety.value.countryName
+  }));
+}

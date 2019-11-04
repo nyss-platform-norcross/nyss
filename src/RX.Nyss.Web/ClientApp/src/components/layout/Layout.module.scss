@@ -31,3 +31,10 @@
     align-items: center;
     display: flex;
 }
+
+.centeredLayoutMessage {
+  flex: 1;
+    align-self: center;
+    text-align: center;
+    font-size: 1.5rem;
+}

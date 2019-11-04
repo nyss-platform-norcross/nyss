@@ -1,4 +1,5 @@
 import { initialState } from "../../../initialState";
+import { CLOSE_MESSAGE } from "./appConstans";
 
 const getActionType = (type) => {
   const parts = type.split("_");
@@ -11,6 +12,13 @@ const getActionName = (type) => {
 };
 
 export function requestReducer(state = initialState.requests, action) {
+  if (action.type === CLOSE_MESSAGE.INVOKE) {
+    return {
+      ...state,
+      errorMessage: null
+    }
+  }
+
   const actionType = getActionType(action.type);
   const actionName = getActionName(action.type);
 
@@ -40,6 +48,7 @@ export function requestReducer(state = initialState.requests, action) {
       return {
         ...state,
         isFetching: false,
+        errorMessage: action.message,
         pending: {
           ...state.pending,
           ...(action.id ? ({ [actionName + "_" + action.id]: false }) : {}),

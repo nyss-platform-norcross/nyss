@@ -44,7 +44,7 @@
                 }
             }
         }
-        
+
         public static class Login
         {
             public const string NotSucceeded = "login.notSucceeded";
@@ -58,6 +58,8 @@
 
         public static class NationalSociety
         {
+            public const string NotFound = "nationalSociety.notFound";
+
             public static class Creation
             {
                 public const string Success = "nationalSociety.creation.success";
