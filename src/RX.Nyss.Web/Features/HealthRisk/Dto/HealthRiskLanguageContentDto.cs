@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace RX.Nyss.Web.Features.HealthRisk
+namespace RX.Nyss.Web.Features.HealthRisk.Dto
 {
     public class HealthRiskLanguageContentDto
     {

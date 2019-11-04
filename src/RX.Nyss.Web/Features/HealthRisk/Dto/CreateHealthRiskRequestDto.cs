@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using FluentValidation;
 using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.HealthRisk
+namespace RX.Nyss.Web.Features.HealthRisk.Dto
 {
     public class CreateHealthRiskRequestDto
     {
@@ -24,6 +24,9 @@ namespace RX.Nyss.Web.Features.HealthRisk
                 RuleFor(hr => hr.HealthRiskCode).GreaterThan(0);
                 RuleFor(hr => hr.HealthRiskType).IsInEnum();
                 RuleFor(hr => hr.LanguageContent).NotEmpty();
+                RuleFor(hr => hr.AlertRuleCountThreshold).GreaterThanOrEqualTo(0);
+                RuleFor(hr => hr.AlertRuleHoursThreshold).GreaterThanOrEqualTo(0);
+                RuleFor(hr => hr.AlertRuleMetersThreshold).GreaterThanOrEqualTo(0);
                 RuleForEach(hr => hr.LanguageContent).SetValidator(new HealthRiskLanguageContentDto.Validator());
             }
         }
