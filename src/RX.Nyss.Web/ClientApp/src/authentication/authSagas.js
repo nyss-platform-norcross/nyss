@@ -53,7 +53,7 @@ function* verifyEmail({ password, email, token }) {
   try {
     yield call(http.post, "/api/userverification/verifyEmailAndAddPassword", { password, email, token }, true);
     yield put(authActions.verifyEmail.success());
-    auth.redirectToLogin();
+    yield put(authActions.login.invoke(email, password));
   } catch (error) {
     yield put(authActions.verifyEmail.failure(error.message));
   }
@@ -75,7 +75,7 @@ function* resetPasswordCallback({ password, email, token }) {
   try {
     yield call(http.post, "/api/userverification/resetPasswordCallback", { password, email, token }, true);
     yield put(authActions.resetPasswordCallback.success());
-    auth.redirectToLogin();
+    yield put(authActions.login.invoke(email, password));
   } catch (error) {
     yield put(authActions.resetPasswordCallback.failure(error.message));
   }
