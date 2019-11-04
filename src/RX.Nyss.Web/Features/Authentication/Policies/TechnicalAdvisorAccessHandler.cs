@@ -3,13 +3,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication.Policies.BaseAccessHandlers;
+using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
     public class TechnicalAdvisorAccessRequirement : IAuthorizationRequirement
     {
     }
-    public class TechnicalAdvisorAccessHandler : UserAccessHandler<TechnicalAdvisorUser, TechnicalAdvisorAccessRequirement>
+    public class TechnicalAdvisorAccessHandler : BaseUserAccessHandler<TechnicalAdvisorUser, TechnicalAdvisorAccessRequirement>
     {
         private const string RouteParameterName = "technicalAdvisorId";
 

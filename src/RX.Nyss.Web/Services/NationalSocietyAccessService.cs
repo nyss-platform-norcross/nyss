@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.Authentication.Policies
+namespace RX.Nyss.Web.Services
 {
     public interface INationalSocietyAccessService
     {
