@@ -36,14 +36,19 @@ namespace RX.Nyss.Web.Features.HealthRisk
         {
             try
             {
-                var languageCode = await _nyssContext.Users.Where(u => u.EmailAddress == userName).Select(u => u.ApplicationLanguage.LanguageCode).SingleOrDefaultAsync() ?? "EN";
+                var languageCode = await _nyssContext.Users
+                    .Where(u => u.EmailAddress == userName)
+                    .Select(u => u.ApplicationLanguage.LanguageCode)
+                    .SingleOrDefaultAsync() ?? "EN";
+                    
                 var healthRisks = await _nyssContext.HealthRisks
                     .Select(hr => new HealthRiskResponseDto
                     {
                         Id = hr.Id,
                         HealthRiskCode = hr.HealthRiskCode,
                         HealthRiskType = hr.HealthRiskType,
-                        Name = hr.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == languageCode)
+                        Name = hr.LanguageContents
+                            .Where(lc => lc.ContentLanguage.LanguageCode == languageCode)
                             .Select(lc => lc.Name).FirstOrDefault()
                     }).ToListAsync();
 
