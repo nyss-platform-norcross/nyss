@@ -21,6 +21,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         private readonly IHealthRiskService _healthRiskService;
         private readonly INyssContext _nyssContextMock;
         private readonly ILoggerAdapter _loggerAdapterMock;
+        private const string UserName = "admin@domain.com";
         private const string HealthRiskName = "AWD";
         private const int HealthRiskId = 1;
         private const int HealthRiskCode = 1;
@@ -40,6 +41,28 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _healthRiskService = new HealthRiskService(_nyssContextMock, _loggerAdapterMock);
 
+            var users = new List<User>
+            {
+                new GlobalCoordinatorUser
+                {
+                    EmailAddress = UserName,
+                    ApplicationLanguage = new ApplicationLanguage
+                    {
+                        Id = LanguageId,
+                        DisplayName = "English",
+                        LanguageCode = "EN"
+                    }
+                }
+            };
+            var contentLanguages = new List<ContentLanguage>
+            {
+                new ContentLanguage
+                {
+                    Id = LanguageId,
+                    DisplayName = "English",
+                    LanguageCode = "EN"
+                }
+            };
             var languageContents = new List<HealthRiskLanguageContent>
             {
                 new HealthRiskLanguageContent
@@ -47,7 +70,18 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     Id = LanguageId,
                     CaseDefinition = CaseDefinition,
                     FeedbackMessage = FeedbackMessage,
-                    Name = HealthRiskName
+                    Name = HealthRiskName,
+                    ContentLanguage = contentLanguages[0]
+                }
+            };
+            var alertRules = new List<AlertRule>
+            {
+                new AlertRule
+                {
+                    Id = AlertRuleId,
+                    CountThreshold = AlertRuleCountThreshold,
+                    HoursThreshold = AlertRuleHoursThreshold,
+                    MetersThreshold = AlertRuleMeterThreshold,
                 }
             };
             var healthRisks = new List<RX.Nyss.Data.Models.HealthRisk>
@@ -57,18 +91,22 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     Id = HealthRiskId,
                     HealthRiskType = HealthRiskType,
                     HealthRiskCode = HealthRiskCode,
-                    LanguageContents = languageContents
+                    LanguageContents = languageContents,
+                    AlertRule = alertRules[0]
                 }
             };
 
+            var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
             var languageContentsMockDbSet = languageContents.AsQueryable().BuildMockDbSet();
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
+            var alertRuleMockDbSet = alertRules.AsQueryable().BuildMockDbSet();
+            var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+
+            _nyssContextMock.ContentLanguages.Returns(contentLanguageMockDbSet);
             _nyssContextMock.HealthRiskLanguageContents.Returns(languageContentsMockDbSet);
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
-
-            _nyssContextMock.ContentLanguages.FindAsync(1).Returns(new ContentLanguage());
-            _nyssContextMock.AlertRules.FindAsync(1).Returns(new AlertRule());
-            _nyssContextMock.HealthRisks.FindAsync(HealthRiskId).Returns(healthRisks[0]);
+            _nyssContextMock.AlertRules.Returns(alertRuleMockDbSet);
+            _nyssContextMock.Users.Returns(usersMockDbSet);
         }
 
         [Fact]
@@ -141,11 +179,72 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task GetHealthRisks_WhenSuccess_ShouldReturnAllHealthRisks()
         {
             // Act
-            // var result = await _healthRiskService.GetHealthRisks();
+            var result = await _healthRiskService.GetHealthRisks(UserName);
 
-            // // Assert
-            // result.IsSuccess.ShouldBeTrue();
-            // result.Value.Count().ShouldBeGreaterThan(0);
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Count().ShouldBeGreaterThan(0);
+        }
+
+        [Fact]
+        public async Task EditHealthRisk_WhenHealthRiskDoesntExist_ShouldReturnError()
+        {
+            // Arrange
+            var editHealthRisk = new EditHealthRiskRequestDto
+            {
+                Id = 2
+            };
+
+            // Act
+            var result = await _healthRiskService.EditHealthRisk(editHealthRisk);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskNotFound);
+        }
+
+        [Fact]
+        public async Task EditHealthRisk_WhenSuccess_ShouldReturnSuccess()
+        {
+            // Arrange
+            var editHealthRisk = new EditHealthRiskRequestDto
+            {
+                Id = HealthRiskId,
+                HealthRiskCode = HealthRiskCode,
+                HealthRiskType = HealthRiskType,
+                AlertRuleCountThreshold = AlertRuleCountThreshold,
+                AlertRuleHoursThreshold = AlertRuleHoursThreshold,
+                AlertRuleMetersThreshold = 1,
+                AlertRuleId = AlertRuleId,
+                LanguageContent = new List<HealthRiskLanguageContentDto>
+                {
+                    new HealthRiskLanguageContentDto
+                    {
+                        LanguageId = LanguageId,
+                        CaseDefinition = CaseDefinition,
+                        FeedbackMessage = FeedbackMessage,
+                        Name = HealthRiskName
+                    }
+                }
+            };
+
+            // Act
+            var result = await _healthRiskService.EditHealthRisk(editHealthRisk);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.EditSuccess);
+        }
+
+        [Fact]
+        public async Task RemoveHealthRisk_WhenSuccess_ShouldReturnSuccess()
+        {
+            // Act
+            var result = await _healthRiskService.RemoveHealthRisk(HealthRiskId);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.RemoveSuccess);
         }
     }
 }
