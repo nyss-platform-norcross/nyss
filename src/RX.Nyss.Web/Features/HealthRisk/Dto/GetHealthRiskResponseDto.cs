@@ -11,7 +11,7 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
 
         public HealthRiskType HealthRiskType { get; set; }
 
-        public int AlertRuleCountThreshold { get; set; }
+        public int? AlertRuleCountThreshold { get; set; }
 
         public int? AlertRuleDaysThreshold { get; set; }
 

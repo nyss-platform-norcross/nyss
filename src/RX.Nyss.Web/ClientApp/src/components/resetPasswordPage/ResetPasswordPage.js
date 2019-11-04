@@ -12,6 +12,7 @@ import { strings, stringKeys } from '../../strings';
 import { createForm, validators } from '../../utils/forms';
 import * as authActions from '../../authentication/authActions';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import Grid from '@material-ui/core/Grid';
 
 class ResetPasswordPageComponent extends PureComponent {
   constructor(props) {
@@ -54,13 +55,17 @@ class ResetPasswordPageComponent extends PureComponent {
             }
 
             <form onSubmit={this.handleSubmit}>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <TextInputField
+                    label={strings(stringKeys.user.resetPassword.emailAddress)}
+                    name="emailAddress"
+                    field={this.form.fields.emailAddress}
+                    autoFocus
+                  />
+                </Grid>
+              </Grid>
 
-              <TextInputField
-                label={strings(stringKeys.user.resetPassword.emailAddress)}
-                name="emailAddress"
-                field={this.form.fields.emailAddress}
-                autoFocus
-              />
               <div className={styles.actions}>
                 <Button type="submit" variant="outlined" color="primary">
                   {strings(stringKeys.user.resetPassword.submit)}

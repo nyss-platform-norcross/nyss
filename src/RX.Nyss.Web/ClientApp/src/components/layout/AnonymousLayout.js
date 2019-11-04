@@ -6,15 +6,17 @@ import styles from './AnonymousLayout.module.scss';
 import { MessagePopup } from './MessagePopup';
 
 export const AnonymousLayout = ({ children }) => {
-    return (
-        <BaseLayout>
-            <div className={`${globalLayoutStyles.header} ${styles.anonymousHeader}`}>
-                <img src="/images/logo.png" alt="" />
-            </div>
-            <div className={styles.content}>
-                {children}
-            </div>
-            <MessagePopup />
-        </BaseLayout>
-    );
+  return (
+    <BaseLayout>
+      <div className={styles.anonymousLayout}>
+        <div className={`${globalLayoutStyles.header} ${styles.anonymousHeader}`}>
+          <img src="/images/logo.png" alt="" />
+        </div>
+        <div className={styles.content}>
+          {children}
+        </div>
+      </div>
+      <MessagePopup />
+    </BaseLayout>
+  );
 }

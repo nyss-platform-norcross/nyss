@@ -36,8 +36,8 @@ const HealthRisksEditPageComponent = (props) => {
       healthRiskCode: props.data.healthRiskCode.toString(),
       healthRiskType: props.data.healthRiskType,
       alertRuleCountThreshold: props.data.alertRuleCountThreshold,
-      alertRuleDaysThreshold: props.data.alertRuleCountThreshold,
-      alertRuleMetersThreshold: props.data.alertRuleCountThreshold
+      alertRuleDaysThreshold: props.data.alertRuleDaysThreshold,
+      alertRuleMetersThreshold: props.data.alertRuleMetersThreshold
     };
 
     let validation = {
@@ -98,7 +98,6 @@ const HealthRisksEditPageComponent = (props) => {
               label="Health risk number"
               name="healthRiskCode"
               field={form.fields.healthRiskCode}
-              autoFocus
             />
           </Grid>
           <Grid item xs={9}>

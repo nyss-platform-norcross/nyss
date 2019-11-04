@@ -16,6 +16,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
+import Grid from '@material-ui/core/Grid';
 
 const NationalSocietiesEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -77,32 +78,40 @@ const NationalSocietiesEditPageComponent = (props) => {
           />
         }
 
-        <TextInputField
-          label="National Society name"
-          name="name"
-          field={form.fields.name}
-          autoFocus
-        />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextInputField
+              label="National Society name"
+              name="name"
+              field={form.fields.name}
+              autoFocus
+            />
+          </Grid>
 
-        <SelectField
-          label="Country"
-          name="country"
-          field={form.fields.countryId}
-        >
-          {props.countries.map(country => (
-            <MenuItem key={`country${country.id}`} value={country.id.toString()}>{country.name}</MenuItem>
-          ))}
-        </SelectField>
+          <Grid item xs={12}>
+            <SelectField
+              label="Country"
+              name="country"
+              field={form.fields.countryId}
+            >
+              {props.countries.map(country => (
+                <MenuItem key={`country${country.id}`} value={country.id.toString()}>{country.name}</MenuItem>
+              ))}
+            </SelectField>
+          </Grid>
 
-        <SelectField
-          label="Content language"
-          name="contentLanguage"
-          field={form.fields.contentLanguageId}
-        >
-          {props.contentLanguages.map(language => (
-            <MenuItem key={`contentLanguage${language.id}`} value={language.id.toString()}>{language.name}</MenuItem>
-          ))}
-        </SelectField>
+          <Grid item xs={12}>
+            <SelectField
+              label="Content language"
+              name="contentLanguage"
+              field={form.fields.contentLanguageId}
+            >
+              {props.contentLanguages.map(language => (
+                <MenuItem key={`contentLanguage${language.id}`} value={language.id.toString()}>{language.name}</MenuItem>
+              ))}
+            </SelectField>
+          </Grid>
+        </Grid>
 
         <FormActions>
           <Button onClick={() => props.goToOverview(props.data.id)}>

@@ -72,9 +72,9 @@ namespace RX.Nyss.Web.Features.HealthRisk
                         Id = healthRisk.Id,
                         HealthRiskCode = healthRisk.HealthRiskCode,
                         HealthRiskType = healthRisk.HealthRiskType,
-                        AlertRuleCountThreshold = healthRisk.AlertRule.CountThreshold,
-                        AlertRuleDaysThreshold = healthRisk.AlertRule.HoursThreshold / 24,
-                        AlertRuleMetersThreshold = healthRisk.AlertRule.MetersThreshold,
+                        AlertRuleCountThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.CountThreshold : (int?) null,
+                        AlertRuleDaysThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.HoursThreshold / 24 : null,
+                        AlertRuleMetersThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.MetersThreshold : null,
                         LanguageContent = healthRisk.LanguageContents.Select(lc => new HealthRiskLanguageContentDto
                         {
                             LanguageId = lc.ContentLanguage.Id,

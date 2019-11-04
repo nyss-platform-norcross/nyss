@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
-import { SmsGatewayTypes } from "./logic/smsGatewayTypes";
+import { strings } from '../../strings';
 
 export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
   if (isListFetching) {
@@ -32,7 +32,7 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
           <TableRow key={row.id} hover onClick={() => goToEdition(nationalSocietyId, row.id)} className={styles.clickableRow}>
             <TableCell>{row.name}</TableCell>
             <TableCell>{row.apiKey}</TableCell>
-            <TableCell>{SmsGatewayTypes[row.gatewayType]}</TableCell>
+            <TableCell>{strings(`smsGateway.type.${row.gatewayType.toLowerCase()}`)}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
               <TableRowAction onClick={() => remove(row.id)} confirmationText="Confirm removing the item" icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />

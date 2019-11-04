@@ -25,7 +25,7 @@ const HealthRisksCreatePageComponent = (props) => {
   const [form] = useState(() => {
     let fields = {
       healthRiskCode: "",
-      healthRiskType: "",
+      healthRiskType: "Human",
       alertRuleCountThreshold: "",
       alertRuleDaysThreshold: "",
       alertRuleMetersThreshold: ""
@@ -93,6 +93,7 @@ const HealthRisksCreatePageComponent = (props) => {
               label="Health risk number"
               name="healthRiskCode"
               field={form.fields.healthRiskCode}
+              autoFocus
             />
           </Grid>
           <Grid item xs={9}>
