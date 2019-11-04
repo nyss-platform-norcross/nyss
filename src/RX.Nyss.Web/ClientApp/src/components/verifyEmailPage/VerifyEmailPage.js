@@ -23,7 +23,7 @@ class VerifyEmailPageComponent extends PureComponent {
     };
 
     const validation = {
-      password: [validators.required, validators.minLength(4)]
+      password: [validators.required, validators.minLength(8)]
     };
 
     this.form = createForm(fields, validation);
