@@ -17,6 +17,7 @@ import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import { healthRiskTypes } from './logic/healthRisksConstants';
 import { getSaveFormModel } from './logic/healthRisksService';
+import { strings } from '../../strings';
 
 const HealthRisksEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -34,17 +35,17 @@ const HealthRisksEditPageComponent = (props) => {
       id: props.data.id,
       healthRiskCode: props.data.healthRiskCode.toString(),
       healthRiskType: props.data.healthRiskType,
-      alertRuleCountThreshold: props.data.alertRuleCountThreshold.toString(),
-      alertRuleHoursThreshold: props.data.alertRuleHoursThreshold.toString(),
-      alertRuleMetersThreshold: props.data.alertRuleMetersThreshold.toString()
+      alertRuleCountThreshold: props.data.alertRuleCountThreshold,
+      alertRuleDaysThreshold: props.data.alertRuleCountThreshold,
+      alertRuleMetersThreshold: props.data.alertRuleCountThreshold
     };
 
     let validation = {
       healthRiskCode: [validators.required, validators.integer],
       healthRiskType: [validators.required],
-      alertRuleCountThreshold: [validators.required, validators.integer],
-      alertRuleHoursThreshold: [validators.required, validators.integer],
-      alertRuleMetersThreshold: [validators.required, validators.integer]
+      alertRuleCountThreshold: [validators.integer],
+      alertRuleDaysThreshold: [validators.integer],
+      alertRuleMetersThreshold: [validators.integer]
     };
 
     const finalFormData = props.contentLanguages
@@ -66,6 +67,11 @@ const HealthRisksEditPageComponent = (props) => {
 
     setForm(createForm(finalFormData.fields, finalFormData.validation));
   }, [props.data, props.contentLanguages]);
+
+  const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
+    value: t,
+    label: strings(`healthRisk.type.${t.toLowerCase()}`)
+  })));
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -92,6 +98,7 @@ const HealthRisksEditPageComponent = (props) => {
               label="Health risk number"
               name="healthRiskCode"
               field={form.fields.healthRiskCode}
+              autoFocus
             />
           </Grid>
           <Grid item xs={9}>
@@ -100,8 +107,8 @@ const HealthRisksEditPageComponent = (props) => {
               name="healthRiskType"
               field={form.fields.healthRiskType}
             >
-              {healthRiskTypes.map(type => (
-                <MenuItem key={`healthRiskType${type}`} value={type}>{type}</MenuItem>
+              {healthRiskTypesData.map(({ value, label }) => (
+                <MenuItem key={`healthRiskType${value}`} value={value}>{label}</MenuItem>
               ))}
             </SelectField>
           </Grid>
@@ -157,9 +164,9 @@ const HealthRisksEditPageComponent = (props) => {
 
           <Grid item xs={4}>
             <TextInputField
-              label="Timeframe in hours"
-              name="alertRuleHoursThreshold"
-              field={form.fields.alertRuleHoursThreshold}
+              label="Timeframe in days"
+              name="alertRuleDaysThreshold"
+              field={form.fields.alertRuleDaysThreshold}
             />
           </Grid>
 

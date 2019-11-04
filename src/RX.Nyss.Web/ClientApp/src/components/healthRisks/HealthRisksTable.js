@@ -23,7 +23,7 @@ export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remo
           <TableCell style={{ width: "10%", minWidth: 100 }}>Number</TableCell>
           <TableCell>Health risk / event</TableCell>
           <TableCell style={{ width: "25%", minWidth: 100 }}>Type</TableCell>
-          <TableCell style={{ width: "16%" }} />
+          <TableCell style={{ width: "25%" }} />
         </TableRow>
       </TableHead>
       <TableBody>

@@ -17,7 +17,7 @@ export const healthRisksSiteMap = [
   {
     parentPath: "/healthrisks",
     path: "/healthrisks/:healthRiskId/edit",
-    title: "Edit Health Risk / Event",
+    title: "Edit heath risk/event: {healthRiskCode}",
     access: accessMap.healthRisks.edit
   }
 ];

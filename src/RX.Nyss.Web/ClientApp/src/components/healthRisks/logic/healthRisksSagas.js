@@ -3,7 +3,6 @@ import * as consts from "./healthRisksConstants";
 import * as actions from "./healthRisksActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
-import * as httpMock from "../../../utils/httpMock";
 
 export const healthRisksSagas = () => [
   takeEvery(consts.GET_HEALTH_RISKS.INVOKE, getHealthRisks),
@@ -36,8 +35,7 @@ function* openHealthRiskEdition({ path, params }) {
     const response = yield call(http.get, `/api/healthRisk/${params.healthRiskId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
-      healthRiskName: response.value.name,
-      healthRiskId: response.value.id
+      healthRiskCode: response.value.healthRiskCode
     }));
 
     yield put(actions.openEdition.success(response.value));

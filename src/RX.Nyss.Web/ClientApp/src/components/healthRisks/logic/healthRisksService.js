@@ -4,7 +4,7 @@ export const getSaveFormModel = (values, contentLanguages) =>
     healthRiskCode: parseInt(values.healthRiskCode),
     healthRiskType: values.healthRiskType,
     alertRuleCountThreshold: parseInt(values.alertRuleCountThreshold),
-    alertRuleHoursThreshold: parseInt(values.alertRuleHoursThreshold),
+    alertRuleDaysThreshold: parseInt(values.alertRuleDaysThreshold),
     alertRuleMetersThreshold: parseInt(values.alertRuleMetersThreshold),
     languageContent: contentLanguages.map(lang => ({
       languageId: lang.id,
