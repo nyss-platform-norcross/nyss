@@ -72,6 +72,9 @@ namespace RX.Nyss.Web.Features.HealthRisk
                         Id = healthRisk.Id,
                         HealthRiskCode = healthRisk.HealthRiskCode,
                         HealthRiskType = healthRisk.HealthRiskType,
+                        AlertRuleCountThreshold = healthRisk.AlertRule.CountThreshold,
+                        AlertRuleDaysThreshold = healthRisk.AlertRule.HoursThreshold / 24,
+                        AlertRuleMetersThreshold = healthRisk.AlertRule.MetersThreshold,
                         LanguageContent = healthRisk.LanguageContents.Select(lc => new HealthRiskLanguageContentDto
                         {
                             LanguageId = lc.ContentLanguage.Id,
@@ -79,14 +82,14 @@ namespace RX.Nyss.Web.Features.HealthRisk
                             FeedbackMessage = lc.FeedbackMessage,
                             Name = lc.Name
                         })
-                    }).FirstOrDefaultAsync();
+                    }).SingleOrDefaultAsync();
 
                 if (healthRiskResponse == null)
                 {
                     return Error(ResultKey.HealthRisk.HealthRiskNotFound).Cast<GetHealthRiskResponseDto>();
                 }
 
-                return Success<GetHealthRiskResponseDto>(healthRiskResponse);
+                return Success(healthRiskResponse);
             }
             catch (Exception e)
             {
@@ -106,9 +109,8 @@ namespace RX.Nyss.Web.Features.HealthRisk
 
                 var languageContentIds = createHealthRiskDto.LanguageContent.Select(lc => lc.LanguageId).ToArray();
                 var contentLanguages = await _nyssContext.ContentLanguages.Where(cl => languageContentIds.Contains(cl.Id)).ToDictionaryAsync(cl => cl.Id, cl => cl);
-                var healthRiskLanguageContents = new List<HealthRiskLanguageContent>();
 
-                var healthRisk = new Nyss.Data.Models.HealthRisk()
+                var healthRisk = new Nyss.Data.Models.HealthRisk
                 {
                     HealthRiskType = createHealthRiskDto.HealthRiskType,
                     HealthRiskCode = createHealthRiskDto.HealthRiskCode,
@@ -119,12 +121,14 @@ namespace RX.Nyss.Web.Features.HealthRisk
                         CaseDefinition = lc.CaseDefinition,
                         ContentLanguage = contentLanguages[lc.LanguageId]
                     }).ToList(),
-                    AlertRule = new Nyss.Data.Models.AlertRule()
-                    {
-                        CountThreshold = createHealthRiskDto.AlertRuleCountThreshold,
-                        HoursThreshold = createHealthRiskDto.AlertRuleHoursThreshold,
-                        MetersThreshold = createHealthRiskDto.AlertRuleMetersThreshold
-                    }
+                    AlertRule = createHealthRiskDto.AlertRuleCountThreshold.HasValue 
+                        ? new AlertRule
+                        {
+                            CountThreshold = createHealthRiskDto.AlertRuleCountThreshold.Value,
+                            HoursThreshold = createHealthRiskDto.AlertRuleDaysThreshold * 24,
+                            MetersThreshold = createHealthRiskDto.AlertRuleMetersThreshold
+                        }
+                        : null
                 };
 
                 var entity = await _nyssContext.AddAsync(healthRisk);
@@ -154,9 +158,18 @@ namespace RX.Nyss.Web.Features.HealthRisk
 
                 healthRisk.HealthRiskCode = editHealthRiskDto.HealthRiskCode;
                 healthRisk.HealthRiskType = editHealthRiskDto.HealthRiskType;
-                healthRisk.AlertRule.CountThreshold = editHealthRiskDto.AlertRuleCountThreshold;
-                healthRisk.AlertRule.HoursThreshold = editHealthRiskDto.AlertRuleHoursThreshold;
-                healthRisk.AlertRule.MetersThreshold = editHealthRiskDto.AlertRuleMetersThreshold;
+
+                if (editHealthRiskDto.AlertRuleCountThreshold.HasValue)
+                {
+                    healthRisk.AlertRule ??= new AlertRule();
+                    healthRisk.AlertRule.CountThreshold = editHealthRiskDto.AlertRuleCountThreshold.Value;
+                    healthRisk.AlertRule.HoursThreshold = editHealthRiskDto.AlertRuleDaysThreshold * 24;
+                    healthRisk.AlertRule.MetersThreshold = editHealthRiskDto.AlertRuleMetersThreshold;
+                }
+                else
+                {
+                    healthRisk.AlertRule = null;
+                }
 
                 foreach (var languageContentDto in editHealthRiskDto.LanguageContent)
                 {

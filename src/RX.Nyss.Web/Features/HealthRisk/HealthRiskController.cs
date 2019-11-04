@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet, Route("get")]
+        [HttpGet, Route("{id}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result<GetHealthRiskResponseDto>> GetHealthRisk(int id) => 
             await _healthRiskService.GetHealthRisk(id);
@@ -51,7 +51,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// </summary>
         /// <param name="healthRisk"></param>
         /// <returns></returns>
-        [HttpPost, Route("edit"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
+        [HttpPost, Route("{id}/edit"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result> Edit([FromBody]EditHealthRiskRequestDto healthRisk) =>
             await _healthRiskService.EditHealthRisk(healthRisk);
 
@@ -60,7 +60,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpPost, Route("remove"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
+        [HttpPost, Route("{id}/remove"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result> Remove(int id) =>
             await _healthRiskService.RemoveHealthRisk(id);
     }

@@ -19,6 +19,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { healthRiskTypes } from './logic/healthRisksConstants';
 import Grid from '@material-ui/core/Grid';
 import { getSaveFormModel } from './logic/healthRisksService';
+import { strings } from '../../strings';
 
 const HealthRisksCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -26,16 +27,16 @@ const HealthRisksCreatePageComponent = (props) => {
       healthRiskCode: "",
       healthRiskType: "",
       alertRuleCountThreshold: "",
-      alertRuleHoursThreshold: "",
+      alertRuleDaysThreshold: "",
       alertRuleMetersThreshold: ""
     };
 
     let validation = {
       healthRiskCode: [validators.required, validators.integer],
       healthRiskType: [validators.required],
-      alertRuleCountThreshold: [validators.required, validators.integer],
-      alertRuleHoursThreshold: [validators.required, validators.integer],
-      alertRuleMetersThreshold: [validators.required, validators.integer]
+      alertRuleCountThreshold: [validators.integer],
+      alertRuleDaysThreshold: [validators.integer],
+      alertRuleMetersThreshold: [validators.integer]
     };
 
     const finalFormData = props.contentLanguages.reduce((result, lang) => ({
@@ -55,6 +56,11 @@ const HealthRisksCreatePageComponent = (props) => {
 
     return createForm(finalFormData.fields, finalFormData.validation);
   });
+
+  const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
+    value: t,
+    label: strings(`healthRisk.type.${t.toLowerCase()}`)
+  })));
 
   useMount(() => {
     props.openModule(props.match.path, props.match.params)
@@ -95,8 +101,8 @@ const HealthRisksCreatePageComponent = (props) => {
               name="healthRiskType"
               field={form.fields.healthRiskType}
             >
-              {healthRiskTypes.map(type => (
-                <MenuItem key={`healthRiskType${type}`} value={type}>{type}</MenuItem>
+              {healthRiskTypesData.map(({ value, label }) => (
+                <MenuItem key={`healthRiskType${value}`} value={value}>{label}</MenuItem>
               ))}
             </SelectField>
           </Grid>
@@ -152,9 +158,9 @@ const HealthRisksCreatePageComponent = (props) => {
 
           <Grid item xs={4}>
             <TextInputField
-              label="Timeframe in hours"
-              name="alertRuleHoursThreshold"
-              field={form.fields.alertRuleHoursThreshold}
+              label="Timeframe in days"
+              name="alertRuleDaysThreshold"
+              field={form.fields.alertRuleDaysThreshold}
             />
           </Grid>
 

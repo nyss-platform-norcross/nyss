@@ -32,7 +32,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         private const int AlertRuleId = 1;
         private const int AlertRuleCountThreshold = 5;
         private const int AlertRuleMeterThreshold = 10;
-        private const int AlertRuleHoursThreshold = 2;
+        private const int AlertRuleDaysThreshold = 2;
 
         public HealthRiskServiceTests()
         {
@@ -95,17 +95,23 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     AlertRule = alertRules[0]
                 }
             };
+            var contentLanguages = new List<ContentLanguage>
+            {
+                new ContentLanguage { Id = LanguageId }
+            };
 
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
             var languageContentsMockDbSet = languageContents.AsQueryable().BuildMockDbSet();
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             var alertRuleMockDbSet = alertRules.AsQueryable().BuildMockDbSet();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+            var contentLanguagesMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
 
             _nyssContextMock.ContentLanguages.Returns(contentLanguageMockDbSet);
             _nyssContextMock.HealthRiskLanguageContents.Returns(languageContentsMockDbSet);
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
             _nyssContextMock.AlertRules.Returns(alertRuleMockDbSet);
+            _nyssContextMock.ContentLanguages.Returns(contentLanguagesMockDbSet);
             _nyssContextMock.Users.Returns(usersMockDbSet);
         }
 

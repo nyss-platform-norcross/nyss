@@ -80,10 +80,6 @@ export const theme = createMuiTheme({
 
       }
     },
-    MuiFormControl: {
-      root: {
-      }
-    },
     MuiInput: {
       root: {
         fontSize: "1rem",
@@ -98,6 +94,12 @@ export const theme = createMuiTheme({
       },
       formControl: {
         marginTop: "30px !important"
+      },
+      multiline: {
+        padding: "10px"
+      },
+      inputMultiline: {
+        padding: "0"
       },
       underline: {
         "&:before": {
@@ -137,8 +139,7 @@ export const theme = createMuiTheme({
     },
     MuiListItemText: {
       root: {
-        padding: "12px 20px",
-        textAlign: "center"
+        padding: "12px 20px"
       },
       primary: {
         fontSize: 16,
