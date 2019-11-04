@@ -80,7 +80,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 {
                     Id = AlertRuleId,
                     CountThreshold = AlertRuleCountThreshold,
-                    HoursThreshold = AlertRuleHoursThreshold,
+                    HoursThreshold = AlertRuleDaysThreshold,
                     MetersThreshold = AlertRuleMeterThreshold,
                 }
             };
@@ -94,10 +94,6 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     LanguageContents = languageContents,
                     AlertRule = alertRules[0]
                 }
-            };
-            var contentLanguages = new List<ContentLanguage>
-            {
-                new ContentLanguage { Id = LanguageId }
             };
 
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
@@ -219,9 +215,8 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 HealthRiskCode = HealthRiskCode,
                 HealthRiskType = HealthRiskType,
                 AlertRuleCountThreshold = AlertRuleCountThreshold,
-                AlertRuleHoursThreshold = AlertRuleHoursThreshold,
+                AlertRuleDaysThreshold = AlertRuleDaysThreshold,
                 AlertRuleMetersThreshold = 1,
-                AlertRuleId = AlertRuleId,
                 LanguageContent = new List<HealthRiskLanguageContentDto>
                 {
                     new HealthRiskLanguageContentDto
