@@ -44,15 +44,16 @@ namespace RX.Nyss.Web.Features.DataConsumer
         {
             try
             {
-                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                string securityStamp;
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataConsumerRequestDto.Email, Role.DataConsumer);
+                    securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
-                var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataConsumerRequestDto.Email, Role.DataConsumer);
-                var securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
+                    await CreateDataConsumerUser(identityUser, nationalSocietyId, createDataConsumerRequestDto);
 
-                await CreateDataConsumerUser(identityUser, nationalSocietyId, createDataConsumerRequestDto);
-
-                transactionScope.Complete();
-
+                    transactionScope.Complete();
+                }
                 await _verificationEmailService.SendVerificationEmail(createDataConsumerRequestDto.Email, createDataConsumerRequestDto.Name, securityStamp);
                 return Result.Success(ResultKey.User.Registration.Success);
             }
