@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.Authentication.Policies.BaseAccessHandlers;
 using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
@@ -11,22 +10,31 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
     {
     }
 
-    public class DataManagerAccessHandler : BaseUserAccessHandler<DataManagerUser, DataManagerAccessRequirement>
+    public class DataManagerAccessHandler : AuthorizationHandler<DataManagerAccessRequirement>
     {
         private const string RouteParameterName = "dataManagerId";
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IResourceAccessService _resourceAccessService;
 
-        public DataManagerAccessHandler(IHttpContextAccessor httpContextAccessor, INationalSocietyAccessService nationalSocietyAccessService)
-            : base(httpContextAccessor, nationalSocietyAccessService, RouteParameterName)
+        public DataManagerAccessHandler(IHttpContextAccessor httpContextAccessor, IResourceAccessService resourceAccessService)
         {
+            _httpContextAccessor = httpContextAccessor;
+            _resourceAccessService = resourceAccessService;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DataManagerAccessRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DataManagerAccessRequirement requirement)
         {
-            if (!context.User.Identity.IsAuthenticated)
-            { 
-                return Task.CompletedTask;
+            var dataManagerId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            if (!context.User.Identity.IsAuthenticated || !dataManagerId.HasValue)
+            {
+                return;
             }
-            return HandleUserResourceRequirement(context, requirement);
+
+            var dataManagerNationalSocieties = await _resourceAccessService.GetUserNationalSocietyIds<DataManagerUser>(dataManagerId.Value);
+            if (await _resourceAccessService.GetUserHasAccessToAnyOfResourceNationalSocieties(context.User, dataManagerNationalSocieties))
+            {
+                context.Succeed(requirement);
+            }
         }
             
     }

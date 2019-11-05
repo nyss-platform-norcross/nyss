@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.Authentication.Policies.BaseAccessHandlers;
 using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
@@ -10,22 +9,31 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
     public class TechnicalAdvisorAccessRequirement : IAuthorizationRequirement
     {
     }
-    public class TechnicalAdvisorAccessHandler : BaseUserAccessHandler<TechnicalAdvisorUser, TechnicalAdvisorAccessRequirement>
+    public class TechnicalAdvisorAccessHandler: AuthorizationHandler<TechnicalAdvisorAccessRequirement>
     {
         private const string RouteParameterName = "technicalAdvisorId";
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IResourceAccessService _resourceAccessService;
 
-        public TechnicalAdvisorAccessHandler(IHttpContextAccessor httpContextAccessor, INationalSocietyAccessService nationalSocietyAccessService)
-            : base(httpContextAccessor, nationalSocietyAccessService, RouteParameterName)
+        public TechnicalAdvisorAccessHandler(IHttpContextAccessor httpContextAccessor, IResourceAccessService resourceAccessService)
         {
+            _httpContextAccessor = httpContextAccessor;
+            _resourceAccessService = resourceAccessService;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, TechnicalAdvisorAccessRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, TechnicalAdvisorAccessRequirement requirement)
         {
-            if (!context.User.Identity.IsAuthenticated)
+            var technicalAdvisorId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            if (!context.User.Identity.IsAuthenticated || !technicalAdvisorId.HasValue)
             {
-                return Task.CompletedTask;
+                return;
             }
-            return HandleUserResourceRequirement(context, requirement);
+
+            var technicalAdvisorNationalSocieties = await _resourceAccessService.GetUserNationalSocietyIds<TechnicalAdvisorUser>(technicalAdvisorId.Value);
+            if (await _resourceAccessService.GetUserHasAccessToAnyOfResourceNationalSocieties(context.User, technicalAdvisorNationalSocieties))
+            {
+                context.Succeed(requirement);
+            }
         }
     }
 }
