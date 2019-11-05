@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.DataManager.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
@@ -27,13 +28,15 @@ namespace RX.Nyss.Web.Features.DataManager
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
+        private readonly IVerificationEmailService _verificationEmailService;
 
-        public DataManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter)
+        public DataManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
+            _verificationEmailService = verificationEmailService;
         }
 
         public async Task<Result> CreateDataManager(int nationalSocietyId, CreateDataManagerRequestDto createDataManagerRequestDto)
@@ -41,11 +44,15 @@ namespace RX.Nyss.Web.Features.DataManager
             try
             {
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
+                
                 var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataManagerRequestDto.Email, Role.DataManager);
-                await CreateDataManagerUser(identityUser, nationalSocietyId, createDataManagerRequestDto);
+                var securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
+                await CreateDataManagerUser(identityUser, nationalSocietyId, createDataManagerRequestDto);
+                
                 transactionScope.Complete();
+
+                await _verificationEmailService.SendVerificationEmail(createDataManagerRequestDto.Email, createDataManagerRequestDto.Name, securityStamp);
                 return Result.Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)

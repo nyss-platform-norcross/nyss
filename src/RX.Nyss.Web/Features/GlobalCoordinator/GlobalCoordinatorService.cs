@@ -28,24 +28,21 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
 
     public class GlobalCoordinatorService : IGlobalCoordinatorService
     {
-        private readonly IConfig _config;
+        
         private readonly INyssContext _dataContext;
-        private readonly IEmailPublisherService _emailPublisherService;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IVerificationEmailService _verificationEmailService;
 
         public GlobalCoordinatorService(
             IIdentityUserRegistrationService identityUserRegistrationService,
             INyssContext dataContext,
-            ILoggerAdapter loggerAdapter,
-            IConfig config,
-            IEmailPublisherService emailPublisherService)
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
-            _config = config;
-            _emailPublisherService = emailPublisherService;
+            _verificationEmailService = verificationEmailService;
         }
 
         public async Task<Result> RegisterGlobalCoordinator(CreateGlobalCoordinatorRequestDto dto)
@@ -74,7 +71,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
                     transactionScope.Complete();
                 }
 
-                await SendVerificationEmail(dto.Email, dto.Name, securityStamp);
+                await _verificationEmailService.SendVerificationEmail(dto.Email, dto.Name, securityStamp);
 
                 return Success(ResultKey.User.Registration.Success);
             }
@@ -178,17 +175,6 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
             }
         }
 
-        private async Task SendVerificationEmail(string email, string name, string securityStamp)
-        {
-            var baseUrl = new Uri(_config.BaseUrl);
-            var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(email)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
-
-            var (emailSubject, emailBody) = EmailTextGenerator.GenerateEmailVerificationEmail(
-                role: Role.GlobalCoordinator.ToString(),
-                callbackUrl: verificationUrl,
-                name: name);
-
-            await _emailPublisherService.SendEmail((email, name), emailSubject, emailBody);
-        }
+       
     }
 }

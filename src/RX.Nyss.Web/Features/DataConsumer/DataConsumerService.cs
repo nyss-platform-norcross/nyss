@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.DataConsumer.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
@@ -27,12 +28,15 @@ namespace RX.Nyss.Web.Features.DataConsumer
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
+        private readonly IVerificationEmailService _verificationEmailService;
 
-        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter)
+        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
+            _verificationEmailService = verificationEmailService;
+
             _nationalSocietyUserService = nationalSocietyUserService;
         }
 
@@ -43,9 +47,13 @@ namespace RX.Nyss.Web.Features.DataConsumer
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataConsumerRequestDto.Email, Role.DataConsumer);
+                var securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
+
                 await CreateDataConsumerUser(identityUser, nationalSocietyId, createDataConsumerRequestDto);
 
                 transactionScope.Complete();
+
+                await _verificationEmailService.SendVerificationEmail(createDataConsumerRequestDto.Email, createDataConsumerRequestDto.Name, securityStamp);
                 return Result.Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
