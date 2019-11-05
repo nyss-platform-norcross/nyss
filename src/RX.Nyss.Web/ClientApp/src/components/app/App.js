@@ -23,6 +23,9 @@ import { GlobalCoordinatorsCreatePage } from '../globalCoordinators/GlobalCoordi
 import { GlobalCoordinatorsEditPage } from '../globalCoordinators/GlobalCoordinatorsEditPage';
 import { ResetPasswordPage } from '../resetPasswordPage/ResetPasswordPage';
 import { ResetPasswordCallbackPage } from '../resetPasswordCallbackPage/ResetPasswordCallbackPage';
+import { HealthRisksListPage } from '../healthRisks/HealthRisksListPage';
+import { HealthRisksCreatePage } from '../healthRisks/HealthRisksCreatePage';
+import { HealthRisksEditPage } from '../healthRisks/HealthRisksEditPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -36,6 +39,7 @@ export const App = ({ history }) => (
         <AuthRoute exact path='/' component={Home} />
         <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />
         <AuthRoute exact path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />
+
         <Redirect exact from="/nationalsocieties/:nationalSocietyId" to="/nationalsocieties/:nationalSocietyId/dashboard" />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/dashboard' component={NationalSocietiesDashboardPage} roles={accessMap.nationalSocieties.add} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/overview' component={NationalSocietiesOverviewPage} roles={accessMap.nationalSocieties.add} />
@@ -48,6 +52,10 @@ export const App = ({ history }) => (
         <AuthRoute exact path='/globalcoordinators' component={GlobalCoordinatorsListPage} roles={accessMap.globalCoordinators.list} />
         <AuthRoute exact path='/globalcoordinators/add' component={GlobalCoordinatorsCreatePage} roles={accessMap.globalCoordinators.add} />
         <AuthRoute exact path='/globalcoordinators/:globalCoordinatorId/edit' component={GlobalCoordinatorsEditPage} roles={accessMap.globalCoordinators.edit} />
+
+        <AuthRoute exact path='/healthrisks' component={HealthRisksListPage} roles={accessMap.healthRisks.list} />
+        <AuthRoute exact path='/healthrisks/add' component={HealthRisksCreatePage} roles={accessMap.healthRisks.add} />
+        <AuthRoute exact path='/healthrisks/:healthRiskId/edit' component={HealthRisksEditPage} roles={accessMap.healthRisks.edit} />
       </Switch>
     </ConnectedRouter>
   </ThemeProvider>

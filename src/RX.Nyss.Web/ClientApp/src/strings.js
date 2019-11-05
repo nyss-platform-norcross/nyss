@@ -20,7 +20,12 @@ let stringList = {
   "user.resetPassword.submit": "Reset my password",
   "user.resetPassword.enterNewPassword": "Please set your new password",
   "user.resetPassword.notFound": "The user was not found",
-  "shared.error": "There was a problem with executing this operation"
+  "shared.error": "There was a problem with executing this operation",
+  "smsGateway.type.smseagle": "Sms Eagle",
+  "healthRisk.type.human": "Human",
+  "healthRisk.type.nonhuman": "Non-human",
+  "healthRisk.type.unusualevent": "Unusual event",
+  "healthRisk.type.activity": "Activity",
 };
 
 export const stringKeys = {

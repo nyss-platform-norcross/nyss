@@ -8,6 +8,7 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<HealthRiskLanguageContent> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
             builder.Property(x => x.CaseDefinition).HasMaxLength(500).IsRequired();
             builder.Property(x => x.FeedbackMessage).HasMaxLength(160).IsRequired();
             builder.HasOne(x => x.HealthRisk).WithMany().IsRequired();

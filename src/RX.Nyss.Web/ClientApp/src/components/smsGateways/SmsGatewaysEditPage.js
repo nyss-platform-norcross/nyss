@@ -14,8 +14,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
-import { SmsGatewayTypes } from "./logic/smsGatewayTypes";
+import { smsGatewayTypes } from "./logic/smsGatewayTypes";
 import { useMount } from '../../utils/lifecycle';
+import { strings } from '../../strings';
+import Grid from '@material-ui/core/Grid';
 
 const SmsGatewaysEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -57,7 +59,7 @@ const SmsGatewaysEditPageComponent = (props) => {
       id: values.id,
       name: values.name,
       apiKey: values.apiKey,
-      gatewayType: parseInt(values.gatewayType)
+      gatewayType: values.gatewayType
     });
   };
 
@@ -76,32 +78,39 @@ const SmsGatewaysEditPageComponent = (props) => {
       }
 
       <Form onSubmit={handleSubmit}>
-        <TextInputField
-          label="Name"
-          name="name"
-          field={form.fields.name}
-        />
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <TextInputField
+              label="Name"
+              name="name"
+              field={form.fields.name}
+            />
+          </Grid>
 
-        <TextInputField
-          label="API key"
-          name="apiKey"
-          field={form.fields.apiKey}
-        />
+          <Grid item xs={12}>
+            <TextInputField
+              label="API key"
+              name="apiKey"
+              field={form.fields.apiKey}
+            />
+          </Grid>
 
-        <SelectInput
-          label="Gateway type"
-          name="gatewayType"
-          field={form.fields.gatewayType}
-        >
-          {Object.keys(SmsGatewayTypes).map(key => (
-            <MenuItem
-              key={`gatewayType${key}`}
-              value={key.toString()}
-              selected={form.fields.gatewayType === key.toString()}>
-              {SmsGatewayTypes[key]}
-            </MenuItem>
-          ))}
-        </SelectInput>
+          <Grid item xs={12}>
+            <SelectInput
+              label="Gateway type"
+              name="gatewayType"
+              field={form.fields.gatewayType}
+            >
+              {smsGatewayTypes.map(type => (
+                <MenuItem
+                  key={`gatewayType${type}`}
+                  value={type}>
+                  {strings(`smsGateway.type.${type.toLowerCase()}`)}
+                </MenuItem>
+              ))}
+            </SelectInput>
+          </Grid>
+        </Grid>
 
         <FormActions>
           <Button onClick={() => props.goToList(props.nationalSocietyId)}>
@@ -112,7 +121,7 @@ const SmsGatewaysEditPageComponent = (props) => {
             Save SMS Gateway
           </SubmitButton>
         </FormActions>
-    </Form>
+      </Form>
     </Fragment>
   );
 }
