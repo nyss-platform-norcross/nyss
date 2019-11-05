@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
@@ -14,12 +17,12 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
     {
         private const string RouteParameterName = "dataConsumerId";
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IResourceAccessService _resourceAccessService;
+        private readonly IUserService _userService;
 
-        public DataConsumerAccessHandler(IHttpContextAccessor httpContextAccessor, IResourceAccessService resourceAccessService)
+        public DataConsumerAccessHandler(IHttpContextAccessor httpContextAccessor, IUserService userService)
         {
             _httpContextAccessor = httpContextAccessor;
-            _resourceAccessService = resourceAccessService;
+            _userService = userService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
@@ -31,8 +34,11 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
                 return;
             }
 
-            var dataConsumerNationalSocieties = await _resourceAccessService.GetUserNationalSocietyIds<DataConsumerUser>(dataConsumerId.Value);
-            if (await _resourceAccessService.GetUserHasAccessToAnyOfResourceNationalSocieties(context.User, dataConsumerNationalSocieties))
+            var dataConsumerNationalSocieties = await _userService.GetUserNationalSocietyIds<DataConsumerUser>(dataConsumerId.Value);
+            var roles = context.User.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value);
+            var identityName = context.User.Identity.Name;
+
+            if (await _userService.GetUserHasAccessToAnyOfResourceNationalSocieties(dataConsumerNationalSocieties, identityName, roles))
             {
                 context.Succeed(requirement);
             }

@@ -1,7 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
@@ -14,12 +17,12 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
     {
         private const string RouteParameterName = "dataManagerId";
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IResourceAccessService _resourceAccessService;
+        private readonly IUserService _userService;
 
-        public DataManagerAccessHandler(IHttpContextAccessor httpContextAccessor, IResourceAccessService resourceAccessService)
+        public DataManagerAccessHandler(IHttpContextAccessor httpContextAccessor, IUserService userService)
         {
             _httpContextAccessor = httpContextAccessor;
-            _resourceAccessService = resourceAccessService;
+            _userService = userService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DataManagerAccessRequirement requirement)
@@ -30,8 +33,11 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
                 return;
             }
 
-            var dataManagerNationalSocieties = await _resourceAccessService.GetUserNationalSocietyIds<DataManagerUser>(dataManagerId.Value);
-            if (await _resourceAccessService.GetUserHasAccessToAnyOfResourceNationalSocieties(context.User, dataManagerNationalSocieties))
+            var dataManagerNationalSocieties = await _userService.GetUserNationalSocietyIds<DataManagerUser>(dataManagerId.Value);
+            var roles = context.User.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value);
+            var identityName = context.User.Identity.Name;
+
+            if (await _userService.GetUserHasAccessToAnyOfResourceNationalSocieties(dataManagerNationalSocieties, identityName, roles))
             {
                 context.Succeed(requirement);
             }
