@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -105,9 +105,12 @@ namespace RX.Nyss.Web.Configuration
             {
                 options.AddPolicy(Policy.NationalSocietyAccess.ToString(),
                     policy => policy.Requirements.Add(new NationalSocietyAccessRequirement()));
+                options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
+                    policy => policy.Requirements.Add(new SmsGatewayAccessRequirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, SmsGatewayAccessHandler>();
 
             serviceCollection.ConfigureApplicationCookie(options =>
             {
