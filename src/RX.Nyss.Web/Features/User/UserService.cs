@@ -12,7 +12,7 @@ namespace RX.Nyss.Web.Features.User
 {
     public interface IUserService
     {
-        Task<Result> GetUsersInNationalSociety(int nationalSocietyId);
+        Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId);
     }
 
     public class UserService : IUserService
@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.User
             _dataContext = dataContext;
         }
 
-        public async Task<Result> GetUsersInNationalSociety(int nationalSocietyId)
+        public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId)
         {
             var users = await _dataContext.UserNationalSocieties
                 .Where(uns => uns.NationalSocietyId == nationalSocietyId)

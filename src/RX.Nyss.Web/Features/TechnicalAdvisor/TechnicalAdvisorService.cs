@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
@@ -27,13 +28,15 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
+        private readonly IVerificationEmailService _verificationEmailService;
 
-        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext, ILoggerAdapter loggerAdapter, INationalSocietyUserService nationalSocietyUserService)
+        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _nationalSocietyUserService = nationalSocietyUserService;
+            _verificationEmailService = verificationEmailService;
         }
 
         public async Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
@@ -43,9 +46,12 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createTechnicalAdvisorRequestDto.Email, Role.TechnicalAdvisor);
+                var securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
                 await CreateTechnicalAdvisorUser(identityUser, nationalSocietyId, createTechnicalAdvisorRequestDto);
 
                 transactionScope.Complete();
+
+                await _verificationEmailService.SendVerificationEmail(createTechnicalAdvisorRequestDto.Email, createTechnicalAdvisorRequestDto.Name, securityStamp);
                 return Result.Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
