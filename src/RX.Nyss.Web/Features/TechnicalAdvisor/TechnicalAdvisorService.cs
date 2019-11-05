@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
@@ -43,14 +42,15 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         {
             try
             {
-                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                string securityStamp;
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createTechnicalAdvisorRequestDto.Email, Role.TechnicalAdvisor);
+                    securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
+                    await CreateTechnicalAdvisorUser(identityUser, nationalSocietyId, createTechnicalAdvisorRequestDto);
 
-                var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createTechnicalAdvisorRequestDto.Email, Role.TechnicalAdvisor);
-                var securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
-                await CreateTechnicalAdvisorUser(identityUser, nationalSocietyId, createTechnicalAdvisorRequestDto);
-
-                transactionScope.Complete();
-
+                    transactionScope.Complete();
+                }
                 await _verificationEmailService.SendVerificationEmail(createTechnicalAdvisorRequestDto.Email, createTechnicalAdvisorRequestDto.Name, securityStamp);
                 return Result.Success(ResultKey.User.Registration.Success);
             }

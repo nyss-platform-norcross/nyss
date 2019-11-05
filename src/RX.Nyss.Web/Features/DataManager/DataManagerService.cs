@@ -43,15 +43,16 @@ namespace RX.Nyss.Web.Features.DataManager
         {
             try
             {
-                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-                
-                var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataManagerRequestDto.Email, Role.DataManager);
-                var securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
+                string securityStamp;
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataManagerRequestDto.Email, Role.DataManager);
+                    securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
-                await CreateDataManagerUser(identityUser, nationalSocietyId, createDataManagerRequestDto);
-                
-                transactionScope.Complete();
-
+                    await CreateDataManagerUser(identityUser, nationalSocietyId, createDataManagerRequestDto);
+                    
+                    transactionScope.Complete();
+                }
                 await _verificationEmailService.SendVerificationEmail(createDataManagerRequestDto.Email, createDataManagerRequestDto.Name, securityStamp);
                 return Result.Success(ResultKey.User.Registration.Success);
             }
