@@ -8,7 +8,7 @@ using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.DataManager
 {
-    [Route("api/nationalSociety/dataManager")]
+    [Route("api")]
     public class DataManagerController : BaseController
     {
         private readonly IDataManagerService _dataManagerService;
@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.DataManager
         /// <param name="nationalSocietyId">The ID of the national society the data manager should be registered in</param>
         /// <param name="createDataManagerRequestDto">The data manager to be created</param>
         /// <returns></returns>
-        [HttpPost("/api/nationalSociety/{nationalSocietyId:int}/dataManager/create")]
+        [HttpPost("nationalSociety/{nationalSocietyId:int}/dataManager/create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> CreateDataManager(int nationalSocietyId, [FromBody]CreateDataManagerRequestDto createDataManagerRequestDto) =>
             await _dataManagerService.CreateDataManager(nationalSocietyId, createDataManagerRequestDto);
@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.DataManager
         /// </summary>
         /// <param name="dataManagerId">The ID of the requested data manager</param>
         /// <returns></returns>
-        [HttpGet("/api/nationalSociety/dataManager/{dataManagerId:int}/get")]
+        [HttpGet("nationalSociety/dataManager/{dataManagerId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataManagerAccess)]
         public async Task<Result> Get(int dataManagerId) =>
             await _dataManagerService.GetDataManager(dataManagerId);
@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.DataManager
         /// <param name="dataManagerId">The id of the data manager to be edited</param>
         /// <param name="editDataManagerRequestDto">The data used to update the specified data manager</param>
         /// <returns></returns>
-        [HttpPost("/api/nationalSociety/dataManager/{dataManagerId:int}/edit")]
+        [HttpPost("nationalSociety/dataManager/{dataManagerId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataManagerAccess)]
         public async Task<Result> Edit(int dataManagerId, [FromBody]EditDataManagerRequestDto editDataManagerRequestDto) =>
             await _dataManagerService.UpdateDataManager(dataManagerId, editDataManagerRequestDto);
@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Features.DataManager
         /// </summary>
         /// <param name="dataManagerId">The ID of the data manager to be deleted</param>
         /// <returns></returns>
-        [HttpPost("/api/nationalSociety/dataManager/{dataManagerId:int}/delete")]
+        [HttpPost("nationalSociety/dataManager/{dataManagerId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataManagerAccess)]
         public async Task<Result> Delete(int dataManagerId) =>
             await _dataManagerService.DeleteDataManager(dataManagerId);
