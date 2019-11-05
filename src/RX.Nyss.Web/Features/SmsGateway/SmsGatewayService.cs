@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.SmsGateway.Dto;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -30,12 +29,14 @@ namespace RX.Nyss.Web.Features.SmsGateway
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IConfig _config;
+        private readonly IBlobService _blobService;
 
-        public SmsGatewayService(INyssContext context, ILoggerAdapter loggerAdapter, IConfig config)
+        public SmsGatewayService(INyssContext context, ILoggerAdapter loggerAdapter, IConfig config, IBlobService blobService)
         {
             _nyssContext = context;
             _loggerAdapter = loggerAdapter;
             _config = config;
+            _blobService = blobService;
         }
 
         public async Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int smsGatewayId)
@@ -47,7 +48,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
                     Name = gs.Name,
                     ApiKey = gs.ApiKey,
                     GatewayType = gs.GatewayType,
-                    NationalSocietyId = gs.NationalSociety.Id
+                    NationalSocietyId = gs.NationalSocietyId
                 })
                 .FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
@@ -84,7 +85,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
         {
             try
             {
-                var nationalSocietyExists = await _nyssContext.NationalSocieties.AnyAsync(n => n.Id == nationalSocietyId);
+                var nationalSocietyExists = await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId);
 
                 if (!nationalSocietyExists)
                 {
@@ -124,18 +125,18 @@ namespace RX.Nyss.Web.Features.SmsGateway
         {
             try
             {
-                var apiKeyExists = await _nyssContext.GatewaySettings.AnyAsync(gs => gs.ApiKey == gatewaySettingRequestDto.ApiKey && gs.Id != smsGatewayId);
-
-                if (apiKeyExists)
-                {
-                    return Error<int>(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
-                }
-
                 var gatewaySettingToUpdate = await _nyssContext.GatewaySettings.FindAsync(smsGatewayId);
 
                 if (gatewaySettingToUpdate == null)
                 {
                     return Error(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
+                }
+
+                var apiKeyExists = await _nyssContext.GatewaySettings.AnyAsync(gs => gs.ApiKey == gatewaySettingRequestDto.ApiKey && gs.Id != smsGatewayId);
+
+                if (apiKeyExists)
+                {
+                    return Error<int>(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
                 }
 
                 gatewaySettingToUpdate.Name = gatewaySettingRequestDto.Name;
@@ -146,7 +147,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
 
                 await UpdateAuthorizedApiKeys();
 
-                return Success(ResultKey.NationalSociety.SmsGateway.SuccessfullyUpdated);
+                return SuccessMessage(ResultKey.NationalSociety.SmsGateway.SuccessfullyUpdated);
             }
             catch (ResultException exception)
             {
@@ -171,7 +172,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
 
                 await UpdateAuthorizedApiKeys();
 
-                return Success(ResultKey.NationalSociety.SmsGateway.SuccessfullyDeleted);
+                return SuccessMessage(ResultKey.NationalSociety.SmsGateway.SuccessfullyDeleted);
             }
             catch (ResultException exception)
             {
@@ -182,22 +183,6 @@ namespace RX.Nyss.Web.Features.SmsGateway
 
         public async Task UpdateAuthorizedApiKeys()
         {
-            var storageAccountConnectionString = _config.ConnectionStrings.SmsGatewayBlobContainer;
-            var smsGatewayBlobContainerName = _config.SmsGatewayBlobContainerName;
-            var authorizedApiKeysBlobObjectName = _config.AuthorizedApiKeysBlobObjectName;
-
-            if (string.IsNullOrWhiteSpace(smsGatewayBlobContainerName) ||
-                string.IsNullOrWhiteSpace(authorizedApiKeysBlobObjectName) ||
-                !CloudStorageAccount.TryParse(storageAccountConnectionString, out var storageAccount))
-            {
-                _loggerAdapter.Error("Unable to update authorized API keys. A configuration of a blob storage is not valid.");
-                throw new ResultException(ResultKey.UnexpectedError);
-            }
-
-            var cloudBlobClient = storageAccount.CreateCloudBlobClient();
-            var smsGatewayContainer = cloudBlobClient.GetContainerReference(smsGatewayBlobContainerName);
-            var authorizedApiKeysBlob = smsGatewayContainer.GetBlockBlobReference(authorizedApiKeysBlobObjectName);
-
             var authorizedApiKeys = await _nyssContext.GatewaySettings
                 .OrderBy(gs => gs.NationalSocietyId)
                 .ThenBy(gs => gs.Id)
@@ -205,8 +190,9 @@ namespace RX.Nyss.Web.Features.SmsGateway
                 .ToListAsync();
 
             var blobContentToUpload = string.Join(Environment.NewLine, authorizedApiKeys);
+            var authorizedApiKeysBlobObjectName = _config.AuthorizedApiKeysBlobObjectName;
 
-            await authorizedApiKeysBlob.UploadTextAsync(blobContentToUpload);
+            await _blobService.UpdateBlob(authorizedApiKeysBlobObjectName, blobContentToUpload);
         }
     }
 }
