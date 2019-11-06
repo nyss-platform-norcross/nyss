@@ -13,14 +13,14 @@ export const goToEdition = (nationalSocietyId, nationalSocietyUserId) => push(`/
 export const openList = {
   invoke: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_USERS_LIST.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USERS_LIST.REQUEST }),
-  success: () => ({ type: OPEN_NATIONAL_SOCIETY_USERS_LIST.SUCCESS }),
+  success: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_USERS_LIST.SUCCESS, nationalSocietyId }),
   failure: (message) => ({ type: OPEN_NATIONAL_SOCIETY_USERS_LIST.FAILURE, message })
 };
 
 export const getList = {
   invoke: (nationalSocietyId) => ({ type: GET_NATIONAL_SOCIETY_USERS.INVOKE, nationalSocietyId }),
   request: () => ({ type: GET_NATIONAL_SOCIETY_USERS.REQUEST }),
-  success: (list) => ({ type: GET_NATIONAL_SOCIETY_USERS.SUCCESS, list }),
+  success: (nationalSocietyId, list) => ({ type: GET_NATIONAL_SOCIETY_USERS.SUCCESS, nationalSocietyId, list }),
   failure: (message) => ({ type: GET_NATIONAL_SOCIETY_USERS.FAILURE, message })
 };
 

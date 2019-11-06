@@ -6,13 +6,13 @@ import { LOCATION_CHANGE } from "connected-react-router";
 export function nationalSocietyUsersReducer(state = initialState.nationalSocietyUsers, action) {
   switch (action.type) {
     case LOCATION_CHANGE: // cleanup
-      return { ...state, formData: null }
+      return { ...state, formData: null, formError: null }
 
     case actions.GET_NATIONAL_SOCIETY_USERS.REQUEST:
       return { ...state, listFetching: true, listData: [] };
 
     case actions.GET_NATIONAL_SOCIETY_USERS.SUCCESS:
-      return { ...state, listFetching: false, listData: action.list, listStale: false };
+      return { ...state, listFetching: false, listData: action.list, listStale: false, listNationalSocietyId: action.nationalSocietyId };
 
     case actions.GET_NATIONAL_SOCIETY_USERS.FAILURE:
       return { ...state, listFetching: false, listData: [] };

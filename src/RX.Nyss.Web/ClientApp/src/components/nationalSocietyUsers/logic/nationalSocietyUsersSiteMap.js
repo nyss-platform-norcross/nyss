@@ -7,6 +7,7 @@ export const nationalSocietyUsersSiteMap = [
     path: "/nationalsocieties/:nationalSocietyId/users",
     title: "Users",
     placeholder: placeholders.leftMenu,
+    placeholderIndex: 2,
     access: accessMap.nationalSocietyUsers.list
   },
   {

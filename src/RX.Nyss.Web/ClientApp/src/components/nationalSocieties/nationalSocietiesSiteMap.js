@@ -28,6 +28,7 @@ export const nationalSocietiesSiteMap = [
     title: () => strings(stringKeys.nationalSociety.dashboard.title),
     access: [Administrator, GlobalCoordinator, DataConsumer],
     placeholder: placeholders.leftMenu,
+    placeholderIndex: 1,
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/overview",
@@ -40,6 +41,7 @@ export const nationalSocietiesSiteMap = [
     path: "/nationalsocieties/:nationalSocietyId/overview",
     title: () => strings(stringKeys.nationalSociety.overview.title),
     placeholder: placeholders.leftMenu,
+    placeholderIndex: 4,
     access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
   }
 ];

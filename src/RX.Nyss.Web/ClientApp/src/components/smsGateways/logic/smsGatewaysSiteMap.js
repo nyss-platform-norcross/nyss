@@ -8,7 +8,8 @@ export const smsGatewaysSiteMap = [
     path: "/nationalsocieties/:nationalSocietyId/smsgateways",
     title: () => strings(stringKeys.smsGateway.title),
     placeholder: placeholders.leftMenu,
-    access: accessMap.smsGateways.list
+    access: accessMap.smsGateways.list,
+    placeholderIndex: 3
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/smsgateways",
