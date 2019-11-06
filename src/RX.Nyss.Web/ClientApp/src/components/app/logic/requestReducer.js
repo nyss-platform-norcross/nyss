@@ -1,5 +1,6 @@
 import { initialState } from "../../../initialState";
 import { CLOSE_MESSAGE } from "./appConstans";
+import { LOCATION_CHANGE } from "connected-react-router";
 
 const getActionType = (type) => {
   const parts = type.split("_");
@@ -13,6 +14,13 @@ const getActionName = (type) => {
 
 export function requestReducer(state = initialState.requests, action) {
   if (action.type === CLOSE_MESSAGE.INVOKE) {
+    return {
+      ...state,
+      errorMessage: null
+    }
+  }
+
+  if (action.type === LOCATION_CHANGE) {
     return {
       ...state,
       errorMessage: null

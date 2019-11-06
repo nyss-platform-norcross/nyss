@@ -66,8 +66,10 @@ export const initialState = {
     listRemoving: {},
     listStale: true,
     listData: [],
+    listNationalSocietyId: null,
     formFetching: false,
     formSaving: false,
-    formData: null
+    formData: null,
+    formError: null
   }
 };

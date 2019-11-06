@@ -7,7 +7,8 @@ export function appReducer(state = initialState.appData, action) {
     case LOCATION_CHANGE:
       return {
         ...state,
-        moduleError: null
+        moduleError: null,
+        message: null
       };
 
     case actions.SWITCH_STRINGS:

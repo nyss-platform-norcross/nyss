@@ -20,7 +20,10 @@ function* openNationalSocietyUsersList({ nationalSocietyId }) {
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
 
-    if (yield select(state => state.nationalSocietyUsers.listStale)) {
+    const isListStale = yield select(state => state.nationalSocietyUsers.listStale);
+    const lastNationalSocietyId = yield select(state => state.nationalSocietyUsers.listNationalSocietyId);
+
+    if (isListStale || lastNationalSocietyId !== nationalSocietyId) {
       yield call(getNationalSocietyUsers, nationalSocietyId);
     }
 
@@ -89,7 +92,7 @@ function* getNationalSocietyUsers(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
     const response = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/user/list`);
-    yield put(actions.getList.success(response.value));
+    yield put(actions.getList.success(nationalSocietyId, response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }
