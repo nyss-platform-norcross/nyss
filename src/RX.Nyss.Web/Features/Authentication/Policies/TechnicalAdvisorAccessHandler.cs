@@ -1,11 +1,9 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.User;
-using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
@@ -33,7 +31,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
             }
 
             var technicalAdvisorNationalSocieties = await _userService.GetUserNationalSocietyIds<TechnicalAdvisorUser>(technicalAdvisorId.Value);
-            var roles = context.User.Claims.Where(x => x.Type == ClaimTypes.Role).Select(x => x.Value);
+            var roles = context.User.GetRoles();
             var identityName = context.User.Identity.Name;
 
             if (await _userService.GetUserHasAccessToAnyOfResourceNationalSocieties(technicalAdvisorNationalSocieties, identityName, roles))
