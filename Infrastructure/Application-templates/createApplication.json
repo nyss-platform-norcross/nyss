@@ -69,7 +69,9 @@
         "defaultSASKeyName": "RootManageSharedAccessKey",
         "defaultAuthRuleResourceId": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespaceName'), variables('defaultSASKeyName'))]",
         "sbVersion": "2017-04-01",
-        "storageAccountName": "[concat(replace(variables('funcapp_name'),'-',''),'st')]",
+        "funcStorageAccountName": "[concat(replace(variables('funcapp_name'),'-',''),'st')]",
+        "generalStorageAccountName": "[concat(replace(parameters('base_name'),'-',''),'st')]",
+        "generalBlobContainerName": "nyss-blob-container",
         "smsGatewayBlobContainerName": "sms-gateway",
         "authorizedApiKeysBlobObjectName": "authorized-api-keys.txt"
     },
@@ -128,6 +130,10 @@
                         {
                             "name": "SmsGatewayBlobContainerName",
                             "value": "[variables('smsGatewayBlobContainerName')]"
+                        },
+                        {
+                            "name": "GeneralBlobContainerName",
+                            "value": "[variables('generalBlobContainerName')]"
                         },
                         {
                             "name": "AuthorizedApiKeysBlobObjectName",
@@ -233,7 +239,7 @@
         },
         {
             "type": "Microsoft.Storage/storageAccounts",
-            "name": "[variables('storageAccountName')]",
+            "name": "[variables('funcStorageAccountName')]",
             "apiVersion": "2018-07-01",
             "location": "[resourceGroup().location]",
             "kind": "[parameters('storageKind')]",
@@ -254,7 +260,35 @@
                     "type": "blobServices/containers",
                     "apiVersion": "2018-07-01",
                     "dependsOn": [
-                        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+                        "[concat('Microsoft.Storage/storageAccounts/', variables('funcStorageAccountName'))]"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[variables('generalStorageAccountName')]",
+            "apiVersion": "2018-07-01",
+            "location": "[resourceGroup().location]",
+            "kind": "[parameters('storageKind')]",
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "tags": "[parameters('tagValues')]",
+            "properties": {
+                "accessTier": "[parameters('storageAccessTier')]",
+                "supportsHttpsTrafficOnly": true,
+                "networkAcls": {
+                    "bypass": "AzureServices"
+                }
+            },
+            "resources": [
+                {
+                    "name": "[concat('default/', variables('generalBlobContainerName'))]",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2018-07-01",
+                    "dependsOn": [
+                        "[concat('Microsoft.Storage/storageAccounts/', variables('generalStorageAccountName'))]"
                     ]
                 }
             ]
@@ -301,7 +335,8 @@
                 }
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName'))]",
                 "[resourceId('Microsoft.Web/serverfarms', variables('funcAppPlanName'))]",
                 "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
             ],
@@ -312,12 +347,13 @@
                     "type": "config",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/sites', variables('funcapp_name'))]",
-                        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName'))]",
+                        "[resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName'))]"
                     ],
                     "properties": {
-                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]",
-                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]",
-                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2015-05-01-preview').key1,';')]",
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+                        "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+                        "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
                         "WEBSITE_CONTENTSHARE": "rxcbsfuncapp01",
                         "FUNCTIONS_EXTENSION_VERSION": "~2",
                         "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('funcapp_name')), '2015-05-01').InstrumentationKey]",
