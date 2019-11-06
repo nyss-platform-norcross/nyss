@@ -428,7 +428,9 @@ namespace RX.Nyss.Data.Migrations
                     IsDataOwner = table.Column<bool>(nullable: true),
                     HasConsented = table.Column<bool>(nullable: true),
                     ConsentedAt = table.Column<DateTime>(nullable: true),
+                    NationalSocietyId = table.Column<int>(nullable: true),
                     Sex = table.Column<string>(maxLength: 20, nullable: true),
+                    SupervisorUser_NationalSocietyId = table.Column<int>(nullable: true),
                     VillageId = table.Column<int>(nullable: true),
                     ZoneId = table.Column<int>(nullable: true),
                     DataManagerUserId = table.Column<int>(nullable: true)
@@ -437,10 +439,24 @@ namespace RX.Nyss.Data.Migrations
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Users_NationalSocieties_NationalSocietyId",
+                        column: x => x.NationalSocietyId,
+                        principalSchema: "nyss",
+                        principalTable: "NationalSocieties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Users_Users_DataManagerUserId",
                         column: x => x.DataManagerUserId,
                         principalSchema: "nyss",
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Users_NationalSocieties_SupervisorUser_NationalSocietyId",
+                        column: x => x.SupervisorUser_NationalSocietyId,
+                        principalSchema: "nyss",
+                        principalTable: "NationalSocieties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -850,10 +866,22 @@ namespace RX.Nyss.Data.Migrations
                 column: "NationalSocietyId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_NationalSocietyId",
+                schema: "nyss",
+                table: "Users",
+                column: "NationalSocietyId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_DataManagerUserId",
                 schema: "nyss",
                 table: "Users",
                 column: "DataManagerUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_SupervisorUser_NationalSocietyId",
+                schema: "nyss",
+                table: "Users",
+                column: "SupervisorUser_NationalSocietyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_VillageId",
