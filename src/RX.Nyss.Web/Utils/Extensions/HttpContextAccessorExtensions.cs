@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace RX.Nyss.Web.Features.Authentication.Policies
+namespace RX.Nyss.Web.Utils.Extensions
 {
-    public static class ContextAccessorExtensions
+    public static class HttpContextAccessorExtensions
     {
         public static int? GetRouteParameterAsInt(this IHttpContextAccessor httpContextAccessor, string routeParameterName)
         {
