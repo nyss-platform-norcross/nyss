@@ -21,9 +21,10 @@ function* initApplication() {
     const user = yield call(getAndVerifyUser);
 
     if (user) {
-      yield call(getStrings);
       yield call(getAppData);
     }
+
+    yield call(getStrings, user ? user.languageCode : "en");
 
     yield put(actions.initApplication.success());
   } catch (error) {
@@ -68,7 +69,11 @@ function* getUserStatus() {
     const status = yield call(http.get, "/api/authentication/status");
 
     const user = status.value.isAuthenticated
-      ? { name: status.value.data.name, roles: status.value.data.roles }
+      ? {
+        name: status.value.data.name,
+        roles: status.value.data.roles,
+        languageCode: status.value.data.languageCode
+      }
       : null;
 
     yield put(actions.getUser.success(status.value.isAuthenticated, user));
@@ -81,18 +86,18 @@ function* getUserStatus() {
 function* getAppData() {
   yield put(actions.getAppData.request());
   try {
-    const appData = yield call(http.get, "/api/appData/get");
+    const appData = yield call(http.get, "/api/appData/getAppData");
     yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries));
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }
 };
 
-function* getStrings() {
+function* getStrings(languageCode) {
   yield put(actions.getStrings.invoke());
   try {
-    // api call
-    updateStrings({});
+    const response = yield call(http.get, `/api/appData/getStrings/${languageCode}`, true);
+    updateStrings(response.value);
     yield put(actions.getStrings.success());
   } catch (error) {
     yield put(actions.getStrings.failure(error.message));

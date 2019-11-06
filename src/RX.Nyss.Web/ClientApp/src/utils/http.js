@@ -14,8 +14,8 @@ export const post = (path, data, anonymous) => {
     });
 }
 
-export const get = (path) => {
-  return callApi(path, "GET", undefined, {}, true)
+export const get = (path, anonymous) => {
+  return callApi(path, "GET", undefined, {}, !anonymous)
     .then(response => {
       ensureResponseIsSuccess(response);
       return response;

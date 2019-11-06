@@ -18,8 +18,8 @@ namespace RX.Nyss.Web.Features.Authentication
         }
 
         [Route("status"), HttpGet, AllowAnonymous]
-        public Result<StatusResponseDto> Status() =>
-            _authenticationService.GetStatus(User);
+        public async Task<Result<StatusResponseDto>> Status() =>
+            await _authenticationService.GetStatus(User);
 
         [Route("login"), HttpPost, AllowAnonymous]
         public async Task<Result<LoginResponseDto>> Login([FromBody]LoginRequestDto dto) =>

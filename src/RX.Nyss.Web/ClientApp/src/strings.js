@@ -1,5 +1,4 @@
 let stringList = {
-  "login.signIn": "Log innnn",
   "login.password": "Password",
   "login.forgotPassword": "Forgot password?",
   "login.notSucceeded": "Invalid user name or password",
@@ -26,6 +25,7 @@ let stringList = {
   "healthRisk.type.nonhuman": "Non-human",
   "healthRisk.type.unusualevent": "Unusual event",
   "healthRisk.type.activity": "Activity",
+  "user.resetPassword.failed": "Password reset failed"
 };
 
 export const stringKeys = {
@@ -54,7 +54,8 @@ export const stringKeys = {
       emailAddress: "user.resetPassword.emailAddress",
       submit: "user.resetPassword.submit",
       enterNewPassword: "user.resetPassword.enterNewPassword",
-      notFound: "user.resetPassword.notFound"
+      notFound: "user.resetPassword.notFound",
+      failed: "user.resetPassword.failed"
     }
   }
 };

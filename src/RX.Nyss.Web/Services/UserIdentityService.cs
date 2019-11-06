@@ -63,7 +63,7 @@ namespace RX.Nyss.Web.Services
         {
             var key = Encoding.ASCII.GetBytes(_config.Authentication.Secret);
 
-            var nameClaims = new[] { new Claim(ClaimTypes.Name, userName) };
+            var nameClaims = new[] { new Claim(ClaimTypes.Name, userName), new Claim(ClaimTypes.Email, userName) };
             var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role));
 
             var securityKey = new SymmetricSecurityKey(key);
