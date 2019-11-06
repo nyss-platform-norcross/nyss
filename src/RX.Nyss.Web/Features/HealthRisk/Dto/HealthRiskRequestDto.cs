@@ -4,7 +4,7 @@ using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.HealthRisk.Dto
 {
-    public class CreateHealthRiskRequestDto
+    public class HealthRiskRequestDto
     {
         public int HealthRiskCode { get; set; }
 
@@ -16,9 +16,9 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
 
         public int? AlertRuleMetersThreshold { get; set; }
 
-        public List<HealthRiskLanguageContentDto> LanguageContent { get; set; }
+        public IEnumerable<HealthRiskLanguageContentDto> LanguageContent { get; set; }
 
-        public class Validator : AbstractValidator<CreateHealthRiskRequestDto>
+        public class Validator : AbstractValidator<HealthRiskRequestDto>
         {
             public Validator()
             {

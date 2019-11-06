@@ -19,7 +19,6 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
     {
         private readonly IHealthRiskService _healthRiskService;
         private readonly INyssContext _nyssContextMock;
-        private readonly ILoggerAdapter _loggerAdapterMock;
         private const string UserName = "admin@domain.com";
         private const string HealthRiskName = "AWD";
         private const int HealthRiskId = 1;
@@ -38,8 +37,8 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         {
             // Arrange
             _nyssContextMock = Substitute.For<INyssContext>();
-            _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _healthRiskService = new HealthRiskService(_nyssContextMock, _loggerAdapterMock);
+            var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
+            _healthRiskService = new HealthRiskService(_nyssContextMock, loggerAdapterMock);
 
             var users = new List<User>
             {
@@ -118,7 +117,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task CreateHealthRisk_WhenSuccessful_ShouldReturnSuccess()
         {
             // Arrange
-            var createHealthRiskDto = new CreateHealthRiskRequestDto
+            var healthRiskDto = new HealthRiskRequestDto
             {
                 HealthRiskCode = 2,
                 HealthRiskType = HealthRiskType,
@@ -145,7 +144,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task CreateHealthRisk_WhenHealthRiskNumberAlreadyExists_ShouldReturnError()
         {
             // Arrange
-            var createHealthRiskDto = new CreateHealthRiskRequestDto
+            var healthRiskDto = new HealthRiskRequestDto
             {
                 HealthRiskCode = HealthRiskCode,
                 HealthRiskType = HealthRiskType,
@@ -162,7 +161,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             };
 
             // Act
-            var result = await _healthRiskService.CreateHealthRisk(createHealthRiskDto);
+            var result = await _healthRiskService.CreateHealthRisk(healthRiskDto);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -192,16 +191,13 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         }
 
         [Fact]
-        public async Task EditHealthRisk_WhenHealthRiskDoesntExist_ShouldReturnError()
+        public async Task EditHealthRisk_WhenHealthRiskDoesNotExist_ShouldReturnError()
         {
             // Arrange
-            var editHealthRisk = new EditHealthRiskRequestDto
-            {
-                Id = 2
-            };
+            var healthRiskDto = new HealthRiskRequestDto();
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(editHealthRisk);
+            var result = await _healthRiskService.EditHealthRisk(2, healthRiskDto);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -212,9 +208,8 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task EditHealthRisk_WhenSuccess_ShouldReturnSuccess()
         {
             // Arrange
-            var editHealthRisk = new EditHealthRiskRequestDto
+            var healthRiskDto = new HealthRiskRequestDto
             {
-                Id = HealthRiskId,
                 HealthRiskCode = HealthRiskCode,
                 HealthRiskType = HealthRiskType,
                 AlertRuleCountThreshold = AlertRuleCountThreshold,
@@ -233,7 +228,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             };
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(editHealthRisk);
+            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskDto);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();

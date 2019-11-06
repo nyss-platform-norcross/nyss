@@ -73,13 +73,12 @@ function* editSmsGateway({ nationalSocietyId, data }) {
   }
 };
 
-function* removeSmsGateway({ smsGatewayId }) {
+function* removeSmsGateway({ nationalSocietyId, smsGatewayId }) {
   yield put(actions.remove.request(smsGatewayId));
   try {
-    const smsGateway = yield call(http.get, `/api/smsGateway/${smsGatewayId}/get`);
     yield call(http.post, `/api/smsGateway/${smsGatewayId}/remove`);
     yield put(actions.remove.success(smsGatewayId));
-    yield call(getSmsGateways, smsGateway.value.nationalSocietyId);
+    yield call(getSmsGateways, nationalSocietyId);
   } catch (error) {
     yield put(actions.remove.failure(smsGatewayId, error.message));
   }

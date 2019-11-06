@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<Result<IEnumerable<HealthRiskResponseDto>>> GetHealthRisks(string userName)
+        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> GetHealthRisks(string userName)
         {
             var languageCode = await _nyssContext.Users
                 .Where(u => u.EmailAddress == userName)
@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
             return Success<IEnumerable<HealthRiskResponseDto>>(healthRisks);
         }
 
-        public async Task<Result<GetHealthRiskResponseDto>> GetHealthRisk(int id)
+        public async Task<Result<HealthRiskResponseDto>> GetHealthRisk(int id)
         {
             var healthRiskResponse = await _nyssContext.HealthRisks
                 .Where(healthRisk => healthRisk.Id == id)
@@ -65,7 +65,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
                     HealthRiskCode = healthRisk.HealthRiskCode,
                     HealthRiskType = healthRisk.HealthRiskType,
                     AlertRuleCountThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.CountThreshold : (int?) null,
-                    AlertRuleDaysThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.HoursThreshold / 24 : null,
+                    AlertRuleDaysThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.HoursThreshold : null,
                     AlertRuleMetersThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.MetersThreshold : null,
                     LanguageContent = healthRisk.LanguageContents.Select(lc => new HealthRiskLanguageContentDto
                     {
@@ -109,7 +109,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
                     ? new AlertRule
                     {
                         CountThreshold = createDto.AlertRuleCountThreshold.Value,
-                        HoursThreshold = createDto.AlertRuleDaysThreshold * 24,
+                        HoursThreshold = createDto.AlertRuleDaysThreshold,
                         MetersThreshold = createDto.AlertRuleMetersThreshold
                     }
                     : null
@@ -144,7 +144,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
             {
                 healthRisk.AlertRule ??= new AlertRule();
                 healthRisk.AlertRule.CountThreshold = editDto.AlertRuleCountThreshold.Value;
-                healthRisk.AlertRule.HoursThreshold = editDto.AlertRuleDaysThreshold * 24;
+                healthRisk.AlertRule.HoursThreshold = editDto.AlertRuleDaysThreshold;
                 healthRisk.AlertRule.MetersThreshold = editDto.AlertRuleMetersThreshold;
             }
             else

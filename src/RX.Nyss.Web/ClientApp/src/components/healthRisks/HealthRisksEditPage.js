@@ -33,7 +33,6 @@ const HealthRisksEditPageComponent = (props) => {
     }
 
     let fields = {
-      id: props.data.id,
       healthRiskCode: props.data.healthRiskCode.toString(),
       healthRiskType: props.data.healthRiskType,
       alertRuleCountThreshold: props.data.alertRuleCountThreshold,
@@ -83,7 +82,7 @@ const HealthRisksEditPageComponent = (props) => {
       return;
     };
 
-    props.edit(getSaveFormModel(form.getValues(), props.contentLanguages));
+    props.edit(props.data.id, getSaveFormModel(form.getValues(), props.contentLanguages));
   };
 
   if (props.isFetching || !form) {

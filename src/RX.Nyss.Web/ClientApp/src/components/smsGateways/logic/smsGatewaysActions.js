@@ -53,7 +53,7 @@ export const edit = {
 };
 
 export const remove = {
-  invoke: (smsGatewayId) => ({ type: REMOVE_SMS_GATEWAY.INVOKE, smsGatewayId }),
+  invoke: (nationalSocietyId, smsGatewayId) => ({ type: REMOVE_SMS_GATEWAY.INVOKE, nationalSocietyId, smsGatewayId }),
   request: (id) => ({ type: REMOVE_SMS_GATEWAY.REQUEST, id }),
   success: (id) => ({ type: REMOVE_SMS_GATEWAY.SUCCESS, id }),
   failure: (id, message) => ({ type: REMOVE_SMS_GATEWAY.FAILURE, id, message })

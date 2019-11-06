@@ -57,10 +57,10 @@ function* createHealthRisk({ data }) {
   }
 };
 
-function* editHealthRisk({ data }) {
+function* editHealthRisk({ id, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/healthrisk/${data.id}/edit`, data);
+    const response = yield call(http.post, `/api/healthrisk/${id}/edit`, data);
     http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList());
