@@ -783,6 +783,11 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<bool>("IsDataOwner")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("NationalSocietyId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("NationalSocietyId");
+
                     b.HasDiscriminator().HasValue("DataManager");
                 });
 
@@ -800,6 +805,10 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int?>("DataManagerUserId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("NationalSocietyId")
+                        .HasColumnName("SupervisorUser_NationalSocietyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Sex")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
@@ -812,6 +821,8 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("int");
 
                     b.HasIndex("DataManagerUserId");
+
+                    b.HasIndex("NationalSocietyId");
 
                     b.HasIndex("VillageId");
 
@@ -1160,11 +1171,24 @@ namespace RX.Nyss.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.DataManagerUser", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
+                        .WithMany()
+                        .HasForeignKey("NationalSocietyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUser", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.DataManagerUser", "DataManagerUser")
                         .WithMany()
                         .HasForeignKey("DataManagerUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
+                        .WithMany()
+                        .HasForeignKey("NationalSocietyId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.Village", "Village")
