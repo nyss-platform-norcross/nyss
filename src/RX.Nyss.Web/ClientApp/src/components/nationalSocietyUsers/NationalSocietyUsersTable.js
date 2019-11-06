@@ -22,6 +22,10 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
       <TableHead>
         <TableRow>
           <TableCell>Name</TableCell>
+          <TableCell>Email</TableCell>
+          <TableCell>Phone number</TableCell>
+          <TableCell>Role</TableCell>
+          <TableCell>Project</TableCell>
           <TableCell style={{ width: "16%" }} />
         </TableRow>
       </TableHead>
@@ -29,6 +33,10 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
         {list.map(row => (
           <TableRow key={row.id} hover onClick={() => goToEdition(nationalSocietyId, row.id)} className={styles.clickableRow}>
             <TableCell>{row.name}</TableCell>
+            <TableCell>{row.email}</TableCell>
+            <TableCell>{row.phoneNumber}</TableCell>
+            <TableCell>{strings(`role.${row.role.toLowerCase()}`)}</TableCell>
+            <TableCell>{row.project}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
               <TableRowAction onClick={() => remove(row.id, row.role)} confirmationText="Confirm removing the item" icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />

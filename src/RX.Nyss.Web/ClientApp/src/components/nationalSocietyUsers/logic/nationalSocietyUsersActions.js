@@ -39,7 +39,7 @@ export const create = {
 };
 
 export const openEdition = {
-  invoke: (nationalSocietyUserId) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.INVOKE, nationalSocietyUserId }),
+  invoke: (nationalSocietyUserId, role) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.INVOKE, nationalSocietyUserId, role }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.REQUEST }),
   success: (data) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS, data }),
   failure: (message) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.FAILURE, message })

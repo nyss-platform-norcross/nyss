@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.TechnicalAdvisor.Dto
+﻿using RX.Nyss.Data.Concepts;
+
+namespace RX.Nyss.Web.Features.TechnicalAdvisor.Dto
 {
     public class GetTechnicalAdvisorResponseDto
     {
@@ -8,5 +10,6 @@
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public string Organization { get; set; }
+        public Role Role { get; set; }
     }
 }

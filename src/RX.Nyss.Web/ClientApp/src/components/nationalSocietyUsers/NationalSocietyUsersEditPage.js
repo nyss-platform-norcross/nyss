@@ -9,14 +9,10 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SelectInput from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
-import { nationalSocietyUserTypes } from "./logic/nationalSocietyUserTypes";
 import { useMount } from '../../utils/lifecycle';
-import { strings } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 
 const NationalSocietyUsersEditPageComponent = (props) => {
@@ -33,15 +29,18 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
     const fields = {
       id: props.data.id,
+      role: props.data.role,
       name: props.data.name,
-      apiKey: props.data.apiKey,
-      gatewayType: props.data.gatewayType.toString()
+      phoneNumber: props.data.phoneNumber,
+      additionalPhoneNumber: props.data.additionalPhoneNumber,
+      organization: props.data.organization
     };
 
     const validation = {
-      name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      gatewayType: [validators.required]
+      name: [validators.required, validators.maxLength(100)],
+      phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
+      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
+      organization: [validators.maxLength(100)]
     };
 
     setForm(createForm(fields, validation));
@@ -54,13 +53,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       return;
     };
 
-    const values = form.getValues();
-    props.edit(props.nationalSocietyId, {
-      id: values.id,
-      name: values.name,
-      apiKey: values.apiKey,
-      gatewayType: values.gatewayType
-    });
+    props.edit(props.nationalSocietyId, form.getValues());
   };
 
   if (props.isFetching || !form) {
@@ -79,6 +72,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
+
           <Grid item xs={12}>
             <TextInputField
               label="Name"
@@ -89,26 +83,26 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="API key"
-              name="apiKey"
-              field={form.fields.apiKey}
+              label="Phone number"
+              name="phoneNumber"
+              field={form.fields.phoneNumber}
             />
           </Grid>
 
           <Grid item xs={12}>
-            <SelectInput
-              label="Gateway type"
-              name="gatewayType"
-              field={form.fields.gatewayType}
-            >
-              {nationalSocietyUserTypes.map(type => (
-                <MenuItem
-                  key={`gatewayType${type}`}
-                  value={type}>
-                  {strings(`nationalSocietyUser.type.${type.toLowerCase()}`)}
-                </MenuItem>
-              ))}
-            </SelectInput>
+            <TextInputField
+              label="Additional phone number (optional)"
+              name="additionalPhoneNumber"
+              field={form.fields.additionalPhoneNumber}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label="Organization"
+              name="organization"
+              field={form.fields.organization}
+            />
           </Grid>
         </Grid>
 

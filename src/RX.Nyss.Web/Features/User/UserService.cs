@@ -6,6 +6,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils.DataContract;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.User
 {
@@ -14,6 +15,7 @@ namespace RX.Nyss.Web.Features.User
         Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId);
         Task<bool> GetUserHasAccessToAnyOfResourceNationalSocieties(List<int> resourceNationalSocietyIds, string identityName, IEnumerable<string> roles);
         Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
+        Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
     }
 
     public class UserService : IUserService
@@ -46,6 +48,21 @@ namespace RX.Nyss.Web.Features.User
 
             return new Result<List<GetNationalSocietyUsersResponseDto>>(users, true);
         }
+
+        public async Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId)
+        {
+            var user = await _dataContext.Users
+                .Where(u => u.Id == nationalSocietyUserId)
+                .Select(u => new NationalSocietyUsersBasicDataResponseDto
+                {
+                    Email = u.EmailAddress,
+                    Role = u.Role
+                })
+                .SingleOrDefaultAsync();
+
+            return Success(user);
+        }
+
 
         public async Task<bool> GetUserHasAccessToAnyOfResourceNationalSocieties(List<int> resourceNationalSocietyIds, string identityName, IEnumerable<string> roles)
         {

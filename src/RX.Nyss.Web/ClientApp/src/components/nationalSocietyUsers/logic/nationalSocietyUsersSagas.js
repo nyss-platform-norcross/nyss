@@ -40,11 +40,12 @@ function* openNationalSocietyUserCreation({ nationalSocietyId }) {
   }
 };
 
-function* openNationalSocietyUserEdition({ nationalSocietyUserId }) {
+function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/nationalSocietyUser/${nationalSocietyUserId}/get`);
-    yield openNationalSocietyUsersModule(response.value.nationalSocietyId);
+    const user = yield call(http.get, `/api/nationalSociety/user/${nationalSocietyUserId}/basicData`);
+    const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, user.value.role));
+    yield openNationalSocietyUsersModule(yield select(state => state.appData.route.params.nationalSocietyId));
     yield put(actions.openEdition.success(response.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
@@ -66,7 +67,7 @@ function* createNationalSocietyUser({ nationalSocietyId, data }) {
 function* editNationalSocietyUser({ nationalSocietyId, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyUser/${data.id}/edit`, data);
+    const response = yield call(http.post, getSpecificRoleUserEditionUrl(data.id, data.role), data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
   } catch (error) {
@@ -94,17 +95,6 @@ function* getNationalSocietyUsers(nationalSocietyId) {
   }
 };
 
-function getSpecificRoleUserRemovalUrl(userId, role) {
-  switch (role) {
-    case roles.TechnicalAdvisor:
-        return `/api/nationalSociety/technicalAdvisor/${userId}/remove`;
-    case roles.DataManager:
-        return `/api/nationalSociety/dataManager/${userId}/remove`;
-    case roles.DataConsumer:
-        return `/api/nationalSociety/dataConsumer/${userId}/remove`;
-  }
-};
-
 function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
@@ -113,6 +103,39 @@ function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
         return `/api/nationalSociety/${nationalSocietyId}/dataManager/create`;
     case roles.DataConsumer:
         return `/api/nationalSociety/${nationalSocietyId}/dataConsumer/create`;
+  }
+};
+
+function getSpecificRoleUserEditionUrl(userId, role) {
+  switch (role) {
+    case roles.TechnicalAdvisor:
+        return `/api/nationalSociety/technicalAdvisor/${userId}/edit`;
+    case roles.DataManager:
+        return `/api/nationalSociety/dataManager/${userId}/edit`;
+    case roles.DataConsumer:
+        return `/api/nationalSociety/dataConsumer/${userId}/edit`;
+  }
+};
+
+function getSpecificRoleUserRetrievalUrl(userId, role) {
+  switch (role) {
+    case roles.TechnicalAdvisor:
+        return `/api/nationalSociety/technicalAdvisor/${userId}/get`;
+    case roles.DataManager:
+        return `/api/nationalSociety/dataManager/${userId}/get`;
+    case roles.DataConsumer:
+        return `/api/nationalSociety/dataConsumer/${userId}/get`;
+  }
+};
+
+function getSpecificRoleUserRemovalUrl(userId, role) {
+  switch (role) {
+    case roles.TechnicalAdvisor:
+        return `/api/nationalSociety/technicalAdvisor/${userId}/remove`;
+    case roles.DataManager:
+        return `/api/nationalSociety/dataManager/${userId}/remove`;
+    case roles.DataConsumer:
+        return `/api/nationalSociety/dataConsumer/${userId}/remove`;
   }
 };
 

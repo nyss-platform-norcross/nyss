@@ -13,7 +13,6 @@ import SelectInput from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
-import { nationalSocietyUserTypes } from "./logic/nationalSocietyUserTypes";
 import { useMount } from '../../utils/lifecycle';
 import { strings } from '../../strings';
 import Grid from '@material-ui/core/Grid';
@@ -37,7 +36,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       email: [validators.required, validators.email, validators.maxLength(100)],
       phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
-      organization: [validators.maxLength(100)]
+      organization: [validators.requiredWhen(f => f.role === roles.TechnicalAdvisor), validators.maxLength(100)]
     };
 
     return createForm(fields, validation);

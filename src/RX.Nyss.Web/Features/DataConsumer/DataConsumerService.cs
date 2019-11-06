@@ -11,13 +11,14 @@ using RX.Nyss.Web.Features.DataConsumer.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.DataConsumer
 {
     public interface IDataConsumerService
     {
         Task<Result> CreateDataConsumer(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
-        Task<Result> GetDataConsumer(int dataConsumerId);
+        Task<Result<GetDataConsumerResponseDto>> GetDataConsumer(int dataConsumerId);
         Task<Result> UpdateDataConsumer(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
         Task<Result> DeleteDataConsumer(int dataConsumerId);
     }
@@ -55,7 +56,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
                     transactionScope.Complete();
                 }
                 await _verificationEmailService.SendVerificationEmail(createDataConsumerRequestDto.Email, createDataConsumerRequestDto.Name, securityStamp);
-                return Result.Success(ResultKey.User.Registration.Success);
+                return Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
             {
@@ -66,11 +67,16 @@ namespace RX.Nyss.Web.Features.DataConsumer
 
         private async Task CreateDataConsumerUser(IdentityUser identityUser, int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyId);
+            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+
             if (nationalSociety == null)
             {
                 throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
             }
+
+            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
 
             var user = new DataConsumerUser
             {
@@ -79,7 +85,8 @@ namespace RX.Nyss.Web.Features.DataConsumer
                 Name = createDataConsumerRequestDto.Name,
                 PhoneNumber = createDataConsumerRequestDto.PhoneNumber,
                 AdditionalPhoneNumber = createDataConsumerRequestDto.AdditionalPhoneNumber,
-                Organization = createDataConsumerRequestDto.Organization
+                Organization = createDataConsumerRequestDto.Organization,
+                ApplicationLanguage = defaultUserApplicationLanguage,
             };
 
             var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
@@ -95,15 +102,16 @@ namespace RX.Nyss.Web.Features.DataConsumer
                 User = user
             };
 
-        public async Task<Result> GetDataConsumer(int nationalSocietyUserId)
+        public async Task<Result<GetDataConsumerResponseDto>> GetDataConsumer(int nationalSocietyUserId)
         {
             var dataConsumer = await _dataContext.Users
                 .OfType<DataConsumerUser>()
                 .Where(u => u.Id == nationalSocietyUserId)
-                .Select(u => new GetDataConsumerResponseDto()
+                .Select(u => new GetDataConsumerResponseDto
                 {
                     Id = u.Id,
                     Name = u.Name,
+                    Role = u.Role,
                     Email = u.EmailAddress,
                     PhoneNumber = u.PhoneNumber,
                     AdditionalPhoneNumber = u.AdditionalPhoneNumber,
@@ -114,7 +122,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
             if (dataConsumer == null)
             {
                 _loggerAdapter.Debug($"Data consumer with id {nationalSocietyUserId} was not found");
-                return Result.Error(ResultKey.User.Common.UserNotFound);
+                return Error<GetDataConsumerResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
             return new Result<GetDataConsumerResponseDto>(dataConsumer, true);
@@ -131,7 +139,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
                 user.Organization = editDataConsumerRequestDto.Organization;
 
                 await _dataContext.SaveChangesAsync();
-                return Result.Success();
+                return Success();
             }
             catch (ResultException e)
             {
