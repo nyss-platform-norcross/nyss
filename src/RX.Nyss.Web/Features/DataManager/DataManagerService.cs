@@ -11,13 +11,14 @@ using RX.Nyss.Web.Features.DataManager.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.DataManager
 {
     public interface IDataManagerService
     {
         Task<Result> CreateDataManager(int nationalSocietyId, CreateDataManagerRequestDto createDataManagerRequestDto);
-        Task<Result> GetDataManager(int dataManagerId);
+        Task<Result<GetDataManagerResponseDto>> GetDataManager(int dataManagerId);
         Task<Result> UpdateDataManager(int dataManagerId, EditDataManagerRequestDto editDataManagerRequestDto); 
         Task<Result> DeleteDataManager(int dataManagerId);
     }
@@ -54,7 +55,7 @@ namespace RX.Nyss.Web.Features.DataManager
                     transactionScope.Complete();
                 }
                 await _verificationEmailService.SendVerificationEmail(createDataManagerRequestDto.Email, createDataManagerRequestDto.Name, securityStamp);
-                return Result.Success(ResultKey.User.Registration.Success);
+                return Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
             {
@@ -65,11 +66,16 @@ namespace RX.Nyss.Web.Features.DataManager
 
         private async Task CreateDataManagerUser(IdentityUser identityUser, int nationalSocietyId, CreateDataManagerRequestDto createDataManagerRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyId);
+            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+
             if (nationalSociety == null)
             {
                 throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
             }
+
+            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
 
             var user = new DataManagerUser
             {
@@ -78,7 +84,8 @@ namespace RX.Nyss.Web.Features.DataManager
                 Name = createDataManagerRequestDto.Name,
                 PhoneNumber = createDataManagerRequestDto.PhoneNumber,
                 AdditionalPhoneNumber = createDataManagerRequestDto.AdditionalPhoneNumber,
-                Organization = createDataManagerRequestDto.Organization
+                Organization = createDataManagerRequestDto.Organization,
+                ApplicationLanguage = defaultUserApplicationLanguage,
             };
 
             var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
@@ -94,15 +101,16 @@ namespace RX.Nyss.Web.Features.DataManager
                 User = user
             };
 
-        public async Task<Result> GetDataManager(int nationalSocietyUserId)
+        public async Task<Result<GetDataManagerResponseDto>> GetDataManager(int nationalSocietyUserId)
         {
             var dataManager = await _dataContext.Users
                 .OfType<DataManagerUser>()
                 .Where(u => u.Id == nationalSocietyUserId)
-                .Select(u => new GetDataManagerResponseDto()
+                .Select(u => new GetDataManagerResponseDto
                 {
                     Id = u.Id,
                     Name = u.Name,
+                    Role = u.Role,
                     Email = u.EmailAddress,
                     PhoneNumber = u.PhoneNumber,
                     AdditionalPhoneNumber = u.AdditionalPhoneNumber,
@@ -113,7 +121,7 @@ namespace RX.Nyss.Web.Features.DataManager
             if (dataManager == null)
             {
                 _loggerAdapter.Debug($"Data manager with id {nationalSocietyUserId} was not found");
-                return Result.Error(ResultKey.User.Common.UserNotFound);
+                return Error<GetDataManagerResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
             return new Result<GetDataManagerResponseDto>(dataManager, true);
@@ -130,7 +138,7 @@ namespace RX.Nyss.Web.Features.DataManager
                 user.Organization = editDataManagerRequestDto.Organization;
 
                 await _dataContext.SaveChangesAsync();
-                return Result.Success();
+                return Success();
             }
             catch (ResultException e)
             {

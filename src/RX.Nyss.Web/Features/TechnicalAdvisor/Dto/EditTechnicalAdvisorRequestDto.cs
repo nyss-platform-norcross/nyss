@@ -16,7 +16,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor.Dto
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
-                RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber();
+                RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
                 RuleFor(m => m.Organization).NotEmpty().MaximumLength(100);
             }
         }

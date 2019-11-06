@@ -10,13 +10,14 @@ using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.TechnicalAdvisor
 {
     public interface ITechnicalAdvisorService
     {
         Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto);
-        Task<Result> GetTechnicalAdvisor(int technicalAdvisorId);
+        Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int technicalAdvisorId);
         Task<Result> UpdateTechnicalAdvisor(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto);
         Task<Result> DeleteTechnicalAdvisor(int TechnicalAdvisorId);
     }
@@ -52,7 +53,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                     transactionScope.Complete();
                 }
                 await _verificationEmailService.SendVerificationEmail(createTechnicalAdvisorRequestDto.Email, createTechnicalAdvisorRequestDto.Name, securityStamp);
-                return Result.Success(ResultKey.User.Registration.Success);
+                return Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
             {
@@ -63,11 +64,16 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
 
         private async Task CreateTechnicalAdvisorUser(IdentityUser identityUser, int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyId);
+            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+
             if (nationalSociety == null)
             {
                 throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
             }
+
+            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
 
             var user = new TechnicalAdvisorUser
             {
@@ -76,7 +82,8 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 Name = createTechnicalAdvisorRequestDto.Name,
                 PhoneNumber = createTechnicalAdvisorRequestDto.PhoneNumber,
                 AdditionalPhoneNumber = createTechnicalAdvisorRequestDto.AdditionalPhoneNumber,
-                Organization = createTechnicalAdvisorRequestDto.Organization
+                Organization = createTechnicalAdvisorRequestDto.Organization,
+                ApplicationLanguage = defaultUserApplicationLanguage,
             };
 
             var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
@@ -92,7 +99,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 User = user
             };
 
-        public async Task<Result> GetTechnicalAdvisor(int nationalSocietyUserId)
+        public async Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int nationalSocietyUserId)
         {
             var technicalAdvisor = await _dataContext.Users
                 .OfType<TechnicalAdvisorUser>()
@@ -101,6 +108,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 {
                     Id = u.Id,
                     Name = u.Name,
+                    Role = u.Role,
                     Email = u.EmailAddress,
                     PhoneNumber = u.PhoneNumber,
                     AdditionalPhoneNumber = u.AdditionalPhoneNumber,
@@ -111,7 +119,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
             if (technicalAdvisor == null)
             {
                 _loggerAdapter.Debug($"Technical advisor with id {nationalSocietyUserId} was not found");
-                return Result.Error(ResultKey.User.Common.UserNotFound);
+                return Error<GetTechnicalAdvisorResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
             return new Result<GetTechnicalAdvisorResponseDto>(technicalAdvisor, true);
@@ -128,7 +136,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 user.Organization = editTechnicalAdvisorRequestDto.Organization;
 
                 await _dataContext.SaveChangesAsync();
-                return Result.Success();
+                return Success();
             }
             catch (ResultException e)
             {
