@@ -50,28 +50,29 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
             try
             {
                 string securityStamp;
-
+                GlobalCoordinatorUser user;
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     var identityUser = await _identityUserRegistrationService.CreateIdentityUser(dto.Email, Role.GlobalCoordinator);
                     securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
-                    await _dataContext.AddAsync(new GlobalCoordinatorUser
+                    user = new GlobalCoordinatorUser
                     {
                         IdentityUserId = identityUser.Id,
                         EmailAddress = identityUser.Email,
                         Name = dto.Name,
                         PhoneNumber = dto.PhoneNumber,
                         AdditionalPhoneNumber = dto.AdditionalPhoneNumber,
-                        Organization =  dto.Organization,
+                        Organization = dto.Organization,
                         Role = Role.GlobalCoordinator
-                    });
+                    };
+                    await _dataContext.AddAsync(user);
 
                     await _dataContext.SaveChangesAsync();
                     transactionScope.Complete();
                 }
 
-                await _verificationEmailService.SendVerificationEmail(dto.Email, dto.Name, securityStamp);
+                await _verificationEmailService.SendVerificationEmail(user, securityStamp);
 
                 return Success(ResultKey.User.Registration.Success);
             }
