@@ -19,6 +19,7 @@ namespace RX.Nyss.Web.Features.DataManager.Dto
                 RuleFor(m => m.Email).NotEmpty().MaximumLength(100).EmailAddress();
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
+                RuleFor(m => m.Organization).MaximumLength(100);
             }
         }
     }

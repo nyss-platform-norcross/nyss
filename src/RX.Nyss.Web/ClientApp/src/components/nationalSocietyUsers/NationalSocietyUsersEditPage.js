@@ -14,6 +14,7 @@ import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
+import * as roles from '../../authentication/roles';
 
 const NationalSocietyUsersEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
