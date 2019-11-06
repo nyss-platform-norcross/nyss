@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
 {
     public interface IVerificationEmailService
     {
-        Task SendVerificationEmail(string email, string name, string securityStamp);
+        Task SendVerificationEmail(User user, string securityStamp);
     }
 
     public class VerificationEmailService : IVerificationEmailService
@@ -24,17 +22,17 @@ namespace RX.Nyss.Web.Services
             _emailPublisherService = emailPublisherService;
         }
 
-        public Task SendVerificationEmail(string email, string name, string securityStamp)
+        public Task SendVerificationEmail(User user, string securityStamp)
         {
             var baseUrl = new Uri(_config.BaseUrl);
-            var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(email)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
+            var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(user.EmailAddress)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
 
             var (emailSubject, emailBody) = EmailTextGenerator.GenerateEmailVerificationEmail(
-                role: Role.GlobalCoordinator.ToString(),
+                role:user.Role.ToString(),
                 callbackUrl: verificationUrl,
-                name: name);
+                name: user.Name);
 
-            return _emailPublisherService.SendEmail((email, name), emailSubject, emailBody);
+            return _emailPublisherService.SendEmail((user.EmailAddress, user.Name), emailSubject, emailBody);
         }
     }
 }

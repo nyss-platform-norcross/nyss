@@ -41,7 +41,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       name: [validators.required, validators.maxLength(100)],
       phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
-      organization: [validators.requiredWhen(f => f.role === roles.TechnicalAdvisor), validators.maxLength(100)]
+      organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)]
     };
 
     setForm(createForm(fields, validation));

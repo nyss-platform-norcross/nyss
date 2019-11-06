@@ -44,15 +44,16 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
             try
             {
                 string securityStamp;
+                TechnicalAdvisorUser user;
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createTechnicalAdvisorRequestDto.Email, Role.TechnicalAdvisor);
                     securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
-                    await CreateTechnicalAdvisorUser(identityUser, nationalSocietyId, createTechnicalAdvisorRequestDto);
+                    user = await CreateTechnicalAdvisorUser(identityUser, nationalSocietyId, createTechnicalAdvisorRequestDto);
 
                     transactionScope.Complete();
                 }
-                await _verificationEmailService.SendVerificationEmail(createTechnicalAdvisorRequestDto.Email, createTechnicalAdvisorRequestDto.Name, securityStamp);
+                await _verificationEmailService.SendVerificationEmail(user, securityStamp);
                 return Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
@@ -62,7 +63,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
             }
         }
 
-        private async Task CreateTechnicalAdvisorUser(IdentityUser identityUser, int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
+        private async Task<TechnicalAdvisorUser> CreateTechnicalAdvisorUser(IdentityUser identityUser, int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
         {
             var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
@@ -90,6 +91,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
 
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
+            return user;
         }
 
         private UserNationalSociety CreateUserNationalSocietyReference(Nyss.Data.Models.NationalSociety nationalSociety, Nyss.Data.Models.User user) =>
