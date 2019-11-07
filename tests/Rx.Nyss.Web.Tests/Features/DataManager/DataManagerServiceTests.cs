@@ -35,6 +35,10 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
 
+            var applicationLanguages = new List<ApplicationLanguage>();
+            var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
+            _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
+
             _dataManagerService = new DataManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
@@ -67,7 +71,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
             var result = await _dataManagerService.CreateDataManager(nationalSocietyId, registerDataManagerRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(userEmail, userName, Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 

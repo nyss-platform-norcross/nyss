@@ -39,6 +39,8 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
+
+
             SetupTestNationalSociety();
         }
 
@@ -48,6 +50,10 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety1 }; 
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
+
+            var applicationLanguages = new List<ApplicationLanguage>();
+            var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
+            _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
             _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSociety1);
         }
@@ -67,7 +73,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var result = await _dataConsumerService.CreateDataConsumer(nationalSocietyId, registerDataConsumerRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(userEmail, userName, Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 
