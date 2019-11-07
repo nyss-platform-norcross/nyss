@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
-import { strings } from '../../strings';
+import { strings, stringKeys } from '../../strings';
 
 export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
   if (isListFetching) {
@@ -21,11 +21,11 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell>Email</TableCell>
-          <TableCell>Phone number</TableCell>
-          <TableCell>Role</TableCell>
-          <TableCell>Project</TableCell>
+          <TableCell>{strings(stringKeys.nationalSocietyUser.list.name)}</TableCell>
+          <TableCell>{strings(stringKeys.nationalSocietyUser.form.email)}</TableCell>
+          <TableCell>{strings(stringKeys.nationalSocietyUser.list.phoneNumber)}</TableCell>
+          <TableCell>{strings(stringKeys.nationalSocietyUser.list.role)}</TableCell>
+          <TableCell>{strings(stringKeys.nationalSocietyUser.list.project)}</TableCell>
           <TableCell style={{ width: "16%" }} />
         </TableRow>
       </TableHead>
@@ -39,7 +39,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             <TableCell>{row.project}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id, row.role)} confirmationText="Confirm removing the item" icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => remove(row.id, row.role)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}

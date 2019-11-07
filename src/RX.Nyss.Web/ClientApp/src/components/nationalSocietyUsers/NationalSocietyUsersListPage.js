@@ -10,6 +10,7 @@ import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietyUsersTable from './NationalSocietyUsersTable';
 import { useMount } from '../../utils/lifecycle';
+import { stringKeys, strings } from '../../strings';
 
 const NationalSocietyUsersListPageComponent = (props) => {
   useMount(() => {
@@ -18,11 +19,11 @@ const NationalSocietyUsersListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Users</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.title)}</Typography>
 
       <TableActions>
         <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          Add User
+          {strings(stringKeys.nationalSocietyUser.addNew)}
        </Button>
       </TableActions>
 
