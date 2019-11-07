@@ -106,6 +106,15 @@
             public const string HealthRiskNumberAlreadyExists = "healthRisk.healthRiskNumberAlreadyExists";
         }
 
+        public static class Project
+        {
+            public const string SuccessfullyAdded = "project.successfullyAdded";
+            public const string SuccessfullyUpdated = "project.successfullyUpdated";
+            public const string SuccessfullyDeleted = "project.successfullyDeleted";
+            public const string ProjectDoesNotExist = "project.projectDoesNotExist";
+            public const string NationalSocietyDoesNotExist = "project.nationalSocietyDoesNotExist";
+        }
+
         public const string UnexpectedError = "error.unexpected";
         
         public static class DataCollector

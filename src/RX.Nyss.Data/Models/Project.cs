@@ -1,4 +1,6 @@
-﻿using RX.Nyss.Data.Concepts;
+﻿using System;
+using System.Collections.Generic;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
 {
@@ -12,8 +14,15 @@ namespace RX.Nyss.Data.Models
 
         public ProjectState State { get; set; }
 
-        public virtual ContentLanguage ContentLanguage { get; set; }
+        public DateTime StartDate { get; set; }
 
+        public DateTime? EndDate { get; set; }
+
+        public int NationalSocietyId { get; set; }
         public virtual NationalSociety NationalSociety { get; set; }
+
+        public virtual ICollection<ProjectHealthRisk> ProjectHealthRisks { get; set; }
+
+        public virtual ICollection<DataCollector> DataCollectors { get; set; }
     }
 }

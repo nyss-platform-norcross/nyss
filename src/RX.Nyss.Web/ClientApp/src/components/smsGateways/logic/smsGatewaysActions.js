@@ -39,7 +39,7 @@ export const create = {
 };
 
 export const openEdition = {
-  invoke: (smsGatewayId) => ({ type: OPEN_SMS_GATEWAY_EDITION.INVOKE, smsGatewayId }),
+  invoke: (nationalSocietyId, smsGatewayId) => ({ type: OPEN_SMS_GATEWAY_EDITION.INVOKE, nationalSocietyId, smsGatewayId }),
   request: () => ({ type: OPEN_SMS_GATEWAY_EDITION.REQUEST }),
   success: (data) => ({ type: OPEN_SMS_GATEWAY_EDITION.SUCCESS, data }),
   failure: (message) => ({ type: OPEN_SMS_GATEWAY_EDITION.FAILURE, message })

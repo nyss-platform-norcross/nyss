@@ -1,4 +1,5 @@
 ﻿using System;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Project.Dto
 {
@@ -15,6 +16,8 @@ namespace RX.Nyss.Web.Features.Project.Dto
         public int ActiveDataCollectorCount { get; set; }
 
         public int SupervisorCount { get; set; }
+
+        public ProjectState State { get; set; }
 
         public DateTime StartDate { get; set; }
 
