@@ -27,6 +27,9 @@ let stringList = {
   "healthRisk.type.activity": "Activity",
   "user.resetPassword.failed": "Password reset failed"
 };
+let showKeys = false;
+
+export const areStringKeysDisplayed = () => showKeys;
 
 export const stringKeys = {
   login: {
@@ -62,11 +65,15 @@ export const stringKeys = {
 
 export const strings = (key) => {
   const value = stringList[key];
-  return value === undefined ? key : value;
+  return value === undefined || showKeys ? key : value;
 }
 
 export function updateStrings(strings) {
   Object.assign(stringList, strings);
+}
+
+export function toggleStringsMode() {
+  showKeys = !showKeys;
 }
 
 export default stringList;

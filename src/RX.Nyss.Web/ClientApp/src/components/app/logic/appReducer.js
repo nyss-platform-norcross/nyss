@@ -10,6 +10,18 @@ export function appReducer(state = initialState.appData, action) {
         moduleError: null
       };
 
+    case actions.SWITCH_STRINGS:
+      return {
+        ...state,
+        showStringsKeys: action.status
+      };
+
+    case actions.SET_APP_READY:
+      return {
+        ...state,
+        appReady: action.status
+      };
+
     case actions.ROUTE_CHANGED:
       return {
         ...state,

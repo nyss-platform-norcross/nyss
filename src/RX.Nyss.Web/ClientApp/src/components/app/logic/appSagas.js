@@ -1,7 +1,7 @@
-import { call, put, takeEvery, select } from "redux-saga/effects";
+import { call, put, takeEvery, select, delay } from "redux-saga/effects";
 import * as consts from "./appConstans";
 import * as actions from "./appActions";
-import { updateStrings } from "../../../strings";
+import { updateStrings, toggleStringsMode } from "../../../strings";
 import * as http from "../../../utils/http";
 import {  removeAccessToken, isAccessTokenSet } from "../../../authentication/auth";
 import { push } from "connected-react-router";
@@ -12,25 +12,40 @@ import * as cache from "../../../utils/cache";
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
   takeEvery(consts.OPEN_MODULE.INVOKE, openModule),
-  takeEvery(consts.ENTITY_UPDATED, entityUpdated)
+  takeEvery(consts.ENTITY_UPDATED, entityUpdated),
+  takeEvery(consts.SWITCH_STRINGS, switchStrings),
 ];
 
 function* initApplication() {
   yield put(actions.initApplication.request());
   try {
     const user = yield call(getAndVerifyUser);
-
-    if (user) {
-      yield call(getAppData);
-    }
-
+    yield call(getAppData);
     yield call(getStrings, user ? user.languageCode : "en");
-
     yield put(actions.initApplication.success());
   } catch (error) {
     yield put(actions.initApplication.failure(error.message));
   }
 };
+
+function* switchStrings() {
+  yield put(actions.setAppReady(false));
+  toggleStringsMode();
+  yield delay(1);
+
+  const hasBreadcrumb = yield select(state => state.appData.siteMap.breadcrumb.length !== 0);
+
+  if (hasBreadcrumb) {
+    const pathAndParams = yield select(state => ({
+      path: state.appData.route.path,
+      params: state.appData.route.params
+    }));
+
+    yield openModule(pathAndParams);
+  }
+
+  yield put(actions.setAppReady(true));
+}
 
 function* openModule({ path, params }) {
   path = path || (yield select(state => state.appData.route && state.appData.route.path));
