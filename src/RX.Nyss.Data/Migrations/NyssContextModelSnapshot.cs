@@ -325,7 +325,7 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AlertRuleId")
+                    b.Property<int?>("AlertRuleId")
                         .HasColumnType("int");
 
                     b.Property<int>("HealthRiskCode")
@@ -934,8 +934,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.AlertRule", "AlertRule")
                         .WithMany()
                         .HasForeignKey("AlertRuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRiskLanguageContent", b =>

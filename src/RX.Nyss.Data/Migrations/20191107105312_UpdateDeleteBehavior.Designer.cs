@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191107102429_UpdateDeleteBehavior")]
+    [Migration("20191107105312_UpdateDeleteBehavior")]
     partial class UpdateDeleteBehavior
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -327,7 +327,7 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AlertRuleId")
+                    b.Property<int?>("AlertRuleId")
                         .HasColumnType("int");
 
                     b.Property<int>("HealthRiskCode")
@@ -936,8 +936,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.AlertRule", "AlertRule")
                         .WithMany()
                         .HasForeignKey("AlertRuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRiskLanguageContent", b =>

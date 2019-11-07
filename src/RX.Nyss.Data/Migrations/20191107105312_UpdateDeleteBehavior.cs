@@ -16,15 +16,6 @@ namespace RX.Nyss.Data.Migrations
                 schema: "nyss",
                 table: "HealthRisks");
 
-            migrationBuilder.AlterColumn<int>(
-                name: "AlertRuleId",
-                schema: "nyss",
-                table: "HealthRisks",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int",
-                oldNullable: true);
-
             migrationBuilder.AddForeignKey(
                 name: "FK_HealthRiskLanguageContents_HealthRisks_HealthRiskId",
                 schema: "nyss",
@@ -57,14 +48,6 @@ namespace RX.Nyss.Data.Migrations
                 name: "FK_HealthRisks_AlertRules_AlertRuleId",
                 schema: "nyss",
                 table: "HealthRisks");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "AlertRuleId",
-                schema: "nyss",
-                table: "HealthRisks",
-                type: "int",
-                nullable: true,
-                oldClrType: typeof(int));
 
             migrationBuilder.AddForeignKey(
                 name: "FK_HealthRiskLanguageContents_HealthRisks_HealthRiskId",
