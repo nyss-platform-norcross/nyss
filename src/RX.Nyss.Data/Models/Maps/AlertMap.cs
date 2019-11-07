@@ -11,7 +11,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.Comments).HasMaxLength(500);
             builder.Property(x => x.Status).HasConversion<string>().IsRequired();
-            builder.HasOne(x => x.ProjectHealthRisk).WithMany().IsRequired();
+            builder.HasOne(x => x.ProjectHealthRisk).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

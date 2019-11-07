@@ -65,11 +65,6 @@ namespace RX.Nyss.Data
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(NyssContext).Assembly);
             modelBuilder.HasDefaultSchema("nyss");
-
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                // relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
         }
     }
 }
