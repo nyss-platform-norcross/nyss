@@ -9,7 +9,7 @@ using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.DataCollector
 {
-    [Route("api/project/{projectId:int}/dataCollector")]
+    [Route("api/nationalSociety/{nationalSocietyId}/project/{projectId:int}/dataCollector")]
     public class DataCollectorController : BaseController
     {
         private readonly IDataCollectorService _dataCollectorService;
