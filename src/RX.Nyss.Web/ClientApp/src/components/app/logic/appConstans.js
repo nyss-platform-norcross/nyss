@@ -12,3 +12,5 @@ export const OPEN_MODULE = action("OPEN_MODULE");
 export const SHOW_MESSAGE = action("SHOW_MESSAGE");
 export const CLOSE_MESSAGE = action("CLOSE_MESSAGE");
 export const ENTITY_UPDATED = "ENTITY_UPDATED";
+export const SWITCH_STRINGS = "SWITCH_STRINGS";
+export const SET_APP_READY = "SET_APP_READY";

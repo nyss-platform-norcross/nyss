@@ -11,6 +11,7 @@ import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import HealthRisksTable from './HealthRisksTable';
 import { useMount } from '../../utils/lifecycle';
+import { strings, stringKeys } from '../../strings';
 
 const HealthRisksListPageComponent = (props) => {
   useMount(() => {
@@ -20,11 +21,11 @@ const HealthRisksListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Health Risks</Typography>
+      <Typography variant="h2">{strings(stringKeys.healthRisk.title)}</Typography>
 
       <TableActions>
         <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          Add Health Risk / Event
+          {strings(stringKeys.healthRisk.addNew)}
        </Button>
       </TableActions>
 

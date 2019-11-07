@@ -7,6 +7,7 @@ import { Loading } from '../common/loading/Loading';
 import Typography from '@material-ui/core/Typography';
 import Button from "@material-ui/core/Button";
 import { push } from 'connected-react-router';
+import { StringsSwitcher } from './StringsSwitcher';
 
 const BaseLayoutComponent = ({ appReady, children, moduleError, push }) => {
   if (!appReady) {
@@ -33,12 +34,14 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push }) => {
         </div>
       )}
       {!moduleError && children}
+      <StringsSwitcher />
     </div>
   );
 }
 
 const mapStateToProps = (state, ownProps) => ({
   appReady: state.appData.appReady,
+  isDevelopment: state.appData.appReady,
   moduleError: state.appData.moduleError || ownProps.authError
 });
 

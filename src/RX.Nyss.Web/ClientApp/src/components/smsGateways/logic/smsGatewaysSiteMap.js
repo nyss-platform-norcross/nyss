@@ -1,24 +1,25 @@
 import { placeholders } from "../../../siteMapPlaceholders";
 import { accessMap } from "../../../authentication/accessMap";
+import { strings, stringKeys } from "../../../strings";
 
 export const smsGatewaysSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
     path: "/nationalsocieties/:nationalSocietyId/smsgateways",
-    title: "SMS Gateways",
-    placeholder: placeholders.topMenu,
+    title: () => strings(stringKeys.smsGateway.title),
+    placeholder: placeholders.leftMenu,
     access: accessMap.smsGateways.list
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/smsgateways",
     path: "/nationalsocieties/:nationalSocietyId/smsgateways/add",
-    title: "Add SMS Gateway",
+    title: () => strings(stringKeys.smsGateway.form.creationTitle),
     access: accessMap.smsGateways.add
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/smsgateways",
     path: "/nationalsocieties/:nationalSocietyId/smsgateways/:smsGatewayId/edit",
-    title: "Edit SMS Gateway",
+    title: () => strings(stringKeys.smsGateway.form.editionTitle),
     access: accessMap.smsGateways.edit
   }
 ];

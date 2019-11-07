@@ -16,7 +16,7 @@ export const getMenu = (pathForMenu, parameters, placeholder, currentPath) => {
   return siteMap
     .filter(item => item.parentPath === closestMenuPath && item.placeholder && item.placeholder === placeholder)
     .map(item => ({
-      title: item.title,
+      title: item.title(),
       url: getUrl(item.path, parameters),
       isActive: breadcrumb.some(b => b.siteMapData.path === item.path)
     }))
@@ -35,7 +35,7 @@ export const getBreadcrumb = (path, siteMapParameters) => {
   while (true) {
     if (!currentItem.access || !currentItem.access.length || currentItem.access.some(role => role === authUser.role)) {
       hierarchy.splice(0, 0, {
-        title: getTitle(currentItem.title, siteMapParameters),
+        title: getTitle(currentItem.title(), siteMapParameters),
         url: getUrl(currentItem.path, siteMapParameters),
         isActive: currentItem.path === path,
         siteMapData: { ...currentItem }

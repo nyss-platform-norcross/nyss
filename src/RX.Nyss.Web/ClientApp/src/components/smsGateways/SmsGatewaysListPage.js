@@ -10,6 +10,7 @@ import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import SmsGatewaysTable from './SmsGatewaysTable';
 import { useMount } from '../../utils/lifecycle';
+import { strings, stringKeys } from '../../strings';
 
 const SmsGatewaysListPageComponent = (props) => {
   useMount(() => {
@@ -18,11 +19,11 @@ const SmsGatewaysListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">SMS Gateways</Typography>
+      <Typography variant="h2">{strings(stringKeys.smsGateway.title)}</Typography>
 
       <TableActions>
         <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          Add SMS Gateway
+          {strings(stringKeys.smsGateway.addNew)}
        </Button>
       </TableActions>
 

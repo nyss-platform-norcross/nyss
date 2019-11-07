@@ -6,6 +6,7 @@ import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
 import { Loading } from '../common/loading/Loading';
+import { stringKeys, strings } from '../../strings';
 
 const NationalSocietiesDashboardPageComponent = ({ openDashbaord, isFetching, match, name }) => {
   useEffect(() => {
@@ -18,7 +19,7 @@ const NationalSocietiesDashboardPageComponent = ({ openDashbaord, isFetching, ma
 
   return (
     <Fragment>
-      <Typography variant="h2">Dashboard - {name}</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSociety.form.create)} - {name}</Typography>
     </Fragment>
   );
 }

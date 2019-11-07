@@ -38,6 +38,8 @@ namespace RX.Nyss.Web
                 app.UseHsts();
             }
 
+            app.UseCustomExceptionHandler();
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

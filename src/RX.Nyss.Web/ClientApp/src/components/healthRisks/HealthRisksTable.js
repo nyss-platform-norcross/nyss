@@ -10,6 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
+import { stringKeys, strings } from '../../strings';
 
 export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
   if (isListFetching) {
@@ -20,9 +21,9 @@ export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remo
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell style={{ width: "10%", minWidth: 100 }}>Number</TableCell>
-          <TableCell>Health risk / event</TableCell>
-          <TableCell style={{ width: "25%", minWidth: 100 }}>Type</TableCell>
+          <TableCell style={{ width: "10%", minWidth: 100 }}>{strings(stringKeys.healthRisk.list.healthRiskCode)}</TableCell>
+          <TableCell>{strings(stringKeys.healthRisk.list.name)}</TableCell>
+          <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.healthRisk.list.healthRiskType)}</TableCell>
           <TableCell style={{ width: "25%" }} />
         </TableRow>
       </TableHead>
@@ -34,7 +35,7 @@ export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remo
             <TableCell>{row.healthRiskType}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} confirmationText="Confirm removing the item" icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.healthRisk.list.confirmationText)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}

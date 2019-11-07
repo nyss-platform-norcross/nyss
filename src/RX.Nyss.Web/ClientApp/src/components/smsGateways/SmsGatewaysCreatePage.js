@@ -15,7 +15,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { smsGatewayTypes } from "./logic/smsGatewayTypes";
 import { useMount } from '../../utils/lifecycle';
-import { strings } from '../../strings';
+import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 
 const SmsGatewaysCreatePageComponent = (props) => {
@@ -56,7 +56,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Add SMS Gateway</Typography>
+      <Typography variant="h2">{strings(stringKeys.smsGateway.form.creationTitle)}</Typography>
 
       {props.error &&
         <SnackbarContent
@@ -68,7 +68,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextInputField
-              label="Name"
+              label={strings(stringKeys.smsGateway.form.name)}
               name="name"
               field={form.fields.name}
             />
@@ -76,7 +76,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="API key"
+              label={strings(stringKeys.smsGateway.form.apiKey)}
               name="apiKey"
               field={form.fields.apiKey}
             />
@@ -84,7 +84,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <SelectInput
-              label="Gateway type"
+              label={strings(stringKeys.smsGateway.form.gatewayType)}
               name="gatewayType"
               field={form.fields.gatewayType}
             >
@@ -100,13 +100,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>
-            Cancel
-          </Button>
-
-          <SubmitButton isFetching={props.isSaving}>
-            Save SMS Gateway
-          </SubmitButton>
+          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.smsGateway.form.create)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

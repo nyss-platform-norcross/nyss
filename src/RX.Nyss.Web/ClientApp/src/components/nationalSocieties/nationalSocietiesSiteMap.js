@@ -1,58 +1,45 @@
 import { placeholders } from "../../siteMapPlaceholders";
 import { accessMap } from "../../authentication/accessMap";
 import { Administrator, GlobalCoordinator, DataConsumer, DataManager } from "../../authentication/roles";
+import { strings, stringKeys } from "../../strings";
 
 export const nationalSocietiesSiteMap = [
   {
     path: "/nationalsocieties",
-    title: "National societies",
+    title: () => strings(stringKeys.nationalSociety.title),
     placeholder: placeholders.topMenu,
     access: accessMap.nationalSocieties.list
   },
   {
     parentPath: "/nationalsocieties",
     path: "/nationalsocieties/add",
-    title: "Add National Society",
+    title: () => strings(stringKeys.nationalSociety.form.creationTitle),
     access: accessMap.nationalSocieties.add
   },
   {
     parentPath: "/nationalsocieties",
     path: "/nationalsocieties/:nationalSocietyId",
-    title: "{nationalSocietyName} ({nationalSocietyCountry})",
+    title: () => "{nationalSocietyName} ({nationalSocietyCountry})",
     access: [Administrator, GlobalCoordinator, DataConsumer]
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
     path: "/nationalsocieties/:nationalSocietyId/dashboard",
-    title: "Dashboard",
+    title: () => strings(stringKeys.nationalSociety.dashboard.title),
     access: [Administrator, GlobalCoordinator, DataConsumer],
     placeholder: placeholders.leftMenu,
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/overview",
     path: "/nationalsocieties/:nationalSocietyId/edit",
-    title: "Edit",
+    title: () => strings(stringKeys.nationalSociety.form.editionTitle),
     access: [Administrator, GlobalCoordinator, DataConsumer]
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
-    path: "/nationalsocieties/:nationalSocietyId/projects",
-    title: "Projects",
-    placeholder: placeholders.leftMenu,
-    access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
-  },
-  {
-    parentPath: "/nationalsocieties/:nationalSocietyId",
     path: "/nationalsocieties/:nationalSocietyId/overview",
-    title: "Overview",
+    title: () => strings(stringKeys.nationalSociety.overview.title),
     placeholder: placeholders.leftMenu,
     access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
-  },
-  {
-    parentPath: "/nationalsocieties/:nationalSocietyId",
-    path: "/nationalsocieties/:nationalSocietyId/smsgateways",
-    title: "SMS Gateways",
-    placeholder: placeholders.leftMenu,
-    access: accessMap.smsGateways.list
   }
 ];

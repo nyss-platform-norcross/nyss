@@ -18,7 +18,7 @@ namespace RX.Nyss.Web.Features.Authentication
     {
         Task<Result<LoginResponseDto>> Login(LoginRequestDto dto);
         Task<Result> Logout();
-        Result<StatusResponseDto> GetStatus(ClaimsPrincipal user);
+        Task<Result<StatusResponseDto>> GetStatus(ClaimsPrincipal user);
     }
 
     public class AuthenticationService : IAuthenticationService
@@ -52,6 +52,40 @@ namespace RX.Nyss.Web.Features.Authentication
             }
         }
 
+        public async Task<Result<StatusResponseDto>> GetStatus(ClaimsPrincipal user)
+        {
+            var email = user.FindFirstValue(ClaimTypes.Name);
+
+            var userEntity = await _nyssContext.Users
+                .Include(x => x.ApplicationLanguage)
+                .SingleOrDefaultAsync(u => u.EmailAddress == email);
+
+            if (userEntity == null)
+            {
+                return Error<StatusResponseDto>(ResultKey.User.Common.UserNotFound);
+            }
+
+            return Success(new StatusResponseDto
+            {
+                IsAuthenticated = user.Identity.IsAuthenticated,
+                Data = user.Identity.IsAuthenticated
+                    ? new StatusResponseDto.DataDto
+                    {
+                        Name = user.Identity.Name, 
+                        Email = email, 
+                        LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
+                        Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray()
+                    }
+                    : null
+            });
+        }
+
+        public async Task<Result> Logout()
+        {
+            await _userIdentityService.Logout();
+            return Success();
+        }
+
         private async Task<IEnumerable<string>> GetRoles(IdentityUser user)
         {
             var userRoles = await _userIdentityService.GetRoles(user);
@@ -59,27 +93,7 @@ namespace RX.Nyss.Web.Features.Authentication
             return await IsDataOwner(user)
                 ? userRoles.Union(new[] { FunctionalRole.DataOwner.ToString() })
                 : userRoles;
-        }
-
-        public Result<StatusResponseDto> GetStatus(ClaimsPrincipal user) =>
-            Success(new StatusResponseDto
-            {
-                IsAuthenticated = user.Identity.IsAuthenticated,
-                Data = user.Identity.IsAuthenticated
-                    ? new StatusResponseDto.DataDto
-                    {
-                        Name = user.Identity.Name,
-                        Email = user.FindFirstValue(ClaimTypes.Email),
-                        Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray()
-                    }
-                    : null
-            });
-
-        public async Task<Result> Logout()
-        {
-            await _userIdentityService.Logout();
-            return Success();
-        }
+         }
 
         private async Task<IEnumerable<Claim>> GetAdditionalClaims(IdentityUser identityUser)
         {

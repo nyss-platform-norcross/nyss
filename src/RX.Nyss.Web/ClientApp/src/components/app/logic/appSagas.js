@@ -1,7 +1,7 @@
-import { call, put, takeEvery, select } from "redux-saga/effects";
+import { call, put, takeEvery, select, delay } from "redux-saga/effects";
 import * as consts from "./appConstans";
 import * as actions from "./appActions";
-import { updateStrings } from "../../../strings";
+import { updateStrings, toggleStringsMode } from "../../../strings";
 import * as http from "../../../utils/http";
 import {  removeAccessToken, isAccessTokenSet } from "../../../authentication/auth";
 import { push } from "connected-react-router";
@@ -12,24 +12,40 @@ import * as cache from "../../../utils/cache";
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
   takeEvery(consts.OPEN_MODULE.INVOKE, openModule),
-  takeEvery(consts.ENTITY_UPDATED, entityUpdated)
+  takeEvery(consts.ENTITY_UPDATED, entityUpdated),
+  takeEvery(consts.SWITCH_STRINGS, switchStrings),
 ];
 
 function* initApplication() {
   yield put(actions.initApplication.request());
   try {
     const user = yield call(getAndVerifyUser);
-
-    if (user) {
-      yield call(getStrings);
-      yield call(getAppData);
-    }
-
+    yield call(getAppData);
+    yield call(getStrings, user ? user.languageCode : "en");
     yield put(actions.initApplication.success());
   } catch (error) {
     yield put(actions.initApplication.failure(error.message));
   }
 };
+
+function* switchStrings() {
+  yield put(actions.setAppReady(false));
+  toggleStringsMode();
+  yield delay(1);
+
+  const hasBreadcrumb = yield select(state => state.appData.siteMap.breadcrumb.length !== 0);
+
+  if (hasBreadcrumb) {
+    const pathAndParams = yield select(state => ({
+      path: state.appData.route.path,
+      params: state.appData.route.params
+    }));
+
+    yield openModule(pathAndParams);
+  }
+
+  yield put(actions.setAppReady(true));
+}
 
 function* openModule({ path, params }) {
   path = path || (yield select(state => state.appData.route && state.appData.route.path));
@@ -68,7 +84,11 @@ function* getUserStatus() {
     const status = yield call(http.get, "/api/authentication/status");
 
     const user = status.value.isAuthenticated
-      ? { name: status.value.data.name, roles: status.value.data.roles }
+      ? {
+        name: status.value.data.name,
+        roles: status.value.data.roles,
+        languageCode: status.value.data.languageCode
+      }
       : null;
 
     yield put(actions.getUser.success(status.value.isAuthenticated, user));
@@ -81,18 +101,18 @@ function* getUserStatus() {
 function* getAppData() {
   yield put(actions.getAppData.request());
   try {
-    const appData = yield call(http.get, "/api/appData/get");
-    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries));
+    const appData = yield call(http.get, "/api/appData/getAppData", true);
+    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries, appData.value.isDevelopment));
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }
 };
 
-function* getStrings() {
+function* getStrings(languageCode) {
   yield put(actions.getStrings.invoke());
   try {
-    // api call
-    updateStrings({});
+    const response = yield call(http.get, `/api/appData/getStrings/${languageCode}`, true);
+    updateStrings(response.value);
     yield put(actions.getStrings.success());
   } catch (error) {
     yield put(actions.getStrings.failure(error.message));

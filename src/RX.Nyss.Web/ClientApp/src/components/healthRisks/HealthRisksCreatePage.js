@@ -19,7 +19,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { healthRiskTypes } from './logic/healthRisksConstants';
 import Grid from '@material-ui/core/Grid';
 import { getSaveFormModel } from './logic/healthRisksService';
-import { strings } from '../../strings';
+import { strings, stringKeys } from '../../strings';
 
 const HealthRisksCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -46,12 +46,14 @@ const HealthRisksCreatePageComponent = (props) => {
         [`contentLanguage_${lang.id}_caseDefinition`]: "",
         [`contentLanguage_${lang.id}_feedbackMessage`]: ""
       },
-      validation: {
-        ...result.validation,
-        [`contentLanguage_${lang.id}_name`]: [validators.required, validators.maxLength(100)],
-        [`contentLanguage_${lang.id}_caseDefinition`]: [validators.required, validators.maxLength(500)],
-        [`contentLanguage_${lang.id}_feedbackMessage`]: [validators.required, validators.maxLength(160)]
-      }
+      validation: lang.name.toLowerCase() === "english"
+        ? {
+          ...result.validation,
+          [`contentLanguage_${lang.id}_name`]: [validators.required, validators.maxLength(100)],
+          [`contentLanguage_${lang.id}_caseDefinition`]: [validators.required, validators.maxLength(500)],
+          [`contentLanguage_${lang.id}_feedbackMessage`]: [validators.required, validators.maxLength(160)]
+        }
+        : result.validation
     }), { fields, validation });
 
     return createForm(finalFormData.fields, finalFormData.validation);
@@ -78,7 +80,7 @@ const HealthRisksCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Add health risk/event</Typography>
+      <Typography variant="h2">{strings(stringKeys.healthRisk.form.creationTitle)}</Typography>
 
       {props.error &&
         <SnackbarContent
@@ -90,7 +92,7 @@ const HealthRisksCreatePageComponent = (props) => {
         <Grid container spacing={3}>
           <Grid item xs={3}>
             <TextInputField
-              label="Health risk number"
+              label={strings(stringKeys.healthRisk.form.healthRiskCode)}
               name="healthRiskCode"
               field={form.fields.healthRiskCode}
               autoFocus
@@ -98,7 +100,7 @@ const HealthRisksCreatePageComponent = (props) => {
           </Grid>
           <Grid item xs={9}>
             <SelectField
-              label="Health risk type"
+              label={strings(stringKeys.healthRisk.form.healthRiskType)}
               name="healthRiskType"
               field={form.fields.healthRiskType}
             >
@@ -109,21 +111,21 @@ const HealthRisksCreatePageComponent = (props) => {
           </Grid>
 
           {props.contentLanguages.map(lang => (
-            <Fragment>
+            <Fragment key={`contentLanguage${lang.id}`}>
               <Grid item xs={12}>
-                <Typography variant="h3">{lang.name} translations</Typography>
+                <Typography variant="h3">{strings(stringKeys.healthRisk.form.translationsSetion).replace("{language}", lang.name)}</Typography>
 
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
                     <TextInputField
-                      label={`Health risk/event name`}
+                      label={strings(stringKeys.healthRisk.form.contentLanguageName)}
                       name={`contentLanguage_${lang.id}_name`}
                       field={form.fields[`contentLanguage_${lang.id}_name`]}
                     />
                   </Grid>
                   <Grid item xs={6}>
                     <TextInputField
-                      label={`Community case definition`}
+                      label={strings(stringKeys.healthRisk.form.contentLanguageCaseDefinition)}
                       name={`contentLanguage_${lang.id}_caseDefinition`}
                       field={form.fields[`contentLanguage_${lang.id}_caseDefinition`]}
                       multiline
@@ -131,7 +133,7 @@ const HealthRisksCreatePageComponent = (props) => {
                   </Grid>
                   <Grid item xs={6}>
                     <TextInputField
-                      label={`Feedback message`}
+                      label={strings(stringKeys.healthRisk.form.contentLanguageFeedbackMessage)}
                       name={`contentLanguage_${lang.id}_feedbackMessage`}
                       field={form.fields[`contentLanguage_${lang.id}_feedbackMessage`]}
                       multiline
@@ -143,15 +145,13 @@ const HealthRisksCreatePageComponent = (props) => {
           ))}
 
           <Grid item xs={12}>
-            <Typography variant="h3">Alert rule</Typography>
-            <Typography variant="subtitle1">
-              An alert is triggered when the number of reports in an area exceeds a limit within a given time. Please specify the alert rule for this health risk.
-            </Typography>
+            <Typography variant="h3">{strings(stringKeys.healthRisk.form.alertsSetion)}</Typography>
+            <Typography variant="subtitle1">{strings(stringKeys.healthRisk.form.alertRuleDescription)}</Typography>
           </Grid>
 
           <Grid item xs={4}>
             <TextInputField
-              label="Number of reports"
+              label={strings(stringKeys.healthRisk.form.alertRuleCountThreshold)}
               name="alertRuleCountThreshold"
               field={form.fields.alertRuleCountThreshold}
             />
@@ -159,7 +159,7 @@ const HealthRisksCreatePageComponent = (props) => {
 
           <Grid item xs={4}>
             <TextInputField
-              label="Timeframe in days"
+              label={strings(stringKeys.healthRisk.form.alertRuleDaysThreshold)}
               name="alertRuleDaysThreshold"
               field={form.fields.alertRuleDaysThreshold}
             />
@@ -167,7 +167,7 @@ const HealthRisksCreatePageComponent = (props) => {
 
           <Grid item xs={4}>
             <TextInputField
-              label="Distance in km"
+              label={strings(stringKeys.healthRisk.form.alertRuleMetersThreshold)}
               name="alertRuleMetersThreshold"
               field={form.fields.alertRuleMetersThreshold}
             />
@@ -175,13 +175,8 @@ const HealthRisksCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>
-            Cancel
-            </Button>
-
-          <SubmitButton isFetching={props.isSaving}>
-            Save health risk/event
-            </SubmitButton>
+          <Button onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.healthRisk.form.create)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

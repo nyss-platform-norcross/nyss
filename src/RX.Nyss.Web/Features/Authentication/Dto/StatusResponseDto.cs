@@ -14,6 +14,7 @@
 
             public string[] Roles { get; set; }
 
+            public string LanguageCode { get; set; }
         }
     }
 }

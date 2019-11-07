@@ -15,6 +15,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
+import { stringKeys, strings } from '../../strings';
 
 const GlobalCoordinatorsCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -54,7 +55,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Add Global Coordinator</Typography>
+      <Typography variant="h2">{strings(stringKeys.globalCoordinator.form.creationTitle)}</Typography>
 
       {props.error &&
         <SnackbarContent
@@ -66,7 +67,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextInputField
-              label="E-mail"
+              label={strings(stringKeys.globalCoordinator.form.email)}
               name="email"
               field={form.fields.email}
               autoFocus
@@ -75,7 +76,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Name"
+              label={strings(stringKeys.globalCoordinator.form.name)}
               name="name"
               field={form.fields.name}
             />
@@ -83,7 +84,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Phone number"
+              label={strings(stringKeys.globalCoordinator.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
             />
@@ -91,7 +92,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Additional phone number (optional)"
+              label={strings(stringKeys.globalCoordinator.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
             />
@@ -99,7 +100,7 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Organization"
+              label={strings(stringKeys.globalCoordinator.form.organization)}
               name="organization"
               field={form.fields.organization}
             />
@@ -107,13 +108,8 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>
-            Cancel
-          </Button>
-
-          <SubmitButton isFetching={props.isSaving}>
-            Save Global Coordinator
-          </SubmitButton>
+          <Button onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.globalCoordinator.form.create)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

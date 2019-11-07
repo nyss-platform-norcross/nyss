@@ -8,6 +8,8 @@ namespace RX.Nyss.Web.Features.AppData.Dto
 
         public List<CountryDto> Countries { get; set; }
 
+        public bool? IsDevelopment { get; set; }
+
         public class ContentLanguageDto
         {
             public int Id { get; set; }

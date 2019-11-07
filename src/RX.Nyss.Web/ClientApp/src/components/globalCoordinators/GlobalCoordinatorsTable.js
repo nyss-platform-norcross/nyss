@@ -10,6 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
+import { stringKeys, strings } from '../../strings';
 
 export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
   if (isListFetching) {
@@ -20,10 +21,10 @@ export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEditio
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell style={{ width: "25%", minWidth: 100 }}>E-mail</TableCell>
-          <TableCell style={{ width: "8%", minWidth: 75 }}>Phone number</TableCell>
-          <TableCell style={{ width: "16%" }}>Organization</TableCell>
+          <TableCell>{strings(stringKeys.globalCoordinator.list.name)}</TableCell>
+          <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.globalCoordinator.list.email)}</TableCell>
+          <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.globalCoordinator.list.phoneNumber)}</TableCell>
+          <TableCell style={{ width: "16%" }}>{strings(stringKeys.globalCoordinator.list.organization)}</TableCell>
           <TableCell style={{ width: "16%" }} />
         </TableRow>
       </TableHead>
@@ -36,7 +37,7 @@ export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEditio
             <TableCell>{row.organization}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} confirmationText="Confirm removing the item" icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.globalCoordinator.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}

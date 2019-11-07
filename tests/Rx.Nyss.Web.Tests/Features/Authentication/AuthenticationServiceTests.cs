@@ -19,17 +19,20 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
 {
     public class AuthenticationServiceTests
     {
-        private const string UserName = "user";
+        private const string UserName = "user@user.com";
         private const string UserEmail = "user@user.com";
         private const string Password = "password";
         private readonly IUserIdentityService _userIdentityService;
         private readonly INyssContext _nyssContext;
         private readonly AuthenticationService _authenticationService;
+        private readonly SupervisorUser _user;
 
         public AuthenticationServiceTests()
         {
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
+            _user = new SupervisorUser { EmailAddress = UserEmail };
+            _nyssContext.Users = new List<User>{ _user }.AsQueryable().BuildMockDbSet();
             _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
         }
 
@@ -88,10 +91,13 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         }
 
         [Fact]
-        public void GetStatus_CallsLogoutOnIdentityService()
+        public async Task GetStatus_CallsLogoutOnIdentityService()
         {
+            const string languageCode = "en";
             const string role = "Administrator";
 
+            _user.ApplicationLanguage = new ApplicationLanguage { LanguageCode = languageCode };
+            
             var user = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.Name, UserName),
@@ -99,11 +105,12 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
                 new Claim(ClaimTypes.Role, role)
             }, "JWT"));
 
-            var result = _authenticationService.GetStatus(user);
+            var result = await _authenticationService.GetStatus(user);
 
             result.Value.IsAuthenticated.ShouldBe(true);
             result.Value.Data.Email.ShouldBe(UserEmail);
             result.Value.Data.Name.ShouldBe(UserName);
+            result.Value.Data.LanguageCode.ShouldBe(languageCode);
             result.Value.Data.Roles[0].ShouldBe(role);
         }
     }

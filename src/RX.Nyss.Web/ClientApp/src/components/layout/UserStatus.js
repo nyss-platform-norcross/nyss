@@ -11,6 +11,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Icon from "@material-ui/core/Icon";
 import * as authActions from '../../authentication/authActions';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import { strings, stringKeys } from '../../strings';
 
 export const UserStatusComponent = ({ user, logout }) => {
   const [anchorEl, setAnchorEl] = useState();
@@ -43,7 +44,7 @@ export const UserStatusComponent = ({ user, logout }) => {
           </ListItem>
           <MenuItem onClick={logout} className={styles.authButton}>
             <Icon className={styles.logoutIcon}>exit_to_app</Icon>
-            Log out
+            {strings(stringKeys.user.logout)}
           </MenuItem>
         </List>
       </Menu>

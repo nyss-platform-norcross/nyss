@@ -51,8 +51,8 @@ class LoginPageComponent extends PureComponent {
       <div className={styles.loginContent}>
         <Paper className={styles.loginPaper}>
           <div className={styles.loginPaperContent}>
-            <Typography variant="h1" className={styles.paperHeader}>Welcome to Nyss</Typography>
-            <Typography variant="h2">Log in</Typography>
+            <Typography variant="h1" className={styles.paperHeader}>{strings(stringKeys.login.welcome)}</Typography>
+            <Typography variant="h2">{strings(stringKeys.login.title)}</Typography>
 
             {this.props.loginResponse &&
               <SnackbarContent
@@ -65,7 +65,7 @@ class LoginPageComponent extends PureComponent {
                 <Grid item xs={12}>
 
                   <TextInputField
-                    label="User name"
+                    label={strings(stringKeys.login.email)}
                     name="userName"
                     field={this.form.fields.userName}
                     autoFocus
