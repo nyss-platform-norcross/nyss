@@ -11,7 +11,7 @@ using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.AppData
 {
-    [Route("api/appdata")]
+    [Route("api/appData")]
     public class AppDataController : BaseController
     {
         private readonly IAppDataService _appDataService;

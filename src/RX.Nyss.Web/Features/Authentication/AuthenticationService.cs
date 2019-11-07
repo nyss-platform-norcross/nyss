@@ -56,7 +56,9 @@ namespace RX.Nyss.Web.Features.Authentication
         {
             var email = user.FindFirstValue(ClaimTypes.Name);
 
-            var userEntity = await _nyssContext.Users.SingleOrDefaultAsync(u => u.EmailAddress == email);
+            var userEntity = await _nyssContext.Users
+                .Include(x => x.ApplicationLanguage)
+                .SingleOrDefaultAsync(u => u.EmailAddress == email);
 
             if (userEntity == null)
             {
