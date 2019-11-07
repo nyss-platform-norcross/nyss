@@ -13,8 +13,13 @@ export const getMenu = (pathForMenu, parameters, placeholder, currentPath) => {
   const breadcrumb = getBreadcrumb(currentPath, parameters);
   const closestMenuPath = findClosestMenu(breadcrumb, placeholder, pathForMenu);
 
-  return siteMap
-    .filter(item => item.parentPath === closestMenuPath && item.placeholder && item.placeholder === placeholder)
+  const filteredSiteMap = siteMap
+    .filter(item => item.parentPath === closestMenuPath && item.placeholder && item.placeholder === placeholder);
+
+  filteredSiteMap
+    .sort((a, b) => a.placeholderIndex - b.placeholderIndex);
+
+  return filteredSiteMap
     .map(item => ({
       title: item.title(),
       url: getUrl(item.path, parameters),

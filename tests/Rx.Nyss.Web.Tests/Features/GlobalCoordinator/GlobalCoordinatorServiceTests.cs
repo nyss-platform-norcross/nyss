@@ -17,7 +17,7 @@ using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
+namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
 {
     public class GlobalCoordinatorServiceTests
     {
@@ -25,19 +25,16 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
-        private readonly IConfig _configMock;
-        private readonly IEmailPublisherService _emailPublisherServiceMock;
+        private readonly IVerificationEmailService _verificationEmailServiceMock;
 
         public GlobalCoordinatorServiceTests()
         {
             _loggerAdapter = Substitute.For<ILoggerAdapter>();
             _nyssContext = Substitute.For<INyssContext>();
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
-            _configMock = Substitute.For<IConfig>();
-            _configMock.BaseUrl = "http://hello";
-            _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
+            _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
 
-            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _configMock, _emailPublisherServiceMock);
+            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
         }
@@ -56,7 +53,7 @@ namespace Rx.Nyss.Web.Tests.Features.Administration.GlobalCoordinator
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Is<(string email, string name)>(x => x.email == userEmail && x.name == userName), Arg.Any<string>(), Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 

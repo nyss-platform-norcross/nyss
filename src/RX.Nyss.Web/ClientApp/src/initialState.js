@@ -60,5 +60,16 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null
+  },
+  nationalSocietyUsers: {
+    listFetching: false,
+    listRemoving: {},
+    listStale: true,
+    listData: [],
+    listNationalSocietyId: null,
+    formFetching: false,
+    formSaving: false,
+    formData: null,
+    formError: null
   }
 };

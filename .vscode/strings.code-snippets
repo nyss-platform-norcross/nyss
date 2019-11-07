@@ -1,0 +1,10 @@
+{
+	"Use a string": {
+		"scope": "javascript,typescript",
+		"prefix": "_str",
+		"body": [
+			"{strings(stringKeys.$1)}$0"
+		],
+		"description": "Use a string from resources"
+	}
+}
