@@ -11,7 +11,8 @@ export const initialState = {
       sideMenu: []
     },
     message: null,
-    moduleError: null
+    moduleError: null,
+    showStringsKeys: false,
   },
   requests: {
     isFetching: false,
