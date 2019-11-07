@@ -8,8 +8,8 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<UserNationalSociety> builder)
         {
             builder.HasKey(uns => new { uns.UserId, uns.NationalSocietyId });
-            builder.HasOne(uns => uns.User).WithMany(u => u.UserNationalSocieties).HasForeignKey(uns => uns.UserId).IsRequired();
-            builder.HasOne(uns => uns.NationalSociety).WithMany(ns => ns.NationalSocietyUsers).HasForeignKey(uns => uns.NationalSocietyId).IsRequired();
+            builder.HasOne(uns => uns.User).WithMany(u => u.UserNationalSocieties).HasForeignKey(uns => uns.UserId).IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(uns => uns.NationalSociety).WithMany(ns => ns.NationalSocietyUsers).HasForeignKey(uns => uns.NationalSocietyId).IsRequired().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

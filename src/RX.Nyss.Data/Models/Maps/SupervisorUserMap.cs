@@ -9,10 +9,10 @@ namespace RX.Nyss.Data.Models.Maps
         {
             builder.HasBaseType<User>();
             builder.Property(u => u.Sex).HasMaxLength(20).IsRequired();
-            builder.HasOne(dmu => dmu.NationalSociety);
-            builder.HasOne(su => su.Village);
-            builder.HasOne(su => su.Zone);
-            builder.HasOne(su => su.DataManagerUser);
+            builder.HasOne(dmu => dmu.NationalSociety).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(su => su.Village).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(su => su.Zone).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(su => su.DataManagerUser).WithMany().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

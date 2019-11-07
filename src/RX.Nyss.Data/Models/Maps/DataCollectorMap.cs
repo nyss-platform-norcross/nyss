@@ -14,10 +14,10 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.PhoneNumber).HasMaxLength(20).IsRequired();
             builder.Property(x => x.AdditionalPhoneNumber).HasMaxLength(20);
             builder.Property(x => x.Location).IsRequired();
-            builder.HasOne(x => x.Project).WithMany().IsRequired();
-            builder.HasOne(x => x.Supervisor).WithMany().IsRequired();
-            builder.HasOne(x => x.Village).WithMany().IsRequired();
-            builder.HasOne(x => x.Zone);
+            builder.HasOne(x => x.Project).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.Supervisor).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.Zone).WithMany().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

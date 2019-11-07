@@ -11,8 +11,8 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.Name).HasMaxLength(200);
             builder.Property(x => x.State).HasMaxLength(50).HasConversion<string>();
             builder.Property(x => x.TimeZone).HasMaxLength(50);
-            builder.HasOne(x => x.NationalSociety).WithMany().IsRequired();
-            builder.HasOne(x => x.ContentLanguage).WithMany().IsRequired();
+            builder.HasOne(x => x.NationalSociety).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.ContentLanguage).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

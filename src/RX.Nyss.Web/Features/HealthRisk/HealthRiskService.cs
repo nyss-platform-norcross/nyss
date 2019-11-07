@@ -205,9 +205,10 @@ namespace RX.Nyss.Web.Features.HealthRisk
             {
                 var healthRisk = await _nyssContext.HealthRisks
                     .Include(hr => hr.AlertRule)
-                    .Include(hr => hr.LanguageContents).ThenInclude(lc => lc.ContentLanguage)
+                    .Include(hr => hr.LanguageContents)
                     .SingleOrDefaultAsync(hr => hr.Id == id);
 
+                _nyssContext.AlertRules.Remove(healthRisk.AlertRule);
                 _nyssContext.HealthRisks.Remove(healthRisk);
                 await _nyssContext.SaveChangesAsync();
                 return SuccessMessage(ResultKey.HealthRisk.RemoveSuccess);

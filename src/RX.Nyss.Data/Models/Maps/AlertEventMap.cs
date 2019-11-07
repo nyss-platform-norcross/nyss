@@ -10,8 +10,8 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Operation).HasMaxLength(100).IsRequired();
             builder.Property(x => x.CreatedAt).IsRequired();
-            builder.HasOne(x => x.Alert).WithMany().IsRequired();
-            builder.HasOne(x => x.User).WithMany().IsRequired();
+            builder.HasOne(x => x.Alert).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.User).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
