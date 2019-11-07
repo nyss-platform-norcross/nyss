@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.DataCollector
 {
-    [Route("api/dataCollector")]
+    [Route("api/project/{projectId:int}/dataCollector")]
     public class DataCollectorController : BaseController
     {
         private readonly IDataCollectorService _dataCollectorService;
@@ -18,23 +19,23 @@ namespace RX.Nyss.Web.Features.DataCollector
             _dataCollectorService = dataCollectorService;
         }
 
-        [Route("get"), NeedsRole(Role.DataManager, Role.Supervisor)]
+        [HttpGet, Route("get"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId) =>
             await _dataCollectorService.GetDataCollector(dataCollectorId);
 
-        [Route("list"), NeedsRole(Role.DataManager, Role.Supervisor)]
+        [HttpGet, Route("list"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors() =>
             await _dataCollectorService.ListDataCollectors();
 
-        [Route("create"), NeedsRole(Role.DataManager, Role.Supervisor)]
-        public async Task<Result<int>> CreateDataCollector([FromBody]CreateDataCollectorRequestDto createDataCollectorDto) => 
-            await _dataCollectorService.CreateDataCollector(createDataCollectorDto);
+        [HttpPost, Route("create"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result<int>> CreateDataCollector(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) => 
+            await _dataCollectorService.CreateDataCollector(projectId, createDataCollectorDto);
 
-        [Route("edit"), NeedsRole(Role.DataManager, Role.Supervisor)]
-        public async Task<Result> EditDataCollector([FromBody]EditDataCollectorRequestDto editDataCollectorDto) =>
-            await _dataCollectorService.EditDataCollector(editDataCollectorDto);
+        [HttpPost, Route("edit"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result> EditDataCollector(int projectId, [FromBody]EditDataCollectorRequestDto editDataCollectorDto) =>
+            await _dataCollectorService.EditDataCollector(projectId, editDataCollectorDto);
 
-        [Route("remove"), NeedsRole(Role.DataManager, Role.Supervisor)]
+        [HttpPost, Route("remove"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> RemoveDataCollector(int dataCollectorId) =>
             await _dataCollectorService.RemoveDataCollector(dataCollectorId);
     }

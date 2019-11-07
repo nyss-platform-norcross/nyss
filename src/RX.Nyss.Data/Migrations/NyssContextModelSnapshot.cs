@@ -1684,6 +1684,11 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
 
+                    b.Property<string>("BirthYearGroup")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
                     b.Property<string>("DataCollectorType")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
@@ -1707,6 +1712,11 @@ namespace RX.Nyss.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
+
+                    b.Property<string>("Sex")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
 
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");

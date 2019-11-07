@@ -98,5 +98,18 @@
         }
 
         public const string UnexpectedError = "error.unexpected";
+        
+        public static class DataCollector
+        {
+            public const string CreateSuccess = "dataCollector.create.success";
+            public const string EditSuccess = "dataCollector.edit.success";
+            public const string PhoneNumberAlreadyExists = "dataCollector.phoneNumberExists";
+            public const string DataCollectorNotFound = "dataCollector.notFound";
+            public const string CreateError = "dataCollector.create.error";
+            public const string EditError = "dataCollector.edit.error";
+            public const string RemoveSuccess = "dataCollector.remove.success";
+            public const string RemoveError = "dataCollector.remove.error";
+        }
+
     }
 }
