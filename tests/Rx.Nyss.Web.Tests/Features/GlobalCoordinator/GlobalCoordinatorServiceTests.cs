@@ -53,7 +53,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(userEmail, userName, Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 
