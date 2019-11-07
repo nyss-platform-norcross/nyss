@@ -908,7 +908,8 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasOne("RX.Nyss.Data.Models.Zone", "Zone")
                         .WithMany()
-                        .HasForeignKey("ZoneId");
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.District", b =>

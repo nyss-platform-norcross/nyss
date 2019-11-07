@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191107105312_UpdateDeleteBehavior")]
+    [Migration("20191107114906_UpdateDeleteBehavior")]
     partial class UpdateDeleteBehavior
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -910,7 +910,8 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasOne("RX.Nyss.Data.Models.Zone", "Zone")
                         .WithMany()
-                        .HasForeignKey("ZoneId");
+                        .HasForeignKey("ZoneId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.District", b =>
