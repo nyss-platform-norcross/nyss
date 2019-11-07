@@ -17,6 +17,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
+import { strings, stringKeys } from '../../strings';
 
 const NationalSocietiesCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -56,7 +57,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Add National Society</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSociety.form.creationTitle)}</Typography>
 
       {props.error &&
         <SnackbarContent
@@ -68,7 +69,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextInputField
-              label="National Society name"
+              label={strings(stringKeys.nationalSociety.form.name)}
               name="name"
               field={form.fields.name}
               autoFocus
@@ -77,7 +78,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <SelectField
-              label="Country"
+              label={strings(stringKeys.nationalSociety.form.country)}
               name="country"
               field={form.fields.countryId}
             >
@@ -89,7 +90,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <SelectField
-              label="Content language"
+              label={strings(stringKeys.nationalSociety.form.contentLanguage)}
               name="contentLanguage"
               field={form.fields.contentLanguageId}
             >
@@ -102,11 +103,11 @@ const NationalSocietiesCreatePageComponent = (props) => {
 
         <FormActions>
           <Button onClick={() => props.goToList()}>
-            Cancel
+            {strings(stringKeys.form.cancel)}
           </Button>
 
           <SubmitButton isFetching={props.isSaving}>
-            Save National Society
+            {strings(stringKeys.nationalSociety.form.create)}
           </SubmitButton>
         </FormActions>
       </Form>

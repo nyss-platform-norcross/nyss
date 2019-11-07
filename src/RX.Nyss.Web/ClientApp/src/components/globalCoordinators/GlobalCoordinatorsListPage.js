@@ -11,6 +11,7 @@ import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import GlobalCoordinatorsTable from './GlobalCoordinatorsTable';
 import { useMount } from '../../utils/lifecycle';
+import { strings, stringKeys } from '../../strings';
 
 const GlobalCoordinatorsListPageComponent = (props) => {
   useMount(() => {
@@ -20,11 +21,11 @@ const GlobalCoordinatorsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Global Coordinators</Typography>
+      <Typography variant="h2">{strings(stringKeys.globalCoordinator.title)}</Typography>
 
       <TableActions>
         <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          Add Global Coordinator
+          {strings(stringKeys.globalCoordinator.addNew)}
        </Button>
       </TableActions>
 

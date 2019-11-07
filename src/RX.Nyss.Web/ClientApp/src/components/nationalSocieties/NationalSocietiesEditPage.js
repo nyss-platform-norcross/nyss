@@ -17,6 +17,7 @@ import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
+import { strings, stringKeys } from '../../strings';
 
 const NationalSocietiesEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -69,7 +70,7 @@ const NationalSocietiesEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Edit National Society</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSociety.form.editionTitle)}</Typography>
 
       <Form onSubmit={handleSubmit}>
         {props.loginResponse &&
@@ -81,7 +82,7 @@ const NationalSocietiesEditPageComponent = (props) => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextInputField
-              label="National Society name"
+              label={strings(stringKeys.nationalSociety.form.name)}
               name="name"
               field={form.fields.name}
               autoFocus
@@ -90,7 +91,7 @@ const NationalSocietiesEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <SelectField
-              label="Country"
+              label={strings(stringKeys.nationalSociety.form.country)}
               name="country"
               field={form.fields.countryId}
             >
@@ -102,7 +103,7 @@ const NationalSocietiesEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <SelectField
-              label="Content language"
+              label={strings(stringKeys.nationalSociety.form.contentLanguage)}
               name="contentLanguage"
               field={form.fields.contentLanguageId}
             >
@@ -115,11 +116,11 @@ const NationalSocietiesEditPageComponent = (props) => {
 
         <FormActions>
           <Button onClick={() => props.goToOverview(props.data.id)}>
-            Cancel
+            {strings(stringKeys.form.cancel)}
           </Button>
 
           <SubmitButton isFetching={props.isSaving}>
-            Save National Society
+            {strings(stringKeys.nationalSociety.form.update)}
           </SubmitButton>
         </FormActions>
       </Form>

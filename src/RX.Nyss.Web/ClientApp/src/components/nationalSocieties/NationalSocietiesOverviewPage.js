@@ -12,6 +12,7 @@ import FormActions from '../forms/formActions/FormActions';
 import ReadOnlyField from '../forms/ReadOnlyField';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
+import { strings, stringKeys } from '../../strings';
 
 const NationalSocietiesOverviewPageComponent = (props) => {
   useMount(() => {
@@ -24,35 +25,37 @@ const NationalSocietiesOverviewPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Overview</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSociety.overview.title)}</Typography>
 
 
       <Form>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <ReadOnlyField
-              label={"National Society name"}
+              label={strings(stringKeys.nationalSociety.form.name)}
               value={props.data.name}
             />
           </Grid>
 
           <Grid item xs={12}>
             <ReadOnlyField
-              label={"Country"}
+              label={strings(stringKeys.nationalSociety.form.country)}
               value={props.data.countryName}
             />
           </Grid>
 
           <Grid item xs={12}>
             <ReadOnlyField
-              label={"Content language"}
+              label={strings(stringKeys.nationalSociety.form.contentLanguage)}
               value={props.data.contentLanguageName}
             />
           </Grid>
         </Grid>
 
         <FormActions>
-          <Button variant="outlined" color="primary" onClick={() => props.openEdition(props.data.id)}>Edit National Society</Button>
+          <Button variant="outlined" color="primary" onClick={() => props.openEdition(props.data.id)}>
+            {strings(stringKeys.nationalSociety.edit)}
+          </Button>
         </FormActions>
       </Form>
 

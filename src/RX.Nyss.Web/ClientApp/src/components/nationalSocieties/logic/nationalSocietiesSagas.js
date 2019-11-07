@@ -26,7 +26,6 @@ function* getNationalSocieties(force) {
   yield put(actions.getList.request());
   try {
     const response = yield call(http.get, "/api/nationalSociety/list");
-
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));

@@ -11,8 +11,9 @@ import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietiesTable from './NationalSocietiesTable';
 import { useMount } from '../../utils/lifecycle';
+import { strings, stringKeys } from '../../strings';
 
-const NationalSocietiesListPageComponent = ({ match, openModule, getList, ...props }) => {
+const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule, getList, ...props }) => {
   useMount(() => {
     openModule(match.path, match.params);
     getList();
@@ -20,11 +21,11 @@ const NationalSocietiesListPageComponent = ({ match, openModule, getList, ...pro
 
   return (
     <Fragment>
-      <Typography variant="h2">National Societies</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSociety.title)}</Typography>
 
       <TableActions>
         <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          Add national society
+          {strings(stringKeys.nationalSociety.addNew)}
        </Button>
       </TableActions>
 

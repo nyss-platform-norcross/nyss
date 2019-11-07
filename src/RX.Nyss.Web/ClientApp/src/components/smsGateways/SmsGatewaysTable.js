@@ -10,7 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
-import { strings } from '../../strings';
+import { strings, stringKeys } from '../../strings';
 
 export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
   if (isListFetching) {
@@ -21,9 +21,9 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell style={{ width: "25%", minWidth: 100 }}>API key</TableCell>
-          <TableCell style={{ width: "16%", minWidth: 75 }}>Gateway type</TableCell>
+          <TableCell>{strings(stringKeys.smsGateway.list.name)}</TableCell>
+          <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.smsGateway.list.apiKey)}</TableCell>
+          <TableCell style={{ width: "16%", minWidth: 75 }}>{strings(stringKeys.smsGateway.list.gatewayType)}</TableCell>
           <TableCell style={{ width: "16%" }} />
         </TableRow>
       </TableHead>
@@ -35,7 +35,7 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
             <TableCell>{strings(`smsGateway.type.${row.gatewayType.toLowerCase()}`)}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} confirmationText="Confirm removing the item" icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.smsGateway.list.confirmationText)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}

@@ -11,6 +11,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import dayjs from "dayjs"
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
+import { strings, stringKeys } from '../../strings';
 
 export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition, goToDashboard, remove, list }) => {
   if (isListFetching) {
@@ -21,11 +22,11 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
     <Table>
       <TableHead>
         <TableRow>
-          <TableCell>Name</TableCell>
-          <TableCell style={{ width: "16%", minWidth: 100 }}>Country</TableCell>
-          <TableCell style={{ width: "8%", minWidth: 75 }}>Start date</TableCell>
-          <TableCell style={{ width: "16%" }}>Data owner</TableCell>
-          <TableCell style={{ width: "16%" }}>Technical advisor</TableCell>
+          <TableCell>{strings(stringKeys.nationalSociety.list.name)}</TableCell>
+          <TableCell style={{ width: "16%", minWidth: 100 }}>{strings(stringKeys.nationalSociety.list.country)}</TableCell>
+          <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.nationalSociety.list.startDate)}</TableCell>
+          <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.headManager)}</TableCell>
+          <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.technicalAdvisor)}</TableCell>
           <TableCell style={{ width: "16%", minWidth: 75 }} />
         </TableRow>
       </TableHead>
@@ -39,7 +40,7 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
             <TableCell>{row.technicalAdvisor}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} confirmationText="Confirm removing the item" icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}

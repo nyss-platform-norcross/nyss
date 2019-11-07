@@ -1,3 +1,5 @@
+import { strings, stringKeys } from "../strings";
+
 const validateField = (field, validators, formValues) => {
   if (validators && validators.length !== 0) {
     for (let validator of validators) {
@@ -10,7 +12,7 @@ const validateField = (field, validators, formValues) => {
       if (!isValid) {
         return {
           isValid: isValid,
-          errorMessage: !isValid ? validator[0] : null
+          errorMessage: !isValid ? validator[0]() : null
         };
       }
     }
@@ -123,19 +125,13 @@ export const createForm = (fields, validators) => {
 };
 
 const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-const textRegex = /^[a-zA-Z\s]+$/;
 const phoneNumberRegex = /^\+[0-9]{6}[0-9]*$/;
 
 export const validators = {
-  not: ["Value is incorrect", (value) => !!value],
-  phoneNumber: ["Not a valid phone number", (value) => !value || phoneNumberRegex.test(value)],
-  required: ["Value is required", (value) => !!value],
-  greatherThanField: (fieldGetter) => ["The value is to low", (value, fields) => value > fieldGetter(fields)],
-  integer: ["Value has to be an integer", (value) => !isNaN(Number(value))],
-  minLength: (minLength) => [`Length has to be at least ${minLength} characters`, (value) => !value || value.length >= minLength],
-  maxLength: (maxLength) => [`Length has to be at maximum ${maxLength} characters`, (value) => !value || value.length <= maxLength],
-  length: (minLength, maxLength) => [`Length has to be at least ${minLength} and maximum ${maxLength} characters`, (value) => value && value.length >= minLength && value.length <= maxLength],
-  email: ["Value has to be an email address", (value) => emailRegex.test(value)],
-  points: ["Value has to be a number and be more than zero", (value) => !isNaN(Number(value)) && value > 0],
-  text: ["Value can contain only letters", (value) => textRegex.test(value)]
+  phoneNumber: [() => strings(stringKeys.validation.invalidPhoneNumber), (value) => !value || phoneNumberRegex.test(value)],
+  required: [() => strings(stringKeys.validation.fieldRequired), (value) => !!value],
+  integer: [() => strings(stringKeys.validation.invalidInteger), (value) => !value || !isNaN(Number(value))],
+  minLength: (minLength) => [() => strings(stringKeys.validation.tooShortString).replace("{value}", minLength), (value) => !value || value.length >= minLength],
+  maxLength: (maxLength) => [() => strings(stringKeys.validation.tooLongString).replace("{value}", maxLength), (value) => !value || value.length <= maxLength],
+  email: [() => strings(stringKeys.validation.invalidEmail), (value) => emailRegex.test(value)]
 };

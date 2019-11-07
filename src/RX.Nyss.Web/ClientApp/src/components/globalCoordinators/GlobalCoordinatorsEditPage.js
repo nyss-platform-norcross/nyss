@@ -13,6 +13,7 @@ import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
+import { strings, stringKeys } from '../../strings';
 
 const GlobalCoordinatorsEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -67,7 +68,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextInputField
-              label="Name"
+              label={strings(stringKeys.globalCoordinator.form.name)}
               name="name"
               field={form.fields.name}
             />
@@ -75,7 +76,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Phone number"
+              label={strings(stringKeys.globalCoordinator.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
             />
@@ -83,7 +84,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Additional phone number (optional)"
+              label={strings(stringKeys.globalCoordinator.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
             />
@@ -91,7 +92,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Organization"
+              label={strings(stringKeys.globalCoordinator.form.organization)}
               name="organization"
               field={form.fields.organization}
             />
@@ -99,13 +100,8 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>
-            Cancel
-          </Button>
-
-          <SubmitButton isFetching={props.isSaving}>
-            Save Global Coordinator
-          </SubmitButton>
+          <Button onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.globalCoordinator.form.update)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

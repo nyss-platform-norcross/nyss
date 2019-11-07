@@ -1,24 +1,25 @@
 import { placeholders } from "../../siteMapPlaceholders";
 import { accessMap } from "../../authentication/accessMap";
 import { Administrator, GlobalCoordinator } from "../../authentication/roles";
+import { stringKeys, strings } from "../../strings";
 
 export const globalCoordinatorsSiteMap = [
   {
     path: "/globalcoordinators",
-    title: "Global Coordinators",
+    title: () => strings(stringKeys.globalCoordinator.title),
     placeholder: placeholders.topMenu,
     access: accessMap.globalCoordinators.list
   },
   {
     parentPath: "/globalcoordinators",
     path: "/globalcoordinators/add",
-    title: "Add Global Coordinator",
+    title: () => strings(stringKeys.globalCoordinator.form.creationTitle),
     access: accessMap.globalCoordinators.add
   },
   {
     parentPath: "/globalcoordinators",
     path: "/globalcoordinators/:globalCoordinatorId/edit",
-    title: "Edit Global Coordinator",
+    title: () => strings(stringKeys.globalCoordinator.form.editionTitle),
     access: [Administrator, GlobalCoordinator]
   }
 ];
