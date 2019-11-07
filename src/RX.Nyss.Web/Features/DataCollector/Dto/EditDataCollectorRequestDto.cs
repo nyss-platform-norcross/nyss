@@ -16,6 +16,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string Village { get; set; }
+        public string Zone { get; set; }
         public int SupervisorId { get; set; }
 
         class Validator : AbstractValidator<EditDataCollectorRequestDto>
@@ -33,6 +34,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 RuleFor(dc => dc.Latitude).InclusiveBetween(-90, 90);
                 RuleFor(dc => dc.Longitude).InclusiveBetween(-180, 180);
                 RuleFor(dc => dc.Village).NotEmpty().MaximumLength(100);
+                RuleFor(dc => dc.Zone).MaximumLength(100);
                 RuleFor(dc => dc.SupervisorId).GreaterThan(0);
             }
         }

@@ -38,7 +38,6 @@ namespace RX.Nyss.Web.Features.DataCollector
             {
                 var dataCollector = await _nyssContext.DataCollectors
                     .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
-                    .Where(dc => dc.Id == dataCollectorId)
                     .Select(dc => new GetDataCollectorResponseDto
                     {
                         Id = dc.Id,
@@ -55,8 +54,14 @@ namespace RX.Nyss.Web.Features.DataCollector
                         Region = dc.Village.District.Region.Name,
                         District = dc.Village.District.Name,
                         Village = dc.Village.Name,
-                        Zone = dc.Zone.Name
-                    }).FirstOrDefaultAsync();
+                        Zone = dc.Zone != null ? dc.Zone.Name : null
+                    }).FirstOrDefaultAsync(dc => dc.Id == dataCollectorId);
+
+                if (dataCollector == null)
+                {
+                    return Error(ResultKey.DataCollector.DataCollectorNotFound).Cast<GetDataCollectorResponseDto>();
+                }
+
                 return Success(dataCollector);
             }
             catch (Exception e)
@@ -152,7 +157,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                     .Include(dc => dc.Supervisor)
                     .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
                     .Include(dc => dc.Zone)
-                    .SingleOrDefaultAsync(dc => dc.Id == dc.Id);
+                    .SingleOrDefaultAsync(dc => dc.Id == editDataCollectorDto.Id);
 
                 if (dataCollector == null)
                 {
@@ -166,11 +171,30 @@ namespace RX.Nyss.Web.Features.DataCollector
                 dataCollector.Location = new Point(editDataCollectorDto.Latitude, editDataCollectorDto.Longitude);
                 dataCollector.Sex = editDataCollectorDto.Sex;
                 dataCollector.DataCollectorType = editDataCollectorDto.DataCollectorType;
-                dataCollector.Project = await _nyssContext.Projects.FindAsync(projectId);
-                dataCollector.Supervisor = (SupervisorUser)await _nyssContext.Users.FindAsync(editDataCollectorDto.SupervisorId);
+
+                if (dataCollector.Project.Id != projectId)
+                {
+                    dataCollector.Project = await _nyssContext.Projects.FindAsync(projectId);
+                }
+
+                if (dataCollector.Supervisor.Id != editDataCollectorDto.SupervisorId)
+                {
+                    dataCollector.Supervisor = (SupervisorUser)await _nyssContext.Users.FindAsync(editDataCollectorDto.SupervisorId);
+                }
+
+                if (dataCollector.Village.Name != editDataCollectorDto.Village)
+                {
+                    dataCollector.Village = await _nyssContext.Villages
+                        .FirstOrDefaultAsync(v => v.Name == editDataCollectorDto.Name && v.District.Region.NationalSociety.Id == dataCollector.Project.Id);
+                }
+
+                if (!string.IsNullOrEmpty(editDataCollectorDto.Zone) && (dataCollector.Zone == null || dataCollector.Zone.Name != editDataCollectorDto.Zone))
+                {
+                    dataCollector.Zone = await _nyssContext.Zones.FirstOrDefaultAsync(z => z.Name == editDataCollectorDto.Zone && z.Village.Id == dataCollector.Village.Id);
+                } 
 
                 await _nyssContext.SaveChangesAsync();
-                return Success(ResultKey.DataCollector.EditSuccess);
+                return SuccessMessage(ResultKey.DataCollector.EditSuccess);
             }
             catch (Exception e)
             {
