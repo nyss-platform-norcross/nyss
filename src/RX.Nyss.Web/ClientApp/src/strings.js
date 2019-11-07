@@ -146,6 +146,32 @@ export const stringKeys = {
       removalConfirmation: "nationalSocietyUser.list.removalConfirmation"
     },
   },
+  dataCollector: {
+    title: "dataCollectors.title",
+    addNew: "dataCollectors.addNew",
+    form: {
+      creationTitle: "dataCollectors.form.creationTitle",
+      editionTitle: "dataCollectors.form.editionTitle",
+      name: "dataCollectors.form.name",
+      displayName: "dataCollectors.form.displayName",
+      sex: "dataCollectors.form.sex",
+      latitude: "dataCollectors.form.latitude",
+      longitude: "dataCollectors.form.longitude",
+      create: "dataCollectors.form.create",
+      update: "dataCollectors.form.update"
+    },
+    list: {
+      name: "dataCollectors.list.name",
+      removalConfirmation: "dataCollectors.list.removalConfirmation"
+    },
+    constants: {
+      sex: {
+        male: "dataCollectors.sex.male",
+        female: "dataCollectors.sex.female",
+        other: "dataCollectors.sex.other",
+      }
+    }
+  },
   form: {
     cancel: "form.cancel"
   },

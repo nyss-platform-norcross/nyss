@@ -1,0 +1,121 @@
+import { call, put, takeEvery, select } from "redux-saga/effects";
+import * as consts from "./dataCollectorsConstants";
+import * as actions from "./dataCollectorsActions";
+import * as appActions from "../../app/logic/appActions";
+import * as http from "../../../utils/http";
+import * as httpMock from "../../../utils/httpMock";
+
+export const dataCollectorsSagas = () => [
+  takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
+  takeEvery(consts.OPEN_DATA_COLLECTOR_CREATION.INVOKE, openDataCollectorCreation),
+  takeEvery(consts.OPEN_DATA_COLLECTOR_EDITION.INVOKE, openDataCollectorEdition),
+  takeEvery(consts.CREATE_DATA_COLLECTOR.INVOKE, createDataCollector),
+  takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
+  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector)
+];
+
+function* openDataCollectorsList({ projectId }) {
+  yield put(actions.openList.request());
+  try {
+    yield openDataCollectorsModule(projectId);
+
+    if (yield select(state => state.dataCollectors.listStale)) {
+      yield call(getDataCollectors, projectId);
+    }
+
+    yield put(actions.openList.success());
+  } catch (error) {
+    yield put(actions.openList.failure(error.message));
+  }
+};
+
+function* openDataCollectorCreation({ projectId }) {
+  yield put(actions.openCreation.request());
+  try {
+    yield openDataCollectorsModule(projectId);
+    yield put(actions.openCreation.success());
+  } catch (error) {
+    yield put(actions.openCreation.failure(error.message));
+  }
+};
+
+function* openDataCollectorEdition({ dataCollectorId }) {
+  yield put(actions.openEdition.request());
+  try {
+    const response = yield call(http.get, `/api/dataCollector/${dataCollectorId}/get`);
+    yield openDataCollectorsModule(response.value.nationalSocietyId);
+    yield put(actions.openEdition.success(response.value));
+  } catch (error) {
+    yield put(actions.openEdition.failure(error.message));
+  }
+};
+
+function* createDataCollector({ projectId, data }) {
+  yield put(actions.create.request());
+  try {
+    const response = yield call(http.post, `/api/project/${projectId}/dataCollector/add`, data);
+    yield put(actions.create.success(response.value));
+    yield put(actions.goToList(projectId));
+    yield put(appActions.showMessage("The SMS Gateway was added successfully"));
+  } catch (error) {
+    yield put(actions.create.failure(error.message));
+  }
+};
+
+function* editDataCollector({ nationalSocietyId, data }) {
+  yield put(actions.edit.request());
+  try {
+    const response = yield call(http.post, `/api/dataCollector/${data.id}/edit`, data);
+    yield put(actions.edit.success(response.value));
+    yield put(actions.goToList(nationalSocietyId));
+  } catch (error) {
+    yield put(actions.edit.failure(error.message));
+  }
+};
+
+function* removeDataCollector({ dataCollectorId }) {
+  yield put(actions.remove.request(dataCollectorId));
+  try {
+    yield call(http.post, `/api/dataCollector/${dataCollectorId}/remove`);
+    yield put(actions.remove.success(dataCollectorId));
+    const projectId = yield select(state => state.appData.route.params.projectId);
+    yield call(getDataCollectors, projectId);
+  } catch (error) {
+    yield put(actions.remove.failure(dataCollectorId, error.message));
+  }
+};
+
+function* getDataCollectors(projectId) {
+  yield put(actions.getList.request());
+  try {
+    const response = yield call(httpMock.get, `/api/project/${projectId}/dataCollector/list`);
+    yield put(actions.getList.success(response.value));
+  } catch (error) {
+    yield put(actions.getList.failure(error.message));
+  }
+};
+
+function* openDataCollectorsModule(projectId) {
+  // const project = yield call(http.getCached, {
+  //   path: `/api/project/${projectId}/get`,
+  //   dependencies: [entityTypes.project(projectId)]
+  // });
+
+  const project = {
+    value: {
+      nationalSocietyId: "1",
+      nationalSocietyName: "National Society Mock",
+      nationalSocietyCountryName: "Country",
+      projectId: "1",
+      projectName: "Project mock"
+    }
+  };
+
+  yield put(appActions.openModule.invoke(null, {
+    nationalSocietyId: project.value.nationalSocietyId,
+    nationalSocietyName: project.value.nationalSocietyName,
+    nationalSocietyCountry: project.value.nationalSocietyCountryName,
+    projectId: project.value.projectId,
+    projectName: project.value.projectName
+  }));
+}

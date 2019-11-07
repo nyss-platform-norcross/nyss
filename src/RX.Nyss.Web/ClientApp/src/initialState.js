@@ -72,5 +72,14 @@ export const initialState = {
     formSaving: false,
     formData: null,
     formError: null
+  },
+  dataCollectors: {
+    listFetching: false,
+    listRemoving: {},
+    listStale: true,
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formData: null
   }
 };

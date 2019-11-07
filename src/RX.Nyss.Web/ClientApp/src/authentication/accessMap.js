@@ -31,5 +31,17 @@ export const accessMap = {
     add: [Administrator, GlobalCoordinator],
     edit: [Administrator, GlobalCoordinator],
     delete: [Administrator, GlobalCoordinator]
-  }
+  },
+  dataCollectors: {
+    list: [Administrator, GlobalCoordinator, DataManager, TechnicalAdvisor],
+    add: [Administrator, GlobalCoordinator, DataManager, TechnicalAdvisor],
+    edit: [Administrator, GlobalCoordinator, DataManager, TechnicalAdvisor],
+    delete: [Administrator, GlobalCoordinator, DataManager, TechnicalAdvisor]
+  },
+  projects: {
+    list: [Administrator, GlobalCoordinator, DataManager, TechnicalAdvisor],
+    add: [Administrator, GlobalCoordinator, DataManager, TechnicalAdvisor],
+    edit: [Administrator, GlobalCoordinator, DataManager, TechnicalAdvisor],
+    delete: [Administrator, GlobalCoordinator, DataManager, TechnicalAdvisor]
+  },
 };
