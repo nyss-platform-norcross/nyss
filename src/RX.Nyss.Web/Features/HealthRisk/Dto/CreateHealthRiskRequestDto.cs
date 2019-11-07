@@ -28,7 +28,6 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
                 RuleFor(hr => hr.AlertRuleCountThreshold).GreaterThanOrEqualTo(0);
                 RuleFor(hr => hr.AlertRuleDaysThreshold).GreaterThanOrEqualTo(0);
                 RuleFor(hr => hr.AlertRuleMetersThreshold).GreaterThanOrEqualTo(0);
-                RuleForEach(hr => hr.LanguageContent).SetValidator(new HealthRiskLanguageContentDto.Validator());
             }
         }
     }

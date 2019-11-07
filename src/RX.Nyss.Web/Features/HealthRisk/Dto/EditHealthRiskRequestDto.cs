@@ -28,7 +28,6 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
                 RuleFor(hr => hr.HealthRiskCode).GreaterThan(0);
                 RuleFor(hr => hr.HealthRiskType).IsInEnum();
                 RuleFor(hr => hr.LanguageContent).NotEmpty();
-                RuleForEach(hr => hr.LanguageContent).SetValidator(new HealthRiskLanguageContentDto.Validator());
             }
         }
     }
