@@ -21,7 +21,9 @@
                 public const string UserAlreadyInRole = "user.registration.userAlreadyInRole";
                 public const string UserNotFound = "user.registration.userNotFound";
                 public const string PasswordTooWeak = "user.registration.passwordTooWeak";
+                public const string NationalSocietyDoesNotExist = "user.registration.nationalSocietyDoesNotExist";
                 public const string UnknownError = "user.registration.unknownError";
+                
             }
 
             public static class ResetPassword

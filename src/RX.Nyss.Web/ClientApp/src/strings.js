@@ -111,6 +111,30 @@ export const stringKeys = {
       removalConfirmation: "globalCoordinator.list.removalConfirmation"
     },
   },
+  nationalSocietyUser: {
+    title: "nationalSocietyUser.title",
+    addNew: "nationalSocietyUser.addNew",
+    form: {
+      creationTitle: "nationalSocietyUser.form.creationTitle",
+      editionTitle: "nationalSocietyUser.form.editionTitle",
+      name: "nationalSocietyUser.form.name",
+      role: "nationalSocietyUser.form.role",
+      email: "nationalSocietyUser.form.email",
+      phoneNumber: "nationalSocietyUser.form.phoneNumber",
+      additionalPhoneNumber: "nationalSocietyUser.form.additionalPhoneNumber",
+      organization: "nationalSocietyUser.form.organization",
+      create: "nationalSocietyUser.form.create",
+      update: "nationalSocietyUser.form.update"
+    },
+    list: {
+      name: "nationalSocietyUser.list.name",
+      email: "nationalSocietyUser.list.email",
+      phoneNumber: "nationalSocietyUser.list.phoneNumber",
+      role: "nationalSocietyUser.list.role",
+      project: "nationalSocietyUser.list.project",
+      removalConfirmation: "nationalSocietyUser.list.removalConfirmation"
+    },
+  },
   form: {
     cancel: "form.cancel"
   },

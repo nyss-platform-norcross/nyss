@@ -130,6 +130,7 @@ const phoneNumberRegex = /^\+[0-9]{6}[0-9]*$/;
 export const validators = {
   phoneNumber: [() => strings(stringKeys.validation.invalidPhoneNumber), (value) => !value || phoneNumberRegex.test(value)],
   required: [() => strings(stringKeys.validation.fieldRequired), (value) => !!value],
+  requiredWhen: (fieldGetter) => [() => "Value is required", (value, fields) => !fieldGetter(fields) || !!value],
   integer: [() => strings(stringKeys.validation.invalidInteger), (value) => !value || !isNaN(Number(value))],
   minLength: (minLength) => [() => strings(stringKeys.validation.tooShortString).replace("{value}", minLength), (value) => !value || value.length >= minLength],
   maxLength: (maxLength) => [() => strings(stringKeys.validation.tooLongString).replace("{value}", maxLength), (value) => !value || value.length <= maxLength],
