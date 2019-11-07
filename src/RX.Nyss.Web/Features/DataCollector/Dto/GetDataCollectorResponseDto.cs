@@ -1,6 +1,6 @@
 using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.DataCollector
+namespace RX.Nyss.Web.Features.DataCollector.Dto
 {
     public class GetDataCollectorResponseDto
     {

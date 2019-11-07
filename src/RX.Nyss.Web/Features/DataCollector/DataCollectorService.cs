@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;

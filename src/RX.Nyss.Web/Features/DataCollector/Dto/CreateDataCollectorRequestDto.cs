@@ -1,7 +1,7 @@
 using FluentValidation;
 using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.DataCollector
+namespace RX.Nyss.Web.Features.DataCollector.Dto
 {
     public class CreateDataCollectorRequestDto
     {
@@ -18,7 +18,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         public string Zone { get; set; }
         public int SupervisorId { get; set; }
 
-        class Validator : AbstractValidator<CreateDataCollectorRequestDto>
+        public class Validator : AbstractValidator<CreateDataCollectorRequestDto>
         {
             public Validator()
             {

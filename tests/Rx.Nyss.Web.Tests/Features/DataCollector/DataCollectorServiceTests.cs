@@ -8,6 +8,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.DataCollector;
+using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
