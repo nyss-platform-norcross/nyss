@@ -3,6 +3,8 @@ import * as actions from "./appConstans";
 export const showMessage = (message) => ({ type: actions.SHOW_MESSAGE.INVOKE, message });
 export const closeMessage = () => ({ type: actions.CLOSE_MESSAGE.INVOKE });
 export const entityUpdated = (entity) => ({ type: actions.ENTITY_UPDATED, entities: [entity] });
+export const switchStrings = (status) => ({ type: actions.SWITCH_STRINGS, status });
+export const setAppReady = (status) => ({ type: actions.SET_APP_READY, status });
 
 export const initApplication = {
   invoke: () =>
@@ -25,8 +27,8 @@ export const getUser = {
   request: () =>
     ({ type: actions.GET_USER.REQUEST }),
 
-  success: (isAuthenticated, { name, email, roles }, session) =>
-    ({ type: actions.GET_USER.SUCCESS, isAuthenticated, user: { name, email, roles }, session }),
+  success: (isAuthenticated, { name, email, roles }) =>
+    ({ type: actions.GET_USER.SUCCESS, isAuthenticated, user: { name, email, roles } }),
 
   failure: (message) => ({ type: actions.GET_USER.FAILURE, message })
 };
@@ -38,8 +40,8 @@ export const getAppData = {
   request: () =>
     ({ type: actions.GET_APP_DATA.REQUEST }),
 
-  success: (contentLanguages, countries) =>
-    ({ type: actions.GET_APP_DATA.SUCCESS, contentLanguages, countries }),
+  success: (contentLanguages, countries, isDevelopment) =>
+    ({ type: actions.GET_APP_DATA.SUCCESS, contentLanguages, countries, isDevelopment }),
 
   failure: (message) =>
     ({ type: actions.GET_APP_DATA.FAILURE, message })

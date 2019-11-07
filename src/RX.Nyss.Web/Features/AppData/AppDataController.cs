@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.AppData.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.StringsResources;
@@ -34,7 +32,7 @@ namespace RX.Nyss.Web.Features.AppData
         /// Gets application data
         /// </summary>
         /// <returns></returns>
-        [Route("getAppData"), HttpGet]
+        [Route("getAppData"), HttpGet, AllowAnonymous]
         public async Task<Result<AppDataResponseDto>> GetAppData() =>
             await _appDataService.GetAppData();
 

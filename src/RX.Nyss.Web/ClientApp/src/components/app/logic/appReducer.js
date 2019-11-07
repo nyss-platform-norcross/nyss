@@ -42,7 +42,8 @@ export function appReducer(state = initialState.appData, action) {
       return {
         ...state,
         contentLanguages: action.contentLanguages,
-        countries: action.countries
+        countries: action.countries,
+        isDevelopment: action.isDevelopment
       }
 
     case actions.OPEN_MODULE.INVOKE:

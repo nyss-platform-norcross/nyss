@@ -86,8 +86,8 @@ function* getUserStatus() {
 function* getAppData() {
   yield put(actions.getAppData.request());
   try {
-    const appData = yield call(http.get, "/api/appData/getAppData");
-    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries));
+    const appData = yield call(http.get, "/api/appData/getAppData", true);
+    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries, appData.value.isDevelopment));
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }

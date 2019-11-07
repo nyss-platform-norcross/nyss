@@ -2,8 +2,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.AppData.Dto;
 using RX.Nyss.Web.Utils.DataContract;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.AppData
 {
@@ -15,14 +17,18 @@ namespace RX.Nyss.Web.Features.AppData
     public class AppDataService : IAppDataService
     {
         private readonly INyssContext _nyssContext;
+        private readonly IConfig _config;
 
-        public AppDataService(INyssContext context)
+        public AppDataService(
+            INyssContext context, 
+            IConfig config)
         {
             _nyssContext = context;
+            _config = config;
         }
 
         public async Task<Result<AppDataResponseDto>> GetAppData() => 
-            Result.Success(new AppDataResponseDto
+            Success(new AppDataResponseDto
             {
                 Countries = await _nyssContext.Countries
                         .Select(cl => new AppDataResponseDto.CountryDto
@@ -37,7 +43,8 @@ namespace RX.Nyss.Web.Features.AppData
                             Id = cl.Id,
                             Name = cl.DisplayName
                         })
-                        .ToListAsync()
+                        .ToListAsync(),
+                IsDevelopment = _config.Environment != "Prod" ? true : (bool?)null
             });
     }
 }
