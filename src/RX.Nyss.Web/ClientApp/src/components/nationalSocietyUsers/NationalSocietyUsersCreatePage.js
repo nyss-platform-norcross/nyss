@@ -14,7 +14,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
-import { strings } from '../../strings';
+import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 import { userRoles } from './logic/nationalSocietyUsersConstants';
 import * as roles from '../../authentication/roles';
@@ -58,7 +58,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Add User</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.form.creationTitle)}</Typography>
 
       {props.error &&
         <SnackbarContent
@@ -71,7 +71,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <SelectInput
-              label="Role"
+              label={strings(stringKeys.nationalSocietyUser.form.role)}
               name="role"
               field={form.fields.role}
             >
@@ -87,7 +87,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="E-mail"
+              label={strings(stringKeys.nationalSocietyUser.form.email)}
               name="email"
               field={form.fields.email}
               autoFocus
@@ -96,7 +96,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Name"
+              label={strings(stringKeys.nationalSocietyUser.form.name)}
               name="name"
               field={form.fields.name}
             />
@@ -104,7 +104,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Phone number"
+              label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
             />
@@ -112,7 +112,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Additional phone number (optional)"
+              label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
             />
@@ -120,7 +120,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Organization"
+              label={strings(stringKeys.nationalSocietyUser.form.organization)}
               name="organization"
               field={form.fields.organization}
             />
@@ -128,13 +128,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>
-            Cancel
-          </Button>
-
-          <SubmitButton isFetching={props.isSaving}>
-            Save User
-          </SubmitButton>
+          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.create)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>

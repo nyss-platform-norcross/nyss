@@ -15,6 +15,7 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
 import * as roles from '../../authentication/roles';
+import { stringKeys, strings } from '../../strings';
 
 const NationalSocietyUsersEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -63,7 +64,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Edit User</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.form.editionTitle)}</Typography>
 
       {props.error &&
         <SnackbarContent
@@ -76,7 +77,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Name"
+              label={strings(stringKeys.nationalSocietyUser.form.name)}
               name="name"
               field={form.fields.name}
             />
@@ -84,7 +85,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Phone number"
+              label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
             />
@@ -92,7 +93,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Additional phone number (optional)"
+              label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
             />
@@ -100,7 +101,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
           <Grid item xs={12}>
             <TextInputField
-              label="Organization"
+              label={strings(stringKeys.nationalSocietyUser.form.organization)}
               name="organization"
               field={form.fields.organization}
             />
@@ -108,13 +109,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>
-            Cancel
-          </Button>
-
-          <SubmitButton isFetching={props.isSaving}>
-            Save User
-          </SubmitButton>
+          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.update)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>
