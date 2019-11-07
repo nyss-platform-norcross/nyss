@@ -11,7 +11,6 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(dmu => dmu.IsDataOwner);
             builder.Property(dmu => dmu.HasConsented);
             builder.Property(dmu => dmu.ConsentedAt);
-            builder.HasOne(dmu => dmu.NationalSociety).WithMany().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
