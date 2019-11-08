@@ -19,46 +19,46 @@ namespace RX.Nyss.Web.Features.Manager
         }
 
         /// <summary>
-        /// Register a data manager.
+        /// Register a manager.
         /// </summary>
-        /// <param name="nationalSocietyId">The ID of the national society the data manager should be registered in</param>
-        /// <param name="createManagerRequestDto">The data manager to be created</param>
+        /// <param name="nationalSocietyId">The ID of the national society the manager should be registered in</param>
+        /// <param name="createManagerRequestDto">The manager to be created</param>
         /// <returns></returns>
-        [HttpPost("nationalSociety/{nationalSocietyId:int}/dataManager/create")]
+        [HttpPost("nationalSociety/{nationalSocietyId:int}/manager/create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> CreateManager(int nationalSocietyId, [FromBody]CreateManagerRequestDto createManagerRequestDto) =>
             await _managerService.CreateManager(nationalSocietyId, createManagerRequestDto);
 
         /// <summary>
-        /// Get a data manager.
+        /// Get a manager.
         /// </summary>
-        /// <param name="dataManagerId">The ID of the requested data manager</param>
+        /// <param name="managerId">The ID of the requested manager</param>
         /// <returns></returns>
-        [HttpGet("nationalSociety/dataManager/{dataManagerId:int}/get")]
+        [HttpGet("nationalSociety/manager/{managerId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
-        public async Task<Result> Get(int dataManagerId) =>
-            await _managerService.GetManager(dataManagerId);
+        public async Task<Result> Get(int managerId) =>
+            await _managerService.GetManager(managerId);
 
         /// <summary>
-        /// Update a data manager.
+        /// Update a manager.
         /// </summary>
-        /// <param name="dataManagerId">The id of the data manager to be edited</param>
-        /// <param name="editManagerRequestDto">The data used to update the specified data manager</param>
+        /// <param name="managerId">The id of the manager to be edited</param>
+        /// <param name="editManagerRequestDto">The data used to update the specified manager</param>
         /// <returns></returns>
-        [HttpPost("nationalSociety/dataManager/{dataManagerId:int}/edit")]
+        [HttpPost("nationalSociety/manager/{managerId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
-        public async Task<Result> Edit(int dataManagerId, [FromBody]EditManagerRequestDto editManagerRequestDto) =>
-            await _managerService.UpdateManager(dataManagerId, editManagerRequestDto);
+        public async Task<Result> Edit(int managerId, [FromBody]EditManagerRequestDto editManagerRequestDto) =>
+            await _managerService.UpdateManager(managerId, editManagerRequestDto);
 
         /// <summary>
-        /// Delete a data manager.
+        /// Delete a manager.
         /// </summary>
-        /// <param name="dataManagerId">The ID of the data manager to be deleted</param>
+        /// <param name="managerId">The ID of the manager to be deleted</param>
         /// <returns></returns>
-        [HttpPost("nationalSociety/dataManager/{dataManagerId:int}/remove")]
+        [HttpPost("nationalSociety/manager/{managerId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
-        public async Task<Result> Delete(int dataManagerId) =>
-            await _managerService.DeleteManager(dataManagerId);
+        public async Task<Result> Delete(int managerId) =>
+            await _managerService.DeleteManager(managerId);
     }
 }
 

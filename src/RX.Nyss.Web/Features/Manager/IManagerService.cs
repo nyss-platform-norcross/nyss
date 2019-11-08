@@ -8,9 +8,9 @@ namespace RX.Nyss.Web.Features.Manager
     public interface IManagerService
     {
         Task<Result> CreateManager(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto);
-        Task<Result<GetManagerResponseDto>> GetManager(int dataManagerId);
-        Task<Result> UpdateManager(int dataManagerId, EditManagerRequestDto editManagerRequestDto); 
-        Task<Result> DeleteManager(int dataManagerId);
+        Task<Result<GetManagerResponseDto>> GetManager(int managerId);
+        Task<Result> UpdateManager(int managerId, EditManagerRequestDto editManagerRequestDto); 
+        Task<Result> DeleteManager(int managerId);
     }
 }
 

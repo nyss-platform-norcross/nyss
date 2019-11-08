@@ -9,4 +9,4 @@ export const OPEN_NATIONAL_SOCIETY_USER_EDITION = action("OPEN_NATIONAL_SOCIETY_
 export const EDIT_NATIONAL_SOCIETY_USER = action("EDIT_NATIONAL_SOCIETY_USER");
 export const REMOVE_NATIONAL_SOCIETY_USER = action("REMOVE_NATIONAL_SOCIETY_USER");
 
-export const userRoles = [ roles.DataManager, roles.TechnicalAdvisor, roles.DataConsumer ];
+export const userRoles = [ roles.Manager, roles.TechnicalAdvisor, roles.DataConsumer ];

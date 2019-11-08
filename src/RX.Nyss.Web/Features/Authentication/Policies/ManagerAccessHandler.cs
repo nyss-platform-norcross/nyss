@@ -13,7 +13,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
     public class ManagerAccessHandler : AuthorizationHandler<ManagerAccessRequirement>
     {
-        private const string RouteParameterName = "dataManagerId";
+        private const string RouteParameterName = "managerId";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
 
@@ -25,17 +25,17 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ManagerAccessRequirement requirement)
         {
-            var dataManagerId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
-            if (!context.User.Identity.IsAuthenticated || !dataManagerId.HasValue)
+            var managerId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            if (!context.User.Identity.IsAuthenticated || !managerId.HasValue)
             {
                 return;
             }
 
-            var dataManagerNationalSocieties = await _userService.GetUserNationalSocietyIds<ManagerUser>(dataManagerId.Value);
+            var managerNationalSocieties = await _userService.GetUserNationalSocietyIds<ManagerUser>(managerId.Value);
             var roles = context.User.GetRoles();
             var identityName = context.User.Identity.Name;
 
-            if (await _userService.GetUserHasAccessToAnyOfResourceNationalSocieties(dataManagerNationalSocieties, identityName, roles))
+            if (await _userService.GetUserHasAccessToAnyOfResourceNationalSocieties(managerNationalSocieties, identityName, roles))
             {
                 context.Succeed(requirement);
             }

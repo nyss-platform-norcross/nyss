@@ -95,7 +95,7 @@ namespace RX.Nyss.Web.Features.Manager
 
         public async Task<Result<GetManagerResponseDto>> GetManager(int nationalSocietyUserId)
         {
-            var dataManager = await _dataContext.Users
+            var manager = await _dataContext.Users
                 .OfType<ManagerUser>()
                 .Where(u => u.Id == nationalSocietyUserId)
                 .Select(u => new GetManagerResponseDto
@@ -110,20 +110,20 @@ namespace RX.Nyss.Web.Features.Manager
                 })
                 .SingleOrDefaultAsync();
 
-            if (dataManager == null)
+            if (manager == null)
             {
                 _loggerAdapter.Debug($"Data manager with id {nationalSocietyUserId} was not found");
                 return Result.Error<GetManagerResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
-            return new Result<GetManagerResponseDto>(dataManager, true);
+            return new Result<GetManagerResponseDto>(manager, true);
         }
 
-        public async Task<Result> UpdateManager(int dataManagerId, EditManagerRequestDto editManagerRequestDto)
+        public async Task<Result> UpdateManager(int managerId, EditManagerRequestDto editManagerRequestDto)
         {
             try
             {
-                var user = await _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(dataManagerId);
+                var user = await _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(managerId);
 
                 user.Name = editManagerRequestDto.Name;
                 user.PhoneNumber = editManagerRequestDto.PhoneNumber;
@@ -139,7 +139,7 @@ namespace RX.Nyss.Web.Features.Manager
             }
         }
 
-        public Task<Result> DeleteManager(int dataManagerId) =>
-            _nationalSocietyUserService.DeleteUser<ManagerUser>(dataManagerId);
+        public Task<Result> DeleteManager(int managerId) =>
+            _nationalSocietyUserService.DeleteUser<ManagerUser>(managerId);
     }
 }
