@@ -155,10 +155,17 @@ export const stringKeys = {
       name: "dataCollectors.form.name",
       displayName: "dataCollectors.form.displayName",
       sex: "dataCollectors.form.sex",
+      phoneNumber: "dataCollectors.form.phoneNumber",
+      additionalPhoneNumber: "dataCollectors.form.additionalPhoneNumber",
       latitude: "dataCollectors.form.latitude",
       longitude: "dataCollectors.form.longitude",
       create: "dataCollectors.form.create",
-      update: "dataCollectors.form.update"
+      update: "dataCollectors.form.update",
+      birthYearGroup: "dataCollectors.form.birthYearGroup",
+      village: "dataCollectors.form.village",
+      district: "dataCollectors.form.district",
+      region: "dataCollectors.form.region",
+      zone: "dataCollectors.form.zone"
     },
     list: {
       name: "dataCollectors.list.name",

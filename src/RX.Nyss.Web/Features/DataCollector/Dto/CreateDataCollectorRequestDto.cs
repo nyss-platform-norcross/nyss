@@ -9,7 +9,7 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
         public string DisplayName { get; set; }
         public Sex Sex { get; set; }
         public DataCollectorType DataCollectorType { get; set; }
-        public string BirthYearGroup { get; set; }
+        public int TenYearBirthGroupStartYear { get; set; }
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public double Latitude { get; set; }
@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
                 RuleFor(dc => dc.DisplayName).NotEmpty().MaximumLength(100);
                 RuleFor(dc => dc.Sex).IsInEnum();
                 RuleFor(dc => dc.DataCollectorType).IsInEnum();
-                RuleFor(dc => dc.BirthYearGroup).NotEmpty().MaximumLength(20);
+                RuleFor(dc => dc.TenYearBirthGroupStartYear).GreaterThan(0).Must(x => x % 10 == 0);
                 RuleFor(dc => dc.PhoneNumber).NotEmpty().MaximumLength(50);
                 RuleFor(dc => dc.AdditionalPhoneNumber).MaximumLength(50);
                 RuleFor(dc => dc.Latitude).InclusiveBetween(-90, 90);

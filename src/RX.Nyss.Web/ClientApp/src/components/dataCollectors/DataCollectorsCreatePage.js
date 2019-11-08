@@ -43,15 +43,15 @@ const DataCollectorsCreatePageComponent = (props) => {
       sex: [validators.required],
       supervisorId: [validators.required],
       dataCollectorType: [validators.required],
-      birthYearGroup: [validators.required],
-      additionalPhoneNumber: [validators.required],
+      birthYearGroup: [validators.required, validators.minLength(1), validators.maxLength(100)],
+      additionalPhoneNumber: [validators.phoneNumber],
       latitude: [validators.required],
       longitude: [validators.required],
-      phoneNumber: [validators.required],
+      phoneNumber: [validators.required, validators.phoneNumber],
       village: [validators.required],
       district: [validators.required],
       region: [validators.required],
-      zone: [validators.required]
+      zone: []
     };
 
     return createForm(fields, validation);
@@ -98,6 +98,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               field={form.fields.displayName}
             />
           </Grid>
+
           <Grid item xs={12}>
             <SelectInput
               label={strings(stringKeys.dataCollector.form.sex)}
@@ -110,6 +111,30 @@ const DataCollectorsCreatePageComponent = (props) => {
                 </MenuItem>
               ))}
             </SelectInput>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.dataCollector.form.birthYearGroup)}
+              name="birthYearGroup"
+              field={form.fields.birthYearGroup}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.dataCollector.form.phoneNumber)}
+              name="phoneNumber"
+              field={form.fields.phoneNumber}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
+              name="additionalPhoneNumber"
+              field={form.fields.additionalPhoneNumber}
+            />
           </Grid>
 
           <Grid item xs={6}>
@@ -126,6 +151,42 @@ const DataCollectorsCreatePageComponent = (props) => {
               name="longitude"
               field={form.fields.longitude}
             />
+          </Grid>
+
+          <Grid item xs={12}>
+            <SelectInput
+              label={strings(stringKeys.dataCollector.form.region)}
+              field={form.fields.region}
+              name="region"
+            >
+            </SelectInput>
+          </Grid>
+
+          <Grid item xs={12}>
+            <SelectInput
+              label={strings(stringKeys.dataCollector.form.district)}
+              field={form.fields.district}
+              name="district"
+            >
+            </SelectInput>
+          </Grid>
+
+          <Grid item xs={12}>
+            <SelectInput
+              label={strings(stringKeys.dataCollector.form.village)}
+              field={form.fields.village}
+              name="village"
+            >
+            </SelectInput>
+          </Grid>
+
+          <Grid item xs={12}>
+            <SelectInput
+              label={strings(stringKeys.dataCollector.form.zone)}
+              field={form.fields.zone}
+              name="zone"
+            >
+            </SelectInput>
           </Grid>
         </Grid>
 

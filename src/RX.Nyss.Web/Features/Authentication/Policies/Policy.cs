@@ -6,6 +6,7 @@
         ManagerAccess,
         DataConsumerAccess,
         TechnicalAdvisorAccess,
-        SmsGatewayAccess
+        SmsGatewayAccess,
+        DataCollectorAccess
     }
 }

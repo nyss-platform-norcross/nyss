@@ -63,7 +63,7 @@ const DataCollectorsEditPageComponent = (props) => {
       village: [validators.required],
       district: [validators.required],
       region: [validators.required],
-      zone: [validators.required]
+      zone: []
     };
 
     setForm(createForm(fields, validation));
