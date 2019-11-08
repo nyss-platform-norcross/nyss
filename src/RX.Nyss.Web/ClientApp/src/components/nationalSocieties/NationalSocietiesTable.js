@@ -36,7 +36,7 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
             <TableCell>{row.name}</TableCell>
             <TableCell>{row.country}</TableCell>
             <TableCell>{dayjs(row.startDate).format("YYYY-MM-DD")}</TableCell>
-            <TableCell>{row.dataOwner}</TableCell>
+            <TableCell>{row.headManagerName}</TableCell>
             <TableCell>{row.technicalAdvisor}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />

@@ -41,13 +41,17 @@ namespace RX.Nyss.Web.Features.NationalSociety
             try
             {
                 var list = await _nyssContext.NationalSocieties
+                    .Include(x => x.HeadManager)
+                    .Include(x => x.PendingHeadManager)
                     .Select(n => new NationalSocietyListResponseDto
                     {
                         Id = n.Id,
                         ContentLanguage = n.ContentLanguage.DisplayName,
                         Name = n.Name,
                         Country = n.Country.Name,
-                        StartDate = n.StartDate
+                        StartDate = n.StartDate,
+                        HeadManagerName = n.HeadManager.Name,
+                        PendingHeadManagerName = n.PendingHeadManager.Name
                     })
                     .OrderBy(n => n.Name)
                     .ToListAsync();

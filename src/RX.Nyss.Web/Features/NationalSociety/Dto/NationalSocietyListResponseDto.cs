@@ -7,9 +7,9 @@ namespace RX.Nyss.Web.Features.NationalSociety.Dto
         public int Id { get; set; }
 
         public string Name { get; set; }
-        
+
         public string Country { get; set; }
-        
+
         public string ContentLanguage { get; set; }
 
         public DateTime StartDate { get; set; }
@@ -17,5 +17,9 @@ namespace RX.Nyss.Web.Features.NationalSociety.Dto
         public string DataOwner { get; set; }
 
         public string TechnicalAdvisor { get; set; }
+
+        public string HeadManagerName { get; set; }
+
+        public string PendingHeadManagerName { get; set; }
     }
 }
