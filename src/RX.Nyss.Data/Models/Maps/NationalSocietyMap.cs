@@ -18,6 +18,8 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(ns => ns.ZoneCustomName).HasMaxLength(100);
             builder.HasOne(ns => ns.ContentLanguage).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(ns => ns.Country).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(uns => uns.HeadManager).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(uns => uns.PendingHeadManager).WithMany().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

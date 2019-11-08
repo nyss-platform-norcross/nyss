@@ -5,9 +5,6 @@ namespace RX.Nyss.Data.Models.Maps
 {
     public class AdministratorUserMap : IEntityTypeConfiguration<AdministratorUser>
     {
-        public void Configure(EntityTypeBuilder<AdministratorUser> builder)
-        {
-            builder.HasBaseType<User>();
-        }
+        public void Configure(EntityTypeBuilder<AdministratorUser> builder) => builder.HasBaseType<User>();
     }
 }
