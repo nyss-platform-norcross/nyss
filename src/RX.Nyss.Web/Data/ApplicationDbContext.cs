@@ -15,6 +15,7 @@ namespace RX.Nyss.Web.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasDefaultSchema("identity");
+            modelBuilder.Seed();
         }
     }
 }
