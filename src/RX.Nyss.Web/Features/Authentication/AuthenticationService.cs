@@ -102,7 +102,7 @@ namespace RX.Nyss.Web.Features.Authentication
 
         private async Task<bool> IsDataOwner(IdentityUser identityUser) =>
             await _nyssContext.Users
-                .OfType<DataManagerUser>()
+                .OfType<ManagerUser>()
                 .AnyAsync(u => u.IdentityUserId == identityUser.Id && u.IsDataOwner);
 
         private async Task<List<Claim>> GetNationalSocietyClaims(IdentityUser identityUser) =>

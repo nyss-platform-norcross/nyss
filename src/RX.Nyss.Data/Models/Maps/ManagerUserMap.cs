@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace RX.Nyss.Data.Models.Maps
 {
-    public class DataManagerUserMap : IEntityTypeConfiguration<DataManagerUser>
+    public class ManagerUserMap : IEntityTypeConfiguration<ManagerUser>
     {
-        public void Configure(EntityTypeBuilder<DataManagerUser> builder)
+        public void Configure(EntityTypeBuilder<ManagerUser> builder)
         {
             builder.HasBaseType<User>();
             builder.Property(dmu => dmu.IsDataOwner);

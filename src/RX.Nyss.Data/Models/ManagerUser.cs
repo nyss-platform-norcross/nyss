@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Data.Models
 {
-    public class DataManagerUser : User
+    public class ManagerUser : User
     {
         public bool IsDataOwner { get; set; }
 

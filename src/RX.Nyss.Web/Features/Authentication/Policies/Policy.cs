@@ -3,7 +3,7 @@
     public enum Policy
     {
         NationalSocietyAccess,
-        DataManagerAccess,
+        ManagerAccess,
         DataConsumerAccess,
         TechnicalAdvisorAccess,
         SmsGatewayAccess

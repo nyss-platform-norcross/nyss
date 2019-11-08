@@ -7,23 +7,23 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
-    public class DataManagerAccessRequirement : IAuthorizationRequirement
+    public class ManagerAccessRequirement : IAuthorizationRequirement
     {
     }
 
-    public class DataManagerAccessHandler : AuthorizationHandler<DataManagerAccessRequirement>
+    public class ManagerAccessHandler : AuthorizationHandler<ManagerAccessRequirement>
     {
         private const string RouteParameterName = "dataManagerId";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
 
-        public DataManagerAccessHandler(IHttpContextAccessor httpContextAccessor, IUserService userService)
+        public ManagerAccessHandler(IHttpContextAccessor httpContextAccessor, IUserService userService)
         {
             _httpContextAccessor = httpContextAccessor;
             _userService = userService;
         }
 
-        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, DataManagerAccessRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ManagerAccessRequirement requirement)
         {
             var dataManagerId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
             if (!context.User.Identity.IsAuthenticated || !dataManagerId.HasValue)
@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
                 return;
             }
 
-            var dataManagerNationalSocieties = await _userService.GetUserNationalSocietyIds<DataManagerUser>(dataManagerId.Value);
+            var dataManagerNationalSocieties = await _userService.GetUserNationalSocietyIds<ManagerUser>(dataManagerId.Value);
             var roles = context.User.GetRoles();
             var identityName = context.User.Identity.Name;
 

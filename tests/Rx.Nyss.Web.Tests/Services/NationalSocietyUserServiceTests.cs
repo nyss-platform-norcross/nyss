@@ -44,14 +44,14 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenSuccesful_NyssContextSaveChangesShouldBeCalledOnce()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            await _nationalSocietyUserService.DeleteUser<DataManagerUser>(123);
+            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
 
             
             await _nyssContext.Received().SaveChangesAsync();
@@ -61,14 +61,14 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenSuccessful_NyssContextRemoveUserShouldBeCalledOnce()
         {
-            var dataManager = new DataManagerUser {Id = 123, Role = Role.DataManager};
+            var dataManager = new ManagerUser {Id = 123, Role = Role.Manager};
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User =  dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety>{ userNationalSociety });
 
 
-            await _nationalSocietyUserService.DeleteUser<DataManagerUser>(123);
+            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
 
 
             _nyssContext.Users.Received().Remove(dataManager);
@@ -78,14 +78,14 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenSuccessful_NyssContextRemoveUserNationalSocietiesShouldBeCalledOnce()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            await _nationalSocietyUserService.DeleteUser<DataManagerUser>(123);
+            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
 
 
             _nyssContext.UserNationalSocieties.Received().RemoveRange(Arg.Is<IEnumerable<UserNationalSociety>>(x => x.Contains(userNationalSociety)));
@@ -106,14 +106,14 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenSuccesful_IdentityUserDeleteShouldBeCalledOnce()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            await _nationalSocietyUserService.DeleteUser<DataManagerUser>(123);
+            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
 
 
             await _identityUserRegistrationService.Received().DeleteIdentityUser(Arg.Any<string>());
@@ -122,14 +122,14 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenUserExistsAndIsOfRequestedType_ShouldReturnSuccess()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            var result = await _nationalSocietyUserService.DeleteUser<DataManagerUser>(123);
+            var result = await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
 
 
             result.IsSuccess.ShouldBeTrue();
@@ -138,7 +138,7 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenUserExistsAndIsNotOfRequestedType_ShouldReturnError()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
@@ -154,7 +154,7 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenUserDoesntExist_ShouldReturnError()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
@@ -170,14 +170,14 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task GetNationalSocietyUser_WhenUserExistsAndIsOfRequestedType_ShouldReturnUser()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            var user = await _nationalSocietyUserService.GetNationalSocietyUser<DataManagerUser>(123);
+            var user = await _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(123);
 
 
             user.ShouldBe(dataManager);
@@ -186,20 +186,20 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task GetNationalSocietyUser_WhenUserDoesntExists_ShouldThrowException()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
             
 
-            await _nationalSocietyUserService.GetNationalSocietyUser<DataManagerUser>(999).ShouldThrowAsync<ResultException>();
+            await _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(999).ShouldThrowAsync<ResultException>();
         }
 
         [Fact]
         public async Task GetNationalSocietyUser_WhenUserExistsButIsOfOtherType_ShouldThrowException()
         {
-            var dataManager = new DataManagerUser { Id = 123, Role = Role.DataManager };
+            var dataManager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { dataManager });
 
             var userNationalSociety = new UserNationalSociety { User = dataManager, UserId = dataManager.Id, NationalSocietyId = 1 };

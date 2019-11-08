@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Gets all countries with country codes.
         /// </summary>
         /// <returns></returns>
-        [Route("{id}/get"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.DataManager, Role.TechnicalAdvisor, Role.DataConsumer)]
+        [Route("{id}/get"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer)]
         public async Task<Result<NationalSocietyResponseDto>> Get(int id) =>
             await _nationalSocietyService.GetNationalSociety(id);
 
