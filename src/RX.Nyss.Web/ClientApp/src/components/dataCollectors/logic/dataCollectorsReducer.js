@@ -56,6 +56,15 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
     case actions.REMOVE_DATA_COLLECTOR.FAILURE:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
 
+    case actions.GET_COUNTRY_LOCATION.REQUEST:
+      return { ...state, isGettingCountryLocation: true };
+
+    case actions.GET_COUNTRY_LOCATION.SUCCESS:
+      return { ...state, country: action.countryData, isGettingCountryLocation: false };
+
+    case actions.GET_COUNTRY_LOCATION.FAILURE:
+      return { ...state, isGettingCountryLocation: false };
+
     default:
       return state;
   }

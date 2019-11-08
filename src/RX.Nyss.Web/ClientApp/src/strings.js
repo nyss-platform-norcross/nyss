@@ -212,6 +212,7 @@ export const stringKeys = {
     invalidEmail: "validation.invalidEmail",
     invalidInteger: "validation.invalidInteger",
     phoneNumberInvalid: "validation.phoneNumberInvalid",
+    invalidModuloTen: "validation.invalidModuloTen"
   }
 };
 

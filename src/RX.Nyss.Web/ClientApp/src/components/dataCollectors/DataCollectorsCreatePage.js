@@ -43,7 +43,7 @@ const DataCollectorsCreatePageComponent = (props) => {
       sex: [validators.required],
       supervisorId: [validators.required],
       dataCollectorType: [validators.required],
-      birthYearGroup: [validators.required, validators.minLength(1), validators.maxLength(100)],
+      birthYearGroup: [validators.required, validators.moduloTen],
       additionalPhoneNumber: [validators.phoneNumber],
       latitude: [validators.required],
       longitude: [validators.required],
@@ -59,6 +59,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
   useMount(() => {
     props.openCreation(props.projectId);
+    props.getCountryLocation(props.countryName);
   })
 
   const handleSubmit = (e) => {
@@ -137,6 +138,10 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>
 
+          <Grid item xs={12}>
+            
+          </Grid>
+
           <Grid item xs={6}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.latitude)}
@@ -204,12 +209,16 @@ DataCollectorsCreatePageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
+  countryName: state.appData.siteMap.parameters.nationalSocietyCountry,
   isSaving: state.dataCollectors.formSaving,
+  isGettingCountryLocation: state.dataCollectors.gettingLocation,
+  country: state.dataCollectors.countryData,
   error: state.dataCollectors.formError
 });
 
 const mapDispatchToProps = {
   openCreation: dataCollectorsActions.openCreation.invoke,
+  getCountryLocation: dataCollectorsActions.getCountryLocation.invoke,
   create: dataCollectorsActions.create.invoke,
   goToList: dataCollectorsActions.goToList
 };

@@ -11,7 +11,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTOR_EDITION.INVOKE, openDataCollectorEdition),
   takeEvery(consts.CREATE_DATA_COLLECTOR.INVOKE, createDataCollector),
   takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
-  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector)
+  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector),
+  takeEvery(consts.GET_COUNTRY_LOCATION.INVOKE, getCountryLocation)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -95,6 +96,16 @@ function* getDataCollectors(projectId) {
   }
 };
 
+function* getCountryLocation({country}) {
+  yield put(actions.getCountryLocation.request());
+  try {
+    const response = yield call(http.post, `https://nominatim.openstreetmap.org/search.php?country=${country}&format=json`);
+    yield put(actions.getCountryLocation.success(response));
+  } catch (error) {
+    yield put(actions.getCountryLocation.failure(error.message));
+  }
+};
+
 function* openDataCollectorsModule(projectId) {
   // const project = yield call(http.getCached, {
   //   path: `/api/project/${projectId}/get`,
@@ -105,7 +116,7 @@ function* openDataCollectorsModule(projectId) {
     value: {
       nationalSocietyId: "1",
       nationalSocietyName: "National Society Mock",
-      nationalSocietyCountryName: "Country",
+      nationalSocietyCountryName: "Norway",
       projectId: "1",
       projectName: "Project mock"
     }

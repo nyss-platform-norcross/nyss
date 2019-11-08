@@ -3,7 +3,8 @@ import {
   OPEN_DATA_COLLECTORS_LIST, GET_DATA_COLLECTORS,
   OPEN_DATA_COLLECTOR_CREATION, CREATE_DATA_COLLECTOR,
   OPEN_DATA_COLLECTOR_EDITION, EDIT_DATA_COLLECTOR,
-  REMOVE_DATA_COLLECTOR
+  REMOVE_DATA_COLLECTOR,
+  GET_COUNTRY_LOCATION
 } from "./dataCollectorsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors`);
@@ -22,6 +23,13 @@ export const getList = {
   request: () => ({ type: GET_DATA_COLLECTORS.REQUEST }),
   success: (list) => ({ type: GET_DATA_COLLECTORS.SUCCESS, list }),
   failure: (message) => ({ type: GET_DATA_COLLECTORS.FAILURE, message })
+};
+
+export const getCountryLocation = {
+  invoke: (country) => ({ type: GET_COUNTRY_LOCATION.INVOKE, country }),
+  request: () => ({ type: GET_COUNTRY_LOCATION.REQUEST }),
+  success: () => ({ type: GET_COUNTRY_LOCATION.SUCCESS }),
+  failure: (message) => ({ type: GET_COUNTRY_LOCATION.FAILURE, message })
 };
 
 export const openCreation = {
