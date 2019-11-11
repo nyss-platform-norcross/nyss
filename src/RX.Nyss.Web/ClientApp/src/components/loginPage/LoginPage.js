@@ -28,7 +28,7 @@ class LoginPageComponent extends PureComponent {
 
     const validation = {
       userName: [validators.required, validators.email],
-      password: [validators.required, validators.minLength(4)]
+      password: [validators.required, validators.minLength(8)]
     };
 
     this.form = createForm(fields, validation);

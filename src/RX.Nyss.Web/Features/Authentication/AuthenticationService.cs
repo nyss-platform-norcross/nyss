@@ -40,7 +40,6 @@ namespace RX.Nyss.Web.Features.Authentication
                 var roles = await GetRoles(user);
                 var additionalClaims = await GetAdditionalClaims(user);
                 var accessToken = _userIdentityService.CreateToken(user.UserName, roles, additionalClaims);
-
                 return Success(new LoginResponseDto { AccessToken = accessToken });
             }
             catch (ResultException exception)
@@ -62,6 +61,10 @@ namespace RX.Nyss.Web.Features.Authentication
                 return Error<StatusResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
+            var pendingSocieties = await _nyssContext.NationalSocieties
+                .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId)
+                .Select(ns => new StatusResponseDto.DataDto.PendingHeadManagerConsent { NationalSocietyId = ns.Id, NationalSocietyName = ns.Name }).ToListAsync();
+
             return Success(new StatusResponseDto
             {
                 IsAuthenticated = user.Identity.IsAuthenticated,
@@ -72,6 +75,7 @@ namespace RX.Nyss.Web.Features.Authentication
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),
+                        PendingHeadManagerConsents = pendingSocieties
                         HomePage = user.Identity.IsAuthenticated
                             ? GetHomePageData(userEntity)
                             : null
@@ -121,11 +125,16 @@ namespace RX.Nyss.Web.Features.Authentication
         private async Task<IEnumerable<string>> GetRoles(IdentityUser user) => await _userIdentityService.GetRoles(user);
 
         private async Task<IEnumerable<Claim>> GetAdditionalClaims(IdentityUser identityUser) => await GetNationalSocietyClaims(identityUser);
-        
+
         private async Task<List<Claim>> GetNationalSocietyClaims(IdentityUser identityUser) =>
             await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.User.IdentityUserId == identityUser.Id)
                 .Select(uns => new Claim(ClaimType.ResourceAccess, $"{ResourceType.NationalSociety}:{uns.NationalSocietyId}"))
+                .ToListAsync();
+
+        private async Task<List<Nyss.Data.Models.NationalSociety>> GetPendingSocieties(IdentityUser user) =>
+            await _nyssContext.NationalSocieties
+                .Where(ns => ns.PendingHeadManager.IdentityUserId == user.Id)
                 .ToListAsync();
     }
 }

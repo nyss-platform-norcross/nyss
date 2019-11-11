@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.Authentication.Dto
+﻿using System.Collections.Generic;
+
+namespace RX.Nyss.Web.Features.Authentication.Dto
 {
     public class StatusResponseDto
     {
@@ -15,6 +17,15 @@
             public string[] Roles { get; set; }
 
             public string LanguageCode { get; set; }
+
+            public List<PendingHeadManagerConsent> PendingHeadManagerConsents { get; set; }
+
+            public class PendingHeadManagerConsent
+            {
+                public string NationalSocietyName { get; set; }
+
+                public string NationalSocietyId { get; set; }
+            }
 
             public HomePageDto HomePage { get; set; }
         }
