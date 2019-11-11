@@ -13,7 +13,8 @@ export const nationalSocietyUsersSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_USER_EDITION.INVOKE, openNationalSocietyUserEdition),
   takeEvery(consts.CREATE_NATIONAL_SOCIETY_USER.INVOKE, createNationalSocietyUser),
   takeEvery(consts.EDIT_NATIONAL_SOCIETY_USER.INVOKE, editNationalSocietyUser),
-  takeEvery(consts.REMOVE_NATIONAL_SOCIETY_USER.INVOKE, removeNationalSocietyUser)
+  takeEvery(consts.REMOVE_NATIONAL_SOCIETY_USER.INVOKE, removeNationalSocietyUser),
+  takeEvery(consts.SET_AS_HEADMANAGER_NATIONAL_SOCIETY_USER.INVOKE, setAsHeadManagerNationalSociety)
 ];
 
 function* openNationalSocietyUsersList({ nationalSocietyId }) {
@@ -96,6 +97,17 @@ function* getNationalSocietyUsers(nationalSocietyId) {
     yield put(actions.getList.success(nationalSocietyId, response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
+  }
+};
+
+function* setAsHeadManagerNationalSociety({ nationalSocietyId, nationalSocietyUserId }) {
+  yield put(actions.setAsHeadManager.request(nationalSocietyUserId));
+  try {
+    const response = yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/setHeadManager`, {userId: nationalSocietyUserId});
+    yield put(actions.setAsHeadManager.success(response.value));
+    yield put(appActions.showMessage("Head manager set successfully"));
+  } catch (error) {
+    yield put(actions.setAsHeadManager.failure(nationalSocietyUserId, error.message));
   }
 };
 

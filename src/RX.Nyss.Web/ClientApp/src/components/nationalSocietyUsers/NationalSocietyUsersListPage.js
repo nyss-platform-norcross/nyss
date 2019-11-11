@@ -33,8 +33,10 @@ const NationalSocietyUsersListPageComponent = (props) => {
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
         isRemoving={props.isRemoving}
+        isSettingAsHead={props.isSettingAsHead}
         remove={props.remove}
         nationalSocietyId={props.nationalSocietyId}
+        setAsHeadManager={props.setAsHeadManager}
       />
     </Fragment>
   );
@@ -53,14 +55,16 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   list: state.nationalSocietyUsers.listData,
   isListFetching: state.nationalSocietyUsers.listFetching,
-  isRemoving: state.nationalSocietyUsers.listRemoving
+  isRemoving: state.nationalSocietyUsers.listRemoving,
+  isSettingAsHead: state.nationalSocietyUsers.settingAsHead
 });
 
 const mapDispatchToProps = {
   openNationalSocietyUsersList: nationalSocietyUsersActions.openList.invoke,
   goToCreation: nationalSocietyUsersActions.goToCreation,
   goToEdition: nationalSocietyUsersActions.goToEdition,
-  remove: nationalSocietyUsersActions.remove.invoke
+  remove: nationalSocietyUsersActions.remove.invoke,
+  setAsHeadManager: nationalSocietyUsersActions.setAsHeadManager.invoke,
 };
 
 export const NationalSocietyUsersListPage = useLayout(

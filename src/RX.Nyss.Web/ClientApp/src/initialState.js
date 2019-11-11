@@ -68,6 +68,7 @@ export const initialState = {
     listStale: true,
     listData: [],
     listNationalSocietyId: null,
+    settingAsHead: {},
     formFetching: false,
     formSaving: false,
     formData: null,
