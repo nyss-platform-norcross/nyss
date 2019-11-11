@@ -21,6 +21,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result<int>> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
         Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
+        Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -180,6 +181,37 @@ namespace RX.Nyss.Web.Features.NationalSociety
             catch (Exception e)
             {
                 return HandleException(e);
+            }
+        }
+
+        public async Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId)
+        {
+            try
+            {
+                var ns = await _nyssContext.NationalSocieties
+                    .Include(x => x.NationalSocietyUsers)
+                    .FirstOrDefaultAsync(x => x.Id == nationalSocietyId);
+                var user = await _nyssContext.Users.FindAsync(userId);
+
+                if (ns.NationalSocietyUsers.Count == 0 || ns.NationalSocietyUsers.All(x => x.UserId != userId))
+                {
+                    return Error(ResultKey.NationalSociety.SetHead.NotAMemberOfSociety);
+                }
+
+                if (!(user is ManagerUser || user is TechnicalAdvisorUser))
+                {
+                    return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
+                }
+
+                ns.PendingHeadManager = user;
+                await _nyssContext.SaveChangesAsync();
+
+                return Success();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
 

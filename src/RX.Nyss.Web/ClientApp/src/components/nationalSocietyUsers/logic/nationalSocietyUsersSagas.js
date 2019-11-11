@@ -103,8 +103,8 @@ function* getNationalSocietyUsers(nationalSocietyId) {
 function* setAsHeadManagerNationalSociety({ nationalSocietyId, nationalSocietyUserId }) {
   yield put(actions.setAsHeadManager.request(nationalSocietyUserId));
   try {
-    const response = yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/setHeadManager`, {userId: nationalSocietyUserId});
-    yield put(actions.setAsHeadManager.success(response.value));
+    yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/setHeadManager`, {userId: nationalSocietyUserId});
+    yield put(actions.setAsHeadManager.success(nationalSocietyUserId));
     yield put(appActions.showMessage("Head manager set successfully"));
   } catch (error) {
     yield put(actions.setAsHeadManager.failure(nationalSocietyUserId, error.message));

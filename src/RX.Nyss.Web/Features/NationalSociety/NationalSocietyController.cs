@@ -65,5 +65,15 @@ namespace RX.Nyss.Web.Features.NationalSociety
         [Route("{nationalSocietyId}/remove"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<Result> Remove(int nationalSocietyId) =>
             await _nationalSocietyService.RemoveNationalSociety(nationalSocietyId);
+
+        /// <summary>
+        /// Sets a user as the Head Manager for the National Society
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="requestDto"></param>
+        /// <returns></returns>
+        [Route("{id}/setHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
+        public async Task<Result> SetHeadManager(int id, [FromBody]SetAsHeadManagerRequestDto requestDto) =>
+            await _nationalSocietyService.SetPendingHeadManager(id, requestDto.UserId);
     }
 }

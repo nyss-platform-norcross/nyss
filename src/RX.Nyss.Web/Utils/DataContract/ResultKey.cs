@@ -84,6 +84,12 @@
                 public const string SettingDoesNotExist = "nationalSociety.smsGateway.settingDoesNotExist";
                 public const string NationalSocietyDoesNotExist = "nationalSociety.smsGateway.nationalSocietyDoesNotExist";
             }
+
+            public static class SetHead
+            {
+                public const string NotAMemberOfSociety = "nationalSociety.setHead.notAMemberOfSociety";
+                public const string NotApplicableUserRole = "nationalSociety.setHead.notApplicableUserRole";
+            }
         }
 
         public static class HealthRisk
