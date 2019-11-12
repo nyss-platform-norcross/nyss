@@ -48,7 +48,9 @@ namespace RX.Nyss.Web.Features.HealthRisk
                     Name = hr.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == languageCode)
                         .Select(lc => lc.Name).FirstOrDefault()
-                }).ToListAsync();
+                })
+                .OrderBy(hr => hr.HealthRiskCode)
+                .ToListAsync();
 
             return Success<IEnumerable<HealthRiskResponseDto>>(healthRisks);
         }
