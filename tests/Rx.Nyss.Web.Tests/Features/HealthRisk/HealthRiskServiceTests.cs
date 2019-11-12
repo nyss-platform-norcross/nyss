@@ -11,7 +11,6 @@ using RX.Nyss.Data.Models;
 using System.Linq;
 using MockQueryable.NSubstitute;
 using RX.Nyss.Web.Utils.DataContract;
-using System;
 using RX.Nyss.Web.Features.HealthRisk.Dto;
 
 namespace Rx.Nyss.Web.Tests.Features.HealthRisk
@@ -26,6 +25,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         private const int HealthRiskId = 1;
         private const int HealthRiskCode = 1;
         private HealthRiskType HealthRiskType = HealthRiskType.Human;
+        private RX.Nyss.Data.Models.HealthRisk _healthRisk;
         private const string FeedbackMessage = "Clean yo self";
         private const string CaseDefinition = "Some symptoms";
         private const int LanguageId = 1;
@@ -84,16 +84,19 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     MetersThreshold = AlertRuleMeterThreshold,
                 }
             };
+
+            _healthRisk = new RX.Nyss.Data.Models.HealthRisk
+            {
+                Id = HealthRiskId,
+                HealthRiskType = HealthRiskType,
+                HealthRiskCode = HealthRiskCode,
+                LanguageContents = languageContents,
+                AlertRule = alertRules[0]
+            };
+
             var healthRisks = new List<RX.Nyss.Data.Models.HealthRisk>
             {
-                new RX.Nyss.Data.Models.HealthRisk
-                {
-                    Id = HealthRiskId,
-                    HealthRiskType = HealthRiskType,
-                    HealthRiskCode = HealthRiskCode,
-                    LanguageContents = languageContents,
-                    AlertRule = alertRules[0]
-                }
+                _healthRisk
             };
 
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
@@ -132,7 +135,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             };
 
             // Act
-            var result = await _healthRiskService.CreateHealthRisk(createHealthRiskDto);
+            await _healthRiskService.CreateHealthRisk(createHealthRiskDto);
 
             // Assert
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<RX.Nyss.Data.Models.HealthRisk>());
@@ -246,6 +249,31 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             // Assert
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.HealthRisk.RemoveSuccess);
+        }
+
+        [Fact]
+        public async Task RemoveHealthRisk_WhenAlertIsNotNull_ShouldRemoveAlertFromTheContext()
+        {
+            var alertRule = new AlertRule();
+            _healthRisk.AlertRule = alertRule;
+
+            // Act
+            await _healthRiskService.RemoveHealthRisk(HealthRiskId);
+
+            // Assert
+            _nyssContextMock.AlertRules.Received(1).Remove(alertRule);
+        }
+
+        [Fact]
+        public async Task RemoveHealthRisk_WhenAlertIsNull_ShouldNotCallRemoveAlertFromTheContext()
+        {
+            _healthRisk.AlertRule = null;
+
+            // Act
+            await _healthRiskService.RemoveHealthRisk(HealthRiskId);
+
+            // Assert
+            _nyssContextMock.AlertRules.DidNotReceiveWithAnyArgs().Remove(null);
         }
     }
 }

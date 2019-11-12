@@ -2,11 +2,6 @@
 {
     public static class ResultKey
     {
-        public static class Shared
-        {
-            public const string GeneralErrorMessage = "shared.error";
-        }
-
         public static class User
         {
             public static class Common
@@ -102,6 +97,6 @@
             public const string HealthRiskNumberAlreadyExists = "healthRisk.healthRiskNumberAlreadyExists";
         }
 
-        public const string UnexpectedError = "unexpectedError";
+        public const string UnexpectedError = "error.unexpected";
     }
 }

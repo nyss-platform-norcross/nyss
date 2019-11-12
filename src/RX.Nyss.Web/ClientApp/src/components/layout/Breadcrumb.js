@@ -12,8 +12,12 @@ const BreadcrumbComponent = ({ breadcrumb, push }) => (
     className={styles.container}
     separator={<NavigateNextIcon fontSize="small" color="primary" />}>
     {breadcrumb.map((item, index) => (
-      <div key={`breadcrumbItem${index}`} className={`${styles.item} ${item.isActive ? styles.selected : ""}`}>
-        <div onClick={() => push(item.url)} className={styles.title}>{item.title}</div>
+      <div key={`breadcrumbItem${item.url}`} className={`${styles.item} ${item.isActive ? styles.selected : ""}`}>
+        <div
+          onClick={() => index !== breadcrumb.length - 1 ? push(item.url) : null}
+          className={styles.title}>
+          {item.title}
+        </div>
       </div>
     ))}
   </Breadcrumbs>

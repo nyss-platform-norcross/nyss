@@ -191,7 +191,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 }
             }
 
-            return Error(ResultKey.Shared.GeneralErrorMessage);
+            return Error(ResultKey.UnexpectedError);
         }
     }
 }

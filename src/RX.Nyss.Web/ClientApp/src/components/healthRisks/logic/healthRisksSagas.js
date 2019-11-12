@@ -76,6 +76,7 @@ function* removeHealthRisk({ id }) {
     yield put(actions.remove.success(id));
     yield call(getHealthRisks, true);
   } catch (error) {
+    yield put(appActions.showMessage(error.message));
     yield put(actions.remove.failure(id, error.message));
   }
 };

@@ -18,6 +18,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { healthRiskTypes } from './logic/healthRisksConstants';
 import { getSaveFormModel } from './logic/healthRisksService';
 import { strings, stringKeys } from '../../strings';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const HealthRisksEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -53,9 +54,9 @@ const HealthRisksEditPageComponent = (props) => {
       .reduce((result, { lang, content }) => ({
         fields: {
           ...result.fields,
-          [`contentLanguage_${lang.id}_name`]: content.name,
-          [`contentLanguage_${lang.id}_caseDefinition`]: content.caseDefinition,
-          [`contentLanguage_${lang.id}_feedbackMessage`]: content.feedbackMessage
+          [`contentLanguage_${lang.id}_name`]: content && content.name,
+          [`contentLanguage_${lang.id}_caseDefinition`]: content && content.caseDefinition,
+          [`contentLanguage_${lang.id}_feedbackMessage`]: content && content.feedbackMessage
         },
         validation: lang.name.toLowerCase() === "english"
           ? {
@@ -72,7 +73,7 @@ const HealthRisksEditPageComponent = (props) => {
 
   const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
     value: t,
-    label: strings(`healthRisk.type.${t.toLowerCase()}`)
+    label: strings(stringKeys.healthRisk.constants.healthRiskType[t.toLowerCase()])
   })));
 
   const handleSubmit = (e) => {
@@ -95,6 +96,12 @@ const HealthRisksEditPageComponent = (props) => {
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={3}>
+          {props.formError && (
+            <Grid item xs={12}>
+              <ValidationMessage message={props.formError} />
+            </Grid>
+          )}
+
           <Grid item xs={3}>
             <TextInputField
               label={strings(stringKeys.healthRisk.form.healthRiskCode)}
@@ -179,13 +186,8 @@ const HealthRisksEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList()}>
-            Cancel
-            </Button>
-
-          <SubmitButton isFetching={props.isSaving}>
-            Save health risk/event
-            </SubmitButton>
+          <Button onClick={() => props.goToList()}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.healthRisk.form.update)}</SubmitButton>
         </FormActions>
       </Form>
     </Fragment>
@@ -199,6 +201,7 @@ const mapStateToProps = state => ({
   contentLanguages: state.appData.contentLanguages,
   isFetching: state.healthRisks.formFetching,
   isSaving: state.healthRisks.formSaving,
+  formError: state.healthRisks.formError,
   data: state.healthRisks.formData
 });
 

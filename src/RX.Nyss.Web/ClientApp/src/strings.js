@@ -69,6 +69,14 @@ export const stringKeys = {
       healthRiskType: "healthRisk.list.healthRiskType",
       removalConfirmation: "healthRisk.list.removalConfirmation"
     },
+    constants: {
+      healthRiskType: {
+        human: "healthRisk.type.human",
+        nonhuman: "healthRisk.type.nonhuman",
+        unusualevent: "healthRisk.type.unusualevent",
+        activity: "healthRisk.type.activity",
+      }
+    }
   },
   smsGateway: {
     title: "smsGateway.title",

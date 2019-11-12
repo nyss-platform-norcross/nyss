@@ -11,7 +11,6 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
@@ -20,6 +19,7 @@ import { healthRiskTypes } from './logic/healthRisksConstants';
 import Grid from '@material-ui/core/Grid';
 import { getSaveFormModel } from './logic/healthRisksService';
 import { strings, stringKeys } from '../../strings';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const HealthRisksCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -61,7 +61,7 @@ const HealthRisksCreatePageComponent = (props) => {
 
   const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
     value: t,
-    label: strings(`healthRisk.type.${t.toLowerCase()}`)
+    label: strings(stringKeys.healthRisk.constants.healthRiskType[t.toLowerCase()])
   })));
 
   useMount(() => {
@@ -82,14 +82,14 @@ const HealthRisksCreatePageComponent = (props) => {
     <Fragment>
       <Typography variant="h2">{strings(stringKeys.healthRisk.form.creationTitle)}</Typography>
 
-      {props.error &&
-        <SnackbarContent
-          message={props.error}
-        />
-      }
-
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={3}>
+          {props.formError && (
+            <Grid item xs={12}>
+              <ValidationMessage message={props.formError} />
+            </Grid>
+          )}
+
           <Grid item xs={3}>
             <TextInputField
               label={strings(stringKeys.healthRisk.form.healthRiskCode)}
@@ -191,7 +191,7 @@ HealthRisksCreatePageComponent.propTypes = {
 
 const mapStateToProps = state => ({
   contentLanguages: state.appData.contentLanguages,
-  error: state.healthRisks.formError,
+  formError: state.healthRisks.formError,
   isSaving: state.healthRisks.formSaving
 });
 

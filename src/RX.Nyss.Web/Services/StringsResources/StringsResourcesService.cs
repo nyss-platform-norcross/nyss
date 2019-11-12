@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Services.StringsResources
             catch (Exception exception)
             {
                 _logger.LogError(exception, "There was a problem furing fetching the strings resources");
-                return Error<IDictionary<string, string>>(ResultKey.Shared.GeneralErrorMessage);
+                return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
             }
         }
 
