@@ -4,6 +4,7 @@ import { appSagas } from "../components/app/logic/appSagas";
 import { authSagas } from "../authentication/authSagas";
 import { nationalSocietiesSagas } from "../components/nationalSocieties/logic/nationalSocietiesSagas";
 import { smsGatewaysSagas } from "../components/smsGateways/logic/smsGatewaysSagas";
+import { projectsSagas } from "../components/projects/logic/projectsSagas";
 import { globalCoordinatorsSagas } from "../components/globalCoordinators/logic/globalCoordinatorsSagas";
 import { healthRisksSagas } from "../components/healthRisks/logic/healthRisksSagas";
 import { nationalSocietyUsersSagas } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersSagas";
@@ -16,6 +17,7 @@ function* rootSaga() {
     ...authSagas(),
     ...nationalSocietiesSagas(),
     ...smsGatewaysSagas(),
+    ...projectsSagas(),
     ...globalCoordinatorsSagas(),
     ...healthRisksSagas(),
     ...nationalSocietyUsersSagas(),

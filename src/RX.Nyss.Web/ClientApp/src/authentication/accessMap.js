@@ -14,6 +14,12 @@ export const accessMap = {
     edit: [Administrator, Manager, TechnicalAdvisor],
     delete: [Administrator, Manager, TechnicalAdvisor]
   },
+  projects: {
+    list: [Administrator, Manager, TechnicalAdvisor],
+    add: [Administrator, Manager, TechnicalAdvisor],
+    edit: [Administrator, Manager, TechnicalAdvisor],
+    delete: [Administrator, Manager, TechnicalAdvisor]
+  },
   nationalSocietyUsers: {
     list: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
     add: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],

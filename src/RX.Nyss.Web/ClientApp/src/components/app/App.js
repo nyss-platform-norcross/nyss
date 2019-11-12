@@ -17,6 +17,9 @@ import { NationalSocietiesOverviewPage } from '../nationalSocieties/NationalSoci
 import { SmsGatewaysListPage } from '../smsGateways/SmsGatewaysListPage';
 import { SmsGatewaysCreatePage } from '../smsGateways/SmsGatewaysCreatePage';
 import { SmsGatewaysEditPage } from '../smsGateways/SmsGatewaysEditPage';
+import { ProjectsListPage } from '../projects/ProjectsListPage';
+import { ProjectsCreatePage } from '../projects/ProjectsCreatePage';
+import { ProjectsEditPage } from '../projects/ProjectsEditPage';
 import { VerifyEmailPage } from '../verifyEmailPage/VerifyEmailPage';
 import { GlobalCoordinatorsListPage } from '../globalCoordinators/GlobalCoordinatorsListPage';
 import { GlobalCoordinatorsCreatePage } from '../globalCoordinators/GlobalCoordinatorsCreatePage';
@@ -57,6 +60,10 @@ export const App = ({ history }) => (
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways' component={SmsGatewaysListPage} roles={accessMap.smsGateways.list} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/:smsGatewayId/edit' component={SmsGatewaysEditPage} roles={accessMap.smsGateways.edit} />
+
+        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects' component={ProjectsListPage} roles={accessMap.projects.list} />
+        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/add' component={ProjectsCreatePage} roles={accessMap.projects.add} />
+        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/edit' component={ProjectsEditPage} roles={accessMap.projects.edit} />
 
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users' component={NationalSocietyUsersListPage} roles={accessMap.nationalSocietyUsers.list} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/add' component={NationalSocietyUsersCreatePage} roles={accessMap.nationalSocietyUsers.add} />

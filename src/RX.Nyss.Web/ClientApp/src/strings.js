@@ -103,6 +103,32 @@ export const stringKeys = {
       removalConfirmation: "smsGateway.list.removalConfirmation"
     },
   },
+  project: {
+    title: "project.title",
+    addNew: "project.addNew",
+    form: {
+      creationTitle: "project.form.creationTitle",
+      editionTitle: "project.form.editionTitle",
+      name: "project.form.name",
+      timeZone: "project.form.timeZone",
+      create: "project.form.create",
+      update: "project.form.update"
+    },
+    list: {
+      name: "project.list.name",
+      totalReportCount: "project.list.totalReportCount",
+      activeDataCollectorCount: "project.list.activeDataCollectorCount",
+      startDate: "project.list.startDate",
+      escalatedAlertCount: "project.list.escalatedAlertCount",
+      supervisorCount: "project.list.supervisorCount",
+      endDate: "project.list.endDate",
+      ongoing: "project.list.ongoing",
+      open: "project.list.open",
+      edit: "project.list.edit",
+      remove: "project.list.remove",
+      removalConfirmation: "project.list.removalConfirmation"
+    },
+  },
   globalCoordinator: {
     title: "globalCoordinator.title",
     addNew: "globalCoordinator.addNew",
