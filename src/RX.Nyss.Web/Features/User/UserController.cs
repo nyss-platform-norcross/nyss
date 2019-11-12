@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.User
         /// <param name="nationalSocietyId">The id of the national society to list the users from</param>
         /// <returns></returns>
         [HttpGet("nationalSociety/{nationalSocietyId:int}/user/list")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> List(int nationalSocietyId) =>
             await _userService.GetUsersInNationalSociety(nationalSocietyId);
 
@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.User
         /// <param name="nationalSocietyUserId">User Id</param>
         /// <returns></returns>
         [HttpGet("nationalSociety/user/{nationalSocietyUserId:int}/basicData")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.DataManager, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> GetBasicData(int nationalSocietyUserId) =>
             await _userService.GetBasicData(nationalSocietyUserId);
     }

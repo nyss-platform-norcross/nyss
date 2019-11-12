@@ -10,8 +10,8 @@ using RX.Nyss.Web.Data;
 namespace RX.Nyss.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191025105201_ApplicationDbContext_InitialMigration")]
-    partial class ApplicationDbContext_InitialMigration
+    [Migration("20191108122952_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,6 +47,50 @@ namespace RX.Nyss.Web.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "b0091a03-ffaf-44f4-ac70-df9fcd295457",
+                            ConcurrencyStamp = "d22b1211-071e-4e29-8b73-9264cd5dc187",
+                            Name = "Administrator",
+                            NormalizedName = "ADMINISTRATOR"
+                        },
+                        new
+                        {
+                            Id = "b583d8c9-3feb-4e08-834c-c604e7481fae",
+                            ConcurrencyStamp = "adc021a7-51c9-4a29-918e-8a562253074c",
+                            Name = "DataConsumer",
+                            NormalizedName = "DATACONSUMER"
+                        },
+                        new
+                        {
+                            Id = "cca2c07b-c90f-46d2-8413-1dc6ee51e63a",
+                            ConcurrencyStamp = "f0f67ee3-a803-4d1d-af27-966db72d5746",
+                            Name = "GlobalCoordinator",
+                            NormalizedName = "GLOBALCOORDINATOR"
+                        },
+                        new
+                        {
+                            Id = "cef5482a-383c-4eaa-a23f-16577fc8d34b",
+                            ConcurrencyStamp = "dd7ea34c-cffe-47ec-aa98-2dd668668070",
+                            Name = "Supervisor",
+                            NormalizedName = "SUPERVISOR"
+                        },
+                        new
+                        {
+                            Id = "f6afa341-af08-4b8a-a6fd-7ca33382a440",
+                            ConcurrencyStamp = "0b5dddf5-5008-48b3-8c9d-1831a1b7149a",
+                            Name = "TechnicalAdvisor",
+                            NormalizedName = "TECHNICALADVISOR"
+                        },
+                        new
+                        {
+                            Id = "fb23c271-059a-4537-ae3e-7f9fd5b305c6",
+                            ConcurrencyStamp = "8d27b561-f2ad-47cf-bd3a-e614995fffce",
+                            Name = "Manager",
+                            NormalizedName = "MANAGER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -136,6 +180,24 @@ namespace RX.Nyss.Web.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "9c1071c1-fa69-432a-9cd0-2c4baa703a67",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "6ac53d5d-db24-4b4a-bacf-947b456dbe64",
+                            Email = "admin@domain.com",
+                            EmailConfirmed = true,
+                            LockoutEnabled = true,
+                            NormalizedEmail = "ADMIN@DOMAIN.COM",
+                            NormalizedUserName = "ADMIN@DOMAIN.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAECR5Ja6EyNSJUjBYPQPOJjW5JP2XoVuOx6MsCjcntc5XANwVwvwPUjsHvNG8qhcO3g==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "3Q4P4PMC46O7CGQNZDPNQZDLOT23NLRV",
+                            TwoFactorEnabled = false,
+                            UserName = "admin@domain.com"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -197,6 +259,13 @@ namespace RX.Nyss.Web.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "9c1071c1-fa69-432a-9cd0-2c4baa703a67",
+                            RoleId = "b0091a03-ffaf-44f4-ac70-df9fcd295457"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>

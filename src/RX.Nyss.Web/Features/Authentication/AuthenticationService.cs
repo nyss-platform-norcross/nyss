@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
@@ -23,8 +22,8 @@ namespace RX.Nyss.Web.Features.Authentication
 
     public class AuthenticationService : IAuthenticationService
     {
-        private readonly IUserIdentityService _userIdentityService;
         private readonly INyssContext _nyssContext;
+        private readonly IUserIdentityService _userIdentityService;
 
         public AuthenticationService(IUserIdentityService userIdentityService, INyssContext nyssContext)
         {
@@ -41,10 +40,7 @@ namespace RX.Nyss.Web.Features.Authentication
                 var additionalClaims = await GetAdditionalClaims(user);
                 var accessToken = _userIdentityService.CreateToken(user.UserName, roles, additionalClaims);
 
-                return Success(new LoginResponseDto
-                {
-                    AccessToken = accessToken
-                });
+                return Success(new LoginResponseDto { AccessToken = accessToken });
             }
             catch (ResultException exception)
             {
@@ -71,8 +67,8 @@ namespace RX.Nyss.Web.Features.Authentication
                 Data = user.Identity.IsAuthenticated
                     ? new StatusResponseDto.DataDto
                     {
-                        Name = user.Identity.Name, 
-                        Email = email, 
+                        Name = user.Identity.Name,
+                        Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray()
                     }
@@ -86,25 +82,10 @@ namespace RX.Nyss.Web.Features.Authentication
             return Success();
         }
 
-        private async Task<IEnumerable<string>> GetRoles(IdentityUser user)
-        {
-            var userRoles = await _userIdentityService.GetRoles(user);
+        private async Task<IEnumerable<string>> GetRoles(IdentityUser user) => await _userIdentityService.GetRoles(user);
 
-            return await IsDataOwner(user)
-                ? userRoles.Union(new[] { FunctionalRole.DataOwner.ToString() })
-                : userRoles;
-         }
-
-        private async Task<IEnumerable<Claim>> GetAdditionalClaims(IdentityUser identityUser)
-        {
-            return await GetNationalSocietyClaims(identityUser);
-        }
-
-        private async Task<bool> IsDataOwner(IdentityUser identityUser) =>
-            await _nyssContext.Users
-                .OfType<DataManagerUser>()
-                .AnyAsync(u => u.IdentityUserId == identityUser.Id && u.IsDataOwner);
-
+        private async Task<IEnumerable<Claim>> GetAdditionalClaims(IdentityUser identityUser) => await GetNationalSocietyClaims(identityUser);
+        
         private async Task<List<Claim>> GetNationalSocietyClaims(IdentityUser identityUser) =>
             await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.User.IdentityUserId == identityUser.Id)

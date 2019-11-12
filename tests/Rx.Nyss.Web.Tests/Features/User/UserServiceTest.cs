@@ -67,7 +67,7 @@ namespace Rx.Nyss.Web.Tests.Features.Users
 
             var users = await _userService.GetUsersInNationalSociety(1);
 
-            var allowedRoles = new List<Role> {Role.DataConsumer, Role.DataManager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
+            var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
             users.Value.Count.ShouldBe(5);
             users.Value.ShouldAllBe(u => allowedRoles.Contains(u.Role));
         }
@@ -79,11 +79,11 @@ namespace Rx.Nyss.Web.Tests.Features.Users
             {
                 new AdministratorUser {Id = 1, Role = Role.Administrator},
                 new GlobalCoordinatorUser {Id = 2, Role = Role.GlobalCoordinator},
-                new DataManagerUser {Id = 3, Role = Role.DataManager, Name = NationalSociety1Tag},
+                new ManagerUser {Id = 3, Role = Role.Manager, Name = NationalSociety1Tag},
                 new DataConsumerUser {Id = 4, Role = Role.DataConsumer, Name = NationalSociety1Tag},
                 new TechnicalAdvisorUser {Id = 5, Role = Role.TechnicalAdvisor, Name = NationalSociety1Tag},
                 new SupervisorUser {Id = 6, Role = Role.Supervisor, Name = NationalSociety1Tag},
-                new DataManagerUser {Id = 7, Role = Role.DataManager, Name = NationalSociety2Tag},
+                new ManagerUser {Id = 7, Role = Role.Manager, Name = NationalSociety2Tag},
                 new DataConsumerUser {Id = 8, Role = Role.DataConsumer, Name = NationalSociety2Tag},
                 new TechnicalAdvisorUser {Id = 9, Role = Role.TechnicalAdvisor, Name = NationalSociety2Tag},
                 new SupervisorUser {Id = 10, Role = Role.Supervisor, Name = NationalSociety2Tag},

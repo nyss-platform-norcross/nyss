@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace RX.Nyss.Web.Migrations
 {
-    public partial class ApplicationDbContext_InitialMigration : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -167,6 +167,32 @@ namespace RX.Nyss.Web.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                schema: "identity",
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "b0091a03-ffaf-44f4-ac70-df9fcd295457", "d22b1211-071e-4e29-8b73-9264cd5dc187", "Administrator", "ADMINISTRATOR" },
+                    { "b583d8c9-3feb-4e08-834c-c604e7481fae", "adc021a7-51c9-4a29-918e-8a562253074c", "DataConsumer", "DATACONSUMER" },
+                    { "cca2c07b-c90f-46d2-8413-1dc6ee51e63a", "f0f67ee3-a803-4d1d-af27-966db72d5746", "GlobalCoordinator", "GLOBALCOORDINATOR" },
+                    { "cef5482a-383c-4eaa-a23f-16577fc8d34b", "dd7ea34c-cffe-47ec-aa98-2dd668668070", "Supervisor", "SUPERVISOR" },
+                    { "f6afa341-af08-4b8a-a6fd-7ca33382a440", "0b5dddf5-5008-48b3-8c9d-1831a1b7149a", "TechnicalAdvisor", "TECHNICALADVISOR" },
+                    { "fb23c271-059a-4537-ae3e-7f9fd5b305c6", "8d27b561-f2ad-47cf-bd3a-e614995fffce", "Manager", "MANAGER" }
+                });
+
+            migrationBuilder.InsertData(
+                schema: "identity",
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "9c1071c1-fa69-432a-9cd0-2c4baa703a67", 0, "6ac53d5d-db24-4b4a-bacf-947b456dbe64", "admin@domain.com", true, true, null, "ADMIN@DOMAIN.COM", "ADMIN@DOMAIN.COM", "AQAAAAEAACcQAAAAECR5Ja6EyNSJUjBYPQPOJjW5JP2XoVuOx6MsCjcntc5XANwVwvwPUjsHvNG8qhcO3g==", null, false, "3Q4P4PMC46O7CGQNZDPNQZDLOT23NLRV", false, "admin@domain.com" });
+
+            migrationBuilder.InsertData(
+                schema: "identity",
+                table: "AspNetUserRoles",
+                columns: new[] { "UserId", "RoleId" },
+                values: new object[] { "9c1071c1-fa69-432a-9cd0-2c4baa703a67", "b0091a03-ffaf-44f4-ac70-df9fcd295457" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

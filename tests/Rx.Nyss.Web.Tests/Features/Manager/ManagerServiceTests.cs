@@ -8,26 +8,26 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.DataManager;
-using RX.Nyss.Web.Features.DataManager.Dto;
+using RX.Nyss.Web.Features.Manager;
+using RX.Nyss.Web.Features.Manager.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.DataManager
+namespace Rx.Nyss.Web.Tests.Features.Manager
 {
-    public class DataManagerServiceTests
+    public class ManagerServiceTests
     {
-        private readonly DataManagerService _dataManagerService;
+        private readonly ManagerService _managerService;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
 
-        public DataManagerServiceTests()
+        public ManagerServiceTests()
         {
             _loggerAdapter = Substitute.For<ILoggerAdapter>();
             _nyssContext = Substitute.For<INyssContext>();
@@ -39,7 +39,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _dataManagerService = new DataManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
+            _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -57,18 +57,18 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
         }
 
         [Fact]
-        public async Task RegisterDataManager_WhenIdentityUserCreationSuccessful_ShouldReturnSuccessResult()
+        public async Task RegisterManager_WhenIdentityUserCreationSuccessful_ShouldReturnSuccessResult()
         {
             var userEmail = "emailTest1@domain.com";
             var userName = "Mickey Mouse";
-            var registerDataManagerRequestDto = new CreateDataManagerRequestDto
+            var registerManagerRequestDto = new CreateManagerRequestDto
             {
                 Name = userName,
                 Email = userEmail
             };
 
             var nationalSocietyId = 1;
-            var result = await _dataManagerService.CreateDataManager(nationalSocietyId, registerDataManagerRequestDto);
+            var result = await _managerService.CreateManager(nationalSocietyId, registerManagerRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
             await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
@@ -76,43 +76,43 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
         }
 
         [Fact]
-        public async Task RegisterDataManager_WhenIdentityUserCreationSuccessful_NyssContextAddIsCalledOnce()
+        public async Task RegisterManager_WhenIdentityUserCreationSuccessful_NyssContextAddIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerDataManagerRequestDto = new CreateDataManagerRequestDto { Name = userEmail, Email = userEmail };
+            var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            var result = await _dataManagerService.CreateDataManager(nationalSocietyId, registerDataManagerRequestDto);
+            var result = await _managerService.CreateManager(nationalSocietyId, registerManagerRequestDto);
 
 
             await _nyssContext.Received().AddAsync(Arg.Any<UserNationalSociety>());
         }
 
         [Fact]
-        public async Task RegisterDataManager_WhenIdentityUserCreationSuccessful_NyssContextSaveChangesIsCalledOnce()
+        public async Task RegisterManager_WhenIdentityUserCreationSuccessful_NyssContextSaveChangesIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerDataManagerRequestDto = new CreateDataManagerRequestDto { Name = userEmail, Email = userEmail };
+            var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            var result = await _dataManagerService.CreateDataManager(nationalSocietyId, registerDataManagerRequestDto);
+            var result = await _managerService.CreateManager(nationalSocietyId, registerManagerRequestDto);
 
 
             await _nyssContext.Received().SaveChangesAsync();
         }
 
         [Fact]
-        public async Task RegisterDataManager_WhenIdentityUserServiceThrowsResultException_ShouldReturnErrorResultWithAppropriateKey()
+        public async Task RegisterManager_WhenIdentityUserServiceThrowsResultException_ShouldReturnErrorResultWithAppropriateKey()
         {
             var exception = new ResultException(ResultKey.User.Registration.UserAlreadyExists);
             _identityUserRegistrationServiceMock.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
                 .Do(x => throw exception);
 
             var userEmail = "emailTest1@domain.com";
-            var registerDataManagerRequestDto = new CreateDataManagerRequestDto { Name = userEmail, Email = userEmail };
+            var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            var result = await _dataManagerService.CreateDataManager(nationalSocietyId, registerDataManagerRequestDto);
+            var result = await _managerService.CreateManager(nationalSocietyId, registerManagerRequestDto);
 
 
             result.IsSuccess.ShouldBeFalse();
@@ -120,37 +120,37 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
         }
 
         [Fact]
-        public void RegisterDataManager_WhenNonResultExceptionIsThrown_ShouldPassThroughWithoutBeingCaught()
+        public void RegisterManager_WhenNonResultExceptionIsThrown_ShouldPassThroughWithoutBeingCaught()
         {
             _identityUserRegistrationServiceMock.When(ius => ius.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()))
                 .Do(x => throw new Exception());
 
             var userEmail = "emailTest1@domain.com";
-            var registerDataManagerRequestDto = new CreateDataManagerRequestDto { Name = userEmail, Email = userEmail };
+            var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            _dataManagerService.CreateDataManager(nationalSocietyId, registerDataManagerRequestDto).ShouldThrowAsync<Exception>();
+            _managerService.CreateManager(nationalSocietyId, registerManagerRequestDto).ShouldThrowAsync<Exception>();
         }
 
 
         [Fact]
-        public async Task EditDataManager_WhenEditingNonExistingUser_ReturnsErrorResult()
+        public async Task EditManager_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
             ArrangeUsersFrom(new List<User> { });
 
 
-            var result = await _dataManagerService.UpdateDataManager(123, new EditDataManagerRequestDto() {});
+            var result = await _managerService.UpdateManager(123, new EditManagerRequestDto() {});
 
 
             result.IsSuccess.ShouldBeFalse();
         }
 
         [Fact]
-        public async Task EditDataManager_WhenEditingUserThatIsNotDataManager_ReturnsErrorResult()
+        public async Task EditManager_WhenEditingUserThatIsNotManager_ReturnsErrorResult()
         {
             ArrangeUsersWithOneAdministratorUser();
 
-            var result = await _dataManagerService.UpdateDataManager(123, new EditDataManagerRequestDto() { });
+            var result = await _managerService.UpdateManager(123, new EditManagerRequestDto() { });
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -163,9 +163,9 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
             var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
 
-            _nationalSocietyUserService.GetNationalSocietyUser<DataManagerUser>(Arg.Any<int>()).Returns(ci =>
+            _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(Arg.Any<int>()).Returns(ci =>
             {
-                var user = existingUsers.OfType<DataManagerUser>().FirstOrDefault(x => x.Id == (int)ci[0]);
+                var user = existingUsers.OfType<ManagerUser>().FirstOrDefault(x => x.Id == (int)ci[0]);
                 if (user == null)
                 {
                     throw new ResultException(ResultKey.User.Registration.UserNotFound);
@@ -175,33 +175,33 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
         }
         
         [Fact]
-        public async Task EditDataManager_WhenEditingUserThatIsNotDataManager_SaveChangesShouldNotBeCalled()
+        public async Task EditManager_WhenEditingUserThatIsNotManager_SaveChangesShouldNotBeCalled()
         {
             ArrangeUsersWithOneAdministratorUser();
 
-            await _dataManagerService.UpdateDataManager(123, new EditDataManagerRequestDto() { });
+            await _managerService.UpdateManager(123, new EditManagerRequestDto() { });
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
 
 
         [Fact]
-        public async Task EditDataManager_WhenEditingExistingDataManager_ReturnsSuccess()
+        public async Task EditManager_WhenEditingExistingManager_ReturnsSuccess()
         {
-            ArrangeUSersDbSetWithOneDataManager();
+            ArrangeUSersDbSetWithOneManager();
 
-            var result = await _dataManagerService.UpdateDataManager(123, new EditDataManagerRequestDto() {  });
+            var result = await _managerService.UpdateManager(123, new EditManagerRequestDto() {  });
 
             result.IsSuccess.ShouldBeTrue();
         }
 
-        private void ArrangeUSersDbSetWithOneDataManager() =>
+        private void ArrangeUSersDbSetWithOneManager() =>
             ArrangeUsersFrom(new List<User>
             {
-                new DataManagerUser
+                new ManagerUser
                 {
                     Id = 123,
-                    Role = Role.DataManager,
+                    Role = Role.Manager,
                     EmailAddress = "emailTest1@domain.com",
                     Name = "emailTest1@domain.com",
                     Organization = "org org",
@@ -211,33 +211,33 @@ namespace Rx.Nyss.Web.Tests.Features.DataManager
 
 
         [Fact]
-        public async Task EditDataManager_WhenEditingExistingDataManager_SaveChangesAsyncIsCalled()
+        public async Task EditManager_WhenEditingExistingManager_SaveChangesAsyncIsCalled()
         {
-            ArrangeUSersDbSetWithOneDataManager();
+            ArrangeUSersDbSetWithOneManager();
 
-            await _dataManagerService.UpdateDataManager(123, new EditDataManagerRequestDto() {  });
+            await _managerService.UpdateManager(123, new EditManagerRequestDto() {  });
 
             await _nyssContext.Received().SaveChangesAsync();
         }
 
 
         [Fact]
-        public async Task EditDataManager_WhenEditingExistingUser_ExpectedFieldsGetEdited()
+        public async Task EditManager_WhenEditingExistingUser_ExpectedFieldsGetEdited()
         {
-            ArrangeUSersDbSetWithOneDataManager();
+            ArrangeUSersDbSetWithOneManager();
 
             var existingUserEmail = _nyssContext.Users.Single(u => u.Id == 123)?.EmailAddress;
 
-            var editRequest = new EditDataManagerRequestDto()
+            var editRequest = new EditManagerRequestDto()
             {
                 Name = "New name",
                 Organization = "New organization",
                 PhoneNumber = "432432"
             };
 
-            await _dataManagerService.UpdateDataManager(123, editRequest);
+            await _managerService.UpdateManager(123, editRequest);
 
-            var editedUser = _nyssContext.Users.Single(u => u.Id == 123) as DataManagerUser;
+            var editedUser = _nyssContext.Users.Single(u => u.Id == 123) as ManagerUser;
 
             editedUser.ShouldNotBeNull();
             editedUser.Name.ShouldBe(editRequest.Name);

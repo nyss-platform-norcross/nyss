@@ -102,8 +102,8 @@ function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
         return `/api/nationalSociety/${nationalSocietyId}/technicalAdvisor/create`;
-    case roles.DataManager:
-        return `/api/nationalSociety/${nationalSocietyId}/dataManager/create`;
+    case roles.Manager:
+        return `/api/nationalSociety/${nationalSocietyId}/manager/create`;
     case roles.DataConsumer:
         return `/api/nationalSociety/${nationalSocietyId}/dataConsumer/create`;
   }
@@ -113,8 +113,8 @@ function getSpecificRoleUserEditionUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
         return `/api/nationalSociety/technicalAdvisor/${userId}/edit`;
-    case roles.DataManager:
-        return `/api/nationalSociety/dataManager/${userId}/edit`;
+    case roles.Manager:
+        return `/api/nationalSociety/manager/${userId}/edit`;
     case roles.DataConsumer:
         return `/api/nationalSociety/dataConsumer/${userId}/edit`;
   }
@@ -124,8 +124,8 @@ function getSpecificRoleUserRetrievalUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
         return `/api/nationalSociety/technicalAdvisor/${userId}/get`;
-    case roles.DataManager:
-        return `/api/nationalSociety/dataManager/${userId}/get`;
+    case roles.Manager:
+        return `/api/nationalSociety/manager/${userId}/get`;
     case roles.DataConsumer:
         return `/api/nationalSociety/dataConsumer/${userId}/get`;
   }
@@ -135,8 +135,8 @@ function getSpecificRoleUserRemovalUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
         return `/api/nationalSociety/technicalAdvisor/${userId}/remove`;
-    case roles.DataManager:
-        return `/api/nationalSociety/dataManager/${userId}/remove`;
+    case roles.Manager:
+        return `/api/nationalSociety/manager/${userId}/remove`;
     case roles.DataConsumer:
         return `/api/nationalSociety/dataConsumer/${userId}/remove`;
   }

@@ -1,6 +1,6 @@
 import { placeholders } from "../../siteMapPlaceholders";
 import { accessMap } from "../../authentication/accessMap";
-import { Administrator, GlobalCoordinator, DataConsumer, DataManager } from "../../authentication/roles";
+import { Administrator, GlobalCoordinator, DataConsumer, Manager } from "../../authentication/roles";
 import { strings, stringKeys } from "../../strings";
 
 export const nationalSocietiesSiteMap = [
@@ -42,6 +42,6 @@ export const nationalSocietiesSiteMap = [
     title: () => strings(stringKeys.nationalSociety.overview.title),
     placeholder: placeholders.leftMenu,
     placeholderIndex: 4,
-    access: [Administrator, GlobalCoordinator, DataManager, DataConsumer]
+    access: [Administrator, GlobalCoordinator, Manager, DataConsumer]
   }
 ];

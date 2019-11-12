@@ -22,7 +22,7 @@ import * as roles from '../../authentication/roles';
 const NationalSocietyUsersCreatePageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
-      role: roles.DataManager,
+      role: roles.Manager,
       name: "",
       email: "",
       phoneNumber: "",

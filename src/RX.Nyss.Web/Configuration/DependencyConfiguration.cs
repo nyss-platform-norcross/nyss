@@ -135,8 +135,8 @@ namespace RX.Nyss.Web.Configuration
                 options.AddPolicy(Policy.NationalSocietyAccess.ToString(),
                     policy => policy.Requirements.Add(new NationalSocietyAccessRequirement()));
 
-                options.AddPolicy(Policy.DataManagerAccess.ToString(),
-                    policy => policy.Requirements.Add(new DataManagerAccessRequirement()));
+                options.AddPolicy(Policy.ManagerAccess.ToString(),
+                    policy => policy.Requirements.Add(new ManagerAccessRequirement()));
 
                 options.AddPolicy(Policy.DataConsumerAccess.ToString(),
                     policy => policy.Requirements.Add(new DataConsumerAccessRequirement()));
@@ -149,7 +149,7 @@ namespace RX.Nyss.Web.Configuration
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
-            serviceCollection.AddScoped<IAuthorizationHandler, DataManagerAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, ManagerAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, DataConsumerAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, TechnicalAdvisorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, SmsGatewayAccessHandler>();

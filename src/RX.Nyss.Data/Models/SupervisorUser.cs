@@ -8,6 +8,6 @@
 
         public virtual Zone Zone { get; set; }
 
-        public virtual DataManagerUser DataManagerUser { get; set; }
+        public virtual ManagerUser ManagerUser { get; set; }
     }
 }

@@ -25,3 +25,6 @@ dotnet ef database update --startup-project ..\RX.Nyss.Web\RX.Nyss.Web.csproj --
 ```
 
 If not specified, `dotnet ef database update` command updates to the latest migration, but you can also specify which version you want to update to, either using the name or Id. If you specify "0", it will update the databse back to how it was before the initial migration.
+
+## Seeding
+If there is data that needs to be added/deleted/changed in the database as part of the feature you are implementing, it should be added/deleted/changed in the `NyssContextSeeder.Seed` extension method. After you have made the alterations needed, just create a Migration as in the case of Model changes.

@@ -1,8 +1,8 @@
 ﻿using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.DataManager.Dto
+namespace RX.Nyss.Web.Features.Manager.Dto
 {
-    public class GetDataManagerResponseDto
+    public class GetManagerResponseDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -6,7 +6,7 @@
         GlobalCoordinator,
         TechnicalAdvisor,
         DataConsumer,
-        DataManager,
+        Manager,
         Supervisor
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Data
@@ -60,11 +59,12 @@ namespace RX.Nyss.Data
 
         public DbSet<Zone> Zones { get; set; }
 
-       
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(NyssContext).Assembly);
             modelBuilder.HasDefaultSchema("nyss");
+            modelBuilder.Seed();
         }
     }
 }

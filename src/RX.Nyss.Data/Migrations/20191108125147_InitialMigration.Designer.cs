@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20191108125147_InitialMigration")]
+    partial class InitialMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1899,18 +1901,12 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int?>("HeadManagerId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
-
-                    b.Property<int?>("PendingHeadManagerId")
-                        .HasColumnType("int");
 
                     b.Property<string>("RegionCustomName")
                         .HasColumnType("nvarchar(100)")
@@ -1933,13 +1929,9 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("HeadManagerId");
-
                     b.HasIndex("Name")
                         .IsUnique()
                         .HasFilter("[Name] IS NOT NULL");
-
-                    b.HasIndex("PendingHeadManagerId");
 
                     b.ToTable("NationalSocieties");
                 });
@@ -2271,6 +2263,15 @@ namespace RX.Nyss.Data.Migrations
                 {
                     b.HasBaseType("RX.Nyss.Data.Models.User");
 
+                    b.Property<DateTime?>("ConsentedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HasConsented")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDataOwner")
+                        .HasColumnType("bit");
+
                     b.HasDiscriminator().HasValue("Manager");
                 });
 
@@ -2451,16 +2452,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("RX.Nyss.Data.Models.User", "HeadManager")
-                        .WithMany()
-                        .HasForeignKey("HeadManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("RX.Nyss.Data.Models.User", "PendingHeadManager")
-                        .WithMany()
-                        .HasForeignKey("PendingHeadManagerId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 

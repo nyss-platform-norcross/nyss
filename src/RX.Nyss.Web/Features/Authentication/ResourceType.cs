@@ -4,7 +4,7 @@
     {
         NationalSociety,
         SmsGateway,
-        DataManager,
+        Manager,
         DataConsumer,
         TechnicalAdvisor
     }

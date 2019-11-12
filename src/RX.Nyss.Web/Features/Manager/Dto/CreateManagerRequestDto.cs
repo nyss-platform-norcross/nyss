@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
 using RX.Nyss.Web.Services;
 
-namespace RX.Nyss.Web.Features.DataManager.Dto
+namespace RX.Nyss.Web.Features.Manager.Dto
 {
-    public class CreateDataManagerRequestDto
+    public class CreateManagerRequestDto
     {
         public string Email { get; set; }
         public string Name { get; set; }
@@ -11,9 +11,9 @@ namespace RX.Nyss.Web.Features.DataManager.Dto
         public string AdditionalPhoneNumber { get; set; }
         public string Organization { get; set; }
 
-        public class CreateDataManagerValidator : AbstractValidator<CreateDataManagerRequestDto>
+        public class CreateManagerValidator : AbstractValidator<CreateManagerRequestDto>
         {
-            public CreateDataManagerValidator()
+            public CreateManagerValidator()
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.Email).NotEmpty().MaximumLength(100).EmailAddress();
