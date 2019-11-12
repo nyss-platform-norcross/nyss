@@ -19,7 +19,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(u => u.IsFirstLogin).IsRequired();
             builder.HasDiscriminator(u => u.Role)
                 .HasValue<SupervisorUser>(Role.Supervisor)
-                .HasValue<DataManagerUser>(Role.Manager)
+                .HasValue<ManagerUser>(Role.Manager)
                 .HasValue<AdministratorUser>(Role.Administrator)
                 .HasValue<GlobalCoordinatorUser>(Role.GlobalCoordinator)
                 .HasValue<DataConsumerUser>(Role.DataConsumer)
