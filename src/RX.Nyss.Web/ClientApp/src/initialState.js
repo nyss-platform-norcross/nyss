@@ -59,6 +59,7 @@ export const initialState = {
     listData: [],
     formFetching: false,
     formSaving: false,
+    formError: null,
     formData: null
   },
   nationalSocietyUsers: {

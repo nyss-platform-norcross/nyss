@@ -7,6 +7,11 @@ import { BaseLayout } from './BaseLayout';
 import styles from './Layout.module.scss';
 import { MessagePopup } from './MessagePopup';
 
+const pageContentId = "pageContent";
+
+export const resetPageContentScroll = () =>
+  document.getElementById(pageContentId).scrollTo(0, 0)
+
 export const Layout = ({ children }) => (
   <BaseLayout>
     <div className={styles.sideMenu}>
@@ -18,7 +23,7 @@ export const Layout = ({ children }) => (
         <Header />
       </div>
 
-      <div className={styles.pageContentContainer}>
+      <div className={styles.pageContentContainer} id={pageContentId}>
         <div className={styles.pageContent}>
           <Breadcrumb />
 
