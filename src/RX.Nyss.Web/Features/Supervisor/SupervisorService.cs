@@ -116,42 +116,10 @@ namespace RX.Nyss.Web.Features.Supervisor
             }
         }
 
-        private async Task HandleSupervisorProjectReferences(SupervisorUser user, SupervisorUserProject currentProjectReference, int? selectedProjectId)
-        {
-            if (selectedProjectId.HasValue && selectedProjectId.Value == currentProjectReference?.ProjectId)
-            {
-                return;
-            }
-
-            if (selectedProjectId.HasValue)
-            {
-                var project = await _dataContext.Projects
-                    .Where(p => p.State == ProjectState.Open)
-                    .Where(p => user.UserNationalSocieties.Select(uns => uns.NationalSocietyId).Contains(p.NationalSociety.Id))
-                    .SingleOrDefaultAsync(p => p.Id == selectedProjectId.Value);
-
-                if (project == null)
-                {
-                    throw new ResultException(ResultKey.User.Supervisor.ProjectDoesNotExistOrNoAccess);
-                }
-
-                await AttachSupervisorToProject(user, project);
-            }
-            RemoveExistingProjectReference(currentProjectReference);
-        }
-
         private async Task AttachSupervisorToProject(SupervisorUser user, Project project)
         {
             var newSupervisorUserProject = CreateSupervisorUserProjectReference(project, user);
             await _dataContext.AddAsync(newSupervisorUserProject);
-        }
-
-        private async Task RemoveExistingProjectReference(SupervisorUserProject existingProjectReference)
-        {
-            if (existingProjectReference != null)
-            {
-                _dataContext.SupervisorUserProjects.Remove(existingProjectReference);
-            }
         }
 
         private UserNationalSociety CreateUserNationalSocietyReference(Nyss.Data.Models.NationalSociety nationalSociety, Nyss.Data.Models.User user) =>
@@ -229,7 +197,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                 supervisorUser.PhoneNumber = editSupervisorRequestDto.PhoneNumber;
                 supervisorUser.AdditionalPhoneNumber = editSupervisorRequestDto.AdditionalPhoneNumber;
 
-                await HandleSupervisorProjectReferences(supervisorUser, currentProjectReference, editSupervisorRequestDto.ProjectId);
+                await UpdateSupervisorProjectReferences(supervisorUser, currentProjectReference, editSupervisorRequestDto.ProjectId);
 
                 await _dataContext.SaveChangesAsync();
                 return Success();
@@ -238,6 +206,39 @@ namespace RX.Nyss.Web.Features.Supervisor
             {
                 _loggerAdapter.Debug(e);
                 return e.Result;
+            }
+        }
+
+        private async Task UpdateSupervisorProjectReferences(SupervisorUser user, SupervisorUserProject currentProjectReference, int? selectedProjectId)
+        {
+            var projectHasNotChanged = selectedProjectId.HasValue && selectedProjectId.Value == currentProjectReference?.ProjectId;
+            if (projectHasNotChanged)
+            {
+                return;
+            }
+
+            if (selectedProjectId.HasValue)
+            {
+                var project = await _dataContext.Projects
+                    .Where(p => p.State == ProjectState.Open)
+                    .Where(p => user.UserNationalSocieties.Select(uns => uns.NationalSocietyId).Contains(p.NationalSociety.Id))
+                    .SingleOrDefaultAsync(p => p.Id == selectedProjectId.Value);
+
+                if (project == null)
+                {
+                    throw new ResultException(ResultKey.User.Supervisor.ProjectDoesNotExistOrNoAccess);
+                }
+
+                await AttachSupervisorToProject(user, project);
+            }
+            RemoveExistingProjectReference(currentProjectReference);
+        }
+
+        private void RemoveExistingProjectReference(SupervisorUserProject existingProjectReference)
+        {
+            if (existingProjectReference != null)
+            {
+                _dataContext.SupervisorUserProjects.Remove(existingProjectReference);
             }
         }
 
@@ -264,11 +265,11 @@ namespace RX.Nyss.Web.Features.Supervisor
             }
         }
 
-        public async Task<SupervisorUser> GetSupervisorUser(int supervisorUserId) 
+        public async Task<SupervisorUser> GetSupervisorUser(int supervisorUserId)
         {
             var supervisorUser = await _dataContext.Users
                 .OfType<SupervisorUser>()
-                .Include(u=> u.SupervisorUserProjects)
+                .Include(u => u.SupervisorUserProjects)
                 .Where(u => u.Id == supervisorUserId)
                 .SingleOrDefaultAsync();
 
