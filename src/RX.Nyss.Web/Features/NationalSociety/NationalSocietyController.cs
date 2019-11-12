@@ -67,7 +67,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
             await _nationalSocietyService.RemoveNationalSociety(nationalSocietyId);
 
         /// <summary>
-        /// Sets a user as the Head Manager for the National Society
+        /// Sets a user as the pending Head Manager for the National Society. Next time this user logs in, the person will get a consent form, and if the user consents the user
+        /// will be the next Head Manager
         /// </summary>
         /// <param name="id"></param>
         /// <param name="requestDto"></param>
@@ -75,5 +76,16 @@ namespace RX.Nyss.Web.Features.NationalSociety
         [Route("{id}/setHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<Result> SetHeadManager(int id, [FromBody]SetAsHeadManagerRequestDto requestDto) =>
             await _nationalSocietyService.SetPendingHeadManager(id, requestDto.UserId);
+
+
+        /// <summary>
+        /// Will set the current user as the head for the given national societies
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="requestDto"></param>
+        /// <returns></returns>
+        [Route("consentAsHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
+        public async Task<Result> ConsentAsHeadManager([FromBody]ConsentAsHeadManagerRequestDto requestDto) =>
+            await _nationalSocietyService.SetAsHeadManager(User, requestDto.NationalSocietyIds);
     }
 }

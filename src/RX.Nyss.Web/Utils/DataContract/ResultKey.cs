@@ -89,6 +89,7 @@
             {
                 public const string NotAMemberOfSociety = "nationalSociety.setHead.notAMemberOfSociety";
                 public const string NotApplicableUserRole = "nationalSociety.setHead.notApplicableUserRole";
+                public const string NotThePendingHeadManager = "nationalSociety.setHead.notThePendingHeadManager";
             }
         }
 

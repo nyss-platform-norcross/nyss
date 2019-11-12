@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
+        Task<Result> SetAsHeadManager(ClaimsPrincipal user, List<int> requestDtoNationalSocietyIds);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -213,6 +215,38 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        public async Task<Result> SetAsHeadManager(ClaimsPrincipal user, List<int> requestDtoNationalSocietyIds)
+        {
+            var email = user.FindFirstValue(ClaimTypes.Name);
+
+            var userEntity = await _nyssContext.Users
+                .Include(x => x.ApplicationLanguage)
+                .SingleOrDefaultAsync(u => u.EmailAddress == email);
+
+            if (userEntity == null)
+            {
+                return Error(ResultKey.User.Common.UserNotFound);
+            }
+
+            var requestedNationalSocieties = _nyssContext.NationalSocieties.Where(x => requestDtoNationalSocietyIds.Contains(x.Id));
+            foreach (var nationalSociety in requestedNationalSocieties)
+            {
+                if (nationalSociety.PendingHeadManager != userEntity)
+                {
+                    return Error(ResultKey.NationalSociety.SetHead.NotThePendingHeadManager);
+                }
+
+                nationalSociety.PendingHeadManager = null;
+                nationalSociety.HeadManager = userEntity;
+
+                // ToDo: Store in separate consent table
+            }
+
+            await _nyssContext.SaveChangesAsync();
+
+            return Success();
         }
 
         public async Task<ContentLanguage> GetLanguageById(int id) =>
