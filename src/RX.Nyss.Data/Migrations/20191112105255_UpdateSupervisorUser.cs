@@ -7,6 +7,11 @@ namespace RX.Nyss.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_Users_Users_ManagerUserId",
+                schema: "nyss",
+                table: "Users");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Users_Villages_VillageId",
                 schema: "nyss",
                 table: "Users");
@@ -17,12 +22,22 @@ namespace RX.Nyss.Data.Migrations
                 table: "Users");
 
             migrationBuilder.DropIndex(
+                name: "IX_Users_ManagerUserId",
+                schema: "nyss",
+                table: "Users");
+
+            migrationBuilder.DropIndex(
                 name: "IX_Users_VillageId",
                 schema: "nyss",
                 table: "Users");
 
             migrationBuilder.DropIndex(
                 name: "IX_Users_ZoneId",
+                schema: "nyss",
+                table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "ManagerUserId",
                 schema: "nyss",
                 table: "Users");
 
@@ -110,6 +125,13 @@ namespace RX.Nyss.Data.Migrations
                 oldNullable: true);
 
             migrationBuilder.AddColumn<int>(
+                name: "ManagerUserId",
+                schema: "nyss",
+                table: "Users",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
                 name: "VillageId",
                 schema: "nyss",
                 table: "Users",
@@ -124,6 +146,12 @@ namespace RX.Nyss.Data.Migrations
                 nullable: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Users_ManagerUserId",
+                schema: "nyss",
+                table: "Users",
+                column: "ManagerUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_VillageId",
                 schema: "nyss",
                 table: "Users",
@@ -134,6 +162,16 @@ namespace RX.Nyss.Data.Migrations
                 schema: "nyss",
                 table: "Users",
                 column: "ZoneId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Users_Users_ManagerUserId",
+                schema: "nyss",
+                table: "Users",
+                column: "ManagerUserId",
+                principalSchema: "nyss",
+                principalTable: "Users",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Users_Villages_VillageId",

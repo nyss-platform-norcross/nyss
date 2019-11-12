@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20191112105255_UpdateSupervisorUser")]
+    partial class UpdateSupervisorUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,16 +89,16 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("AlertRuleId")
+                        .HasColumnType("int");
+
                     b.Property<string>("EmailAddress")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("AlertRuleId");
 
                     b.ToTable("AlertRecipients");
                 });
@@ -126,10 +128,10 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("CountThreshold")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DaysThreshold")
+                    b.Property<int?>("HoursThreshold")
                         .HasColumnType("int");
 
-                    b.Property<int?>("KilometersThreshold")
+                    b.Property<int?>("MetersThreshold")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1711,15 +1713,7 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Sex")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)")
-                        .HasMaxLength(10);
-
                     b.Property<int>("SupervisorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BirthGroupDecade")
                         .HasColumnType("int");
 
                     b.Property<int>("VillageId")
@@ -1792,37 +1786,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("NationalSocietyId");
 
                     b.ToTable("GatewaySettings");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.HeadManagerConsent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("ConsentedFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ConsentedUntil")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("NationalSocietyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserEmailAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("UserPhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HeadManagerConsents");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRisk", b =>
@@ -2023,19 +1986,15 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("EndDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("ContentLanguageId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
                     b.Property<int>("NationalSocietyId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("State")
                         .IsRequired()
@@ -2047,6 +2006,8 @@ namespace RX.Nyss.Data.Migrations
                         .HasMaxLength(50);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ContentLanguageId");
 
                     b.HasIndex("NationalSocietyId");
 
@@ -2062,10 +2023,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.Property<int?>("AlertRuleId")
                         .HasColumnType("int");
-
-                    b.Property<string>("CaseDefinition")
-                        .HasColumnType("nvarchar(500)")
-                        .HasMaxLength(500);
 
                     b.Property<string>("FeedbackMessage")
                         .HasColumnType("nvarchar(160)")
@@ -2359,7 +2316,7 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.Alert", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
-                        .WithMany("Alerts")
+                        .WithMany()
                         .HasForeignKey("ProjectHealthRiskId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2382,10 +2339,10 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertRecipient", b =>
                 {
-                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
-                        .WithMany("AlertRecipients")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("RX.Nyss.Data.Models.AlertRule", "AlertRule")
+                        .WithMany()
+                        .HasForeignKey("AlertRuleId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -2407,7 +2364,7 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.DataCollector", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
-                        .WithMany("DataCollectors")
+                        .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2523,6 +2480,12 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>
                 {
+                    b.HasOne("RX.Nyss.Data.Models.ContentLanguage", "ContentLanguage")
+                        .WithMany()
+                        .HasForeignKey("ContentLanguageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
                         .HasForeignKey("NationalSocietyId")
@@ -2544,7 +2507,7 @@ namespace RX.Nyss.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
-                        .WithMany("ProjectHealthRisks")
+                        .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2568,7 +2531,7 @@ namespace RX.Nyss.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
-                        .WithMany("Reports")
+                        .WithMany()
                         .HasForeignKey("ProjectHealthRiskId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();

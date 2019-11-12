@@ -61,7 +61,47 @@ namespace Rx.Nyss.Web.Tests.Features.Users
             users.Value.ShouldAllBe(u => u.Name == NationalSociety1Tag || u.Name == NationalSociety1And2Tag);
         }
 
-        private void ArrangeUsers(List<RX.Nyss.Data.Models.NationalSociety> nationalSocieties)
+        [Fact]
+        public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
+        {
+            ArrangeUsers();
+
+            var users = await _userService.GetUsersInNationalSociety(1, new[] { Role.Administrator.ToString() });
+
+            var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
+            users.Value.Count.ShouldBe(5);
+            users.Value.ShouldAllBe(u => allowedRoles.Contains(u.Role));
+        }
+
+        [Theory]
+        [InlineData(Role.Administrator)]
+        [InlineData(Role.DataConsumer)]
+        [InlineData(Role.Manager)]
+        [InlineData(Role.Supervisor)]
+        [InlineData(Role.TechnicalAdvisor)]
+        public async Task GetUsersInNationalSociety_WhenCallingRoleIsOtherThanGlobalCoordinator_ShouldReturnAllUsers(Role callingRole)
+        {
+            ArrangeUsers();
+
+            var users = await _userService.GetUsersInNationalSociety(1, new[] { callingRole.ToString() });
+
+            var allowedRoles = new List<Role> { Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor }.Select(x => x.ToString());
+            users.Value.Count.ShouldBe(5);
+            users.Value.ShouldAllBe(u => allowedRoles.Contains(u.Role));
+        }
+
+        [Fact]
+        public async Task GetUsersInNationalSociety_WhenCallingRoleIsGlobalCoordinator_ShouldNotReturnSupervisors()
+        {
+            ArrangeUsers();
+
+            var users = await _userService.GetUsersInNationalSociety(1, new[] { Role.GlobalCoordinator.ToString() });
+
+            users.Value.Count.ShouldBe(4);
+            users.Value.ShouldAllBe(u => u.Role != Role.Supervisor.ToString());
+        }
+
+        private void ArrangeUsers()
         {
             var users = new List<User>
             {
