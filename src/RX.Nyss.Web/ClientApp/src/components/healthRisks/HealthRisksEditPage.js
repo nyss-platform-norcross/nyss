@@ -54,9 +54,9 @@ const HealthRisksEditPageComponent = (props) => {
       .reduce((result, { lang, content }) => ({
         fields: {
           ...result.fields,
-          [`contentLanguage_${lang.id}_name`]: content.name,
-          [`contentLanguage_${lang.id}_caseDefinition`]: content.caseDefinition,
-          [`contentLanguage_${lang.id}_feedbackMessage`]: content.feedbackMessage
+          [`contentLanguage_${lang.id}_name`]: content && content.name,
+          [`contentLanguage_${lang.id}_caseDefinition`]: content && content.caseDefinition,
+          [`contentLanguage_${lang.id}_feedbackMessage`]: content && content.feedbackMessage
         },
         validation: lang.name.toLowerCase() === "english"
           ? {

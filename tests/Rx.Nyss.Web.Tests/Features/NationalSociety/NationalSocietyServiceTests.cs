@@ -120,7 +120,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Shared.GeneralErrorMessage);
+            result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
 
         [Fact]
@@ -181,7 +181,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Shared.GeneralErrorMessage);
+            result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
 
         [Fact]
@@ -206,7 +206,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Shared.GeneralErrorMessage);
+            result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
     }
 }

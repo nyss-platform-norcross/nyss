@@ -155,7 +155,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
             foreach (var languageContentDto in editDto.LanguageContent)
             {
                 var languageContent = healthRisk.LanguageContents.SingleOrDefault(lc => lc.ContentLanguage.Id == languageContentDto.LanguageId)
-                    ?? await CreateNewLanguageContent(healthRisk, languageContentDto.LanguageId);
+                    ?? CreateNewLanguageContent(healthRisk, languageContentDto.LanguageId);
 
                 languageContent.FeedbackMessage = languageContentDto.FeedbackMessage;
                 languageContent.CaseDefinition = languageContentDto.CaseDefinition;
@@ -166,12 +166,12 @@ namespace RX.Nyss.Web.Features.HealthRisk
             return SuccessMessage(ResultKey.HealthRisk.EditSuccess);
         }
 
-        private async Task<HealthRiskLanguageContent> CreateNewLanguageContent(Nyss.Data.Models.HealthRisk healthRisk, int languageId)
+        private HealthRiskLanguageContent CreateNewLanguageContent(Nyss.Data.Models.HealthRisk healthRisk, int languageId)
         {
             var newLanguageContent = new HealthRiskLanguageContent
             {
                 HealthRisk = healthRisk,
-                ContentLanguage = await _nyssContext.ContentLanguages.FindAsync(languageId)
+                ContentLanguage = _nyssContext.ContentLanguages.Attach(new ContentLanguage { Id = languageId }).Entity
             };
 
             healthRisk.LanguageContents.Add(newLanguageContent);

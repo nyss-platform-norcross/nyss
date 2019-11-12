@@ -2,11 +2,6 @@
 {
     public static class ResultKey
     {
-        public static class Shared
-        {
-            public const string GeneralErrorMessage = "shared.error";
-        }
-
         public static class User
         {
             public static class Common

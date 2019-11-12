@@ -273,7 +273,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             await _healthRiskService.RemoveHealthRisk(HealthRiskId);
 
             // Assert
-            _nyssContextMock.AlertRules.ReceivedWithAnyArgs(0).Remove(null);
+            _nyssContextMock.AlertRules.DidNotReceiveWithAnyArgs().Remove(null);
         }
     }
 }
