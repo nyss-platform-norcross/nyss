@@ -10,7 +10,7 @@ steps:
   displayName: 'GitVersion'
   inputs:
     targetType: 'inline'
-    script: 'gitversion /l console /output buildserver /updateAssemblyInfo'
+    script: 'gitversion /l console /output buildserver /updateAssemblyInfo /nonormalize /nocache'
 
 - task: DotNetCoreCLI@2
   displayName: 'Run unit tests'
