@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.Authentication.Dto
             {
                 public string NationalSocietyName { get; set; }
 
-                public string NationalSocietyId { get; set; }
+                public int NationalSocietyId { get; set; }
             }
 
             public HomePageDto HomePage { get; set; }

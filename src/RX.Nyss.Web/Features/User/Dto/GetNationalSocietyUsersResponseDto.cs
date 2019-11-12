@@ -8,5 +8,7 @@
         public string PhoneNumber { get; set; }
         public string Role { get; set; }
         public string Project { get; set; }
+        public bool IsHeadManager { get; set; }
+        public bool IsPendingHeadManager { get; set; }
     }
 }

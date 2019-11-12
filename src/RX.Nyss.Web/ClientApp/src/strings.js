@@ -143,7 +143,8 @@ export const stringKeys = {
       phoneNumber: "nationalSocietyUser.list.phoneNumber",
       role: "nationalSocietyUser.list.role",
       project: "nationalSocietyUser.list.project",
-      removalConfirmation: "nationalSocietyUser.list.removalConfirmation"
+      removalConfirmation: "nationalSocietyUser.list.removalConfirmation",
+      headManager: "nationalSocietyUser.list.headManager"
     },
     messages:{
       creationSuccessful: "nationalSocietyUser.messages.creationSuccessful",

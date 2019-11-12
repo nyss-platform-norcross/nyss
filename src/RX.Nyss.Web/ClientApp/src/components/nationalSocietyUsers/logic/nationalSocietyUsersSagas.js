@@ -106,6 +106,7 @@ function* setAsHeadManagerNationalSociety({ nationalSocietyId, nationalSocietyUs
     yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/setHeadManager`, {userId: nationalSocietyUserId});
     yield put(actions.setAsHeadManager.success(nationalSocietyUserId));
     yield put(appActions.showMessage("Head manager set successfully"));
+    yield openNationalSocietyUsersList(nationalSocietyId);
   } catch (error) {
     yield put(actions.setAsHeadManager.failure(nationalSocietyUserId, error.message));
   }

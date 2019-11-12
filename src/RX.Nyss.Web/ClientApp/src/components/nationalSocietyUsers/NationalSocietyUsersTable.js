@@ -9,6 +9,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
+import CheckIcon from '@material-ui/icons/Check';
+import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
@@ -28,6 +30,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
           <TableCell>{strings(stringKeys.nationalSocietyUser.list.phoneNumber)}</TableCell>
           <TableCell>{strings(stringKeys.nationalSocietyUser.list.role)}</TableCell>
           <TableCell>{strings(stringKeys.nationalSocietyUser.list.project)}</TableCell>
+          <TableCell align="center">{strings(stringKeys.nationalSocietyUser.list.headManager)}</TableCell>
           <TableCell style={{ width: "16%" }} />
         </TableRow>
       </TableHead>
@@ -39,6 +42,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             <TableCell>{row.phoneNumber}</TableCell>
             <TableCell>{strings(`role.${row.role.toLowerCase()}`)}</TableCell>
             <TableCell>{row.project}</TableCell>
+            <TableCell align="center">{(row.isHeadManager && <CheckIcon fontSize="small" />) || (row.isPendingHeadManager && <MoreHorizIcon fontSize="small" />)}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
               <TableRowAction onClick={() => remove(row.id, row.role)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />

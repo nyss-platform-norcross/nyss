@@ -37,14 +37,15 @@ namespace RX.Nyss.Web.Features.User
         {
             var users = await _dataContext.UserNationalSocieties
                 .Where(uns => uns.NationalSocietyId == nationalSocietyId)
-                .Select(nsu => nsu.User)
-                .Select(u => new GetNationalSocietyUsersResponseDto
+                .Select(uns => new GetNationalSocietyUsersResponseDto
                 {
-                    Id = u.Id,
-                    Name = u.Name,
-                    Email = u.EmailAddress,
-                    PhoneNumber = u.PhoneNumber,
-                    Role = u.Role.ToString(),
+                    Id = uns.User.Id,
+                    Name = uns.User.Name,
+                    Email = uns.User.EmailAddress,
+                    PhoneNumber = uns.User.PhoneNumber,
+                    Role = uns.User.Role.ToString(),
+                    IsHeadManager = uns.NationalSociety.HeadManager == uns.User,
+                    IsPendingHeadManager = uns.NationalSociety.PendingHeadManager == uns.User
                 })
                 .ToListAsync();
 
