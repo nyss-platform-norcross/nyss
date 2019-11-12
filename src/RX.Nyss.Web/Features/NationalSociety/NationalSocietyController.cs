@@ -84,8 +84,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <param name="id"></param>
         /// <param name="requestDto"></param>
         /// <returns></returns>
-        [Route("consentAsHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
-        public async Task<Result> ConsentAsHeadManager([FromBody]ConsentAsHeadManagerRequestDto requestDto) =>
-            await _nationalSocietyService.SetAsHeadManager(User, requestDto.NationalSocietyIds);
+        [Route("consentAsHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
+        public async Task<Result> ConsentAsHeadManager() =>
+            await _nationalSocietyService.SetAsHeadManager(User.Identity.Name);
     }
 }

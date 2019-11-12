@@ -223,6 +223,17 @@ export const stringKeys = {
     invalidInteger: "validation.invalidInteger",
     phoneNumberInvalid: "validation.phoneNumberInvalid",
     invalidModuloTen: "validation.invalidModuloTen"
+  },
+  headManagerConsents: {
+    title: "headManagerConsents.title",
+    consentText: "headManagerConsents.consentText",
+    nationalSociety: "headManagerConsents.nationalSociety",
+    nationalSocieties: "headManagerConsents.nationalSocieties",
+    agreeToContinue: "headManagerConsents.agreeToContinue",
+    submit: "headManagerConsents.submit",
+    iConsent: "headManagerConsents.iConsent",
+    setAsHeadManager: "headManagerConsents.setAsHeadManager",
+    pendingHeadManager: "headManagerConsents.pendingHeadManager",
   }
 };
 

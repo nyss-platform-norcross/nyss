@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
-        Task<Result> SetAsHeadManager(ClaimsPrincipal user, List<int> requestDtoNationalSocietyIds);
+        Task<Result> SetAsHeadManager(string identityUserName);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -217,21 +217,18 @@ namespace RX.Nyss.Web.Features.NationalSociety
             }
         }
 
-        public async Task<Result> SetAsHeadManager(ClaimsPrincipal user, List<int> requestDtoNationalSocietyIds)
+        public async Task<Result> SetAsHeadManager(string identityUserName)
         {
-            var email = user.FindFirstValue(ClaimTypes.Name);
-
             var userEntity = await _nyssContext.Users
                 .Include(x => x.ApplicationLanguage)
-                .SingleOrDefaultAsync(u => u.EmailAddress == email);
+                .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
 
             if (userEntity == null)
             {
                 return Error(ResultKey.User.Common.UserNotFound);
             }
 
-            var requestedNationalSocieties = _nyssContext.NationalSocieties.Where(x => requestDtoNationalSocietyIds.Contains(x.Id));
-            foreach (var nationalSociety in requestedNationalSocieties)
+            foreach (var nationalSociety in _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager == userEntity))
             {
                 if (nationalSociety.PendingHeadManager != userEntity)
                 {

@@ -11,10 +11,12 @@ import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import CheckIcon from '@material-ui/icons/Check';
 import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import * as Roles from '../../authentication/roles';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
+import { Tooltip } from '@material-ui/core';
 
 export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, setAsHeadManager, isSettingAsHead }) => {
   if (isListFetching) {
@@ -42,14 +44,23 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             <TableCell>{row.phoneNumber}</TableCell>
             <TableCell>{strings(`role.${row.role.toLowerCase()}`)}</TableCell>
             <TableCell>{row.project}</TableCell>
-            <TableCell align="center">{(row.isHeadManager && <CheckIcon fontSize="small" />) || (row.isPendingHeadManager && <MoreHorizIcon fontSize="small" />)}</TableCell>
+            <TableCell align="center">{
+              (row.isHeadManager && <CheckIcon fontSize="small" />) ||
+              (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.headManagerConsents.pendingHeadManager)}><MoreHorizIcon fontSize="small" /></Tooltip>)
+            }
+            </TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
               <TableRowAction onClick={() => remove(row.id, row.role)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
-              <TableRowMenu id={row.id} items={[
-                { title: `Set ${row.name} as head`, action: () => setAsHeadManager(nationalSocietyId, row.id) }
-              ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
+              {
+                !row.isHeadManager && (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() ||
+                  Roles.Manager.toLowerCase() === row.role.toLowerCase()) &&
+                <TableRowMenu id={row.id} items={[
+                  { title: strings(stringKeys.headManagerConsents.setAsHeadManager), action: () => setAsHeadManager(nationalSocietyId, row.id) }
+                ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
+              }
             </TableCell>
+
           </TableRow>
         ))}
       </TableBody>
