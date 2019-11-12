@@ -113,6 +113,7 @@
             public const string SuccessfullyDeleted = "project.successfullyDeleted";
             public const string ProjectDoesNotExist = "project.projectDoesNotExist";
             public const string NationalSocietyDoesNotExist = "project.nationalSocietyDoesNotExist";
+            public const string HealthRiskDoesNotExist = "project.healthRiskDoesNotExist";
         }
 
         public const string UnexpectedError = "error.unexpected";

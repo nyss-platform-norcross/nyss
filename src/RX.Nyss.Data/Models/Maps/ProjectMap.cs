@@ -8,7 +8,7 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<Project> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Name).HasMaxLength(200);
+            builder.Property(x => x.Name).HasMaxLength(200).IsRequired();
             builder.Property(x => x.State).HasMaxLength(50).HasConversion<string>();
             builder.Property(x => x.TimeZone).HasMaxLength(50);
             builder.Property(x => x.StartDate).IsRequired();

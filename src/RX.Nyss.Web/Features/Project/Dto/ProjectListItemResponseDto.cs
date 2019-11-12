@@ -9,7 +9,7 @@ namespace RX.Nyss.Web.Features.Project.Dto
 
         public string Name { get; set; }
 
-        public int ReportCount { get; set; }
+        public int TotalReportCount { get; set; }
 
         public int EscalatedAlertCount { get; set; }
 

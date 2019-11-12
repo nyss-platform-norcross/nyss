@@ -5,8 +5,11 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
     public class HealthRiskLanguageContentDto
     {
         public int LanguageId { get; set; }
+
         public string Name { get; set; }
+
         public string FeedbackMessage { get; set; }
+
         public string CaseDefinition { get; set; }
 
         public class Validator : AbstractValidator<HealthRiskLanguageContentDto>

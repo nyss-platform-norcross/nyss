@@ -1,11 +1,21 @@
-﻿using RX.Nyss.Data.Concepts;
+﻿using System.Collections.Generic;
+using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Alert.Dto;
 
 namespace RX.Nyss.Web.Features.Project.Dto
 {
-    public class ProjectResponseDto : ProjectRequestDto
+    public class ProjectResponseDto
     {
         public int Id { get; set; }
 
+        public string Name { get; set; }
+
+        public string TimeZone { get; set; }
+
         public ProjectState State { get; set; }
+
+        public IEnumerable<ProjectHealthRiskResponseDto> HealthRisks { get; set; }
+
+        public IEnumerable<AlertRecipientDto> AlertRecipients { get; set; }
     }
 }

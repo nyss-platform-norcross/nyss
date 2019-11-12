@@ -6,6 +6,6 @@
 
         public string EmailAddress { get; set; }
         
-        public virtual AlertRule AlertRule { get; set; }
+        public virtual Project Project { get; set; }
     }
 }

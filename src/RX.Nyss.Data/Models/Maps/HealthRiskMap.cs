@@ -11,7 +11,6 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.HealthRiskType).HasMaxLength(20).HasConversion<string>();
             builder.Property(x => x.HealthRiskCode).IsRequired();
             builder.HasOne(x => x.AlertRule).WithMany().OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(x => x.LanguageContents).WithOne(x => x.HealthRisk).OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

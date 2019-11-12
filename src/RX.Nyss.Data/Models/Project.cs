@@ -19,10 +19,13 @@ namespace RX.Nyss.Data.Models
         public DateTime? EndDate { get; set; }
 
         public int NationalSocietyId { get; set; }
+
         public virtual NationalSociety NationalSociety { get; set; }
 
         public virtual ICollection<ProjectHealthRisk> ProjectHealthRisks { get; set; }
 
         public virtual ICollection<DataCollector> DataCollectors { get; set; }
+
+        public virtual ICollection<AlertRecipient> AlertRecipients { get; set; }
     }
 }

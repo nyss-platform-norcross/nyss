@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentValidation;
-using RX.Nyss.Web.Features.HealthRisk.Dto;
+using RX.Nyss.Web.Features.Alert.Dto;
 
 namespace RX.Nyss.Web.Features.Project.Dto
 {
@@ -10,14 +10,20 @@ namespace RX.Nyss.Web.Features.Project.Dto
 
         public string TimeZone { get; set; }
 
-        public IEnumerable<HealthRiskRequestDto> HealthRisks;
+        public IEnumerable<ProjectHealthRiskRequestDto> HealthRisks { get; set; }
+
+        public IEnumerable<AlertRecipientDto> AlertRecipients { get; set; }
 
         public class Validator : AbstractValidator<ProjectRequestDto>
         {
             public Validator()
             {
-                RuleFor(p => p.Name).NotEmpty();
-                RuleForEach(p => p.HealthRisks).SetValidator(new HealthRiskRequestDto.Validator());
+                RuleFor(p => p.Name).NotEmpty().MaximumLength(200);
+                RuleFor(p => p.Name).MaximumLength(50);
+                RuleFor(p => p.HealthRisks).NotNull();
+                RuleFor(p => p.AlertRecipients).NotNull();
+                RuleForEach(p => p.HealthRisks).SetValidator(new ProjectHealthRiskRequestDto.Validator());
+                RuleForEach(p => p.AlertRecipients).SetValidator(new AlertRecipientDto.Validator());
             }
         }
     }
