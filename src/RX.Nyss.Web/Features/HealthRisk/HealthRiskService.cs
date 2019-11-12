@@ -201,23 +201,19 @@ namespace RX.Nyss.Web.Features.HealthRisk
 
         public async Task<Result> RemoveHealthRisk(int id)
         {
-            try
-            {
-                var healthRisk = await _nyssContext.HealthRisks
-                    .Include(hr => hr.AlertRule)
-                    .Include(hr => hr.LanguageContents)
-                    .SingleOrDefaultAsync(hr => hr.Id == id);
+            var healthRisk = await _nyssContext.HealthRisks
+                .Include(hr => hr.AlertRule)
+                .Include(hr => hr.LanguageContents)
+                .SingleOrDefaultAsync(hr => hr.Id == id);
 
-                _nyssContext.AlertRules.Remove(healthRisk.AlertRule);
-                _nyssContext.HealthRisks.Remove(healthRisk);
-                await _nyssContext.SaveChangesAsync();
-                return SuccessMessage(ResultKey.HealthRisk.RemoveSuccess);
-            }
-            catch (Exception e)
+            if (healthRisk.AlertRule != null)
             {
-                _loggerAdapter.Debug(e);
-                return Error(ResultKey.Shared.GeneralErrorMessage);
+                _nyssContext.AlertRules.Remove(healthRisk.AlertRule);
             }
+
+            _nyssContext.HealthRisks.Remove(healthRisk);
+            await _nyssContext.SaveChangesAsync();
+            return SuccessMessage(ResultKey.HealthRisk.RemoveSuccess);
         }
     }
 }
