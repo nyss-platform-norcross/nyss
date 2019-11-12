@@ -16,7 +16,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
     {
         Task<Result<IEnumerable<HealthRiskResponseDto>>> GetHealthRisks(string userName);
         Task<Result<GetHealthRiskResponseDto>> GetHealthRisk(int id);
-        Task<Result<int>> CreateHealthRisk(CreateHealthRiskRequestDto createDto);
+        Task<Result> CreateHealthRisk(CreateHealthRiskRequestDto createDto);
         Task<Result> EditHealthRisk(EditHealthRiskRequestDto editDto);
         Task<Result> RemoveHealthRisk(int id);
     }
@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
             return Success(healthRiskResponse);
         }
 
-        public async Task<Result<int>> CreateHealthRisk(CreateHealthRiskRequestDto createDto)
+        public async Task<Result> CreateHealthRisk(CreateHealthRiskRequestDto createDto)
         {
             if (await _nyssContext.HealthRisks.AnyAsync(hr => hr.HealthRiskCode == createDto.HealthRiskCode))
             {
@@ -115,9 +115,9 @@ namespace RX.Nyss.Web.Features.HealthRisk
                     : null
             };
 
-            var entity = await _nyssContext.AddAsync(healthRisk);
+            await _nyssContext.AddAsync(healthRisk);
             await _nyssContext.SaveChangesAsync();
-            return Success(entity.Entity.Id, ResultKey.HealthRisk.CreationSuccess);
+            return SuccessMessage(ResultKey.HealthRisk.CreationSuccess);
         }
 
         public async Task<Result> EditHealthRisk(EditHealthRiskRequestDto editDto)
