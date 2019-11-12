@@ -183,13 +183,13 @@ namespace RX.Nyss.Web.Features.Supervisor
                     })
                     .SingleOrDefaultAsync();
 
-                var (supervisorUser, currentProjectReference) = (supervisorUserData.User, supervisorUserData.CurrentProjectReference);
-
-                if (supervisorUser == null)
+                if (supervisorUserData == null)
                 {
                     _loggerAdapter.Debug($"A supervisor with id {supervisorId} was not found");
                     return Error(ResultKey.User.Common.UserNotFound);
                 }
+
+                var (supervisorUser, currentProjectReference) = (supervisorUserData.User, supervisorUserData.CurrentProjectReference);
 
                 supervisorUser.Name = editSupervisorRequestDto.Name;
                 supervisorUser.Sex = editSupervisorRequestDto.Sex;
