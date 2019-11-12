@@ -59,7 +59,7 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
           // logout
           reject(new Error("UNAUTHORIZED"));
         } else {
-          reject(new Error(`${path}: ${response.statusText}`));
+          return response.json().then(data => reject(new Error(strings(data.message.key))));
         }
       });
   });

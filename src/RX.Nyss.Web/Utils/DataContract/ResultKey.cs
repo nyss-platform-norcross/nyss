@@ -102,6 +102,6 @@
             public const string HealthRiskNumberAlreadyExists = "healthRisk.healthRiskNumberAlreadyExists";
         }
 
-        public const string UnexpectedError = "unexpectedError";
+        public const string UnexpectedError = "error.unexpected";
     }
 }
