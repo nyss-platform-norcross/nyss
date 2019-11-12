@@ -1,13 +1,13 @@
-﻿namespace RX.Nyss.Data.Models
+﻿using System.Collections.Generic;
+using RX.Nyss.Data.Concepts;
+
+namespace RX.Nyss.Data.Models
 {
     public class SupervisorUser : User
     {
-        public string Sex { get; set; }
-
-        public virtual Village Village { get; set; }
-
-        public virtual Zone Zone { get; set; }
-
-        public virtual ManagerUser ManagerUser { get; set; }
+        public Sex Sex { get; set; }
+        public virtual DataManagerUser DataManagerUser { get; set; }
+        public virtual ICollection<SupervisorUserProject> SupervisorUserProjects { get; set; } = new List<SupervisorUserProject>();
+        public int DecadeOfBirth { get; set; }
     }
 }

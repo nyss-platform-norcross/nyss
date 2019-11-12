@@ -21,7 +21,11 @@
                 public const string UserIsNotAssignedToThisNationalSociety = "user.registration.userIsNotAssignedToThisNationalSociety";
                 public const string UserIsAlreadyInThisNationalSociety = "user.registration.userIsAlreadyInThisNationalSociety";
                 public const string UnknownError = "user.registration.unknownError";
-                
+            }
+
+            public static class Supervisor
+            {
+                public const string ProjectDoesNotExistOrNoAccess = "user.registration.projectDoesNotExistOrSupervisorDoesntHaveAccess";
             }
 
             public static class ResetPassword
@@ -54,6 +58,7 @@
         public static class Validation
         {
             public const string ValidationError = "validation.validationError";
+            public const string BirthGroupStartYearMustBeMulipleOf10 = "validation.validationError.birthGroupStartYearMustBeMulipleOf10";
         }
 
         public static class NationalSociety

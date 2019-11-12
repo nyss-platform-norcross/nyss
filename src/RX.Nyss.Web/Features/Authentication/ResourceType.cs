@@ -6,6 +6,7 @@
         SmsGateway,
         Manager,
         DataConsumer,
-        TechnicalAdvisor
+        TechnicalAdvisor,
+        SupervisorAccess,
     }
 }

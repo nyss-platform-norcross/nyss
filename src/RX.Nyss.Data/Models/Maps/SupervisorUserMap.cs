@@ -8,10 +8,9 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<SupervisorUser> builder)
         {
             builder.HasBaseType<User>();
-            builder.Property(u => u.Sex).HasMaxLength(20).IsRequired();
-            builder.HasOne(su => su.Village).WithMany().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(su => su.Zone).WithMany().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(su => su.ManagerUser).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.Property(u => u.Sex).HasConversion<string>().HasMaxLength(10).IsRequired();
+            builder.Property(u => u.DecadeOfBirth).IsRequired();
+            builder.HasOne(su => su.DataManagerUser).WithMany().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

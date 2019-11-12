@@ -7,8 +7,9 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
-    public class DataConsumerAccessRequirement : IAuthorizationRequirement
+    public class DataConsumerAccessRequirement : IPolicyAuthorizationRequirement
     {
+        public Policy Policy => Policy.DataConsumerAccess;
     }
 
     public class DataConsumerAccessHandler : AuthorizationHandler<DataConsumerAccessRequirement>

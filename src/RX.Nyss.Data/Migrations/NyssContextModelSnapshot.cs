@@ -2169,6 +2169,21 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Reports");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUserProject", b =>
+                {
+                    b.Property<int>("SupervisorUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SupervisorUserId", "ProjectId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("SupervisorUserProjects");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -2326,22 +2341,15 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int?>("ManagerUserId")
                         .HasColumnType("int");
 
+                    b.Property<int>("DecadeOfBirth")
+                        .HasColumnType("int");
+
                     b.Property<string>("Sex")
                         .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
-
-                    b.Property<int?>("VillageId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ZoneId")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
 
                     b.HasIndex("ManagerUserId");
-
-                    b.HasIndex("VillageId");
-
-                    b.HasIndex("ZoneId");
 
                     b.HasDiscriminator().HasValue("Supervisor");
                 });
@@ -2649,6 +2657,21 @@ namespace RX.Nyss.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUserProject", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
+                        .WithMany("SupervisorUserProjects")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.SupervisorUser", "SupervisorUser")
+                        .WithMany("SupervisorUserProjects")
+                        .HasForeignKey("SupervisorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.User", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.ApplicationLanguage", "ApplicationLanguage")
@@ -2695,16 +2718,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ManagerUser", "ManagerUser")
                         .WithMany()
                         .HasForeignKey("ManagerUserId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("RX.Nyss.Data.Models.Village", "Village")
-                        .WithMany()
-                        .HasForeignKey("VillageId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("RX.Nyss.Data.Models.Zone", "Zone")
-                        .WithMany()
-                        .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618

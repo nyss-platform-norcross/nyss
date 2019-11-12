@@ -9,6 +9,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 {
     public class ManagerAccessRequirement : IAuthorizationRequirement
     {
+        public Policy Policy => Policy.DataManagerAccess;
     }
 
     public class ManagerAccessHandler : AuthorizationHandler<ManagerAccessRequirement>

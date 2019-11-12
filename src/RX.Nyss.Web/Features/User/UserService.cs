@@ -13,7 +13,9 @@ namespace RX.Nyss.Web.Features.User
 {
     public interface IUserService
     {
-        Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId);
+        Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId, IEnumerable<string> callingUserRoles);
+        Task<bool> GetUserHasAccessToAnyOfResourceNationalSocieties(List<int> resourceNationalSocietyIds, string identityName, IEnumerable<string> callingUserRoles);
+        Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
         Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
         Task<bool> GetUserHasAccessToAnyOfProvidedNationalSocieties(List<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles);
         Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
@@ -36,23 +38,42 @@ namespace RX.Nyss.Web.Features.User
                 .Select(role => role.ToString());
         }
 
-        public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId)
+        public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId, IEnumerable<string> callingUserRoles)
         {
-            var users = await _dataContext.UserNationalSocieties
+            var usersQuery = _dataContext.UserNationalSocieties
                 .Where(uns => uns.NationalSocietyId == nationalSocietyId)
-                .Select(uns => new GetNationalSocietyUsersResponseDto
-                {
-                    Id = uns.User.Id,
-                    Name = uns.User.Name,
-                    Email = uns.User.EmailAddress,
-                    PhoneNumber = uns.User.PhoneNumber,
-                    Role = uns.User.Role.ToString(),
+                .Select(nsu => nsu.User);
+
+            usersQuery = FilterOutSupervisorsForGlobalCoordinatorUsers(usersQuery, callingUserRoles);
+            
+            var users = await usersQuery.Select(u => new GetNationalSocietyUsersResponseDto
+            {
+                Id = u.Id,
+                Name = u.Name,
+                Email = u.EmailAddress,
+                PhoneNumber = u.PhoneNumber,
+                Role = u.Role.ToString(),
+                Project = (u is SupervisorUser) 
+                    ? ((SupervisorUser)u).SupervisorUserProjects
+                        .Where(sup => sup.Project.State == ProjectState.Open)
+                        .Select(sup => sup.Project.Name)
+                        .SingleOrDefault()
+                    : null,
                     IsHeadManager = uns.NationalSociety.HeadManager != null && uns.NationalSociety.HeadManager.Id == uns.User.Id,
                     IsPendingHeadManager = uns.NationalSociety.PendingHeadManager != null && uns.NationalSociety.PendingHeadManager.Id == uns.User.Id
-                })
-                .ToListAsync();
+            })
+            .ToListAsync();
 
             return new Result<List<GetNationalSocietyUsersResponseDto>>(users, true);
+        }
+
+        private IQueryable<Nyss.Data.Models.User> FilterOutSupervisorsForGlobalCoordinatorUsers(IQueryable<Nyss.Data.Models.User> usersQuery, IEnumerable<string> callingUserRoles)
+        {
+            if (callingUserRoles.Contains(Role.GlobalCoordinator.ToString()))
+            {
+                return usersQuery.Where(u => u.Role != Role.Supervisor);
+            }
+            return usersQuery;
         }
 
         public async Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId)

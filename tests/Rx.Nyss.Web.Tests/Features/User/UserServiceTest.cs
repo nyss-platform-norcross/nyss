@@ -85,6 +85,50 @@ namespace Rx.Nyss.Web.Tests.Features.Users
 
             ArrangeUsersFrom(users);
             ArrangeUserNationalSocietiesFrom(userNationalSocieties1.Concat(userNationalSocieties2).Concat(userNationalSocieties1And2));
+
+            ArrangeProjects();
+            ArrangeSupervisorUserProjects();
+        }
+
+        private void ArrangeSupervisorUserProjects()
+        {
+            var supervisor = _nyssContext.Users.OfType<SupervisorUser>().Single(x => x.Id == 6);
+            var project = _nyssContext.Projects.Single(x => x.Id == 1);
+
+            var supervisorUserProjects = new List<SupervisorUserProject>
+                {
+                    new SupervisorUserProject()
+                    {
+                        SupervisorUserId = 6,
+                        SupervisorUser = supervisor,
+                        ProjectId = 1,
+                        Project = project
+                    }
+                }
+                .AsQueryable().BuildMockDbSet();
+
+            supervisor.SupervisorUserProjects = supervisorUserProjects.Where(x => x.SupervisorUserId == 6).ToList();
+            project.SupervisorUserProjects = supervisorUserProjects.Where(x => x.ProjectId == 1).ToList();
+
+            _nyssContext.SupervisorUserProjects.Returns(supervisorUserProjects);
+        }
+
+        private void ArrangeProjects()
+        {
+            var projectsDbSet = new List<Project>
+                {
+                    new Project
+                    {
+                        Id = 1,
+                        NationalSociety = _nyssContext.NationalSocieties.Single(ns => ns.Id == 1),
+                        Name = "awd in somalia",
+                        ContentLanguage = new ContentLanguage {DisplayName = "english", Id = 1, LanguageCode = "en-us"},
+                        State = ProjectState.Open,
+                        TimeZone = "CEST",
+                    }
+                }
+                .AsQueryable().BuildMockDbSet();
+            _nyssContext.Projects.Returns(projectsDbSet);
         }
 
         private void ArrangeUsersFrom(IEnumerable<RX.Nyss.Data.Models.User> existingUsers)
@@ -175,3 +219,4 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         }
     }
 }
+;
