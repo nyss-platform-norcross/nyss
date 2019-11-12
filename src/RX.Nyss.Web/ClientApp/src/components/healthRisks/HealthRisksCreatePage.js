@@ -61,7 +61,7 @@ const HealthRisksCreatePageComponent = (props) => {
 
   const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
     value: t,
-    label: strings(`healthRisk.type.${t.toLowerCase()}`)
+    label: strings(stringKeys.healthRisk.constants.healthRiskType[t.toLowerCase()])
   })));
 
   useMount(() => {

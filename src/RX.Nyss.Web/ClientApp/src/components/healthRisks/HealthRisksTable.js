@@ -32,7 +32,7 @@ export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remo
           <TableRow key={row.id} hover onClick={() => goToEdition(row.id)} className={styles.clickableRow}>
             <TableCell>{row.healthRiskCode}</TableCell>
             <TableCell>{row.name}</TableCell>
-            <TableCell>{row.healthRiskType}</TableCell>
+            <TableCell>{strings(stringKeys.healthRisk.constants.healthRiskType[row.healthRiskType.toLowerCase()])}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
               <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.healthRisk.list.confirmationText)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
