@@ -37,7 +37,7 @@ const HealthRisksEditPageComponent = (props) => {
       healthRiskType: props.data.healthRiskType,
       alertRuleCountThreshold: props.data.alertRuleCountThreshold,
       alertRuleDaysThreshold: props.data.alertRuleDaysThreshold,
-      alertRuleMetersThreshold: props.data.alertRuleMetersThreshold
+      alertRuleKilometersThreshold: props.data.alertRuleKilometersThreshold
     };
 
     let validation = {
@@ -45,7 +45,7 @@ const HealthRisksEditPageComponent = (props) => {
       healthRiskType: [validators.required],
       alertRuleCountThreshold: [validators.integer],
       alertRuleDaysThreshold: [validators.integer],
-      alertRuleMetersThreshold: [validators.integer]
+      alertRuleKilometersThreshold: [validators.integer]
     };
 
     const finalFormData = props.contentLanguages
@@ -177,9 +177,9 @@ const HealthRisksEditPageComponent = (props) => {
 
           <Grid item xs={4}>
             <TextInputField
-              label={strings(stringKeys.healthRisk.form.alertRuleMetersThreshold)}
-              name="alertRuleMetersThreshold"
-              field={form.fields.alertRuleMetersThreshold}
+              label={strings(stringKeys.healthRisk.form.alertRuleKilometersThreshold)}
+              name="alertRuleKilometersThreshold"
+              field={form.fields.alertRuleKilometersThreshold}
             />
           </Grid>
         </Grid>

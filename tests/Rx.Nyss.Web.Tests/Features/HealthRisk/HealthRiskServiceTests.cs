@@ -30,7 +30,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         private const int LanguageId = 1;
         private const int AlertRuleId = 1;
         private const int AlertRuleCountThreshold = 5;
-        private const int AlertRuleMeterThreshold = 10;
+        private const int AlertRuleKilometersThreshold = 10;
         private const int AlertRuleDaysThreshold = 2;
 
         public HealthRiskServiceTests()
@@ -79,8 +79,8 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 {
                     Id = AlertRuleId,
                     CountThreshold = AlertRuleCountThreshold,
-                    HoursThreshold = AlertRuleDaysThreshold,
-                    MetersThreshold = AlertRuleMeterThreshold,
+                    DaysThreshold = AlertRuleDaysThreshold,
+                    KilometersThreshold = AlertRuleKilometersThreshold,
                 }
             };
 
@@ -214,7 +214,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 HealthRiskType = HealthRiskType,
                 AlertRuleCountThreshold = AlertRuleCountThreshold,
                 AlertRuleDaysThreshold = AlertRuleDaysThreshold,
-                AlertRuleMetersThreshold = 1,
+                AlertRuleKilometersThreshold = 1,
                 LanguageContent = new List<HealthRiskLanguageContentDto>
                 {
                     new HealthRiskLanguageContentDto

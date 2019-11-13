@@ -62,7 +62,7 @@ export const stringKeys = {
       alertRuleDescription: "healthRisk.form.alertRuleDescription",
       alertRuleCountThreshold: "healthRisk.form.alertRuleCountThreshold",
       alertRuleDaysThreshold: "healthRisk.form.alertRuleDaysThreshold",
-      alertRuleMetersThreshold: "healthRisk.form.alertRuleMetersThreshold",
+      alertRuleKilometersThreshold: "healthRisk.form.alertRuleKilometersThreshold",
       contentLanguageName: "healthRisk.form.contentLanguageName",
       contentLanguageCaseDefinition: "healthRisk.form.contentLanguageCaseDefinition",
       contentLanguageFeedbackMessage: "healthRisk.form.contentLanguageFeedbackMessage",

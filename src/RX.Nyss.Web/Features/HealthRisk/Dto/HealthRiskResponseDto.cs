@@ -16,7 +16,7 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
 
         public int? AlertRuleDaysThreshold { get; set; }
 
-        public int? AlertRuleMetersThreshold { get; set; }
+        public int? AlertRuleKilometersThreshold { get; set; }
 
         public IEnumerable<AlertRecipientDto> AlertRecipients { get; set; }
 

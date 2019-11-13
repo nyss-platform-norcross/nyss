@@ -41,8 +41,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
 
             var project = GenerateExemplaryProjects(nationalSocietyId);
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
             // Act
             var result = await _projectService.GetProjects(nationalSocietyId);
@@ -110,8 +110,12 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             AlertRule = new AlertRule
                             {
                                 CountThreshold = 1,
-                                HoursThreshold = 48,
-                                MetersThreshold = 3000
+                                DaysThreshold = 2,
+                                KilometersThreshold = 3
+                            },
+                            Reports = new[]
+                            {
+                                new Report()
                             }
                         }
                     },
@@ -126,8 +130,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
             // Act
             var result = await _projectService.GetProject(existingProjectId);
@@ -146,7 +150,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Value.HealthRisks.ElementAt(0).FeedbackMessage.ShouldBe("FeedbackMessage");
             result.Value.HealthRisks.ElementAt(0).AlertRuleCountThreshold.ShouldBe(1);
             result.Value.HealthRisks.ElementAt(0).AlertRuleDaysThreshold.ShouldBe(2);
-            result.Value.HealthRisks.ElementAt(0).AlertRuleMetersThreshold.ShouldBe(3000);
+            result.Value.HealthRisks.ElementAt(0).AlertRuleKilometersThreshold.ShouldBe(3);
+            result.Value.HealthRisks.ElementAt(0).ContainsReports.ShouldBe(true);
             result.Value.AlertRecipients.Count().ShouldBe(1);
             result.Value.AlertRecipients.ElementAt(0).Id.ShouldBe(1);
             result.Value.AlertRecipients.ElementAt(0).EmailAddress.ShouldBe("user@domain.com");
@@ -167,8 +172,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
             // Act
             var result = await _projectService.GetProject(nonExistentProjectId);
@@ -217,8 +222,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
             var projectRequestDto = new ProjectRequestDto
             {
@@ -231,7 +236,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         HealthRiskId = healthRiskId,
                         AlertRuleCountThreshold = 1,
                         AlertRuleDaysThreshold = 2,
-                        AlertRuleMetersThreshold = 3,
+                        AlertRuleKilometersThreshold = 3,
                         CaseDefinition = "CaseDefinition",
                         FeedbackMessage = "FeedbackMessage"
                     }
@@ -260,8 +265,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         phr.CaseDefinition == "CaseDefinition" &&
                         phr.FeedbackMessage == "FeedbackMessage" &&
                         phr.AlertRule.CountThreshold == 1 &&
-                        phr.AlertRule.HoursThreshold == 48 &&
-                        phr.AlertRule.MetersThreshold == 3) &&
+                        phr.AlertRule.DaysThreshold == 2 &&
+                        phr.AlertRule.KilometersThreshold == 3) &&
                     p.AlertRecipients.Any(phr => phr.EmailAddress == "user@domain.com")));
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
@@ -364,8 +369,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
             var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZone = "Time Zone" };
 
@@ -401,15 +406,99 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     Name = "Name",
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
-                    State = ProjectState.Open
+                    State = ProjectState.Open,
+                    ProjectHealthRisks = new List<ProjectHealthRisk>
+                    {
+                        new ProjectHealthRisk
+                        {
+                            Id = 1,
+                            CaseDefinition = "Case Definition 1",
+                            FeedbackMessage = "Feedback Message 2",
+                            AlertRule = new AlertRule
+                            {
+                                CountThreshold = 1,
+                                DaysThreshold = 2,
+                                KilometersThreshold = 3
+                            },
+                            Reports = new List<Report>()
+                        },
+                        new ProjectHealthRisk
+                        {
+                            Id = 2,
+                            CaseDefinition = "Case Definition 2",
+                            FeedbackMessage = "Feedback Message 2",
+                            AlertRule = new AlertRule
+                            {
+                                CountThreshold = 1,
+                                DaysThreshold = 2,
+                                KilometersThreshold = 3
+                            },
+                            Reports = new List<Report>()
+                        }
+                    },
+                    AlertRecipients = new List<AlertRecipient>
+                    {
+                        new AlertRecipient
+                        {
+                            Id = 1,
+                            EmailAddress = "user1@domain.com"
+                        },
+                        new AlertRecipient
+                        {
+                            Id = 2,
+                            EmailAddress = "user2@domain.com"
+                        }
+                    }
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
 
-            var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZone = "Updated Time Zone" };
+            var projectRequestDto = new ProjectRequestDto
+            {
+                Name = "Updated Project",
+                TimeZone = "Updated Time Zone",
+                HealthRisks = new[]
+                {
+                    new ProjectHealthRiskRequestDto
+                    {
+                        Id = 2,
+                        CaseDefinition = "Updated Case Definition 2",
+                        FeedbackMessage = "Updated Feedback Message 2",
+                        AlertRuleCountThreshold = 2,
+                        AlertRuleDaysThreshold = 3,
+                        AlertRuleKilometersThreshold = 4
+                    },
+                    new ProjectHealthRiskRequestDto
+                    {
+                        Id = null,
+                        CaseDefinition = "Case Definition 3",
+                        FeedbackMessage = "Feedback Message 3",
+                        AlertRuleCountThreshold = 3,
+                        AlertRuleDaysThreshold = 4,
+                        AlertRuleKilometersThreshold = 5
+                    }
+                },
+                AlertRecipients = new[]
+                {
+                    new AlertRecipientDto
+                    {
+                        Id = 2,
+                        EmailAddress = "user2-updated@domain.com"
+                    },
+                    new AlertRecipientDto
+                    {
+                        Id = null,
+                        EmailAddress = "user3@domain.com"
+                    }
+                }
+            };
+
+            var alertRecipients = new List<AlertRecipient> { new AlertRecipient { Id = 1, EmailAddress = "user1@domain.com" }, new AlertRecipient { Id = 2, EmailAddress = "user2@domain.com" } };
+            var alertRecipientsMockDbSet = alertRecipients.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.AlertRecipients.Returns(alertRecipientsMockDbSet);
 
             // Act
             var result = await _projectService.UpdateProject(projectId, projectRequestDto);
@@ -443,8 +532,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(nonExistentProjectId).ReturnsNull();
 
             var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZone = "Updated Time Zone" };
@@ -456,6 +545,70 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Project.ProjectDoesNotExist);
+        }
+
+        [Fact]
+        public async Task UpdateProject_WhenRemovedHealthRiskContainsReports_ShouldReturnError()
+        {
+            // Arrange
+            const int projectId = 1;
+
+            var nationalSocieties = new[] { new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society" } };
+
+            var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
+
+            var project = new[]
+            {
+                new RX.Nyss.Data.Models.Project
+                {
+                    Id = projectId,
+                    Name = "Name",
+                    TimeZone = "Time Zone",
+                    NationalSocietyId = 1,
+                    State = ProjectState.Open,
+                    ProjectHealthRisks = new List<ProjectHealthRisk>
+                    {
+                        new ProjectHealthRisk
+                        {
+                            Id = 1,
+                            CaseDefinition = "Case Definition",
+                            FeedbackMessage = "Feedback Message",
+                            AlertRule = new AlertRule
+                            {
+                                CountThreshold = 1,
+                                DaysThreshold = 2,
+                                KilometersThreshold = 3
+                            },
+                            Reports = new List<Report>()
+                            {
+                                new Report()
+                            }
+                        }
+                    },
+                    AlertRecipients = new List<AlertRecipient>()
+                }
+            };
+
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
+            _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
+
+            var projectRequestDto = new ProjectRequestDto
+            {
+                Name = "Updated Project",
+                TimeZone = "Updated Time Zone",
+                HealthRisks = new List<ProjectHealthRiskRequestDto>(),
+                AlertRecipients = new List<AlertRecipientDto>()
+            };
+
+            // Act
+            var result = await _projectService.UpdateProject(projectId, projectRequestDto);
+
+            // Assert
+            await _nyssContextMock.DidNotReceive().SaveChangesAsync();
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Project.HealthRiskContainsReports);
         }
 
         [Fact(Skip = "Currently, UpdateProject does not throw ResultException")]
@@ -481,8 +634,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
 
             var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZone = "Updated Time Zone" };
@@ -514,8 +667,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(existingProjectId).Returns(project[0]);
 
             // Act
@@ -547,8 +700,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(nonExistentProjectId).ReturnsNull();
 
             // Act
@@ -579,8 +732,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 }
             };
 
-            var projectMockDbSet = project.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Projects.Returns(projectMockDbSet);
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
 
             // Act

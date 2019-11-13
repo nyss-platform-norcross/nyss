@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
 
         public int? AlertRuleDaysThreshold { get; set; }
 
-        public int? AlertRuleMetersThreshold { get; set; }
+        public int? AlertRuleKilometersThreshold { get; set; }
 
         public IEnumerable<HealthRiskLanguageContentDto> LanguageContent { get; set; }
 
@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
                 RuleFor(hr => hr.LanguageContent).NotEmpty();
                 RuleFor(hr => hr.AlertRuleCountThreshold).GreaterThanOrEqualTo(0);
                 RuleFor(hr => hr.AlertRuleDaysThreshold).GreaterThanOrEqualTo(0);
-                RuleFor(hr => hr.AlertRuleMetersThreshold).GreaterThanOrEqualTo(0);
+                RuleFor(hr => hr.AlertRuleKilometersThreshold).GreaterThanOrEqualTo(0);
             }
         }
     }

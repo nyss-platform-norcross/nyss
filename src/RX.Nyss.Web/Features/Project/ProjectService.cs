@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +43,8 @@ namespace RX.Nyss.Web.Features.Project
                 .ThenInclude(phr => phr.HealthRisk)
                 .Include(p => p.ProjectHealthRisks)
                 .ThenInclude(phr => phr.AlertRule)
+                .Include(p => p.ProjectHealthRisks)
+                .ThenInclude(phr => phr.Reports)
                 .Include(p => p.AlertRecipients)
                 .Select(p => new ProjectResponseDto
                 {
@@ -57,11 +58,11 @@ namespace RX.Nyss.Web.Features.Project
                         HealthRiskCode = phr.HealthRisk.HealthRiskCode,
                         HealthRiskType = phr.HealthRisk.HealthRiskType,
                         AlertRuleCountThreshold = phr.AlertRule.CountThreshold,
-                        //ToDo: use either days or hours
-                        AlertRuleDaysThreshold = phr.AlertRule.HoursThreshold / 24,
-                        AlertRuleMetersThreshold = phr.AlertRule.MetersThreshold,
+                        AlertRuleDaysThreshold = phr.AlertRule.DaysThreshold,
+                        AlertRuleKilometersThreshold = phr.AlertRule.KilometersThreshold,
                         FeedbackMessage = phr.FeedbackMessage,
-                        CaseDefinition = phr.CaseDefinition
+                        CaseDefinition = phr.CaseDefinition,
+                        ContainsReports = phr.Reports.Any()
                     }),
                     AlertRecipients = p.AlertRecipients.Select(ar => new AlertRecipientDto
                     {
@@ -148,10 +149,10 @@ namespace RX.Nyss.Web.Features.Project
                         HealthRiskId = phr.HealthRiskId,
                         AlertRule = new AlertRule
                         {
-                            //ToDo: make CountThreshold nullable
+                            //ToDo: make CountThreshold nullable or change validation
                             CountThreshold = phr.AlertRuleCountThreshold ?? 0,
-                            HoursThreshold = phr.AlertRuleDaysThreshold * 24,
-                            MetersThreshold = phr.AlertRuleMetersThreshold
+                            DaysThreshold = phr.AlertRuleDaysThreshold,
+                            KilometersThreshold = phr.AlertRuleKilometersThreshold
                         }
                     }).ToList(),
                     AlertRecipients = projectRequestDto.AlertRecipients.Select(ar => new AlertRecipient
@@ -179,6 +180,8 @@ namespace RX.Nyss.Web.Features.Project
                 var projectToUpdate = await _nyssContext.Projects
                     .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.AlertRule)
+                    .Include(p => p.ProjectHealthRisks)
+                    .ThenInclude(phr => phr.Reports)
                     .Include(p => p.AlertRecipients)
                     .FirstOrDefaultAsync(p => p.Id == projectId);
 
@@ -190,6 +193,10 @@ namespace RX.Nyss.Web.Features.Project
                 projectToUpdate.Name = projectRequestDto.Name;
                 projectToUpdate.TimeZone = projectRequestDto.TimeZone;
 
+                UpdateHealthRisks(projectToUpdate, projectRequestDto);
+
+                UpdateAlertRecipients(projectToUpdate, projectRequestDto);
+
                 await _nyssContext.SaveChangesAsync();
 
                 return SuccessMessage(ResultKey.Project.SuccessfullyUpdated);
@@ -198,6 +205,79 @@ namespace RX.Nyss.Web.Features.Project
             {
                 _loggerAdapter.Debug(exception);
                 return exception.Result;
+            }
+        }
+
+        private void UpdateHealthRisks(Nyss.Data.Models.Project projectToUpdate, ProjectRequestDto projectRequestDto)
+        {
+            var projectHealthRiskIdsFromDto = projectRequestDto.HealthRisks.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
+            var projectHealthRisksToDelete = projectToUpdate.ProjectHealthRisks.Where(ar => !projectHealthRiskIdsFromDto.Contains(ar.Id)).ToList();
+
+            if (projectHealthRisksToDelete.Any(phr => phr.Reports.Count > 0))
+            {
+                throw new ResultException(ResultKey.Project.HealthRiskContainsReports); 
+            }
+
+            _nyssContext.ProjectHealthRisks.RemoveRange(projectHealthRisksToDelete);
+
+            var projectHealthRisksToAdd = projectRequestDto.HealthRisks.Where(ar => ar.Id == null);
+            foreach (var projectHealthRisk in projectHealthRisksToAdd)
+            {
+                var projectHealthRiskToAdd = new ProjectHealthRisk
+                {
+                    CaseDefinition = projectHealthRisk.CaseDefinition,
+                    FeedbackMessage = projectHealthRisk.FeedbackMessage,
+                    AlertRule = new AlertRule
+                    {
+                        //ToDo: make CountThreshold nullable or change validation
+                        CountThreshold = projectHealthRisk.AlertRuleCountThreshold ?? 0,
+                        DaysThreshold = projectHealthRisk.AlertRuleDaysThreshold,
+                        KilometersThreshold = projectHealthRisk.AlertRuleKilometersThreshold
+                    }
+                };
+
+                projectToUpdate.ProjectHealthRisks.Add(projectHealthRiskToAdd);
+            }
+
+            var projectHealthRisksToUpdate = projectRequestDto.HealthRisks.Where(ar => ar.Id.HasValue);
+            foreach (var projectHealthRisk in projectHealthRisksToUpdate)
+            {
+                var projectHealthRiskToUpdate = projectToUpdate.ProjectHealthRisks.FirstOrDefault(ar => ar.Id == projectHealthRisk.Id.Value);
+
+                if (projectHealthRiskToUpdate != null)
+                {
+                    projectHealthRiskToUpdate.CaseDefinition = projectHealthRisk.CaseDefinition;
+                    projectHealthRiskToUpdate.FeedbackMessage = projectHealthRisk.FeedbackMessage;
+                    //ToDo: make CountThreshold nullable or change validation
+                    projectHealthRiskToUpdate.AlertRule.CountThreshold = projectHealthRisk.AlertRuleCountThreshold ?? 0;
+                    projectHealthRiskToUpdate.AlertRule.DaysThreshold = projectHealthRisk.AlertRuleDaysThreshold;
+                    projectHealthRiskToUpdate.AlertRule.KilometersThreshold = projectHealthRisk.AlertRuleKilometersThreshold;
+                }
+            }
+        }
+
+        private void UpdateAlertRecipients(Nyss.Data.Models.Project projectToUpdate, ProjectRequestDto projectRequestDto)
+        {
+            var alertRecipientIdsFromDto = projectRequestDto.AlertRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
+            var alertRecipientsToDelete = projectToUpdate.AlertRecipients.Where(ar => !alertRecipientIdsFromDto.Contains(ar.Id));
+            _nyssContext.AlertRecipients.RemoveRange(alertRecipientsToDelete);
+
+            var alertRecipientsToAdd = projectRequestDto.AlertRecipients.Where(ar => ar.Id == null);
+            foreach (var alertRecipient in alertRecipientsToAdd)
+            {
+                var alertRecipientToAdd = new AlertRecipient {EmailAddress = alertRecipient.EmailAddress};
+                projectToUpdate.AlertRecipients.Add(alertRecipientToAdd);
+            }
+
+            var alertRecipientsToUpdate = projectRequestDto.AlertRecipients.Where(ar => ar.Id.HasValue);
+            foreach (var alertRecipient in alertRecipientsToUpdate)
+            {
+                var alertRecipientToUpdate = projectToUpdate.AlertRecipients.FirstOrDefault(ar => ar.Id == alertRecipient.Id.Value);
+
+                if (alertRecipientToUpdate != null)
+                {
+                    alertRecipientToUpdate.EmailAddress = alertRecipient.EmailAddress;
+                }
             }
         }
 

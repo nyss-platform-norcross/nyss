@@ -114,6 +114,7 @@
             public const string ProjectDoesNotExist = "project.projectDoesNotExist";
             public const string NationalSocietyDoesNotExist = "project.nationalSocietyDoesNotExist";
             public const string HealthRiskDoesNotExist = "project.healthRiskDoesNotExist";
+            public const string HealthRiskContainsReports = "project.healthRiskContainsReports";
         }
 
         public const string UnexpectedError = "error.unexpected";

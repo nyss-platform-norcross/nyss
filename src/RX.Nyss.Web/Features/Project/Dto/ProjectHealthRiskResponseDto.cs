@@ -14,10 +14,12 @@ namespace RX.Nyss.Web.Features.Project.Dto
 
         public int? AlertRuleDaysThreshold { get; set; }
 
-        public int? AlertRuleMetersThreshold { get; set; }
+        public int? AlertRuleKilometersThreshold { get; set; }
 
         public string FeedbackMessage { get; set; }
 
         public string CaseDefinition { get; set; }
+
+        public bool ContainsReports { get; set; }
     }
 }
