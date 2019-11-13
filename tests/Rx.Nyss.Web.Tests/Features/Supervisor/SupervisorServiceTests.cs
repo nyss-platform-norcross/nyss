@@ -148,6 +148,85 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
 
 
         [Fact]
+        public async Task Create_WhenCreatingInNonExistentNationalSociety_ShouldReturnError()
+        {
+            //Arrange
+            var userEmail = "emailTest1@domain.com";
+            var registerSupervisorRequestDto = new CreateSupervisorRequestDto { Name = userEmail, Email = userEmail };
+
+            //Act
+            var nationalSocietyId = 666;
+            var result = await _supervisorService.Create(nationalSocietyId, registerSupervisorRequestDto);
+
+            //Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+        }
+
+        [Fact]
+        public async Task Create_WhenCreatingSupervisorWithProjectSpecified_AddAsyncForProjectReferenceShouldBeCalledOnce()
+        {
+            //Arrange
+            var userEmail = "emailTest1@domain.com";
+            var registerSupervisorRequestDto = new CreateSupervisorRequestDto { Name = userEmail, Email = userEmail, ProjectId = 1 };
+
+            //Act
+            var nationalSocietyId = 1;
+            var result = await _supervisorService.Create(nationalSocietyId, registerSupervisorRequestDto);
+
+            //Assert
+            await _nyssContext.Received(1).AddAsync(Arg.Any<SupervisorUserProject>());
+        }
+
+        [Fact]
+        public async Task Create_WhenCreatingSupervisorWithNoProjectSpecified_AddAsyncForProjectReferenceShouldNotBeCalled()
+        {
+            //Arrange
+            var userEmail = "emailTest1@domain.com";
+            var registerSupervisorRequestDto = new CreateSupervisorRequestDto { Name = userEmail, Email = userEmail };
+
+            //Act
+            var nationalSocietyId = 1;
+            var result = await _supervisorService.Create(nationalSocietyId, registerSupervisorRequestDto);
+
+            //Assert
+            await _nyssContext.Received(0).AddAsync(Arg.Any<SupervisorUserProject>());
+        }
+
+        [Fact]
+        public async Task Create_WhenCreatingSupervisorWithProjectThatDoesntExist_ShouldReturnError()
+        {
+            //Arrange
+            var userEmail = "emailTest1@domain.com";
+            var registerSupervisorRequestDto = new CreateSupervisorRequestDto { Name = userEmail, Email = userEmail, ProjectId = 666};
+
+            //Act
+            var nationalSocietyId = 1;
+            var result = await _supervisorService.Create(nationalSocietyId, registerSupervisorRequestDto);
+
+            //Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Supervisor.ProjectDoesNotExistOrNoAccess);
+        }
+
+        [Fact]
+        public async Task Create_WhenCreatingSupervisorWithProjectInAnotherNationalSociety_ShouldReturnError()
+        {
+            //Arrange
+            var userEmail = "emailTest1@domain.com";
+            var registerSupervisorRequestDto = new CreateSupervisorRequestDto { Name = userEmail, Email = userEmail, ProjectId = 5 };
+
+            //Act
+            var nationalSocietyId = 1;
+            var result = await _supervisorService.Create(nationalSocietyId, registerSupervisorRequestDto);
+
+            //Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Supervisor.ProjectDoesNotExistOrNoAccess);
+        }
+
+
+        [Fact]
         public async Task Edit_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
             ArrangeUsersFrom(new List<User> { });
@@ -328,6 +407,31 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             await _nyssContext.Received(1).AddAsync(Arg.Any<SupervisorUserProject>());
         }
 
+
+        [Fact]
+        public async Task Edit_WhenSwitchingProjectToTheSameProject_NyssContextRemoveAndAddProjectShouldNotBeCalled()
+        {
+            //Arrange
+            ArrangeUsersDbSetWithOneSupervisor();
+            var editRequest = new EditSupervisorRequestDto()
+            {
+                Name = "New name",
+                PhoneNumber = "432432",
+                Sex = Sex.Female,
+                DecadeOfBirth = 1980,
+                AdditionalPhoneNumber = "123123",
+                ProjectId = 1,
+            };
+
+            //Act
+            await _supervisorService.Edit(123, editRequest);
+
+            //Assert
+            _nyssContext.SupervisorUserProjects.Received(0).Remove(Arg.Any<SupervisorUserProject>());
+            await _nyssContext.Received(0).AddAsync(Arg.Any<SupervisorUserProject>());
+        }
+
+
         [Fact]
         public async Task Edit_WhenSwitchingProjectToOneFromOtherNationalSociety_ShouldReturnError()
         {
@@ -363,6 +467,57 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
 
             //Assert
             _nyssContext.SupervisorUserProjects.Received(1).RemoveRange(Arg.Any<List<SupervisorUserProject>>());
+        }
+
+        [Fact]
+        public async Task Remove_WhenRemovingNonExistantSupervisot_ReturnsError()
+        {
+            //Arrange
+            ArrangeUsersDbSetWithOneSupervisor();
+
+            //Act
+            var result = await _supervisorService.Remove(666);
+
+            //Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
+        }
+
+
+        [Fact]
+        public async Task Get_IfSupervisorExists_ReturnSupervisor()
+        {
+            //Arrange
+            ArrangeUsersDbSetWithOneSupervisor();
+
+            //Act
+            var result = await _supervisorService.Get(123);
+
+            //Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Id.ShouldBe(123);
+            result.Value.Role.ShouldBe(Role.Supervisor);
+            result.Value.Email.ShouldBe("emailTest1@domain.com");
+            result.Value.Name.ShouldBe("emailTest1@domain.com");
+            result.Value.PhoneNumber.ShouldBe("123");
+            result.Value.AdditionalPhoneNumber.ShouldBe("321");
+            result.Value.Sex.ShouldBe(Sex.Male);
+            result.Value.DecadeOfBirth.ShouldBe(1990);
+        }
+
+
+        [Fact]
+        public async Task Get_IfSupervisorDoesntExists_ReturnError()
+        {
+            //Arrange
+            ArrangeUsersDbSetWithOneSupervisor();
+
+            //Act
+            var result = await _supervisorService.Get(666);
+
+            //Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
         }
     }
 }

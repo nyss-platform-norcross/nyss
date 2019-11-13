@@ -136,11 +136,11 @@ namespace RX.Nyss.Web.Features.Supervisor
                 SupervisorUser = supervisorUser
             };
 
-        public async Task<Result<GetSupervisorResponseDto>> Get(int nationalSocietyUserId)
+        public async Task<Result<GetSupervisorResponseDto>> Get(int supervisorId)
         {
             var supervisor = await _dataContext.Users
                 .OfType<SupervisorUser>()
-                .Where(u => u.Id == nationalSocietyUserId)
+                .Where(u => u.Id == supervisorId)
                 .Select(u => new GetSupervisorResponseDto
                 {
                     Id = u.Id,
@@ -160,7 +160,7 @@ namespace RX.Nyss.Web.Features.Supervisor
 
             if (supervisor == null)
             {
-                _loggerAdapter.Debug($"Data manager with id {nationalSocietyUserId} was not found");
+                _loggerAdapter.Debug($"Data manager with id {supervisorId} was not found");
                 return Error<GetSupervisorResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
