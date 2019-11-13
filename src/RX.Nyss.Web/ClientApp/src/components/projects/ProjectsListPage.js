@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
-import ProjectsTable from './ProjectsTable';
+import ProjectsList from './ProjectsList';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 
@@ -27,7 +27,7 @@ const ProjectsListPageComponent = (props) => {
        </Button>
       </TableActions>
 
-      <ProjectsTable
+      <ProjectsList
         list={props.list}
         goToEdition={props.goToEdition}
         goToDashboard={props.goToDashboard}

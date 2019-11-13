@@ -1,0 +1,49 @@
+.input {
+  display: flex !important;
+  padding: 4px 5px !important;
+  height: auto !important;
+  min-height: 40px;
+}
+
+.valueContainer {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1;
+  align-items: center;
+  overflow: hidden;
+}
+
+.chip {
+   margin: 4px 2px;
+}
+
+.chipFocused {
+  background-color: grey
+}
+
+.noOptionsMessage {
+  padding: 1px 2px;
+}
+
+.singleValue {
+  font-size: 1rem;
+}
+
+.placeholder {
+  position: absolute;
+  left: 2px;
+  bottom: 6px;
+  font-size: 1rem;
+}
+
+.paper {
+  position: absolute;
+  z-index: 1;
+  margin-top: 1px;
+  left: 0;
+  right: 0;
+}
+
+.divider {
+  height: 2px;
+}

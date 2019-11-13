@@ -6,6 +6,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -13,8 +14,9 @@ import EditIcon from '@material-ui/icons/Edit';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
+import dayjs from "dayjs"
 
-export const ProjectsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
+export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -27,51 +29,51 @@ export const ProjectsTable = ({ isListFetching, isRemoving, goToEdition, remove,
             <Typography variant="h3" gutterBottom>
               {row.name}
             </Typography>
-            <Typography gutterBottom variant="body1" color="textSecondary" gutterBottom>
+            <Typography variant="h6" color="textSecondary" gutterBottom>
               {row.state}
             </Typography>            
             <Grid container spacing={2}>
               <Grid item xs={12} sm container>
                 <Grid item xs container direction="column" spacing={2}>
                   <Grid item xs>
-                    <Typography variant="subtitle1">
+                    <Typography variant="h6">
                       {row.totalReportCount}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
+                    <Typography variant="body1" color="textSecondary" gutterBottom>
                       {stringKeys.project.list.totalReportCount}
                     </Typography>
-                    <Typography variant="subtitle1">
+                    <Typography variant="h6">
                       {row.activeDataCollectorCount}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
+                    <Typography variant="body1" color="textSecondary" gutterBottom>
                       {stringKeys.project.list.activeDataCollectorCount}
                     </Typography>
-                    <Typography variant="subtitle1">
-                      {row.startDate}
+                    <Typography variant="h6">
+                      {dayjs(row.startDate).format("YYYY-MM-DD")}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
+                    <Typography variant="body1" color="textSecondary" gutterBottom>
                       {stringKeys.project.list.startDate}
                     </Typography>
                   </Grid>
                 </Grid>
                 <Grid item xs container direction="column" spacing={2}>
                   <Grid item xs>
-                    <Typography variant="subtitle1">
+                    <Typography variant="h6">
                       {row.escalatedAlertCount}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
+                    <Typography variant="body1" color="textSecondary" gutterBottom>
                       {stringKeys.project.list.escalatedAlertCount}
                     </Typography>
-                    <Typography variant="subtitle1">
+                    <Typography variant="h6">
                       {row.supervisorCount}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
+                    <Typography variant="body1" color="textSecondary" gutterBottom>
                       {stringKeys.project.list.supervisorCount}
                     </Typography>
-                    <Typography variant="subtitle1">
-                      {row.endDate ? row.endDate : stringKeys.project.list.ongoing}
+                    <Typography variant="h6">
+                      {row.endDate ? dayjs(row.endDate).format("YYYY-MM-DD") : stringKeys.project.list.ongoing}
                     </Typography>
-                    <Typography variant="body2" gutterBottom>
+                    <Typography variant="body1" color="textSecondary" gutterBottom>
                       {stringKeys.project.list.endDate}
                     </Typography>
                   </Grid>
@@ -80,9 +82,11 @@ export const ProjectsTable = ({ isListFetching, isRemoving, goToEdition, remove,
             </Grid>           
           </CardContent>
           <CardActions>
-            <IconButton size="small" onClick={() => goToEdition(nationalSocietyId, row.id)} aria-label={"Edit"}><EditIcon /></IconButton>
-            <IconButton size="small" onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.project.list.confirmationText)} aria-label={"Delete"} isFetching={isRemoving[row.id]}><ClearIcon /></IconButton>
-            <Button onClick={() => goToEdition(nationalSocietyId, row.id)} endIcon={<ArrowForwardIcon />}>{strings(stringKeys.project.list.open)}</Button>
+            <Box style={{ width: '100%' }} p={1} display="flex" justifyContent="flex-end">
+              <IconButton size="small" onClick={() => goToEdition(nationalSocietyId, row.id)} aria-label={"Edit"}><EditIcon /></IconButton>
+              <IconButton size="small" onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.project.list.confirmationText)} aria-label={"Delete"} isFetching={isRemoving[row.id]}><ClearIcon /></IconButton>
+              <Button onClick={() => goToEdition(nationalSocietyId, row.id)} endIcon={<ArrowForwardIcon />}>{strings(stringKeys.project.list.open)}</Button>
+            </Box>
           </CardActions>
         </Card>
       ))}
@@ -90,9 +94,9 @@ export const ProjectsTable = ({ isListFetching, isRemoving, goToEdition, remove,
   );
 }
 
-ProjectsTable.propTypes = {
+ProjectsList.propTypes = {
   isFetching: PropTypes.bool,
   list: PropTypes.array
 };
 
-export default ProjectsTable;
+export default ProjectsList;
