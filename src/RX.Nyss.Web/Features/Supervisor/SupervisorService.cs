@@ -189,7 +189,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                     return Error(ResultKey.User.Common.UserNotFound);
                 }
 
-                var (supervisorUser, currentProjectReference) = (supervisorUserData.User, supervisorUserData.CurrentProjectReference);
+                var supervisorUser = supervisorUserData.User;
 
                 supervisorUser.Name = editSupervisorRequestDto.Name;
                 supervisorUser.Sex = editSupervisorRequestDto.Sex;
@@ -197,7 +197,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                 supervisorUser.PhoneNumber = editSupervisorRequestDto.PhoneNumber;
                 supervisorUser.AdditionalPhoneNumber = editSupervisorRequestDto.AdditionalPhoneNumber;
 
-                await UpdateSupervisorProjectReferences(supervisorUser, currentProjectReference, editSupervisorRequestDto.ProjectId);
+                await UpdateSupervisorProjectReferences(supervisorUser, supervisorUserData.CurrentProjectReference, editSupervisorRequestDto.ProjectId);
 
                 await _dataContext.SaveChangesAsync();
                 return Success();
