@@ -40,21 +40,21 @@ namespace RX.Nyss.Web.Features.HealthRisk
         /// <summary>
         /// Creates a new health risk.
         /// </summary>
-        /// <param name="healthRiskDto"></param>
+        /// <param name="healthRiskRequestDto"></param>
         /// <returns>An identifier of the created health risk</returns>
         [HttpPost, Route("create"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result> Create([FromBody]HealthRiskRequestDto healthRiskDto) => 
-            await _healthRiskService.CreateHealthRisk(healthRiskDto);
+        public async Task<Result> Create([FromBody]HealthRiskRequestDto healthRiskRequestDto) => 
+            await _healthRiskService.CreateHealthRisk(healthRiskRequestDto);
 
         /// <summary>
         /// Edits a health risk.
         /// </summary>
         /// <param name="id">An identifier of a health risk</param>
-        /// <param name="healthRiskDto"></param>
+        /// <param name="healthRiskRequestDto"></param>
         /// <returns></returns>
         [HttpPost, Route("{id:int}/edit"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result> Edit(int id, [FromBody]HealthRiskRequestDto healthRiskDto) =>
-            await _healthRiskService.EditHealthRisk(id, healthRiskDto);
+        public async Task<Result> Edit(int id, [FromBody]HealthRiskRequestDto healthRiskRequestDto) =>
+            await _healthRiskService.EditHealthRisk(id, healthRiskRequestDto);
 
         /// <summary>
         /// Removes a health risk.
