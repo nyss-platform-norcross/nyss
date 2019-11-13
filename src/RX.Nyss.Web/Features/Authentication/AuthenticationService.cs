@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
@@ -70,7 +71,10 @@ namespace RX.Nyss.Web.Features.Authentication
                         Name = user.Identity.Name,
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
-                        Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray()
+                        Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),
+                        HomePage = user.Identity.IsAuthenticated
+                            ? GetHomePageData(userEntity)
+                            : null
                     }
                     : null
             });
@@ -81,6 +85,38 @@ namespace RX.Nyss.Web.Features.Authentication
             await _userIdentityService.Logout();
             return Success();
         }
+
+        private StatusResponseDto.HomePageDto GetHomePageData(Nyss.Data.Models.User userEntity) =>
+            userEntity switch
+            {
+                SupervisorUser user => GetNationalSocietyHomePage(user),
+                ManagerUser user => GetNationalSocietyHomePage(user),
+                TechnicalAdvisorUser user => GetNationalSocietyHomePage(user),
+                DataConsumerUser user => GetNationalSocietyHomePage(user),
+                _ => GetRootHomePage()
+            };
+
+        private StatusResponseDto.HomePageDto GetNationalSocietyHomePage<T>(T user) where T : Nyss.Data.Models.User
+        {
+            var nationalSocietyIds = _nyssContext.UserNationalSocieties
+                .Where(uns => uns.UserId == user.Id)
+                .Select(uns => (int?) uns.NationalSocietyId)
+                .ToList();
+
+            if (!nationalSocietyIds.Any() || nationalSocietyIds.Count > 1)
+            {
+                return new StatusResponseDto.HomePageDto { Page = HomePageType.Root };
+            }
+            
+            return new StatusResponseDto.HomePageDto
+            {
+                Page = HomePageType.NationalSociety,
+                NationalSocietyId = nationalSocietyIds.Single()
+            };
+        }
+
+        private StatusResponseDto.HomePageDto GetRootHomePage() =>
+            new StatusResponseDto.HomePageDto { Page = HomePageType.Root };
 
         private async Task<IEnumerable<string>> GetRoles(IdentityUser user) => await _userIdentityService.GetRoles(user);
 

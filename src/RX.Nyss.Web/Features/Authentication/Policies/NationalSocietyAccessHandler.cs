@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.User;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
@@ -14,44 +17,36 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
     public class NationalSocietyAccessHandler : AuthorizationHandler<NationalSocietyAccessRequirement>
     {
-        private const string RouteValueName = "nationalSocietyId";
+        private const string RouteParameterName = "nationalSocietyId";
         public static readonly ResourceType ResourceType = ResourceType.NationalSociety;
 
         private readonly IEnumerable<string> _rolesWithAccessToAllNationalSocieties;
         protected readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserService _userService;
 
-        public NationalSocietyAccessHandler(IHttpContextAccessor httpContextAccessor)
+        public NationalSocietyAccessHandler(IHttpContextAccessor httpContextAccessor, IUserService userService)
         {
             _httpContextAccessor = httpContextAccessor;
+            _userService = userService;
             _rolesWithAccessToAllNationalSocieties = new[] { Role.Administrator, Role.GlobalCoordinator }
                 .Select(role => role.ToString());
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, NationalSocietyAccessRequirement requirement)
+        protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, NationalSocietyAccessRequirement requirement)
         {
-            if (!context.User.Identity.IsAuthenticated)
+            var nationalSocietyId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            if (!context.User.Identity.IsAuthenticated || !nationalSocietyId.HasValue)
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            var routeValue = _httpContextAccessor.HttpContext.Request.RouteValues[RouteValueName];
-            if (routeValue == null)
-            {
-                return Task.CompletedTask;
-            }
+            var roles = context.User.GetRoles();
+            var identityName = context.User.Identity.Name;
 
-            if (HasAccessToSpecificNationalSociety(context, routeValue.ToString()) || HasAccessToAllNationalSocieties(context))
+            if (await _userService.GetUserHasAccessToAnyOfProvidedNationalSocieties(new List<int>{ nationalSocietyId.Value }, identityName, roles))
             {
                 context.Succeed(requirement);
             }
-
-            return Task.CompletedTask;
         }
-
-        private bool HasAccessToSpecificNationalSociety(AuthorizationHandlerContext context, string routeValue) => 
-            context.User.Claims.Any(c => c.Type == ClaimType.ResourceAccess && c.Value == $"{ResourceType}:{routeValue}");
-
-        private bool HasAccessToAllNationalSocieties(AuthorizationHandlerContext context) => 
-            context.User.Claims.Any(c => c.Type == ClaimTypes.Role && _rolesWithAccessToAllNationalSocieties.Contains(c.Value));
     }
 }

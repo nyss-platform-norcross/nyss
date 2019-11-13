@@ -27,8 +27,8 @@ export const getUser = {
   request: () =>
     ({ type: actions.GET_USER.REQUEST }),
 
-  success: (isAuthenticated, { name, email, roles }) =>
-    ({ type: actions.GET_USER.SUCCESS, isAuthenticated, user: { name, email, roles } }),
+  success: (isAuthenticated, user) =>
+    ({ type: actions.GET_USER.SUCCESS, isAuthenticated, user }),
 
   failure: (message) => ({ type: actions.GET_USER.FAILURE, message })
 };

@@ -3,8 +3,8 @@
     public class StatusResponseDto
     {
         public bool IsAuthenticated { get; set; }
-
         public DataDto Data { get; set; }
+
 
         public class DataDto
         {
@@ -15,6 +15,15 @@
             public string[] Roles { get; set; }
 
             public string LanguageCode { get; set; }
+
+            public HomePageDto HomePage { get; set; }
+        }
+
+        public class HomePageDto
+        {
+            public HomePageType Page { get; set; }
+            public int? NationalSocietyId { get; set; }
+            public int? ProjectId { get; set; }
         }
     }
 }

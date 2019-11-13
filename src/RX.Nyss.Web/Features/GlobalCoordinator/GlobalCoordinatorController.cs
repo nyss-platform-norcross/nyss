@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         /// Lists all global coordinators available in the system.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("list"), NeedsRole(Role.Administrator)]
+        [HttpGet("list"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result> List() =>
             await _globalCoordinatorService.GetGlobalCoordinators();
     }

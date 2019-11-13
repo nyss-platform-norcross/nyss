@@ -87,7 +87,8 @@ function* getUserStatus() {
       ? {
         name: status.value.data.name,
         roles: status.value.data.roles,
-        languageCode: status.value.data.languageCode
+        languageCode: status.value.data.languageCode,
+        homePage: status.value.data.homePage
       }
       : null;
 

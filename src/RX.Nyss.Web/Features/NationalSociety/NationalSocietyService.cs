@@ -8,6 +8,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -16,10 +17,10 @@ namespace RX.Nyss.Web.Features.NationalSociety
 {
     public interface INationalSocietyService
     {
-        Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties();
+        Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties(string userEmail, IEnumerable<string> userRoles);
         Task<Result<NationalSocietyResponseDto>> GetNationalSociety(int id);
         Task<Result<int>> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
-        Task<Result> EditNationalSociety(EditNationalSocietyRequestDto nationalSociety);
+        Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
     }
 
@@ -28,19 +29,21 @@ namespace RX.Nyss.Web.Features.NationalSociety
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IConfig _config;
+        private readonly IUserService _userService;
 
-        public NationalSocietyService(INyssContext context, ILoggerAdapter loggerAdapter, IConfig config)
+        public NationalSocietyService(INyssContext context, ILoggerAdapter loggerAdapter, IConfig config, IUserService userService)
         {
             _nyssContext = context;
             _loggerAdapter = loggerAdapter;
             _config = config;
+            _userService = userService;
         }
 
-        public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties()
+        public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties(string userEmail, IEnumerable<string> userRoles)
         {
             try
             {
-                var list = await _nyssContext.NationalSocieties
+                var nationalSocietiesQuery = _nyssContext.NationalSocieties
                     .Include(x => x.HeadManager)
                     .Include(x => x.PendingHeadManager)
                     .Select(n => new NationalSocietyListResponseDto
@@ -52,7 +55,15 @@ namespace RX.Nyss.Web.Features.NationalSociety
                         StartDate = n.StartDate,
                         HeadManagerName = n.HeadManager.Name,
                         PendingHeadManagerName = n.PendingHeadManager.Name
-                    })
+                    });
+
+                if (!_userService.HasAccessToAllNationalSocieties(userRoles))
+                {
+                    var availableNationalSocieties = await _userService.GetUserNationalSocietyIds(userEmail);
+                    nationalSocietiesQuery = nationalSocietiesQuery.Where(ns => availableNationalSocieties.Contains(ns.Id));
+                }
+
+                var list = await nationalSocietiesQuery
                     .OrderBy(n => n.Name)
                     .ToListAsync();
 
@@ -135,16 +146,16 @@ namespace RX.Nyss.Web.Features.NationalSociety
             }
         }
 
-        public async Task<Result> EditNationalSociety(EditNationalSocietyRequestDto dto)
+        public async Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto dto)
         {
             try
             {
-                if (_nyssContext.NationalSocieties.Any(ns => ns.Id != dto.Id && ns.Name.ToLower() == dto.Name.ToLower()))
+                if (_nyssContext.NationalSocieties.Any(ns => ns.Id != nationalSocietyId && ns.Name.ToLower() == dto.Name.ToLower()))
                 {
                     return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
                 }
 
-                var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(dto.Id);
+                var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
 
                 nationalSociety.Name = dto.Name;
                 nationalSociety.ContentLanguage = await GetLanguageById(dto.ContentLanguageId);
