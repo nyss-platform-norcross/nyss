@@ -136,6 +136,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 user.Name = editTechnicalAdvisorRequestDto.Name;
                 user.PhoneNumber = editTechnicalAdvisorRequestDto.PhoneNumber;
                 user.Organization = editTechnicalAdvisorRequestDto.Organization;
+                user.AdditionalPhoneNumber = editTechnicalAdvisorRequestDto.AdditionalPhoneNumber;
 
                 await _dataContext.SaveChangesAsync();
                 return Success();

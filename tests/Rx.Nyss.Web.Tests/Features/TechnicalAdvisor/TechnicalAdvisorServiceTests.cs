@@ -205,7 +205,8 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
                     EmailAddress = "emailTest1@domain.com",
                     Name = "emailTest1@domain.com",
                     Organization = "org org",
-                    PhoneNumber = "123"
+                    PhoneNumber = "123",
+                    AdditionalPhoneNumber = "321"
                 }
             });
 
@@ -232,7 +233,8 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             {
                 Name = "New name",
                 Organization = "New organization",
-                PhoneNumber = "432432"
+                PhoneNumber = "345",
+                AdditionalPhoneNumber = "543",
             };
 
             await _technicalAdvisorService.UpdateTechnicalAdvisor(123, editRequest);
@@ -244,8 +246,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             editedUser.Organization.ShouldBe(editRequest.Organization);
             editedUser.PhoneNumber.ShouldBe(editRequest.PhoneNumber);
             editedUser.EmailAddress.ShouldBe(existingUserEmail);
+            editedUser.AdditionalPhoneNumber.ShouldBe(editRequest.AdditionalPhoneNumber);
         }
-
-        
     }
 }

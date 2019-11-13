@@ -140,6 +140,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
                 user.Name = editDataConsumerRequestDto.Name;
                 user.PhoneNumber = editDataConsumerRequestDto.PhoneNumber;
                 user.Organization = editDataConsumerRequestDto.Organization;
+                user.AdditionalPhoneNumber = editDataConsumerRequestDto.AdditionalPhoneNumber;
 
                 await _dataContext.SaveChangesAsync();
                 return Success();
