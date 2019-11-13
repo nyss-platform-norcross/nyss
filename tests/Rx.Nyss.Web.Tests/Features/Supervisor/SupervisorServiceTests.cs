@@ -74,6 +74,60 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             _nyssContext.Projects.Returns(projectsDbSet);
         }
 
+        private void ArrangeUsersWithOneAdministratorUser() =>
+            ArrangeUsersFrom(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
+
+        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
+        {
+            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users.Returns(usersDbSet);
+
+            _nationalSocietyUserService.GetNationalSocietyUser<SupervisorUser>(Arg.Any<int>()).Returns(ci =>
+            {
+                var user = existingUsers.OfType<SupervisorUser>().FirstOrDefault(x => x.Id == (int)ci[0]);
+                if (user == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
+                }
+                return user;
+            });
+        }
+
+        private void ArrangeUsersDbSetWithOneSupervisor()
+        {
+            var supervisor = new SupervisorUser
+            {
+                Id = 123,
+                Role = Role.Supervisor,
+                EmailAddress = "emailTest1@domain.com",
+                Name = "emailTest1@domain.com",
+                PhoneNumber = "123",
+                AdditionalPhoneNumber = "321",
+                Sex = Sex.Male,
+                DecadeOfBirth = 1990,
+            };
+            ArrangeUsersFrom(new List<User> { supervisor });
+
+
+            var supervisorUserProjects = new List<SupervisorUserProject>
+            {
+                new SupervisorUserProject { Project = _nyssContext.Projects.Single(x => x.Id == 1), ProjectId = 1, SupervisorUser = supervisor, SupervisorUserId = 123 },
+                new SupervisorUserProject { Project = _nyssContext.Projects.Single(x => x.Id == 3), ProjectId = 3, SupervisorUser = supervisor, SupervisorUserId = 123 }
+            };
+            var supervisorUserProjectsDbSet = supervisorUserProjects.AsQueryable().BuildMockDbSet();
+            supervisor.SupervisorUserProjects = supervisorUserProjects;
+            _nyssContext.SupervisorUserProjects.Returns(supervisorUserProjectsDbSet);
+
+
+            var userNationalSocieties = new List<UserNationalSociety>
+            {
+                new UserNationalSociety { NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1), NationalSocietyId = 1, User =  supervisor, UserId = 1}
+            };
+            var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
+            supervisor.UserNationalSocieties = userNationalSocieties;
+            _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
+        }
+
         [Fact]
         public async Task Create_WhenIdentityUserCreationSuccessful_ShouldReturnSuccessResult()
         {
@@ -145,7 +199,6 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             var nationalSocietyId = 1;
             _supervisorService.Create(nationalSocietyId, registerSupervisorRequestDto).ShouldThrowAsync<Exception>();
         }
-
 
         [Fact]
         public async Task Create_WhenCreatingInNonExistentNationalSociety_ShouldReturnError()
@@ -246,25 +299,6 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             result.IsSuccess.ShouldBeFalse();
         }
 
-        private void ArrangeUsersWithOneAdministratorUser() =>
-            ArrangeUsersFrom(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
-
-        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
-        {
-            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
-            _nyssContext.Users.Returns(usersDbSet);
-
-            _nationalSocietyUserService.GetNationalSocietyUser<SupervisorUser>(Arg.Any<int>()).Returns(ci =>
-            {
-                var user = existingUsers.OfType<SupervisorUser>().FirstOrDefault(x => x.Id == (int)ci[0]);
-                if (user == null)
-                {
-                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
-                }
-                return user;
-            });
-        }
-        
         [Fact]
         public async Task Edit_WhenEditingUserThatIsNotSupervisor_SaveChangesShouldNotBeCalled()
         {
@@ -286,42 +320,6 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             result.IsSuccess.ShouldBeTrue();
         }
 
-        private void ArrangeUsersDbSetWithOneSupervisor()
-        {
-            var supervisor = new SupervisorUser
-            {
-                Id = 123,
-                Role = Role.Supervisor,
-                EmailAddress = "emailTest1@domain.com",
-                Name = "emailTest1@domain.com",
-                PhoneNumber = "123",
-                AdditionalPhoneNumber = "321",
-                Sex = Sex.Male,
-                DecadeOfBirth = 1990,
-            };
-            ArrangeUsersFrom(new List<User> { supervisor });
-
-
-            var supervisorUserProjects = new List<SupervisorUserProject>
-            {
-                new SupervisorUserProject { Project = _nyssContext.Projects.Single(x => x.Id == 1), ProjectId = 1, SupervisorUser = supervisor, SupervisorUserId = 123 },
-                new SupervisorUserProject { Project = _nyssContext.Projects.Single(x => x.Id == 3), ProjectId = 3, SupervisorUser = supervisor, SupervisorUserId = 123 }
-            };
-            var supervisorUserProjectsDbSet = supervisorUserProjects.AsQueryable().BuildMockDbSet();
-            supervisor.SupervisorUserProjects = supervisorUserProjects;
-            _nyssContext.SupervisorUserProjects.Returns(supervisorUserProjectsDbSet);
-
-
-            var userNationalSocieties = new List<UserNationalSociety>
-            {
-                new UserNationalSociety { NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1), NationalSocietyId = 1, User =  supervisor, UserId = 1}
-            };
-            var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
-            supervisor.UserNationalSocieties = userNationalSocieties;
-            _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
-        }
-
-    
         [Fact]
         public async Task Edit_WhenEditingExistingSupervisor_SaveChangesAsyncIsCalled()
         {
