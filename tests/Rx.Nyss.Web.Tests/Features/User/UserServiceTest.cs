@@ -59,17 +59,6 @@ namespace Rx.Nyss.Web.Tests.Features.Users
             users.Value.ShouldAllBe(u => u.Name == NationalSociety1Tag || u.Name == NationalSociety1And2Tag);
         }
 
-        [Fact]
-        public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
-        {
-            var users = await _userService.GetUsersInNationalSociety(1);
-
-            var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
-            users.Value.Count.ShouldBe(5);
-            users.Value.ShouldAllBe(u => allowedRoles.Contains(u.Role));
-        }
-
-
         private void ArrangeUsers(List<RX.Nyss.Data.Models.NationalSociety> nationalSocieties)
         {
             var users = new List<User>
@@ -106,6 +95,16 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         {
             var userNationalSocietyDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietyDbSet);
+        }
+        
+        [Fact]
+        public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
+        {
+            var users = await _userService.GetUsersInNationalSociety(1);
+
+            var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
+            users.Value.Count.ShouldBe(5);
+            users.Value.ShouldAllBe(u => allowedRoles.Contains(u.Role));
         }
     }
 }
