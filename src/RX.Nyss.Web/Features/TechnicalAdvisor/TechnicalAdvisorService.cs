@@ -19,7 +19,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto);
         Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int technicalAdvisorId);
         Task<Result> UpdateTechnicalAdvisor(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto);
-        Task<Result> DeleteTechnicalAdvisor(int TechnicalAdvisorId);
+        Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId);
     }
 
     public class TechnicalAdvisorService : ITechnicalAdvisorService
@@ -148,8 +148,41 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
             }
         }
 
-        public Task<Result> DeleteTechnicalAdvisor(int technicalAdvisorId) =>
-            _nationalSocietyUserService.DeleteUser<TechnicalAdvisorUser>(technicalAdvisorId);
+        public async Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId)
+        {
+            try
+            {
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
+
+                var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
+                
+                var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
+                if (nationalSocietyReferenceToRemove == null)
+                {
+                    return Error(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+                }
+
+                var isUsersLastNationalSociety = (userNationalSocieties.Count == 1);
+                _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
+
+                if (isUsersLastNationalSociety)
+                {
+                    await _nationalSocietyUserService.DeleteNationalSocietyUser(technicalAdvisor);
+                    await _identityUserRegistrationService.DeleteIdentityUser(technicalAdvisor.IdentityUserId);
+                }
+
+                await _dataContext.SaveChangesAsync();
+                transactionScope.Complete();
+                return Success(ResultKey.User.Registration.Success);
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result;
+            }
+        }
     }
 }
 

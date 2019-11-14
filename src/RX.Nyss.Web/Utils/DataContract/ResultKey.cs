@@ -18,6 +18,7 @@
                 public const string PasswordTooWeak = "user.registration.passwordTooWeak";
                 public const string NationalSocietyDoesNotExist = "user.registration.nationalSocietyDoesNotExist";
                 public const string NoAssignableUserWithThisEmailFound = "user.registration.noAssignableUserWithThisEmailFound";
+                public const string UserIsNotAssignedToThisNationalSociety = "user.registration.userIsNotAssignedToThisNationalSociety";
                 public const string UserIsAlreadyInThisNationalSociety = "user.registration.userIsAlreadyInThisNationalSociety";
                 public const string UnknownError = "user.registration.unknownError";
                 

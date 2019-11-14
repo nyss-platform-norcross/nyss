@@ -12,7 +12,9 @@ namespace RX.Nyss.Web.Services
     public interface INationalSocietyUserService
     {
         Task<Result> DeleteUser<T>(int nationalSocietyUserId) where T : User;
-        Task<User> GetNationalSocietyUser<T>(int nationalSocietyUserId) where T : User;
+        Task<T> GetNationalSocietyUser<T>(int nationalSocietyUserId) where T : User;
+        Task DeleteNationalSocietyUser<T>(T nationalSocietyUser) where T : User;
+        Task<T> GetNationalSocietyUserIncludingNationalSocieties<T>(int nationalSocietyUserId) where T : User;
     }
 
     public class NationalSocietyUserService : INationalSocietyUserService
@@ -28,7 +30,7 @@ namespace RX.Nyss.Web.Services
             _identityUserRegistrationService = identityUserRegistrationService;
         }
 
-        public async Task<User> GetNationalSocietyUser<T>(int nationalSocietyUserId) where T: User
+        public async Task<T> GetNationalSocietyUser<T>(int nationalSocietyUserId) where T : User
         {
             var nationalSocietyUser = await _dataContext.Users
                 .OfType<T>()
@@ -44,14 +46,36 @@ namespace RX.Nyss.Web.Services
             return nationalSocietyUser;
         }
 
+        public async Task<T> GetNationalSocietyUserIncludingNationalSocieties<T>(int nationalSocietyUserId) where T : User
+        {
+            var nationalSocietyUser = await _dataContext.Users
+                .Include(u => u.UserNationalSocieties)
+                .OfType<T>()
+                .Where(u => u.Id == nationalSocietyUserId)
+                .SingleOrDefaultAsync();
+
+            if (nationalSocietyUser == null)
+            {
+                _loggerAdapter.Debug($"User with id {nationalSocietyUserId} and the role {typeof(T).ToString()} was not found");
+                throw new ResultException(ResultKey.User.Common.UserNotFound);
+            }
+
+            return nationalSocietyUser;
+        }
+
+
         public async Task<Result> DeleteUser<T>(int nationalSocietyUserId) where T : User
         {
             try
             {
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                var deletedDataConsumer = await DeleteNationalSocietyUser<T>(nationalSocietyUserId);
-                await _identityUserRegistrationService.DeleteIdentityUser(deletedDataConsumer.IdentityUserId);
+                var nationalSocietyUser = await GetNationalSocietyUserIncludingNationalSocieties<T>(nationalSocietyUserId);
+
+                await DeleteNationalSocietyUser<T>(nationalSocietyUser);
+                await _identityUserRegistrationService.DeleteIdentityUser(nationalSocietyUser.IdentityUserId);
+
+                await _dataContext.SaveChangesAsync();
 
                 transactionScope.Complete();
                 return Result.Success(ResultKey.User.Registration.Success);
@@ -63,19 +87,12 @@ namespace RX.Nyss.Web.Services
             }
         }
 
-        private async Task<User> DeleteNationalSocietyUser<T>(int nationalSocietyUserId) where T : User
+        public async Task DeleteNationalSocietyUser<T>(T nationalSocietyUser) where T : User
         {
-            var nationalSocietyUser = await GetNationalSocietyUser<T>(nationalSocietyUserId);
-
-            var userNationalSocieties = await _dataContext.UserNationalSocieties
-                .Where(uns => uns.UserId == nationalSocietyUserId)
-                .ToListAsync();
+            var userNationalSocieties = nationalSocietyUser.UserNationalSocieties;
 
             _dataContext.UserNationalSocieties.RemoveRange(userNationalSocieties);
             _dataContext.Users.Remove(nationalSocietyUser);
-            await _dataContext.SaveChangesAsync();
-
-            return nationalSocietyUser;
         }
     }
 }

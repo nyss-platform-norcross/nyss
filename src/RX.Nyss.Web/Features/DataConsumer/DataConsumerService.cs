@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         Task<Result> CreateDataConsumer(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
         Task<Result<GetDataConsumerResponseDto>> GetDataConsumer(int dataConsumerId);
         Task<Result> UpdateDataConsumer(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
-        Task<Result> DeleteDataConsumer(int dataConsumerId);
+        Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId);
     }
 
     public class DataConsumerService : IDataConsumerService
@@ -152,8 +152,41 @@ namespace RX.Nyss.Web.Features.DataConsumer
             }
         }
 
-        public Task<Result> DeleteDataConsumer(int dataConsumerId) =>
-            _nationalSocietyUserService.DeleteUser<DataConsumerUser>(dataConsumerId);
+        public async Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId)
+        {
+            try
+            {
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                var dataConsumerUser = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<DataConsumerUser>(dataConsumerId);
+                var userNationalSocieties = dataConsumerUser.UserNationalSocieties;
+
+                var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
+
+                if (nationalSocietyReferenceToRemove == null)
+                {
+                    return Error(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+                }
+
+                var isUsersLastNationalSociety = (userNationalSocieties.Count == 1);
+                _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
+
+                if (isUsersLastNationalSociety)
+                { 
+                    await _nationalSocietyUserService.DeleteNationalSocietyUser(dataConsumerUser);
+                    await _identityUserRegistrationService.DeleteIdentityUser(dataConsumerUser.IdentityUserId);
+                }
+
+                await _dataContext.SaveChangesAsync();
+                transactionScope.Complete();
+                return Success(ResultKey.User.Registration.Success);
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result;
+            }
+        }
     }
 }
 

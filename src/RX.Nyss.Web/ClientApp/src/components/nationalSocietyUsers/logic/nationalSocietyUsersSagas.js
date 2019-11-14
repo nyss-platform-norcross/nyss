@@ -10,8 +10,10 @@ import { strings, stringKeys } from "../../../strings";
 export const nationalSocietyUsersSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_USERS_LIST.INVOKE, openNationalSocietyUsersList),
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_USER_CREATION.INVOKE, openNationalSocietyUserCreation),
+  takeEvery(consts.OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.INVOKE, openNationalSocietyAddExistingUser),
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_USER_EDITION.INVOKE, openNationalSocietyUserEdition),
   takeEvery(consts.CREATE_NATIONAL_SOCIETY_USER.INVOKE, createNationalSocietyUser),
+  takeEvery(consts.ADD_EXISTING_NATIONAL_SOCIETY_USER.INVOKE, addExistingNationalSocietyUser),
   takeEvery(consts.EDIT_NATIONAL_SOCIETY_USER.INVOKE, editNationalSocietyUser),
   takeEvery(consts.REMOVE_NATIONAL_SOCIETY_USER.INVOKE, removeNationalSocietyUser),
   takeEvery(consts.SET_AS_HEAD_MANAGER.INVOKE, setAsHeadManagerInNationalSociety)
@@ -45,6 +47,16 @@ function* openNationalSocietyUserCreation({ nationalSocietyId }) {
   }
 };
 
+function* openNationalSocietyAddExistingUser({ nationalSocietyId }) {
+  yield put(actions.openAddExisting.request());
+  try {
+    yield openNationalSocietyUsersModule(nationalSocietyId);
+    yield put(actions.openAddExisting.success());
+  } catch (error) {
+    yield put(actions.openAddExisting.failure(error.message));
+  }
+};
+
 function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
   yield put(actions.openEdition.request());
   try {
@@ -69,6 +81,18 @@ function* createNationalSocietyUser({ nationalSocietyId, data }) {
   }
 };
 
+function* addExistingNationalSocietyUser({ nationalSocietyId, data }) {
+  yield put(actions.create.request());
+  try {
+    const response = yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/user/addExisting`, data);
+    yield put(actions.create.success(response.value));
+    yield put(actions.goToList(nationalSocietyId));
+    yield put(appActions.showMessage("The User was added successfully"));
+  } catch (error) {
+    yield put(actions.create.failure(error.message));
+  }
+};
+
 function* editNationalSocietyUser({ nationalSocietyId, data }) {
   yield put(actions.edit.request());
   try {
@@ -80,10 +104,10 @@ function* editNationalSocietyUser({ nationalSocietyId, data }) {
   }
 };
 
-function* removeNationalSocietyUser({ nationalSocietyUserId, role }) {
+function* removeNationalSocietyUser({ nationalSocietyUserId, role, nationalSocietyId }) {
   yield put(actions.remove.request(nationalSocietyUserId));
   try {
-    yield call(http.post, getSpecificRoleUserRemovalUrl(nationalSocietyUserId, role));
+    yield call(http.post, getSpecificRoleUserRemovalUrl(nationalSocietyUserId, role, nationalSocietyId));
     yield put(actions.remove.success(nationalSocietyUserId));
   } catch (error) {
     yield put(actions.remove.failure(nationalSocietyUserId, error.message));
@@ -152,16 +176,14 @@ function getSpecificRoleUserRetrievalUrl(userId, role) {
   }
 };
 
-function getSpecificRoleUserRemovalUrl(userId, role) {
+function getSpecificRoleUserRemovalUrl(userId, role, nationalSocietyId) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/nationalSociety/technicalAdvisor/${userId}/remove`;
+        return `/api/nationalSociety/${nationalSocietyId}/technicalAdvisor/${userId}/remove`;
     case roles.Manager:
       return `/api/nationalSociety/manager/${userId}/remove`;
     case roles.DataConsumer:
-      return `/api/nationalSociety/dataConsumer/${userId}/remove`;
-    default:
-      throw new Error("Role is not valid");
+        return `/api/nationalSociety/${nationalSocietyId}/dataConsumer/${userId}/remove`;
   }
 };
 

@@ -21,7 +21,11 @@ const NationalSocietyUsersListPageComponent = (props) => {
     <Fragment>
       <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.title)}</Typography>
 
-      <TableActions>
+      <TableActions>               
+       <Button onClick={() => props.goToAddExisting(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+          {strings(stringKeys.nationalSocietyUser.addExisting)}
+       </Button>
+
         <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.nationalSocietyUser.addNew)}
        </Button>
@@ -46,6 +50,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
 NationalSocietyUsersListPageComponent.propTypes = {
   getNationalSocietyUsers: PropTypes.func,
   goToCreation: PropTypes.func,
+  goToAddExisting: PropTypes.func,
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
   isFetching: PropTypes.bool,
@@ -64,6 +69,7 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = {
   openNationalSocietyUsersList: nationalSocietyUsersActions.openList.invoke,
   goToCreation: nationalSocietyUsersActions.goToCreation,
+  goToAddExisting: nationalSocietyUsersActions.goToAddExisting,
   goToEdition: nationalSocietyUsersActions.goToEdition,
   remove: nationalSocietyUsersActions.remove.invoke,
   setAsHeadManager: nationalSocietyUsersActions.setAsHeadManager.invoke,
