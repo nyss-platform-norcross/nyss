@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -19,6 +20,7 @@ namespace RX.Nyss.Web.Features.User
         Task<List<int>> GetUserNationalSocietyIds(string identityName);
         bool HasAccessToAllNationalSocieties(IEnumerable<string> roles);
         Task<bool> IsHeadManagerToNationalSociety(string identityName, int nationalSocietyId);
+        Task<Result> AddExisting(int nationalSocietyId, string userEmail);
     }
 
     public class UserService : IUserService
@@ -95,6 +97,37 @@ namespace RX.Nyss.Web.Features.User
 
         public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
             roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));
+
+        public async Task<Result> AddExisting(int nationalSocietyId, string userEmail)
+        {
+            var userId = await _dataContext.Users
+                .Where(u => u.Role == Role.TechnicalAdvisor || u.Role == Role.DataConsumer)
+                .Where(u => u.EmailAddress == userEmail)
+                .Select(u => (int?) u.Id)
+                .SingleOrDefaultAsync();
+
+            if (userId == null)
+            {
+                return Error(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
+            }
+
+            var userAlreadyIsInThisNationalSociety = await _dataContext.UserNationalSocieties
+                .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == userId.Value);
+
+            if (userAlreadyIsInThisNationalSociety)
+            {
+                return Error(ResultKey.User.Registration.UserIsAlreadyInThisNationalSociety);
+            }
+
+            var userNationalSociety = new UserNationalSociety
+            {
+                NationalSocietyId = nationalSocietyId,
+                UserId = userId.Value
+            };
+            await _dataContext.UserNationalSocieties.AddAsync(userNationalSociety);
+            await _dataContext.SaveChangesAsync();
+            return Success();
+        }
     }
 }
 
