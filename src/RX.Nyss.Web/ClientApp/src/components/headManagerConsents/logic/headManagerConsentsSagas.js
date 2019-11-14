@@ -1,4 +1,4 @@
-import { call, put, takeEvery, select } from "redux-saga/effects";
+import { call, put, takeEvery } from "redux-saga/effects";
 import * as consts from "./headManagerConsentsConstants";
 import * as actions from "./headManagerConsentsActions";
 import * as http from "../../../utils/http";

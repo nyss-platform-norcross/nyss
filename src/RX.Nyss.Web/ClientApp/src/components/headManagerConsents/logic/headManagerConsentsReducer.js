@@ -20,7 +20,7 @@ export function headManagerConsentsReducer(state = initialState.headManagerConse
       return { ...state, submitting: false };
 
     case actions.CONSENT_AS_HEAD_MANAGER.FAILURE:
-      return { ...state, submitting: false };
+      return { ...state, submitting: false, consentAsHeadManagerErrorMessage: action.message };
 
     default:
       return state;

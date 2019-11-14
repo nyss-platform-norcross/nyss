@@ -108,7 +108,8 @@ function* setAsHeadManagerNationalSociety({ nationalSocietyId, nationalSocietyUs
     yield put(appActions.showMessage(strings(stringKeys.headManagerConsents.setSuccessfully)));
     yield call(getNationalSocietyUsers, nationalSocietyId);
   } catch (error) {
-    yield put(actions.setAsHeadManager.failure(nationalSocietyUserId, error.message));
+    yield put(appActions.showMessage(strings(error.message)));
+    yield put(actions.setAsHeadManager.failure(nationalSocietyUserId));
   }
 };
 

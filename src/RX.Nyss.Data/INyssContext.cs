@@ -20,6 +20,7 @@ namespace RX.Nyss.Data
         DbSet<DataCollector> DataCollectors { get; set; }
         DbSet<District> Districts { get; set; }
         DbSet<GatewaySetting> GatewaySettings { get; set; }
+        DbSet<HeadManagerConsent> HeadManagerConsents { get; set; }
         DbSet<HealthRisk> HealthRisks { get; set; }
         DbSet<HealthRiskLanguageContent> HealthRiskLanguageContents { get; set; }
         DbSet<Localization> Localizations { get; set; }
@@ -36,8 +37,7 @@ namespace RX.Nyss.Data
         DbSet<Zone> Zones { get; set; }
         DatabaseFacade Database { get; }
         int SaveChanges();
-
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken));
-        ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity,CancellationToken cancellationToken = default(CancellationToken)) where TEntity : class;
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;
     }
 }

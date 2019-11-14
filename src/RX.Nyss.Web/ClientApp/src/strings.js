@@ -44,6 +44,9 @@ export const stringKeys = {
     },
     overview: {
       title: "nationalSociety.dashboard.overview"
+    },
+    setHead: {
+      notAMemberOfSociety: "nationalSociety.setHead.notAMemberOfSociety"
     }
   },
   healthRisk: {

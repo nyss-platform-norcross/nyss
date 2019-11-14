@@ -63,7 +63,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, listStale: true, settingAsHead: setProperty(state.settingAsHead, action.id, undefined) };
 
     case actions.SET_AS_HEADMANAGER_NATIONAL_SOCIETY_USER.FAILURE:
-      return { ...state, settingAsHead: setProperty(state.settingAsHead, action.id, undefined) };
+      return { ...state, settingAsHead: setProperty(state.settingAsHead, action.id, undefined), message: action.message };
 
     default:
       return state;
