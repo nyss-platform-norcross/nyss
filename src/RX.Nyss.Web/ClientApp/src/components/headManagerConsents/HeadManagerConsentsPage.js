@@ -10,10 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import styles from './HeadManagerConsentsPage.module.scss';
 import { strings, stringKeys } from '../../strings';
 import * as headManagerConsentsActions from './logic/headManagerConsentsActions';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { useMount } from '../../utils/lifecycle';
-import { Checkbox, FormGroup, FormControlLabel, Divider } from '@material-ui/core';
-import { typography } from '@material-ui/system';
+import { Checkbox, FormGroup, FormControlLabel, SnackbarContent } from '@material-ui/core';
 
 const HeadManagerConsentsPageComponent = (props) => {
   const [hasConsented, consent] = useState(false);
@@ -47,7 +45,7 @@ const HeadManagerConsentsPageComponent = (props) => {
           </Typography>
           <Typography variant="body1">{props.nationalSocieties.length > 1 ?
               strings(stringKeys.headManagerConsents.nationalSocieties) :
-              strings(stringKeys.headManagerConsents.nationalSociety)}: {props.nationalSocieties.map(ns => ns.nationalSocietyName).join(', ')}
+              strings(stringKeys.headManagerConsents.nationalSociety)}: {props.nationalSocieties.map(ns => `${ns.nationalSocietyName} (${ns.nationalSocietyCountryName})`).join(', ')}
           </Typography>
 
           <Form onSubmit={handleSubmit} fullWidth>

@@ -23,7 +23,7 @@ function* initApplication() {
     yield call(getAppData);
     yield call(getStrings, user ? user.languageCode : "en");
     yield put(actions.initApplication.success());
-    if (user.pendingHeadManagerConsents && user.pendingHeadManagerConsents.length > 0){
+    if (user.hasPendingHeadManagerConsents){
       yield put(actions.goToHeadManagerConsents())
     }
   } catch (error) {
@@ -92,7 +92,7 @@ function* getUserStatus() {
         roles: status.value.data.roles,
         languageCode: status.value.data.languageCode,
         homePage: status.value.data.homePage
-        pendingHeadManagerConsents: status.value.data.pendingHeadManagerConsents || []
+        hasPendingHeadManagerConsents: status.value.data.hasPendingHeadManagerConsents
       }
       : null;
 

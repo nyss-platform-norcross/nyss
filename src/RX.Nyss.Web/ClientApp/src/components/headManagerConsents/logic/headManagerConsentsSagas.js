@@ -9,13 +9,11 @@ export const headManagerConsentsSagas = () => [
 ];
 
 function* getPendingConsents() {
-  const currentData = yield select(state => state.headManagerConsents.listData)
-
   yield put(actions.openHeadManagerConsentsPage.request());
   try {
-    const response = yield call(http.get, "/api/authentication/status");
+    const response = yield call(http.get, "/api/nationalSociety/pendingConsents");
 
-    yield put(actions.openHeadManagerConsentsPage.success(response.value.data.pendingHeadManagerConsents));
+    yield put(actions.openHeadManagerConsentsPage.success(response.value.pendingHeadManagerConsents));
   } catch (error) {
     yield put(actions.openHeadManagerConsentsPage.failure(error.message));
   }

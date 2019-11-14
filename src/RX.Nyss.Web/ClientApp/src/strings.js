@@ -125,6 +125,7 @@ export const stringKeys = {
   nationalSocietyUser: {
     title: "nationalSocietyUser.title",
     addNew: "nationalSocietyUser.addNew",
+    addSuccess: "nationalSocietyUser.addSuccess",
     form: {
       creationTitle: "nationalSocietyUser.form.creationTitle",
       editionTitle: "nationalSocietyUser.form.editionTitle",
@@ -234,6 +235,7 @@ export const stringKeys = {
     iConsent: "headManagerConsents.iConsent",
     setAsHeadManager: "headManagerConsents.setAsHeadManager",
     pendingHeadManager: "headManagerConsents.pendingHeadManager",
+    setSuccessfully: "headManagerConsents.setSuccessfully",
   }
 };
 

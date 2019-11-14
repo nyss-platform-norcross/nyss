@@ -18,14 +18,7 @@ namespace RX.Nyss.Web.Features.Authentication.Dto
 
             public string LanguageCode { get; set; }
 
-            public List<PendingHeadManagerConsent> PendingHeadManagerConsents { get; set; }
-
-            public class PendingHeadManagerConsent
-            {
-                public string NationalSocietyName { get; set; }
-
-                public int NationalSocietyId { get; set; }
-            }
+            public bool HasPendingHeadManagerConsents { get; set; }
 
             public HomePageDto HomePage { get; set; }
         }

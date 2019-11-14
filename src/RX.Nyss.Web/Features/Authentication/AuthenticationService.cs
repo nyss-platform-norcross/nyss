@@ -62,8 +62,7 @@ namespace RX.Nyss.Web.Features.Authentication
             }
 
             var pendingSocieties = await _nyssContext.NationalSocieties
-                .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId)
-                .Select(ns => new StatusResponseDto.DataDto.PendingHeadManagerConsent { NationalSocietyId = ns.Id, NationalSocietyName = ns.Name }).ToListAsync();
+                .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId).AnyAsync();
 
             return Success(new StatusResponseDto
             {
@@ -75,7 +74,7 @@ namespace RX.Nyss.Web.Features.Authentication
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),
-                        PendingHeadManagerConsents = pendingSocieties
+                        HasPendingHeadManagerConsents = pendingSocieties
                         HomePage = user.Identity.IsAuthenticated
                             ? GetHomePageData(userEntity)
                             : null
