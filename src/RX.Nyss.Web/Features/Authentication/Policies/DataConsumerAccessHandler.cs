@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
             var roles = context.User.GetRoles();
             var identityName = context.User.Identity.Name;
 
-            if (await _userService.GetUserHasAccessToAnyOfResourceNationalSocieties(dataConsumerNationalSocieties, identityName, roles))
+            if (await _userService.GetUserHasAccessToAnyOfProvidedNationalSocieties(dataConsumerNationalSocieties, identityName, roles))
             {
                 context.Succeed(requirement);
             }

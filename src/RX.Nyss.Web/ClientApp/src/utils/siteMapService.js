@@ -12,9 +12,10 @@ const findClosestMenu = (breadcrumb, placeholder, pathForMenu) => {
 export const getMenu = (pathForMenu, parameters, placeholder, currentPath) => {
   const breadcrumb = getBreadcrumb(currentPath, parameters);
   const closestMenuPath = findClosestMenu(breadcrumb, placeholder, pathForMenu);
+  const authUser = getAccessTokenData();
 
   const filteredSiteMap = siteMap
-    .filter(item => item.parentPath === closestMenuPath && item.placeholder && item.placeholder === placeholder);
+    .filter(item => item.parentPath === closestMenuPath && item.placeholder && item.placeholder === placeholder && item.access.some(role => role === authUser.role));
 
   filteredSiteMap
     .sort((a, b) => a.placeholderIndex - b.placeholderIndex);

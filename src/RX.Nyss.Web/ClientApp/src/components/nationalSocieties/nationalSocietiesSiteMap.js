@@ -1,6 +1,6 @@
 import { placeholders } from "../../siteMapPlaceholders";
 import { accessMap } from "../../authentication/accessMap";
-import { Administrator, GlobalCoordinator, DataConsumer, Manager } from "../../authentication/roles";
+import { Administrator, GlobalCoordinator, DataConsumer, Manager, TechnicalAdvisor } from "../../authentication/roles";
 import { strings, stringKeys } from "../../strings";
 
 export const nationalSocietiesSiteMap = [
@@ -26,7 +26,7 @@ export const nationalSocietiesSiteMap = [
     parentPath: "/nationalsocieties/:nationalSocietyId",
     path: "/nationalsocieties/:nationalSocietyId/dashboard",
     title: () => strings(stringKeys.nationalSociety.dashboard.title),
-    access: [Administrator, GlobalCoordinator, DataConsumer],
+    access: accessMap.nationalSocieties.get,
     placeholder: placeholders.leftMenu,
     placeholderIndex: 1,
   },
@@ -34,7 +34,7 @@ export const nationalSocietiesSiteMap = [
     parentPath: "/nationalsocieties/:nationalSocietyId/overview",
     path: "/nationalsocieties/:nationalSocietyId/edit",
     title: () => strings(stringKeys.nationalSociety.form.editionTitle),
-    access: [Administrator, GlobalCoordinator, DataConsumer]
+    access: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor]
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
@@ -42,6 +42,6 @@ export const nationalSocietiesSiteMap = [
     title: () => strings(stringKeys.nationalSociety.overview.title),
     placeholder: placeholders.leftMenu,
     placeholderIndex: 4,
-    access: [Administrator, GlobalCoordinator, Manager, DataConsumer]
+    access: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor]
   }
 ];

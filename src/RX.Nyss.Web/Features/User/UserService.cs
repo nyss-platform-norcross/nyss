@@ -13,9 +13,11 @@ namespace RX.Nyss.Web.Features.User
     public interface IUserService
     {
         Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId);
-        Task<bool> GetUserHasAccessToAnyOfResourceNationalSocieties(List<int> resourceNationalSocietyIds, string identityName, IEnumerable<string> roles);
-        Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
         Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
+        Task<bool> GetUserHasAccessToAnyOfProvidedNationalSocieties(List<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles);
+        Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
+        Task<List<int>> GetUserNationalSocietyIds(string identityName);
+        bool HasAccessToAllNationalSocieties(IEnumerable<string> roles);
     }
 
     public class UserService : IUserService
@@ -64,11 +66,11 @@ namespace RX.Nyss.Web.Features.User
         }
 
 
-        public async Task<bool> GetUserHasAccessToAnyOfResourceNationalSocieties(List<int> resourceNationalSocietyIds, string identityName, IEnumerable<string> roles)
+        public async Task<bool> GetUserHasAccessToAnyOfProvidedNationalSocieties(List<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles)
         {
             var authorizedUserNationalSocietyIds = await GetUserNationalSocietyIds(identityName);
-            var hasAccessToAnyOfResourceNationalSocieties = resourceNationalSocietyIds.Intersect(authorizedUserNationalSocietyIds).Any();
-            return hasAccessToAnyOfResourceNationalSocieties || HasAccessToAllNationalSocieties(roles);
+            var hasAccessToAnyOfProvidedNationalSocieties = providedNationalSocietyIds.Intersect(authorizedUserNationalSocietyIds).Any();
+            return hasAccessToAnyOfProvidedNationalSocieties || HasAccessToAllNationalSocieties(roles);
         }
 
         public Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User =>
@@ -79,14 +81,14 @@ namespace RX.Nyss.Web.Features.User
                 .Select(uns => uns.NationalSocietyId)
                 .ToListAsync();
 
-        private async Task<List<int>> GetUserNationalSocietyIds(string identityName) =>
+        public async Task<List<int>> GetUserNationalSocietyIds(string identityName) =>
             await _dataContext.Users
                 .Where(u => u.EmailAddress == identityName)
                 .SelectMany(u => u.UserNationalSocieties)
                 .Select(uns => uns.NationalSocietyId)
                 .ToListAsync();
 
-        private bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
+        public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
             roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));
     }
 }

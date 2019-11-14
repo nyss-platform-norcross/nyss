@@ -4,9 +4,15 @@ import { useLayout } from '../../utils/layout';
 import Typography from '@material-ui/core/Typography';
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
+import { useMount } from '../../utils/lifecycle';
 
-const HomeComponent = ({ push }) => {
-  useEffect(() => { push("/nationalsocieties") });
+const HomeComponent = ({ user, push }) => {
+  useEffect(() => { 
+    if (!user.homePage){
+      return;
+    }
+    push(getHomePageUrl(user)) 
+  }, [user]);
 
   return (
     <div>
@@ -15,7 +21,21 @@ const HomeComponent = ({ push }) => {
   );
 }
 
+const getHomePageUrl = (user) => { 
+  switch (user.homePage.page) {
+    case "Root":
+        return "/nationalsocieties";
+    case "NationalSociety":
+        return `/nationalSocieties/${user.homePage.nationalSocietyId}`;
+    case "Project":
+        return `/api/project/${user.homePage.projectId}`;
+    default:
+        return '/';
+  }
+};
+
 const mapStateToProps = state => ({
+  user: state.appData.user
 });
 
 const mapDispatchToProps = {
