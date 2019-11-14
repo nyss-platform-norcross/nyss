@@ -26,11 +26,9 @@ const SelectInput = ({ error, name, label, value, controlProps, customProps, chi
 };
 
 SelectInput.propTypes = {
-  label: PropTypes.string,
   controlProps: PropTypes.object,
   value: PropTypes.string,
-  name: PropTypes.string,
-  error: PropTypes.string
+  name: PropTypes.string
 };
 
 export const SelectField = createFieldComponent(SelectInput);

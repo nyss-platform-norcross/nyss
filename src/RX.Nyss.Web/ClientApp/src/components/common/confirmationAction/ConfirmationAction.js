@@ -44,7 +44,6 @@ export const ConfirmationAction = ({ children, icon, confirmationText, onClick }
 
 ConfirmationAction.propTypes = {
   automationid: PropTypes.string,
-  confirmationText: PropTypes.string,
   canEdit: PropTypes.bool,
   isIcon: PropTypes.bool,
   onClick: PropTypes.func,

@@ -1,3 +1,6 @@
+import React from 'react';
+import { StringsEditor } from './components/common/stringsEditor/StringsEditor';
+
 let stringList = {};
 
 let showKeys = false;
@@ -179,9 +182,14 @@ export const stringKeys = {
   }
 };
 
-export const strings = (key) => {
+export const strings = (key, noEditor) => {
   const value = stringList[key];
-  return value === undefined || showKeys ? key : value;
+
+  if (showKeys && !noEditor) {
+    return <StringsEditor stringKey={key} />;
+  }
+
+  return value === undefined ? key : value;
 }
 
 export function updateStrings(strings) {

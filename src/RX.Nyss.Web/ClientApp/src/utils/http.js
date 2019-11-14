@@ -67,5 +67,5 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
 
 const getResponseErrorMessage = (message) =>
   (message && message.key)
-    ? strings(message.key)
+    ? strings(message.key, true)
     : "";

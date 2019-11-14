@@ -68,14 +68,13 @@ class FieldBase extends PureComponent {
 };
 
 FieldBase.propTypes = {
-    label: PropTypes.string,
     Component: PropTypes.func,
     field: PropTypes.shape({
         subscribe: PropTypes.func,
         update: PropTypes.func,
         value: PropTypes.any,
         name: PropTypes.string,
-        error: PropTypes.string
+        error: PropTypes.any
     })
 };
 

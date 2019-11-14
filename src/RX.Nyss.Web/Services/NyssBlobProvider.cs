@@ -7,6 +7,7 @@ namespace RX.Nyss.Web.Services
     public interface INyssBlobProvider
     {
         Task<string> GetStringsResources();
+        Task SaveStringsResources(string value);
     }
 
     public class NyssBlobProvider : INyssBlobProvider
@@ -22,5 +23,8 @@ namespace RX.Nyss.Web.Services
 
         public async Task<string> GetStringsResources() =>
             await _blobProvider.GetBlobValue(_config.StringsResourcesBlobObjectName);
+
+        public async Task SaveStringsResources(string value) =>
+            await _blobProvider.SetBlobValue(_config.StringsResourcesBlobObjectName, value);
     }
 }

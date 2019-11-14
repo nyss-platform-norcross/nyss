@@ -12,6 +12,8 @@ namespace RX.Nyss.Web.Services.StringsResources
     public interface IStringsResourcesService
     {
         Task<Result<IDictionary<string, string>>> GetStringsResources(string languageCode);
+        Task<StringsBlob> GetStringsBlob();
+        Task SaveStringsBlob(StringsBlob blob);
     }
 
     public class StringsResourcesService : IStringsResourcesService
@@ -52,7 +54,7 @@ namespace RX.Nyss.Web.Services.StringsResources
             }
         }
 
-        private async Task<StringsBlob> GetStringsBlob()
+        public async Task<StringsBlob> GetStringsBlob()
         {
             var blobValue = await _nyssBlobProvider.GetStringsResources();
 
@@ -60,6 +62,16 @@ namespace RX.Nyss.Web.Services.StringsResources
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
+        }
+
+        public async Task SaveStringsBlob(StringsBlob blob)
+        {
+            var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+
+            await _nyssBlobProvider.SaveStringsResources(blobValue);
         }
     }
 }

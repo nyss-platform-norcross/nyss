@@ -139,7 +139,9 @@ export const theme = createMuiTheme({
     },
     MuiListItemText: {
       root: {
-        padding: "12px 20px"
+        padding: "12px 20px",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
       },
       primary: {
         fontSize: 16,

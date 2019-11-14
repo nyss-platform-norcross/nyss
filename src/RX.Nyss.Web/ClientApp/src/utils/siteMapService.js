@@ -58,10 +58,10 @@ export const getBreadcrumb = (path, siteMapParameters) => {
 }
 
 const getTitle = (template, params) =>
-  Object.keys(params).reduce((result, key) => result.replace(`{${key}}`, params[key]), template);
+  Object.keys(params).reduce((result, key) => typeof result === 'string' ? result.replace(`{${key}}`, params[key]) : result, template);
 
 const getUrl = (template, params) =>
-  Object.keys(params).reduce((result, key) => result.replace(`:${key}`, params[key]), template);
+  Object.keys(params).reduce((result, key) => typeof result === 'string' ? result.replace(`:${key}`, params[key]) : result, template);
 
 const findSiteMapItem = (path) => {
   const item = siteMap.find(item => item.path === path);

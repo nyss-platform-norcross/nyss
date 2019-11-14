@@ -22,10 +22,8 @@ const TextInput = ({ error, name, label, value, controlProps, customProps, multi
 };
 
 TextInput.propTypes = {
-  label: PropTypes.string,
   controlProps: PropTypes.object,
-  name: PropTypes.string,
-  error: PropTypes.string
+  name: PropTypes.string
 };
 
 export const TextInputField = createFieldComponent(TextInput);
