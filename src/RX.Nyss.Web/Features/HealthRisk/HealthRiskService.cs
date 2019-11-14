@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +13,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
 {
     public interface IHealthRiskService
     {
-        Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> GetHealthRisks(string userName);
+        Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks(string userName);
         Task<Result<HealthRiskResponseDto>> GetHealthRisk(int id);
         Task<Result> CreateHealthRisk(HealthRiskRequestDto healthRiskRequestDto);
         Task<Result> EditHealthRisk(int id, HealthRiskRequestDto healthRiskRequestDto);
@@ -32,7 +31,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> GetHealthRisks(string userName)
+        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks(string userName)
         {
             var languageCode = await _nyssContext.Users
                 .Where(u => u.EmailAddress == userName)
@@ -47,7 +46,8 @@ namespace RX.Nyss.Web.Features.HealthRisk
                     HealthRiskType = hr.HealthRiskType,
                     Name = hr.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == languageCode)
-                        .Select(lc => lc.Name).FirstOrDefault()
+                        .Select(lc => lc.Name)
+                        .FirstOrDefault()
                 })
                 .OrderBy(hr => hr.HealthRiskCode)
                 .ToListAsync();
@@ -117,6 +117,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
 
             await _nyssContext.AddAsync(healthRisk);
             await _nyssContext.SaveChangesAsync();
+
             return SuccessMessage(ResultKey.HealthRisk.CreationSuccess);
         }
 
@@ -163,6 +164,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
             }
 
             await _nyssContext.SaveChangesAsync();
+
             return SuccessMessage(ResultKey.HealthRisk.EditSuccess);
         }
 
@@ -193,6 +195,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
 
             _nyssContext.HealthRisks.Remove(healthRisk);
             await _nyssContext.SaveChangesAsync();
+
             return SuccessMessage(ResultKey.HealthRisk.RemoveSuccess);
         }
     }

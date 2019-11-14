@@ -9,7 +9,7 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.title),
     placeholder: placeholders.leftMenu,
     access: accessMap.projects.list,
-    placeholderIndex: 3
+    placeholderIndex: 1
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects",

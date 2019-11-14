@@ -27,7 +27,7 @@ export const getList = {
 export const openCreation = {
   invoke: (nationalSocietyId) => ({ type: OPEN_PROJECT_CREATION.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_PROJECT_CREATION.REQUEST }),
-  success: () => ({ type: OPEN_PROJECT_CREATION.SUCCESS }),
+  success: (healthRisks) => ({ type: OPEN_PROJECT_CREATION.SUCCESS, healthRisks }),
   failure: (message) => ({ type: OPEN_PROJECT_CREATION.FAILURE, message })
 };
 
@@ -41,12 +41,12 @@ export const create = {
 export const openEdition = {
   invoke: (nationalSocietyId, projectId) => ({ type: OPEN_PROJECT_EDITION.INVOKE, nationalSocietyId, projectId }),
   request: () => ({ type: OPEN_PROJECT_EDITION.REQUEST }),
-  success: (data) => ({ type: OPEN_PROJECT_EDITION.SUCCESS, data }),
+  success: (data, healthRisks) => ({ type: OPEN_PROJECT_EDITION.SUCCESS, data, healthRisks }),
   failure: (message) => ({ type: OPEN_PROJECT_EDITION.FAILURE, message })
 };
 
 export const edit = {
-  invoke: (nationalSocietyId, data) => ({ type: EDIT_PROJECT.INVOKE, nationalSocietyId, data }),
+  invoke: (nationalSocietyId, projectId, data) => ({ type: EDIT_PROJECT.INVOKE, nationalSocietyId, projectId, data }),
   request: () => ({ type: EDIT_PROJECT.REQUEST }),
   success: () => ({ type: EDIT_PROJECT.SUCCESS }),
   failure: (message) => ({ type: EDIT_PROJECT.FAILURE, message })

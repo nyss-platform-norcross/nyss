@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
+using Error = Microsoft.Azure.Amqp.Framing.Error;
 
 namespace RX.Nyss.Web.Features.Project
 {
@@ -18,6 +20,7 @@ namespace RX.Nyss.Web.Features.Project
     {
         Task<Result<ProjectResponseDto>> GetProject(int projectId);
         Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId);
+        Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId);
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> DeleteProject(int projectId);
@@ -39,8 +42,10 @@ namespace RX.Nyss.Web.Features.Project
         public async Task<Result<ProjectResponseDto>> GetProject(int projectId)
         {
             var project = await _nyssContext.Projects
+                .Include(p => p.NationalSociety)
                 .Include(p => p.ProjectHealthRisks)
                 .ThenInclude(phr => phr.HealthRisk)
+                .ThenInclude(hr => hr.LanguageContents)
                 .Include(p => p.ProjectHealthRisks)
                 .ThenInclude(phr => phr.AlertRule)
                 .Include(p => p.ProjectHealthRisks)
@@ -52,11 +57,15 @@ namespace RX.Nyss.Web.Features.Project
                     Name = p.Name,
                     TimeZone = p.TimeZone,
                     State = p.State,
-                    HealthRisks = p.ProjectHealthRisks.Select(phr => new ProjectHealthRiskResponseDto
+                    ProjectHealthRisks = p.ProjectHealthRisks.Select(phr => new ProjectHealthRiskResponseDto
                     {
                         Id = phr.Id,
+                        HealthRiskId = phr.HealthRiskId,
                         HealthRiskCode = phr.HealthRisk.HealthRiskCode,
-                        HealthRiskType = phr.HealthRisk.HealthRiskType,
+                        HealthRiskName = phr.HealthRisk.LanguageContents
+                            .Where(lc => lc.ContentLanguage.Id == p.NationalSociety.ContentLanguage.Id)
+                            .Select(lc => lc.Name)
+                            .FirstOrDefault(),
                         AlertRuleCountThreshold = phr.AlertRule.CountThreshold,
                         AlertRuleDaysThreshold = phr.AlertRule.DaysThreshold,
                         AlertRuleKilometersThreshold = phr.AlertRule.KilometersThreshold,
@@ -67,7 +76,7 @@ namespace RX.Nyss.Web.Features.Project
                     AlertRecipients = p.AlertRecipients.Select(ar => new AlertRecipientDto
                     {
                         Id = ar.Id,
-                        EmailAddress = ar.EmailAddress
+                        Email = ar.EmailAddress
                     })
                 })
                 .FirstOrDefaultAsync(p => p.Id == projectId);
@@ -114,6 +123,47 @@ namespace RX.Nyss.Web.Features.Project
             return result;
         }
 
+        public async Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId)
+        {
+            var nationalSociety = await _nyssContext.NationalSocieties
+                .Include(x => x.ContentLanguage)
+                .FirstOrDefaultAsync(x => x.Id == nationalSocietyId);
+
+            if (nationalSociety == null)
+            {
+                return Error<IEnumerable<ProjectHealthRiskResponseDto>>(ResultKey.Project.NationalSocietyDoesNotExist);
+            }
+
+            var projectHealthRisks = await _nyssContext.HealthRisks
+                .Include(hr => hr.LanguageContents)
+                .Select(hr => new ProjectHealthRiskResponseDto
+                {
+                    Id = null,
+                    HealthRiskId = hr.Id,
+                    HealthRiskCode = hr.HealthRiskCode,
+                    HealthRiskName = hr.LanguageContents
+                        .Where(lc => lc.ContentLanguage.Id == nationalSociety.ContentLanguage.Id)
+                        .Select(lc => lc.Name)
+                        .FirstOrDefault(),
+                    AlertRuleCountThreshold = hr.AlertRule.CountThreshold,
+                    AlertRuleDaysThreshold = hr.AlertRule.DaysThreshold,
+                    AlertRuleKilometersThreshold = hr.AlertRule.KilometersThreshold,
+                    FeedbackMessage = hr.LanguageContents
+                        .Where(lc => lc.ContentLanguage.Id == nationalSociety.ContentLanguage.Id)
+                        .Select(lc => lc.FeedbackMessage)
+                        .FirstOrDefault(),
+                    CaseDefinition = hr.LanguageContents
+                        .Where(lc => lc.ContentLanguage.Id == nationalSociety.ContentLanguage.Id)
+                        .Select(lc => lc.CaseDefinition)
+                        .FirstOrDefault(),
+                    ContainsReports = false
+                })
+                .OrderBy(hr => hr.HealthRiskCode)
+                .ToListAsync();
+
+            return Success<IEnumerable<ProjectHealthRiskResponseDto>>(projectHealthRisks);
+        }
+
         public async Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto)
         {
             try
@@ -157,7 +207,7 @@ namespace RX.Nyss.Web.Features.Project
                     }).ToList(),
                     AlertRecipients = projectRequestDto.AlertRecipients.Select(ar => new AlertRecipient
                     {
-                        EmailAddress = ar.EmailAddress
+                        EmailAddress = ar.Email
                     }).ToList()
                 };
 
@@ -225,6 +275,7 @@ namespace RX.Nyss.Web.Features.Project
             {
                 var projectHealthRiskToAdd = new ProjectHealthRisk
                 {
+                    HealthRiskId = projectHealthRisk.HealthRiskId,
                     CaseDefinition = projectHealthRisk.CaseDefinition,
                     FeedbackMessage = projectHealthRisk.FeedbackMessage,
                     AlertRule = new AlertRule
@@ -265,7 +316,7 @@ namespace RX.Nyss.Web.Features.Project
             var alertRecipientsToAdd = projectRequestDto.AlertRecipients.Where(ar => ar.Id == null);
             foreach (var alertRecipient in alertRecipientsToAdd)
             {
-                var alertRecipientToAdd = new AlertRecipient {EmailAddress = alertRecipient.EmailAddress};
+                var alertRecipientToAdd = new AlertRecipient {EmailAddress = alertRecipient.Email};
                 projectToUpdate.AlertRecipients.Add(alertRecipientToAdd);
             }
 
@@ -276,7 +327,7 @@ namespace RX.Nyss.Web.Features.Project
 
                 if (alertRecipientToUpdate != null)
                 {
-                    alertRecipientToUpdate.EmailAddress = alertRecipient.EmailAddress;
+                    alertRecipientToUpdate.EmailAddress = alertRecipient.Email;
                 }
             }
         }

@@ -93,17 +93,36 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     Id = existingProjectId,
                     Name = "Name",
                     TimeZone = "Time Zone",
-                    NationalSocietyId = 2,
                     State = ProjectState.Open,
+                    NationalSocietyId = 2,
+                    NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                    {
+                        ContentLanguage = new ContentLanguage
+                        {
+                            Id = 1
+                        }
+                    },
                     ProjectHealthRisks = new[]
                     {
                         new ProjectHealthRisk
                         {
                             Id = 1,
+                            HealthRiskId = 10,
                             HealthRisk = new RX.Nyss.Data.Models.HealthRisk
                             {
-                                HealthRiskCode = 1,
-                                HealthRiskType = HealthRiskType.Human
+                                HealthRiskCode = 100,
+                                HealthRiskType = HealthRiskType.Human,
+                                LanguageContents = new[]
+                                {
+                                    new HealthRiskLanguageContent
+                                    {
+                                        Name = "HealthRiskName",
+                                        ContentLanguage = new ContentLanguage
+                                        {
+                                            Id = 1
+                                        }
+                                    }
+                                }
                             },
                             CaseDefinition = "CaseDefinition",
                             FeedbackMessage = "FeedbackMessage",
@@ -142,19 +161,20 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Value.Name.ShouldBe("Name");
             result.Value.TimeZone.ShouldBe("Time Zone");
             result.Value.State.ShouldBe(ProjectState.Open);
-            result.Value.HealthRisks.Count().ShouldBe(1);
-            result.Value.HealthRisks.ElementAt(0).Id.ShouldBe(1);
-            result.Value.HealthRisks.ElementAt(0).HealthRiskCode.ShouldBe(1);
-            result.Value.HealthRisks.ElementAt(0).HealthRiskType.ShouldBe(HealthRiskType.Human);
-            result.Value.HealthRisks.ElementAt(0).CaseDefinition.ShouldBe("CaseDefinition");
-            result.Value.HealthRisks.ElementAt(0).FeedbackMessage.ShouldBe("FeedbackMessage");
-            result.Value.HealthRisks.ElementAt(0).AlertRuleCountThreshold.ShouldBe(1);
-            result.Value.HealthRisks.ElementAt(0).AlertRuleDaysThreshold.ShouldBe(2);
-            result.Value.HealthRisks.ElementAt(0).AlertRuleKilometersThreshold.ShouldBe(3);
-            result.Value.HealthRisks.ElementAt(0).ContainsReports.ShouldBe(true);
+            result.Value.ProjectHealthRisks.Count().ShouldBe(1);
+            result.Value.ProjectHealthRisks.ElementAt(0).Id.ShouldBe(1);
+            result.Value.ProjectHealthRisks.ElementAt(0).HealthRiskId.ShouldBe(10);
+            result.Value.ProjectHealthRisks.ElementAt(0).HealthRiskCode.ShouldBe(100);
+            result.Value.ProjectHealthRisks.ElementAt(0).HealthRiskName.ShouldBe("HealthRiskName");
+            result.Value.ProjectHealthRisks.ElementAt(0).CaseDefinition.ShouldBe("CaseDefinition");
+            result.Value.ProjectHealthRisks.ElementAt(0).FeedbackMessage.ShouldBe("FeedbackMessage");
+            result.Value.ProjectHealthRisks.ElementAt(0).AlertRuleCountThreshold.ShouldBe(1);
+            result.Value.ProjectHealthRisks.ElementAt(0).AlertRuleDaysThreshold.ShouldBe(2);
+            result.Value.ProjectHealthRisks.ElementAt(0).AlertRuleKilometersThreshold.ShouldBe(3);
+            result.Value.ProjectHealthRisks.ElementAt(0).ContainsReports.ShouldBe(true);
             result.Value.AlertRecipients.Count().ShouldBe(1);
             result.Value.AlertRecipients.ElementAt(0).Id.ShouldBe(1);
-            result.Value.AlertRecipients.ElementAt(0).EmailAddress.ShouldBe("user@domain.com");
+            result.Value.AlertRecipients.ElementAt(0).Email.ShouldBe("user@domain.com");
         }
 
         [Fact]
@@ -245,7 +265,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 {
                     new AlertRecipientDto
                     {
-                        EmailAddress = "user@domain.com"
+                        Email = "user@domain.com"
                     }
                 }
             };
@@ -465,6 +485,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     new ProjectHealthRiskRequestDto
                     {
                         Id = 2,
+                        HealthRiskId = 1,
                         CaseDefinition = "Updated Case Definition 2",
                         FeedbackMessage = "Updated Feedback Message 2",
                         AlertRuleCountThreshold = 2,
@@ -474,6 +495,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     new ProjectHealthRiskRequestDto
                     {
                         Id = null,
+                        HealthRiskId = 2,
                         CaseDefinition = "Case Definition 3",
                         FeedbackMessage = "Feedback Message 3",
                         AlertRuleCountThreshold = 3,
@@ -486,12 +508,12 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     new AlertRecipientDto
                     {
                         Id = 2,
-                        EmailAddress = "user2-updated@domain.com"
+                        Email = "user2-updated@domain.com"
                     },
                     new AlertRecipientDto
                     {
                         Id = null,
-                        EmailAddress = "user3@domain.com"
+                        Email = "user3@domain.com"
                     }
                 }
             };

@@ -19,13 +19,13 @@ namespace RX.Nyss.Web.Features.HealthRisk
         }
 
         /// <summary>
-        /// Gets a list of all health risks.
+        /// Gets a list with basic information of all health risks.
         /// </summary>
-        /// <returns>A list of health risks</returns>
+        /// <returns>A list of basic information of health risks</returns>
         [HttpGet, Route("list")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> GetHealthRisks() => 
-            await _healthRiskService.GetHealthRisks(User.Identity.Name);
+        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks() => 
+            await _healthRiskService.ListHealthRisks(User.Identity.Name);
 
         /// <summary>
         /// Gets a health risk with all values for editing.

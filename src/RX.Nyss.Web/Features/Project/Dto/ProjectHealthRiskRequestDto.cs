@@ -22,10 +22,13 @@ namespace RX.Nyss.Web.Features.Project.Dto
         {
             public Validator()
             {
-                RuleFor(phr => phr.Id).GreaterThanOrEqualTo(0).When(phr => phr.Id.HasValue);
+                RuleFor(phr => phr.Id).GreaterThan(0).When(phr => phr.Id.HasValue);
+                RuleFor(phr => phr.HealthRiskId).GreaterThan(0);
                 RuleFor(phr => phr.AlertRuleCountThreshold).GreaterThanOrEqualTo(0).When(phr => phr.AlertRuleCountThreshold.HasValue);
                 RuleFor(phr => phr.AlertRuleDaysThreshold).GreaterThanOrEqualTo(0).When(phr => phr.AlertRuleDaysThreshold.HasValue);
+                RuleFor(phr => phr.AlertRuleDaysThreshold).Null().When(phr => phr.AlertRuleCountThreshold.HasValue && phr.AlertRuleCountThreshold == 1);
                 RuleFor(phr => phr.AlertRuleKilometersThreshold).GreaterThanOrEqualTo(0).When(phr => phr.AlertRuleKilometersThreshold.HasValue);
+                RuleFor(phr => phr.AlertRuleKilometersThreshold).Null().When(phr => phr.AlertRuleCountThreshold.HasValue && phr.AlertRuleCountThreshold == 1);
                 RuleFor(phr => phr.FeedbackMessage).MaximumLength(160);
                 RuleFor(phr => phr.CaseDefinition).MaximumLength(500);
             }

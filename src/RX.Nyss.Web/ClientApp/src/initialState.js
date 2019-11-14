@@ -51,6 +51,7 @@ export const initialState = {
     listStale: true,
     listData: [],
     formFetching: false,
+    formHealthRisks: [],
     formSaving: false,
     formData: null
   },

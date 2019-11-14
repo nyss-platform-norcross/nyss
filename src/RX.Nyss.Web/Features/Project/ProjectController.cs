@@ -20,6 +20,7 @@ namespace RX.Nyss.Web.Features.Project
         /// <summary>
         /// Gets a project.
         /// </summary>
+        /// <param name="projectId">An identifier of a project</param>
         /// <returns>A project</returns>
         [HttpGet("api/project/{projectId:int}/get"), NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
         //[NeedsPolicy(Policy.ProjectAccess)]
@@ -29,11 +30,22 @@ namespace RX.Nyss.Web.Features.Project
         /// <summary>
         /// Lists projects assigned to a specified national society.
         /// </summary>
+        /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns>A list of projects assigned to the national society</returns>
         [HttpGet("api/nationalSociety/{nationalSocietyId:int}/project/list"), NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
         //[NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId) =>
             _projectService.GetProjects(nationalSocietyId);
+
+        /// <summary>
+        /// Lists all health risks with details in language specific for the specified national society.
+        /// </summary>
+        /// <param name="nationalSocietyId">A content language identifier</param>
+        /// <returns>A list of health risks with details in language specific for the specified national society</returns>
+        [HttpGet, Route("api/nationalSociety/{nationalSocietyId:int}/healthRisk/list")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
+        public async Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId) => 
+            await _projectService.GetHealthRisks(nationalSocietyId);
 
         /// <summary>
         /// Adds a new project for a specified national society.

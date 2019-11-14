@@ -24,7 +24,7 @@ const ProjectsListPageComponent = (props) => {
       <TableActions>
         <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.project.addNew)}
-       </Button>
+        </Button>
       </TableActions>
 
       <ProjectsList

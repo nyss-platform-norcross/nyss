@@ -32,8 +32,9 @@ function* openProjectsList({ nationalSocietyId }) {
 function* openProjectCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
+    const healthRisks = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/healthRisk/list`);
     yield openProjectsModule(nationalSocietyId);
-    yield put(actions.openCreation.success());
+    yield put(actions.openCreation.success(healthRisks.value));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }
@@ -43,8 +44,9 @@ function* openProjectEdition({ nationalSocietyId, projectId }) {
   yield put(actions.openEdition.request());
   try {
     const response = yield call(http.get, `/api/project/${projectId}/get`);
+    const healthRisks = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/healthRisk/list`);
     yield openProjectsModule(nationalSocietyId);
-    yield put(actions.openEdition.success(response.value));
+    yield put(actions.openEdition.success(response.value, healthRisks.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }
@@ -62,10 +64,10 @@ function* createProject({ nationalSocietyId, data }) {
   }
 };
 
-function* editProject({ nationalSocietyId, data }) {
+function* editProject({ nationalSocietyId, projectId, data }) {
   yield put(actions.edit.request());
   try {
-    const response = yield call(http.post, `/api/project/${data.id}/edit`, data);
+    const response = yield call(http.post, `/api/project/${projectId}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
   } catch (error) {
@@ -103,6 +105,6 @@ function* openProjectsModule(nationalSocietyId) {
   yield put(appActions.openModule.invoke(null, {
     nationalSocietyId: nationalSociety.value.id,
     nationalSocietyName: nationalSociety.value.name,
-    nationalSocietyCountry: nationalSociety.value.countryName
+    nationalSocietyCountry: nationalSociety.value.countryName,
   }));
 }

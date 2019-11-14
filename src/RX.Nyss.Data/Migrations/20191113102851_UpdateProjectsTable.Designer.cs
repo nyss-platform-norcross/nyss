@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20191113102851_UpdateProjectsTable")]
+    partial class UpdateProjectsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1711,15 +1713,7 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Sex")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(10)")
-                        .HasMaxLength(10);
-
                     b.Property<int>("SupervisorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BirthGroupDecade")
                         .HasColumnType("int");
 
                     b.Property<int>("VillageId")
@@ -1792,37 +1786,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("NationalSocietyId");
 
                     b.ToTable("GatewaySettings");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.HeadManagerConsent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("ConsentedFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ConsentedUntil")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("NationalSocietyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserEmailAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("UserPhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("HeadManagerConsents");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRisk", b =>

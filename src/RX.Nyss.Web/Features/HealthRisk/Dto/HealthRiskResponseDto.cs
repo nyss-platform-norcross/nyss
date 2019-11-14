@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Alert.Dto;
 
 namespace RX.Nyss.Web.Features.HealthRisk.Dto
 {
@@ -17,8 +16,6 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
         public int? AlertRuleDaysThreshold { get; set; }
 
         public int? AlertRuleKilometersThreshold { get; set; }
-
-        public IEnumerable<AlertRecipientDto> AlertRecipients { get; set; }
 
         public IEnumerable<HealthRiskLanguageContentDto> LanguageContent { get; set; }
     }

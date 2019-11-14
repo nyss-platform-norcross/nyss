@@ -5,8 +5,6 @@ import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -22,75 +20,81 @@ export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, remove, 
   }
 
   return (
-    <Container maxWidth="sm">
-      {list.map(row => (
-        <Card key={row.id}>
-          <CardContent>
-            <Typography variant="h3" gutterBottom>
-              {row.name}
-            </Typography>
-            <Typography variant="h6" color="textSecondary" gutterBottom>
-              {row.state}
-            </Typography>            
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm container>
-                <Grid item xs container direction="column" spacing={2}>
-                  <Grid item xs>
+    <Grid container spacing={3} fullWidth style={{ maxWidth: 1200 }}>
+      {list.map(project => (
+        <Grid key={`projectsListItem_${project.id}`} item xs={6}>
+          <Card key={project.id}>
+            <CardContent>
+              <Typography variant="h3" gutterBottom>
+                {project.name}
+              </Typography>
+              <Typography variant="h6" color="textSecondary" gutterBottom>
+                {project.state}
+              </Typography>
+              <Grid container spacing={3}>
+                <Grid item container xs={6} direction="column" spacing={2}>
+                  <Grid item>
                     <Typography variant="h6">
-                      {row.totalReportCount}
+                      {project.totalReportCount}
                     </Typography>
                     <Typography variant="body1" color="textSecondary" gutterBottom>
-                      {stringKeys.project.list.totalReportCount}
+                      {strings(stringKeys.project.list.totalReportCount)}
                     </Typography>
                     <Typography variant="h6">
-                      {row.activeDataCollectorCount}
+                      {project.activeDataCollectorCount}
                     </Typography>
                     <Typography variant="body1" color="textSecondary" gutterBottom>
-                      {stringKeys.project.list.activeDataCollectorCount}
+                      {strings(stringKeys.project.list.activeDataCollectorCount)}
                     </Typography>
                     <Typography variant="h6">
-                      {dayjs(row.startDate).format("YYYY-MM-DD")}
+                      {dayjs(project.startDate).format("YYYY-MM-DD")}
                     </Typography>
                     <Typography variant="body1" color="textSecondary" gutterBottom>
-                      {stringKeys.project.list.startDate}
+                      {strings(stringKeys.project.list.startDate)}
                     </Typography>
                   </Grid>
                 </Grid>
-                <Grid item xs container direction="column" spacing={2}>
-                  <Grid item xs>
+                <Grid item container xs={6} direction="column" spacing={3}>
+                  <Grid item>
                     <Typography variant="h6">
-                      {row.escalatedAlertCount}
+                      {project.escalatedAlertCount}
                     </Typography>
                     <Typography variant="body1" color="textSecondary" gutterBottom>
-                      {stringKeys.project.list.escalatedAlertCount}
+                      {strings(stringKeys.project.list.escalatedAlertCount)}
                     </Typography>
                     <Typography variant="h6">
-                      {row.supervisorCount}
+                      {project.supervisorCount}
                     </Typography>
                     <Typography variant="body1" color="textSecondary" gutterBottom>
-                      {stringKeys.project.list.supervisorCount}
+                      {strings(stringKeys.project.list.supervisorCount)}
                     </Typography>
                     <Typography variant="h6">
-                      {row.endDate ? dayjs(row.endDate).format("YYYY-MM-DD") : stringKeys.project.list.ongoing}
+                      {project.endDate ? dayjs(project.endDate).format("YYYY-MM-DD") : strings(stringKeys.project.list.ongoing)}
                     </Typography>
                     <Typography variant="body1" color="textSecondary" gutterBottom>
-                      {stringKeys.project.list.endDate}
+                      {strings(stringKeys.project.list.endDate)}
                     </Typography>
                   </Grid>
                 </Grid>
               </Grid>
-            </Grid>           
-          </CardContent>
-          <CardActions>
-            <Box style={{ width: '100%' }} p={1} display="flex" justifyContent="flex-end">
-              <IconButton size="small" onClick={() => goToEdition(nationalSocietyId, row.id)} aria-label={"Edit"}><EditIcon /></IconButton>
-              <IconButton size="small" onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.project.list.confirmationText)} aria-label={"Delete"} isFetching={isRemoving[row.id]}><ClearIcon /></IconButton>
-              <Button onClick={() => goToEdition(nationalSocietyId, row.id)} endIcon={<ArrowForwardIcon />}>{strings(stringKeys.project.list.open)}</Button>
-            </Box>
-          </CardActions>
-        </Card>
+            </CardContent>
+            <CardActions>
+              <Grid container direction="row" justify="flex-end" alignItems="center">
+                <Grid item xs={1}>
+                  <IconButton size="small" onClick={() => goToEdition(nationalSocietyId, project.id)} aria-label={"Edit"}><EditIcon /></IconButton>
+                </Grid>
+                <Grid item xs={1}>
+                  <IconButton size="small" onClick={() => remove(nationalSocietyId, project.id)} aria-label={"Delete"}><ClearIcon /></IconButton>
+                </Grid>
+                <Grid item xs={4}>
+                  <Button onClick={() => goToEdition(nationalSocietyId, project.id)} endIcon={<ArrowForwardIcon />}>{strings(stringKeys.project.list.open)}</Button>
+                </Grid>
+              </Grid>
+            </CardActions>
+          </Card>
+        </Grid>
       ))}
-    </Container>
+    </Grid>
   );
 }
 

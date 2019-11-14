@@ -183,7 +183,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task GetHealthRisks_WhenSuccess_ShouldReturnAllHealthRisks()
         {
             // Act
-            var result = await _healthRiskService.GetHealthRisks(UserName);
+            var result = await _healthRiskService.ListHealthRisks(UserName);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();

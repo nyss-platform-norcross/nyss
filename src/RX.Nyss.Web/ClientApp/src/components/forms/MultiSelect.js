@@ -20,7 +20,7 @@ const components = {
   ValueContainer,
 };
 
-export const MultiSelect = ({ name, label, value, defaultValue, options, onChange }) => {
+export const MultiSelect = ({ name, error, label, value, defaultValue, options, onChange }) => {
   return (
     <Select
       defaultValue={defaultValue}
@@ -34,6 +34,7 @@ export const MultiSelect = ({ name, label, value, defaultValue, options, onChang
       components={components}
       TextFieldProps={{
         label: label,
+        error: error,
         InputLabelProps: {
           htmlFor: { name },
           shrink: true
@@ -42,7 +43,6 @@ export const MultiSelect = ({ name, label, value, defaultValue, options, onChang
     />
   );
 };
-
 
 function MultiValue(props) {
   return (
@@ -127,9 +127,9 @@ function Option(props) {
 function Placeholder(props) {
   const { innerProps = {}, children } = props;
   return (
-    <Typography color="textSecondary" 
-    className={styles.placeholder} 
-    {...innerProps}>
+    <Typography color="textSecondary"
+      className={styles.placeholder}
+      {...innerProps}>
       {children}
     </Typography>
   );
@@ -137,16 +137,16 @@ function Placeholder(props) {
 
 function SingleValue(props) {
   return (
-    <Typography 
-    className={styles.singleValue}
-     {...props.innerProps}>
+    <Typography
+      className={styles.singleValue}
+      {...props.innerProps}>
       {props.children}
     </Typography>
   );
 }
 
 function ValueContainer(props) {
-  return <div 
-  className={styles.valueContainer}
+  return <div
+    className={styles.valueContainer}
   >{props.children}</div>;
 }
