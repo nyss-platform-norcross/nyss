@@ -13,6 +13,7 @@ using System.Linq;
 using MockQueryable.NSubstitute;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
+using RX.Nyss.Web.Features.User;
 
 namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 {
@@ -23,6 +24,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         private readonly INyssContext _nyssContextMock;
         private readonly ILoggerAdapter _loggerAdapterMock;
         private readonly IConfig _configMock;
+        private readonly IUserService _userServiceMock;
         private const string NationalSocietyName = "Norway";
         private const string ExistingNationalSocietyName = "Poland";
         private const int NationalSocietyId = 1;
@@ -34,7 +36,8 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             _nyssContextMock = Substitute.For<INyssContext>();
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _configMock = Substitute.For<IConfig>();
-            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, _loggerAdapterMock, _configMock);
+            _userServiceMock = Substitute.For<IUserService>();
+            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, _loggerAdapterMock, _configMock, _userServiceMock);
 
             // Arrange
 
@@ -148,14 +151,13 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             // Arrange
             var nationalSocietyReq = new EditNationalSocietyRequestDto()
             {
-                Id = NationalSocietyId,
                 Name = NationalSocietyName,
                 CountryId = CountryId,
                 ContentLanguageId = ContentLanguageId
             };
 
             // Actual
-            var result = await _nationalSocietyService.EditNationalSociety(nationalSocietyReq);
+            var result = await _nationalSocietyService.EditNationalSociety(NationalSocietyId, nationalSocietyReq);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -168,7 +170,6 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             // Arrange
             var nationalSocietyReq = new EditNationalSocietyRequestDto()
             {
-                Id = NationalSocietyId,
                 Name = NationalSocietyName,
                 CountryId = CountryId,
                 ContentLanguageId = ContentLanguageId
@@ -177,7 +178,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             _nyssContextMock.SaveChangesAsync().Throws(new Exception());
 
             // Actual
-            var result = await _nationalSocietyService.EditNationalSociety(nationalSocietyReq);
+            var result = await _nationalSocietyService.EditNationalSociety(NationalSocietyId, nationalSocietyReq);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();

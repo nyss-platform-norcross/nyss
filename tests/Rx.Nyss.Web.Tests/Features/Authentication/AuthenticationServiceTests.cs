@@ -25,13 +25,13 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         private readonly IUserIdentityService _userIdentityService;
         private readonly INyssContext _nyssContext;
         private readonly AuthenticationService _authenticationService;
-        private readonly SupervisorUser _user;
+        private readonly AdministratorUser _user;
 
         public AuthenticationServiceTests()
         {
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
-            _user = new SupervisorUser { EmailAddress = UserEmail };
+            _user = new AdministratorUser { EmailAddress = UserEmail };
             _nyssContext.Users = new List<User>{ _user }.AsQueryable().BuildMockDbSet();
             _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
         }
