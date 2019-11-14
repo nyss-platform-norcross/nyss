@@ -128,6 +128,7 @@ namespace RX.Nyss.Web.Features.Manager
                 user.Name = editManagerRequestDto.Name;
                 user.PhoneNumber = editManagerRequestDto.PhoneNumber;
                 user.Organization = editManagerRequestDto.Organization;
+                user.AdditionalPhoneNumber = editManagerRequestDto.AdditionalPhoneNumber;
 
                 await _dataContext.SaveChangesAsync();
                 return Result.Success();

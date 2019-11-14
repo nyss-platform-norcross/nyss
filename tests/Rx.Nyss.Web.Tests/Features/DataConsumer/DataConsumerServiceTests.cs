@@ -207,7 +207,8 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
                     EmailAddress = "emailTest1@domain.com",
                     Name = "emailTest1@domain.com",
                     Organization = "org org",
-                    PhoneNumber = "123"
+                    PhoneNumber = "123",
+                    AdditionalPhoneNumber = "321"
                 }
             });
 
@@ -234,7 +235,8 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             {
                 Name = "New name",
                 Organization = "New organization",
-                PhoneNumber = "432432"
+                PhoneNumber = "456",
+                AdditionalPhoneNumber = "654"
             };
 
             await _dataConsumerService.UpdateDataConsumer(123, editRequest);
@@ -246,6 +248,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             editedUser.Organization.ShouldBe(editRequest.Organization);
             editedUser.PhoneNumber.ShouldBe(editRequest.PhoneNumber);
             editedUser.EmailAddress.ShouldBe(existingUserEmail);
+            editedUser.AdditionalPhoneNumber.ShouldBe(editRequest.AdditionalPhoneNumber);
         }
 
         
