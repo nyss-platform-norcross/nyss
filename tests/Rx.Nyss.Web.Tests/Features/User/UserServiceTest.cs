@@ -34,11 +34,12 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         {
             var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
             {
-                new RX.Nyss.Data.Models.NationalSociety {Id = 1, Name = "National society 1"},
-                new RX.Nyss.Data.Models.NationalSociety {Id = 2, Name = "National society 2"}
+                new RX.Nyss.Data.Models.NationalSociety {Id = 1, Name = "National society 1", PendingHeadManager = null, HeadManager = null},
+                new RX.Nyss.Data.Models.NationalSociety {Id = 2, Name = "National society 2", PendingHeadManager = null, HeadManager = null}
             };
 
             SetupNationalSocietiesFrom(nationalSocieties);
+            ArrangeUsers(nationalSocieties);
         }
 
 
@@ -52,8 +53,6 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturOnlyUsersFromSpecifiedNationalSociety()
         {
-            ArrangeUsers();
-
             var users = await _userService.GetUsersInNationalSociety(1);
 
             users.Value.Count.ShouldBe(5);
@@ -63,8 +62,6 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
         {
-            ArrangeUsers();
-
             var users = await _userService.GetUsersInNationalSociety(1);
 
             var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
@@ -73,7 +70,7 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         }
 
 
-        private void ArrangeUsers()
+        private void ArrangeUsers(List<RX.Nyss.Data.Models.NationalSociety> nationalSocieties)
         {
             var users = new List<User>
             {
@@ -90,10 +87,10 @@ namespace Rx.Nyss.Web.Tests.Features.Users
                 new TechnicalAdvisorUser {Id = 13, Role = Role.TechnicalAdvisor, Name = NationalSociety1And2Tag},
             };
 
-            var userNationalSocieties1 = users.Where(u => u.Name == NationalSociety1Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 1});
-            var userNationalSocieties2 = users.Where(u => u.Name == NationalSociety2Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 2});
-            var userNationalSocieties1And2 = users.Where(u => u.Name == NationalSociety1And2Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 1})
-                     .Concat(users.Where(u => u.Name == NationalSociety1And2Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 2}));
+            var userNationalSocieties1 = users.Where(u => u.Name == NationalSociety1Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 1, NationalSociety = nationalSocieties[0]});
+            var userNationalSocieties2 = users.Where(u => u.Name == NationalSociety2Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 2, NationalSociety = nationalSocieties[1]});
+            var userNationalSocieties1And2 = users.Where(u => u.Name == NationalSociety1And2Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 1, NationalSociety = nationalSocieties[0] })
+                     .Concat(users.Where(u => u.Name == NationalSociety1And2Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 2, NationalSociety = nationalSocieties[1] }));
 
             ArrangeUsersFrom(users);
             ArrangeUserNationalSocietiesFrom(userNationalSocieties1.Concat(userNationalSocieties2).Concat(userNationalSocieties1And2));

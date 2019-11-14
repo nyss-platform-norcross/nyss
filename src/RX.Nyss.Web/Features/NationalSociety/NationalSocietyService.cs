@@ -221,7 +221,6 @@ namespace RX.Nyss.Web.Features.NationalSociety
             try
             {
                 var user = await _nyssContext.Users
-                    .Include(x => x.ApplicationLanguage)
                     .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
 
                 if (user == null)
@@ -247,7 +246,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     nationalSociety.PendingHeadManager = null;
                     nationalSociety.HeadManager = user;
 
-                    _nyssContext.HeadManagerConsents.Add(new HeadManagerConsent
+                    await _nyssContext.HeadManagerConsents.AddAsync(new HeadManagerConsent
                     {
                         ConsentedFrom = utcNow, NationalSocietyId = nationalSociety.Id, UserEmailAddress = user.EmailAddress, UserPhoneNumber = user.PhoneNumber
                     });
