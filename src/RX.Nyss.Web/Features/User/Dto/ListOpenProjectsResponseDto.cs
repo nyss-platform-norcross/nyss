@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.Web.Features.User.Dto
 {
-    public class ListOpenProjectsDto
+    public class ListOpenProjectsResponseDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

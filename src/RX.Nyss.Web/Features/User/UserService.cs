@@ -17,6 +17,7 @@ namespace RX.Nyss.Web.Features.User
         Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
         Task<bool> GetUserHasAccessToAnyOfProvidedNationalSocieties(List<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles);
         Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
+        Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<List<int>> GetUserNationalSocietyIds(string identityName);
         bool HasAccessToAllNationalSocieties(IEnumerable<string> roles);
         Task<bool> IsHeadManagerToNationalSociety(string identityName, int nationalSocietyId);
@@ -117,12 +118,12 @@ namespace RX.Nyss.Web.Features.User
         public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
             roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));
 
-        public async Task<Result<List<ListOpenProjectsDto>>> ListOpenedProjects(int nationalSocietyId)
+        public async Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId)
         {
             var projects = await _dataContext.Projects
                 .Where(p => p.NationalSociety.Id == nationalSocietyId)
                 .Where(p => p.State == ProjectState.Open)
-                .Select(p => new ListOpenProjectsDto()
+                .Select(p => new ListOpenProjectsResponseDto()
                 {
                     Id = p.Id,
                     Name = p.Name
