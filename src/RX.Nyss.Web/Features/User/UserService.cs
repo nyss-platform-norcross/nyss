@@ -14,8 +14,6 @@ namespace RX.Nyss.Web.Features.User
     public interface IUserService
     {
         Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId, IEnumerable<string> callingUserRoles);
-        Task<bool> GetUserHasAccessToAnyOfResourceNationalSocieties(List<int> resourceNationalSocietyIds, string identityName, IEnumerable<string> callingUserRoles);
-        Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
         Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
         Task<bool> GetUserHasAccessToAnyOfProvidedNationalSocieties(List<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles);
         Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
@@ -119,6 +117,21 @@ namespace RX.Nyss.Web.Features.User
         public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
             roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));
 
+        public async Task<Result<List<ListOpenProjectsDto>>> ListOpenedProjects(int nationalSocietyId)
+        {
+            var projects = await _dataContext.Projects
+                .Where(p => p.NationalSociety.Id == nationalSocietyId)
+                .Where(p => p.State == ProjectState.Open)
+                .Select(p => new ListOpenProjectsDto()
+                {
+                    Id = p.Id,
+                    Name = p.Name
+                })
+                .ToListAsync();
+
+            return Success(projects);
+        }
+        
         public async Task<Result> AddExisting(int nationalSocietyId, string userEmail)
         {
             var userData = await _dataContext.Users
