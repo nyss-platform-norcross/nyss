@@ -11,9 +11,8 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
-    public class NationalSocietyAccessRequirement : IPolicyAuthorizationRequirement
+    public class NationalSocietyAccessRequirement : IAuthorizationRequirement
     {
-        public Policy Policy => Policy.NationalSocietyAccess;
     }
 
     public class NationalSocietyAccessHandler : AuthorizationHandler<NationalSocietyAccessRequirement>

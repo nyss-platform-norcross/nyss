@@ -6,6 +6,13 @@ namespace RX.Nyss.Web.Features.Resources.Dto
     {
         public string Key { get; set; }
 
-        public IEnumerable<EntryDto> Translations { get; set; }
+        public IEnumerable<SaveEntryDto> Translations { get; set; }
+
+        public class SaveEntryDto
+        {
+            public string LanguageCode { get; set; }
+
+            public string Value { get; set; }
+        }
     }
 }

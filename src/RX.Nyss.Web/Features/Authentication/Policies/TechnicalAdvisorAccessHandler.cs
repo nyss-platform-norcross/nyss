@@ -7,9 +7,8 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
-    public class TechnicalAdvisorAccessRequirement : IPolicyAuthorizationRequirement
+    public class TechnicalAdvisorAccessRequirement : IAuthorizationRequirement
     {
-        public Policy Policy => Policy.TechnicalAdvisorAccess;
     }
     public class TechnicalAdvisorAccessHandler: AuthorizationHandler<TechnicalAdvisorAccessRequirement>
     {

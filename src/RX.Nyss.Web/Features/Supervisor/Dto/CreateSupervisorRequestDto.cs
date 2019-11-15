@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.Supervisor.Dto
             public CreateSupervisorValidator()
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
-                RuleFor(m => m.Sex).NotEmpty().IsInEnum();
+                RuleFor(m => m.Sex).IsInEnum();
                 RuleFor(m => m.DecadeOfBirth).NotEmpty().Must(y => y % 10 == 0).WithMessage(ResultKey.Validation.BirthGroupStartYearMustBeMulipleOf10);
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
                 RuleFor(m => m.Email).NotEmpty().MaximumLength(100).EmailAddress();

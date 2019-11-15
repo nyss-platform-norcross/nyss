@@ -7,9 +7,8 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
-    public class SupervisorAccessRequirement : IPolicyAuthorizationRequirement
+    public class SupervisorAccessRequirement : IAuthorizationRequirement
     {
-        public Policy Policy => Policy.SupervisorAccess;
     }
 
     public class SupervisorAccessHandler : AuthorizationHandler<SupervisorAccessRequirement>
@@ -36,7 +35,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
             var roles = context.User.GetRoles();
             var identityName = context.User.Identity.Name;
 
-            if (await _userService.GetUserHasAccessToAnyOfResourceNationalSocieties(supervisorNationalSocieties, identityName, roles))
+            if (await _userService.GetUserHasAccessToAnyOfProvidedNationalSocieties(supervisorNationalSocieties, identityName, roles))
             {
                 context.Succeed(requirement);
             }

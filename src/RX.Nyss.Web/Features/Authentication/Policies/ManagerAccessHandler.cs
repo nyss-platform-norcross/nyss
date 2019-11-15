@@ -7,9 +7,8 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
-    public class ManagerAccessRequirement : IPolicyAuthorizationRequirement
+    public class ManagerAccessRequirement : IAuthorizationRequirement
     {
-        public Policy Policy => Policy.ManagerAccess;
     }
 
     public class ManagerAccessHandler : AuthorizationHandler<ManagerAccessRequirement>

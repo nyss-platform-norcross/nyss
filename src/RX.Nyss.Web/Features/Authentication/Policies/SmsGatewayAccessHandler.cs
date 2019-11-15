@@ -9,9 +9,8 @@ using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
 {
-    public class SmsGatewayAccessRequirement : IPolicyAuthorizationRequirement
+    public class SmsGatewayAccessRequirement : IAuthorizationRequirement
     {
-        public Policy Policy => Policy.SmsGatewayAccess;
     }
 
     public class SmsGatewayAccessHandler : AuthorizationHandler<SmsGatewayAccessRequirement>

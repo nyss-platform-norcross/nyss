@@ -149,7 +149,10 @@ namespace RX.Nyss.Web.Configuration
                     
                 options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
                     policy => policy.Requirements.Add(new SmsGatewayAccessRequirement()));
-                    
+
+                options.AddPolicy(Policy.SupervisorAccess.ToString(),
+                    policy => policy.Requirements.Add(new SupervisorAccessRequirement()));
+
                 options.AddPolicy(Policy.DataCollectorAccess.ToString(),
                     policy => policy.Requirements.Add(new DataCollectorAccessRequirement()));
 
@@ -162,6 +165,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, DataConsumerAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, TechnicalAdvisorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, SmsGatewayAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, SupervisorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, DataCollectorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, HeadManagerAccessHandler>();
         }

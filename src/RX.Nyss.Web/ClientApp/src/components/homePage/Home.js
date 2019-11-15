@@ -28,6 +28,8 @@ const getHomePageUrl = (user) => {
         return `/nationalSocieties/${user.homePage.nationalSocietyId}`;
     case "Project":
         return `/api/project/${user.homePage.projectId}`;
+    case "ProjectList":
+        return `/api/nationalSocieties/${user.homePage.nationalSocietyId}/projects`;
     default:
         return '/';
   }

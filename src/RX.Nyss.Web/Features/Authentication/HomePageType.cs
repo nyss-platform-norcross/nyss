@@ -4,6 +4,7 @@
     {
         Root,
         NationalSociety,
+        ProjectList,
         Project
     }
 }
