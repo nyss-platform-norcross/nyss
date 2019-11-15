@@ -91,7 +91,7 @@ function* getUserStatus() {
         name: status.value.data.name,
         roles: status.value.data.roles,
         languageCode: status.value.data.languageCode,
-        homePage: status.value.data.homePage
+        homePage: status.value.data.homePage,
         hasPendingHeadManagerConsents: status.value.data.hasPendingHeadManagerConsents
       }
       : null;

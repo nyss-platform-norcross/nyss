@@ -74,7 +74,7 @@ namespace RX.Nyss.Web.Features.Authentication
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),
-                        HasPendingHeadManagerConsents = pendingSocieties
+                        HasPendingHeadManagerConsents = pendingSocieties,
                         HomePage = user.Identity.IsAuthenticated
                             ? GetHomePageData(userEntity)
                             : null
