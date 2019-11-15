@@ -1,3 +1,5 @@
+import formStyles from "../forms/form/Form.module.scss";
+
 import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
@@ -9,7 +11,6 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SelectInput from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
@@ -18,8 +19,13 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 import { sexValues } from './logic/dataCollectorsConstants';
+import { GeoStructureSelect } from './GeoStructureSelect';
+import SelectField from '../forms/SelectField';
+import { getBirthDecades } from './logic/dataCollectorsService';
+import { DataCollectorMap } from './DataCollectorMap';
 
 const DataCollectorsEditPageComponent = (props) => {
+  const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
 
   useMount(() => {
@@ -36,38 +42,38 @@ const DataCollectorsEditPageComponent = (props) => {
       name: props.data.name,
       displayName: props.data.displayName,
       sex: props.data.sex,
-      supervisorId: props.data.supervisorId,
-      dataCollectorType: props.data.dataCollectorType,
-      birthYearGroup: props.data.birthYearGroup,
+      supervisorId: props.data.supervisorId.toString(),
+      birthGroupDecade: props.data.birthGroupDecade.toString(),
+      phoneNumber: props.data.phoneNumber,
       additionalPhoneNumber: props.data.additionalPhoneNumber,
       latitude: props.data.latitude,
       longitude: props.data.longitude,
-      phoneNumber: props.data.phoneNumber,
-      village: props.data.village,
-      district: props.data.district,
-      region: props.data.region,
-      zone: props.data.zone
+      villageId: props.data.villageId.toString(),
+      districtId: props.data.districtId.toString(),
+      regionId: props.data.regionId.toString(),
+      zoneId: props.data.zoneId ? props.data.zoneId.toString() : ""
     };
 
     const validation = {
-      name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      displayName: [validators.required, validators.minLength(1), validators.maxLength(100)],
+      name: [validators.required, validators.maxLength(100)],
+      displayName: [validators.required, validators.maxLength(100)],
       sex: [validators.required],
       supervisorId: [validators.required],
-      dataCollectorType: [validators.required],
-      birthYearGroup: [validators.required],
-      additionalPhoneNumber: [validators.required],
-      latitude: [validators.required],
-      longitude: [validators.required],
-      phoneNumber: [validators.required],
-      village: [validators.required],
-      district: [validators.required],
-      region: [validators.required],
-      zone: []
+      birthGroupDecade: [validators.required],
+      phoneNumber: [validators.required, validators.maxLength(20)],
+      additionalPhoneNumber: [validators.maxLength(20)],
+      villageId: [validators.required],
+      districtId: [validators.required],
+      regionId: [validators.required]
     };
 
     setForm(createForm(fields, validation));
   }, [props.data, props.match]);
+
+  const onLocationChange = (e) => {
+    form.fields.latitude.update(e.lat);
+    form.fields.longitude.update(e.lng);
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -76,14 +82,31 @@ const DataCollectorsEditPageComponent = (props) => {
       return;
     };
 
-    props.edit(props.projectId, form.getValues());
+    const values = form.getValues();
+
+    props.edit(props.projectId, {
+      id: values.id,
+      name: values.name,
+      displayName: values.displayName,
+      sex: values.sex,
+      supervisorId: parseInt(values.supervisorId),
+      birthGroupDecade: parseInt(values.birthGroupDecade),
+      additionalPhoneNumber: values.additionalPhoneNumber,
+      latitude: parseFloat(values.latitude),
+      longitude: parseFloat(values.longitude),
+      phoneNumber: values.phoneNumber,
+      villageId: parseInt(values.villageId),
+      districtId: parseInt(values.districtId),
+      regionId: parseInt(values.regionId),
+      zoneId: values.zoneId ? parseInt(values.zoneId) : null
+    });
   };
 
   if (props.isFetching) {
     return <Loading />;
   }
 
-  if (!form) {
+  if (!form || !props.data) {
     return null;
   }
 
@@ -97,8 +120,8 @@ const DataCollectorsEditPageComponent = (props) => {
         />
       }
 
-      <Form onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
+      <Form onSubmit={handleSubmit} fullWidth>
+        <Grid container spacing={3} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.name)}
@@ -114,8 +137,9 @@ const DataCollectorsEditPageComponent = (props) => {
               field={form.fields.displayName}
             />
           </Grid>
+
           <Grid item xs={12}>
-            <SelectInput
+            <SelectField
               label={strings(stringKeys.dataCollector.form.sex)}
               field={form.fields.sex}
               name="sex"
@@ -125,27 +149,77 @@ const DataCollectorsEditPageComponent = (props) => {
                   {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
                 </MenuItem>
               ))}
-            </SelectInput>
+            </SelectField>
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.dataCollector.form.birthYearGroup)}
+              field={form.fields.birthGroupDecade}
+              name="birthGroupDecade"
+            >
+              {birthDecades.map(decade => (
+                <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                  {decade}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>
+
+          <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.dataCollector.form.latitude)}
-              name="latitude"
-              field={form.fields.latitude}
+              label={strings(stringKeys.dataCollector.form.phoneNumber)}
+              name="phoneNumber"
+              field={form.fields.phoneNumber}
             />
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.dataCollector.form.longitude)}
-              name="longitude"
-              field={form.fields.longitude}
+              label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
+              name="additionalPhoneNumber"
+              field={form.fields.additionalPhoneNumber}
             />
           </Grid>
         </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <div>Location</div>
+            <DataCollectorMap
+              onChange={onLocationChange}
+              location={{ lat: props.data.latitude, lng: props.data.longitude }}
+              zoom={16}
+            />
+          </Grid>
+        </Grid>
+        <Grid container spacing={3} className={formStyles.shrinked}>
+          <GeoStructureSelect
+            regions={props.data.formData.regions}
+            regionIdField={form.fields.regionId}
+            districtIdField={form.fields.districtId}
+            villageIdField={form.fields.villageId}
+            zoneIdField={form.fields.zoneId}
+            initialDistricts={props.data.formData.districts}
+            initialVillages={props.data.formData.villages}
+            initialZones={props.data.formData.zones}
+          />
 
-        <FormActions>
+          <Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.dataCollector.form.supervisor)}
+              field={form.fields.supervisorId}
+              name="supervisorId"
+            >
+              {props.data.formData.supervisors.map(supervisor => (
+                <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
+                  {supervisor.name}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>
+        </Grid>
+
+        <FormActions className={formStyles.shrinked}>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.update)}</SubmitButton>
         </FormActions>

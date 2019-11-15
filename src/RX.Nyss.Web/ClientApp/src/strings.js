@@ -162,6 +162,7 @@ export const stringKeys = {
       create: "dataCollectors.form.create",
       update: "dataCollectors.form.update",
       birthYearGroup: "dataCollectors.form.birthYearGroup",
+      supervisor: "dataCollectors.form.supervisor",
       village: "dataCollectors.form.village",
       district: "dataCollectors.form.district",
       region: "dataCollectors.form.region",
@@ -169,6 +170,11 @@ export const stringKeys = {
     },
     list: {
       name: "dataCollectors.list.name",
+      displayName: "dataCollectors.list.displayName",
+      phoneNumber: "dataCollectors.list.phoneNumber",
+      sex: "dataCollectors.list.sex",
+      location: "dataCollectors.list.location",
+      status: "dataCollectors.list.status",
       removalConfirmation: "dataCollectors.list.removalConfirmation"
     },
     constants: {

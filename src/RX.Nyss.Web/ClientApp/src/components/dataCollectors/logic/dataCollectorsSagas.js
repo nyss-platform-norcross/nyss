@@ -3,7 +3,7 @@ import * as consts from "./dataCollectorsConstants";
 import * as actions from "./dataCollectorsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
-import * as httpMock from "../../../utils/httpMock";
+import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 
 export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
@@ -34,7 +34,10 @@ function* openDataCollectorCreation({ projectId }) {
   yield put(actions.openCreation.request());
   try {
     yield openDataCollectorsModule(projectId);
-    yield put(actions.openCreation.success());
+
+    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/formData`);
+
+    yield put(actions.openCreation.success(response.value.regions, response.value.supervisors, response.value.defaultLocation, response.value.defaultSupervisorId));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }
@@ -54,7 +57,7 @@ function* openDataCollectorEdition({ dataCollectorId }) {
 function* createDataCollector({ projectId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/project/${projectId}/dataCollector/add`, data);
+    const response = yield call(http.post, `/api/project/${projectId}/dataCollector/create`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage("The SMS Gateway was added successfully"));
@@ -63,12 +66,12 @@ function* createDataCollector({ projectId, data }) {
   }
 };
 
-function* editDataCollector({ nationalSocietyId, data }) {
+function* editDataCollector({ projectId, data }) {
   yield put(actions.edit.request());
   try {
     const response = yield call(http.post, `/api/dataCollector/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
-    yield put(actions.goToList(nationalSocietyId));
+    yield put(actions.goToList(projectId));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
@@ -89,7 +92,7 @@ function* removeDataCollector({ dataCollectorId }) {
 function* getDataCollectors(projectId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(httpMock.get, `/api/project/${projectId}/dataCollector/list`);
+    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/list`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -107,26 +110,16 @@ function* getCountryLocation({country}) {
 };
 
 function* openDataCollectorsModule(projectId) {
-  // const project = yield call(http.getCached, {
-  //   path: `/api/project/${projectId}/get`,
-  //   dependencies: [entityTypes.project(projectId)]
-  // });
-
-  const project = {
-    value: {
-      nationalSocietyId: "1",
-      nationalSocietyName: "National Society Mock",
-      nationalSocietyCountryName: "Norway",
-      projectId: "1",
-      projectName: "Project mock"
-    }
-  };
+  const project = yield call(http.getCached, {
+    path: `/api/project/${projectId}/basicData`,
+    dependencies: [entityTypes.project(projectId)]
+  });
 
   yield put(appActions.openModule.invoke(null, {
-    nationalSocietyId: project.value.nationalSocietyId,
-    nationalSocietyName: project.value.nationalSocietyName,
-    nationalSocietyCountry: project.value.nationalSocietyCountryName,
-    projectId: project.value.projectId,
-    projectName: project.value.projectName
+    nationalSocietyId: project.value.nationalSociety.id,
+    nationalSocietyName: project.value.nationalSociety.name,
+    nationalSocietyCountry: project.value.nationalSociety.countryName,
+    projectId: project.value.id,
+    projectName: project.value.name
   }));
 }

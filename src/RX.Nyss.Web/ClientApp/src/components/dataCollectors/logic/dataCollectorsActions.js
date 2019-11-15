@@ -35,12 +35,12 @@ export const getCountryLocation = {
 export const openCreation = {
   invoke: (projectId) => ({ type: OPEN_DATA_COLLECTOR_CREATION.INVOKE, projectId }),
   request: () => ({ type: OPEN_DATA_COLLECTOR_CREATION.REQUEST }),
-  success: () => ({ type: OPEN_DATA_COLLECTOR_CREATION.SUCCESS }),
+  success: (regions, supervisors, defaultLocation, defaultSupervisorId) => ({ type: OPEN_DATA_COLLECTOR_CREATION.SUCCESS, regions, supervisors, defaultLocation, defaultSupervisorId }),
   failure: (message) => ({ type: OPEN_DATA_COLLECTOR_CREATION.FAILURE, message })
 };
 
 export const create = {
-  invoke: (nationalSocietyId, data) => ({ type: CREATE_DATA_COLLECTOR.INVOKE, nationalSocietyId, data }),
+  invoke: (projectId, data) => ({ type: CREATE_DATA_COLLECTOR.INVOKE, projectId, data }),
   request: () => ({ type: CREATE_DATA_COLLECTOR.REQUEST }),
   success: () => ({ type: CREATE_DATA_COLLECTOR.SUCCESS }),
   failure: (message) => ({ type: CREATE_DATA_COLLECTOR.FAILURE, message })

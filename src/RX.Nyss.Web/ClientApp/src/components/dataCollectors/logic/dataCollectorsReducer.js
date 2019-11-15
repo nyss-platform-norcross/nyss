@@ -29,6 +29,15 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
     case actions.OPEN_DATA_COLLECTOR_EDITION.FAILURE:
       return { ...state, formFetching: false };
 
+    case actions.OPEN_DATA_COLLECTOR_CREATION.REQUEST:
+      return { ...state, formFetching: true, nationalSocietyId: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null };
+
+    case actions.OPEN_DATA_COLLECTOR_CREATION.SUCCESS:
+      return { ...state, formFetching: false, nationalSocietyId: action.nationalSocietyId, formDefaultSupervisorId: action.defaultSupervisorId, formRegions: action.regions, formSupervisors: action.supervisors, formDefaultLocation: action.defaultLocation };
+
+    case actions.OPEN_DATA_COLLECTOR_CREATION.FAILURE:
+      return { ...state, formFetching: false, formError: action.message };
+
     case actions.CREATE_DATA_COLLECTOR.REQUEST:
       return { ...state, formSaving: true };
 

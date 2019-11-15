@@ -1,4 +1,6 @@
-import React, { useState, Fragment } from 'react';
+import formStyles from "../forms/form/Form.module.scss";
+
+import React, { useState, Fragment, useEffect } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -9,7 +11,7 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SelectInput from '../forms/SelectField';
+import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
@@ -17,50 +19,60 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 import { sexValues } from './logic/dataCollectorsConstants';
+import { GeoStructureSelect } from './GeoStructureSelect';
+import { getBirthDecades } from './logic/dataCollectorsService';
+import { DataCollectorMap } from './DataCollectorMap';
+import { Loading } from '../common/loading/Loading';
 
 const DataCollectorsCreatePageComponent = (props) => {
-  const [form] = useState(() => {
+  const [birthDecades] = useState(getBirthDecades());
+  const [form, setForm] = useState(null);
+
+  useMount(() => {
+    props.openCreation(props.projectId);
+  })
+
+  useEffect(() => {
+    if (!props.defaultLocation) {
+      return;
+    }
+
     const fields = {
       name: "",
       displayName: "",
       sex: "",
-      supervisorId: "",
-      dataCollectorType: "",
-      birthYearGroup: "",
-      additionalPhoneNumber: "",
-      latitude: "",
-      longitude: "",
+      supervisorId: props.defaultSupervisorId ? props.defaultSupervisorId.toString() : "",
+      birthGroupDecade: "",
       phoneNumber: "",
-      village: "",
-      district: "",
-      region: "",
-      zone: ""
+      additionalPhoneNumber: "",
+      latitude: 0,
+      longitude: 0,
+      villageId: "",
+      districtId: "",
+      regionId: "",
+      zoneId: ""
     };
 
     const validation = {
-      name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      displayName: [validators.required, validators.minLength(1), validators.maxLength(100)],
+      name: [validators.required, validators.maxLength(100)],
+      displayName: [validators.required, validators.maxLength(100)],
       sex: [validators.required],
       supervisorId: [validators.required],
-      dataCollectorType: [validators.required],
-      birthYearGroup: [validators.required, validators.moduloTen],
-      additionalPhoneNumber: [validators.phoneNumber],
-      latitude: [validators.required],
-      longitude: [validators.required],
-      phoneNumber: [validators.required, validators.phoneNumber],
-      village: [validators.required],
-      district: [validators.required],
-      region: [validators.required],
-      zone: []
+      birthGroupDecade: [validators.required],
+      phoneNumber: [validators.required, validators.maxLength(20)],
+      additionalPhoneNumber: [validators.maxLength(20)],
+      villageId: [validators.required],
+      districtId: [validators.required],
+      regionId: [validators.required]
     };
 
-    return createForm(fields, validation);
-  });
+    setForm(createForm(fields, validation));
+  }, [props.regions, props.defaultSupervisorId, props.defaultLocation])
 
-  useMount(() => {
-    props.openCreation(props.projectId);
-    props.getCountryLocation(props.countryName);
-  })
+  const onLocationChange = (e) => {
+    form.fields.latitude.update(e.lat);
+    form.fields.longitude.update(e.lng);
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,8 +81,32 @@ const DataCollectorsCreatePageComponent = (props) => {
       return;
     };
 
-    props.create(props.projectId, form.getValues());
+    const values = form.getValues();
+
+    props.create(props.projectId, {
+      name: values.name,
+      displayName: values.displayName,
+      sex: values.sex,
+      supervisorId: parseInt(values.supervisorId),
+      birthGroupDecade: parseInt(values.birthGroupDecade),
+      additionalPhoneNumber: values.additionalPhoneNumber,
+      latitude: parseFloat(values.latitude),
+      longitude: parseFloat(values.longitude),
+      phoneNumber: values.phoneNumber,
+      villageId: parseInt(values.villageId),
+      districtId: parseInt(values.districtId),
+      regionId: parseInt(values.regionId),
+      zoneId: values.zoneId ? parseInt(values.zoneId) : null
+    });
   };
+
+  if (props.isFetching) {
+    return <Loading />;
+  }
+
+  if (!form) {
+    return null;
+  }
 
   return (
     <Fragment>
@@ -82,8 +118,8 @@ const DataCollectorsCreatePageComponent = (props) => {
         />
       }
 
-      <Form onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
+      <Form onSubmit={handleSubmit} fullWidth>
+        <Grid container spacing={3} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.name)}
@@ -101,7 +137,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <SelectInput
+            <SelectField
               label={strings(stringKeys.dataCollector.form.sex)}
               field={form.fields.sex}
               name="sex"
@@ -111,15 +147,21 @@ const DataCollectorsCreatePageComponent = (props) => {
                   {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
                 </MenuItem>
               ))}
-            </SelectInput>
+            </SelectField>
           </Grid>
 
           <Grid item xs={12}>
-            <TextInputField
+            <SelectField
               label={strings(stringKeys.dataCollector.form.birthYearGroup)}
-              name="birthYearGroup"
-              field={form.fields.birthYearGroup}
-            />
+              field={form.fields.birthGroupDecade}
+              name="birthGroupDecade"
+            >
+              {birthDecades.map(decade => (
+                <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                  {decade}
+                </MenuItem>
+              ))}
+            </SelectField>
           </Grid>
 
           <Grid item xs={12}>
@@ -137,65 +179,42 @@ const DataCollectorsCreatePageComponent = (props) => {
               field={form.fields.additionalPhoneNumber}
             />
           </Grid>
-
+        </Grid>
+        <Grid container spacing={3}>
           <Grid item xs={12}>
-            
-          </Grid>
-
-          <Grid item xs={6}>
-            <TextInputField
-              label={strings(stringKeys.dataCollector.form.latitude)}
-              name="latitude"
-              field={form.fields.latitude}
+            <div>Location</div>
+            <DataCollectorMap
+              onChange={onLocationChange}
+              location={{ lat: props.defaultLocation.latitude, lng: props.defaultLocation.longitude }}
+              zoom={6}
             />
           </Grid>
-
-          <Grid item xs={6}>
-            <TextInputField
-              label={strings(stringKeys.dataCollector.form.longitude)}
-              name="longitude"
-              field={form.fields.longitude}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <SelectInput
-              label={strings(stringKeys.dataCollector.form.region)}
-              field={form.fields.region}
-              name="region"
-            >
-            </SelectInput>
-          </Grid>
+        </Grid>
+        <Grid container spacing={3} className={formStyles.shrinked}>
+          <GeoStructureSelect
+            regions={props.regions}
+            regionIdField={form.fields.regionId}
+            districtIdField={form.fields.districtId}
+            villageIdField={form.fields.villageId}
+            zoneIdField={form.fields.zoneId}
+          />
 
           <Grid item xs={12}>
-            <SelectInput
-              label={strings(stringKeys.dataCollector.form.district)}
-              field={form.fields.district}
-              name="district"
+            <SelectField
+              label={strings(stringKeys.dataCollector.form.supervisor)}
+              field={form.fields.supervisorId}
+              name="supervisorId"
             >
-            </SelectInput>
-          </Grid>
-
-          <Grid item xs={12}>
-            <SelectInput
-              label={strings(stringKeys.dataCollector.form.village)}
-              field={form.fields.village}
-              name="village"
-            >
-            </SelectInput>
-          </Grid>
-
-          <Grid item xs={12}>
-            <SelectInput
-              label={strings(stringKeys.dataCollector.form.zone)}
-              field={form.fields.zone}
-              name="zone"
-            >
-            </SelectInput>
+              {props.supervisors.map(supervisor => (
+                <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
+                  {supervisor.name}
+                </MenuItem>
+              ))}
+            </SelectField>
           </Grid>
         </Grid>
 
-        <FormActions>
+        <FormActions className={formStyles.shrinked}>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.create)}</SubmitButton>
         </FormActions>
@@ -210,7 +229,12 @@ DataCollectorsCreatePageComponent.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   countryName: state.appData.siteMap.parameters.nationalSocietyCountry,
+  isFetching: state.dataCollectors.formFetching,
   isSaving: state.dataCollectors.formSaving,
+  regions: state.dataCollectors.formRegions,
+  defaultLocation: state.dataCollectors.formDefaultLocation,
+  supervisors: state.dataCollectors.formSupervisors,
+  defaultSupervisorId: state.dataCollectors.formDefaultSupervisorId,
   isGettingCountryLocation: state.dataCollectors.gettingLocation,
   country: state.dataCollectors.countryData,
   error: state.dataCollectors.formError
@@ -218,7 +242,6 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openCreation: dataCollectorsActions.openCreation.invoke,
-  getCountryLocation: dataCollectorsActions.getCountryLocation.invoke,
   create: dataCollectorsActions.create.invoke,
   goToList: dataCollectorsActions.goToList
 };

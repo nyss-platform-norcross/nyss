@@ -22,6 +22,10 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
       <TableHead>
         <TableRow>
           <TableCell>{strings(stringKeys.dataCollector.list.name)}</TableCell>
+          <TableCell style={{ width: "16%" }}>{strings(stringKeys.dataCollector.list.displayName)}</TableCell>
+          <TableCell style={{ width: "16%" }}>{strings(stringKeys.dataCollector.list.phoneNumber)}</TableCell>
+          <TableCell style={{ width: "16%" }}>{strings(stringKeys.dataCollector.list.sex)}</TableCell>
+          <TableCell style={{ width: "16%" }}>{strings(stringKeys.dataCollector.list.location)}</TableCell>
           <TableCell style={{ width: "16%" }} />
         </TableRow>
       </TableHead>
@@ -29,6 +33,10 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
         {list.map(row => (
           <TableRow key={row.id} hover onClick={() => goToEdition(projectId, row.id)} className={styles.clickableRow}>
             <TableCell>{row.name}</TableCell>
+            <TableCell>{row.displayName}</TableCell>
+            <TableCell>{row.phoneNumber}</TableCell>
+            <TableCell>{row.sex}</TableCell>
+            <TableCell>{row.region}, {row.district}, {row.village}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
               <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />

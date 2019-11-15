@@ -78,6 +78,8 @@ export const initialState = {
     listRemoving: {},
     listStale: true,
     listData: [],
+    formRegions: [],
+    formSupervisors: [],
     formFetching: false,
     formSaving: false,
     formData: null
