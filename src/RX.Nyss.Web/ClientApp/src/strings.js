@@ -129,8 +129,11 @@ export const stringKeys = {
     title: "nationalSocietyUser.title",
     addNew: "nationalSocietyUser.addNew",
     addSuccess: "nationalSocietyUser.addSuccess",
+    addExisting: "nationalSocietyUser.addExisting",
     form: {
       creationTitle: "nationalSocietyUser.form.creationTitle",
+      addExistingTitle: "nationalSocietyUser.form.addExistingTitle",
+      addExistingDescription: "nationalSocietyUser.form.addExistingDescription",
       editionTitle: "nationalSocietyUser.form.editionTitle",
       name: "nationalSocietyUser.form.name",
       role: "nationalSocietyUser.form.role",
@@ -139,6 +142,7 @@ export const stringKeys = {
       additionalPhoneNumber: "nationalSocietyUser.form.additionalPhoneNumber",
       organization: "nationalSocietyUser.form.organization",
       create: "nationalSocietyUser.form.create",
+      addExisting: "nationalSocietyUser.form.addExisting",
       update: "nationalSocietyUser.form.update"
     },
     list: {

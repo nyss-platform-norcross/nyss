@@ -41,6 +41,20 @@ namespace Rx.Nyss.Web.Tests.Services
             _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSociety);
         }
 
+        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
+        {
+            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users.Returns(usersDbSet);
+        }
+
+        private void ArrangeUserNationalSocietiesFrom(IEnumerable<UserNationalSociety> userNationalSocieties)
+        {
+            var userNationalSocietyDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContext.UserNationalSocieties.Returns(userNationalSocietyDbSet);
+        }
+
+
+
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenSuccesful_NyssContextSaveChangesShouldBeCalledOnce()
         {
@@ -61,46 +75,41 @@ namespace Rx.Nyss.Web.Tests.Services
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenSuccessful_NyssContextRemoveUserShouldBeCalledOnce()
         {
+            //arrange
             var manager = new ManagerUser {Id = 123, Role = Role.Manager};
             ArrangeUsersFrom(new List<User> { manager });
 
             var userNationalSociety = new UserNationalSociety { User =  manager, UserId = manager.Id, NationalSocietyId = 1 };
-            ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety>{ userNationalSociety });
+            var usersNationalSocieties = new List<UserNationalSociety> { userNationalSociety };
+            ArrangeUserNationalSocietiesFrom(usersNationalSocieties);
 
+            manager.UserNationalSocieties = usersNationalSocieties;
 
+            //act
             await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
 
-
+            //assert
             _nyssContext.Users.Received().Remove(manager);
         }
-
 
         [Fact]
         public async Task DeleteNationalSocietyUser_WhenSuccessful_NyssContextRemoveUserNationalSocietiesShouldBeCalledOnce()
         {
+            //arrange
             var manager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { manager });
 
             var userNationalSociety = new UserNationalSociety { User = manager, UserId = manager.Id, NationalSocietyId = 1 };
-            ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
+            var usersNationalSocieties = new List<UserNationalSociety> { userNationalSociety };
+            ArrangeUserNationalSocietiesFrom(usersNationalSocieties);
 
+            manager.UserNationalSocieties = usersNationalSocieties;
 
+            //act
             await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
 
-
+            //assert
             _nyssContext.UserNationalSocieties.Received().RemoveRange(Arg.Is<IEnumerable<UserNationalSociety>>(x => x.Contains(userNationalSociety)));
-        }
-
-        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
-        {
-            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
-            _nyssContext.Users.Returns(usersDbSet);
-        }
-
-        private void ArrangeUserNationalSocietiesFrom(IEnumerable<UserNationalSociety> userNationalSocieties)
-        {
-            var userNationalSocietyDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
-            _nyssContext.UserNationalSocieties.Returns(userNationalSocietyDbSet);
         }
 
         [Fact]

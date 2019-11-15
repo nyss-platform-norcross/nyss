@@ -6,6 +6,7 @@ import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietyUsersTable from './NationalSocietyUsersTable';
@@ -22,9 +23,15 @@ const NationalSocietyUsersListPageComponent = (props) => {
       <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.title)}</Typography>
 
       <TableActions>
-        <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          {strings(stringKeys.nationalSocietyUser.addNew)}
-       </Button>
+          <Box mr={2}>
+            <Button onClick={() => props.goToAddExisting(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+                {strings(stringKeys.nationalSocietyUser.addExisting)}
+            </Button>   
+          </Box>
+
+          <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+            {strings(stringKeys.nationalSocietyUser.addNew)}
+          </Button>      
       </TableActions>
 
       <NationalSocietyUsersTable
@@ -46,6 +53,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
 NationalSocietyUsersListPageComponent.propTypes = {
   getNationalSocietyUsers: PropTypes.func,
   goToCreation: PropTypes.func,
+  goToAddExisting: PropTypes.func,
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
   isFetching: PropTypes.bool,
@@ -64,6 +72,7 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = {
   openNationalSocietyUsersList: nationalSocietyUsersActions.openList.invoke,
   goToCreation: nationalSocietyUsersActions.goToCreation,
+  goToAddExisting: nationalSocietyUsersActions.goToAddExisting,
   goToEdition: nationalSocietyUsersActions.goToEdition,
   remove: nationalSocietyUsersActions.remove.invoke,
   setAsHeadManager: nationalSocietyUsersActions.setAsHeadManager.invoke,

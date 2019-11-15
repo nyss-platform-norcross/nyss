@@ -51,14 +51,17 @@ namespace RX.Nyss.Web.Features.DataConsumer
             await _dataConsumerService.UpdateDataConsumer(dataConsumerId, editDataConsumerRequestDto);
 
         /// <summary>
-        /// Delete a data consumer.
+        /// Remove a data consumer from a national society.
+        /// If the data consumer is also in other national societies, he/she will be removed from the provided national society, but the user will not be deleted.
+        /// If this is the only national society of the data consumer, the data consumer will be deleted.
         /// </summary>
-        /// <param name="id">The ID of the data consumer to be deleted</param>
+        /// <param name="nationalSocietyId">The ID of the national society the data consumer should be removed from</param>
+        /// <param name="dataConsumerId">The ID of the data consumer to be removed</param>
         /// <returns></returns>
-        [HttpPost("nationalSociety/dataConsumer/{dataConsumerId:int}/remove")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
-        public async Task<Result> Delete(int dataConsumerId) =>
-            await _dataConsumerService.DeleteDataConsumer(dataConsumerId);
+        [HttpPost("nationalSociety/{nationalSocietyId:int}/dataConsumer/{dataConsumerId:int}/remove")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result> Delete(int nationalSocietyId, int dataConsumerId) =>
+            await _dataConsumerService.DeleteDataConsumer(nationalSocietyId, dataConsumerId);
     }
 }
 

@@ -38,6 +38,15 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
     case actions.CREATE_NATIONAL_SOCIETY_USER.FAILURE:
       return { ...state, formSaving: false, formError: action.message };
 
+    case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.REQUEST:
+      return { ...state, formSaving: true };
+    
+    case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.SUCCESS:
+        return { ...state, formSaving: false, listStale: true };
+  
+    case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.FAILURE:
+        return { ...state, formSaving: false, formError: action.message };
+
     case actions.EDIT_NATIONAL_SOCIETY_USER.REQUEST:
       return { ...state, formSaving: true };
 

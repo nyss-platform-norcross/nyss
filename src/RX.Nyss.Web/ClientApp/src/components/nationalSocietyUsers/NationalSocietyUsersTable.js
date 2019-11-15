@@ -55,7 +55,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             </TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id, row.role)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
               {
                 hasHeadManagerAccess &&
                 !row.isHeadManager && (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() ||

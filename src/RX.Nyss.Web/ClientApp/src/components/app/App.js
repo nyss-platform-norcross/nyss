@@ -28,6 +28,7 @@ import { HealthRisksCreatePage } from '../healthRisks/HealthRisksCreatePage';
 import { HealthRisksEditPage } from '../healthRisks/HealthRisksEditPage';
 import { NationalSocietyUsersListPage } from '../nationalSocietyUsers/NationalSocietyUsersListPage';
 import { NationalSocietyUsersCreatePage } from '../nationalSocietyUsers/NationalSocietyUsersCreatePage';
+import { NationalSocietyUsersAddExistingPage } from '../nationalSocietyUsers/NationalSocietyUsersAddExistingPage';
 import { NationalSocietyUsersEditPage } from '../nationalSocietyUsers/NationalSocietyUsersEditPage';
 import { HeadManagerConsentsPage } from '../headManagerConsents/HeadManagerConsentsPage';
 import { DataCollectorsListPage } from '../dataCollectors/DataCollectorsListPage';
@@ -59,6 +60,7 @@ export const App = ({ history }) => (
 
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users' component={NationalSocietyUsersListPage} roles={accessMap.nationalSocietyUsers.list} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/add' component={NationalSocietyUsersCreatePage} roles={accessMap.nationalSocietyUsers.add} />
+        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/addExisting' component={NationalSocietyUsersAddExistingPage} roles={accessMap.nationalSocietyUsers.add} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/users/:nationalSocietyUserId/edit' component={NationalSocietyUsersEditPage} roles={accessMap.nationalSocietyUsers.edit} />
 
         <AuthRoute exact path='/globalcoordinators' component={GlobalCoordinatorsListPage} roles={accessMap.globalCoordinators.list} />
