@@ -5,7 +5,7 @@ import { BaseLayout } from "../layout/BaseLayout";
 import { ReactReduxContext } from 'react-redux'
 
 export const AuthRoute = ({ component: Component, roles, computedMatch, ...rest }) => (
-  <Route {...rest} render={props => {
+  <Route exact {...rest} render={props => {
     var tokenData = auth.getAccessTokenData();
 
     if (!tokenData) {
