@@ -19,8 +19,7 @@ function* rootSaga() {
     ...globalCoordinatorsSagas(),
     ...healthRisksSagas(),
     ...nationalSocietyUsersSagas(),
-    ...dataCollectorsSagas()
-    ...nationalSocietyUsersSagas(),
+    ...dataCollectorsSagas(),
     ...headManagerConsentsSagas()
   ]);
 }

@@ -21,7 +21,6 @@ export const createRootReducer = (history) => combineReducers({
   globalCoordinators: globalCoordinatorsReducer,
   healthRisks: healthRisksReducer,
   nationalSocietyUsers: nationalSocietyUsersReducer,
-  dataCollectors: dataCollectorsReducer
-  nationalSocietyUsers: nationalSocietyUsersReducer,
+  dataCollectors: dataCollectorsReducer,
   headManagerConsents: headManagerConsentsReducer
 });
