@@ -70,12 +70,12 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Sets a user as the pending Head Manager for the National Society. Next time this user logs in, the person will get a consent form, and if the user consents the user
         /// will be the next Head Manager
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="nationalSocietyId"></param>
         /// <param name="requestDto"></param>
         /// <returns></returns>
-        [Route("{id}/setHeadManager"), HttpPost, NeedsPolicy(Policy.HeadManagerAccess)]
-        public async Task<Result> SetHeadManager(int id, [FromBody]SetAsHeadManagerRequestDto requestDto) =>
-            await _nationalSocietyService.SetPendingHeadManager(id, requestDto.UserId);
+        [Route("{nationalSocietyId}/setHeadManager"), HttpPost, NeedsPolicy(Policy.HeadManagerAccess)]
+        public async Task<Result> SetHeadManager(int nationalSocietyId, [FromBody]SetAsHeadManagerRequestDto requestDto) =>
+            await _nationalSocietyService.SetPendingHeadManager(nationalSocietyId, requestDto.UserId);
 
 
         /// <summary>

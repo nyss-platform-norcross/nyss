@@ -37,6 +37,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
         remove={props.remove}
         nationalSocietyId={props.nationalSocietyId}
         setAsHeadManager={props.setAsHeadManager}
+        user={props.user}
       />
     </Fragment>
   );

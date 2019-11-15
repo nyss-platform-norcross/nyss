@@ -18,10 +18,14 @@ import { strings, stringKeys } from '../../strings';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { Tooltip } from '@material-ui/core';
 
-export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, setAsHeadManager, isSettingAsHead }) => {
+export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, setAsHeadManager, isSettingAsHead, user }) => {
   if (isListFetching) {
     return <Loading />;
   }
+
+  const headManagers = list.filter((u) => { return u.isHeadManager; });
+  const hasSimilarAccess = user.roles.filter((r) => { return ["GlobalCoordinator", "Administrator", "TechnicalAdvisor"].indexOf(r) !== -1; }).length > 0;
+  const hasHeadManagerAccess = hasSimilarAccess || user.name === (headManagers.length > 0 && headManagers[0].email)
 
   return (
     <Table>
@@ -53,6 +57,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
               <TableRowAction onClick={() => remove(row.id, row.role)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
               {
+                hasHeadManagerAccess &&
                 !row.isHeadManager && (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() ||
                   Roles.Manager.toLowerCase() === row.role.toLowerCase()) &&
                 <TableRowMenu id={row.id} items={[

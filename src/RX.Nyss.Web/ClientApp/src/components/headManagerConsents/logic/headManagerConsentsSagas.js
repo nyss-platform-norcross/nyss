@@ -13,7 +13,7 @@ function* getPendingConsents() {
   try {
     const response = yield call(http.get, "/api/nationalSociety/pendingConsents");
 
-    yield put(actions.openHeadManagerConsentsPage.success(response.value.pendingHeadManagerConsents));
+    yield put(actions.openHeadManagerConsentsPage.success(response.value));
   } catch (error) {
     yield put(actions.openHeadManagerConsentsPage.failure(error.message));
   }
