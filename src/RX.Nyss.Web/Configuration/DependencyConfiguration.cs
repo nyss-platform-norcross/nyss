@@ -183,6 +183,7 @@ namespace RX.Nyss.Web.Configuration
                 });
 
             serviceCollection.AddRazorPages();
+            serviceCollection.AddHttpClient();
 
             // In production, the React files will be served from this directory
             serviceCollection.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });

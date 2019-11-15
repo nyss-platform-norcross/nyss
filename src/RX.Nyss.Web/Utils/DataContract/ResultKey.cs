@@ -111,5 +111,10 @@
             public const string RemoveError = "dataCollector.remove.error";
         }
 
+        public static class Geolocation
+        {
+            public const string NotFound = "There were no matching results when retrieving data from Nominatim API";
+        }
+
     }
 }
