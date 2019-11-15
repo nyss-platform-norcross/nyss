@@ -38,7 +38,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             // Arrange
             _nyssContextMock = Substitute.For<INyssContext>();
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _healthRiskService = new HealthRiskService(_nyssContextMock, loggerAdapterMock);
+            _healthRiskService = new HealthRiskService(_nyssContextMock);
 
             var users = new List<User>
             {

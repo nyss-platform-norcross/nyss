@@ -12,7 +12,6 @@ using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
-using Error = Microsoft.Azure.Amqp.Framing.Error;
 
 namespace RX.Nyss.Web.Features.Project
 {
@@ -44,12 +43,12 @@ namespace RX.Nyss.Web.Features.Project
             var project = await _nyssContext.Projects
                 .Include(p => p.NationalSociety)
                 .Include(p => p.ProjectHealthRisks)
-                .ThenInclude(phr => phr.HealthRisk)
-                .ThenInclude(hr => hr.LanguageContents)
+                    .ThenInclude(phr => phr.HealthRisk)
+                        .ThenInclude(hr => hr.LanguageContents)
                 .Include(p => p.ProjectHealthRisks)
-                .ThenInclude(phr => phr.AlertRule)
+                    .ThenInclude(phr => phr.AlertRule)
                 .Include(p => p.ProjectHealthRisks)
-                .ThenInclude(phr => phr.Reports)
+                    .ThenInclude(phr => phr.Reports)
                 .Include(p => p.AlertRecipients)
                 .Select(p => new ProjectResponseDto
                 {
@@ -95,12 +94,12 @@ namespace RX.Nyss.Web.Features.Project
         {
             var projects = await _nyssContext.Projects
                 .Include(p => p.ProjectHealthRisks)
-                .ThenInclude(phr => phr.Alerts)
+                    .ThenInclude(phr => phr.Alerts)
                 .Where(p => p.NationalSocietyId == nationalSocietyId)
                 .OrderBy(p => p.State)
-                .ThenBy(p => p.EndDate.HasValue)
-                .ThenBy(p => p.EndDate)
-                .ThenBy(p => p.Name)
+                    .ThenBy(p => p.EndDate.HasValue)
+                    .ThenBy(p => p.EndDate)
+                    .ThenBy(p => p.Name)
                 .Select(p => new ProjectListItemResponseDto
                 {
                     Id = p.Id,

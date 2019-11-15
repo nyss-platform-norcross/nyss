@@ -6,7 +6,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.HealthRisk.Dto;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.HealthRisk
@@ -23,12 +22,10 @@ namespace RX.Nyss.Web.Features.HealthRisk
     public class HealthRiskService : IHealthRiskService
     {
         private readonly INyssContext _nyssContext;
-        private readonly ILoggerAdapter _loggerAdapter;
 
-        public HealthRiskService(INyssContext nyssContext, ILoggerAdapter loggerAdapter)
+        public HealthRiskService(INyssContext nyssContext)
         {
             _nyssContext = nyssContext;
-            _loggerAdapter = loggerAdapter;
         }
 
         public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks(string userName)

@@ -27,10 +27,7 @@ namespace RX.Nyss.Web.Features.HealthRisk.Dto
                 RuleFor(hr => hr.AlertRuleCountThreshold).GreaterThanOrEqualTo(0).When(hr => hr.AlertRuleCountThreshold.HasValue);
                 RuleFor(hr => hr.AlertRuleDaysThreshold).GreaterThanOrEqualTo(0).When(hr => hr.AlertRuleDaysThreshold.HasValue);
                 RuleFor(hr => hr.AlertRuleDaysThreshold).Null().When(hr => hr.AlertRuleCountThreshold.HasValue && hr.AlertRuleCountThreshold == 1);
-                RuleFor(hr => hr.AlertRuleKilometersThreshold).GreaterThanOrEqualTo(0).When(hr => hr.AlertRuleKilometersThreshold.HasValue);
-                RuleFor(hr => hr.AlertRuleKilometersThreshold).Null().When(hr => hr.AlertRuleCountThreshold.HasValue && hr.AlertRuleCountThreshold == 1);
                 RuleFor(hr => hr.LanguageContent).NotEmpty();
-                RuleForEach(hr => hr.LanguageContent).SetValidator(new HealthRiskLanguageContentDto.Validator());
             }
         }
     }

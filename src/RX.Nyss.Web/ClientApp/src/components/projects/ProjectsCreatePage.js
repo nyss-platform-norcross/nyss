@@ -14,7 +14,6 @@ import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
 import AddIcon from '@material-ui/icons/Add';
 import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
@@ -116,10 +115,6 @@ const ProjectsCreatePageComponent = (props) => {
               options={healthRiskDataSource}
               onChange={onHealthRiskChange}
             />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Divider />
           </Grid>
 
           {selectedHealthRisks.length > 0 &&

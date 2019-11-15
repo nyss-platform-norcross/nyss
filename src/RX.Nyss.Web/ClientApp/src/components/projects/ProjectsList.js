@@ -20,7 +20,7 @@ export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, remove, 
   }
 
   return (
-    <Grid container spacing={3} fullWidth style={{ maxWidth: 1200 }}>
+    <Grid container spacing={3} style={{ maxWidth: 1200 }}>
       {list.map(project => (
         <Grid key={`projectsListItem_${project.id}`} item xs={6}>
           <Card key={project.id}>
@@ -80,12 +80,6 @@ export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, remove, 
             </CardContent>
             <CardActions>
               <Grid container direction="row" justify="flex-end" alignItems="center">
-                <Grid item xs={1}>
-                  <IconButton size="small" onClick={() => goToEdition(nationalSocietyId, project.id)} aria-label={"Edit"}><EditIcon /></IconButton>
-                </Grid>
-                <Grid item xs={1}>
-                  <IconButton size="small" onClick={() => remove(nationalSocietyId, project.id)} aria-label={"Delete"}><ClearIcon /></IconButton>
-                </Grid>
                 <Grid item xs={4}>
                   <Button onClick={() => goToEdition(nationalSocietyId, project.id)} endIcon={<ArrowForwardIcon />}>{strings(stringKeys.project.list.open)}</Button>
                 </Grid>
