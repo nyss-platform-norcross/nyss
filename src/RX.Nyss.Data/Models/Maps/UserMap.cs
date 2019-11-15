@@ -9,16 +9,6 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.HasKey(u => u.Id);
-            builder.HasOne(u => u.ApplicationLanguage).WithMany().OnDelete(DeleteBehavior.Restrict);
-            builder.HasMany(u => u.UserNationalSocieties);
-            builder.HasDiscriminator(u => u.Role)
-                .HasValue<SupervisorUser>(Role.Supervisor)
-                .HasValue<ManagerUser>(Role.Manager)
-                .HasValue<AdministratorUser>(Role.Administrator)
-                .HasValue<GlobalCoordinatorUser>(Role.GlobalCoordinator)
-                .HasValue<DataConsumerUser>(Role.DataConsumer)
-                .HasValue<TechnicalAdvisorUser>(Role.TechnicalAdvisor);
-            
             builder.Property(u => u.Name).HasMaxLength(100).IsRequired();
             builder.Property(u => u.IdentityUserId);
             builder.Property(u => u.Role).HasConversion<string>().HasMaxLength(50).IsRequired();
@@ -27,6 +17,14 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(u => u.AdditionalPhoneNumber).HasMaxLength(20);
             builder.Property(u => u.Organization).HasMaxLength(100);
             builder.Property(u => u.IsFirstLogin).IsRequired();
+            builder.HasDiscriminator(u => u.Role)
+                .HasValue<SupervisorUser>(Role.Supervisor)
+                .HasValue<ManagerUser>(Role.Manager)
+                .HasValue<AdministratorUser>(Role.Administrator)
+                .HasValue<GlobalCoordinatorUser>(Role.GlobalCoordinator)
+                .HasValue<DataConsumerUser>(Role.DataConsumer)
+                .HasValue<TechnicalAdvisorUser>(Role.TechnicalAdvisor);
+            builder.HasOne(u => u.ApplicationLanguage).WithMany().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -62,7 +62,7 @@ export const stringKeys = {
       alertRuleDescription: "healthRisk.form.alertRuleDescription",
       alertRuleCountThreshold: "healthRisk.form.alertRuleCountThreshold",
       alertRuleDaysThreshold: "healthRisk.form.alertRuleDaysThreshold",
-      alertRuleMetersThreshold: "healthRisk.form.alertRuleMetersThreshold",
+      alertRuleKilometersThreshold: "healthRisk.form.alertRuleKilometersThreshold",
       contentLanguageName: "healthRisk.form.contentLanguageName",
       contentLanguageCaseDefinition: "healthRisk.form.contentLanguageCaseDefinition",
       contentLanguageFeedbackMessage: "healthRisk.form.contentLanguageFeedbackMessage",
@@ -102,6 +102,48 @@ export const stringKeys = {
       gatewayType: "smsGateway.list.gatewayType",
       removalConfirmation: "smsGateway.list.removalConfirmation"
     },
+  },
+  project: {
+    title: "project.title",
+    addNew: "project.addNew",
+    form: {
+      creationTitle: "project.form.creationTitle",
+      editionTitle: "project.form.editionTitle",
+      name: "project.form.name",
+      timeZone: "project.form.timeZone",
+      healthRisks: "project.form.healthRisks",
+      healthRisksSetion: "project.form.healthRisksSetion",
+      caseDefinition: "project.form.caseDefinition",
+      feedbackMessage: "project.form.feedbackMessage",
+      alertsSetion: "project.form.alertsSetion",
+      alertRuleCountThreshold: "project.form.alertRuleCountThreshold",
+      alertRuleDaysThreshold: "project.form.alertRuleDaysThreshold",
+      alertRuleKilometersThreshold: "project.form.alertRuleKilometersThreshold",
+      notificationsSetion: "project.form.notificationsSetion",
+      notificationDescription: "project.form.notificationDescription",
+      email: "project.form.email",
+      addEmail: "project.form.addEmail",
+      create: "project.form.create",
+      update: "project.form.update"
+    },
+    list: {
+      name: "project.list.name",
+      totalReportCount: "project.list.totalReportCount",
+      activeDataCollectorCount: "project.list.activeDataCollectorCount",
+      startDate: "project.list.startDate",
+      escalatedAlertCount: "project.list.escalatedAlertCount",
+      supervisorCount: "project.list.supervisorCount",
+      endDate: "project.list.endDate",
+      ongoing: "project.list.ongoing",
+      open: "project.list.open",
+      edit: "project.list.edit",
+      remove: "project.list.remove",
+      removalConfirmation: "project.list.removalConfirmation"
+    },
+    dashboard: {
+      title: "project.dashboard.title"
+    },
+    settings: "project.settings.title"
   },
   globalCoordinator: {
     title: "globalCoordinator.title",

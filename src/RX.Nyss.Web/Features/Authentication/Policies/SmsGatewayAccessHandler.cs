@@ -17,7 +17,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
     {
         public const string RouteValueName = "smsGatewayId";
         public static readonly ResourceType ResourceType = ResourceType.NationalSociety;
-        public static readonly IEnumerable<string> RolesWithAccessToAllSmsGateways = new[] {Role.Administrator.ToString(), Role.GlobalCoordinator.ToString()}.ToList();
+        public static readonly IEnumerable<string> RolesWithAccessToAllSmsGateways = new[] {Role.Administrator.ToString()}.ToList();
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INyssContext _nyssContext;

@@ -45,10 +45,5 @@ namespace RX.Nyss.Web.Features.DataCollector
         [HttpGet, Route("project/{projectId:int}/dataCollector/formData"), NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
         public async Task<Result<DataCollectorFormDataResponse>> GetDataCollectorFormData(int projectId) =>
             await _dataCollectorService.GetFormData(projectId, User.Identity.Name);
-
-        //ToDo: Add project access policy once projects are ready. Additionally move it to project controller (?)
-        [HttpGet, Route("project/{projectId:int}/basicData"), NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
-        public async Task<Result> GetProjectBasicData(int projectId) =>
-            await _dataCollectorService.GetProjectBasicData(projectId);
     }
 }

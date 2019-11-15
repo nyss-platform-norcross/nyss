@@ -21,7 +21,7 @@ export const create = {
 };
 
 export const edit = {
-  invoke: (data) => ({ type: EDIT_HEALTH_RISK.INVOKE, data }),
+  invoke: (id, data) => ({ type: EDIT_HEALTH_RISK.INVOKE, id, data }),
   request: () => ({ type: EDIT_HEALTH_RISK.REQUEST }),
   success: () => ({ type: EDIT_HEALTH_RISK.SUCCESS }),
   failure: (message) => ({ type: EDIT_HEALTH_RISK.FAILURE, message })

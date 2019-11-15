@@ -45,6 +45,20 @@ export const initialState = {
     formSaving: false,
     formData: null
   },
+  projects: {
+    listFetching: false,
+    listRemoving: {},
+    listStale: true,
+    listData: [],
+    formFetching: false,
+    formHealthRisks: [],
+    formSaving: false,
+    formData: null,
+    dashboard: {
+      name: null,
+      isFetching: false
+    }
+  },
   globalCoordinators: {
     listFetching: false,
     listRemoving: {},

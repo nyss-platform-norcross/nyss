@@ -24,12 +24,12 @@ const validateField = (field, validators, formValues) => {
   };
 };
 
-const onChange = (name, newValue, subscribers, form, validators, suspendValidation, formSubscribers) => {
+const onChange = (name, newValue, subscribers, form, validatorDefinition, suspendValidation, formSubscribers) => {
   const field = form[name];
   field.value = newValue;
 
-  if (validators && !suspendValidation) {
-    field.error = validateField(field, validators[name], getFormValues(form)).errorMessage;
+  if (validatorDefinition && !suspendValidation) {
+    field.error = validateField(field, validatorDefinition, getFormValues(form)).errorMessage;
   }
 
   for (let subscriber of subscribers) {
@@ -75,6 +75,25 @@ const getFormValues = (form) => {
   return result;
 };
 
+const createFormField = (name, value, validatorDefinition, form, formSubscribers) => {
+  const subscribers = [];
+
+  return {
+    name: name,
+    value: value,
+    error: null,
+    touched: false,
+    subscribe: callback => {
+      subscribers.push(callback);
+      return {
+        unsubscribe: () => subscribers.splice(subscribers.indexOf(callback), 1)
+      };
+    },
+    _subscribers: subscribers,
+    update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, validatorDefinition, suspendValidation, formSubscribers)
+  }
+}
+
 export const createForm = (fields, validators) => {
   const form = {};
 
@@ -85,22 +104,7 @@ export const createForm = (fields, validators) => {
       continue;
     }
 
-    const subscribers = [];
-
-    form[name] = {
-      name: name,
-      value: fields[name],
-      error: null,
-      touched: false,
-      subscribe: callback => {
-        subscribers.push(callback);
-        return {
-          unsubscribe: () => subscribers.splice(subscribers.indexOf(callback), 1)
-        };
-      },
-      _subscribers: subscribers,
-      update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, validators, suspendValidation, formSubscribers)
-    };
+    form[name] = createFormField(name, fields[name], validators && validators[name], form, formSubscribers);
   }
 
   const subscribeToForm = callback => {
@@ -110,11 +114,17 @@ export const createForm = (fields, validators) => {
     };
   };
 
+  const removeField = (name) => {
+    delete form[name];
+  };
+
   return {
     fields: form,
     isValid: () => validateFields(form, validators, getFormValues(form)),
     getValues: () => getFormValues(form),
     subscribe: subscribeToForm,
+    addField: (name, value, validators) => { form[name] = createFormField(name, value, validators, form, formSubscribers) },
+    removeField: (name, value, validators) => removeField(name),
     subscribeOnce: callback => {
       const { unsubscribe } = subscribeToForm(() => {
         callback();

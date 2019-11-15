@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Web.Utils.Extensions
 {
-    public static class HttpContextAccessorExtensions
+    public static class ContextAccessorExtensions
     {
         public static int? GetRouteParameterAsInt(this IHttpContextAccessor httpContextAccessor, string routeParameterName)
         {

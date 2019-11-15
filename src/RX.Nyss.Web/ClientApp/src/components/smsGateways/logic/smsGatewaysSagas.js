@@ -39,11 +39,11 @@ function* openSmsGatewayCreation({ nationalSocietyId }) {
   }
 };
 
-function* openSmsGatewayEdition({ smsGatewayId }) {
+function* openSmsGatewayEdition({ nationalSocietyId, smsGatewayId }) {
   yield put(actions.openEdition.request());
   try {
     const response = yield call(http.get, `/api/smsGateway/${smsGatewayId}/get`);
-    yield openSmsGatewaysModule(response.value.nationalSocietyId);
+    yield openSmsGatewaysModule(nationalSocietyId);
     yield put(actions.openEdition.success(response.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
@@ -53,7 +53,7 @@ function* openSmsGatewayEdition({ smsGatewayId }) {
 function* createSmsGateway({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/smsGateway/add/nationalSociety/${nationalSocietyId}`, data);
+    const response = yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/smsGateway/add`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage("The SMS Gateway was added successfully"));
@@ -73,13 +73,12 @@ function* editSmsGateway({ nationalSocietyId, data }) {
   }
 };
 
-function* removeSmsGateway({ smsGatewayId }) {
+function* removeSmsGateway({ nationalSocietyId, smsGatewayId }) {
   yield put(actions.remove.request(smsGatewayId));
   try {
-    const smsGateway = yield call(http.get, `/api/smsGateway/${smsGatewayId}/get`);
     yield call(http.post, `/api/smsGateway/${smsGatewayId}/remove`);
     yield put(actions.remove.success(smsGatewayId));
-    yield call(getSmsGateways, smsGateway.value.nationalSocietyId);
+    yield call(getSmsGateways, nationalSocietyId);
   } catch (error) {
     yield put(actions.remove.failure(smsGatewayId, error.message));
   }
@@ -88,7 +87,7 @@ function* removeSmsGateway({ smsGatewayId }) {
 function* getSmsGateways(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/smsGateway/list/nationalSociety/${nationalSocietyId}`);
+    const response = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/smsGateway/list`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));

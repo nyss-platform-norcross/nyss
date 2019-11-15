@@ -8,8 +8,8 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<Zone> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.Property(x => x.Name).HasMaxLength(100);
+            builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

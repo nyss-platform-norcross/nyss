@@ -106,6 +106,18 @@
             public const string HealthRiskNumberAlreadyExists = "healthRisk.healthRiskNumberAlreadyExists";
         }
 
+        public static class Project
+        {
+            public const string NotFound = "project.notFound";
+            public const string SuccessfullyAdded = "project.successfullyAdded";
+            public const string SuccessfullyUpdated = "project.successfullyUpdated";
+            public const string SuccessfullyDeleted = "project.successfullyDeleted";
+            public const string ProjectDoesNotExist = "project.projectDoesNotExist";
+            public const string NationalSocietyDoesNotExist = "project.nationalSocietyDoesNotExist";
+            public const string HealthRiskDoesNotExist = "project.healthRiskDoesNotExist";
+            public const string HealthRiskContainsReports = "project.healthRiskContainsReports";
+        }
+
         public const string UnexpectedError = "error.unexpected";
         
         public static class DataCollector
@@ -119,11 +131,6 @@
             public const string EditError = "dataCollector.edit.error";
             public const string RemoveSuccess = "dataCollector.remove.success";
             public const string RemoveError = "dataCollector.remove.error";
-        }
-
-        public static class Project
-        {
-            public const string NotFound = "project.notFound";
         }
 
         public static class Geolocation

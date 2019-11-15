@@ -39,6 +39,6 @@ namespace RX.Nyss.Data.Models
 
         public virtual DataCollector DataCollector { get; set; }
 
-        public virtual ICollection<AlertReport> ReportAlerts { get; set; }
+        public virtual ICollection<AlertReport> ReportAlerts { get; set; } = new List<AlertReport>();
     }
 }

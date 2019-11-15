@@ -31,9 +31,9 @@ namespace RX.Nyss.Web.Features.SmsGateway
         private readonly IConfig _config;
         private readonly IBlobService _blobService;
 
-        public SmsGatewayService(INyssContext context, ILoggerAdapter loggerAdapter, IConfig config, IBlobService blobService)
+        public SmsGatewayService(INyssContext nyssContext, ILoggerAdapter loggerAdapter, IConfig config, IBlobService blobService)
         {
-            _nyssContext = context;
+            _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _config = config;
             _blobService = blobService;
@@ -47,8 +47,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
                     Id = gs.Id,
                     Name = gs.Name,
                     ApiKey = gs.ApiKey,
-                    GatewayType = gs.GatewayType,
-                    NationalSocietyId = gs.NationalSocietyId
+                    GatewayType = gs.GatewayType
                 })
                 .FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
@@ -160,7 +159,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
         {
             try
             {
-                var gatewaySettingToDelete = await _nyssContext.GatewaySettings.FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
+                var gatewaySettingToDelete = await _nyssContext.GatewaySettings.FindAsync(smsGatewayId);
 
                 if (gatewaySettingToDelete == null)
                 {

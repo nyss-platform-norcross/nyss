@@ -23,7 +23,7 @@ const SmsGatewaysEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
 
   useMount(() => {
-    props.openEdition(props.smsGatewayId);
+    props.openEdition(props.nationalSocietyId, props.smsGatewayId);
   });
 
   useEffect(() => {

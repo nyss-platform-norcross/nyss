@@ -6,8 +6,8 @@
 
         public int CountThreshold { get; set; }
 
-        public int? HoursThreshold { get; set; }
+        public int? DaysThreshold { get; set; }
 
-        public int? MetersThreshold { get; set; }
+        public int? KilometersThreshold { get; set; }
     }
 }

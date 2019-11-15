@@ -59,7 +59,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -r win-x86 --self-contained --no-build /p:PublishTrimmed=true /p:PublishReadyToRun=true /p:PublishReadyToRunShowWarnings=true -o "$(Build.ArtifactStagingDirectory)/webapp"'
+    arguments: './src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -r win-x86 --self-contained --no-build /p:PublishReadyToRun=true /p:PublishReadyToRunShowWarnings=true -o "$(Build.ArtifactStagingDirectory)/webapp"'
     zipAfterPublish: true
     modifyOutputPath: false
 

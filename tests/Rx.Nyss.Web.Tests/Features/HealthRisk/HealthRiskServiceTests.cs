@@ -19,27 +19,26 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
     {
         private readonly IHealthRiskService _healthRiskService;
         private readonly INyssContext _nyssContextMock;
-        private readonly ILoggerAdapter _loggerAdapterMock;
+        private readonly RX.Nyss.Data.Models.HealthRisk _healthRisk;
+        private const HealthRiskType HealthRiskType = RX.Nyss.Data.Concepts.HealthRiskType.Human;
         private const string UserName = "admin@domain.com";
         private const string HealthRiskName = "AWD";
         private const int HealthRiskId = 1;
         private const int HealthRiskCode = 1;
-        private HealthRiskType HealthRiskType = HealthRiskType.Human;
-        private RX.Nyss.Data.Models.HealthRisk _healthRisk;
         private const string FeedbackMessage = "Clean yo self";
         private const string CaseDefinition = "Some symptoms";
         private const int LanguageId = 1;
         private const int AlertRuleId = 1;
         private const int AlertRuleCountThreshold = 5;
-        private const int AlertRuleMeterThreshold = 10;
+        private const int AlertRuleKilometersThreshold = 10;
         private const int AlertRuleDaysThreshold = 2;
 
         public HealthRiskServiceTests()
         {
             // Arrange
             _nyssContextMock = Substitute.For<INyssContext>();
-            _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _healthRiskService = new HealthRiskService(_nyssContextMock, _loggerAdapterMock);
+            var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
+            _healthRiskService = new HealthRiskService(_nyssContextMock);
 
             var users = new List<User>
             {
@@ -80,8 +79,8 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 {
                     Id = AlertRuleId,
                     CountThreshold = AlertRuleCountThreshold,
-                    HoursThreshold = AlertRuleDaysThreshold,
-                    MetersThreshold = AlertRuleMeterThreshold,
+                    DaysThreshold = AlertRuleDaysThreshold,
+                    KilometersThreshold = AlertRuleKilometersThreshold,
                 }
             };
 
@@ -118,7 +117,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task CreateHealthRisk_WhenSuccessful_ShouldReturnSuccess()
         {
             // Arrange
-            var createHealthRiskDto = new CreateHealthRiskRequestDto
+            var healthRiskRequestDto = new HealthRiskRequestDto
             {
                 HealthRiskCode = 2,
                 HealthRiskType = HealthRiskType,
@@ -135,7 +134,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             };
 
             // Act
-            await _healthRiskService.CreateHealthRisk(createHealthRiskDto);
+            await _healthRiskService.CreateHealthRisk(healthRiskRequestDto);
 
             // Assert
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<RX.Nyss.Data.Models.HealthRisk>());
@@ -145,7 +144,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task CreateHealthRisk_WhenHealthRiskNumberAlreadyExists_ShouldReturnError()
         {
             // Arrange
-            var createHealthRiskDto = new CreateHealthRiskRequestDto
+            var healthRiskRequestDto = new HealthRiskRequestDto
             {
                 HealthRiskCode = HealthRiskCode,
                 HealthRiskType = HealthRiskType,
@@ -162,7 +161,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             };
 
             // Act
-            var result = await _healthRiskService.CreateHealthRisk(createHealthRiskDto);
+            var result = await _healthRiskService.CreateHealthRisk(healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -184,7 +183,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task GetHealthRisks_WhenSuccess_ShouldReturnAllHealthRisks()
         {
             // Act
-            var result = await _healthRiskService.GetHealthRisks(UserName);
+            var result = await _healthRiskService.ListHealthRisks(UserName);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -192,16 +191,13 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         }
 
         [Fact]
-        public async Task EditHealthRisk_WhenHealthRiskDoesntExist_ShouldReturnError()
+        public async Task EditHealthRisk_WhenHealthRiskDoesNotExist_ShouldReturnError()
         {
             // Arrange
-            var editHealthRisk = new EditHealthRiskRequestDto
-            {
-                Id = 2
-            };
+            var healthRiskRequestDto = new HealthRiskRequestDto();
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(editHealthRisk);
+            var result = await _healthRiskService.EditHealthRisk(2, healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -212,14 +208,13 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         public async Task EditHealthRisk_WhenSuccess_ShouldReturnSuccess()
         {
             // Arrange
-            var editHealthRisk = new EditHealthRiskRequestDto
+            var healthRiskRequestDto = new HealthRiskRequestDto
             {
-                Id = HealthRiskId,
                 HealthRiskCode = HealthRiskCode,
                 HealthRiskType = HealthRiskType,
                 AlertRuleCountThreshold = AlertRuleCountThreshold,
                 AlertRuleDaysThreshold = AlertRuleDaysThreshold,
-                AlertRuleMetersThreshold = 1,
+                AlertRuleKilometersThreshold = 1,
                 LanguageContent = new List<HealthRiskLanguageContentDto>
                 {
                     new HealthRiskLanguageContentDto
@@ -233,7 +228,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             };
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(editHealthRisk);
+            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
