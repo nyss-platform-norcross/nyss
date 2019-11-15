@@ -20,8 +20,8 @@ import * as roles from '../../authentication/roles';
 const NationalSocietyUsersAddExistingPageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
-      role: roles.Manager,   
-      email: "",     
+      role: roles.Manager,
+      email: "",
     };
 
     const validation = {
@@ -47,7 +47,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.form.addExistingTitle)}</Typography>      
+      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.form.addExistingTitle)}</Typography>
 
       {props.error &&
         <SnackbarContent
@@ -58,8 +58,8 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
        <Form onSubmit={handleSubmit}>
         <Box mb={3}>
           <Typography variant="body1">{strings(stringKeys.nationalSocietyUser.form.addExistingDescription)}</Typography>
-        </Box> 
-        
+        </Box>
+
          <Grid container spacing={3}>
 
           <Grid item xs={12}>
@@ -71,13 +71,13 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
             />
           </Grid>
 
-        </Grid> 
+        </Grid>
 
         <FormActions>
           <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.addExisting)}</SubmitButton>
         </FormActions>
-      </Form> 
+      </Form>
     </Fragment>
   );
 }
