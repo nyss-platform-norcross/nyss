@@ -10,5 +10,6 @@ export const OPEN_NATIONAL_SOCIETY_DASHBOARD = action("OPEN_NATIONAL_SOCIETY_DAS
 export const REMOVE_NATIONAL_SOCIETY = action("REMOVE_NATIONAL_SOCIETY");
 
 export const entityTypes = {
-  nationalSociety: id => `nationalSociety:${id}`
+  nationalSociety: id => `nationalSociety:${id}`,
+  project: id => `project:${id}`
 }

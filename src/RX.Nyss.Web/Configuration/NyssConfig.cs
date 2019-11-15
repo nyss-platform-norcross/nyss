@@ -50,6 +50,7 @@
             public string ServiceBus { get; set; }
             public string SmsGatewayBlobContainer { get; set; }
             public string GeneralBlobContainer { get; set; }
+            public string Nominatim { get; set; }
         }
 
         public class ServiceBusQueuesOptions

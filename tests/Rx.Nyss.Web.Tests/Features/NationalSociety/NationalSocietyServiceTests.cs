@@ -37,7 +37,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _configMock = Substitute.For<IConfig>();
             _userServiceMock = Substitute.For<IUserService>();
-            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, _loggerAdapterMock, _configMock, _userServiceMock);
+            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, _loggerAdapterMock, _userServiceMock);
 
             // Arrange
 

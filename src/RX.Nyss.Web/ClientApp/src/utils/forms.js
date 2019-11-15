@@ -134,5 +134,6 @@ export const validators = {
   integer: [() => strings(stringKeys.validation.invalidInteger), (value) => !value || !isNaN(Number(value))],
   minLength: (minLength) => [() => strings(stringKeys.validation.tooShortString).replace("{value}", minLength), (value) => !value || value.length >= minLength],
   maxLength: (maxLength) => [() => strings(stringKeys.validation.tooLongString).replace("{value}", maxLength), (value) => !value || value.length <= maxLength],
-  email: [() => strings(stringKeys.validation.invalidEmail), (value) => emailRegex.test(value)]
+  email: [() => strings(stringKeys.validation.invalidEmail), (value) => emailRegex.test(value)],
+  moduloTen: [() => strings(stringKeys.validation.invalidModuloTen), (value) => (Number(value) % 10 === 0)]
 };

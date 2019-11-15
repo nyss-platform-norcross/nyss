@@ -4,15 +4,14 @@ import { useLayout } from '../../utils/layout';
 import Typography from '@material-ui/core/Typography';
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
-import { useMount } from '../../utils/lifecycle';
 
 const HomeComponent = ({ user, push }) => {
-  useEffect(() => { 
+  useEffect(() => {
     if (!user.homePage){
       return;
     }
-    push(getHomePageUrl(user)) 
-  }, [user]);
+    push(getHomePageUrl(user))
+  }, [user, push]);
 
   return (
     <div>
@@ -21,7 +20,7 @@ const HomeComponent = ({ user, push }) => {
   );
 }
 
-const getHomePageUrl = (user) => { 
+const getHomePageUrl = (user) => {
   switch (user.homePage.page) {
     case "Root":
         return "/nationalsocieties";

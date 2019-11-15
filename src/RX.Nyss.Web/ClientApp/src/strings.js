@@ -145,6 +145,48 @@ export const stringKeys = {
       project: "nationalSocietyUser.list.project",
       removalConfirmation: "nationalSocietyUser.list.removalConfirmation"
     },
+    messages:{
+      creationSuccessful: "nationalSocietyUser.messages.creationSuccessful",
+    }
+  },
+  dataCollector: {
+    title: "dataCollectors.title",
+    addNew: "dataCollectors.addNew",
+    form: {
+      creationTitle: "dataCollectors.form.creationTitle",
+      editionTitle: "dataCollectors.form.editionTitle",
+      name: "dataCollectors.form.name",
+      displayName: "dataCollectors.form.displayName",
+      sex: "dataCollectors.form.sex",
+      phoneNumber: "dataCollectors.form.phoneNumber",
+      additionalPhoneNumber: "dataCollectors.form.additionalPhoneNumber",
+      latitude: "dataCollectors.form.latitude",
+      longitude: "dataCollectors.form.longitude",
+      create: "dataCollectors.form.create",
+      update: "dataCollectors.form.update",
+      birthYearGroup: "dataCollectors.form.birthYearGroup",
+      supervisor: "dataCollectors.form.supervisor",
+      village: "dataCollectors.form.village",
+      district: "dataCollectors.form.district",
+      region: "dataCollectors.form.region",
+      zone: "dataCollectors.form.zone"
+    },
+    list: {
+      name: "dataCollectors.list.name",
+      displayName: "dataCollectors.list.displayName",
+      phoneNumber: "dataCollectors.list.phoneNumber",
+      sex: "dataCollectors.list.sex",
+      location: "dataCollectors.list.location",
+      status: "dataCollectors.list.status",
+      removalConfirmation: "dataCollectors.list.removalConfirmation"
+    },
+    constants: {
+      sex: {
+        male: "dataCollectors.sex.male",
+        female: "dataCollectors.sex.female",
+        other: "dataCollectors.sex.other",
+      }
+    }
   },
   form: {
     cancel: "form.cancel"
@@ -179,6 +221,7 @@ export const stringKeys = {
     invalidEmail: "validation.invalidEmail",
     invalidInteger: "validation.invalidInteger",
     phoneNumberInvalid: "validation.phoneNumberInvalid",
+    invalidModuloTen: "validation.invalidModuloTen"
   }
 };
 

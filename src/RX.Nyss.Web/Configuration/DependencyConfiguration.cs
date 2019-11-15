@@ -146,6 +146,9 @@ namespace RX.Nyss.Web.Configuration
                     
                 options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
                     policy => policy.Requirements.Add(new SmsGatewayAccessRequirement()));
+                    
+                options.AddPolicy(Policy.DataCollectorAccess.ToString(),
+                    policy => policy.Requirements.Add(new DataCollectorAccessRequirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
@@ -153,6 +156,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, DataConsumerAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, TechnicalAdvisorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, SmsGatewayAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, DataCollectorAccessHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)
@@ -179,6 +183,7 @@ namespace RX.Nyss.Web.Configuration
                 });
 
             serviceCollection.AddRazorPages();
+            serviceCollection.AddHttpClient();
 
             // In production, the React files will be served from this directory
             serviceCollection.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });

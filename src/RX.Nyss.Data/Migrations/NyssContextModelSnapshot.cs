@@ -1711,7 +1711,15 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Sex")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
                     b.Property<int>("SupervisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BirthGroupDecade")
                         .HasColumnType("int");
 
                     b.Property<int>("VillageId")
