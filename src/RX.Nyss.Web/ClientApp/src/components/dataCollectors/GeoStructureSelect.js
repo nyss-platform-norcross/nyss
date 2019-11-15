@@ -99,6 +99,10 @@ export const GeoStructureSelect = ({ regions, initialDistricts, initialVillages,
           field={zoneIdField}
           name="zoneId"
         >
+          <MenuItem value="">
+            &nbsp;
+          </MenuItem>
+
           {zones.map(zone => (
             <MenuItem key={`zone_${zone.id}`} value={zone.id.toString()}>
               {zone.name}

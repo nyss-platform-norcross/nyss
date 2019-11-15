@@ -1,5 +1,4 @@
 import { strings, stringKeys } from "../strings";
-import { string } from "prop-types";
 
 const validateField = (field, validators, formValues) => {
   if (validators && validators.length !== 0) {

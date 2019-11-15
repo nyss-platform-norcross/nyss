@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191106123210_AddSexAndBirthYearGroupToDataCollector")]
+    [Migration("20191108142434_AddSexAndBirthYearGroupToDataCollector")]
     partial class AddSexAndBirthYearGroupToDataCollector
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -60,8 +60,8 @@ const DataCollectorsEditPageComponent = (props) => {
       sex: [validators.required],
       supervisorId: [validators.required],
       birthGroupDecade: [validators.required],
-      phoneNumber: [validators.required, validators.maxLength(20)],
-      additionalPhoneNumber: [validators.maxLength(20)],
+      phoneNumber: [validators.required, validators.phoneNumber, validators.maxLength(20)],
+      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
       villageId: [validators.required],
       districtId: [validators.required],
       regionId: [validators.required]
@@ -188,7 +188,7 @@ const DataCollectorsEditPageComponent = (props) => {
             <DataCollectorMap
               onChange={onLocationChange}
               location={{ lat: props.data.latitude, lng: props.data.longitude }}
-              zoom={16}
+              zoom={15}
             />
           </Grid>
         </Grid>

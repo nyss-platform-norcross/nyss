@@ -51,6 +51,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project).ThenInclude(p => p.NationalSociety)
                 .Include(dc => dc.Supervisor)
+                .Include(dc => dc.Zone)
                 .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
                 .SingleAsync(dc => dc.Id == dataCollectorId);
 
@@ -201,7 +202,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .SingleAsync(v => v.Id == createDto.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId);
 
             var zone = createDto.ZoneId != null
-                ? await _nyssContext.Zones.SingleAsync(z => z.Village.Id == village.Id)
+                ? await _nyssContext.Zones.SingleAsync(z => z.Id == createDto.ZoneId.Value)
                 : null;
 
             var dataCollector = new Nyss.Data.Models.DataCollector
@@ -246,7 +247,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .SingleAsync(v => v.Id == editDto.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId);
 
             var zone = editDto.ZoneId != null
-                ? await _nyssContext.Zones.SingleAsync(z => z.Village.Id == village.Id)
+                ? await _nyssContext.Zones.SingleAsync(z => z.Id == editDto.ZoneId.Value)
                 : null;
 
             dataCollector.Name = editDto.Name;

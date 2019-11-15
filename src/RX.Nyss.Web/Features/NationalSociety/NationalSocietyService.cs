@@ -29,7 +29,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IUserService _userService;
 
-        public NationalSocietyService(INyssContext context, ILoggerAdapter loggerAdapter, IConfig config, IUserService userService)
+        public NationalSocietyService(INyssContext context, ILoggerAdapter loggerAdapter, IUserService userService)
         {
             _nyssContext = context;
             _loggerAdapter = loggerAdapter;

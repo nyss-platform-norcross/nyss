@@ -6,8 +6,8 @@ namespace RX.Nyss.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "BirthYearGroup",
+            migrationBuilder.AddColumn<int>(
+                name: "BirthGroupDecade",
                 schema: "nyss",
                 table: "DataCollectors",
                 maxLength: 20,
@@ -26,7 +26,7 @@ namespace RX.Nyss.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "BirthYearGroup",
+                name: "BirthGroupDecade",
                 schema: "nyss",
                 table: "DataCollectors");
 

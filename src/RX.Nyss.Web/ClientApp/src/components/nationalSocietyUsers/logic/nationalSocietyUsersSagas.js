@@ -101,44 +101,52 @@ function* getNationalSocietyUsers(nationalSocietyId) {
 function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-        return `/api/nationalSociety/${nationalSocietyId}/technicalAdvisor/create`;
+      return `/api/nationalSociety/${nationalSocietyId}/technicalAdvisor/create`;
     case roles.Manager:
-        return `/api/nationalSociety/${nationalSocietyId}/manager/create`;
+      return `/api/nationalSociety/${nationalSocietyId}/manager/create`;
     case roles.DataConsumer:
-        return `/api/nationalSociety/${nationalSocietyId}/dataConsumer/create`;
+      return `/api/nationalSociety/${nationalSocietyId}/dataConsumer/create`;
+    default:
+      throw new Error("Role is not valid");
   }
 };
 
 function getSpecificRoleUserEditionUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-        return `/api/nationalSociety/technicalAdvisor/${userId}/edit`;
+      return `/api/nationalSociety/technicalAdvisor/${userId}/edit`;
     case roles.Manager:
-        return `/api/nationalSociety/manager/${userId}/edit`;
+      return `/api/nationalSociety/manager/${userId}/edit`;
     case roles.DataConsumer:
-        return `/api/nationalSociety/dataConsumer/${userId}/edit`;
+      return `/api/nationalSociety/dataConsumer/${userId}/edit`;
+    default:
+      throw new Error("Role is not valid");
   }
 };
 
 function getSpecificRoleUserRetrievalUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-        return `/api/nationalSociety/technicalAdvisor/${userId}/get`;
+      return `/api/nationalSociety/technicalAdvisor/${userId}/get`;
     case roles.Manager:
-        return `/api/nationalSociety/manager/${userId}/get`;
+      return `/api/nationalSociety/manager/${userId}/get`;
     case roles.DataConsumer:
-        return `/api/nationalSociety/dataConsumer/${userId}/get`;
+      return `/api/nationalSociety/dataConsumer/${userId}/get`;
+    default:
+      throw new Error("Role is not valid");
   }
 };
 
 function getSpecificRoleUserRemovalUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-        return `/api/nationalSociety/technicalAdvisor/${userId}/remove`;
+      return `/api/nationalSociety/technicalAdvisor/${userId}/remove`;
     case roles.Manager:
-        return `/api/nationalSociety/manager/${userId}/remove`;
+      return `/api/nationalSociety/manager/${userId}/remove`;
     case roles.DataConsumer:
-        return `/api/nationalSociety/dataConsumer/${userId}/remove`;
+      return `/api/nationalSociety/dataConsumer/${userId}/remove`;
+    default:
+      throw new Error("Role is not valid");
   }
 };
 
