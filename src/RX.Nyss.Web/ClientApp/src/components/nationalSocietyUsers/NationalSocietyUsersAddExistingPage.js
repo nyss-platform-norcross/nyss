@@ -9,14 +9,12 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SelectInput from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
+import Box from '@material-ui/core/Box';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import { userRoles } from './logic/nationalSocietyUsersConstants';
 import * as roles from '../../authentication/roles';
 
 const NationalSocietyUsersAddExistingPageComponent = (props) => {
@@ -49,7 +47,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.form.addExistingTitle)}</Typography>
+      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.form.addExistingTitle)}</Typography>      
 
       {props.error &&
         <SnackbarContent
@@ -58,6 +56,10 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
       }
 
        <Form onSubmit={handleSubmit}>
+        <Box mb={3}>
+          <Typography variant="paragraph">{strings(stringKeys.nationalSocietyUser.form.addExistingDescription)}</Typography>
+        </Box> 
+        
          <Grid container spacing={3}>
 
           <Grid item xs={12}>

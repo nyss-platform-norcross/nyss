@@ -133,6 +133,7 @@ export const stringKeys = {
     form: {
       creationTitle: "nationalSocietyUser.form.creationTitle",
       addExistingTitle: "nationalSocietyUser.form.addExistingTitle",
+      addExistingDescription: "nationalSocietyUser.form.addExistingDescription",
       editionTitle: "nationalSocietyUser.form.editionTitle",
       name: "nationalSocietyUser.form.name",
       role: "nationalSocietyUser.form.role",
