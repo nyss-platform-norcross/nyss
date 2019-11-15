@@ -6,6 +6,7 @@ import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietyUsersTable from './NationalSocietyUsersTable';
@@ -21,14 +22,16 @@ const NationalSocietyUsersListPageComponent = (props) => {
     <Fragment>
       <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.title)}</Typography>
 
-      <TableActions>               
-       <Button onClick={() => props.goToAddExisting(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          {strings(stringKeys.nationalSocietyUser.addExisting)}
-       </Button>
+      <TableActions>
+          <Box mr={2}>
+            <Button onClick={() => props.goToAddExisting(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+                {strings(stringKeys.nationalSocietyUser.addExisting)}
+            </Button>   
+          </Box>
 
-        <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          {strings(stringKeys.nationalSocietyUser.addNew)}
-       </Button>
+          <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+            {strings(stringKeys.nationalSocietyUser.addNew)}
+          </Button>      
       </TableActions>
 
       <NationalSocietyUsersTable
