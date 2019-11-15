@@ -18,17 +18,25 @@ export const projectsSiteMap = [
     access: accessMap.projects.add
   },
   {
-    parentPath: "/nationalsocieties/:nationalSocietyId/projects",
-    path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/edit",
-    title: () => strings(stringKeys.project.form.editionTitle),
-    access: accessMap.projects.edit
-  },
-  {
-    parentPath: "/nationalsocieties/:nationalSocietyId/projects",
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
     path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard",
     title: () => strings(stringKeys.project.dashboard.title),
     access: accessMap.projects.get,
     placeholder: placeholders.leftMenu,
     placeholderIndex: 1
-  }
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects",
+    path: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
+    title: () => "{projectName}",
+    access: accessMap.projects.get
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
+    path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/edit",
+    title: () => strings(stringKeys.project.settings),
+    access: accessMap.projects.get,
+    placeholder: placeholders.leftMenu,
+    placeholderIndex: 4
+  },
 ];

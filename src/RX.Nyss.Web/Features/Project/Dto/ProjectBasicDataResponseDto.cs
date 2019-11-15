@@ -1,4 +1,4 @@
-namespace RX.Nyss.Web.Features.DataCollector.Dto
+namespace RX.Nyss.Web.Features.Project.Dto
 {
     public class ProjectBasicDataResponseDto
     {

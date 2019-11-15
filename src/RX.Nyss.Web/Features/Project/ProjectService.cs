@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +22,7 @@ namespace RX.Nyss.Web.Features.Project
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> DeleteProject(int projectId);
+        Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
     }
 
     public class ProjectService : IProjectService
@@ -352,6 +352,26 @@ namespace RX.Nyss.Web.Features.Project
                 _loggerAdapter.Debug(exception);
                 return exception.Result;
             }
+        }
+
+        public async Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId)
+        {
+            var project = await _nyssContext.Projects
+                .Include(p => p.NationalSociety).ThenInclude(n => n.Country)
+                .Select(dc => new ProjectBasicDataResponseDto
+                {
+                    Id = dc.Id,
+                    Name = dc.Name,
+                    NationalSociety = new ProjectBasicDataResponseDto.NationalSocietyIdDto
+                    {
+                        Id = dc.NationalSociety.Id,
+                        Name = dc.NationalSociety.Name,
+                        CountryName = dc.NationalSociety.Country.Name,
+                    }
+                })
+                .SingleAsync(p => p.Id == projectId);
+
+            return Success(project);
         }
     }
 }

@@ -142,7 +142,8 @@ export const stringKeys = {
     },
     dashboard: {
       title: "project.dashboard.title"
-    }
+    },
+    settings: "project.settings.title"
   },
   globalCoordinator: {
     title: "globalCoordinator.title",

@@ -5,13 +5,11 @@ import { globalCoordinatorsSiteMap } from "./components/globalCoordinators/globa
 import { healthRisksSiteMap } from "./components/healthRisks/logic/healthRisksSiteMap";
 import { nationalSocietyUsersSiteMap } from "./components/nationalSocietyUsers/logic/nationalSocietyUsersSiteMap";
 import { dataCollectorsSiteMap } from "./components/dataCollectors/logic/dataCollectorsSiteMap";
-import { projectsSiteMap } from "./components/projects/projectsSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
   ...nationalSocietyUsersSiteMap,
   ...smsGatewaysSiteMap,
-  ...projectsSiteMap,
   ...healthRisksSiteMap,
   ...globalCoordinatorsSiteMap,
   ...projectsSiteMap,

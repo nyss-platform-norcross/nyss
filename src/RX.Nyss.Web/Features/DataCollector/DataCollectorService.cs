@@ -23,7 +23,6 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result> RemoveDataCollector(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId);
         Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId);
-        Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
     }
 
@@ -132,26 +131,6 @@ namespace RX.Nyss.Web.Features.DataCollector
                         Longitude = DefaultLongitude
                     }
             });
-        }
-
-        public async Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId)
-        {
-            var project = await _nyssContext.Projects
-                .Include(p => p.NationalSociety).ThenInclude(n => n.Country)
-                .Select(dc => new ProjectBasicDataResponseDto
-                {
-                    Id = dc.Id,
-                    Name = dc.Name,
-                    NationalSociety = new ProjectBasicDataResponseDto.NationalSocietyIdDto
-                    {
-                        Id = dc.NationalSociety.Id,
-                        Name = dc.NationalSociety.Name,
-                        CountryName = dc.NationalSociety.Country.Name,
-                    }
-                })
-                .SingleAsync(p => p.Id == projectId);
-
-            return Success(project);
         }
 
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId)

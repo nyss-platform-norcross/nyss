@@ -46,7 +46,7 @@ function* openProjectEdition({ nationalSocietyId, projectId }) {
   try {
     const response = yield call(http.get, `/api/project/${projectId}/get`);
     const healthRisks = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/healthRisk/list`);
-    yield openProjectsModule(nationalSocietyId);
+    yield call(openProjectDashboardModule, projectId);
     yield put(actions.openEdition.success(response.value, healthRisks.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
@@ -70,7 +70,8 @@ function* editProject({ nationalSocietyId, projectId, data }) {
   try {
     const response = yield call(http.post, `/api/project/${projectId}/edit`, data);
     yield put(actions.edit.success(response.value));
-    yield put(actions.goToList(nationalSocietyId));
+    yield put(appActions.entityUpdated(entityTypes.project(projectId)));
+    yield put(actions.goToDashboard(nationalSocietyId, projectId));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
@@ -97,19 +98,11 @@ function* getProjects(nationalSocietyId) {
   }
 };
 
-function* openProjectDashboard({ path, params }) {
+function* openProjectDashboard({ projectId }) {
   yield put(actions.openDashbaord.request());
   try {
-    // const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
-
-    // yield put(appActions.openModule.invoke(path, {
-    //   nationalSocietyCountry: response.value.countryName,
-    //   nationalSocietyName: response.value.name,
-    //   nationalSocietyId: response.value.id
-    // }));
-
-    //yield put(actions.openDashbaord.success(response.value.name));
-    yield put(actions.openDashbaord.success("Name"));
+    const project = yield call(openProjectDashboardModule, projectId)
+    yield put(actions.openDashbaord.success(project.name));
   } catch (error) {
     yield put(actions.openDashbaord.failure(error.message));
   }
@@ -126,4 +119,21 @@ function* openProjectsModule(nationalSocietyId) {
     nationalSocietyName: nationalSociety.value.name,
     nationalSocietyCountry: nationalSociety.value.countryName,
   }));
+}
+
+function* openProjectDashboardModule(projectId) {
+  const project = yield call(http.getCached, {
+    path: `/api/project/${projectId}/basicData`,
+    dependencies: [entityTypes.project(projectId)]
+  });
+
+  yield put(appActions.openModule.invoke(null, {
+    nationalSocietyId: project.value.nationalSociety.id,
+    nationalSocietyName: project.value.nationalSociety.name,
+    nationalSocietyCountry: project.value.nationalSociety.countryName,
+    projectId: project.value.id,
+    projectName: project.value.name
+  }));
+
+  return project.value;
 }

@@ -780,7 +780,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     StartDate = new DateTime(2019, 1, 1),
                     EndDate = null,
                     NationalSocietyId = nationalSocietyId,
-                    DataCollectors = new[] { new DataCollector() },
+                    DataCollectors = new[] { new RX.Nyss.Data.Models.DataCollector() },
                     ProjectHealthRisks = new[] { new ProjectHealthRisk { Reports = new[] { new Report() }, Alerts = new[] { new Alert() } } }
                 },
                 new RX.Nyss.Data.Models.Project
@@ -795,7 +795,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     StartDate = new DateTime(2019, 1, 1),
                     EndDate = null,
                     NationalSocietyId = nationalSocietyId,
-                    DataCollectors = new[] { new DataCollector(), new DataCollector() },
+                    DataCollectors = new[] { new RX.Nyss.Data.Models.DataCollector(), new RX.Nyss.Data.Models.DataCollector() },
                     ProjectHealthRisks = new[]
                     {
                         new ProjectHealthRisk

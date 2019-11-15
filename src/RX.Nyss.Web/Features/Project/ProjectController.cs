@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -78,5 +79,9 @@ namespace RX.Nyss.Web.Features.Project
         //[NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result> UpdateProject(int projectId) =>
             _projectService.DeleteProject(projectId);
+
+        [Route("api/project/{projectId:int}/basicData"), NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
+        public async Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId) =>
+            await _projectService.GetProjectBasicData(projectId);
     }
 }

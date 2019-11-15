@@ -57,9 +57,9 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             {
                 new UserNationalSociety { NationalSociety = nationalSocieties[0], User = users[0], NationalSocietyId = NationalSocietyId }
             };
-            var projects = new List<Project>
+            var projects = new List<RX.Nyss.Data.Models.Project>
             {
-                new Project { Id = ProjectId, NationalSociety = nationalSocieties[0] }
+                new RX.Nyss.Data.Models.Project { Id = ProjectId, NationalSociety = nationalSocieties[0] }
             };
             var regions = new List<Region>
             {
