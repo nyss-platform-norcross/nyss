@@ -193,6 +193,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 var ns = await _nyssContext.NationalSocieties
                     .Include(x => x.NationalSocietyUsers)
                     .FirstOrDefaultAsync(x => x.Id == nationalSocietyId);
+
                 var user = await _nyssContext.Users.FindAsync(userId);
 
                 if (ns.NationalSocietyUsers.Count == 0 || ns.NationalSocietyUsers.All(x => x.UserId != userId))

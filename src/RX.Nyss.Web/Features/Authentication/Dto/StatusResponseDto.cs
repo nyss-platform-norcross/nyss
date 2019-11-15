@@ -5,10 +5,10 @@ namespace RX.Nyss.Web.Features.Authentication.Dto
     public class StatusResponseDto
     {
         public bool IsAuthenticated { get; set; }
-        public DataDto Data { get; set; }
+        public UserDataDto UserData { get; set; }
 
 
-        public class DataDto
+        public class UserDataDto
         {
             public string Name { get; set; }
             

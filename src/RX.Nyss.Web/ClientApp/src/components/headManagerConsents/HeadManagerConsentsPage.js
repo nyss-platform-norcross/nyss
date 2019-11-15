@@ -44,8 +44,9 @@ const HeadManagerConsentsPageComponent = (props) => {
             {`${strings(stringKeys.headManagerConsents.consentText)}`}
           </Typography>
           <Typography variant="body1">{props.nationalSocieties.length > 1 ?
-              strings(stringKeys.headManagerConsents.nationalSocieties) :
-              strings(stringKeys.headManagerConsents.nationalSociety)}: {props.nationalSocieties.map(ns => `${ns.nationalSocietyName} (${ns.nationalSocietyCountryName})`).join(', ')}
+            strings(stringKeys.headManagerConsents.nationalSocieties) :
+            strings(stringKeys.headManagerConsents.nationalSociety)}:
+              {props.nationalSocieties.map(ns => `${ns.nationalSocietyName} (${ns.nationalSocietyCountryName})`).join(', ')}
           </Typography>
 
           <Form onSubmit={handleSubmit} fullWidth>

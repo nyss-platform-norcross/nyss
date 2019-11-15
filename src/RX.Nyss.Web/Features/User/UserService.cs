@@ -18,6 +18,7 @@ namespace RX.Nyss.Web.Features.User
         Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
         Task<List<int>> GetUserNationalSocietyIds(string identityName);
         bool HasAccessToAllNationalSocieties(IEnumerable<string> roles);
+        Task<bool> IsHeadManagerToNationalSociety(string identityName, int nationalSocietyId);
     }
 
     public class UserService : IUserService
@@ -44,8 +45,8 @@ namespace RX.Nyss.Web.Features.User
                     Email = uns.User.EmailAddress,
                     PhoneNumber = uns.User.PhoneNumber,
                     Role = uns.User.Role.ToString(),
-                    IsHeadManager = uns.NationalSociety.HeadManager == uns.User,
-                    IsPendingHeadManager = uns.NationalSociety.PendingHeadManager == uns.User
+                    IsHeadManager = uns.NationalSociety.HeadManager != null && uns.NationalSociety.HeadManager.Id == uns.User.Id,
+                    IsPendingHeadManager = uns.NationalSociety.PendingHeadManager != null && uns.NationalSociety.PendingHeadManager.Id == uns.User.Id
                 })
                 .ToListAsync();
 
@@ -88,6 +89,9 @@ namespace RX.Nyss.Web.Features.User
                 .SelectMany(u => u.UserNationalSocieties)
                 .Select(uns => uns.NationalSocietyId)
                 .ToListAsync();
+
+        public async Task<bool> IsHeadManagerToNationalSociety(string identityName, int nationalSocietyId) =>
+            (await _dataContext.NationalSocieties.FindAsync(nationalSocietyId)).HeadManager?.EmailAddress != identityName;
 
         public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
             roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));

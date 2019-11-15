@@ -52,6 +52,7 @@ NationalSocietyUsersListPageComponent.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
+  user: state.appData.user,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   list: state.nationalSocietyUsers.listData,
   isListFetching: state.nationalSocietyUsers.listFetching,

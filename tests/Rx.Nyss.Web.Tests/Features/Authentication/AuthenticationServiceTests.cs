@@ -110,10 +110,10 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
             var result = await _authenticationService.GetStatus(user);
 
             result.Value.IsAuthenticated.ShouldBe(true);
-            result.Value.Data.Email.ShouldBe(UserEmail);
-            result.Value.Data.Name.ShouldBe(UserName);
-            result.Value.Data.LanguageCode.ShouldBe(languageCode);
-            result.Value.Data.Roles[0].ShouldBe(role);
+            result.Value.UserData.Email.ShouldBe(UserEmail);
+            result.Value.UserData.Name.ShouldBe(UserName);
+            result.Value.UserData.LanguageCode.ShouldBe(languageCode);
+            result.Value.UserData.Roles[0].ShouldBe(role);
         }
     }
 }
