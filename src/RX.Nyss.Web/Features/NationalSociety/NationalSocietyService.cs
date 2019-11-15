@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result> RemoveNationalSociety(int id);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
         Task<Result> SetAsHeadManager(string identityUserName);
-        Task<Result<GetPendingHeadManagerConsentsResponseDto>> GetPendingHeadManagerConsents(string identityUserName);
+        Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents(string identityUserName);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -190,12 +190,9 @@ namespace RX.Nyss.Web.Features.NationalSociety
         {
             try
             {
-                var ns = await _nyssContext.NationalSocieties
-                    .Include(x => x.NationalSocietyUsers)
-                    .FirstOrDefaultAsync(x => x.Id == nationalSocietyId);
-
-                var user = await _nyssContext.Users.FindAsync(userId);
-
+                var ns = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
+                var user = await _nyssContext.Users.Include(u => u.UserNationalSocieties).FirstOrDefaultAsync(u => u.Id == userId);
+                
                 if (ns.NationalSocietyUsers.Count == 0 || ns.NationalSocietyUsers.All(x => x.UserId != userId))
                 {
                     return Error(ResultKey.NationalSociety.SetHead.NotAMemberOfSociety);
@@ -234,7 +231,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
                 }
 
-                var pendingSocieties = _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager == user);
+                var pendingSocieties = _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager.Id == user.Id);
                 var utcNow = DateTime.UtcNow;
 
                 // Set until date for the previous consent
@@ -249,7 +246,10 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
                     await _nyssContext.HeadManagerConsents.AddAsync(new HeadManagerConsent
                     {
-                        ConsentedFrom = utcNow, NationalSocietyId = nationalSociety.Id, UserEmailAddress = user.EmailAddress, UserPhoneNumber = user.PhoneNumber
+                        ConsentedFrom = utcNow,
+                        NationalSocietyId = nationalSociety.Id,
+                        UserEmailAddress = user.EmailAddress,
+                        UserPhoneNumber = user.PhoneNumber
                     });
                 }
 
@@ -263,7 +263,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
             }
         }
 
-        public async Task<Result<GetPendingHeadManagerConsentsResponseDto>> GetPendingHeadManagerConsents(string identityUserName)
+        public async Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents(string identityUserName)
         {
             var userEntity = await _nyssContext.Users
                 .Include(x => x.ApplicationLanguage)
@@ -271,18 +271,20 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
             if (userEntity == null)
             {
-                return Error<GetPendingHeadManagerConsentsResponseDto>(ResultKey.User.Common.UserNotFound);
+                return Error<List<PendingHeadManagerConsentDto>>(ResultKey.User.Common.UserNotFound);
             }
 
             var pendingSocieties = await _nyssContext.NationalSocieties
                 .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId)
-                .Select(ns => new GetPendingHeadManagerConsentsResponseDto.PendingHeadManagerConsent
+                .Select(ns => new PendingHeadManagerConsentDto
                 {
-                    NationalSocietyName = ns.Name, NationalSocietyCountryName = ns.Country.Name, NationalSocietyId = ns.Id
+                    NationalSocietyName = ns.Name,
+                    NationalSocietyCountryName = ns.Country.Name,
+                    NationalSocietyId = ns.Id
                 })
                 .ToListAsync();
 
-            return Success(new GetPendingHeadManagerConsentsResponseDto { PendingHeadManagerConsents = pendingSocieties });
+            return Success(pendingSocieties);
         }
 
         public async Task<ContentLanguage> GetLanguageById(int id) =>

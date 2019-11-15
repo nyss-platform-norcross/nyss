@@ -82,7 +82,6 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Will set the current user as the head for the given national societies
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="requestDto"></param>
         /// <returns></returns>
         [Route("consentAsHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> ConsentAsHeadManager() =>
@@ -91,8 +90,6 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <summary>
         /// Get the current user's list of national societies that he is assigned as pending head manager
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="requestDto"></param>
         /// <returns></returns>
         [Route("pendingConsents"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> GetPendingConsents() =>

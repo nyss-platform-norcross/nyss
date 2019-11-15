@@ -14,7 +14,7 @@ export const nationalSocietyUsersSagas = () => [
   takeEvery(consts.CREATE_NATIONAL_SOCIETY_USER.INVOKE, createNationalSocietyUser),
   takeEvery(consts.EDIT_NATIONAL_SOCIETY_USER.INVOKE, editNationalSocietyUser),
   takeEvery(consts.REMOVE_NATIONAL_SOCIETY_USER.INVOKE, removeNationalSocietyUser),
-  takeEvery(consts.SET_AS_HEADMANAGER_NATIONAL_SOCIETY_USER.INVOKE, setAsHeadManagerNationalSociety)
+  takeEvery(consts.SET_AS_HEAD_MANAGER.INVOKE, setAsHeadManagerInNationalSociety)
 ];
 
 function* openNationalSocietyUsersList({ nationalSocietyId }) {
@@ -100,7 +100,7 @@ function* getNationalSocietyUsers(nationalSocietyId) {
   }
 };
 
-function* setAsHeadManagerNationalSociety({ nationalSocietyId, nationalSocietyUserId }) {
+function* setAsHeadManagerInNationalSociety({ nationalSocietyId, nationalSocietyUserId }) {
   yield put(actions.setAsHeadManager.request(nationalSocietyUserId));
   try {
     yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/setHeadManager`, {userId: nationalSocietyUserId});
