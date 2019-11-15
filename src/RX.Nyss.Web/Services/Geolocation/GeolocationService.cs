@@ -61,7 +61,8 @@ namespace RX.Nyss.Web.Services.Geolocation
                 {
                     Longitude = double.Parse(g.Longitude, CultureInfo.InvariantCulture),
                     Latitude = double.Parse(g.Latitude, CultureInfo.InvariantCulture)
-                }).First();
+                })
+                .First();
 
                 return Success(location);
             }

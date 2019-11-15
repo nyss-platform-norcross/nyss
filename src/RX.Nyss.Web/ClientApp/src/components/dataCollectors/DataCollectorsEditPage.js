@@ -34,6 +34,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
   useEffect(() => {
     if (!props.data) {
+      setForm(null);
       return;
     }
 
@@ -187,7 +188,7 @@ const DataCollectorsEditPageComponent = (props) => {
             <div>Location</div>
             <DataCollectorMap
               onChange={onLocationChange}
-              location={{ lat: props.data.latitude, lng: props.data.longitude }}
+              location={props.data ? { lat: props.data.latitude, lng: props.data.longitude } : null}
               zoom={15}
             />
           </Grid>

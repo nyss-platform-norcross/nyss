@@ -103,12 +103,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                     NationalSocietyId = dc.NationalSociety.Id,
                     CountryName = dc.NationalSociety.Country.Name
                 })
-                .SingleOrDefaultAsync();
-
-            if (projectData == null)
-            {
-                return Error<DataCollectorFormDataResponse>(ResultKey.Project.NotFound);
-            }
+                .SingleAsync();
 
             var regions = await _nationalSocietyStructureService.GetRegions(projectData.NationalSocietyId);
 
@@ -154,11 +149,9 @@ namespace RX.Nyss.Web.Features.DataCollector
                         CountryName = dc.NationalSociety.Country.Name,
                     }
                 })
-                .SingleOrDefaultAsync(p => p.Id == projectId);
+                .SingleAsync(p => p.Id == projectId);
 
-            return project != null
-                ? Success(project)
-                : Error<ProjectBasicDataResponseDto>(ResultKey.DataCollector.DataCollectorNotFound);
+            return Success(project);
         }
 
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId)

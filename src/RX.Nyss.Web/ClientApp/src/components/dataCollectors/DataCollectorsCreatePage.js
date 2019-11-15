@@ -34,6 +34,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
   useEffect(() => {
     if (!props.defaultLocation) {
+      setForm(null);
       return;
     }
 
@@ -185,7 +186,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             <div>Location</div>
             <DataCollectorMap
               onChange={onLocationChange}
-              location={{ lat: props.defaultLocation.latitude, lng: props.defaultLocation.longitude }}
+              location={props.defaultLocation ? { lat: props.defaultLocation.latitude, lng: props.defaultLocation.longitude } : null}
               zoom={6}
             />
           </Grid>
