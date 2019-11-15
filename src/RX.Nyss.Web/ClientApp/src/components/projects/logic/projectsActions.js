@@ -3,12 +3,14 @@ import {
   OPEN_PROJECTS_LIST, GET_PROJECTS,
   OPEN_PROJECT_CREATION, CREATE_PROJECT,
   OPEN_PROJECT_EDITION, EDIT_PROJECT,
-  REMOVE_PROJECT
+  REMOVE_PROJECT,
+  OPEN_PROJECT_DASHBOARD
 } from "./projectsConstants";
 
 export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/projects`);
 export const goToCreation = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/projects/add`);
 export const goToEdition = (nationalSocietyId, projectId) => push(`/nationalsocieties/${nationalSocietyId}/projects/${projectId}/edit`);
+export const goToDashboard = (nationalSocietyId, projectId) => push(`/nationalsocieties/${nationalSocietyId}/projects/${projectId}/dashboard`);
 
 export const openList = {
   invoke: (nationalSocietyId) => ({ type: OPEN_PROJECTS_LIST.INVOKE, nationalSocietyId }),
@@ -57,4 +59,11 @@ export const remove = {
   request: (id) => ({ type: REMOVE_PROJECT.REQUEST, id }),
   success: (id) => ({ type: REMOVE_PROJECT.SUCCESS, id }),
   failure: (id, message) => ({ type: REMOVE_PROJECT.FAILURE, id, message })
+};
+
+export const openDashbaord = {
+  invoke: (path, params) => ({ type: OPEN_PROJECT_DASHBOARD.INVOKE, path, params }),
+  request: () => ({ type: OPEN_PROJECT_DASHBOARD.REQUEST }),
+  success: (name) => ({ type: OPEN_PROJECT_DASHBOARD.SUCCESS, name }),
+  failure: (message) => ({ type: OPEN_PROJECT_DASHBOARD.FAILURE, message })
 };

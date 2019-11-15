@@ -140,6 +140,9 @@ export const stringKeys = {
       remove: "project.list.remove",
       removalConfirmation: "project.list.removalConfirmation"
     },
+    dashboard: {
+      title: "project.dashboard.title"
+    }
   },
   globalCoordinator: {
     title: "globalCoordinator.title",

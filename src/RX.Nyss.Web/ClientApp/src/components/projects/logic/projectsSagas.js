@@ -11,7 +11,8 @@ export const projectsSagas = () => [
   takeEvery(consts.OPEN_PROJECT_EDITION.INVOKE, openProjectEdition),
   takeEvery(consts.CREATE_PROJECT.INVOKE, createProject),
   takeEvery(consts.EDIT_PROJECT.INVOKE, editProject),
-  takeEvery(consts.REMOVE_PROJECT.INVOKE, removeProject)
+  takeEvery(consts.REMOVE_PROJECT.INVOKE, removeProject),
+  takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard),
 ];
 
 function* openProjectsList({ nationalSocietyId }) {
@@ -93,6 +94,24 @@ function* getProjects(nationalSocietyId) {
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
+  }
+};
+
+function* openProjectDashboard({ path, params }) {
+  yield put(actions.openDashbaord.request());
+  try {
+    // const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
+
+    // yield put(appActions.openModule.invoke(path, {
+    //   nationalSocietyCountry: response.value.countryName,
+    //   nationalSocietyName: response.value.name,
+    //   nationalSocietyId: response.value.id
+    // }));
+
+    //yield put(actions.openDashbaord.success(response.value.name));
+    yield put(actions.openDashbaord.success("Name"));
+  } catch (error) {
+    yield put(actions.openDashbaord.failure(error.message));
   }
 };
 

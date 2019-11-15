@@ -53,7 +53,11 @@ export const initialState = {
     formFetching: false,
     formHealthRisks: [],
     formSaving: false,
-    formData: null
+    formData: null,
+    dashboard: {
+      name: null,
+      isFetching: false
+    }
   },
   globalCoordinators: {
     listFetching: false,

@@ -22,5 +22,13 @@ export const projectsSiteMap = [
     path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/edit",
     title: () => strings(stringKeys.project.form.editionTitle),
     access: accessMap.projects.edit
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects",
+    path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard",
+    title: () => strings(stringKeys.project.dashboard.title),
+    access: accessMap.projects.get,
+    placeholder: placeholders.leftMenu,
+    placeholderIndex: 1
   }
 ];

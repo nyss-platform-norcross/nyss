@@ -42,6 +42,7 @@ const ProjectsListPageComponent = (props) => {
 
 ProjectsListPageComponent.propTypes = {
   getProjects: PropTypes.func,
+  goToDashboard: PropTypes.func,
   goToCreation: PropTypes.func,
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
@@ -58,6 +59,7 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openProjectsList: projectsActions.openList.invoke,
+  goToDashboard: projectsActions.goToDashboard,
   goToCreation: projectsActions.goToCreation,
   goToEdition: projectsActions.goToEdition,
   remove: projectsActions.remove.invoke

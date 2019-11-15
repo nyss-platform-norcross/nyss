@@ -14,7 +14,7 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs"
 
-export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
+export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, goToDashboard, remove, list, nationalSocietyId }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -81,7 +81,7 @@ export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, remove, 
             <CardActions>
               <Grid container direction="row" justify="flex-end" alignItems="center">
                 <Grid item xs={4}>
-                  <Button onClick={() => goToEdition(nationalSocietyId, project.id)} endIcon={<ArrowForwardIcon />}>{strings(stringKeys.project.list.open)}</Button>
+                  <Button onClick={() => goToDashboard(nationalSocietyId, project.id)} endIcon={<ArrowForwardIcon />}>{strings(stringKeys.project.list.open)}</Button>
                 </Grid>
               </Grid>
             </CardActions>
