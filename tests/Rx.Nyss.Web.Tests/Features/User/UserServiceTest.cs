@@ -139,11 +139,11 @@ namespace Rx.Nyss.Web.Tests.Features.Users
             ArrangeUsers();
 
             //act
-            var result = await _userService.AddExisting(1, "technical.advisor5@domain.com");
+            var result = await _userService.AddExisting(1, "technicalAdvisor5@domain.com");
 
             //assert
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
+            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserIsAlreadyInThisNationalSociety);
         }
 
         [Fact]

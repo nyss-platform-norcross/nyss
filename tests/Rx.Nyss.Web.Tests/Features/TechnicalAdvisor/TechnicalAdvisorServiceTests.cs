@@ -316,6 +316,35 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
         }
 
         [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromNationalSocietyTheUserIsNotIn_ShouldReturnError()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+
+            //act
+            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 123);
+
+            //assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingAUserThatDoesNotExist_ShouldReturnError()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+
+            //act
+            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 321);
+
+            //assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserNotFound);
+        }
+
+
+        [Fact]
         public async Task DeleteTechnicalAdvisor_WhenDeletingFromLastNationalSociety_RemoveOnNyssUserIsCalledOnce()
         {
             //arrange

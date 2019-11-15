@@ -309,6 +309,35 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         }
 
         [Fact]
+        public async Task DeleteDataConsumer_WhenDeletingFromNationalSocietyTheUserIsNotIn_ShouldReturnError()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
+
+            //act
+            var result = await _dataConsumerService.DeleteDataConsumer(2, 123);
+
+            //assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
+        }
+
+        [Fact]
+        public async Task DeleteDataConsumer_WhenDeletingAUserThatDoesNotExist_ShouldReturnError()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
+
+            //act
+            var result = await _dataConsumerService.DeleteDataConsumer(2, 321);
+
+            //assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Registration.UserNotFound);
+        }
+
+
+        [Fact]
         public async Task DeleteDataConsumer_WhenDeletingFromLastNationalSociety_RemoveOnNyssUserIsCalledOnce()
         {
             //arrange
