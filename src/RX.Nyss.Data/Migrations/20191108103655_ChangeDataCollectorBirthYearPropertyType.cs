@@ -12,7 +12,7 @@ namespace RX.Nyss.Data.Migrations
                 table: "DataCollectors");
 
             migrationBuilder.AddColumn<int>(
-                name: "TenYearBirthGroupStartYear",
+                name: "BirthGroupDecade",
                 schema: "nyss",
                 table: "DataCollectors",
                 nullable: false,
@@ -22,7 +22,7 @@ namespace RX.Nyss.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "TenYearBirthGroupStartYear",
+                name: "BirthGroupDecade",
                 schema: "nyss",
                 table: "DataCollectors");
 

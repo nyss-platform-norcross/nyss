@@ -19,7 +19,7 @@ namespace RX.Nyss.Data.Models
 
         public Sex Sex { get; set; }
 
-        public int TenYearBirthGroupStartYear { get; set; }
+        public int BirthGroupDecade { get; set; }
 
         public Point Location { get; set; }
 

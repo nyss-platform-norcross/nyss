@@ -253,7 +253,7 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("SupervisorId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TenYearBirthGroupStartYear")
+                    b.Property<int>("BirthGroupDecade")
                         .HasColumnType("int");
 
                     b.Property<int>("VillageId")

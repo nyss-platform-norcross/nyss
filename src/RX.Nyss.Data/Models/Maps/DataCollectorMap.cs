@@ -15,7 +15,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.AdditionalPhoneNumber).HasMaxLength(20);
             builder.Property(x => x.Location).IsRequired();
             builder.Property(x => x.Sex).HasConversion<string>().HasMaxLength(10).IsRequired();
-            builder.Property(x => x.TenYearBirthGroupStartYear).IsRequired();
+            builder.Property(x => x.BirthGroupDecade).IsRequired();
             builder.HasOne(x => x.Project).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Supervisor).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
