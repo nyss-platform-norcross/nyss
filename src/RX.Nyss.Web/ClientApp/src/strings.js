@@ -44,6 +44,9 @@ export const stringKeys = {
     },
     overview: {
       title: "nationalSociety.dashboard.overview"
+    },
+    setHead: {
+      notAMemberOfSociety: "nationalSociety.setHead.notAMemberOfSociety"
     }
   },
   healthRisk: {
@@ -125,6 +128,7 @@ export const stringKeys = {
   nationalSocietyUser: {
     title: "nationalSocietyUser.title",
     addNew: "nationalSocietyUser.addNew",
+    addSuccess: "nationalSocietyUser.addSuccess",
     form: {
       creationTitle: "nationalSocietyUser.form.creationTitle",
       editionTitle: "nationalSocietyUser.form.editionTitle",
@@ -143,7 +147,8 @@ export const stringKeys = {
       phoneNumber: "nationalSocietyUser.list.phoneNumber",
       role: "nationalSocietyUser.list.role",
       project: "nationalSocietyUser.list.project",
-      removalConfirmation: "nationalSocietyUser.list.removalConfirmation"
+      removalConfirmation: "nationalSocietyUser.list.removalConfirmation",
+      headManager: "nationalSocietyUser.list.headManager"
     },
     messages:{
       creationSuccessful: "nationalSocietyUser.messages.creationSuccessful",
@@ -222,6 +227,18 @@ export const stringKeys = {
     invalidInteger: "validation.invalidInteger",
     phoneNumberInvalid: "validation.phoneNumberInvalid",
     invalidModuloTen: "validation.invalidModuloTen"
+  },
+  headManagerConsents: {
+    title: "headManagerConsents.title",
+    consentText: "headManagerConsents.consentText",
+    nationalSociety: "headManagerConsents.nationalSociety",
+    nationalSocieties: "headManagerConsents.nationalSocieties",
+    agreeToContinue: "headManagerConsents.agreeToContinue",
+    submit: "headManagerConsents.submit",
+    iConsent: "headManagerConsents.iConsent",
+    setAsHeadManager: "headManagerConsents.setAsHeadManager",
+    pendingHeadManager: "headManagerConsents.pendingHeadManager",
+    setSuccessfully: "headManagerConsents.setSuccessfully",
   }
 };
 

@@ -65,5 +65,34 @@ namespace RX.Nyss.Web.Features.NationalSociety
         [Route("{nationalSocietyId}/remove"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<Result> Remove(int nationalSocietyId) =>
             await _nationalSocietyService.RemoveNationalSociety(nationalSocietyId);
+
+        /// <summary>
+        /// Sets a user as the pending Head Manager for the National Society. Next time this user logs in, the person will get a consent form, and if the user consents the user
+        /// will be the next Head Manager
+        /// </summary>
+        /// <param name="nationalSocietyId"></param>
+        /// <param name="requestDto"></param>
+        /// <returns></returns>
+        [Route("{nationalSocietyId}/setHeadManager"), HttpPost, NeedsPolicy(Policy.HeadManagerAccess)]
+        public async Task<Result> SetHeadManager(int nationalSocietyId, [FromBody]SetAsHeadManagerRequestDto requestDto) =>
+            await _nationalSocietyService.SetPendingHeadManager(nationalSocietyId, requestDto.UserId);
+
+
+        /// <summary>
+        /// Will set the current user as the head for the given national societies
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Route("consentAsHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
+        public async Task<Result> ConsentAsHeadManager() =>
+            await _nationalSocietyService.SetAsHeadManager(User.Identity.Name);
+
+        /// <summary>
+        /// Get the current user's list of national societies that he is assigned as pending head manager
+        /// </summary>
+        /// <returns></returns>
+        [Route("pendingConsents"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
+        public async Task<Result> GetPendingConsents() =>
+            await _nationalSocietyService.GetPendingHeadManagerConsents(User.Identity.Name);
     }
 }

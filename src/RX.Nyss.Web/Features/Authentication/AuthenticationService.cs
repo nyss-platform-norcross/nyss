@@ -40,7 +40,6 @@ namespace RX.Nyss.Web.Features.Authentication
                 var roles = await GetRoles(user);
                 var additionalClaims = await GetAdditionalClaims(user);
                 var accessToken = _userIdentityService.CreateToken(user.UserName, roles, additionalClaims);
-
                 return Success(new LoginResponseDto { AccessToken = accessToken });
             }
             catch (ResultException exception)
@@ -62,16 +61,20 @@ namespace RX.Nyss.Web.Features.Authentication
                 return Error<StatusResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
+            var hasPendingHeadManagerConsents = await _nyssContext.NationalSocieties
+                .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId).AnyAsync();
+
             return Success(new StatusResponseDto
             {
                 IsAuthenticated = user.Identity.IsAuthenticated,
-                Data = user.Identity.IsAuthenticated
-                    ? new StatusResponseDto.DataDto
+                UserData = user.Identity.IsAuthenticated
+                    ? new StatusResponseDto.UserDataDto
                     {
                         Name = user.Identity.Name,
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),
+                        HasPendingHeadManagerConsents = hasPendingHeadManagerConsents,
                         HomePage = user.Identity.IsAuthenticated
                             ? GetHomePageData(userEntity)
                             : null
@@ -100,19 +103,15 @@ namespace RX.Nyss.Web.Features.Authentication
         {
             var nationalSocietyIds = _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == user.Id)
-                .Select(uns => (int?) uns.NationalSocietyId)
+                .Select(uns => (int?)uns.NationalSocietyId)
                 .ToList();
 
             if (!nationalSocietyIds.Any() || nationalSocietyIds.Count > 1)
             {
                 return new StatusResponseDto.HomePageDto { Page = HomePageType.Root };
             }
-            
-            return new StatusResponseDto.HomePageDto
-            {
-                Page = HomePageType.NationalSociety,
-                NationalSocietyId = nationalSocietyIds.Single()
-            };
+
+            return new StatusResponseDto.HomePageDto { Page = HomePageType.NationalSociety, NationalSocietyId = nationalSocietyIds.Single() };
         }
 
         private StatusResponseDto.HomePageDto GetRootHomePage() =>
@@ -121,7 +120,7 @@ namespace RX.Nyss.Web.Features.Authentication
         private async Task<IEnumerable<string>> GetRoles(IdentityUser user) => await _userIdentityService.GetRoles(user);
 
         private async Task<IEnumerable<Claim>> GetAdditionalClaims(IdentityUser identityUser) => await GetNationalSocietyClaims(identityUser);
-        
+
         private async Task<List<Claim>> GetNationalSocietyClaims(IdentityUser identityUser) =>
             await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.User.IdentityUserId == identityUser.Id)

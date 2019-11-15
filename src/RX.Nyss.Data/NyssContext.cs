@@ -23,6 +23,7 @@ namespace RX.Nyss.Data
         public DbSet<ApplicationLanguage> ApplicationLanguages { get; set; }
 
         public DbSet<ContentLanguage> ContentLanguages { get; set; }
+
         public DbSet<Country> Countries { get; set; }
 
         public DbSet<DataCollector> DataCollectors { get; set; }
@@ -30,6 +31,8 @@ namespace RX.Nyss.Data
         public DbSet<District> Districts { get; set; }
 
         public DbSet<GatewaySetting> GatewaySettings { get; set; }
+
+        public DbSet<HeadManagerConsent> HeadManagerConsents { get; set; }
 
         public DbSet<HealthRisk> HealthRisks { get; set; }
 

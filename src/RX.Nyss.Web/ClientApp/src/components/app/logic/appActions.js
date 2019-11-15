@@ -1,10 +1,12 @@
 import * as actions from "./appConstans";
+import { push } from "connected-react-router";
 
 export const showMessage = (message) => ({ type: actions.SHOW_MESSAGE.INVOKE, message });
 export const closeMessage = () => ({ type: actions.CLOSE_MESSAGE.INVOKE });
 export const entityUpdated = (entity) => ({ type: actions.ENTITY_UPDATED, entities: [entity] });
 export const switchStrings = (status) => ({ type: actions.SWITCH_STRINGS, status });
 export const setAppReady = (status) => ({ type: actions.SET_APP_READY, status });
+export const goToHeadManagerConsents = () => push(`/headManagerConsents`);
 
 export const initApplication = {
   invoke: () =>

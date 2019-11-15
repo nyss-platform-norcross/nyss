@@ -9,6 +9,7 @@ import { globalCoordinatorsReducer } from "../components/globalCoordinators/logi
 import { healthRisksReducer } from "../components/healthRisks/logic/healthRisksReducer";
 import { nationalSocietyUsersReducer } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersReducer";
 import { dataCollectorsReducer } from "../components/dataCollectors/logic/dataCollectorsReducer";
+import { headManagerConsentsReducer } from "../components/headManagerConsents/logic/headManagerConsentsReducer";
 
 export const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -20,5 +21,6 @@ export const createRootReducer = (history) => combineReducers({
   globalCoordinators: globalCoordinatorsReducer,
   healthRisks: healthRisksReducer,
   nationalSocietyUsers: nationalSocietyUsersReducer,
-  dataCollectors: dataCollectorsReducer
+  dataCollectors: dataCollectorsReducer,
+  headManagerConsents: headManagerConsentsReducer
 });

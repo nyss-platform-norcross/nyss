@@ -1,12 +1,14 @@
-﻿namespace RX.Nyss.Web.Features.Authentication.Dto
+﻿using System.Collections.Generic;
+
+namespace RX.Nyss.Web.Features.Authentication.Dto
 {
     public class StatusResponseDto
     {
         public bool IsAuthenticated { get; set; }
-        public DataDto Data { get; set; }
+        public UserDataDto UserData { get; set; }
 
 
-        public class DataDto
+        public class UserDataDto
         {
             public string Name { get; set; }
             
@@ -15,6 +17,8 @@
             public string[] Roles { get; set; }
 
             public string LanguageCode { get; set; }
+
+            public bool HasPendingHeadManagerConsents { get; set; }
 
             public HomePageDto HomePage { get; set; }
         }

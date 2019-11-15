@@ -10,7 +10,9 @@ using NSubstitute.ExceptionExtensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
 using RX.Nyss.Web.Features.User;
@@ -30,6 +32,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         private const int NationalSocietyId = 1;
         private const int CountryId = 1;
         private const int ContentLanguageId = 1;
+        private const int ConsentId = 1;
 
         public NationalSocietyServiceTests()
         {
@@ -41,9 +44,11 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 
             // Arrange
 
+            var users = new List<User> { new ManagerUser { EmailAddress = "yo" } };
+
             var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
             {
-                new RX.Nyss.Data.Models.NationalSociety { Name = ExistingNationalSocietyName }
+                new RX.Nyss.Data.Models.NationalSociety { Name = ExistingNationalSocietyName, PendingHeadManager = users[0] }
             };
             var contentLanguages = new List<RX.Nyss.Data.Models.ContentLanguage>
             {
@@ -53,6 +58,11 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             {
                 new RX.Nyss.Data.Models.Country { Id = CountryId }
             };
+            var headManagerConsents = new List<RX.Nyss.Data.Models.HeadManagerConsent> { new HeadManagerConsent
+            {
+                Id = ConsentId,
+                NationalSocietyId = NationalSocietyId,
+            } };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
@@ -60,6 +70,10 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             _nyssContextMock.ContentLanguages.Returns(contentLanguagesMockDbSet);
             var countriesMockDbSet = countries.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Countries.Returns(countriesMockDbSet);
+            var headManagerConsentsMockDbSet = headManagerConsents.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.HeadManagerConsents.Returns(headManagerConsentsMockDbSet);
+            var mockDbSet = users.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Users.Returns(mockDbSet);
 
             _nyssContextMock.NationalSocieties.FindAsync(NationalSocietyId).Returns(nationalSocieties[0]);
             _nyssContextMock.ContentLanguages.FindAsync(ContentLanguageId).Returns(contentLanguages[0]);
@@ -208,6 +222,34 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             // Assert
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
+        }
+
+        [Fact]
+        public async Task SetAsHead_WhenOk_ShouldBeOk()
+        {
+            // Actual
+            var result = await _nationalSocietyService.SetAsHeadManager("yo");
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            await _nyssContextMock.HeadManagerConsents.Received(1).AddAsync(Arg.Any<HeadManagerConsent>());
+            await _nyssContextMock.Received(1).SaveChangesAsync();
+        }
+
+        [Fact]
+        public async Task SetAsHead_WhenUserNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            var users = new List<User>{new ManagerUser{EmailAddress = "no-yo"}};
+            var mockDbSet = users.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Users.Returns(mockDbSet);
+
+            // Actual
+            var result = await _nationalSocietyService.SetAsHeadManager("yo");
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
         }
     }
 }

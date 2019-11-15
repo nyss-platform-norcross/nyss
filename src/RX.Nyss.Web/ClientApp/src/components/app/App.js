@@ -29,6 +29,7 @@ import { HealthRisksEditPage } from '../healthRisks/HealthRisksEditPage';
 import { NationalSocietyUsersListPage } from '../nationalSocietyUsers/NationalSocietyUsersListPage';
 import { NationalSocietyUsersCreatePage } from '../nationalSocietyUsers/NationalSocietyUsersCreatePage';
 import { NationalSocietyUsersEditPage } from '../nationalSocietyUsers/NationalSocietyUsersEditPage';
+import { HeadManagerConsentsPage } from '../headManagerConsents/HeadManagerConsentsPage';
 import { DataCollectorsListPage } from '../dataCollectors/DataCollectorsListPage';
 import { DataCollectorsCreatePage } from '../dataCollectors/DataCollectorsCreatePage';
 import { DataCollectorsEditPage } from '../dataCollectors/DataCollectorsEditPage';
@@ -43,6 +44,7 @@ export const App = ({ history }) => (
         <Route path='/resetPasswordCallback' component={ResetPasswordCallbackPage} />
 
         <AuthRoute exact path='/' component={Home} />
+        <AuthRoute exact path='/headManagerConsents' component={HeadManagerConsentsPage} />
         <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />
         <AuthRoute exact path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />
 

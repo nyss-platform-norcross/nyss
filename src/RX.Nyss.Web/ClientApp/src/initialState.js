@@ -68,6 +68,7 @@ export const initialState = {
     listStale: true,
     listData: [],
     listNationalSocietyId: null,
+    settingAsHead: {},
     formFetching: false,
     formSaving: false,
     formData: null,
@@ -83,5 +84,8 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null
+  },
+  headManagerConsents: {
+    nationalSocieties: []
   }
 };

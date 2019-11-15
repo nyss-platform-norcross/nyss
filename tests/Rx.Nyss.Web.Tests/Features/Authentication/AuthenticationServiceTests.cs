@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -95,7 +96,8 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         {
             const string languageCode = "en";
             const string role = "Administrator";
-
+            var nationalSocietiesDbSet = new List<RX.Nyss.Data.Models.NationalSociety>().AsQueryable().BuildMockDbSet();
+            _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _user.ApplicationLanguage = new ApplicationLanguage { LanguageCode = languageCode };
             
             var user = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
@@ -108,10 +110,10 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
             var result = await _authenticationService.GetStatus(user);
 
             result.Value.IsAuthenticated.ShouldBe(true);
-            result.Value.Data.Email.ShouldBe(UserEmail);
-            result.Value.Data.Name.ShouldBe(UserName);
-            result.Value.Data.LanguageCode.ShouldBe(languageCode);
-            result.Value.Data.Roles[0].ShouldBe(role);
+            result.Value.UserData.Email.ShouldBe(UserEmail);
+            result.Value.UserData.Name.ShouldBe(UserName);
+            result.Value.UserData.LanguageCode.ShouldBe(languageCode);
+            result.Value.UserData.Roles[0].ShouldBe(role);
         }
     }
 }
