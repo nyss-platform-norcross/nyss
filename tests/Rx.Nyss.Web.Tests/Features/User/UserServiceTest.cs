@@ -162,7 +162,6 @@ namespace Rx.Nyss.Web.Tests.Features.Users
                         Id = 1,
                         NationalSociety = _nyssContext.NationalSocieties.Single(ns => ns.Id == 1),
                         Name = "awd in somalia",
-                        ContentLanguage = new ContentLanguage {DisplayName = "english", Id = 1, LanguageCode = "en-us"},
                         State = ProjectState.Open,
                         TimeZone = "CEST",
                     }

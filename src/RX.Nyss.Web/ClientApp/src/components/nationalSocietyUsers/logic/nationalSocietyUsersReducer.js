@@ -17,14 +17,20 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
     case actions.GET_NATIONAL_SOCIETY_USERS.FAILURE:
       return { ...state, listFetching: false, listData: [] };
 
-    case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.INVOKE:
-      return { ...state, formFetching: true, formData: null };
+    case actions.OPEN_NATIONAL_SOCIETY_USER_CREATION.REQUEST:
+      return { ...state, formFetching: true, formProjects: [] };
+
+    case actions.OPEN_NATIONAL_SOCIETY_USER_CREATION.SUCCESS:
+      return { ...state, formFetching: false, formProjects: action.projects };
+
+    case actions.OPEN_NATIONAL_SOCIETY_USER_CREATION.FAILURE:
+      return { ...state, formFetching: false };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.REQUEST:
       return { ...state, formFetching: true, formData: null };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS:
-      return { ...state, formFetching: false, formData: action.data };
+      return { ...state, formFetching: false, formData: action.data, formProjects: action.projects };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.FAILURE:
       return { ...state, formFetching: false };
