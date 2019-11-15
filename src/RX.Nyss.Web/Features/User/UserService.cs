@@ -100,19 +100,22 @@ namespace RX.Nyss.Web.Features.User
 
         public async Task<Result> AddExisting(int nationalSocietyId, string userEmail)
         {
-            var userId = await _dataContext.Users
-                .Where(u => u.Role == Role.TechnicalAdvisor || u.Role == Role.DataConsumer)
+            var userData = await _dataContext.Users
                 .Where(u => u.EmailAddress == userEmail)
-                .Select(u => (int?) u.Id)
+                .Select(u => new { u.Id , u.Role })
                 .SingleOrDefaultAsync();
 
-            if (userId == null)
+            if (userData == null)
+            {
+                return Error(ResultKey.User.Registration.UserNotFound);
+            }
+            if (userData.Role != Role.TechnicalAdvisor && userData.Role != Role.DataConsumer)
             {
                 return Error(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
             }
 
             var userAlreadyIsInThisNationalSociety = await _dataContext.UserNationalSocieties
-                .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == userId.Value);
+                .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == userData.Id);
 
             if (userAlreadyIsInThisNationalSociety)
             {
@@ -122,7 +125,7 @@ namespace RX.Nyss.Web.Features.User
             var userNationalSociety = new UserNationalSociety
             {
                 NationalSocietyId = nationalSocietyId,
-                UserId = userId.Value
+                UserId = userData.Id
             };
             await _dataContext.UserNationalSocieties.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();

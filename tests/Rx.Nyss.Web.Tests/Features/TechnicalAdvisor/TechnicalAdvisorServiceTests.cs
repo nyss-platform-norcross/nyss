@@ -43,17 +43,102 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
-            SetupTestNationalSociety();
+            SetupTestNationalSocieties();
         }
 
-        private void SetupTestNationalSociety()
+        private User ArrangeUsersDbSetWithOneTechnicalAdvisor()
         {
-            var nationalSociety = new RX.Nyss.Data.Models.NationalSociety {Id = 1, Name = "Test national society"};
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety }; 
+            var technicalAdvisor = new TechnicalAdvisorUser
+            {
+                Id = 123,
+                Role = Role.TechnicalAdvisor,
+                EmailAddress = "emailTest1@domain.com",
+                Name = "emailTest1@domain.com",
+                Organization = "org org",
+                PhoneNumber = "123",
+                AdditionalPhoneNumber = "321"
+            };
+
+            ArrangeUsersFrom(new List<User> { technicalAdvisor });
+            return technicalAdvisor;
+        }
+
+
+        private User ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety()
+        {
+            var technicalAdvisor = ArrangeUsersDbSetWithOneTechnicalAdvisor();
+
+            var userNationalSocieties = new List<UserNationalSociety>
+            {
+                new UserNationalSociety {User = technicalAdvisor, UserId = technicalAdvisor.Id, NationalSocietyId = 1, NationalSociety = _nyssContext.NationalSocieties.Find(1)},
+            };
+
+            ArrangeUserNationalSocietiesFrom(userNationalSocieties);
+            technicalAdvisor.UserNationalSocieties = userNationalSocieties;
+
+            return technicalAdvisor;
+        }
+
+
+        private User ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties()
+        {
+            var technicalAdvisor = ArrangeUsersDbSetWithOneTechnicalAdvisor();
+
+            var userNationalSocieties = new List<UserNationalSociety>
+            {
+                new UserNationalSociety {User = technicalAdvisor, UserId = technicalAdvisor.Id, NationalSocietyId = 1, NationalSociety = _nyssContext.NationalSocieties.Find(1)},
+                new UserNationalSociety {User = technicalAdvisor, UserId = technicalAdvisor.Id, NationalSocietyId = 2, NationalSociety = _nyssContext.NationalSocieties.Find(2)},
+            };
+
+            ArrangeUserNationalSocietiesFrom(userNationalSocieties);
+            technicalAdvisor.UserNationalSocieties = userNationalSocieties;
+
+            return technicalAdvisor;
+        }
+
+        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
+        {
+            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users.Returns(usersDbSet);
+
+            _nationalSocietyUserService.GetNationalSocietyUser<TechnicalAdvisorUser>(Arg.Any<int>()).Returns(ci =>
+            {
+                var user = existingUsers.OfType<TechnicalAdvisorUser>().FirstOrDefault(x => x.Id == (int)ci[0]);
+                if (user == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
+                }
+                return user;
+            });
+
+            _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(Arg.Any<int>())
+                .Returns(ci => _nationalSocietyUserService.GetNationalSocietyUser<TechnicalAdvisorUser>((int)ci[0]));
+        }
+
+        private void ArrangeUserNationalSocietiesFrom(IEnumerable<UserNationalSociety> userNationalSocieties)
+        {
+            var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
+        }
+
+        private void ArrangeUsersWithOneAdministratorUser() =>
+            ArrangeUsersFrom(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
+
+
+        private void SetupTestNationalSocieties()
+        {
+            var nationalSociety1 = new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "Test national society 1" };
+            var nationalSociety2 = new RX.Nyss.Data.Models.NationalSociety { Id = 2, Name = "Test national society 2" };
+            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety1, nationalSociety2 };
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
 
-            _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSociety);
+            var applicationLanguages = new List<ApplicationLanguage>();
+            var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
+            _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
+
+            _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSociety1);
+            _nyssContext.NationalSocieties.FindAsync(2).Returns(nationalSociety2);
         }
 
         [Fact]
@@ -155,25 +240,6 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             result.IsSuccess.ShouldBeFalse();
         }
 
-        private void ArrangeUsersWithOneAdministratorUser() =>
-            ArrangeUsersFrom(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
-
-        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
-        {
-            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
-            _nyssContext.Users.Returns(usersDbSet);
-
-            _nationalSocietyUserService.GetNationalSocietyUser<TechnicalAdvisorUser>(Arg.Any<int>()).Returns(ci =>
-            {
-                var user = existingUsers.OfType<TechnicalAdvisorUser>().FirstOrDefault(x => x.Id == (int)ci[0]);
-                if (user == null)
-                {
-                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
-                }
-                return user;
-            });
-        }
-        
         [Fact]
         public async Task EditTechnicalAdvisor_WhenEditingUserThatIsNotTechnicalAdvisor_SaveChangesShouldNotBeCalled()
         {
@@ -188,33 +254,20 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
         [Fact]
         public async Task EditTechnicalAdvisor_WhenEditingExistingTechnicalAdvisor_ReturnsSuccess()
         {
-            ArrangeUSersDbSetWithOneTechnicalAdvisor();
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             var result = await _technicalAdvisorService.UpdateTechnicalAdvisor(123, new EditTechnicalAdvisorRequestDto() {  });
 
             result.IsSuccess.ShouldBeTrue();
         }
 
-        private void ArrangeUSersDbSetWithOneTechnicalAdvisor() =>
-            ArrangeUsersFrom(new List<User>
-            {
-                new TechnicalAdvisorUser
-                {
-                    Id = 123,
-                    Role = Role.TechnicalAdvisor,
-                    EmailAddress = "emailTest1@domain.com",
-                    Name = "emailTest1@domain.com",
-                    Organization = "org org",
-                    PhoneNumber = "123",
-                    AdditionalPhoneNumber = "321"
-                }
-            });
+        
 
 
         [Fact]
         public async Task EditTechnicalAdvisor_WhenEditingExistingTechnicalAdvisor_SaveChangesAsyncIsCalled()
         {
-            ArrangeUSersDbSetWithOneTechnicalAdvisor();
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             await _technicalAdvisorService.UpdateTechnicalAdvisor(123, new EditTechnicalAdvisorRequestDto() {  });
 
@@ -225,7 +278,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
         [Fact]
         public async Task EditTechnicalAdvisor_WhenEditingExistingUser_ExpectedFieldsGetEdited()
         {
-            ArrangeUSersDbSetWithOneTechnicalAdvisor();
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             var existingUserEmail = _nyssContext.Users.Single(u => u.Id == 123)?.EmailAddress;
 
@@ -247,6 +300,71 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             editedUser.PhoneNumber.ShouldBe(editRequest.PhoneNumber);
             editedUser.EmailAddress.ShouldBe(existingUserEmail);
             editedUser.AdditionalPhoneNumber.ShouldBe(editRequest.AdditionalPhoneNumber);
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenSuccess_SaveChangesIsCalledOnce()
+        {
+            //arrange
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+
+            //assert
+            await _nyssContext.Received(1).SaveChangesAsync();
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromLastNationalSociety_RemoveOnNyssUserIsCalledOnce()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+
+            //assert
+            await _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromLastNationalSociety_RemoveOnNationalSocietyReferenceIsCalledOnce()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+
+            //assert
+            _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromNotLastNationalSociety_RemoveOnNyssUserIsNotCalled()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+
+            //assert
+            await _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromNotLastNationalSociety_RemoveOnNationalSocietyReferenceIsCalledOnce()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+
+            //assert
+            _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
         }
     }
 }

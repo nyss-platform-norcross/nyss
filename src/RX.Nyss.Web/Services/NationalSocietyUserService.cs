@@ -6,6 +6,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Services
 {
@@ -78,7 +79,7 @@ namespace RX.Nyss.Web.Services
                 await _dataContext.SaveChangesAsync();
 
                 transactionScope.Complete();
-                return Result.Success(ResultKey.User.Registration.Success);
+                return Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
             {
