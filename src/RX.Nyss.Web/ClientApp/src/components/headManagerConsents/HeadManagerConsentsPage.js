@@ -41,11 +41,11 @@ const HeadManagerConsentsPageComponent = (props) => {
           {validationMessage && <SnackbarContent message={validationMessage} />}
 
           <Typography variant="body1">
-            {`${strings(stringKeys.headManagerConsents.consentText)}`}
+            {strings(stringKeys.headManagerConsents.consentText)}
           </Typography>
-          <Typography variant="body1">{props.nationalSocieties.length > 1 ?
+          <Typography variant="body1">{`${props.nationalSocieties.length > 1 ?
             strings(stringKeys.headManagerConsents.nationalSocieties) :
-            strings(stringKeys.headManagerConsents.nationalSociety)}:
+            strings(stringKeys.headManagerConsents.nationalSociety)}: `}
               {props.nationalSocieties.map(ns => `${ns.nationalSocietyName} (${ns.nationalSocietyCountryName})`).join(', ')}
           </Typography>
 
