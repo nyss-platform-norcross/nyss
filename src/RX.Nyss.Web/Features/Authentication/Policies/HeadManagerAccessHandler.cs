@@ -25,6 +25,8 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
         {
             _httpContextAccessor = httpContextAccessor;
             _userService = userService;
+
+            // ToDo: Global Coordinator does not have permissions to SMS Gateways, Geographical structure, Projects, etc. but Head Manager does. Investigate and fix later
             _rolesWithSameAccessAsHeadManager = new[] { Role.GlobalCoordinator, Role.Administrator, Role.TechnicalAdvisor }
                 .Select(role => role.ToString());
         }
