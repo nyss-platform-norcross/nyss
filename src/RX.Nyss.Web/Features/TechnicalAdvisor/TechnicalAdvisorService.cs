@@ -161,7 +161,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
                 if (nationalSocietyReferenceToRemove == null)
                 {
-                    return Error(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+                    return Error(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
                 }
 
                 var isUsersLastNationalSociety = (userNationalSocieties.Count == 1);

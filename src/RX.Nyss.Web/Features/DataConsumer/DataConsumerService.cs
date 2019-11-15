@@ -165,7 +165,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
 
                 if (nationalSocietyReferenceToRemove == null)
                 {
-                    return Error(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+                    return Error(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
                 }
 
                 var isUsersLastNationalSociety = (userNationalSocieties.Count == 1);

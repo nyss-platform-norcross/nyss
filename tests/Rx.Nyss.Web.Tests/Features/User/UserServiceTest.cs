@@ -133,6 +133,20 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         }
 
         [Fact]
+        public async Task AddExisting_WhenEmailExistsButUserAlreadyIsInThisNationalSociety_ShouldReturnError()
+        {
+            //arrange
+            ArrangeUsers();
+
+            //act
+            var result = await _userService.AddExisting(1, "technical.advisor5@domain.com");
+
+            //assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
+        }
+
+        [Fact]
         public async Task AddExisting_WhenEmailExistsAndIsAssignable_ShouldReturnSuccess()
         {
             //act
