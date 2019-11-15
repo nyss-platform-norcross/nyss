@@ -14,7 +14,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
     form.addField(`healthRisk_${healthRisk.healthRiskId}_projectHealthRiskId`, projectHealthRisk.id);
     form.addField(`healthRisk_${healthRisk.healthRiskId}_caseDefinition`, healthRisk.caseDefinition, [validators.required]);
     form.addField(`healthRisk_${healthRisk.healthRiskId}_feedbackMessage`, healthRisk.feedbackMessage, [validators.required]);
-    form.addField(`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`, healthRisk.alertRuleCountThreshold, [validators.required]);
+    form.addField(`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`, healthRisk.alertRuleCountThreshold);
     form.addField(`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`, healthRisk.alertRuleDaysThreshold);
     form.addField(`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`, healthRisk.alertRuleKilometersThreshold);
 

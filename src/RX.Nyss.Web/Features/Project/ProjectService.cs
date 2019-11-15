@@ -96,9 +96,9 @@ namespace RX.Nyss.Web.Features.Project
                 .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.Alerts)
                 .Where(p => p.NationalSocietyId == nationalSocietyId)
-                .OrderBy(p => p.State)
-                    .ThenBy(p => p.EndDate.HasValue)
-                    .ThenBy(p => p.EndDate)
+                .OrderByDescending(p => p.State)
+                    .ThenByDescending(p => p.EndDate)
+                    .ThenByDescending(p => p.StartDate)
                     .ThenBy(p => p.Name)
                 .Select(p => new ProjectListItemResponseDto
                 {

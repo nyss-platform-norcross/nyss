@@ -12,7 +12,7 @@ export function projectsReducer(state = initialState.projects, action) {
       return { ...state, listFetching: true, listData: [] };
 
     case actions.GET_PROJECTS.SUCCESS:
-      return { ...state, listFetching: false, listData: action.list, listStale: false };
+      return { ...state, listFetching: false, listData: action.list, listStale: true };
 
     case actions.GET_PROJECTS.FAILURE:
       return { ...state, listFetching: false, listData: [] };
