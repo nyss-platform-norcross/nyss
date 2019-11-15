@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 
@@ -28,7 +29,7 @@ namespace RX.Nyss.Web.Services
             var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(user.EmailAddress)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
 
             var (emailSubject, emailBody) = EmailTextGenerator.GenerateEmailVerificationEmail(
-                role:user.Role.ToString(),
+                role:user.Role,
                 callbackUrl: verificationUrl,
                 name: user.Name);
 

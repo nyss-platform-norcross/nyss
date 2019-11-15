@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Web.Services
+﻿using RX.Nyss.Data.Concepts;
+
+namespace RX.Nyss.Web.Services
 {
     public static class EmailTextGenerator
     {
@@ -18,10 +20,11 @@
             return (subject, body);
         }
 
-        public static (string subject, string body) GenerateEmailVerificationEmail(string role, string callbackUrl, string name)
+        public static (string subject, string body) GenerateEmailVerificationEmail(Role role, string callbackUrl, string name)
         {
-            // ToDo: Add support for multiple languages
+            var roleName = GetRoleName(role);
 
+            // ToDo: Add support for multiple languages
             var subject = "Please verify your email address";
             var body = @"
                 <h1>Dear {{username}},</h1>
@@ -46,10 +49,19 @@
                 ";
             body = body
                 .Replace("{{username}}", name)
-                .Replace("{{roleName}}", role)
+                .Replace("{{roleName}}", roleName)
                 .Replace("{{link}}", callbackUrl);
 
             return (subject, body);
         }
+
+        private static string GetRoleName(Role userRole) =>
+            userRole switch
+            {
+                Role.DataConsumer => "Data consumer",
+                Role.GlobalCoordinator => "Global coordinator",
+                Role.TechnicalAdvisor => "Technical advisor",
+                _ => userRole.ToString()
+            };
     }
 }
