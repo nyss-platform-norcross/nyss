@@ -57,7 +57,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
        <Form onSubmit={handleSubmit}>
         <Box mb={3}>
-          <Typography variant="paragraph">{strings(stringKeys.nationalSocietyUser.form.addExistingDescription)}</Typography>
+          <Typography variant="body1">{strings(stringKeys.nationalSocietyUser.form.addExistingDescription)}</Typography>
         </Box> 
         
          <Grid container spacing={3}>
