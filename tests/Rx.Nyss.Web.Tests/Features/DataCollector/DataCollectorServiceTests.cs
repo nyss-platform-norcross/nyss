@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,32 +10,39 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.DataCollector;
 using RX.Nyss.Web.Features.DataCollector.Dto;
+using RX.Nyss.Web.Features.NationalSocietyStructure;
+using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
+using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace Rx.Nyss.Web.Tests.Features.DataCollector
 {
     public class DataCollectorServiceTests
     {
         private readonly INyssContext _nyssContextMock;
-        private readonly ILoggerAdapter _loggerMock;
         private readonly IDataCollectorService _dataCollectorService;
+        private readonly INationalSocietyStructureService _nationalSocietyStructureService;
+        private readonly IGeolocationService _geolocationService;
 
         private const int DataCollectorId = 1;
         private const string DataCollectorPhoneNumber = "+4712345678";
-        private const string DataCollectorName = "Bubba";
         private const int ProjectId = 1;
         private const int SupervisorId = 1;
         private const int NationalSocietyId = 1;
         private const string Village = "Layuna";
+        private const int RegionId = 1;
+        private const int DistrictId = 1;
+        private const int VillageId = 1;
 
         public DataCollectorServiceTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
-            _loggerMock = Substitute.For<ILoggerAdapter>();
-            _dataCollectorService = new DataCollectorService(_loggerMock, _nyssContextMock);
+            _nationalSocietyStructureService = Substitute.For<INationalSocietyStructureService>();
+            _geolocationService = Substitute.For<IGeolocationService>();
+            _dataCollectorService = new DataCollectorService(_nyssContextMock, _nationalSocietyStructureService, _geolocationService);
 
             // Arrange
             var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
@@ -43,7 +51,11 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             };
             var users = new List<User>
             {
-                new SupervisorUser { Id = SupervisorId }
+                new SupervisorUser { Id = SupervisorId, Role = Role.Supervisor }
+            };
+            var usersNationalSocieties = new List<UserNationalSociety>
+            {
+                new UserNationalSociety { NationalSociety = nationalSocieties[0], User = users[0], NationalSocietyId = NationalSocietyId }
             };
             var projects = new List<Project>
             {
@@ -51,15 +63,15 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             };
             var regions = new List<Region>
             {
-                new Region { NationalSociety = nationalSocieties[0], Name = "Layuna" }
+                new Region { Id = RegionId, NationalSociety = nationalSocieties[0], Name = "Layuna" }
             };
             var districts = new List<District>
             {
-                new District { Region = regions[0], Name = "Layuna" }
+                new District { Id = DistrictId, Region = regions[0], Name = "Layuna" }
             };
             var villages = new List<Village>
             {
-                new Village { District = districts[0], Name = Village }
+                new Village { Id = VillageId, District = districts[0], Name = Village }
             };
             var zones = new List<Zone>();
             var dataCollectors = new List<RX.Nyss.Data.Models.DataCollector>
@@ -72,7 +84,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                     Village = villages[0],
                     Supervisor = (SupervisorUser)users[0],
                     AdditionalPhoneNumber = "",
-                    BirthYearGroup = "",
+                    BirthGroupDecade = 1,
                     DataCollectorType = DataCollectorType.Human,
                     DisplayName = "",
                     Location = new Point(0, 0),
@@ -83,6 +95,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
 
             var nationalSocietyMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+            var userNationalSocietitiesMockDbSet = usersNationalSocieties.AsQueryable().BuildMockDbSet();
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
             var regionsMockDbSet = regions.AsQueryable().BuildMockDbSet();
             var districtsMockDbSet = districts.AsQueryable().BuildMockDbSet();
@@ -92,6 +105,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
 
             _nyssContextMock.NationalSocieties.Returns(nationalSocietyMockDbSet);
             _nyssContextMock.Users.Returns(usersMockDbSet);
+            _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietitiesMockDbSet);
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Regions.Returns(regionsMockDbSet);
             _nyssContextMock.Districts.Returns(districtsMockDbSet);
@@ -101,6 +115,12 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
 
             _nyssContextMock.DataCollectors.FindAsync(DataCollectorId).Returns(dataCollectors[0]);
             _nyssContextMock.DataCollectors.FindAsync(2).Returns((RX.Nyss.Data.Models.DataCollector)null);
+
+            _nationalSocietyStructureService.GetRegions(NationalSocietyId).Returns(Success(new List<RegionResponseDto>()));
+            _nationalSocietyStructureService.GetDistricts(DistrictId).Returns(Success(new List<DistrictResponseDto>()));
+            _nationalSocietyStructureService.GetVillages(VillageId).Returns(Success(new List<VillageResponseDto>()));
+            _nationalSocietyStructureService.GetZones(Arg.Any<int>()).Returns(Success(new List<ZoneResponseDto>()));
+
         }
 
         [Fact]
@@ -111,7 +131,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             {
                 PhoneNumber = "+4712344567",
                 SupervisorId = SupervisorId,
-                Village = _nyssContextMock.Villages.ToList()[0].Name,
+                VillageId = _nyssContextMock.Villages.ToList()[0].Id,
                 Latitude = 15,
                 Longitude = 45,
             };
@@ -131,7 +151,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             {
                 PhoneNumber = DataCollectorPhoneNumber,
                 SupervisorId = SupervisorId,
-                Village = _nyssContextMock.Villages.ToList()[0].Name,
+                VillageId = _nyssContextMock.Villages.ToList()[0].Id,
                 Latitude = 15,
                 Longitude = 45
             };
@@ -153,17 +173,12 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                 Id = 2,
                 PhoneNumber = DataCollectorPhoneNumber,
                 SupervisorId = SupervisorId,
-                Village = _nyssContextMock.Villages.ToList()[0].Name,
+                VillageId = _nyssContextMock.Villages.ToList()[0].Id,
                 Latitude = 15,
                 Longitude = 45
             };
 
-            // Act
-            var result = await _dataCollectorService.EditDataCollector(ProjectId, dataCollector);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.DataCollector.DataCollectorNotFound);
+            await Should.ThrowAsync<Exception>(() => _dataCollectorService.EditDataCollector(dataCollector));
         }
 
         [Fact]
@@ -175,13 +190,13 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                 Id = DataCollectorId,
                 PhoneNumber = DataCollectorPhoneNumber,
                 SupervisorId = SupervisorId,
-                Village = _nyssContextMock.Villages.ToList()[0].Name,
+                VillageId = _nyssContextMock.Villages.ToList()[0].Id,
                 Latitude = 15,
                 Longitude = 45
             };
 
             // Act
-            var result = await _dataCollectorService.EditDataCollector(ProjectId, dataCollector);
+            var result = await _dataCollectorService.EditDataCollector(dataCollector);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -224,19 +239,14 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         [Fact]
         public async Task GetDataCollector_WhenDataCollectorDoesntExist_ShouldReturnError()
         {
-            // Act
-            var result = await _dataCollectorService.GetDataCollector(2);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.DataCollector.DataCollectorNotFound);
+            await Should.ThrowAsync<Exception>(() => _dataCollectorService.GetDataCollector(2));
         }
 
         [Fact]
         public async Task ListDataCollector_WhenSuccessful_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.ListDataCollectors();
+            var result = await _dataCollectorService.ListDataCollectors(ProjectId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();

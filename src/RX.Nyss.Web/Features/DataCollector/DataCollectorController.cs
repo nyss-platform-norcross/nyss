@@ -25,19 +25,27 @@ namespace RX.Nyss.Web.Features.DataCollector
             await _dataCollectorService.GetDataCollector(dataCollectorId);
 
         [HttpGet, Route("project/{projectId:int}/dataCollector/list"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor)]
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors() =>
-            await _dataCollectorService.ListDataCollectors();
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId) =>
+            await _dataCollectorService.ListDataCollectors(projectId);
 
         [HttpPost, Route("project/{projectId:int}/dataCollector/create"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor)]
-        public async Task<Result<int>> CreateDataCollector(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) => 
+        public async Task<Result> CreateDataCollector(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) => 
             await _dataCollectorService.CreateDataCollector(projectId, createDataCollectorDto);
 
         [HttpPost, Route("dataCollector/{dataCollectorId:int}/edit"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
-        public async Task<Result> EditDataCollector(int projectId, [FromBody]EditDataCollectorRequestDto editDataCollectorDto) =>
-            await _dataCollectorService.EditDataCollector(projectId, editDataCollectorDto);
+        public async Task<Result> EditDataCollector([FromBody]EditDataCollectorRequestDto editDataCollectorDto) =>
+            await _dataCollectorService.EditDataCollector(editDataCollectorDto);
 
         [HttpPost, Route("dataCollector/{dataCollectorId:int}/remove"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
         public async Task<Result> RemoveDataCollector(int dataCollectorId) =>
             await _dataCollectorService.RemoveDataCollector(dataCollectorId);
+
+        [HttpGet, Route("project/{projectId:int}/dataCollector/formData"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor)]
+        public async Task<Result<DataCollectorFormDataResponse>> GetDataCollectorFormData(int projectId) =>
+            await _dataCollectorService.GetFormData(projectId, User.Identity.Name);
+
+        [HttpGet, Route("project/{projectId:int}/basicData"), NeedsRole(Role.Administrator, Role.DataManager, Role.Supervisor)]
+        public async Task<Result> GetProjectBasicData(int projectId) =>
+            await _dataCollectorService.GetProjectBasicData(projectId);
     }
 }

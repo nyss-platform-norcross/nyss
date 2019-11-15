@@ -6,7 +6,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
@@ -28,14 +27,12 @@ namespace RX.Nyss.Web.Features.NationalSociety
     {
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IConfig _config;
         private readonly IUserService _userService;
 
         public NationalSocietyService(INyssContext context, ILoggerAdapter loggerAdapter, IConfig config, IUserService userService)
         {
             _nyssContext = context;
             _loggerAdapter = loggerAdapter;
-            _config = config;
             _userService = userService;
         }
 
@@ -192,7 +189,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         public async Task<Country> GetCountryById(int id) =>
             await _nyssContext.Countries.FindAsync(id);
 
-        public Result HandleException(Exception e)
+        private Result HandleException(Exception e)
         {
             if (e.InnerException is SqlException sqlException)
             {

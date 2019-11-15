@@ -1,83 +1,170 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollector.Dto;
+using RX.Nyss.Web.Features.NationalSocietyStructure;
+using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.DataCollector
 {
     public interface IDataCollectorService
     {
-        Task<Result<int>> CreateDataCollector(int projectId, CreateDataCollectorRequestDto createDataCollectorDto);
-        Task<Result> EditDataCollector(int projectId, EditDataCollectorRequestDto editDataCollectorDto);
+        Task<Result> CreateDataCollector(int projectId, CreateDataCollectorRequestDto createDto);
+        Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto);
         Task<Result> RemoveDataCollector(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId);
-        Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors();
+        Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId);
+        Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
+        Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
     }
 
     public class DataCollectorService : IDataCollectorService
     {
-        private readonly INyssContext _nyssContext;
-        private readonly ILoggerAdapter _logger;
+        private const double DefaultLatitude = 11.5024338; // Africa
+        private const double DefaultLongitude = 17.7578122;
 
-        public DataCollectorService(ILoggerAdapter logger, INyssContext nyssContext)
+        private readonly INyssContext _nyssContext;
+        private readonly INationalSocietyStructureService _nationalSocietyStructureService;
+        private readonly IGeolocationService _geolocationService;
+
+        public DataCollectorService(
+            INyssContext nyssContext,
+            INationalSocietyStructureService nationalSocietyStructureService,
+            IGeolocationService geolocationService)
         {
             _nyssContext = nyssContext;
-            _logger = logger;
+            _nationalSocietyStructureService = nationalSocietyStructureService;
+            _geolocationService = geolocationService;
         }
 
         public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId)
         {
-            try
-            {
-                var dataCollector = await _nyssContext.DataCollectors
-                    .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
-                    .Select(dc => new GetDataCollectorResponseDto
-                    {
-                        Id = dc.Id,
-                        Name = dc.Name,
-                        DisplayName = dc.DisplayName,
-                        DataCollectorType = dc.DataCollectorType,
-                        Sex = dc.Sex,
-                        TenYearBirthGroupStartYear = dc.TenYearBirthGroupStartYear,
-                        PhoneNumber = dc.PhoneNumber,
-                        AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
-                        Latitude = dc.Location.X,
-                        Longitude = dc.Location.Y,
-                        SupervisorId = dc.Supervisor.Id,
-                        Region = dc.Village.District.Region.Name,
-                        District = dc.Village.District.Name,
-                        Village = dc.Village.Name,
-                        Zone = dc.Zone != null ? dc.Zone.Name : null
-                    }).FirstOrDefaultAsync(dc => dc.Id == dataCollectorId);
+            var dataCollector = await _nyssContext.DataCollectors
+                .Include(dc => dc.Project).ThenInclude(p => p.NationalSociety)
+                .Include(dc => dc.Supervisor)
+                .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
+                .SingleAsync(dc => dc.Id == dataCollectorId);
 
-                if (dataCollector == null)
+            var regions = await _nationalSocietyStructureService.GetRegions(dataCollector.Project.NationalSociety.Id);
+            var districts = await _nationalSocietyStructureService.GetDistricts(dataCollector.Village.District.Id);
+            var villages = await _nationalSocietyStructureService.GetVillages(dataCollector.Village.Id);
+            var zones = await _nationalSocietyStructureService.GetZones(dataCollector.Village.Id);
+
+            var dto = new GetDataCollectorResponseDto
+            {
+                Id = dataCollector.Id,
+                Name = dataCollector.Name,
+                DisplayName = dataCollector.DisplayName,
+                DataCollectorType = dataCollector.DataCollectorType,
+                Sex = dataCollector.Sex,
+                BirthGroupDecade = dataCollector.BirthGroupDecade,
+                PhoneNumber = dataCollector.PhoneNumber,
+                AdditionalPhoneNumber = dataCollector.AdditionalPhoneNumber,
+                Latitude = dataCollector.Location.X,
+                Longitude = dataCollector.Location.Y,
+                SupervisorId = dataCollector.Supervisor.Id,
+                RegionId = dataCollector.Village.District.Region.Id,
+                DistrictId = dataCollector.Village.District.Id,
+                VillageId = dataCollector.Village.Id,
+                ZoneId = dataCollector.Zone?.Id,
+                NationalSocietyId = dataCollector.Project.NationalSociety.Id,
+                FormData = new GetDataCollectorResponseDto.FormDataDto
                 {
-                    return Error(ResultKey.DataCollector.DataCollectorNotFound).Cast<GetDataCollectorResponseDto>();
+                    Regions = regions.Value,
+                    Districts = districts.Value,
+                    Villages = villages.Value,
+                    Zones = zones.Value,
+                    Supervisors = await GetSupervisors(dataCollector.Project.NationalSociety.Id)
                 }
+            };
 
-                return Success(dataCollector);
-            }
-            catch (Exception e)
-            {
-                _logger.Debug(e.Message);
-                return Error(ResultKey.Shared.GeneralErrorMessage).Cast<GetDataCollectorResponseDto>();
-            }
+            return Success(dto);
         }
 
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors()
+        public async Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName)
         {
-            try
-            {
-                var dataCollectors = await _nyssContext.DataCollectors.Select(dc => new DataCollectorResponseDto
+            var projectData = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(dc => new
                 {
+                    NationalSocietyId = dc.NationalSociety.Id,
+                    CountryName = dc.NationalSociety.Country.Name
+                })
+                .SingleOrDefaultAsync();
+
+
+            if (projectData == null)
+            {
+                return Error<DataCollectorFormDataResponse>(ResultKey.Project.NotFound);
+            }
+
+            var regions = await _nationalSocietyStructureService.GetRegions(projectData.NationalSocietyId);
+
+            var locationFromCountry = await _geolocationService.GetLocationFromCountry(projectData.CountryName);
+
+            var defaultSupervisorId = await _nyssContext.Users
+                .Where(u => u.EmailAddress == identityName && u.Role == Role.Supervisor)
+                .Select(u => (int?)u.Id)
+                .FirstOrDefaultAsync();
+
+            return Success(new DataCollectorFormDataResponse
+            {
+                NationalSocietyId = projectData.NationalSocietyId,
+                Regions = regions.Value,
+                Supervisors = await GetSupervisors(projectData.NationalSocietyId),
+                DefaultSupervisorId = defaultSupervisorId,
+                DefaultLocation = locationFromCountry.IsSuccess
+                    ? new LocationDto
+                    {
+                        Latitude = locationFromCountry.Value.Latitude,
+                        Longitude = locationFromCountry.Value.Longitude
+                    }
+                    : new LocationDto
+                    {
+                        Latitude = DefaultLatitude,
+                        Longitude = DefaultLongitude
+                    }
+            });
+        }
+
+        public async Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId)
+        {
+            var project = await _nyssContext.Projects
+                .Include(p => p.NationalSociety).ThenInclude(n => n.Country)
+                .Select(dc => new ProjectBasicDataResponseDto
+                {
+                    Id = dc.Id,
+                    Name = dc.Name,
+                    NationalSociety = new ProjectBasicDataResponseDto.NationalSocietyIdDto
+                    {
+                        Id = dc.NationalSociety.Id,
+                        Name = dc.NationalSociety.Name,
+                        CountryName = dc.NationalSociety.Country.Name,
+                    }
+                }).SingleOrDefaultAsync(p => p.Id == projectId);
+
+            return project != null
+                ? Success(project)
+                : Error<ProjectBasicDataResponseDto>(ResultKey.DataCollector.DataCollectorNotFound);
+        }
+
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId)
+        {
+            var dataCollectors = await _nyssContext.DataCollectors
+                .Where(dc => dc.Project.Id == projectId)
+                .OrderBy(dc => dc.Name)
+                .Select(dc => new DataCollectorResponseDto
+                {
+                    Id = dc.Id,
                     Name = dc.Name,
                     DisplayName = dc.DisplayName,
                     PhoneNumber = dc.PhoneNumber,
@@ -86,144 +173,123 @@ namespace RX.Nyss.Web.Features.DataCollector
                     Region = dc.Village.District.Region.Name
                 }).ToListAsync();
 
-                return Success<IEnumerable<DataCollectorResponseDto>>(dataCollectors);
-            }
-            catch (Exception e)
-            {
-                _logger.Debug(e);
-                return Error(ResultKey.Shared.GeneralErrorMessage).Cast<IEnumerable<DataCollectorResponseDto>>();
-            }
+            return Success((IEnumerable<DataCollectorResponseDto>)dataCollectors);
         }
 
-        public async Task<Result<int>> CreateDataCollector(int projectId, CreateDataCollectorRequestDto createDataCollectorDto)
+        public async Task<Result> CreateDataCollector(int projectId, CreateDataCollectorRequestDto createDto)
         {
-            try
+            var phoneNumberExists = await _nyssContext.DataCollectors
+                .AnyAsync(dc => dc.PhoneNumber == createDto.PhoneNumber);
+
+            if (phoneNumberExists)
             {
-                var phoneNumberExists = await _nyssContext.DataCollectors.AnyAsync(dc => dc.PhoneNumber == createDataCollectorDto.PhoneNumber);
-
-                if (phoneNumberExists)
-                {
-                    return Error(ResultKey.DataCollector.PhoneNumberAlreadyExists).Cast<int>();
-                }
-
-                var project = await _nyssContext.Projects.Select(p => new Project
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    NationalSociety = p.NationalSociety,
-                    State = p.State,
-                    TimeZone = p.TimeZone
-                }).FirstOrDefaultAsync(p => p.Id == projectId);
-
-                var village = await _nyssContext.Villages
-                    .Include(v => v.District).ThenInclude(d => d.Region).ThenInclude(r => r.NationalSociety)
-                    .FirstOrDefaultAsync(v => v.Name == createDataCollectorDto.Village && v.District.Region.NationalSociety.Id == project.NationalSociety.Id);
-
-                var zone = string.IsNullOrEmpty(createDataCollectorDto.Zone) ? null : await _nyssContext.Zones.FirstOrDefaultAsync(z => z.Village.Id == village.Id);
-                var supervisor = (SupervisorUser)await _nyssContext.Users.FindAsync(createDataCollectorDto.SupervisorId);
-
-                var dataCollector = new Nyss.Data.Models.DataCollector
-                {
-                    Name = createDataCollectorDto.Name,
-                    DisplayName = createDataCollectorDto.DisplayName,
-                    PhoneNumber = createDataCollectorDto.PhoneNumber,
-                    AdditionalPhoneNumber = createDataCollectorDto.AdditionalPhoneNumber,
-                    TenYearBirthGroupStartYear = createDataCollectorDto.TenYearBirthGroupStartYear,
-                    Sex = createDataCollectorDto.Sex,
-                    DataCollectorType = createDataCollectorDto.DataCollectorType,
-                    Location = new Point(createDataCollectorDto.Latitude, createDataCollectorDto.Longitude),
-                    Village = village,
-                    Supervisor = supervisor,
-                    Project = project,
-                    Zone = zone
-                };
-
-                var entity = await _nyssContext.AddAsync(dataCollector);
-                await _nyssContext.SaveChangesAsync();
-                return Success(entity.Entity.Id, ResultKey.DataCollector.CreateSuccess);
+                return Error(ResultKey.DataCollector.PhoneNumberAlreadyExists).Cast<int>();
             }
-            catch (Exception e)
+
+            var project = await _nyssContext.Projects
+                .Include(p => p.NationalSociety)
+                .SingleAsync(p => p.Id == projectId);
+
+            var nationalSocietyId = project.NationalSociety.Id;
+
+            var supervisor = await _nyssContext.UserNationalSocieties
+                .Where(u => u.User.Id == createDto.SupervisorId && u.User.Role == Role.Supervisor && u.NationalSocietyId == nationalSocietyId)
+                .Select(u => (SupervisorUser)u.User)
+                .SingleAsync();
+
+            var village = await _nyssContext.Villages
+                .SingleAsync(v => v.Id == createDto.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId);
+
+            var zone = createDto.ZoneId != null
+                ? await _nyssContext.Zones.SingleAsync(z => z.Village.Id == village.Id)
+                : null;
+
+            var dataCollector = new Nyss.Data.Models.DataCollector
             {
-                _logger.Debug(e);
-                return Error(ResultKey.DataCollector.CreateError).Cast<int>();
-            }
+                Name = createDto.Name,
+                DisplayName = createDto.DisplayName,
+                PhoneNumber = createDto.PhoneNumber,
+                AdditionalPhoneNumber = createDto.AdditionalPhoneNumber,
+                BirthGroupDecade = createDto.BirthGroupDecade,
+                Sex = createDto.Sex,
+                DataCollectorType = DataCollectorType.Human,
+                Location = CreatePoint(createDto.Latitude, createDto.Longitude),
+                Village = village,
+                Supervisor = supervisor,
+                Project = project,
+                Zone = zone
+            };
+
+            await _nyssContext.AddAsync(dataCollector);
+            await _nyssContext.SaveChangesAsync();
+            return Success(ResultKey.DataCollector.CreateSuccess);
+      
         }
 
-        public async Task<Result> EditDataCollector(int projectId, EditDataCollectorRequestDto editDataCollectorDto)
+        public async Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto)
         {
-            try
-            {
-                var dataCollector = await _nyssContext.DataCollectors
-                    .Include(dc => dc.Project)
-                    .Include(dc => dc.Supervisor)
-                    .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
-                    .Include(dc => dc.Zone)
-                    .SingleOrDefaultAsync(dc => dc.Id == editDataCollectorDto.Id);
+            var dataCollector = await _nyssContext.DataCollectors
+                .Include(dc => dc.Project).ThenInclude(x => x.NationalSociety)
+                .Include(dc => dc.Supervisor)
+                .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
+                .Include(dc => dc.Zone)
+                .SingleAsync(dc => dc.Id == editDto.Id);
 
-                if (dataCollector == null)
-                {
-                    return Error(ResultKey.DataCollector.DataCollectorNotFound);
-                }
+            var nationalSocietyId = dataCollector.Project.NationalSociety.Id;
 
-                dataCollector.Name = editDataCollectorDto.Name;
-                dataCollector.DisplayName = editDataCollectorDto.DisplayName;
-                dataCollector.PhoneNumber = editDataCollectorDto.PhoneNumber;
-                dataCollector.AdditionalPhoneNumber = editDataCollectorDto.AdditionalPhoneNumber;
-                dataCollector.Location = new Point(editDataCollectorDto.Latitude, editDataCollectorDto.Longitude);
-                dataCollector.Sex = editDataCollectorDto.Sex;
-                dataCollector.DataCollectorType = editDataCollectorDto.DataCollectorType;
+            var supervisor = await _nyssContext.UserNationalSocieties
+                .Where(u => u.User.Id == editDto.SupervisorId && u.User.Role == Role.Supervisor && u.NationalSocietyId == nationalSocietyId)
+                .Select(u => (SupervisorUser)u.User)
+                .SingleAsync();
 
-                if (dataCollector.Project.Id != projectId)
-                {
-                    dataCollector.Project = await _nyssContext.Projects.FindAsync(projectId);
-                }
+            var village = await _nyssContext.Villages
+                .SingleAsync(v => v.Id == editDto.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId);
 
-                if (dataCollector.Supervisor.Id != editDataCollectorDto.SupervisorId)
-                {
-                    dataCollector.Supervisor = (SupervisorUser)await _nyssContext.Users.FindAsync(editDataCollectorDto.SupervisorId);
-                }
+            var zone = editDto.ZoneId != null
+                ? await _nyssContext.Zones.SingleAsync(z => z.Village.Id == village.Id)
+                : null;
 
-                if (dataCollector.Village.Name != editDataCollectorDto.Village)
-                {
-                    dataCollector.Village = await _nyssContext.Villages
-                        .FirstOrDefaultAsync(v => v.Name == editDataCollectorDto.Name && v.District.Region.NationalSociety.Id == dataCollector.Project.Id);
-                }
+            dataCollector.Name = editDto.Name;
+            dataCollector.DisplayName = editDto.DisplayName;
+            dataCollector.PhoneNumber = editDto.PhoneNumber;
+            dataCollector.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
+            dataCollector.Location = CreatePoint(editDto.Latitude, editDto.Longitude);
+            dataCollector.Sex = editDto.Sex;
+            dataCollector.Village = village;
+            dataCollector.Supervisor = supervisor;
+            dataCollector.Zone = zone;
 
-                if (!string.IsNullOrEmpty(editDataCollectorDto.Zone) && (dataCollector.Zone == null || dataCollector.Zone.Name != editDataCollectorDto.Zone))
-                {
-                    dataCollector.Zone = await _nyssContext.Zones.FirstOrDefaultAsync(z => z.Name == editDataCollectorDto.Zone && z.Village.Id == dataCollector.Village.Id);
-                } 
-
-                await _nyssContext.SaveChangesAsync();
-                return SuccessMessage(ResultKey.DataCollector.EditSuccess);
-            }
-            catch (Exception e)
-            {
-                _logger.Debug(e);
-                return Error(ResultKey.DataCollector.EditError);
-            }
+            await _nyssContext.SaveChangesAsync();
+            return SuccessMessage(ResultKey.DataCollector.EditSuccess);
         }
 
         public async Task<Result> RemoveDataCollector(int dataCollectorId)
         {
-            try
-            {
-                var dataCollector = await _nyssContext.DataCollectors.FindAsync(dataCollectorId);
+            var dataCollector = await _nyssContext.DataCollectors.FindAsync(dataCollectorId);
 
-                if (dataCollector == null)
+            if (dataCollector == null)
+            {
+                return Error(ResultKey.DataCollector.DataCollectorNotFound);
+            }
+
+            _nyssContext.DataCollectors.Remove(dataCollector);
+            await _nyssContext.SaveChangesAsync();
+            return SuccessMessage(ResultKey.DataCollector.RemoveSuccess);
+        }
+
+        private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int nationalSocietyId) =>
+            await _nyssContext.UserNationalSocieties.Where(u => u.NationalSocietyId == nationalSocietyId && u.User is SupervisorUser)
+                .Select(u => new DataCollectorSupervisorResponseDto
                 {
-                    return Error(ResultKey.DataCollector.DataCollectorNotFound);
-                }
+                    Id = u.User.Id,                
+                    Name = u.User.Name,                
+                })
+                .ToListAsync();
 
-                _nyssContext.DataCollectors.Remove(dataCollector);
-                await _nyssContext.SaveChangesAsync();
-                return SuccessMessage(ResultKey.DataCollector.RemoveSuccess);
-            }
-            catch (Exception e)
-            {
-                _logger.Debug(e);
-                return Error(ResultKey.DataCollector.RemoveError);
-            }
+        private static Point CreatePoint(double latitude, double longitude)
+        {
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            return geometryFactory.CreatePoint(new Coordinate(latitude, longitude));
         }
     }
 }
