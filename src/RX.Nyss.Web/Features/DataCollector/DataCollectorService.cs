@@ -49,10 +49,13 @@ namespace RX.Nyss.Web.Features.DataCollector
         public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId)
         {
             var dataCollector = await _nyssContext.DataCollectors
-                .Include(dc => dc.Project).ThenInclude(p => p.NationalSociety)
+                .Include(dc => dc.Project)
+                    .ThenInclude(p => p.NationalSociety)
                 .Include(dc => dc.Supervisor)
                 .Include(dc => dc.Zone)
-                .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
+                .Include(dc => dc.Village)
+                    .ThenInclude(v => v.District)
+                        .ThenInclude(d => d.Region)
                 .SingleAsync(dc => dc.Id == dataCollectorId);
 
             var regions = await _nationalSocietyStructureService.GetRegions(dataCollector.Project.NationalSociety.Id);
@@ -102,7 +105,6 @@ namespace RX.Nyss.Web.Features.DataCollector
                 })
                 .SingleOrDefaultAsync();
 
-
             if (projectData == null)
             {
                 return Error<DataCollectorFormDataResponse>(ResultKey.Project.NotFound);
@@ -151,7 +153,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                         Name = dc.NationalSociety.Name,
                         CountryName = dc.NationalSociety.Country.Name,
                     }
-                }).SingleOrDefaultAsync(p => p.Id == projectId);
+                })
+                .SingleOrDefaultAsync(p => p.Id == projectId);
 
             return project != null
                 ? Success(project)
@@ -172,7 +175,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                     Village = dc.Village.Name,
                     District = dc.Village.District.Name,
                     Region = dc.Village.District.Region.Name
-                }).ToListAsync();
+                })
+                .ToListAsync();
 
             return Success((IEnumerable<DataCollectorResponseDto>)dataCollectors);
         }
@@ -230,9 +234,12 @@ namespace RX.Nyss.Web.Features.DataCollector
         public async Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto)
         {
             var dataCollector = await _nyssContext.DataCollectors
-                .Include(dc => dc.Project).ThenInclude(x => x.NationalSociety)
+                .Include(dc => dc.Project)
+                    .ThenInclude(x => x.NationalSociety)
                 .Include(dc => dc.Supervisor)
-                .Include(dc => dc.Village).ThenInclude(v => v.District).ThenInclude(d => d.Region)
+                .Include(dc => dc.Village)
+                    .ThenInclude(v => v.District)
+                        .ThenInclude(d => d.Region)
                 .Include(dc => dc.Zone)
                 .SingleAsync(dc => dc.Id == editDto.Id);
 

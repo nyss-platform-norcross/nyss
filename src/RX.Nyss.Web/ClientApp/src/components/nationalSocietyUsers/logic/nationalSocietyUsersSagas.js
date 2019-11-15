@@ -5,6 +5,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import * as roles from "../../../authentication/roles";
+import { strings, stringKeys } from "../../../strings";
 
 export const nationalSocietyUsersSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_USERS_LIST.INVOKE, openNationalSocietyUsersList),
@@ -61,7 +62,7 @@ function* createNationalSocietyUser({ nationalSocietyId, data }) {
     const response = yield call(http.post, getSpecificRoleUserAdditionUrl(nationalSocietyId, data.role), data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
-    yield put(appActions.showMessage("The User was added successfully"));
+    yield put(appActions.showMessage(strings(stringKeys.nationalSocietyUser.messages.creationSuccessful)));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }

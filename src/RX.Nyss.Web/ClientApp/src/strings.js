@@ -145,6 +145,9 @@ export const stringKeys = {
       project: "nationalSocietyUser.list.project",
       removalConfirmation: "nationalSocietyUser.list.removalConfirmation"
     },
+    messages:{
+      creationSuccessful: "nationalSocietyUser.messages.creationSuccessful",
+    }
   },
   dataCollector: {
     title: "dataCollectors.title",

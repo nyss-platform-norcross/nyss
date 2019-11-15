@@ -4,6 +4,7 @@ import * as actions from "./dataCollectorsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import { stringKeys } from "../../../strings";
 
 export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
@@ -11,8 +12,7 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTOR_EDITION.INVOKE, openDataCollectorEdition),
   takeEvery(consts.CREATE_DATA_COLLECTOR.INVOKE, createDataCollector),
   takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
-  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector),
-  takeEvery(consts.GET_COUNTRY_LOCATION.INVOKE, getCountryLocation)
+  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector)  
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -60,7 +60,7 @@ function* createDataCollector({ projectId, data }) {
     const response = yield call(http.post, `/api/project/${projectId}/dataCollector/create`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(projectId));
-    yield put(appActions.showMessage("The SMS Gateway was added successfully"));
+    yield put(appActions.showMessage(strings(stringKeys.nationalSocietyUser.messages.creationSuccessful)));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -96,16 +96,6 @@ function* getDataCollectors(projectId) {
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
-  }
-};
-
-function* getCountryLocation({country}) {
-  yield put(actions.getCountryLocation.request());
-  try {
-    const response = yield call(http.post, `https://nominatim.openstreetmap.org/search.php?country=${country}&format=json`);
-    yield put(actions.getCountryLocation.success(response));
-  } catch (error) {
-    yield put(actions.getCountryLocation.failure(error.message));
   }
 };
 

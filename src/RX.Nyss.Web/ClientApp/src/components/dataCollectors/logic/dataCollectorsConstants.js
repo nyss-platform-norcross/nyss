@@ -7,6 +7,5 @@ export const CREATE_DATA_COLLECTOR = action("CREATE_DATA_COLLECTOR");
 export const OPEN_DATA_COLLECTOR_EDITION = action("OPEN_DATA_COLLECTOR_EDITION");
 export const EDIT_DATA_COLLECTOR = action("EDIT_DATA_COLLECTOR");
 export const REMOVE_DATA_COLLECTOR = action("REMOVE_DATA_COLLECTOR");
-export const GET_COUNTRY_LOCATION = action("GET_COUNTRY_LOCATION");
 
 export const sexValues = [ "Male", "Female", "Other" ];

@@ -165,7 +165,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         }
 
         [Fact]
-        public async Task EditDataCollector_WhenDataCollectorDoesntExist_ShouldReturnError()
+        public async Task EditDataCollector_WhenDataCollectorDoesntExist_ShouldThrowException()
         {
             // Arrange
             var dataCollector = new EditDataCollectorRequestDto
@@ -237,7 +237,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         }
 
         [Fact]
-        public async Task GetDataCollector_WhenDataCollectorDoesntExist_ShouldReturnError()
+        public async Task GetDataCollector_WhenDataCollectorDoesntExist_ShouldThrowException()
         {
             await Should.ThrowAsync<Exception>(() => _dataCollectorService.GetDataCollector(2));
         }

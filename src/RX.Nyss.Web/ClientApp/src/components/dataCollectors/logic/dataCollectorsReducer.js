@@ -6,7 +6,7 @@ import { LOCATION_CHANGE } from "connected-react-router";
 export function dataCollectorsReducer(state = initialState.dataCollectors, action) {
   switch (action.type) {
     case LOCATION_CHANGE: // cleanup
-      return { ...state, formData: null }
+      return { ...state, formData: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null }
 
     case actions.GET_DATA_COLLECTORS.REQUEST:
       return { ...state, listFetching: true, listData: [] };
@@ -64,15 +64,6 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
 
     case actions.REMOVE_DATA_COLLECTOR.FAILURE:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
-
-    case actions.GET_COUNTRY_LOCATION.REQUEST:
-      return { ...state, isGettingCountryLocation: true };
-
-    case actions.GET_COUNTRY_LOCATION.SUCCESS:
-      return { ...state, country: action.countryData, isGettingCountryLocation: false };
-
-    case actions.GET_COUNTRY_LOCATION.FAILURE:
-      return { ...state, isGettingCountryLocation: false };
 
     default:
       return state;
