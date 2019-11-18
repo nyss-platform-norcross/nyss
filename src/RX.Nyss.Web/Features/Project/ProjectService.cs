@@ -17,7 +17,7 @@ namespace RX.Nyss.Web.Features.Project
     public interface IProjectService
     {
         Task<Result<ProjectResponseDto>> GetProject(int projectId);
-        Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId);
+        Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles);
         Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId);
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
@@ -91,13 +91,17 @@ namespace RX.Nyss.Web.Features.Project
             return result;
         }
 
-        public async Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId)
+        public async Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles)
         {
-            var projects = await _nyssContext.Projects
+            var projectsQuery = _nyssContext.Projects
                 .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.Alerts)
-                .Where(p => p.NationalSocietyId == nationalSocietyId)
-                .OrderByDescending(p => p.State)
+                .Where(p => p.NationalSocietyId == nationalSocietyId);
+
+            projectsQuery = FilterProjectsForSupervisors(projectsQuery, userIdentityName, roles);
+
+            var projects = await projectsQuery
+                    .OrderByDescending(p => p.State)
                     .ThenByDescending(p => p.EndDate)
                     .ThenByDescending(p => p.StartDate)
                     .ThenBy(p => p.Name)
@@ -122,6 +126,11 @@ namespace RX.Nyss.Web.Features.Project
 
             return result;
         }
+
+        private IQueryable<Nyss.Data.Models.Project> FilterProjectsForSupervisors(IQueryable<Nyss.Data.Models.Project> query, string userIdentityName, IEnumerable<string> roles) =>
+            roles.Contains(Role.Supervisor.ToString())
+                ? query.Where(p => p.SupervisorUserProjects.Any(sup => sup.SupervisorUser.EmailAddress == userIdentityName))
+                : query;
 
         public async Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId)
         {

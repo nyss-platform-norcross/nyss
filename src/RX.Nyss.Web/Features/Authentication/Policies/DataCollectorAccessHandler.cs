@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.DataCollector;
 using RX.Nyss.Web.Features.Supervisor;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.Extensions;
@@ -23,13 +24,15 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
         private readonly ISupervisorService _supervisorService;
+        private readonly IDataCollectorService _dataCollectorService;
 
-        public DataCollectorAccessHandler(IHttpContextAccessor httpContextAccessor, INyssContext nyssContext, ISupervisorService supervisorService, IUserService userService)
+        public DataCollectorAccessHandler(IHttpContextAccessor httpContextAccessor, INyssContext nyssContext, ISupervisorService supervisorService, IUserService userService, IDataCollectorService dataCollectorService)
         {
             _httpContextAccessor = httpContextAccessor;
             _nyssContext = nyssContext;
             _supervisorService = supervisorService;
             _userService = userService;
+            _dataCollectorService = dataCollectorService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
@@ -53,9 +56,9 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         private async Task<bool> HasAccessToDataCollector(int dataCollectorId, IEnumerable<string> roles, string identityName)
         {
-            var dataCollectorData = _nyssContext.DataCollectors
+            var dataCollectorData = await _nyssContext.DataCollectors
                 .Select(dc => new { dc.Id, ProjectId = dc.Project.Id, dc.Project.NationalSocietyId })
-                .Single(dc => dc.Id == dataCollectorId);
+                .SingleAsync(dc => dc.Id == dataCollectorId);
 
             var hasAccessToNationalSociety = await _userService.GetUserHasAccessToAnyOfProvidedNationalSocieties(new List<int> { dataCollectorData.NationalSocietyId }, identityName, roles);
 
@@ -65,7 +68,9 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
             }
 
             var hasAccessToProject = await _supervisorService.GetSupervisorHasAccessToProject(identityName, dataCollectorData.ProjectId);
-            return hasAccessToNationalSociety && hasAccessToProject;
+            var hasAccessToDataCollector = await _dataCollectorService.GetSupervisorIsCollectorsSuperior(identityName, dataCollectorId);
+
+            return hasAccessToNationalSociety && hasAccessToProject && hasAccessToDataCollector;
         }
 
         private bool IsSupervisor(IEnumerable<string> roles) =>

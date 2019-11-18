@@ -52,9 +52,9 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         private async Task<bool> HasAccessToProject(int projectId, IEnumerable<string> roles, string identityName)
         {
-            var projectData = _nyssContext.Projects
+            var projectData = await _nyssContext.Projects
                 .Select(p => new { ProjectId = p.Id, p.NationalSocietyId })
-                .Single(p => p.ProjectId == projectId);
+                .SingleAsync(p => p.ProjectId == projectId);
 
             var hasAccessToNationalSociety = await _userService.GetUserHasAccessToAnyOfProvidedNationalSocieties(new List<int> { projectData.NationalSocietyId }, identityName, roles);
 

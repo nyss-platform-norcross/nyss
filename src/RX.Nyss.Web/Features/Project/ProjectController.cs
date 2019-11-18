@@ -7,6 +7,7 @@ using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Project
 {
@@ -37,7 +38,7 @@ namespace RX.Nyss.Web.Features.Project
         [HttpGet("api/nationalSociety/{nationalSocietyId:int}/project/list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId) =>
-            _projectService.GetProjects(nationalSocietyId);
+            _projectService.GetProjects(nationalSocietyId, User.Identity.Name, User.GetRoles());
 
         /// <summary>
         /// Lists all health risks with details in language specific for the specified national society.
@@ -91,7 +92,7 @@ namespace RX.Nyss.Web.Features.Project
         /// </summary>
         /// <param name="nationalSocietyId">The ID of the national society</param>
         /// <returns></returns>
-        [HttpGet("nationalSociety/{nationalSocietyId:int}/project/listOpenedProjects")]
+        [HttpGet("api/nationalSociety/{nationalSocietyId:int}/project/listOpenedProjects")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> ListOpenedProjects(int nationalSocietyId) =>
             await _projectService.ListOpenedProjects(nationalSocietyId);

@@ -7,6 +7,7 @@ using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.DataCollector
 {
@@ -28,7 +29,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         [HttpGet, Route("project/{projectId:int}/dataCollector/list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId) =>
-            await _dataCollectorService.ListDataCollectors(projectId);
+            await _dataCollectorService.ListDataCollectors(projectId, User.Identity.Name, User.GetRoles());
 
         [HttpPost, Route("project/{projectId:int}/dataCollector/create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
