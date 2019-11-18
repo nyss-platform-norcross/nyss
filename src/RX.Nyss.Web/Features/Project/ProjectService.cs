@@ -23,6 +23,7 @@ namespace RX.Nyss.Web.Features.Project
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> DeleteProject(int projectId);
         Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
+        Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
     }
 
     public class ProjectService : IProjectService
@@ -372,6 +373,21 @@ namespace RX.Nyss.Web.Features.Project
                 .SingleAsync(p => p.Id == projectId);
 
             return Success(project);
+        }
+
+        public async Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId)
+        {
+            var projects = await _nyssContext.Projects
+                .Where(p => p.NationalSociety.Id == nationalSocietyId)
+                .Where(p => p.State == ProjectState.Open)
+                .Select(p => new ListOpenProjectsResponseDto()
+                {
+                    Id = p.Id,
+                    Name = p.Name
+                })
+                .ToListAsync();
+
+            return Success(projects);
         }
     }
 }

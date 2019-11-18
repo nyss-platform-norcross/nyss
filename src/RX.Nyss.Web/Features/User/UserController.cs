@@ -39,18 +39,6 @@ namespace RX.Nyss.Web.Features.User
         public async Task<Result> GetBasicData(int nationalSocietyUserId) =>
             await _userService.GetBasicData(nationalSocietyUserId);
 
-
-        //ToDo: move this and all related code to Project Controller and Service, once they are done
-        /// <summary>
-        /// Get a list of all opened projects in the national society
-        /// </summary>
-        /// <param name="nationalSocietyId">The ID of the national society</param>
-        /// <returns></returns>
-        [HttpGet("nationalSociety/{nationalSocietyId:int}/project/listOpenedProjects")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> ListOpenedProjects(int nationalSocietyId) =>
-            await _userService.ListOpenedProjects(nationalSocietyId);
-            
         /// <summary>
         /// Adds an existing technical advisor or a data consumer user to a national society.
         /// </summary>

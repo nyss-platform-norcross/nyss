@@ -20,6 +20,7 @@ namespace RX.Nyss.Web.Features.Supervisor
         Task<Result<GetSupervisorResponseDto>> Get(int supervisorId);
         Task<Result> Edit(int supervisorId, EditSupervisorRequestDto editSupervisorRequestDto);
         Task<Result> Remove(int supervisorId);
+        Task<bool> GetSupervisorHasAccessToProject(string supervisorIdentityName, int projectId);
     }
 
     public class SupervisorService : ISupervisorService
@@ -284,6 +285,9 @@ namespace RX.Nyss.Web.Features.Supervisor
 
         private void DetachSupervisorFromAllProjects(SupervisorUser deletedUser) =>
             _dataContext.SupervisorUserProjects.RemoveRange(deletedUser.SupervisorUserProjects);
+
+        public async Task<bool> GetSupervisorHasAccessToProject(string supervisorIdentityName, int projectId) =>
+            await _dataContext.SupervisorUserProjects.AnyAsync(sup => sup.SupervisorUser.EmailAddress == supervisorIdentityName && sup.ProjectId == projectId);
     }
 }
 

@@ -156,6 +156,9 @@ namespace RX.Nyss.Web.Configuration
                 options.AddPolicy(Policy.DataCollectorAccess.ToString(),
                     policy => policy.Requirements.Add(new DataCollectorAccessRequirement()));
 
+                options.AddPolicy(Policy.ProjectAccess.ToString(),
+                    policy => policy.Requirements.Add(new ProjectAccessRequirement()));
+
                 options.AddPolicy(Policy.HeadManagerAccess.ToString(),
                     policy => policy.Requirements.Add(new HeadManagerAccessHandlerRequirement()));
             });
@@ -168,6 +171,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, SupervisorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, DataCollectorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, HeadManagerAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, ProjectAccessHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

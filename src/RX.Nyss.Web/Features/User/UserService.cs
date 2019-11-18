@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -17,7 +18,6 @@ namespace RX.Nyss.Web.Features.User
         Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
         Task<bool> GetUserHasAccessToAnyOfProvidedNationalSocieties(List<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles);
         Task<List<int>> GetUserNationalSocietyIds<T>(int userId) where T : Nyss.Data.Models.User;
-        Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<List<int>> GetUserNationalSocietyIds(string identityName);
         bool HasAccessToAllNationalSocieties(IEnumerable<string> roles);
         Task<bool> IsHeadManagerToNationalSociety(string identityName, int nationalSocietyId);
@@ -118,21 +118,6 @@ namespace RX.Nyss.Web.Features.User
         public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
             roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));
 
-        public async Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId)
-        {
-            var projects = await _dataContext.Projects
-                .Where(p => p.NationalSociety.Id == nationalSocietyId)
-                .Where(p => p.State == ProjectState.Open)
-                .Select(p => new ListOpenProjectsResponseDto()
-                {
-                    Id = p.Id,
-                    Name = p.Name
-                })
-                .ToListAsync();
-
-            return Success(projects);
-        }
-        
         public async Task<Result> AddExisting(int nationalSocietyId, string userEmail)
         {
             var userData = await _dataContext.Users

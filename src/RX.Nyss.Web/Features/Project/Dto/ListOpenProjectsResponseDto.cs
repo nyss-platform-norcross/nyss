@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.User.Dto
+﻿namespace RX.Nyss.Web.Features.Project.Dto
 {
     public class ListOpenProjectsResponseDto
     {
