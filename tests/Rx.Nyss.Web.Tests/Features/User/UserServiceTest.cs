@@ -55,7 +55,7 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturOnlyUsersFromSpecifiedNationalSociety()
         {
-            var users = await _userService.GetUsersInNationalSociety(1);
+            var users = await _userService.GetUsersInNationalSociety(1, new [] {Role.Administrator.ToString()});
 
             users.Value.Count.ShouldBe(5);
             users.Value.ShouldAllBe(u => u.Name == NationalSociety1Tag || u.Name == NationalSociety1And2Tag);
@@ -64,8 +64,6 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
         {
-            ArrangeUsers();
-
             var users = await _userService.GetUsersInNationalSociety(1, new[] { Role.Administrator.ToString() });
 
             var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
@@ -81,8 +79,6 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         [InlineData(Role.TechnicalAdvisor)]
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsOtherThanGlobalCoordinator_ShouldReturnAllUsers(Role callingRole)
         {
-            ArrangeUsers();
-
             var users = await _userService.GetUsersInNationalSociety(1, new[] { callingRole.ToString() });
 
             var allowedRoles = new List<Role> { Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor }.Select(x => x.ToString());
@@ -93,15 +89,13 @@ namespace Rx.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsGlobalCoordinator_ShouldNotReturnSupervisors()
         {
-            ArrangeUsers();
-
             var users = await _userService.GetUsersInNationalSociety(1, new[] { Role.GlobalCoordinator.ToString() });
 
             users.Value.Count.ShouldBe(4);
             users.Value.ShouldAllBe(u => u.Role != Role.Supervisor.ToString());
         }
 
-        private void ArrangeUsers()
+        private void ArrangeUsers(List<RX.Nyss.Data.Models.NationalSociety> nationalSocieties)
         {
             var users = new List<User>
             {
@@ -155,9 +149,9 @@ namespace Rx.Nyss.Web.Tests.Features.Users
 
         private void ArrangeProjects()
         {
-            var projectsDbSet = new List<Project>
+            var projectsDbSet = new List<RX.Nyss.Data.Models.Project>
                 {
-                    new Project
+                    new RX.Nyss.Data.Models.Project
                     {
                         Id = 1,
                         NationalSociety = _nyssContext.NationalSocieties.Single(ns => ns.Id == 1),
@@ -182,16 +176,6 @@ namespace Rx.Nyss.Web.Tests.Features.Users
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietyDbSet);
         }
         
-        [Fact]
-        public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
-        {
-            var users = await _userService.GetUsersInNationalSociety(1);
-
-            var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
-            users.Value.Count.ShouldBe(5);
-            users.Value.ShouldAllBe(u => allowedRoles.Contains(u.Role));
-        }
-
         [Fact]
         public async Task AddExisting_WhenEmailDoesntExist_ShouldReturnError()
         {

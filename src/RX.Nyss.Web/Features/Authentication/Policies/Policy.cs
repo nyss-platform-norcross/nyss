@@ -8,9 +8,8 @@
         ManagerAccess,
         DataConsumerAccess,
         TechnicalAdvisorAccess,
-        SmsGatewayAccess,
         SupervisorAccess,
-        DataCollectorAccess
+        DataCollectorAccess,
         HeadManagerAccess
     }
 }

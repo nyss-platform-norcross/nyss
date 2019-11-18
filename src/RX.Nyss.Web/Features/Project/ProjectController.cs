@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.Project
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
         /// <returns>A project</returns>
-        [HttpGet("api/project/{projectId:int}/get"), NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
+        [HttpGet("api/project/{projectId:int}/get"), NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor)]
         //[NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<ProjectResponseDto>> GetProject(int projectId) =>
             _projectService.GetProject(projectId);
@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.Project
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns>A list of projects assigned to the national society</returns>
-        [HttpGet("api/nationalSociety/{nationalSocietyId:int}/project/list"), NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
+        [HttpGet("api/nationalSociety/{nationalSocietyId:int}/project/list"), NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor)]
         //[NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId) =>
             _projectService.GetProjects(nationalSocietyId);

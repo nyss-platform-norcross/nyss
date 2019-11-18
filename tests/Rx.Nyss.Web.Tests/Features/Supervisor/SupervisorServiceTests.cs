@@ -62,13 +62,13 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
 
         private void SetupTestProjects()
         {
-            var project1 = new Project{ Id = 1, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1), Name = "project 1", State = ProjectState.Open };
-            var project2 = new Project{ Id = 2, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1), Name = "project 2", State = ProjectState.Open };
-            var project3 = new Project{ Id = 3, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1), Name = "project 3", State = ProjectState.Closed };
-            var project4 = new Project{ Id = 4, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 2), Name = "project 4", State = ProjectState.Open };
-            var project5 = new Project{ Id = 5, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 2), Name = "project 5", State = ProjectState.Open };
+            var project1 = new RX.Nyss.Data.Models.Project{ Id = 1, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1), Name = "project 1", State = ProjectState.Open };
+            var project2 = new RX.Nyss.Data.Models.Project{ Id = 2, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1), Name = "project 2", State = ProjectState.Open };
+            var project3 = new RX.Nyss.Data.Models.Project{ Id = 3, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1), Name = "project 3", State = ProjectState.Closed };
+            var project4 = new RX.Nyss.Data.Models.Project{ Id = 4, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 2), Name = "project 4", State = ProjectState.Open };
+            var project5 = new RX.Nyss.Data.Models.Project{ Id = 5, NationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 2), Name = "project 5", State = ProjectState.Open };
 
-            var projects = new List<Project> { project1, project2, project3, project4 };
+            var projects = new List<RX.Nyss.Data.Models.Project> { project1, project2, project3, project4 };
             var projectsDbSet = projects.AsQueryable().BuildMockDbSet();
 
             _nyssContext.Projects.Returns(projectsDbSet);

@@ -116,7 +116,7 @@ namespace RX.Nyss.Web.Features.Supervisor
             }
         }
 
-        private async Task AttachSupervisorToProject(SupervisorUser user, Project project)
+        private async Task AttachSupervisorToProject(SupervisorUser user, Nyss.Data.Models.Project project)
         {
             var newSupervisorUserProject = CreateSupervisorUserProjectReference(project, user);
             await _dataContext.AddAsync(newSupervisorUserProject);
@@ -129,7 +129,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                 User = user
             };
 
-        private SupervisorUserProject CreateSupervisorUserProjectReference(Project project, SupervisorUser supervisorUser) =>
+        private SupervisorUserProject CreateSupervisorUserProjectReference(Nyss.Data.Models.Project project, SupervisorUser supervisorUser) =>
             new SupervisorUserProject
             {
                 Project = project,
