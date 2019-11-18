@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Features.Project
         public Task<Result> UpdateProject(int projectId) =>
             _projectService.DeleteProject(projectId);
 
-        [Route("api/project/{projectId:int}/basicData"), NeedsPolicy(Policy.ProjectAccess)]
+        [HttpGet("api/project/{projectId:int}/basicData"), NeedsPolicy(Policy.ProjectAccess)]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
         public async Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId) =>
             await _projectService.GetProjectBasicData(projectId);
