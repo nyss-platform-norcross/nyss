@@ -80,6 +80,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 VillageId = dataCollector.Village.Id,
                 ZoneId = dataCollector.Zone?.Id,
                 NationalSocietyId = dataCollector.Project.NationalSociety.Id,
+                ProjectId = dataCollector.Project.Id,
                 FormData = new GetDataCollectorResponseDto.FormDataDto
                 {
                     Regions = regions.Value,

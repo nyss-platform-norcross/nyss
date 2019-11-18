@@ -41,6 +41,8 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
 
         public int NationalSocietyId { get; set; }
 
+        public int ProjectId { get; set; }
+
         public class FormDataDto
         {
             public IEnumerable<RegionResponseDto> Regions { get; set; }

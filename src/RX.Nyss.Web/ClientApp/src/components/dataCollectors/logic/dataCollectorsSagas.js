@@ -12,7 +12,7 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTOR_EDITION.INVOKE, openDataCollectorEdition),
   takeEvery(consts.CREATE_DATA_COLLECTOR.INVOKE, createDataCollector),
   takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
-  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector)  
+  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -47,7 +47,7 @@ function* openDataCollectorEdition({ dataCollectorId }) {
   yield put(actions.openEdition.request());
   try {
     const response = yield call(http.get, `/api/dataCollector/${dataCollectorId}/get`);
-    yield openDataCollectorsModule(response.value.nationalSocietyId);
+    yield openDataCollectorsModule(response.value.projectId);
     yield put(actions.openEdition.success(response.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
