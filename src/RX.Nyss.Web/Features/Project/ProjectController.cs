@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.Project
         /// <param name="nationalSocietyId">A content language identifier</param>
         /// <returns>A list of health risks with details in language specific for the specified national society</returns>
         [HttpGet, Route("api/nationalSociety/{nationalSocietyId:int}/healthRisk/list")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
         public async Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId) => 
             await _projectService.GetHealthRisks(nationalSocietyId);
 
