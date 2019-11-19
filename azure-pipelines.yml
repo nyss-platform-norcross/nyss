@@ -9,24 +9,6 @@ variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
 
 steps:
-- task: CacheBeta@1
-  inputs:
-    key: 'nuget | "$(Agent.OS)" | **/*.csproj'
-    restoreKeys: |
-       nuget | "$(Agent.OS)"
-       nuget
-    path: $(NUGET_PACKAGES)
-  displayName: Cache NuGet packages
-
-- task: CacheBeta@1
-  inputs:
-    key: 'npm | "$(Agent.OS)" | src/RX.Nyss.Web/ClientApp/package-lock.json'
-    restoreKeys: |
-       npm | "$(Agent.OS)"
-       npm
-    path: $(npm_config_cache)
-  displayName: Cache npm
-
 - task: CmdLine@2
   displayName: 'Install gitversion'
   inputs:
@@ -58,22 +40,22 @@ steps:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Build RX.Nyss.Web and RX.Nyss.Data.MigrationApp'
-  inputs:
-    command: 'build'
-    projects: |
-      src/RX.Nyss.Web/RX.Nyss.Web.csproj
-      src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj
-    arguments: '-c Release -r win-x86 "/p:Version=$(GitVersion.MajorMinorPatch)"'
-
 - task: DotNetCoreCLI@2          
   displayName: 'Publish RX.Nyss.Web'
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: 'src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -r win-x86 --self-contained --no-build /p:PublishReadyToRun=true -o "$(Build.ArtifactStagingDirectory)/webapp"'
+    arguments: 'src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" /p:Version=$(GitVersion.MajorMinorPatch)'
     zipAfterPublish: true
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish RX.Nyss.Data.MigrationApp'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: 'src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" /p:Version=$(GitVersion.MajorMinorPatch)'
+    zipAfterPublish: false
     modifyOutputPath: false
 
 - task: DotNetCoreCLI@2
@@ -83,15 +65,6 @@ steps:
     publishWebProjects: false
     arguments: 'src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/funcapp" /p:Version=$(GitVersion.MajorMinorPatch)'
     zipAfterPublish: true
-    modifyOutputPath: false
-
-- task: DotNetCoreCLI@2
-  displayName: 'Publish RX.Nyss.Data.MigrationApp'
-  inputs:
-    command: publish
-    publishWebProjects: false
-    arguments: 'src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -r win-x86 --self-contained --no-build -o "$(Build.ArtifactStagingDirectory)/migrationapp"'
-    zipAfterPublish: false
     modifyOutputPath: false
 
 - task: CopyFiles@2
