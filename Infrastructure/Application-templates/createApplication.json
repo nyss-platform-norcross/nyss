@@ -156,8 +156,8 @@
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
             },
             {
-              "name": "WEBSITE_CONTENTSHARE",
-              "value": "rxcbsfuncapp01"
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[concat(toLower(variables('funcapp_name')),uniqueString(variables('funcapp_name')))]"
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -349,6 +349,22 @@
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
               "value": "[reference(concat('microsoft.insights/components/', variables('report_funcapp_name')), '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
+            },
+            {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[concat(toLower(variables('report_funcapp_name')),uniqueString(variables('report_funcapp_name')))]"
+            },
+            {
+              "name": "WEBSITE_TIME_ZONE",
+              "value": "W. Europe Standard Time"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~2"
             }
           ]
         }
