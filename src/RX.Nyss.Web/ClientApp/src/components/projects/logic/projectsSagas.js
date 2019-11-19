@@ -33,9 +33,9 @@ function* openProjectsList({ nationalSocietyId }) {
 function* openProjectCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
-    const healthRisks = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/healthRisk/list`);
+    const formData = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/getFormData`);
     yield openProjectsModule(nationalSocietyId);
-    yield put(actions.openCreation.success(healthRisks.value));
+    yield put(actions.openCreation.success(formData.value.healthRisks, formData.value.timeZones));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }
@@ -44,10 +44,9 @@ function* openProjectCreation({ nationalSocietyId }) {
 function* openProjectEdition({ nationalSocietyId, projectId }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/get`);
-    const healthRisks = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/healthRisk/list`);
+    const response = yield call(http.get, `/api/project/${projectId}/get`);    
     yield call(openProjectDashboardModule, projectId);
-    yield put(actions.openEdition.success(response.value, healthRisks.value));
+    yield put(actions.openEdition.success(response.value, response.value.formData.healthRisks, response.value.formData.timeZones));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }

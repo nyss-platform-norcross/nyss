@@ -20,6 +20,8 @@ import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { ProjectNotificationItem } from './ProjectNotificationItem';
 import { getSaveFormModel } from './logic/projectsService';
 import { Loading } from '../common/loading/Loading';
+import SelectField from '../forms/SelectField';
+import MenuItem from "@material-ui/core/MenuItem";
 
 const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -43,12 +45,12 @@ const ProjectsEditPageComponent = (props) => {
 
     let fields = {
       name: props.data.name,
-      timeZone: props.data.timeZone
+      timeZoneId: props.data.timeZoneId
     };
 
     let validation = {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      timeZone: [validators.required, validators.minLength(1), validators.maxLength(50)]
+      timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)]
     };
 
     setForm(createForm(fields, validation));
@@ -116,12 +118,18 @@ const ProjectsEditPageComponent = (props) => {
             />
           </Grid>
 
-          <Grid item xs={9}>
-            <TextInputField
+          <Grid item xs={12}>
+            <SelectField
               label={strings(stringKeys.project.form.timeZone)}
-              name="timeZone"
-              field={form.fields.timeZone}
-            />
+              field={form.fields.timeZoneId}
+              name="timeZoneId"
+            >
+              {props.timeZones.map(timeZone => (
+                <MenuItem key={timeZone.id} value={timeZone.id}>
+                  {timeZone.displayName}
+                </MenuItem>
+              ))}
+            </SelectField>
           </Grid>
 
           <Grid item xs={12}>
@@ -182,6 +190,7 @@ ProjectsEditPageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   healthRisks: state.projects.formHealthRisks,
+  timeZones: state.projects.formTimeZones,
   projectId: ownProps.match.params.projectId,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isFetching: state.projects.formFetching,

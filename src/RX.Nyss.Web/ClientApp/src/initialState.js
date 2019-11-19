@@ -62,6 +62,7 @@ export const initialState = {
     listData: [],
     formFetching: false,
     formHealthRisks: [],
+    formTimeZones: [],
     formSaving: false,
     formData: null,
     dashboard: {

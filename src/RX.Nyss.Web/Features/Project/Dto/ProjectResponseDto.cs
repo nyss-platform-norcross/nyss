@@ -10,12 +10,16 @@ namespace RX.Nyss.Web.Features.Project.Dto
 
         public string Name { get; set; }
 
-        public string TimeZone { get; set; }
+        public string TimeZoneId { get; set; }
 
         public ProjectState State { get; set; }
 
         public IEnumerable<ProjectHealthRiskResponseDto> ProjectHealthRisks { get; set; }
 
         public IEnumerable<AlertRecipientDto> AlertRecipients { get; set; }
+
+        public ProjectFormDataResponseDto FormData { get; set; }
+
+        public int ContentLanguageId { get; set; }
     }
 }

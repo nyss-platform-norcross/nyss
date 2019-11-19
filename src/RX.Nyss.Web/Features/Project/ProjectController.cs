@@ -41,16 +41,6 @@ namespace RX.Nyss.Web.Features.Project
             _projectService.GetProjects(nationalSocietyId, User.Identity.Name, User.GetRoles());
 
         /// <summary>
-        /// Lists all health risks with details in language specific for the specified national society.
-        /// </summary>
-        /// <param name="nationalSocietyId">A content language identifier</param>
-        /// <returns>A list of health risks with details in language specific for the specified national society</returns>
-        [HttpGet, Route("api/nationalSociety/{nationalSocietyId:int}/healthRisk/list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId) => 
-            await _projectService.GetHealthRisks(nationalSocietyId);
-
-        /// <summary>
         /// Adds a new project for a specified national society.
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
@@ -96,5 +86,15 @@ namespace RX.Nyss.Web.Features.Project
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> ListOpenedProjects(int nationalSocietyId) =>
             await _projectService.ListOpenedProjects(nationalSocietyId);
+
+        /// <summary>
+        /// Get the data required to build a "create new project" form
+        /// </summary>
+        /// <param name="nationalSocietyId">The id of the national society</param>
+        /// <returns>An object containing a list of health risks and a list of available timezones</returns>
+        [HttpGet, Route("api/nationalSociety/{nationalSocietyId:int}/getFormData")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
+        public async Task<Result<ProjectFormDataResponseDto>> GetProjectFormData(int nationalSocietyId) =>
+            await _projectService.GetFormData(nationalSocietyId);
     }
 }
