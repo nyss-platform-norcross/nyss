@@ -246,7 +246,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         public async Task ListDataCollector_WhenSuccessful_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.ListDataCollectors(ProjectId);
+            var result = await _dataCollectorService.ListDataCollectors(ProjectId, "", new List<string>());
 
             // Assert
             result.IsSuccess.ShouldBeTrue();

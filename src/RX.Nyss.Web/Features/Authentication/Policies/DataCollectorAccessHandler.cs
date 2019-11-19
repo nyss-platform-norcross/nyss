@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
             }
 
             var hasAccessToProject = await _supervisorService.GetSupervisorHasAccessToProject(identityName, dataCollectorData.ProjectId);
-            var hasAccessToDataCollector = await _dataCollectorService.GetSupervisorIsCollectorsSuperior(identityName, dataCollectorId);
+            var hasAccessToDataCollector = await _dataCollectorService.GetDataCollectorIsSubordinateOfSupervisor(identityName, dataCollectorId);
 
             return hasAccessToNationalSociety && hasAccessToProject && hasAccessToDataCollector;
         }

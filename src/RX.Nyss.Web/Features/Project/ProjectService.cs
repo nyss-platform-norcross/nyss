@@ -93,18 +93,20 @@ namespace RX.Nyss.Web.Features.Project
 
         public async Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles)
         {
-            var projectsQuery = _nyssContext.Projects
-                .Include(p => p.ProjectHealthRisks)
-                    .ThenInclude(phr => phr.Alerts)
-                .Where(p => p.NationalSocietyId == nationalSocietyId);
-
-            projectsQuery = FilterProjectsForSupervisors(projectsQuery, userIdentityName, roles);
+            var projectsQuery = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.SupervisorUserProjects
+                    .Where(x => x.SupervisorUser.EmailAddress == userIdentityName)
+                    .Select(x => x.Project)
+                : _nyssContext.Projects;
 
             var projects = await projectsQuery
-                    .OrderByDescending(p => p.State)
-                    .ThenByDescending(p => p.EndDate)
-                    .ThenByDescending(p => p.StartDate)
-                    .ThenBy(p => p.Name)
+                .Include(p => p.ProjectHealthRisks)
+                    .ThenInclude(phr => phr.Alerts)
+                .Where(p => p.NationalSocietyId == nationalSocietyId)
+                .OrderByDescending(p => p.State)
+                .ThenByDescending(p => p.EndDate)
+                .ThenByDescending(p => p.StartDate)
+                .ThenBy(p => p.Name)
                 .Select(p => new ProjectListItemResponseDto
                 {
                     Id = p.Id,
@@ -126,11 +128,6 @@ namespace RX.Nyss.Web.Features.Project
 
             return result;
         }
-
-        private IQueryable<Nyss.Data.Models.Project> FilterProjectsForSupervisors(IQueryable<Nyss.Data.Models.Project> query, string userIdentityName, IEnumerable<string> roles) =>
-            roles.Contains(Role.Supervisor.ToString())
-                ? query.Where(p => p.SupervisorUserProjects.Any(sup => sup.SupervisorUser.EmailAddress == userIdentityName))
-                : query;
 
         public async Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId)
         {

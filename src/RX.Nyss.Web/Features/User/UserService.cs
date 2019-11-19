@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -39,40 +38,31 @@ namespace RX.Nyss.Web.Features.User
 
         public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId, IEnumerable<string> callingUserRoles)
         {
-            var usersQuery = _dataContext.UserNationalSocieties
-                .Where(uns => uns.NationalSocietyId == nationalSocietyId);
-                
+            var usersQuery = callingUserRoles.Contains(Role.GlobalCoordinator.ToString())
+                ? _dataContext.UserNationalSocieties.Where(u => u.User.Role != Role.Supervisor)
+                : _dataContext.UserNationalSocieties;
 
-            usersQuery = FilterOutSupervisorsForGlobalCoordinatorUsers(usersQuery, callingUserRoles);
-            
-            var users = await usersQuery.Select(uns => new GetNationalSocietyUsersResponseDto
-            {
-                Id = uns.User.Id,
-                Name = uns.User.Name,
-                Email = uns.User.EmailAddress,
-                PhoneNumber = uns.User.PhoneNumber,
-                Role = uns.User.Role.ToString(),
-                Project = (uns.User is SupervisorUser) 
-                    ? ((SupervisorUser)uns.User).SupervisorUserProjects
+            var users = await usersQuery
+                .Where(uns => uns.NationalSocietyId == nationalSocietyId)
+                .Select(uns => new GetNationalSocietyUsersResponseDto
+                {
+                    Id = uns.User.Id,
+                    Name = uns.User.Name,
+                    Email = uns.User.EmailAddress,
+                    PhoneNumber = uns.User.PhoneNumber,
+                    Role = uns.User.Role.ToString(),
+                    Project = (uns.User is SupervisorUser)
+                        ? ((SupervisorUser)uns.User).SupervisorUserProjects
                         .Where(sup => sup.Project.State == ProjectState.Open)
                         .Select(sup => sup.Project.Name)
                         .SingleOrDefault()
-                    : null,
-                IsHeadManager = uns.NationalSociety.HeadManager != null && uns.NationalSociety.HeadManager.Id == uns.User.Id,
-                IsPendingHeadManager = uns.NationalSociety.PendingHeadManager != null && uns.NationalSociety.PendingHeadManager.Id == uns.User.Id
-            })
-            .ToListAsync();
+                        : null,
+                    IsHeadManager = uns.NationalSociety.HeadManager != null && uns.NationalSociety.HeadManager.Id == uns.User.Id,
+                    IsPendingHeadManager = uns.NationalSociety.PendingHeadManager != null && uns.NationalSociety.PendingHeadManager.Id == uns.User.Id
+                })
+                .ToListAsync();
 
             return new Result<List<GetNationalSocietyUsersResponseDto>>(users, true);
-        }
-
-        private IQueryable<UserNationalSociety> FilterOutSupervisorsForGlobalCoordinatorUsers(IQueryable<UserNationalSociety> usersQuery, IEnumerable<string> callingUserRoles)
-        {
-            if (callingUserRoles.Contains(Role.GlobalCoordinator.ToString()))
-            {
-                return usersQuery.Where(u => u.User.Role != Role.Supervisor);
-            }
-            return usersQuery;
         }
 
         public async Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId)

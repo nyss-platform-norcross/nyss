@@ -99,7 +99,7 @@ namespace RX.Nyss.Web.Features.Authentication
                 ManagerUser user => await GetNationalSocietyHomePage(user),
                 TechnicalAdvisorUser user => await GetNationalSocietyHomePage(user),
                 DataConsumerUser user => await GetNationalSocietyHomePage(user),
-                _ => await GetRootHomePage()
+                _ => GetRootHomePage()
             };
 
         private async Task<StatusResponseDto.HomePageDto> GetNationalSocietyHomePage<T>(T user) where T : Nyss.Data.Models.User
@@ -119,31 +119,38 @@ namespace RX.Nyss.Web.Features.Authentication
 
         private async Task<StatusResponseDto.HomePageDto> GetProjectHomePage(SupervisorUser user)
         {
-            var supervisorActiveProjectId = await _nyssContext.SupervisorUserProjects
+            var supervisorActiveProject = await _nyssContext.SupervisorUserProjects
                 .Where(sup => sup.SupervisorUserId == user.Id)
                 .Where(sup => sup.Project.State == ProjectState.Open)
-                .Select(sup => (int?)sup.ProjectId)
+                .Select(sup => new
+                {
+                    projectId = sup.ProjectId,
+                    nationalSocietyId = sup.Project.NationalSociety.Id
+                })
                 .SingleOrDefaultAsync();
 
-            if (!supervisorActiveProjectId.HasValue)
+            if (supervisorActiveProject != null)
             {
-                var nationalSocietyId = await _nyssContext.UserNationalSocieties
-                    .Where(uns => uns.UserId == user.Id)
-                    .Select(uns => uns.NationalSocietyId)
-                    .SingleAsync();
-
-                return new StatusResponseDto.HomePageDto { Page = HomePageType.ProjectList, NationalSocietyId = nationalSocietyId };
+                return new StatusResponseDto.HomePageDto
+                {
+                    Page = HomePageType.Project,
+                    ProjectId = supervisorActiveProject.projectId,
+                    NationalSocietyId = supervisorActiveProject.nationalSocietyId
+                };
             }
 
             return new StatusResponseDto.HomePageDto
             {
-                Page = HomePageType.Project,
-                ProjectId = supervisorActiveProjectId.Value
+                Page = HomePageType.ProjectList,
+                NationalSocietyId = await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == user.Id)
+                    .Select(uns => uns.NationalSocietyId)
+                    .SingleAsync()
             };
+
         }
 
-
-        private async Task<StatusResponseDto.HomePageDto> GetRootHomePage() =>
+        private StatusResponseDto.HomePageDto GetRootHomePage() =>
             new StatusResponseDto.HomePageDto { Page = HomePageType.Root };
 
         private async Task<IEnumerable<string>> GetRoles(IdentityUser user) => await _userIdentityService.GetRoles(user);

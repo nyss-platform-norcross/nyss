@@ -137,12 +137,12 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId, string userIdentityName, IEnumerable<string> roles)
         {
-            var dataCollectorsQuery = _nyssContext.DataCollectors
-                .Where(dc => dc.Project.Id == projectId);
-
-            dataCollectorsQuery = FilterDataCollectorsForSupervisors(dataCollectorsQuery, userIdentityName, roles);
+            var dataCollectorsQuery = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.DataCollectors;
 
             var dataCollectors = await dataCollectorsQuery
+                .Where(dc => dc.Project.Id == projectId)
                 .OrderBy(dc => dc.Name)
                 .Select(dc => new DataCollectorResponseDto
                 {
@@ -158,11 +158,6 @@ namespace RX.Nyss.Web.Features.DataCollector
 
             return Success((IEnumerable<DataCollectorResponseDto>)dataCollectors);
         }
-
-        private IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsForSupervisors(IQueryable<Nyss.Data.Models.DataCollector> query, string userIdentityName, IEnumerable<string> roles) =>
-            roles.Contains(Role.Supervisor.ToString())
-                ? query.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
-                : query;
 
         public async Task<Result> CreateDataCollector(int projectId, CreateDataCollectorRequestDto createDto)
         {
