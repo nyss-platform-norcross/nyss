@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
@@ -37,8 +38,18 @@ namespace RX.Nyss.Web.Features.Project
         /// <returns>A list of projects assigned to the national society</returns>
         [HttpGet("api/nationalSociety/{nationalSocietyId:int}/project/list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId) =>
-            _projectService.GetProjects(nationalSocietyId, User.Identity.Name, User.GetRoles());
+        public Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId) =>
+            _projectService.ListProjects(nationalSocietyId, User.Identity.Name, User.GetRoles());
+
+        /// <summary>
+        /// Gets a summary of specified project displayed on the dashboard page.
+        /// </summary>
+        /// <param name="projectId">An identifier of a project</param>
+        /// <returns>A summary of specified project</returns>
+        [HttpGet("api/project/{projectId:int}/summary"), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
+        public Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId) =>
+            _projectService.GetProjectSummary(projectId);
 
         /// <summary>
         /// Adds a new project for a specified national society.

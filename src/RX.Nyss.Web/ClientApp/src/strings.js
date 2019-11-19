@@ -156,7 +156,20 @@ export const stringKeys = {
       removalConfirmation: "project.list.removalConfirmation"
     },
     dashboard: {
-      title: "project.dashboard.title"
+      title: "project.dashboard.title",
+      activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
+      inactiveDataCollectorCount: "project.dashboard.inactiveDataCollectorCount",
+      inTrainingDataCollectorCount: "project.dashboard.inTrainingDataCollectorCount",
+      startDate: "project.dashboard.startDate",
+      totalReportCount: "project.dashboard.totalReportCount",
+      escalatedAlertCount: "project.dashboard.escalatedAlertCount",
+      dismissedAlertCount: "project.dashboard.dismissedAlertCount",
+      dataCollectors: "project.dashboard.dataCollectors",
+      healthRisks: "project.dashboard.healthRisks",
+      supervisors: "project.dashboard.supervisors",
+      supervisorEmailAddress: "project.dashboard.supervisorEmailAddress",
+      supervisorPhoneNumber: "project.dashboard.supervisorPhoneNumber",
+      supervisorAdditionalPhoneNumber: "project.dashboard.supervisorAdditionalPhoneNumber"
     },
     settings: "project.settings.title"
   },

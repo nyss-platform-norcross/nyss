@@ -30,11 +30,12 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             _nyssContextMock = Substitute.For<INyssContext>();
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+
             _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider);
         }
 
         [Fact]
-        public async Task GetProjects_WhenNationalSocietyIsProvided_ShouldFilterResults()
+        public async Task ListProjects_WhenNationalSocietyIsProvided_ShouldFilterResults()
         {
             // Arrange
             const int nationalSocietyId = 1;
@@ -44,8 +45,11 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
+            var currentDate = new DateTime(2019, 1, 1);
+            _dateTimeProvider.UtcNow.Returns(currentDate);
+
             // Act
-            var result = await _projectService.GetProjects(nationalSocietyId, "", new List<string>());
+            var result = await _projectService.ListProjects(nationalSocietyId, "", new List<string>());
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -59,7 +63,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Value[0].TotalReportCount.ShouldBe(1);
             result.Value[0].EscalatedAlertCount.ShouldBe(0);
             result.Value[0].ActiveDataCollectorCount.ShouldBe(1);
-            //result.Value[0].SupervisorCount.ShouldBe(0);
+            result.Value[0].SupervisorCount.ShouldBe(0);
 
             result.Value[1].Id.ShouldBe(3);
             result.Value[1].Name.ShouldBe("3");
@@ -68,7 +72,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Value[1].TotalReportCount.ShouldBe(3);
             result.Value[1].EscalatedAlertCount.ShouldBe(2);
             result.Value[1].ActiveDataCollectorCount.ShouldBe(2);
-            //result.Value[1].SupervisorCount.ShouldBe(0);
+            result.Value[1].SupervisorCount.ShouldBe(0);
         }
 
         [Fact]
@@ -793,8 +797,29 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     StartDate = new DateTime(2019, 1, 1),
                     EndDate = null,
                     NationalSocietyId = nationalSocietyId,
-                    DataCollectors = new[] { new RX.Nyss.Data.Models.DataCollector() },
-                    ProjectHealthRisks = new[] { new ProjectHealthRisk { Reports = new[] { new RX.Nyss.Data.Models.Report() }, Alerts = new[] { new Alert() } } }
+                    DataCollectors = new[]
+                    {
+                        new RX.Nyss.Data.Models.DataCollector
+                        {
+                            DataCollectorType = DataCollectorType.Human,
+                            Reports = new []
+                            {
+                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                            }
+                        }
+                    },
+                    SupervisorUserProjects = new List<SupervisorUserProject>(),
+                    ProjectHealthRisks = new[] { new ProjectHealthRisk
+                    {
+                        Reports = new[]
+                        {
+                            new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                        },
+                        Alerts = new[]
+                        {
+                            new Alert { Id = 10, Status = AlertStatus.Pending }
+                        }
+                    } }
                 },
                 new RX.Nyss.Data.Models.Project
                 {
@@ -808,12 +833,35 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     StartDate = new DateTime(2019, 1, 1),
                     EndDate = null,
                     NationalSocietyId = nationalSocietyId,
-                    DataCollectors = new[] { new RX.Nyss.Data.Models.DataCollector(), new RX.Nyss.Data.Models.DataCollector() },
+                    DataCollectors = new[]
+                    {
+                        new RX.Nyss.Data.Models.DataCollector
+                        {
+                            DataCollectorType = DataCollectorType.Human,
+                            Reports = new []
+                            {
+                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                            }
+                        },
+                        new RX.Nyss.Data.Models.DataCollector
+                        {
+                            DataCollectorType = DataCollectorType.Human,
+                            Reports = new []
+                            {
+                                new Report { ReceivedAt = new DateTime(2019, 1, 1)},
+                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                            }
+                        }
+                    },
+                    SupervisorUserProjects = new List<SupervisorUserProject>(),
                     ProjectHealthRisks = new[]
                     {
                         new ProjectHealthRisk
                         {
-                            Reports = new[] { new RX.Nyss.Data.Models.Report() },
+                            Reports = new[]
+                            {
+                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                            },
                             Alerts = new[]
                             {
                                 new Alert { Id = 1, Status = AlertStatus.Pending },
@@ -822,7 +870,11 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         },
                         new ProjectHealthRisk
                         {
-                            Reports = new[] { new RX.Nyss.Data.Models.Report(), new RX.Nyss.Data.Models.Report() },
+                            Reports = new[]
+                            {
+                                new Report { ReceivedAt = new DateTime(2019, 1, 1)},
+                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                            },
                             Alerts = new[]
                             {
                                 new Alert { Id = 4, Status = AlertStatus.Pending },

@@ -72,7 +72,7 @@ export function projectsReducer(state = initialState.projects, action) {
       return { ...state, dashboard: { ...state.dashboard, isFetching: true } };
 
     case actions.OPEN_PROJECT_DASHBOARD.SUCCESS:
-      return { ...state, dashboard: { ...state.dashboard, name: action.name, isFetching: false } };
+      return { ...state, dashboard: { ...state.dashboard, name: action.name, projectSummary: action.projectSummary, isFetching: false } };
 
     case actions.OPEN_PROJECT_DASHBOARD.FAILURE:
       return { ...state, dashboard: { ...state.dashboard, name: null, isFetching: false } };

@@ -11,6 +11,7 @@ using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Services.Geolocation;
+using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
@@ -35,15 +36,18 @@ namespace RX.Nyss.Web.Features.DataCollector
         private readonly INyssContext _nyssContext;
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
         private readonly IGeolocationService _geolocationService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public DataCollectorService(
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService,
-            IGeolocationService geolocationService)
+            IGeolocationService geolocationService,
+            IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _nationalSocietyStructureService = nationalSocietyStructureService;
             _geolocationService = geolocationService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId)
@@ -201,13 +205,13 @@ namespace RX.Nyss.Web.Features.DataCollector
                 Village = village,
                 Supervisor = supervisor,
                 Project = project,
-                Zone = zone
+                Zone = zone,
+                CreatedAt = _dateTimeProvider.UtcNow
             };
 
             await _nyssContext.AddAsync(dataCollector);
             await _nyssContext.SaveChangesAsync();
             return Success(ResultKey.DataCollector.CreateSuccess);
-      
         }
 
         public async Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto)

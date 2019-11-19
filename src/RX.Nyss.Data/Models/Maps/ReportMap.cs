@@ -30,7 +30,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.OwnsOne(x => x.DataCollectionPointCase).Property(x => x.DeathCount);
             builder.OwnsOne(x => x.DataCollectionPointCase).Property(x => x.FromOtherVillagesCount);
             builder.HasOne(x => x.RawReport).WithOne(x => x.Report).HasForeignKey<RawReport>(x => x.ReportId).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.DataCollector).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.DataCollector).WithMany(x => x.Reports).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.ProjectHealthRisk).WithMany(x => x.Reports).OnDelete(DeleteBehavior.Restrict);
         }
     }

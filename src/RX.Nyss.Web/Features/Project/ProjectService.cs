@@ -18,7 +18,8 @@ namespace RX.Nyss.Web.Features.Project
     public interface IProjectService
     {
         Task<Result<ProjectResponseDto>> GetProject(int projectId);
-        Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId, int? healthRiskId = null, DateTime? startDate = default, DateTime? endDate = default);
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> DeleteProject(int projectId);
@@ -43,15 +44,6 @@ namespace RX.Nyss.Web.Features.Project
         public async Task<Result<ProjectResponseDto>> GetProject(int projectId)
         {
             var project = await _nyssContext.Projects
-                .Include(p => p.NationalSociety)
-                .Include(p => p.ProjectHealthRisks)
-                    .ThenInclude(phr => phr.HealthRisk)
-                        .ThenInclude(hr => hr.LanguageContents)
-                .Include(p => p.ProjectHealthRisks)
-                    .ThenInclude(phr => phr.AlertRule)
-                .Include(p => p.ProjectHealthRisks)
-                    .ThenInclude(phr => phr.Reports)
-                .Include(p => p.AlertRecipients)
                 .Select(p => new ProjectResponseDto
                 {
                     Id = p.Id,
@@ -95,8 +87,10 @@ namespace RX.Nyss.Web.Features.Project
             return result;
         }
 
-        public async Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles)
+        public async Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles)
         {
+            var minReportDate = _dateTimeProvider.UtcNow.Date.Subtract(TimeSpan.FromDays(28));
+
             var projectsQuery = roles.Contains(Role.Supervisor.ToString())
                 ? _nyssContext.SupervisorUserProjects
                     .Where(x => x.SupervisorUser.EmailAddress == userIdentityName)
@@ -104,8 +98,6 @@ namespace RX.Nyss.Web.Features.Project
                 : _nyssContext.Projects;
 
             var projects = await projectsQuery
-                .Include(p => p.ProjectHealthRisks)
-                    .ThenInclude(phr => phr.Alerts)
                 .Where(p => p.NationalSocietyId == nationalSocietyId)
                 .OrderByDescending(p => p.State)
                 .ThenByDescending(p => p.EndDate)
@@ -122,8 +114,10 @@ namespace RX.Nyss.Web.Features.Project
                         .SelectMany(phr => phr.Alerts
                             .Where(a => a.Status == AlertStatus.Escalated)
                         ).Count(),
-                    ActiveDataCollectorCount = p.DataCollectors.Count(),
-                    SupervisorCount = -1
+                    ActiveDataCollectorCount = p.DataCollectors.Count(dc =>
+                        dc.DataCollectorType == DataCollectorType.Human &&
+                        dc.Reports.Any(r => r.ReceivedAt >= minReportDate)),
+                    SupervisorCount = p.SupervisorUserProjects.Count()
                 })
                 .ToListAsync();
 
@@ -132,6 +126,57 @@ namespace RX.Nyss.Web.Features.Project
             return result;
         }
         
+        public async Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId, int? healthRiskId = null,
+            DateTime? startDate = default, DateTime? endDate = default)
+        {
+            var minReportDate = (startDate ?? _dateTimeProvider.UtcNow).Date.Subtract(TimeSpan.FromDays(28));
+            var dayAfterMaxReportDate = (endDate ?? _dateTimeProvider.UtcNow).Date.AddDays(1);
+
+            var projectDashboardData = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => new ProjectSummaryResponseDto
+                {
+                    StartDate = p.StartDate,
+                    ActiveDataCollectorCount = p.DataCollectors.Count(dc =>
+                        dc.DataCollectorType == DataCollectorType.Human &&
+                        dc.Reports.Any(r => r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate)),
+                    InactiveDataCollectorCount = p.DataCollectors.Count(dc =>
+                        dc.DataCollectorType == DataCollectorType.Human &&
+                        !dc.Reports.Any(r => r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate) &&
+                        dc.CreatedAt < minReportDate && (!dc.DeletedAt.HasValue || dc.DeletedAt >= minReportDate)),
+                    InTrainingDataCollectorCount = p.DataCollectors.Count(dc =>
+                        dc.DataCollectorType == DataCollectorType.Human &&
+                        dc.Reports.Any(r => r.IsTraining && r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate)),
+                    HealthRisks = p.ProjectHealthRisks
+                        .Where(phr => healthRiskId == null || phr.HealthRiskId == healthRiskId)
+                        .Select(phr => new ProjectSummaryResponseDto.HealthRiskStats
+                        {
+                            Id = phr.HealthRiskId,
+                            Name = phr.HealthRisk.LanguageContents
+                                .Where(lc => lc.ContentLanguage.Id == p.NationalSociety.ContentLanguage.Id)
+                                .Select(lc => lc.Name)
+                                .FirstOrDefault(),
+                            TotalReportCount = phr.Reports.Count(),
+                            EscalatedAlertCount = phr.Alerts.Count(a => a.Status == AlertStatus.Escalated),
+                            DismissedAlertCount = phr.Alerts.Count(a => a.Status == AlertStatus.Dismissed)
+                        }),
+                    Supervisors = p.SupervisorUserProjects.Select(su => new ProjectSummaryResponseDto.SupervisorInfo
+                    {
+                        Id = su.SupervisorUser.Id,
+                        Name = su.SupervisorUser.Name,
+                        EmailAddress = su.SupervisorUser.EmailAddress,
+                        PhoneNumber = su.SupervisorUser.PhoneNumber,
+                        AdditionalPhoneNumber = su.SupervisorUser.AdditionalPhoneNumber
+                    }
+                    )
+                })
+                .FirstOrDefaultAsync();
+
+            var result = Success(projectDashboardData);
+
+            return result;
+        }
+
         public async Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto)
         {
             try
@@ -198,8 +243,6 @@ namespace RX.Nyss.Web.Features.Project
                 var projectToUpdate = await _nyssContext.Projects
                     .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.AlertRule)
-                    .Include(p => p.ProjectHealthRisks)
-                    .ThenInclude(phr => phr.Reports)
                     .Include(p => p.AlertRecipients)
                     .FirstOrDefaultAsync(p => p.Id == projectId);
 
@@ -233,7 +276,7 @@ namespace RX.Nyss.Web.Features.Project
 
             if (projectHealthRisksToDelete.Any(phr => phr.Reports.Count > 0))
             {
-                throw new ResultException(ResultKey.Project.HealthRiskContainsReports); 
+                throw new ResultException(ResultKey.Project.HealthRiskContainsReports);
             }
 
             _nyssContext.ProjectHealthRisks.RemoveRange(projectHealthRisksToDelete);
@@ -284,7 +327,7 @@ namespace RX.Nyss.Web.Features.Project
             var alertRecipientsToAdd = projectRequestDto.AlertRecipients.Where(ar => ar.Id == null);
             foreach (var alertRecipient in alertRecipientsToAdd)
             {
-                var alertRecipientToAdd = new AlertRecipient {EmailAddress = alertRecipient.Email};
+                var alertRecipientToAdd = new AlertRecipient { EmailAddress = alertRecipient.Email };
                 projectToUpdate.AlertRecipients.Add(alertRecipientToAdd);
             }
 
@@ -326,7 +369,6 @@ namespace RX.Nyss.Web.Features.Project
         public async Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId)
         {
             var project = await _nyssContext.Projects
-                .Include(p => p.NationalSociety).ThenInclude(n => n.Country)
                 .Select(dc => new ProjectBasicDataResponseDto
                 {
                     Id = dc.Id,

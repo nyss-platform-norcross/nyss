@@ -67,6 +67,7 @@ export const initialState = {
     formData: null,
     dashboard: {
       name: null,
+      projectSummary: null,
       isFetching: false
     }
   },

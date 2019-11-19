@@ -13,6 +13,7 @@ using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
 using RX.Nyss.Web.Services.Geolocation;
+using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
@@ -24,8 +25,6 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
     {
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
-        private readonly INationalSocietyStructureService _nationalSocietyStructureService;
-        private readonly IGeolocationService _geolocationService;
 
         private const int DataCollectorId = 1;
         private const int SecondDataCollectorId = 2;
@@ -43,9 +42,11 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         public DataCollectorServiceTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
-            _nationalSocietyStructureService = Substitute.For<INationalSocietyStructureService>();
-            _geolocationService = Substitute.For<IGeolocationService>();
-            _dataCollectorService = new DataCollectorService(_nyssContextMock, _nationalSocietyStructureService, _geolocationService);
+            var nationalSocietyStructureService = Substitute.For<INationalSocietyStructureService>();
+            var geolocationService = Substitute.For<IGeolocationService>();
+            var dateTimeProvider = Substitute.For<IDateTimeProvider>();
+            dateTimeProvider.UtcNow.Returns(new DateTime(2019, 1, 1));
+            _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider);
 
             // Arrange
             var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
@@ -113,7 +114,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
 
             var nationalSocietyMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
-            var userNationalSocietitiesMockDbSet = usersNationalSocieties.AsQueryable().BuildMockDbSet();
+            var userNationalSocietiesMockDbSet = usersNationalSocieties.AsQueryable().BuildMockDbSet();
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
             var regionsMockDbSet = regions.AsQueryable().BuildMockDbSet();
             var districtsMockDbSet = districts.AsQueryable().BuildMockDbSet();
@@ -123,7 +124,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
 
             _nyssContextMock.NationalSocieties.Returns(nationalSocietyMockDbSet);
             _nyssContextMock.Users.Returns(usersMockDbSet);
-            _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietitiesMockDbSet);
+            _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesMockDbSet);
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Regions.Returns(regionsMockDbSet);
             _nyssContextMock.Districts.Returns(districtsMockDbSet);
@@ -134,11 +135,10 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             _nyssContextMock.DataCollectors.FindAsync(DataCollectorId).Returns(dataCollectors[0]);
             _nyssContextMock.DataCollectors.FindAsync(2).Returns((RX.Nyss.Data.Models.DataCollector)null);
 
-            _nationalSocietyStructureService.GetRegions(NationalSocietyId).Returns(Success(new List<RegionResponseDto>()));
-            _nationalSocietyStructureService.GetDistricts(DistrictId).Returns(Success(new List<DistrictResponseDto>()));
-            _nationalSocietyStructureService.GetVillages(VillageId).Returns(Success(new List<VillageResponseDto>()));
-            _nationalSocietyStructureService.GetZones(Arg.Any<int>()).Returns(Success(new List<ZoneResponseDto>()));
-
+            nationalSocietyStructureService.GetRegions(NationalSocietyId).Returns(Success(new List<RegionResponseDto>()));
+            nationalSocietyStructureService.GetDistricts(DistrictId).Returns(Success(new List<DistrictResponseDto>()));
+            nationalSocietyStructureService.GetVillages(VillageId).Returns(Success(new List<VillageResponseDto>()));
+            nationalSocietyStructureService.GetZones(Arg.Any<int>()).Returns(Success(new List<ZoneResponseDto>()));
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             };
 
             // Act
-            var result = await _dataCollectorService.CreateDataCollector(ProjectId, dataCollector);
+            await _dataCollectorService.CreateDataCollector(ProjectId, dataCollector);
 
             // Assert
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<RX.Nyss.Data.Models.DataCollector>());
@@ -183,7 +183,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         }
 
         [Fact]
-        public async Task EditDataCollector_WhenDataCollectorDoesntExist_ShouldThrowException()
+        public void EditDataCollector_WhenDataCollectorDoesNotExist_ShouldThrowException()
         {
             // Arrange
             var dataCollector = new EditDataCollectorRequestDto
@@ -196,7 +196,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                 Longitude = 45
             };
 
-            await Should.ThrowAsync<Exception>(() => _dataCollectorService.EditDataCollector(dataCollector));
+            Should.ThrowAsync<Exception>(() => _dataCollectorService.EditDataCollector(dataCollector));
         }
 
         [Fact]
@@ -222,7 +222,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         }
 
         [Fact]
-        public async Task RemoveDataCollector_WhenDataCollectorDoesntExist_ShouldReturnError()
+        public async Task RemoveDataCollector_WhenDataCollectorDoesNotExist_ShouldReturnError()
         {
             // Act
             var result = await _dataCollectorService.RemoveDataCollector(2);
@@ -255,7 +255,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         }
 
         [Fact]
-        public async Task GetDataCollector_WhenDataCollectorDoesntExist_ShouldThrowException()
+        public void GetDataCollector_WhenDataCollectorDoesNotExist_ShouldThrowException()
         {
             await Should.ThrowAsync<Exception>(() => _dataCollectorService.GetDataCollector(3));
         }
