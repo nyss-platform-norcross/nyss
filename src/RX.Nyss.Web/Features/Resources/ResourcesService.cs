@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.Resources
                 {
                     var languageCode = cl.LanguageCode.ToLower();
 
-                    return new EntryDto
+                    return new GetStringResponseDto.GetEntryDto
                     {
                         LanguageCode = languageCode,
                         Name = cl.DisplayName,

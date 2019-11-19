@@ -17,12 +17,13 @@ namespace RX.Nyss.Web.Features.Project
     public interface IProjectService
     {
         Task<Result<ProjectResponseDto>> GetProject(int projectId);
-        Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId);
+        Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles);
         Task<Result<IEnumerable<ProjectHealthRiskResponseDto>>> GetHealthRisks(int nationalSocietyId);
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> DeleteProject(int projectId);
         Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
+        Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
     }
 
     public class ProjectService : IProjectService
@@ -90,16 +91,22 @@ namespace RX.Nyss.Web.Features.Project
             return result;
         }
 
-        public async Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId)
+        public async Task<Result<List<ProjectListItemResponseDto>>> GetProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles)
         {
-            var projects = await _nyssContext.Projects
+            var projectsQuery = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.SupervisorUserProjects
+                    .Where(x => x.SupervisorUser.EmailAddress == userIdentityName)
+                    .Select(x => x.Project)
+                : _nyssContext.Projects;
+
+            var projects = await projectsQuery
                 .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.Alerts)
                 .Where(p => p.NationalSocietyId == nationalSocietyId)
                 .OrderByDescending(p => p.State)
-                    .ThenByDescending(p => p.EndDate)
-                    .ThenByDescending(p => p.StartDate)
-                    .ThenBy(p => p.Name)
+                .ThenByDescending(p => p.EndDate)
+                .ThenByDescending(p => p.StartDate)
+                .ThenBy(p => p.Name)
                 .Select(p => new ProjectListItemResponseDto
                 {
                     Id = p.Id,
@@ -372,6 +379,21 @@ namespace RX.Nyss.Web.Features.Project
                 .SingleAsync(p => p.Id == projectId);
 
             return Success(project);
+        }
+
+        public async Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId)
+        {
+            var projects = await _nyssContext.Projects
+                .Where(p => p.NationalSociety.Id == nationalSocietyId)
+                .Where(p => p.State == ProjectState.Open)
+                .Select(p => new ListOpenProjectsResponseDto()
+                {
+                    Id = p.Id,
+                    Name = p.Name
+                })
+                .ToListAsync();
+
+            return Success(projects);
         }
     }
 }

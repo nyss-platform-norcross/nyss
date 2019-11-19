@@ -45,7 +45,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
             // Act
-            var result = await _projectService.GetProjects(nationalSocietyId);
+            var result = await _projectService.GetProjects(nationalSocietyId, "", new List<string>());
 
             // Assert
             result.IsSuccess.ShouldBeTrue();

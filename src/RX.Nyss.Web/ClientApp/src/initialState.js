@@ -86,6 +86,7 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null,
+    formProjects: [],
     formError: null
   },
   dataCollectors: {

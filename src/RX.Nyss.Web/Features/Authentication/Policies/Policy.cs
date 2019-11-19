@@ -8,6 +8,7 @@
         ManagerAccess,
         DataConsumerAccess,
         TechnicalAdvisorAccess,
+        SupervisorAccess,
         DataCollectorAccess,
         HeadManagerAccess
     }

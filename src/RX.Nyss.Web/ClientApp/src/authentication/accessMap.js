@@ -1,4 +1,4 @@
-import { Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer } from "./roles";
+import { Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer, Supervisor } from "./roles";
 
 export const accessMap = {
   nationalSocieties: {
@@ -15,8 +15,8 @@ export const accessMap = {
     delete: [Administrator, Manager, TechnicalAdvisor]
   },
   projects: {
-    get: [Administrator, Manager, TechnicalAdvisor],
-    list: [Administrator, Manager, TechnicalAdvisor],
+    get: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
     add: [Administrator, Manager, TechnicalAdvisor],
     edit: [Administrator, Manager, TechnicalAdvisor],
     delete: [Administrator, Manager, TechnicalAdvisor]
@@ -40,9 +40,9 @@ export const accessMap = {
     delete: [Administrator, GlobalCoordinator]
   },
   dataCollectors: {
-    list: [Administrator, Manager, TechnicalAdvisor],
-    add: [Administrator, Manager, TechnicalAdvisor],
-    edit: [Administrator, Manager, TechnicalAdvisor],
-    delete: [Administrator, Manager, TechnicalAdvisor]
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    add: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    edit: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    delete: [Administrator, Manager, TechnicalAdvisor, Supervisor]
   }
 };

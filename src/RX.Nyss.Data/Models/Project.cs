@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
@@ -27,5 +28,6 @@ namespace RX.Nyss.Data.Models
         public virtual ICollection<DataCollector> DataCollectors { get; set; }
 
         public virtual ICollection<AlertRecipient> AlertRecipients { get; set; }
+        public virtual ICollection<SupervisorUserProject> SupervisorUserProjects { get; set; }
     }
 }

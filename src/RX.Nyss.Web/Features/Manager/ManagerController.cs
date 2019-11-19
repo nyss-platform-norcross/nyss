@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.Manager
         /// <param name="managerId">The ID of the requested manager</param>
         /// <returns></returns>
         [HttpGet("nationalSociety/manager/{managerId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
+        //[NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Get(int managerId) =>
             await _managerService.GetManager(managerId);
 

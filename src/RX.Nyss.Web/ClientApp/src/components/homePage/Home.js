@@ -27,7 +27,9 @@ const getHomePageUrl = (user) => {
     case "NationalSociety":
         return `/nationalSocieties/${user.homePage.nationalSocietyId}`;
     case "Project":
-        return `/api/project/${user.homePage.projectId}`;
+        return `/nationalsocieties/${user.homePage.nationalSocietyId}/projects/${user.homePage.projectId}`;
+    case "ProjectList":
+        return `/nationalSocieties/${user.homePage.nationalSocietyId}/projects`;
     default:
         return '/';
   }

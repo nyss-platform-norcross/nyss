@@ -13,12 +13,18 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
+import SelectField from '../forms/SelectField';
 import Grid from '@material-ui/core/Grid';
 import * as roles from '../../authentication/roles';
 import { stringKeys, strings } from '../../strings';
+import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
+import MenuItem from "@material-ui/core/MenuItem";
+import { sexValues } from './logic/nationalSocietyUsersConstants';
 
 const NationalSocietyUsersEditPageComponent = (props) => {
+  const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
+  const [role, setRole] = useState(null);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyUserId);
@@ -35,15 +41,23 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       name: props.data.name,
       phoneNumber: props.data.phoneNumber,
       additionalPhoneNumber: props.data.additionalPhoneNumber,
-      organization: props.data.organization
+      organization: props.data.organization,
+      decadeOfBirth: props.data.decadeOfBirth ? props.data.decadeOfBirth.toString() : "",
+      projectId: props.data.projectId ? props.data.projectId.toString() : "",
+      sex: props.data.sex ? props.data.sex : ""
     };
 
     const validation = {
       name: [validators.required, validators.maxLength(100)],
       phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
-      organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)]
+      organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
+      decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
+      sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
+      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)]
     };
+
+    setRole(props.data.role);
 
     setForm(createForm(fields, validation));
   }, [props.data, props.match]);
@@ -55,7 +69,13 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       return;
     };
 
-    props.edit(props.nationalSocietyId, form.getValues());
+    const values = form.getValues();
+
+    props.edit(props.nationalSocietyId, {
+      ...values,
+      projectId: values.projectId ? parseInt(values.projectId) : null,
+      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null
+    });
   };
 
   if (props.isFetching || !form) {
@@ -106,6 +126,54 @@ const NationalSocietyUsersEditPageComponent = (props) => {
               field={form.fields.organization}
             />
           </Grid>
+
+          {role === roles.Supervisor && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
+                field={form.fields.decadeOfBirth}
+                name="decadeOfBirth"
+              >
+                {birthDecades.map(decade => (
+                  <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                    {decade}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
+
+          {role === roles.Supervisor && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.sex)}
+                field={form.fields.sex}
+                name="sex"
+              >
+                {sexValues.map(type => (
+                  <MenuItem key={`sex${type}`} value={type}>
+                    {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
+
+          {role === roles.Supervisor && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.project)}
+                field={form.fields.projectId}
+                name="projectId"
+              >
+                {props.projects.map(project => (
+                  <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
+                    {project.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
         </Grid>
 
         <FormActions>
@@ -124,6 +192,7 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyUserId: ownProps.match.params.nationalSocietyUserId,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isFetching: state.nationalSocietyUsers.formFetching,
+  projects: state.nationalSocietyUsers.formProjects,
   isSaving: state.nationalSocietyUsers.formSaving,
   data: state.nationalSocietyUsers.formData,
   error: state.nationalSocietyUsers.formError

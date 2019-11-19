@@ -28,6 +28,7 @@ namespace RX.Nyss.Data
         DbSet<NationalSociety> NationalSocieties { get; set; }
         DbSet<Notification> Notifications { get; set; }
         DbSet<Project> Projects { get; set; }
+        DbSet<SupervisorUserProject> SupervisorUserProjects { get; set; }
         DbSet<ProjectHealthRisk> ProjectHealthRisks { get; set; }
         DbSet<Region> Regions { get; set; }
         DbSet<Report> Reports { get; set; }

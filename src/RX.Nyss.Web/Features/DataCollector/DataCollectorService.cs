@@ -22,8 +22,9 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto);
         Task<Result> RemoveDataCollector(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId);
-        Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId);
+        Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId, string userIdentityName, IEnumerable<string> roles);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
+        Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -134,9 +135,13 @@ namespace RX.Nyss.Web.Features.DataCollector
             });
         }
 
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId)
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId, string userIdentityName, IEnumerable<string> roles)
         {
-            var dataCollectors = await _nyssContext.DataCollectors
+            var dataCollectorsQuery = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.DataCollectors;
+
+            var dataCollectors = await dataCollectorsQuery
                 .Where(dc => dc.Project.Id == projectId)
                 .OrderBy(dc => dc.Name)
                 .Select(dc => new DataCollectorResponseDto
@@ -272,5 +277,8 @@ namespace RX.Nyss.Web.Features.DataCollector
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
             return geometryFactory.CreatePoint(new Coordinate(latitude, longitude));
         }
+
+        public async Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId) =>
+            await _nyssContext.DataCollectors.AnyAsync(dc => dc.Id == dataCollectorId && dc.Supervisor.EmailAddress == supervisorIdentityName);
     }
 }

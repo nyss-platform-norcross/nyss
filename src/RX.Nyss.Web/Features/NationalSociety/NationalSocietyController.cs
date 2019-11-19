@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// </summary>
         /// <returns></returns>
         [Route("{nationalSocietyId}/get"), HttpGet]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<NationalSocietyResponseDto>> Get(int nationalSocietyId) =>
             await _nationalSocietyService.GetNationalSociety(nationalSocietyId);
 
