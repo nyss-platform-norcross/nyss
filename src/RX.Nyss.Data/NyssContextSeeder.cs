@@ -11,7 +11,23 @@ namespace RX.Nyss.Data
             SeedContentLanguages(modelBuilder);
             SeedCountries(modelBuilder);
             SeedAdministrator(modelBuilder);
+            SeedApplicationLanguages(modelBuilder);
         }
+
+        private static void SeedApplicationLanguages(ModelBuilder modelBuilder) =>
+            modelBuilder.Entity<ApplicationLanguage>().HasData(
+                new ApplicationLanguage
+                {
+                    Id = 1,
+                    LanguageCode = "en-US",
+                    DisplayName = "English",
+                },
+                new ApplicationLanguage
+                {
+                    Id = 2,
+                    LanguageCode = "fr-FR",
+                    DisplayName = "Français",
+                });
 
         private static void SeedAdministrator(ModelBuilder modelBuilder) =>
             modelBuilder.Entity<AdministratorUser>().HasData(new AdministratorUser
