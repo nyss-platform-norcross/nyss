@@ -320,7 +320,7 @@ export const stringKeys = {
       femalesBelowFive: "reports.list.femalesBelowFive",
       femalesAtLeastFive: "reports.list.femalesAtLeastFive",
       success: "reports.list.success",
-      error: "reports.list.error",
+      error: "reports.list.error"     
     },
   },
   filters: {
