@@ -156,8 +156,8 @@
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
             },
             {
-                "name": "WEBSITE_CONTENTSHARE",
-                "value": "[concat(toLower(variables('funcapp_name')),uniqueString(variables('funcapp_name')))]"
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[concat(toLower(variables('funcapp_name')),uniqueString(variables('funcapp_name')))]"
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -355,8 +355,8 @@
               "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
             },
             {
-                "name": "WEBSITE_CONTENTSHARE",
-                "value": "[concat(toLower(variables('report_funcapp_name')),uniqueString(variables('report_funcapp_name')))]"
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[concat(toLower(variables('report_funcapp_name')),uniqueString(variables('report_funcapp_name')))]"
             },
             {
               "name": "WEBSITE_TIME_ZONE",
@@ -391,16 +391,16 @@
           ],
           "properties": {
             "lockDuration": "PT1M",
-            "maxSizeInMegabytes": "1024",
-            "requiresDuplicateDetection": "false",
-            "requiresSession": "false",
+            "maxSizeInMegabytes": 1024,
+            "requiresDuplicateDetection": false,
+            "requiresSession": false,
             "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
             "duplicateDetectionHistoryTimeWindow": "PT10M",
-            "deadLetteringOnMessageExpiration": "true",
-            "maxDeliveryCount": "5",
+            "deadLetteringOnMessageExpiration": true,
+            "maxDeliveryCount": 5,
             "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
-            "enablePartitioning": "false",
-            "enableExpress": "false"
+            "enablePartitioning": false,
+            "enableExpress": false
           }
         },
         {
@@ -412,16 +412,16 @@
           ],
           "properties": {
             "lockDuration": "PT1M",
-            "maxSizeInMegabytes": "1024",
-            "requiresDuplicateDetection": "false",
-            "requiresSession": "false",
+            "maxSizeInMegabytes": 1024,
+            "requiresDuplicateDetection": false,
+            "requiresSession": false,
             "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
             "duplicateDetectionHistoryTimeWindow": "PT10M",
-            "deadLetteringOnMessageExpiration": "true",
-            "maxDeliveryCount": "5",
+            "deadLetteringOnMessageExpiration": true,
+            "maxDeliveryCount": 5,
             "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
-            "enablePartitioning": "false",
-            "enableExpress": "false"
+            "enablePartitioning": false,
+            "enableExpress": false
           }
         }
       ]
@@ -440,7 +440,8 @@
         "accessTier": "[parameters('storageAccessTier')]",
         "supportsHttpsTrafficOnly": true,
         "networkAcls": {
-          "bypass": "AzureServices"
+          "bypass": "AzureServices",
+          "defaultAction": "Allow"
         }
       },
       "resources": [
@@ -468,7 +469,8 @@
         "accessTier": "[parameters('storageAccessTier')]",
         "supportsHttpsTrafficOnly": true,
         "networkAcls": {
-          "bypass": "AzureServices"
+          "bypass": "AzureServices",
+          "defaultAction": "Allow"
         }
       },
       "resources": [
