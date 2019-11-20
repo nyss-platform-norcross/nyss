@@ -11,7 +11,7 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Report
 {
-    [Route("api/report")]
+    [Route("api")]
     public class ReportController: BaseController
     {
         public IReportService _reportService;
@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Report
         /// Gets a list of reports in a project
         /// </summary>
         /// <returns></returns>
-        [Route("list"), HttpGet]
+        [Route("project/{projectId:int}/report/list"), HttpGet]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Supervisor)]
         public async Task<Result<List<ReportListResponseDto>>> List(int projectId, int pageNumber) =>
             await _reportService.List(projectId, pageNumber, User.Identity.Name);

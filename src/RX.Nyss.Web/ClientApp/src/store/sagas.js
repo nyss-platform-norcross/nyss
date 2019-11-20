@@ -11,6 +11,7 @@ import { nationalSocietyUsersSagas } from "../components/nationalSocietyUsers/lo
 import { dataCollectorsSagas } from "../components/dataCollectors/logic/dataCollectorsSagas";
 import { headManagerConsentsSagas } from "../components/headManagerConsents/logic/headManagerConsentsSagas";
 import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
+import { reportsSagas } from "../components/reports/logic/reportsSagas";
 
 function* rootSaga() {
   yield all([
@@ -24,7 +25,8 @@ function* rootSaga() {
     ...healthRisksSagas(),
     ...nationalSocietyUsersSagas(),
     ...dataCollectorsSagas(),
-    ...headManagerConsentsSagas()
+    ...headManagerConsentsSagas(),
+    ...reportsSagas()
   ]);
 }
 

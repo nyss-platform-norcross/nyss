@@ -44,5 +44,8 @@ export const accessMap = {
     add: [Administrator, Manager, TechnicalAdvisor, Supervisor],
     edit: [Administrator, Manager, TechnicalAdvisor, Supervisor],
     delete: [Administrator, Manager, TechnicalAdvisor, Supervisor]
+  },
+  reports: {
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],    
   }
 };

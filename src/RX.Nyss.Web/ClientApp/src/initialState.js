@@ -113,5 +113,11 @@ export const initialState = {
   },
   headManagerConsents: {
     nationalSocieties: []
+  },
+  reports: {
+    listFetching: false,
+    listRemoving: {},
+    listStale: true,
+    listData: []    
   }
 };

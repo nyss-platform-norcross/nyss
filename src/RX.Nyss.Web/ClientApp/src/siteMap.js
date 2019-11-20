@@ -6,6 +6,7 @@ import { healthRisksSiteMap } from "./components/healthRisks/logic/healthRisksSi
 import { nationalSocietyUsersSiteMap } from "./components/nationalSocietyUsers/logic/nationalSocietyUsersSiteMap";
 import { dataCollectorsSiteMap } from "./components/dataCollectors/logic/dataCollectorsSiteMap";
 import { nationalSocietyStructureSiteMap } from "./components/nationalSocietyStructure/nationalSocietyStructureSiteMap";
+import { reportsSiteMap } from "./components/reports/logic/reportsSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
@@ -15,5 +16,6 @@ export const siteMap = [
   ...healthRisksSiteMap,
   ...globalCoordinatorsSiteMap,
   ...projectsSiteMap,
-  ...dataCollectorsSiteMap
+  ...dataCollectorsSiteMap,
+  ...reportsSiteMap
 ];

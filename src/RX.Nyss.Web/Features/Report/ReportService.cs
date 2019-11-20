@@ -36,6 +36,7 @@ namespace RX.Nyss.Web.Features.Report
                 .Where(r => r.DataCollector.Project.Id == projectId)
                 .Select(r => new ReportListResponseDto
                 {
+                    Id = r.Id,
                     CreatedAt = r.CreatedAt,
                     HealthRiskName = r.ProjectHealthRisk.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Name,
                     Status = r.Status.ToString(),
@@ -45,11 +46,11 @@ namespace RX.Nyss.Web.Features.Report
                     Zone = r.DataCollector.Zone != null
                         ? r.DataCollector.Zone.Name
                         : null,
-                    DataCollectorName = r.DataCollector.DisplayName,
+                    DataCollectorDisplayName = r.DataCollector.DisplayName,
                     DataCollectorPhoneNumber = r.DataCollector.PhoneNumber,
                     CountMalesBelowFive = r.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.ReportedCase.CountFemalesBelowFive,
-                    CountMaleAtLeastFive = r.ReportedCase.CountMalesAtLeastFive,
+                    CountMalesAtLeastFive = r.ReportedCase.CountMalesAtLeastFive,
                     CountFemalesAtLeastFive = r.ReportedCase.CountFemalesAtLeastFive,
                 })
                 .Page(pageNumber)
