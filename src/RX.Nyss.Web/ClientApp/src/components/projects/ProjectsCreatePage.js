@@ -61,7 +61,7 @@ const ProjectsCreatePageComponent = (props) => {
     if (eventData.action === "select-option") {
       setSelectedHealthRisks([...selectedHealthRisks, eventData.option.data]);
     } else if (eventData.action === "remove-value") {
-      setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.id !== eventData.removedValue.value));
+      setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
     } else if (eventData.action === "clear") {
       setSelectedHealthRisks([]);
     }
