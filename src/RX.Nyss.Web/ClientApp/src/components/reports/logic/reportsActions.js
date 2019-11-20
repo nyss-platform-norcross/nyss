@@ -13,8 +13,8 @@ export const openList = {
 };
 
 export const getList = {
-  invoke: (projectId) => ({ type: GET_REPORTS.INVOKE, projectId }),
+  invoke: (projectId, pageNumber) => ({ type: GET_REPORTS.INVOKE, projectId, pageNumber }),
   request: () => ({ type: GET_REPORTS.REQUEST }),
-  success: (list) => ({ type: GET_REPORTS.SUCCESS, list }),
+  success: (data, page, rowsPerPage, totalRows) => ({ type: GET_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows }),
   failure: (message) => ({ type: GET_REPORTS.FAILURE, message })
 };

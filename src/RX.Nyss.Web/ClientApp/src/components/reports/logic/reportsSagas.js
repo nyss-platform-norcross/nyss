@@ -8,6 +8,7 @@ import { strings, stringKeys } from "../../../strings";
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
+  takeEvery(consts.GET_REPORTS.INVOKE, getReports)
 ];
 
 function* openReportsList({ projectId }) {
@@ -16,7 +17,7 @@ function* openReportsList({ projectId }) {
     yield openReportsModule(projectId);
 
     if (yield select(state => state.reports.listStale)) {
-      yield call(getReports, projectId);
+      yield call(getReports, { projectId });
     }
 
     yield put(actions.openList.success());
@@ -25,11 +26,11 @@ function* openReportsList({ projectId }) {
   }
 };
 
-function* getReports(projectId) {
+function* getReports({ projectId, pageNumber }) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/report/list?pageNumber=1`);
-    yield put(actions.getList.success(response.value));
+    const response = yield call(http.get, `/api/project/${projectId}/report/list?pageNumber=${pageNumber || 1}`);
+    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }

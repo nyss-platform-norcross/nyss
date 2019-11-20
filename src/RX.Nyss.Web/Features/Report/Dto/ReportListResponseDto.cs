@@ -8,7 +8,7 @@ namespace RX.Nyss.Web.Features.Report.Dto
     public class ReportListResponseDto
     {
         public int Id { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime DateTime { get; set; }
         public string HealthRiskName { get; set; }
         public string Status { get; set; }
         public string Region { get; set; }

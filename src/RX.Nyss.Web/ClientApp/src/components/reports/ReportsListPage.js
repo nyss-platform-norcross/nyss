@@ -5,9 +5,6 @@ import * as reportsActions from './logic/reportsActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
-import TableActions from '../common/tableActions/TableActions';
 import ReportsTable from './ReportsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -17,13 +14,22 @@ const ReportsListPageComponent = (props) => {
     props.openReportsList(props.projectId);
   });
 
+  if (!props.data) {
+    return null;
+  }
+
   return (
     <Fragment>
       <Typography variant="h2">{strings(stringKeys.reports.list.title)}</Typography>
      
       <ReportsTable
-        list={props.list}
+        list={props.data.data}
         isListFetching={props.isListFetching}
+        getList={props.getList}
+        projectId={props.projectId}
+        page={props.data.page}
+        totalRows={props.data.totalRows}
+        rowsPerPage={props.data.rowsPerPage}
       />
     </Fragment>
   );
@@ -37,13 +43,14 @@ ReportsListPageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
-  list: state.reports.listData,
+  data: state.reports.paginatedListData,
   isListFetching: state.reports.listFetching,
   isRemoving: state.reports.listRemoving
 });
 
 const mapDispatchToProps = {
-  openReportsList: reportsActions.openList.invoke,      
+  openReportsList: reportsActions.openList.invoke,
+  getList: reportsActions.getList.invoke      
 };
 
 export const ReportsListPage = useLayout(

@@ -267,6 +267,7 @@ export const stringKeys = {
       region: "reports.list.region",
       district: "reports.list.district",
       village: "reports.list.village",
+      location: "reports.list.location",
       zone: "reports.list.zone",
       dataCollectorDisplayName: "reports.list.dataCollectorDisplayName",
       dataCollectorPhoneNumber: "reports.list.dataCollectorPhoneNumber",

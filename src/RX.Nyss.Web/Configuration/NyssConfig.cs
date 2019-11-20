@@ -12,6 +12,7 @@
         string GeneralBlobContainerName { get; set; }
         string AuthorizedApiKeysBlobObjectName { get; set; }
         string StringsResourcesBlobObjectName { get; set; }
+        int PaginationRowsPerPage { get; set; }
     }
 
     public class NyssConfig : IConfig
@@ -30,6 +31,8 @@
         public string AuthorizedApiKeysBlobObjectName { get; set; }
 
         public string StringsResourcesBlobObjectName { get; set; }
+
+        public int PaginationRowsPerPage { get; set; }
 
         public class LoggingOptions 
         {

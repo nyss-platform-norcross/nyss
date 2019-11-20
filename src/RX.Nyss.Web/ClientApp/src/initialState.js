@@ -117,7 +117,7 @@ export const initialState = {
   reports: {
     listFetching: false,
     listRemoving: {},
-    listStale: true,
-    listData: []    
+    listStale: true, 
+    paginatedListData: null
   }
 };

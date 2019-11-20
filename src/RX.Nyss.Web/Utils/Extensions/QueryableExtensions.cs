@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
 namespace RX.Nyss.Web.Utils.Extensions
 {
     public static class QueryableExtensions
     {
-        public static IQueryable<T> Page<T>(this IQueryable<T> query, int pageNumber, int pageSize = 50) =>
+        public static IQueryable<T> Page<T>(this IQueryable<T> query, int pageNumber, int pageSize) =>
             query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
     }
 }
