@@ -20,6 +20,13 @@ const components = {
   ValueContainer,
 };
 
+const customMultiselectStyle = {
+  dropdownIndicator: (provided) => ({
+    ...provided,
+    cursor: 'pointer',
+  })
+}
+
 export const MultiSelect = ({ name, error, label, value, defaultValue, options, onChange }) => {
   return (
     <Select
@@ -32,6 +39,7 @@ export const MultiSelect = ({ name, error, label, value, defaultValue, options, 
       onChange={onChange}
       placeholder={""}
       components={components}
+      styles={customMultiselectStyle}
       TextFieldProps={{
         label: label,
         error: error,
