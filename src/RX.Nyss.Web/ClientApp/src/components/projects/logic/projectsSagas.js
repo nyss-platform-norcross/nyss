@@ -11,8 +11,7 @@ export const projectsSagas = () => [
   takeEvery(consts.OPEN_PROJECT_EDITION.INVOKE, openProjectEdition),
   takeEvery(consts.CREATE_PROJECT.INVOKE, createProject),
   takeEvery(consts.EDIT_PROJECT.INVOKE, editProject),
-  takeEvery(consts.REMOVE_PROJECT.INVOKE, removeProject),
-  takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard),
+  takeEvery(consts.REMOVE_PROJECT.INVOKE, removeProject)
 ];
 
 function* openProjectsList({ nationalSocietyId }) {
@@ -94,17 +93,6 @@ function* getProjects(nationalSocietyId) {
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
-  }
-};
-
-function* openProjectDashboard({ projectId }) {
-  yield put(actions.openDashbaord.request());
-  try {
-    const project = yield call(openProjectDashboardModule, projectId);
-    const projectSummary = yield call(http.get, `/api/project/${projectId}/summary`);
-    yield put(actions.openDashbaord.success(project.name, projectSummary.value));
-  } catch (error) {
-    yield put(actions.openDashbaord.failure(error.message));
   }
 };
 

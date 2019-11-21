@@ -1,7 +1,7 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as projectsActions from './logic/projectsActions';
+import * as projectDashboardActions from './logic/projectDashboardActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Grid from '@material-ui/core/Grid';
@@ -14,7 +14,7 @@ import { stringKeys, strings } from '../../strings';
 import dayjs from "dayjs"
 import { useMount } from '../../utils/lifecycle';
 
-const ProjectsDashboardPageComponent = ({ openDashbaord, projectId, isFetching, match, name, projectSummary }) => {
+const ProjectDashboardPageComponent = ({ openDashbaord, projectId, isFetching, match, name, projectSummary }) => {
   useMount(() => {
     openDashbaord(projectId);
   });
@@ -25,7 +25,6 @@ const ProjectsDashboardPageComponent = ({ openDashbaord, projectId, isFetching, 
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.project.dashboard.title)} - {name}</Typography>
       <Card>
         <CardContent>
           <Typography variant="h6">
@@ -140,23 +139,23 @@ const ProjectsDashboardPageComponent = ({ openDashbaord, projectId, isFetching, 
   );
 }
 
-ProjectsDashboardPageComponent.propTypes = {
+ProjectDashboardPageComponent.propTypes = {
   openDashbaord: PropTypes.func,
   name: PropTypes.string
 };
 
 const mapStateToProps = state => ({
-  name: state.projects.dashboard.name,
-  projectSummary: state.projects.dashboard.projectSummary,
   projectId: state.appData.route.params.projectId,
-  isFetching: state.projects.dashboard.isFetching
+  name: state.projectDashboard.name,
+  projectSummary: state.projectDashboard.projectSummary,
+  isFetching: state.projectDashboard.isFetching
 });
 
 const mapDispatchToProps = {
-  openDashbaord: projectsActions.openDashbaord.invoke
+  openDashbaord: projectDashboardActions.openDashbaord.invoke
 };
 
-export const ProjectsDashboardPage = useLayout(
+export const ProjectDashboardPage = useLayout(
   Layout,
-  connect(mapStateToProps, mapDispatchToProps)(ProjectsDashboardPageComponent)
+  connect(mapStateToProps, mapDispatchToProps)(ProjectDashboardPageComponent)
 );

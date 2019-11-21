@@ -12,6 +12,7 @@ import { dataCollectorsSagas } from "../components/dataCollectors/logic/dataColl
 import { headManagerConsentsSagas } from "../components/headManagerConsents/logic/headManagerConsentsSagas";
 import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
 import { reportsSagas } from "../components/reports/logic/reportsSagas";
+import { projectDashboardSagas } from "../components/projectDashboard/logic/projectDashboardSagas";
 
 function* rootSaga() {
   yield all([
@@ -21,6 +22,7 @@ function* rootSaga() {
     ...nationalSocietyStructureSagas(),
     ...smsGatewaysSagas(),
     ...projectsSagas(),
+    ...projectDashboardSagas(),
     ...globalCoordinatorsSagas(),
     ...healthRisksSagas(),
     ...nationalSocietyUsersSagas(),

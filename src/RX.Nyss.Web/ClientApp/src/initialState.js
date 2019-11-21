@@ -69,7 +69,12 @@ export const initialState = {
       name: null,
       projectSummary: null,
       isFetching: false
-    }
+    },
+  },
+  projectDashboard: {
+    name: null,
+    projectSummary: null,
+    isFetching: false
   },
   globalCoordinators: {
     listFetching: false,

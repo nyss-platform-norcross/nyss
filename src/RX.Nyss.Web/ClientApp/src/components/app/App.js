@@ -20,7 +20,6 @@ import { SmsGatewaysEditPage } from '../smsGateways/SmsGatewaysEditPage';
 import { ProjectsListPage } from '../projects/ProjectsListPage';
 import { ProjectsCreatePage } from '../projects/ProjectsCreatePage';
 import { ProjectsEditPage } from '../projects/ProjectsEditPage';
-import { ProjectsDashboardPage } from '../projects/ProjectsDashboardPage';
 import { VerifyEmailPage } from '../verifyEmailPage/VerifyEmailPage';
 import { GlobalCoordinatorsListPage } from '../globalCoordinators/GlobalCoordinatorsListPage';
 import { GlobalCoordinatorsCreatePage } from '../globalCoordinators/GlobalCoordinatorsCreatePage';
@@ -40,6 +39,7 @@ import { DataCollectorsCreatePage } from '../dataCollectors/DataCollectorsCreate
 import { DataCollectorsEditPage } from '../dataCollectors/DataCollectorsEditPage';
 import { NationalSocietyStructurePage } from '../nationalSocietyStructure/NationalSocietyStructurePage';
 import { ReportsListPage } from '../reports/ReportsListPage';
+import { ProjectDashboardPage } from '../projectDashboard/ProjectsDashboardPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -66,7 +66,7 @@ export const App = ({ history }) => (
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/:smsGatewayId/edit' component={SmsGatewaysEditPage} roles={accessMap.smsGateways.edit} />
 
-        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard' component={ProjectsDashboardPage} roles={accessMap.projects.get} />
+        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard' component={ProjectDashboardPage} roles={accessMap.projects.get} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects' component={ProjectsListPage} roles={accessMap.projects.list} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/add' component={ProjectsCreatePage} roles={accessMap.projects.add} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/edit' component={ProjectsEditPage} roles={accessMap.projects.edit} />

@@ -3,8 +3,7 @@ import {
   OPEN_PROJECTS_LIST, GET_PROJECTS,
   OPEN_PROJECT_CREATION, CREATE_PROJECT,
   OPEN_PROJECT_EDITION, EDIT_PROJECT,
-  REMOVE_PROJECT,
-  OPEN_PROJECT_DASHBOARD
+  REMOVE_PROJECT
 } from "./projectsConstants";
 
 export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/projects`);
@@ -59,11 +58,4 @@ export const remove = {
   request: (id) => ({ type: REMOVE_PROJECT.REQUEST, id }),
   success: (id) => ({ type: REMOVE_PROJECT.SUCCESS, id }),
   failure: (id, message) => ({ type: REMOVE_PROJECT.FAILURE, id, message })
-};
-
-export const openDashbaord = {
-  invoke: (projectId) => ({ type: OPEN_PROJECT_DASHBOARD.INVOKE, projectId }),
-  request: () => ({ type: OPEN_PROJECT_DASHBOARD.REQUEST }),
-  success: (name, projectSummary) => ({ type: OPEN_PROJECT_DASHBOARD.SUCCESS, name, projectSummary }),
-  failure: (message) => ({ type: OPEN_PROJECT_DASHBOARD.FAILURE, message })
 };
