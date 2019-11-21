@@ -76,6 +76,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
         {
             // Arrange
             const int existingProjectId = 2;
+            const int healthRiskId = 1;
 
             var project = new[]
             {
@@ -83,6 +84,13 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 {
                     Id = 1,
                     NationalSocietyId = 1,
+                    NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                    {
+                        ContentLanguage = new ContentLanguage
+                        {
+                            Id = 2
+                        }
+                    },
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
                     AlertRecipients = new List<AlertRecipient>()
                 },
@@ -150,6 +158,10 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
+            var healthRisks = new RX.Nyss.Data.Models.HealthRisk[0]  ;
+            var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
+
             // Act
             var result = await _projectService.GetProject(existingProjectId);
 
@@ -186,7 +198,11 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 {
                     Id = 1,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
-                    AlertRecipients = new List<AlertRecipient>()
+                    AlertRecipients = new List<AlertRecipient>(),
+                    NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                    {
+                        ContentLanguage = new ContentLanguage { Id = 1 }
+                    }
                 }
             };
 

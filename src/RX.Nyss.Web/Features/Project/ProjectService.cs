@@ -383,7 +383,6 @@ namespace RX.Nyss.Web.Features.Project
 
         private async Task<ProjectFormDataResponseDto> GetFormDataDto(int contentLanguageId)
         {
-            
             var projectHealthRisks = await _nyssContext.HealthRisks
                 .Include(hr => hr.LanguageContents)
                 .Select(hr => new ProjectHealthRiskResponseDto
