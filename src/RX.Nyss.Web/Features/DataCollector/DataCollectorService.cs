@@ -152,7 +152,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                     PhoneNumber = dc.PhoneNumber,
                     Village = dc.Village.Name,
                     District = dc.Village.District.Name,
-                    Region = dc.Village.District.Region.Name
+                    Region = dc.Village.District.Region.Name,
+                    Sex = dc.Sex
                 })
                 .ToListAsync();
 
