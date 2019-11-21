@@ -21,6 +21,7 @@ namespace RX.Nyss.Web.Features.User
         bool HasAccessToAllNationalSocieties(IEnumerable<string> roles);
         Task<bool> IsHeadManagerToNationalSociety(string identityName, int nationalSocietyId);
         Task<Result> AddExisting(int nationalSocietyId, string userEmail);
+        Task<bool> HasUserAccessToNationalSociety(int nationalSocietyId, string identityName);
     }
 
     public class UserService : IUserService
@@ -79,6 +80,9 @@ namespace RX.Nyss.Web.Features.User
             return Success(user);
         }
 
+        public async Task<bool> HasUserAccessToNationalSociety(int nationalSocietyId, string identityName) =>
+            await _dataContext.UserNationalSocieties
+                .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.User.EmailAddress == identityName);
 
         public async Task<bool> GetUserHasAccessToAnyOfProvidedNationalSocieties(List<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles)
         {

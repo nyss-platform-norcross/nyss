@@ -98,6 +98,11 @@
                 public const string NotAMemberOfSociety = "nationalSociety.setHead.notAMemberOfSociety";
                 public const string NotApplicableUserRole = "nationalSociety.setHead.notApplicableUserRole";
             }
+
+            public static class Structure
+            {
+                public const string ItemAlreadyExists = "nationalSociety.structure.itemAlreadyExists";
+            }
         }
 
         public static class HealthRisk

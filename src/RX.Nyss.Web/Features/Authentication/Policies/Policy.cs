@@ -10,6 +10,10 @@
         TechnicalAdvisorAccess,
         SupervisorAccess,
         DataCollectorAccess,
-        HeadManagerAccess
+        HeadManagerAccess,
+        RegionAccess,
+        DistrictAccess,
+        VillageAccess,
+        ZoneAccess
     }
 }
