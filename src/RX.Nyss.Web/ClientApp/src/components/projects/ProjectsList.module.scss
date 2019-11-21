@@ -1,6 +1,13 @@
 .keyPoint {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   p {
     text-transform: uppercase;
+  }
+}
+
+.projectCard {
+  padding: "10px";
+  .projectTitle {
+    margin-bottom: "20px";
   }
 }

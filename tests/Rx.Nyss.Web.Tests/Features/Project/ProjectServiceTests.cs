@@ -56,7 +56,6 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Value[0].Name.ShouldBe("1");
             result.Value[0].StartDate.ShouldBe(new DateTime(2019, 1, 1));
             result.Value[0].EndDate.ShouldBeNull();
-            result.Value[0].State.ShouldBe(ProjectState.Open);
             result.Value[0].TotalReportCount.ShouldBe(1);
             result.Value[0].EscalatedAlertCount.ShouldBe(0);
             result.Value[0].ActiveDataCollectorCount.ShouldBe(1);
@@ -66,7 +65,6 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Value[1].Name.ShouldBe("3");
             result.Value[1].StartDate.ShouldBe(new DateTime(2019, 1, 1));
             result.Value[1].EndDate.ShouldBeNull();
-            result.Value[1].State.ShouldBe(ProjectState.Open);
             result.Value[1].TotalReportCount.ShouldBe(3);
             result.Value[1].EscalatedAlertCount.ShouldBe(2);
             result.Value[1].ActiveDataCollectorCount.ShouldBe(2);

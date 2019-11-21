@@ -28,6 +28,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         private readonly IGeolocationService _geolocationService;
 
         private const int DataCollectorId = 1;
+        private const int SecondDataCollectorId = 2;
         private const string DataCollectorPhoneNumber = "+4712345678";
         private const int ProjectId = 1;
         private const int SupervisorId = 1;
@@ -76,7 +77,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             var zones = new List<Zone>();
             var dataCollectors = new List<RX.Nyss.Data.Models.DataCollector>
             {
-                new RX.Nyss.Data.Models.DataCollector 
+                new RX.Nyss.Data.Models.DataCollector
                 {
                     Id = DataCollectorId,
                     PhoneNumber = DataCollectorPhoneNumber,
@@ -90,6 +91,21 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                     Location = new Point(0, 0),
                     Name = "",
                     Sex = Sex.Male
+                },
+                new RX.Nyss.Data.Models.DataCollector
+                {
+                    Id = SecondDataCollectorId,
+                    PhoneNumber = DataCollectorPhoneNumber,
+                    Project = projects[0],
+                    Village = villages[0],
+                    Supervisor = (SupervisorUser)users[0],
+                    AdditionalPhoneNumber = "",
+                    BirthGroupDecade = 1,
+                    DataCollectorType = DataCollectorType.Human,
+                    DisplayName = "",
+                    Location = new Point(0, 0),
+                    Name = "",
+                    Sex = Sex.Female
                 }
             };
 
@@ -170,7 +186,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             // Arrange
             var dataCollector = new EditDataCollectorRequestDto
             {
-                Id = 2,
+                Id = 3,
                 PhoneNumber = DataCollectorPhoneNumber,
                 SupervisorId = SupervisorId,
                 VillageId = _nyssContextMock.Villages.ToList()[0].Id,
@@ -239,7 +255,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         [Fact]
         public async Task GetDataCollector_WhenDataCollectorDoesntExist_ShouldThrowException()
         {
-            await Should.ThrowAsync<Exception>(() => _dataCollectorService.GetDataCollector(2));
+            await Should.ThrowAsync<Exception>(() => _dataCollectorService.GetDataCollector(3));
         }
 
         [Fact]
@@ -250,7 +266,20 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Count().ShouldBeGreaterThan(0);
+            result.Value.Count().ShouldBe(2);
+            var dataCollector = result.Value.First();
+            dataCollector.Id.ShouldBe(DataCollectorId);
+            dataCollector.DisplayName.ShouldBe("");
+            dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber);
+            dataCollector.Village.ShouldBe(Village);
+            dataCollector.District.ShouldBe("Layuna");
+            dataCollector.Name.ShouldBe("");
+            dataCollector.Sex.ShouldBe(Sex.Male);
+            dataCollector.Region.ShouldBe("Layuna");
+
+            var secondDataCollector = result.Value.Last();
+            secondDataCollector.Id.ShouldBe(SecondDataCollectorId);
+            secondDataCollector.Sex.ShouldBe(Sex.Female);
         }
     }
 }
