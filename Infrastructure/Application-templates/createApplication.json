@@ -184,10 +184,6 @@
               "value": "[variables('sendEmailQueueName')]"
             },
             {
-              "name": "InternalApiReportUrl",
-              "value": "[concat('https://', variables('funcapp_name'), '.azurewebsites.net/api/report')]"
-            },
-            {
               "name": "AuthorizedApiKeysBlobPath",
               "value": "[concat(variables('smsGatewayBlobContainerName'),'/',variables('authorizedApiKeysBlobObjectName'))]"
             }
@@ -365,6 +361,22 @@
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
               "value": "~2"
+            },
+            {
+              "name": "SERVICEBUS_CONNECTIONSTRING",
+              "value": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]"
+            },
+            {
+              "name": "SERVICEBUS_REPORTQUEUE",
+              "value": "[variables('reportQueueName')]"
+            },
+            {
+              "name": "SERVICEBUS_SENDEMAILQUEUE",
+              "value": "[variables('sendEmailQueueName')]"
+            },
+            {
+              "name": "ReportApiUrl",
+              "value": "[concat('https://', variables('funcapp_name'), '.azurewebsites.net/api/report')]"
             }
           ]
         }

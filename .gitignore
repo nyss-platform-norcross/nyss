@@ -274,12 +274,11 @@ __pycache__/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-/src/RX.Nyss.Web/*.db
-/src/RX.Nyss.Web/RX.Nyss.Web.xml
+
 **/ClientApp/build
 **/Logs/*.txt
+**/Properties/PublishProfiles/
+
 src/RX.Nyss.Web/RX.Nyss.Web.xml
-
-src/RX.Nyss.FuncApp/Properties/PublishProfiles/
-
+/src/RX.Nyss.Web/*.db
 src/RX.Nyss.Web/appsettings.Development.json

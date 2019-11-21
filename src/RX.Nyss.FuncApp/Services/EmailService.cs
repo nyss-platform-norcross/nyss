@@ -15,21 +15,21 @@ namespace RX.Nyss.FuncApp.Services
 
     public class EmailService : IEmailService
     {
-        private readonly INyssFuncappConfig _config;
+        private readonly INyssFuncAppConfig _nyssFuncAppConfig;
         private readonly ILogger<EmailService> _logger;
         private readonly IMailjetEmailClient _emailClient;
 
-        public EmailService(ILogger<EmailService> logger, INyssFuncappConfig config, IMailjetEmailClient emailClient)
+        public EmailService(ILogger<EmailService> logger, INyssFuncAppConfig nyssFuncAppConfig, IMailjetEmailClient emailClient)
         {
             _logger = logger;
-            _config = config;
+            _nyssFuncAppConfig = nyssFuncAppConfig;
             _emailClient = emailClient;
         }
 
         public async Task<HttpResponseMessage> SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses)
         {
             var sandboxMode = false;
-            if (!_config.MailjetConfig.SendToAll)
+            if (!_nyssFuncAppConfig.MailjetConfig.SendToAll)
             {
                 sandboxMode = !IsWhitelisted(whitelistedEmailAddresses, message.To.Email);
             }

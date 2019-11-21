@@ -14,14 +14,14 @@ namespace RX.Nyss.FuncApp.Tests
     {
         private readonly IEmailService _emailService;
         private readonly ILogger<EmailService> _loggerMock;
-        private readonly INyssFuncappConfig _configurationMock;
+        private readonly INyssFuncAppConfig _configurationMock;
         private readonly IMailjetEmailClient _mailjetEmailClientMock;
 
         public EmailServiceTests()
         {
             _loggerMock = Substitute.For<ILogger<EmailService>>();
-            _configurationMock = Substitute.For<INyssFuncappConfig>();
-            _configurationMock.MailjetConfig = new NyssFuncappConfig.MailjetConfigOptions();
+            _configurationMock = Substitute.For<INyssFuncAppConfig>();
+            _configurationMock.MailjetConfig = new Config.MailjetConfigOptions();
             _mailjetEmailClientMock = Substitute.For<IMailjetEmailClient>();
             _emailService = new EmailService(
                 _loggerMock, 

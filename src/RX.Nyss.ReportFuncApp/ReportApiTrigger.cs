@@ -3,17 +3,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
-using RX.Nyss.FuncApp.Configuration;
+using RX.Nyss.ReportFuncApp.Configuration;
 
-namespace RX.Nyss.FuncApp
+namespace RX.Nyss.ReportFuncApp
 {
     public class ReportApiTrigger
     {
         private readonly ILogger<ReportApiTrigger> _logger;
-        private readonly INyssFuncappConfig _configuration;
+        private readonly INyssReportFuncAppConfig _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public ReportApiTrigger(ILogger<ReportApiTrigger> logger, INyssFuncappConfig configuration, IHttpClientFactory httpClientFactory)
+        public ReportApiTrigger(ILogger<ReportApiTrigger> logger, INyssReportFuncAppConfig configuration, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
             _configuration = configuration;
@@ -26,7 +26,7 @@ namespace RX.Nyss.FuncApp
         {
             _logger.Log(LogLevel.Debug, $"Dequeued report: {report}");
             var client = _httpClientFactory.CreateClient();
-            await client.PostAsync(_configuration.InternalApiReportUrl, new StringContent(report, Encoding.UTF8, "application/x-www-form-urlencoded"));
+            await client.PostAsync(_configuration.ReportApiUrl, new StringContent(report, Encoding.UTF8, "application/x-www-form-urlencoded"));
         }
     }
 }

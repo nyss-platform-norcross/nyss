@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RX.Nyss.FuncApp\RX.Nyss.FuncApp.csproj" />
+    <ProjectReference Include="..\..\src\RX.Nyss.ReportFuncApp\RX.Nyss.ReportFuncApp.csproj" />
   </ItemGroup>
 
 </Project>
