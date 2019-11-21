@@ -23,13 +23,15 @@ const SmsGatewaysCreatePageComponent = (props) => {
     const fields = {
       name: "",
       apiKey: "",
-      gatewayType: "SmsEagle"
+      gatewayType: "SmsEagle",
+      "emailAddress": ""
     };
 
     const validation = {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
       apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      gatewayType: [validators.required]
+      gatewayType: [validators.required],
+      emailAddress: [validators.required, validators.email]
     };
 
     return createForm(fields, validation);
@@ -50,7 +52,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
     props.create(props.nationalSocietyId, {
       name: values.name,
       apiKey: values.apiKey,
-      gatewayType: values.gatewayType
+      gatewayType: values.gatewayType,
+      emailAddress: values.emailAddress
     });
   };
 
@@ -77,6 +80,14 @@ const SmsGatewaysCreatePageComponent = (props) => {
               label={strings(stringKeys.smsGateway.form.apiKey)}
               name="apiKey"
               field={form.fields.apiKey}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.smsGateway.form.emailAddress)}
+              name="emailAddress"
+              field={form.fields.emailAddress}
             />
           </Grid>
 

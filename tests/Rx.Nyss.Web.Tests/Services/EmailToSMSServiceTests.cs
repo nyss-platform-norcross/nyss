@@ -13,20 +13,20 @@ namespace Rx.Nyss.Web.Tests.Services
     {
         private readonly IEmailToSMSService _emailToSMSService;
         private readonly IEmailPublisherService _emailPublisherServiceMock;
-        private readonly IConfig _configMock;
+        private readonly INyssContext _nyssContextMock;
 
         public EmailToSMSServiceTests()
         {
             _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
-            _configMock = new NyssConfig() { EmailToSMSDomain = "domain.com" };
-            _emailToSMSService = new EmailToSMSService(_emailPublisherServiceMock, _configMock);
+            _nyssContextMock = Substitute.For<INyssContext>();
+            _emailToSMSService = new EmailToSMSService(_nyssContextMock, _emailPublisherServiceMock);
         }
 
         [Fact]
         public async Task SendMessage_WhenSuccessful_ShouldCallEmailPublisherService()
         {
             // Arrange
-            var apiKey = "someapikey";
+            var smsEagleId = 1;
             List<string> recipients = new List<string>
             {
                 "+47123143513"
@@ -34,7 +34,7 @@ namespace Rx.Nyss.Web.Tests.Services
             var message = "Thanks for your message";
 
             // Act
-            await _emailToSMSService.SendMessage(apiKey, recipients, message);
+            await _emailToSMSService.SendMessage(smsEagleId, recipients, message);
 
             await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
         }
