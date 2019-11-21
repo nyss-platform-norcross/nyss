@@ -9,7 +9,6 @@ using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
-using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Report
 {
@@ -45,7 +44,7 @@ namespace RX.Nyss.Web.Features.Report
                     Id = r.Id,
                     DateTime = r.CreatedAt,
                     HealthRiskName = r.ProjectHealthRisk.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Name,
-                    Status = r.Status.ToString(),
+                    IsValid = r.IsValid,
                     Region = r.DataCollector.Village.District.Region.Name,
                     District = r.DataCollector.Village.District.Name,
                     Village = r.DataCollector.Village.Name,
@@ -64,7 +63,7 @@ namespace RX.Nyss.Web.Features.Report
 
             var project = await _nyssContext.Projects.FindAsync(projectId);
             var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
-            result.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone ));
+            result.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
 
             return PagedResult.Success(result, pageNumber, rowCount, rowsPerPage);
         }

@@ -275,6 +275,8 @@ export const stringKeys = {
       malesAtLeastFive: "reports.list.malesAtLeastFive",
       femalesBelowFive: "reports.list.femalesBelowFive",
       femalesAtLeastFive: "reports.list.femalesAtLeastFive",
+      success: "reports.list.success",
+      error: "reports.list.error",       
     },
   },
   form: {
