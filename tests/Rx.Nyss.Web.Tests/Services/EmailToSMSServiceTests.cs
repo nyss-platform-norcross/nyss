@@ -18,7 +18,7 @@ namespace Rx.Nyss.Web.Tests.Services
         public EmailToSMSServiceTests()
         {
             _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
-            _configMock = new NyssConfig() { EmailToSMSDomain = "gmail.com" };
+            _configMock = new NyssConfig() { EmailToSMSDomain = "domain.com" };
             _emailToSMSService = new EmailToSMSService(_emailPublisherServiceMock, _configMock);
         }
 
@@ -26,7 +26,7 @@ namespace Rx.Nyss.Web.Tests.Services
         public async Task SendMessage_WhenSuccessful_ShouldCallEmailPublisherService()
         {
             // Arrange
-            var apiKey = "nyss.feedback.messages";
+            var apiKey = "someapikey";
             List<string> recipients = new List<string>
             {
                 "+47123143513"
