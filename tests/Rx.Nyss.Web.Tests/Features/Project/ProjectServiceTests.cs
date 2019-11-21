@@ -132,7 +132,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             },
                             Reports = new[]
                             {
-                                new Report()
+                                new RX.Nyss.Data.Models.Report()
                             }
                         }
                     },
@@ -438,7 +438,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<Report>()
+                            Reports = new List<RX.Nyss.Data.Models.Report>()
                         },
                         new ProjectHealthRisk
                         {
@@ -451,7 +451,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<Report>()
+                            Reports = new List<RX.Nyss.Data.Models.Report>()
                         }
                     },
                     AlertRecipients = new List<AlertRecipient>
@@ -600,9 +600,9 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<Report>()
+                            Reports = new List<RX.Nyss.Data.Models.Report>()
                             {
-                                new Report()
+                                new RX.Nyss.Data.Models.Report()
                             }
                         }
                     },
@@ -779,7 +779,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     EndDate = null,
                     NationalSocietyId = nationalSocietyId,
                     DataCollectors = new[] { new RX.Nyss.Data.Models.DataCollector() },
-                    ProjectHealthRisks = new[] { new ProjectHealthRisk { Reports = new[] { new Report() }, Alerts = new[] { new Alert() } } }
+                    ProjectHealthRisks = new[] { new ProjectHealthRisk { Reports = new[] { new RX.Nyss.Data.Models.Report() }, Alerts = new[] { new Alert() } } }
                 },
                 new RX.Nyss.Data.Models.Project
                 {
@@ -798,7 +798,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     {
                         new ProjectHealthRisk
                         {
-                            Reports = new[] { new Report() },
+                            Reports = new[] { new RX.Nyss.Data.Models.Report() },
                             Alerts = new[]
                             {
                                 new Alert { Id = 1, Status = AlertStatus.Pending },
@@ -807,7 +807,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         },
                         new ProjectHealthRisk
                         {
-                            Reports = new[] { new Report(), new Report() },
+                            Reports = new[] { new RX.Nyss.Data.Models.Report(), new RX.Nyss.Data.Models.Report() },
                             Alerts = new[]
                             {
                                 new Alert { Id = 4, Status = AlertStatus.Pending },

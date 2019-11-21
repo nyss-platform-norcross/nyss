@@ -41,12 +41,12 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
           <TableCell style={{ width: "10%" }}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
           <TableCell style={{ width: "6%" }}>{strings(stringKeys.reports.list.status)}</TableCell>
           <TableCell style={{ width: "18%", "minWidth": "250px" }}>{strings(stringKeys.reports.list.location)}</TableCell>
-          <TableCell style={{ width: "14%", "minWidth": "250px" }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
+          <TableCell style={{ width: "14%", "minWidth": "200px" }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
           <TableCell style={{ width: "11%" }}>{strings(stringKeys.reports.list.dataCollectorPhoneNumber)}</TableCell>
-          <TableCell style={{ width: "5%", "minWidth": "70px" }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
-          <TableCell style={{ width: "5%", "minWidth": "70px" }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
-          <TableCell style={{ width: "5%", "minWidth": "70px" }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
-          <TableCell style={{ width: "5%", "minWidth": "70px" }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
+          <TableCell style={{ width: "5%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
+          <TableCell style={{ width: "5%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
+          <TableCell style={{ width: "5%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
+          <TableCell style={{ width: "5%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>

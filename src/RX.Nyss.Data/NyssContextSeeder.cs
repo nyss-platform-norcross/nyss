@@ -290,8 +290,8 @@ namespace RX.Nyss.Data
 
         private static void SeedContentLanguages(ModelBuilder modelBuilder) =>
             modelBuilder.Entity<ContentLanguage>().HasData(
-                new ContentLanguage { Id = 1, DisplayName = "English", LanguageCode = "EN" },
-                new ContentLanguage { Id = 2, DisplayName = "Français", LanguageCode = "FR" }
+                new ContentLanguage { Id = 1, DisplayName = "English", LanguageCode = "en" },
+                new ContentLanguage { Id = 2, DisplayName = "Français", LanguageCode = "fr" }
             );
     }
 }
