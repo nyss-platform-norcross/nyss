@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Data.Models
+﻿using System.Collections.Generic;
+
+namespace RX.Nyss.Data.Models
 {
     public class District
     {
@@ -7,5 +9,7 @@
         public string Name { get; set; }
 
         public virtual Region Region { get; set; }
+
+        public virtual ICollection<Village> Villages { get; set; }
     }
 }

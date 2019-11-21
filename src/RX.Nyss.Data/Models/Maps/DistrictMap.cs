@@ -8,7 +8,7 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<District> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.HasOne(x => x.Region).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(x => x.Villages).WithOne(x => x.District).IsRequired().OnDelete(DeleteBehavior.Cascade);
             builder.Property(x => x.Name).HasMaxLength(100);
         }
     }

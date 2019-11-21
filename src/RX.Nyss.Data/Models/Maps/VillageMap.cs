@@ -9,7 +9,7 @@ namespace RX.Nyss.Data.Models.Maps
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).HasMaxLength(100);
-            builder.HasOne(x => x.District).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(x => x.Zones).WithOne(x => x.Village).IsRequired().OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
