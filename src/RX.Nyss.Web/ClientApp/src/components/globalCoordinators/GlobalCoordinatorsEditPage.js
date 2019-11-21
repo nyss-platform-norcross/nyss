@@ -62,8 +62,6 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">Edit Global Coordinator</Typography>
-
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
           <Grid item xs={12}>

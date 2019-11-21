@@ -8,6 +8,7 @@ export const initialState = {
       parameters: {},
       breadcrumb: [],
       topMenu: [],
+      tabMenu: [],
       sideMenu: []
     },
     message: null,
@@ -31,10 +32,19 @@ export const initialState = {
     formData: null,
     overviewData: null,
     overviewFetching: false,
+    structureData: null,
+    structureFetching: false,
     dashboard: {
       name: null,
       isFetching: false
     }
+  },
+  nationalSocietyStructure: {
+    regions: [],
+    isFetching: false,
+    districts: [],
+    villages: [],
+    zones: []
   },
   smsGateways: {
     listFetching: false,

@@ -21,8 +21,6 @@ const GlobalCoordinatorsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.globalCoordinator.title)}</Typography>
-
       <TableActions>
         <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.globalCoordinator.addNew)}

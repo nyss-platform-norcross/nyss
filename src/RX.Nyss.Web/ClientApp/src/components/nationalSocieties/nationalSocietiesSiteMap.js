@@ -38,10 +38,19 @@ export const nationalSocietiesSiteMap = [
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
-    path: "/nationalsocieties/:nationalSocietyId/overview",
-    title: () => strings(stringKeys.nationalSociety.overview.title),
+    path: "/nationalsocieties/:nationalSocietyId/settings",
+    title: () => strings(stringKeys.nationalSociety.settings.title),
     placeholder: placeholders.leftMenu,
     placeholderIndex: 4,
     access: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor]
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/settings",
+    path: "/nationalsocieties/:nationalSocietyId/overview",
+    title: () => strings(stringKeys.nationalSociety.overview.title),
+    placeholder: placeholders.tabMenu,
+    placeholderIndex: 1,
+    access: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
+    middleStepOnly: true
   }
 ];

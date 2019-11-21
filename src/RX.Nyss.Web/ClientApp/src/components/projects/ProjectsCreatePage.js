@@ -87,8 +87,6 @@ const ProjectsCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.project.form.creationTitle)}</Typography>
-
       {props.error &&
         <SnackbarContent
           message={props.error}

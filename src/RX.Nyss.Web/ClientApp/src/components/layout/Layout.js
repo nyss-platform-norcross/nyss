@@ -6,6 +6,7 @@ import { BaseLayout } from './BaseLayout';
 
 import styles from './Layout.module.scss';
 import { MessagePopup } from './MessagePopup';
+import { TabMenu } from './TabMenu';
 
 const pageContentId = "pageContent";
 
@@ -28,6 +29,7 @@ export const Layout = ({ children }) => (
           <Breadcrumb />
 
           <div>
+            <TabMenu />
             {children}
           </div>
         </div>

@@ -84,8 +84,6 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.form.editionTitle)}</Typography>
-
       {props.error &&
         <SnackbarContent
           message={props.error}

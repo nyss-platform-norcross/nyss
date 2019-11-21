@@ -1,0 +1,32 @@
+.tree {
+  margin: 30px !important;
+}
+
+.treeItemContent {
+  display: flex;
+  align-items: center;
+
+  .itemAction {
+    visibility: hidden;
+    margin-left: 15px;
+  }
+
+  &:hover {
+    .itemAction {
+      visibility: visible;
+    }
+  }
+}
+
+.addPanel {
+  display: flex;
+  align-items: center;
+  padding-left: 2px;
+
+  .addPanelIcon {
+    text-align: right;
+    left: 7px;
+    position: relative;
+    z-index: 1;
+  }
+}

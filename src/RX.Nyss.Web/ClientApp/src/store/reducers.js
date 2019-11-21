@@ -11,6 +11,7 @@ import { healthRisksReducer } from "../components/healthRisks/logic/healthRisksR
 import { nationalSocietyUsersReducer } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersReducer";
 import { dataCollectorsReducer } from "../components/dataCollectors/logic/dataCollectorsReducer";
 import { headManagerConsentsReducer } from "../components/headManagerConsents/logic/headManagerConsentsReducer";
+import { nationalSocietyStructureReducer } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureReducer";
 
 export const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -18,6 +19,7 @@ export const createRootReducer = (history) => combineReducers({
   requests: requestReducer,
   auth: authReducer,
   nationalSocieties: nationalSocietiesReducer,
+  nationalSocietyStructure: nationalSocietyStructureReducer,
   smsGateways: smsGatewaysReducer,
   projects: projectsReducer,
   globalCoordinators: globalCoordinatorsReducer,

@@ -156,6 +156,35 @@ export const theme = createMuiTheme({
         fontWeight: 600,
         borderBottomColor: "#8C8C8C",
       }
+    },
+    MuiTabs: {
+      root: {
+        borderBottom: "1px solid #e0e0e0",
+
+      },
+      indicator: {
+        backgroundColor: "#C02C2C",
+        height: 3
+      }
+    },
+    MuiTab: {
+      root: {
+        fontSize: "1rem !important"
+      },
+      textColorInherit: {
+        opacity: 1
+      }
+    },
+    MuiTreeItem: {
+      root: {
+        "&:focus": {
+          backgroundColor: "inherit"
+        }
+      },
+      content: {
+        padding: "8px",
+        background: "inherit !important"
+      }
     }
   },
 });

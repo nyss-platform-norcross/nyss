@@ -113,8 +113,6 @@ const DataCollectorsEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.dataCollector.form.editionTitle)}</Typography>
-
       {props.error &&
         <SnackbarContent
           message={props.error}

@@ -19,8 +19,6 @@ const ProjectsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.project.title)}</Typography>
-
       <TableActions>
         <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.project.addNew)}

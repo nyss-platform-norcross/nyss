@@ -80,8 +80,6 @@ const HealthRisksCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.healthRisk.form.creationTitle)}</Typography>
-
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={3}>
           {props.formError && (

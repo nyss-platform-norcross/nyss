@@ -69,7 +69,8 @@ export function appReducer(state = initialState.appData, action) {
           parameters: {},
           breadcrumb: [],
           topMenu: [],
-          sideMenu: []
+          sideMenu: [],
+          tabMenu: []
         }
       }
 
@@ -81,7 +82,8 @@ export function appReducer(state = initialState.appData, action) {
           parameters: action.parameters,
           breadcrumb: action.breadcrumb,
           topMenu: action.topMenu,
-          sideMenu: action.sideMenu
+          sideMenu: action.sideMenu,
+          tabMenu: action.tabMenu
         }
       }
 

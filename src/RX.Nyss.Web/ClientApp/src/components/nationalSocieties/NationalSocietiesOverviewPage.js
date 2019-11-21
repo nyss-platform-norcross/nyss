@@ -25,9 +25,6 @@ const NationalSocietiesOverviewPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSociety.overview.title)}</Typography>
-
-
       <Form>
         <Grid container spacing={3}>
           <Grid item xs={12}>

@@ -21,8 +21,6 @@ const HealthRisksListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.healthRisk.title)}</Typography>
-
       <TableActions>
         <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.healthRisk.addNew)}

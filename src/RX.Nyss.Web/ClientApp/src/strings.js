@@ -39,11 +39,26 @@ export const stringKeys = {
       technicalAdvisor: "nationalSociety.list.technicalAdvisor",
       removalConfirmation: "nationalSociety.list.removalConfirmation",
     },
+    settings: {
+      title: "nationalSociety.settings.title"
+    },
     dashboard: {
       title: "nationalSociety.dashboard.title"
     },
     overview: {
       title: "nationalSociety.dashboard.overview"
+    },
+    structure: {
+      title: "nationalSociety.structure.title",
+      introduction: "nationalSociety.structure.introduction",
+      removalConfirmation: "nationalSociety.structure.removalConfirmation",
+      cancelEdition: "nationalSociety.structure.cancelEdition",
+      saveEdition: "nationalSociety.structure.saveEdition",
+      saveNew: "nationalSociety.structure.saveNew",
+      addRegion: "nationalSociety.structure.addRegion",
+      addDistrict: "nationalSociety.structure.addDistrict",
+      addVillage: "nationalSociety.structure.addVillage",
+      addZone: "nationalSociety.structure.addZone"
     },
     setHead: {
       notAMemberOfSociety: "nationalSociety.setHead.notAMemberOfSociety"
@@ -243,7 +258,8 @@ export const stringKeys = {
     }
   },
   form: {
-    cancel: "form.cancel"
+    cancel: "form.cancel",
+    inlineSave: "form.inlineSave"
   },
   user: {
     logout: "user.logout",

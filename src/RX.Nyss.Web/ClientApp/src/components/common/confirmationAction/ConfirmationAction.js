@@ -1,3 +1,5 @@
+import styles from "./ConfirmationAction.module.scss"
+
 import React, { Fragment, useState } from "react";
 import PropTypes from "prop-types";
 import Menu from "@material-ui/core/Menu";
@@ -25,7 +27,7 @@ export const ConfirmationAction = ({ children, icon, confirmationText, onClick }
 
   return (
     <Fragment>
-      <div onClick={handleDropdownClick}>
+      <div onClick={handleDropdownClick} className={styles.confirmationAction}>
         {children}
       </div>
       <Menu
