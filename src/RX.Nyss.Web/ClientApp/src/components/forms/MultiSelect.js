@@ -42,7 +42,8 @@ export const MultiSelect = ({ name, error, label, value, defaultValue, options, 
       styles={customMultiselectStyle}
       TextFieldProps={{
         label: label,
-        error: error,
+        error: !!error,
+        helperText: error,
         InputLabelProps: {
           htmlFor: { name },
           shrink: true

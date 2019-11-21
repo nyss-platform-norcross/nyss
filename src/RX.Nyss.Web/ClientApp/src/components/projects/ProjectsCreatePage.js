@@ -50,6 +50,10 @@ const ProjectsCreatePageComponent = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (selectedHealthRisks.length === 0){
+      return;
+    }
+
     if (!form.isValid()) {
       return;
     };
@@ -114,6 +118,7 @@ const ProjectsCreatePageComponent = (props) => {
               label={strings(stringKeys.project.form.healthRisks)}
               options={healthRiskDataSource}
               onChange={onHealthRiskChange}
+              error={selectedHealthRisks.length === 0 ? `${strings(stringKeys.validation.fieldRequired)}` : null}
             />
           </Grid>
 
