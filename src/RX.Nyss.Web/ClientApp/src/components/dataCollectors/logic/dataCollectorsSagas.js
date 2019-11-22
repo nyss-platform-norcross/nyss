@@ -16,15 +16,18 @@ export const dataCollectorsSagas = () => [
 ];
 
 function* openDataCollectorsList({ projectId }) {
+  const listStale = yield select(state => state.dataCollectors.listStale);
+  const listProjectId = yield select(state => state.dataCollectors.listProjectId);
+
   yield put(actions.openList.request());
   try {
     yield openDataCollectorsModule(projectId);
 
-    if (yield select(state => state.dataCollectors.listStale)) {
+    if (listStale || listProjectId !== projectId) {
       yield call(getDataCollectors, projectId);
     }
 
-    yield put(actions.openList.success());
+    yield put(actions.openList.success(projectId));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
   }
