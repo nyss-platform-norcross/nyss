@@ -21,6 +21,10 @@ const components = {
 };
 
 const customMultiselectStyle = {
+  clearIndicator: (provided) => ({
+    ...provided,
+    cursor: 'pointer',
+  }),
   dropdownIndicator: (provided) => ({
     ...provided,
     cursor: 'pointer',
