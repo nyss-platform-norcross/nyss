@@ -59,6 +59,10 @@ const ProjectsEditPageComponent = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (selectedHealthRisks.length === 0){
+      return;
+    }
+
     if (!form.isValid()) {
       return;
     };
@@ -128,6 +132,7 @@ const ProjectsEditPageComponent = (props) => {
               options={healthRiskDataSource}
               defaultValue={healthRiskDataSource.filter(hr => (selectedHealthRisks.some(shr => shr.healthRiskId === hr.value)))}
               onChange={onHealthRiskChange}
+              error={selectedHealthRisks.length === 0 ? `${strings(stringKeys.validation.fieldRequired)}` : null}
             />
           </Grid>
 

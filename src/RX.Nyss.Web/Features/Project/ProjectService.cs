@@ -111,7 +111,6 @@ namespace RX.Nyss.Web.Features.Project
                 {
                     Id = p.Id,
                     Name = p.Name,
-                    State = p.State,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
                     TotalReportCount = p.ProjectHealthRisks.SelectMany(phr => phr.Reports).Count(),
