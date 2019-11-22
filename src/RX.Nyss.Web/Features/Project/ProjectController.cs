@@ -42,16 +42,6 @@ namespace RX.Nyss.Web.Features.Project
             _projectService.ListProjects(nationalSocietyId, User.Identity.Name, User.GetRoles());
 
         /// <summary>
-        /// Gets a summary of specified project displayed on the dashboard page.
-        /// </summary>
-        /// <param name="projectId">An identifier of a project</param>
-        /// <returns>A summary of specified project</returns>
-        [HttpGet("api/project/{projectId:int}/summary"), NeedsPolicy(Policy.ProjectAccess)]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
-        public Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId) =>
-            _projectService.GetProjectSummary(projectId);
-
-        /// <summary>
         /// Adds a new project for a specified national society.
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>

@@ -13,6 +13,7 @@ import { Loading } from '../common/loading/Loading';
 import { stringKeys, strings } from '../../strings';
 import dayjs from "dayjs"
 import { useMount } from '../../utils/lifecycle';
+import { AreaFilter } from './AreaFilter';
 
 const ProjectDashboardPageComponent = ({ openDashbaord, projectId, isFetching, match, name, projectSummary }) => {
   useMount(() => {
@@ -25,6 +26,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, projectId, isFetching, m
 
   return (
     <Fragment>
+      <AreaFilter />
       <Card>
         <CardContent>
           <Typography variant="h6">

@@ -13,7 +13,7 @@ function* openProjectDashboard({ projectId }) {
   yield put(actions.openDashbaord.request());
   try {
     const project = yield call(openProjectDashboardModule, projectId);
-    const projectSummary = yield call(http.get, `/api/project/${projectId}/summary`);
+    const projectSummary = yield call(http.get, `/api/project/${projectId}/dashboard/summary`);
     yield put(actions.openDashbaord.success(project.name, projectSummary.value));
   } catch (error) {
     yield put(actions.openDashbaord.failure(error.message));

@@ -7,6 +7,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alert.Dto;
+using RX.Nyss.Web.Features.Project.Domain;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -19,13 +20,13 @@ namespace RX.Nyss.Web.Features.Project
     {
         Task<Result<ProjectResponseDto>> GetProject(int projectId);
         Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles);
-        Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId, int? healthRiskId = null, DateTime? startDate = default, DateTime? endDate = default);
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> DeleteProject(int projectId);
         Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
         Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
+        Task<IEnumerable<ProjectHealthRiskName>> GetProjectHealthRiskNames(int projectId);
     }
 
     public class ProjectService : IProjectService
@@ -87,6 +88,19 @@ namespace RX.Nyss.Web.Features.Project
             return result;
         }
 
+        public async Task<IEnumerable<ProjectHealthRiskName>> GetProjectHealthRiskNames(int projectId) =>
+            await _nyssContext.ProjectHealthRisks
+                .Where(ph => ph.Project.Id == projectId)
+                .Select(ph => new ProjectHealthRiskName
+                {
+                    Id = ph.HealthRiskId,
+                    Name = ph.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage.Id == ph.Project.NationalSociety.ContentLanguage.Id)
+                        .Select(lc => lc.Name)
+                        .FirstOrDefault()
+                })
+                .ToListAsync();
+
         public async Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles)
         {
             var minReportDate = _dateTimeProvider.UtcNow.Date.Subtract(TimeSpan.FromDays(28));
@@ -126,57 +140,6 @@ namespace RX.Nyss.Web.Features.Project
             return result;
         }
         
-        public async Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId, int? healthRiskId = null,
-            DateTime? startDate = default, DateTime? endDate = default)
-        {
-            var minReportDate = (startDate ?? _dateTimeProvider.UtcNow).Date.Subtract(TimeSpan.FromDays(28));
-            var dayAfterMaxReportDate = (endDate ?? _dateTimeProvider.UtcNow).Date.AddDays(1);
-
-            var projectDashboardData = await _nyssContext.Projects
-                .Where(p => p.Id == projectId)
-                .Select(p => new ProjectSummaryResponseDto
-                {
-                    StartDate = p.StartDate,
-                    ActiveDataCollectorCount = p.DataCollectors.Count(dc =>
-                        dc.DataCollectorType == DataCollectorType.Human &&
-                        dc.Reports.Any(r => r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate)),
-                    InactiveDataCollectorCount = p.DataCollectors.Count(dc =>
-                        dc.DataCollectorType == DataCollectorType.Human &&
-                        !dc.Reports.Any(r => r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate) &&
-                        dc.CreatedAt < minReportDate && (!dc.DeletedAt.HasValue || dc.DeletedAt >= minReportDate)),
-                    InTrainingDataCollectorCount = p.DataCollectors.Count(dc =>
-                        dc.DataCollectorType == DataCollectorType.Human &&
-                        dc.Reports.Any(r => r.IsTraining && r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate)),
-                    HealthRisks = p.ProjectHealthRisks
-                        .Where(phr => healthRiskId == null || phr.HealthRiskId == healthRiskId)
-                        .Select(phr => new ProjectSummaryResponseDto.HealthRiskStats
-                        {
-                            Id = phr.HealthRiskId,
-                            Name = phr.HealthRisk.LanguageContents
-                                .Where(lc => lc.ContentLanguage.Id == p.NationalSociety.ContentLanguage.Id)
-                                .Select(lc => lc.Name)
-                                .FirstOrDefault(),
-                            TotalReportCount = phr.Reports.Count(),
-                            EscalatedAlertCount = phr.Alerts.Count(a => a.Status == AlertStatus.Escalated),
-                            DismissedAlertCount = phr.Alerts.Count(a => a.Status == AlertStatus.Dismissed)
-                        }),
-                    Supervisors = p.SupervisorUserProjects.Select(su => new ProjectSummaryResponseDto.SupervisorInfo
-                    {
-                        Id = su.SupervisorUser.Id,
-                        Name = su.SupervisorUser.Name,
-                        EmailAddress = su.SupervisorUser.EmailAddress,
-                        PhoneNumber = su.SupervisorUser.PhoneNumber,
-                        AdditionalPhoneNumber = su.SupervisorUser.AdditionalPhoneNumber
-                    }
-                    )
-                })
-                .FirstOrDefaultAsync();
-
-            var result = Success(projectDashboardData);
-
-            return result;
-        }
-
         public async Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto)
         {
             try
