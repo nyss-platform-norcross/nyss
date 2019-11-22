@@ -59,8 +59,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .SingleAsync(dc => dc.Id == dataCollectorId);
 
             var regions = await _nationalSocietyStructureService.GetRegions(dataCollector.Project.NationalSociety.Id);
-            var districts = await _nationalSocietyStructureService.GetDistricts(dataCollector.Village.District.Id);
-            var villages = await _nationalSocietyStructureService.GetVillages(dataCollector.Village.Id);
+            var districts = await _nationalSocietyStructureService.GetDistricts(dataCollector.Village.District.Region.Id);
+            var villages = await _nationalSocietyStructureService.GetVillages(dataCollector.Village.District.Id);
             var zones = await _nationalSocietyStructureService.GetZones(dataCollector.Village.Id);
 
             var dto = new GetDataCollectorResponseDto
