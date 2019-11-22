@@ -7,21 +7,25 @@ import { push } from "connected-react-router";
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
-const BreadcrumbComponent = ({ breadcrumb, push }) => (
-  <Breadcrumbs
-    className={styles.container}
-    separator={<NavigateNextIcon fontSize="small" color="primary" />}>
-    {breadcrumb.map((item, index) => (
-      <div key={`breadcrumbItem${item.url}`} className={`${styles.item} ${item.isActive ? styles.selected : ""}`}>
-        <div
-          onClick={() => index !== breadcrumb.length - 1 ? push(item.url) : null}
-          className={styles.title}>
-          {item.title}
+const BreadcrumbComponent = ({ breadcrumb, push }) => {
+  const breadcrumbVisibleItems = breadcrumb.filter(b => !b.hidden);
+
+  return (
+    <Breadcrumbs
+      className={styles.container}
+      separator={<NavigateNextIcon fontSize="small" color="primary" />}>
+      {breadcrumbVisibleItems.map((item, index) => (
+        <div key={`breadcrumbItem${item.url}`} className={`${styles.item} ${item.isActive ? styles.selected : ""}`}>
+          <div
+            onClick={() => index !== breadcrumbVisibleItems.length - 1 ? push(item.url) : null}
+            className={styles.title}>
+            {item.title}
+          </div>
         </div>
-      </div>
-    ))}
-  </Breadcrumbs>
-);
+      ))}
+    </Breadcrumbs>
+  );
+};
 
 BreadcrumbComponent.propTypes = {
   appReady: PropTypes.bool,

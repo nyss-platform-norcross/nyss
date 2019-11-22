@@ -10,12 +10,14 @@ import { healthRisksSagas } from "../components/healthRisks/logic/healthRisksSag
 import { nationalSocietyUsersSagas } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersSagas";
 import { dataCollectorsSagas } from "../components/dataCollectors/logic/dataCollectorsSagas";
 import { headManagerConsentsSagas } from "../components/headManagerConsents/logic/headManagerConsentsSagas";
+import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
 
 function* rootSaga() {
   yield all([
     ...appSagas(),
     ...authSagas(),
     ...nationalSocietiesSagas(),
+    ...nationalSocietyStructureSagas(),
     ...smsGatewaysSagas(),
     ...projectsSagas(),
     ...globalCoordinatorsSagas(),

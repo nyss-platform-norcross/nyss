@@ -1684,6 +1684,9 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
 
+                    b.Property<int>("BirthGroupDecade")
+                        .HasColumnType("int");
+
                     b.Property<string>("DataCollectorType")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
@@ -1717,9 +1720,6 @@ namespace RX.Nyss.Data.Migrations
                         .HasMaxLength(10);
 
                     b.Property<int>("SupervisorId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BirthGroupDecade")
                         .HasColumnType("int");
 
                     b.Property<int>("VillageId")
@@ -1870,7 +1870,7 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(160)")
                         .HasMaxLength(160);
 
-                    b.Property<int>("HealthRiskId")
+                    b.Property<int?>("HealthRiskId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -2433,9 +2433,9 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.District", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Region", "Region")
-                        .WithMany()
+                        .WithMany("Districts")
                         .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2467,8 +2467,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.HealthRisk", "HealthRisk")
                         .WithMany("LanguageContents")
                         .HasForeignKey("HealthRiskId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Localization", b =>
@@ -2555,7 +2554,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
                         .HasForeignKey("NationalSocietyId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2693,18 +2692,18 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.Village", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.District", "District")
-                        .WithMany()
+                        .WithMany("Villages")
                         .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Zone", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Village", "Village")
-                        .WithMany()
+                        .WithMany("Zones")
                         .HasForeignKey("VillageId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

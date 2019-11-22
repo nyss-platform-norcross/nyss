@@ -27,7 +27,9 @@ namespace RX.Nyss.Web.Features.Authentication
         private readonly INyssContext _nyssContext;
         private readonly IUserIdentityService _userIdentityService;
 
-        public AuthenticationService(IUserIdentityService userIdentityService, INyssContext nyssContext)
+        public AuthenticationService(
+            IUserIdentityService userIdentityService,
+            INyssContext nyssContext)
         {
             _userIdentityService = userIdentityService;
             _nyssContext = nyssContext;

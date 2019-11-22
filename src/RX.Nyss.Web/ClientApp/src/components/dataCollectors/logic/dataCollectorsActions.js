@@ -13,7 +13,7 @@ export const goToEdition = (projectId, dataCollectorId) => push(`/projects/${pro
 export const openList = {
   invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_LIST.INVOKE, projectId }),
   request: () => ({ type: OPEN_DATA_COLLECTORS_LIST.REQUEST }),
-  success: () => ({ type: OPEN_DATA_COLLECTORS_LIST.SUCCESS }),
+  success: (projectId) => ({ type: OPEN_DATA_COLLECTORS_LIST.SUCCESS, projectId }),
   failure: (message) => ({ type: OPEN_DATA_COLLECTORS_LIST.FAILURE, message })
 };
 

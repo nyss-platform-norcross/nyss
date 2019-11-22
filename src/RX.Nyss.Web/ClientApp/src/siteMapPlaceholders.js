@@ -1,4 +1,5 @@
 export const placeholders = {
   topMenu: "topMenu",
-  leftMenu: "leftMenu"
+  leftMenu: "leftMenu",
+  tabMenu: "tabMenu"
 };

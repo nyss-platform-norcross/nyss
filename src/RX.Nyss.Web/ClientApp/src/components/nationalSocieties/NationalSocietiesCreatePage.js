@@ -57,8 +57,6 @@ const NationalSocietiesCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSociety.form.creationTitle)}</Typography>
-
       {props.error &&
         <SnackbarContent
           message={props.error}

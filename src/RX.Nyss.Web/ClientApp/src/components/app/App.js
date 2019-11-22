@@ -38,6 +38,7 @@ import { HeadManagerConsentsPage } from '../headManagerConsents/HeadManagerConse
 import { DataCollectorsListPage } from '../dataCollectors/DataCollectorsListPage';
 import { DataCollectorsCreatePage } from '../dataCollectors/DataCollectorsCreatePage';
 import { DataCollectorsEditPage } from '../dataCollectors/DataCollectorsEditPage';
+import { NationalSocietyStructurePage } from '../nationalSocietyStructure/NationalSocietyStructurePage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -56,7 +57,9 @@ export const App = ({ history }) => (
         <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />
         <AuthRoute exact path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/edit' component={NationalSocietiesEditPage} roles={accessMap.nationalSocieties.edit} />
+        <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/structure' component={NationalSocietyStructurePage} roles={accessMap.nationalSocieties.edit} />
         <Redirect exact from='/nationalsocieties/:nationalSocietyId' to='/nationalsocieties/:nationalSocietyId/dashboard' />
+        <Redirect exact from='/nationalsocieties/:nationalSocietyId/settings' to='/nationalsocieties/:nationalSocietyId/overview' />
 
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways' component={SmsGatewaysListPage} roles={accessMap.smsGateways.list} />
         <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />

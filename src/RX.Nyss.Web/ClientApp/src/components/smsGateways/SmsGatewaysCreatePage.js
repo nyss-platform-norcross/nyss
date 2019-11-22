@@ -56,8 +56,6 @@ const SmsGatewaysCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.smsGateway.form.creationTitle)}</Typography>
-
       {props.error &&
         <SnackbarContent
           message={props.error}

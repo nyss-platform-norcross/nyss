@@ -20,18 +20,16 @@ const NationalSocietyUsersListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.title)}</Typography>
-
       <TableActions>
           <Box mr={2}>
             <Button onClick={() => props.goToAddExisting(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
                 {strings(stringKeys.nationalSocietyUser.addExisting)}
-            </Button>   
+            </Button>
           </Box>
 
           <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
             {strings(stringKeys.nationalSocietyUser.addNew)}
-          </Button>      
+          </Button>
       </TableActions>
 
       <NationalSocietyUsersTable

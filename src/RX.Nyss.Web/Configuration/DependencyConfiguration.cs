@@ -161,6 +161,18 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.HeadManagerAccess.ToString(),
                     policy => policy.Requirements.Add(new HeadManagerAccessHandlerRequirement()));
+
+                options.AddPolicy(Policy.RegionAccess.ToString(),
+                    policy => policy.Requirements.Add(new RegionAccessRequirement()));
+
+                options.AddPolicy(Policy.DistrictAccess.ToString(),
+                    policy => policy.Requirements.Add(new DistrictAccessRequirement()));
+
+                options.AddPolicy(Policy.VillageAccess.ToString(),
+                    policy => policy.Requirements.Add(new VillageAccessRequirement()));
+
+                options.AddPolicy(Policy.ZoneAccess.ToString(),
+                    policy => policy.Requirements.Add(new ZoneAccessRequirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
@@ -172,6 +184,10 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, DataCollectorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, HeadManagerAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ProjectAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, RegionAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, DistrictAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, VillageAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, ZoneAccessHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

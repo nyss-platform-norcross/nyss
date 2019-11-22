@@ -98,6 +98,11 @@
                 public const string NotAMemberOfSociety = "nationalSociety.setHead.notAMemberOfSociety";
                 public const string NotApplicableUserRole = "nationalSociety.setHead.notApplicableUserRole";
             }
+
+            public static class Structure
+            {
+                public const string ItemAlreadyExists = "nationalSociety.structure.itemAlreadyExists";
+            }
         }
 
         public static class HealthRisk
@@ -124,7 +129,13 @@
         }
 
         public const string UnexpectedError = "error.unexpected";
-        
+
+        public class SqlExceptions
+        {
+            public const string GeneralError = "error.sql.general";
+            public const string ForeignKeyViolation = "error.sql.foreignKeyViolation";
+        }
+
         public static class DataCollector
         {
             public const string CreateSuccess = "dataCollector.create.success";

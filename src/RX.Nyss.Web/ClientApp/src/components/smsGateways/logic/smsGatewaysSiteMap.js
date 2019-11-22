@@ -4,12 +4,13 @@ import { strings, stringKeys } from "../../../strings";
 
 export const smsGatewaysSiteMap = [
   {
-    parentPath: "/nationalsocieties/:nationalSocietyId",
+    parentPath: "/nationalsocieties/:nationalSocietyId/settings",
     path: "/nationalsocieties/:nationalSocietyId/smsgateways",
     title: () => strings(stringKeys.smsGateway.title),
-    placeholder: placeholders.leftMenu,
+    placeholder: placeholders.tabMenu,
     access: accessMap.smsGateways.list,
-    placeholderIndex: 3
+    placeholderIndex: 2,
+    middleStepOnly: true
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/smsgateways",

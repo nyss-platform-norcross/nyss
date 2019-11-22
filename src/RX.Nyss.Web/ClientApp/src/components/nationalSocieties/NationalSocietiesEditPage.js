@@ -70,8 +70,6 @@ const NationalSocietiesEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSociety.form.editionTitle)}</Typography>
-
       <Form onSubmit={handleSubmit}>
         {props.loginResponse &&
           <SnackbarContent

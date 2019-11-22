@@ -55,8 +55,6 @@ const GlobalCoordinatorsCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.globalCoordinator.form.creationTitle)}</Typography>
-
       {props.error &&
         <SnackbarContent
           message={props.error}

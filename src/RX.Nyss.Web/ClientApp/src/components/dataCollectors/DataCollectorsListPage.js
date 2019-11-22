@@ -19,8 +19,6 @@ const DataCollectorsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.dataCollector.title)}</Typography>
-
       <TableActions>
         <Button onClick={() => props.goToCreation(props.projectId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.dataCollector.addNew)}

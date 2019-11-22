@@ -47,8 +47,6 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSocietyUser.form.addExistingTitle)}</Typography>
-
       {props.error &&
         <SnackbarContent
           message={props.error}

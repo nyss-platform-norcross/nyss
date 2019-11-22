@@ -21,8 +21,6 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSociety.title)}</Typography>
-
       <TableActions>
         <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.nationalSociety.addNew)}

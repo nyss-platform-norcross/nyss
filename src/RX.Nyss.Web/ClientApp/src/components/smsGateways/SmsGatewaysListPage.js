@@ -19,8 +19,6 @@ const SmsGatewaysListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.smsGateway.title)}</Typography>
-
       <TableActions>
         <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.smsGateway.addNew)}

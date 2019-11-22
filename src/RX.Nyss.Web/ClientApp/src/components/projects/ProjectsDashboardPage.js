@@ -24,8 +24,6 @@ const ProjectsDashboardPageComponent = ({ openDashbaord, projectId, isFetching, 
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.project.dashboard.title)} - {name}</Typography>
-
       <Card key={{ id: "projectdashboard1" }.id}>
         <CardContent>
           <Typography variant="h3" gutterBottom>

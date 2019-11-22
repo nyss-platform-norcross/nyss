@@ -39,12 +39,15 @@ export const getBreadcrumb = (path, siteMapParameters) => {
   let hierarchy = [];
 
   while (true) {
-    if (!currentItem.access || !currentItem.access.length || currentItem.access.some(role => role === authUser.role)) {
+    const hasAccess = !currentItem.access || !currentItem.access.length || currentItem.access.some(role => role === authUser.role);
+
+    if (hasAccess) {
       hierarchy.splice(0, 0, {
         title: getTitle(currentItem.title(), siteMapParameters),
         url: getUrl(currentItem.path, siteMapParameters),
         isActive: currentItem.path === path,
-        siteMapData: { ...currentItem }
+        siteMapData: { ...currentItem },
+        hidden: hierarchy.length === 0 && currentItem.middleStepOnly
       });
     }
 

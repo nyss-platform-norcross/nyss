@@ -19,7 +19,6 @@ const NationalSocietiesDashboardPageComponent = ({ openDashbaord, isFetching, ma
 
   return (
     <Fragment>
-      <Typography variant="h2">{strings(stringKeys.nationalSociety.dashboard.title)} - {name}</Typography>
     </Fragment>
   );
 }
