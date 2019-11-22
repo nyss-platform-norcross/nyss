@@ -8,14 +8,14 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
-import TablePagination from '@material-ui/core/TablePagination';
 import  TableFooter  from '@material-ui/core/TableFooter';
 import dayjs from "dayjs";
+import TablePager from '../common/tablePagination/TablePager';
 
 export const ReportsTable = ({ isListFetching, list, projectId, getList, page, rowsPerPage, totalRows }) => {
 
   const onChangePage = (event, page) => {
-    getList(projectId, page + 1);
+    getList(projectId, page);
   };
 
   const dashIfEmpty = (text) => {
@@ -67,11 +67,12 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
         ))}
       </TableBody>
 
-      <TableFooter>
+      <TableFooter>    
         <TableRow>
-          <TablePagination count={totalRows} rowsPerPage={rowsPerPage} page={page - 1} onChangePage={onChangePage} />
-        </TableRow>
-      </TableFooter>
+          <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />                     
+        </TableRow>       
+      </TableFooter>    
+
     </Table>
   );
 }
