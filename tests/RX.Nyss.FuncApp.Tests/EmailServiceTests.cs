@@ -1,6 +1,4 @@
-using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using RX.Nyss.FuncApp.Configuration;
@@ -21,7 +19,7 @@ namespace RX.Nyss.FuncApp.Tests
         {
             _loggerMock = Substitute.For<ILogger<EmailService>>();
             _configurationMock = Substitute.For<INyssFuncAppConfig>();
-            _configurationMock.MailjetConfig = new Config.MailjetConfigOptions();
+            _configurationMock.MailjetConfig = new NyssFuncAppConfig.MailjetConfigOptions();
             _mailjetEmailClientMock = Substitute.For<IMailjetEmailClient>();
             _emailService = new EmailService(
                 _loggerMock, 

@@ -3,7 +3,7 @@ using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Data
 {
-    public class NyssContext : DbContext, INyssContext
+    public class NyssContext : DbContext, INyssContext, INyssReportContext
     {
         public NyssContext(DbContextOptions<NyssContext> options)
             : base(options)

@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using RX.Nyss.ReportApi.Utils.Logging;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using RX.Nyss.ReportApi.Services;
 
 namespace RX.Nyss.ReportApi.Controllers
 {
@@ -7,17 +8,15 @@ namespace RX.Nyss.ReportApi.Controllers
     [Route("api/[controller]")]
     public class ReportController : ControllerBase
     {
-        private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IReportService _reportService;
 
-        public ReportController(ILoggerAdapter loggerAdapter)
+        public ReportController(IReportService reportService)
         {
-            _loggerAdapter = loggerAdapter;
+            _reportService = reportService;
         }
 
         [HttpPost]
-        public void Post([FromForm] string text)
-        {
-            _loggerAdapter.Debug("Received form:" + text);
-        }
+        public async Task<IActionResult> Post(string sms) =>
+            await _reportService.ReceiveSms(sms) ? (StatusCodeResult) new OkResult() : new BadRequestResult();
     }
 }

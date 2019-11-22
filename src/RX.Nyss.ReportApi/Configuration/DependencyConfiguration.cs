@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Data;
+using RX.Nyss.ReportApi.Handlers;
 using RX.Nyss.ReportApi.Utils.Logging;
 using Serilog;
 
@@ -87,6 +88,8 @@ namespace RX.Nyss.ReportApi.Configuration
         private static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssReportApiConfig nyssReportApiConfig)
         {
             serviceCollection.AddSingleton<INyssReportApiConfig>(nyssReportApiConfig);
+            serviceCollection.AddScoped<ISmsHandler, SmsEagleHandler>();
+            serviceCollection.AddScoped<INyssReportContext, NyssContext>();
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 
