@@ -129,7 +129,13 @@
         }
 
         public const string UnexpectedError = "error.unexpected";
-        
+
+        public class SqlExceptions
+        {
+            public const string GeneralError = "error.sql.general";
+            public const string ForeignKeyViolation = "error.sql.foreignKeyViolation";
+        }
+
         public static class DataCollector
         {
             public const string CreateSuccess = "dataCollector.create.success";
