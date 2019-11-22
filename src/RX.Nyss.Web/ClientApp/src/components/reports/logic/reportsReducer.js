@@ -9,13 +9,13 @@ export function reportsReducer(state = initialState.reports, action) {
       return { ...state, formData: null }
 
     case actions.GET_REPORTS.REQUEST:
-      return { ...state, listFetching: true, paginatedListData: null };
+      return { ...state, listFetching: true };
 
     case actions.GET_REPORTS.SUCCESS:
       return { ...state, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows} };
 
     case actions.GET_REPORTS.FAILURE:
-      return { ...state, listFetching: false };
+      return { ...state, listFetching: false, paginatedListData: null };
 
     default:
       return state;

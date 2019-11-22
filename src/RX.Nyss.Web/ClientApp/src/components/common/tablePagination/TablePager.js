@@ -6,6 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import Grid from "@material-ui/core/Grid";
 
 export const TablePager = (props) => {
   
@@ -33,12 +34,18 @@ export const TablePager = (props) => {
     };
 
     return (
-      <TableCell colSpan={1000} align="right">  
+      <Grid
+        container
+        direction="row"
+        justify="flex-end"
+        alignItems="center"
+        className={styles.pager}
+      >  
         <IconButton onClick={handleBackButtonClick} disabled={page === 1} aria-label="previous page">
           <KeyboardArrowLeft />
         </IconButton>
         
-        <Select className={`${styles.dropDown}`} onChange={handlePageSelect}  value={page} style={{ width: "50px", "textAlign":"center" }} >
+        <Select className={`${styles.dropDown}`} onChange={handlePageSelect}  value={page}>
           {pagesRange(rowsPerPage, totalRows).map(page => ( <MenuItem value={page} key={page}>{page}</MenuItem> ) ) }
         </Select>
         
@@ -48,7 +55,7 @@ export const TablePager = (props) => {
           aria-label="next page">
            <KeyboardArrowRight />
         </IconButton>
-      </TableCell>
+      </Grid>
     );
 };
 
