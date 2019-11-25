@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
@@ -15,6 +16,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto);
         Task<IList<ReportByDateResponseDto>> GetReportsGroupedByDate(int projectId, FiltersRequestDto filtersDto);
         Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(int projectId, FiltersRequestDto filtersDto);
+        Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto);
     }
 
     public class ProjectDashboardDataService : IProjectDashboardDataService
@@ -69,6 +71,21 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
             // TODO: add grouping by EpiWeek when the reports flow is done
             return await GroupReportsByFeaturesAndDay(reports, filtersDto.StartDate.Date, filtersDto.EndDate.Date);
+        }
+
+        public async Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto)
+        {
+            var reports = GetFilteredReports(projectId, filtersDto);
+
+            var groupedByLocation = (await reports.ToListAsync()) // ToDo: We can't group by location unless we have it in memory, maybe find a more elegant solution
+                .GroupBy(x => x.Location).Select(x =>
+                new ProjectSummaryMapResponseDto
+                {
+                    ReportsCount = x.Count(), Location = new ProjectSummaryMapResponseDto.MapReportLocation { Latitude = x.Key.X, Longitude = x.Key.Y }
+                }
+            );
+
+            return groupedByLocation;
         }
 
         private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
