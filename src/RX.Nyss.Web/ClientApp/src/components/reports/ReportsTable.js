@@ -51,7 +51,7 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
           {list.map(row => (
             <TableRow key={row.id} hover className={styles.clickableRow}>
               <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD')}</TableCell>
-              <TableCell>{dayjs(row.dateTime).format('hh:mm')}</TableCell>
+              <TableCell>{dayjs(row.dateTime).format('HH:mm')}</TableCell>
               <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
               <TableCell>{getSuccessText(row.isValid)}</TableCell>
               <TableCell>{row.region}, {row.district}, {row.village}{row.zone ? ',' : null} {row.zone}</TableCell>
