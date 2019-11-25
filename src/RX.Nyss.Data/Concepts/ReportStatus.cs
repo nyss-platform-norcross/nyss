@@ -2,6 +2,7 @@
 {
     public enum ReportStatus
     {
+        Unknown,
         Pending,
         Removed,
         Rejected,

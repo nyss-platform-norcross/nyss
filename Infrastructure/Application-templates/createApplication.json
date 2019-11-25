@@ -458,11 +458,27 @@
       },
       "resources": [
         {
-          "name": "[concat('default/', variables('smsGatewayBlobContainerName'))]",
-          "type": "blobServices/containers",
+          "name": "default",
+          "type": "blobServices",
           "apiVersion": "2018-07-01",
+          "properties": {
+            "deleteRetentionPolicy": {
+              "enabled": true,
+              "days": 30
+            }
+          },
           "dependsOn": [
             "[concat('Microsoft.Storage/storageAccounts/', variables('funcStorageAccountName'))]"
+          ],
+          "resources": [
+            {
+              "name": "[variables('smsGatewayBlobContainerName')]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('funcStorageAccountName'))]"
+              ]
+            }
           ]
         }
       ]
@@ -487,11 +503,27 @@
       },
       "resources": [
         {
-          "name": "[concat('default/', variables('generalBlobContainerName'))]",
-          "type": "blobServices/containers",
+          "name": "default",
+          "type": "blobServices",
           "apiVersion": "2018-07-01",
+          "properties": {
+            "deleteRetentionPolicy": {
+              "enabled": true,
+              "days": 30
+            }
+          },
           "dependsOn": [
             "[concat('Microsoft.Storage/storageAccounts/', variables('generalStorageAccountName'))]"
+          ],
+          "resources": [
+            {
+              "name": "[variables('generalBlobContainerName')]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('generalStorageAccountName'))]"
+              ]
+            }
           ]
         }
       ]

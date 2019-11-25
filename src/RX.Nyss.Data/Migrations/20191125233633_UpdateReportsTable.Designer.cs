@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20191125233633_UpdateReportsTable")]
+    partial class UpdateReportsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,20 +161,6 @@ namespace RX.Nyss.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ApplicationLanguages");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DisplayName = "English",
-                            LanguageCode = "en"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DisplayName = "Français",
-                            LanguageCode = "fr"
-                        });
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.ContentLanguage", b =>
@@ -203,13 +191,13 @@ namespace RX.Nyss.Data.Migrations
                         {
                             Id = 1,
                             DisplayName = "English",
-                            LanguageCode = "en"
+                            LanguageCode = "EN"
                         },
                         new
                         {
                             Id = 2,
                             DisplayName = "Français",
-                            LanguageCode = "fr"
+                            LanguageCode = "FR"
                         });
                 });
 
@@ -2321,7 +2309,6 @@ namespace RX.Nyss.Data.Migrations
                         new
                         {
                             Id = 1,
-                            ApplicationLanguageId = 1,
                             EmailAddress = "admin@domain.com",
                             IdentityUserId = "9c1071c1-fa69-432a-9cd0-2c4baa703a67",
                             IsFirstLogin = false,
@@ -2451,9 +2438,9 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.District", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Region", "Region")
-                        .WithMany("Districts")
+                        .WithMany()
                         .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -2572,7 +2559,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
                         .HasForeignKey("NationalSocietyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -2708,18 +2695,18 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.Village", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.District", "District")
-                        .WithMany("Villages")
+                        .WithMany()
                         .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Zone", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Village", "Village")
-                        .WithMany("Zones")
+                        .WithMany()
                         .HasForeignKey("VillageId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

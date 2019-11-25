@@ -2,6 +2,7 @@
 {
     public enum ReportType
     {
+        Unknown,
         Single,
         Aggregate,
         Activity,

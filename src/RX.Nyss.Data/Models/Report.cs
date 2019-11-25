@@ -13,7 +13,7 @@ namespace RX.Nyss.Data.Models
         
         public string RawContent { get; set; }
         
-        public DateTime ReceivedAt { get; set; }
+        public DateTime? ReceivedAt { get; set; }
         
         public bool IsValid { get; set; }
         
@@ -25,7 +25,7 @@ namespace RX.Nyss.Data.Models
 
         public ReportStatus Status { get; set; }
 
-        public bool IsTraining { get; set; }
+        public bool? IsTraining { get; set; }
 
         public Point Location { get; set; }
 
