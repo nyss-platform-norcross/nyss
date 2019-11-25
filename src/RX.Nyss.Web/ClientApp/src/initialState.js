@@ -36,6 +36,7 @@ export const initialState = {
     structureFetching: false,
     dashboard: {
       name: null,
+      filters: null,
       isFetching: false
     }
   },
@@ -74,7 +75,10 @@ export const initialState = {
   projectDashboard: {
     name: null,
     projectSummary: null,
-    isFetching: false
+    isFetching: false,
+    filtersData: {
+      healthRisks: []
+    }
   },
   globalCoordinators: {
     listFetching: false,

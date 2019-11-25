@@ -16,8 +16,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 {
     public interface IProjectDashboardService
     {
-        Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId, int? healthRiskId = null, DateTime? startDate = default, DateTime? endDate = default);
         Task<Result<ProjectDashboardFiltersResponseDto>> GetDashboardFiltersData(int projectId);
+        Task<Result<ProjectDashboardResponseDto>> GetDashboardData(int projectId, FiltersRequestDto filtersDto);
     }
 
     public class ProjectDashboardService : IProjectDashboardService
@@ -69,17 +69,30 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             return Success(dto);
         }
 
-        public async Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId, int? healthRiskId = null,
-            DateTime? startDate = default, DateTime? endDate = default)
+        public async Task<Result<ProjectDashboardResponseDto>> GetDashboardData(int projectId, FiltersRequestDto filtersDto)
         {
-            var minReportDate = (startDate ?? _dateTimeProvider.UtcNow).Date.Subtract(TimeSpan.FromDays(28));
-            var dayAfterMaxReportDate = (endDate ?? _dateTimeProvider.UtcNow).Date.AddDays(1);
+            var dashboardDataDto = new ProjectDashboardResponseDto
+            {
+                Summary = await GetSummaryData(projectId, filtersDto)
+            };
 
-            var projectDashboardData = await _nyssContext.Projects
-                .Where(p => p.Id == projectId)
+            return Success(dashboardDataDto);
+        }
+
+        private async Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto)
+        {
+            var minReportDate = (filtersDto.StartDate ?? _dateTimeProvider.UtcNow).Date.Subtract(TimeSpan.FromDays(28));
+            var dayAfterMaxReportDate = (filtersDto.EndDate ?? _dateTimeProvider.UtcNow).Date.AddDays(1);
+
+            return await _nyssContext.ProjectHealthRisks
+                .Where(ph => ph.Project.Id == projectId && (!filtersDto.HealthRiskId.HasValue || ph.HealthRiskId == filtersDto.HealthRiskId.Value))
+                .Select(ph => ph.Project)
                 .Select(p => new ProjectSummaryResponseDto
                 {
-                    StartDate = p.StartDate,
+                    ReportCount = p.DataCollectors
+                        .Where(dc => dc.CreatedAt < minReportDate && (!dc.DeletedAt.HasValue || dc.DeletedAt >= minReportDate))
+                        .SelectMany(d => d.Reports)
+                        .Count(r => r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate),
                     ActiveDataCollectorCount = p.DataCollectors.Count(dc =>
                         dc.DataCollectorType == DataCollectorType.Human &&
                         dc.Reports.Any(r => r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate)),
@@ -90,34 +103,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     InTrainingDataCollectorCount = p.DataCollectors.Count(dc =>
                         dc.DataCollectorType == DataCollectorType.Human &&
                         dc.Reports.Any(r => r.IsTraining && r.ReceivedAt >= minReportDate && r.ReceivedAt < dayAfterMaxReportDate)),
-                    HealthRisks = p.ProjectHealthRisks
-                        .Where(phr => healthRiskId == null || phr.HealthRiskId == healthRiskId)
-                        .Select(phr => new ProjectSummaryResponseDto.HealthRiskStats
-                        {
-                            Id = phr.HealthRiskId,
-                            Name = phr.HealthRisk.LanguageContents
-                                .Where(lc => lc.ContentLanguage.Id == p.NationalSociety.ContentLanguage.Id)
-                                .Select(lc => lc.Name)
-                                .FirstOrDefault(),
-                            TotalReportCount = phr.Reports.Count(),
-                            EscalatedAlertCount = phr.Alerts.Count(a => a.Status == AlertStatus.Escalated),
-                            DismissedAlertCount = phr.Alerts.Count(a => a.Status == AlertStatus.Dismissed)
-                        }),
-                    Supervisors = p.SupervisorUserProjects.Select(su => new ProjectSummaryResponseDto.SupervisorInfo
-                    {
-                        Id = su.SupervisorUser.Id,
-                        Name = su.SupervisorUser.Name,
-                        EmailAddress = su.SupervisorUser.EmailAddress,
-                        PhoneNumber = su.SupervisorUser.PhoneNumber,
-                        AdditionalPhoneNumber = su.SupervisorUser.AdditionalPhoneNumber
-                    }
-                    )
                 })
                 .FirstOrDefaultAsync();
-
-            var result = Success(projectDashboardData);
-
-            return result;
         }
+
     }
 }

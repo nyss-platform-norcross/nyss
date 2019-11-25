@@ -11,9 +11,18 @@ export function projectDashboardReducer(state = initialState.projectDashboard, a
       return { ...state, isFetching: true };
 
     case actions.OPEN_PROJECT_DASHBOARD.SUCCESS:
-      return { ...state, name: action.name, projectSummary: action.projectSummary, isFetching: false };
+      return { ...state, name: action.name, filtersData: action.filtersData, isFetching: false };
 
     case actions.OPEN_PROJECT_DASHBOARD.FAILURE:
+      return { ...state, isFetching: false };
+
+    case actions.GET_PROJECT_DASHBOARD_DATA.REQUEST:
+      return { ...state, isFetching: true };
+
+    case actions.GET_PROJECT_DASHBOARD_DATA.SUCCESS:
+      return { ...state, name: action.name, projectSummary: action.summary, isFetching: false };
+
+    case actions.GET_PROJECT_DASHBOARD_DATA.FAILURE:
       return { ...state, isFetching: false };
 
     default:

@@ -157,13 +157,13 @@ export const stringKeys = {
     },
     dashboard: {
       title: "project.dashboard.title",
+      numbers: {
+        totalReportCount: "project.dashboard.totalReportCount"
+      },
       activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
       inactiveDataCollectorCount: "project.dashboard.inactiveDataCollectorCount",
       inTrainingDataCollectorCount: "project.dashboard.inTrainingDataCollectorCount",
       startDate: "project.dashboard.startDate",
-      totalReportCount: "project.dashboard.totalReportCount",
-      escalatedAlertCount: "project.dashboard.escalatedAlertCount",
-      dismissedAlertCount: "project.dashboard.dismissedAlertCount",
       dataCollectors: "project.dashboard.dataCollectors",
       healthRisks: "project.dashboard.healthRisks",
       supervisors: "project.dashboard.supervisors",

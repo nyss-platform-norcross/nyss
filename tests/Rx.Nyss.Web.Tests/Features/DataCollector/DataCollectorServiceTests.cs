@@ -257,7 +257,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         [Fact]
         public void GetDataCollector_WhenDataCollectorDoesNotExist_ShouldThrowException()
         {
-            await Should.ThrowAsync<Exception>(() => _dataCollectorService.GetDataCollector(3));
+            Should.ThrowAsync<Exception>(() => _dataCollectorService.GetDataCollector(3));
         }
 
         [Fact]

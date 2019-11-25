@@ -32,9 +32,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
         /// <returns>A summary of specified project</returns>
-        [HttpGet("api/project/{projectId:int}/dashboard/summary"), NeedsPolicy(Policy.ProjectAccess)]
+        [HttpPost("api/project/{projectId:int}/dashboard/data"), NeedsPolicy(Policy.ProjectAccess)]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
-        public Task<Result<ProjectSummaryResponseDto>> GetProjectSummary(int projectId) =>
-            _projectDashboardService.GetProjectSummary(projectId);
+        public Task<Result<ProjectDashboardResponseDto>> GetData(int projectId, [FromBody]FiltersRequestDto dto) =>
+            _projectDashboardService.GetDashboardData(projectId, dto);
     }
 }

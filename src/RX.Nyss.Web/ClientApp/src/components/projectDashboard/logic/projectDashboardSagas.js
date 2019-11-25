@@ -6,17 +6,31 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 
 export const projectDashboardSagas = () => [
-  takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard)
+  takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard),
+  takeEvery(consts.GET_PROJECT_DASHBOARD_DATA.INVOKE, getProjectDashboardData)
 ];
 
 function* openProjectDashboard({ projectId }) {
   yield put(actions.openDashbaord.request());
   try {
     const project = yield call(openProjectDashboardModule, projectId);
-    const projectSummary = yield call(http.get, `/api/project/${projectId}/dashboard/summary`);
-    yield put(actions.openDashbaord.success(project.name, projectSummary.value));
+    const filtersData = yield call(http.get, `/api/project/${projectId}/dashboard/filters`);
+
+    yield call(getProjectDashboardData, { projectId, filters: null })
+
+    yield put(actions.openDashbaord.success(project.name, filtersData.value));
   } catch (error) {
     yield put(actions.openDashbaord.failure(error.message));
+  }
+};
+
+function* getProjectDashboardData({ projectId, filters }) {
+  yield put(actions.getDashboardData.request());
+  try {
+    const response = yield call(http.post, `/api/project/${projectId}/dashboard/data`, filters);
+    yield put(actions.getDashboardData.success(response.value.summary));
+  } catch (error) {
+    yield put(actions.getDashboardData.failure(error.message));
   }
 };
 
