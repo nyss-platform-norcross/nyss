@@ -1,5 +1,5 @@
 import styles from '../common/table/Table.module.scss';
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,7 +8,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
-import TableFooter from '@material-ui/core/TableFooter';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 
@@ -37,19 +36,19 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
             <TableCell style={{ width: "6%", "minWidth": "100px" }}>{strings(stringKeys.reports.list.date)}</TableCell>
             <TableCell style={{ width: "5%" }}>{strings(stringKeys.reports.list.time)}</TableCell>
             <TableCell style={{ width: "10%" }}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
-            <TableCell style={{ width: "6%" }}>{strings(stringKeys.reports.list.status)}</TableCell>
+            <TableCell style={{ width: "7%" }}>{strings(stringKeys.reports.list.status)}</TableCell>
             <TableCell style={{ width: "18%", "minWidth": "250px" }}>{strings(stringKeys.reports.list.location)}</TableCell>
-            <TableCell style={{ width: "14%", "minWidth": "200px" }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-            <TableCell style={{ width: "11%" }}>{strings(stringKeys.reports.list.dataCollectorPhoneNumber)}</TableCell>
-            <TableCell style={{ width: "5%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
-            <TableCell style={{ width: "5%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
-            <TableCell style={{ width: "5%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
-            <TableCell style={{ width: "5%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
+            <TableCell style={{ width: "6%", "minWidth": "200px" }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
+            <TableCell style={{ width: "12%" }}>{strings(stringKeys.reports.list.dataCollectorPhoneNumber)}</TableCell>
+            <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
+            <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
+            <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
+            <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={row.id} hover className={styles.clickableRow}>
+            <TableRow key={row.id} hover>
               <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD')}</TableCell>
               <TableCell>{dayjs(row.dateTime).format('HH:mm')}</TableCell>
               <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>

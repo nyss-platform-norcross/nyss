@@ -1,13 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as reportsActions from './logic/reportsActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Typography from '@material-ui/core/Typography';
 import ReportsTable from './ReportsTable';
 import { useMount } from '../../utils/lifecycle';
-import { strings, stringKeys } from '../../strings';
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {
@@ -19,19 +17,15 @@ const ReportsListPageComponent = (props) => {
   }
 
   return (
-    <Fragment>
-      <Typography variant="h2">{strings(stringKeys.reports.list.title)}</Typography>
-     
-      <ReportsTable
-        list={props.data.data}
-        isListFetching={props.isListFetching}
-        getList={props.getList}
-        projectId={props.projectId}
-        page={props.data.page}
-        totalRows={props.data.totalRows}
-        rowsPerPage={props.data.rowsPerPage}
-      />
-    </Fragment>
+    <ReportsTable
+      list={props.data.data}
+      isListFetching={props.isListFetching}
+      getList={props.getList}
+      projectId={props.projectId}
+      page={props.data.page}
+      totalRows={props.data.totalRows}
+      rowsPerPage={props.data.rowsPerPage}
+    />
   );
 }
 
@@ -50,7 +44,7 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openReportsList: reportsActions.openList.invoke,
-  getList: reportsActions.getList.invoke      
+  getList: reportsActions.getList.invoke
 };
 
 export const ReportsListPage = useLayout(

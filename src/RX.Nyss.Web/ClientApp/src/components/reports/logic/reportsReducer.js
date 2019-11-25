@@ -1,6 +1,5 @@
 import * as actions from "./reportsConstants";
 import { initialState } from "../../../initialState";
-import { setProperty } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";
 
 export function reportsReducer(state = initialState.reports, action) {
