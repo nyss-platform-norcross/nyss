@@ -39,6 +39,7 @@ import { DataCollectorsListPage } from '../dataCollectors/DataCollectorsListPage
 import { DataCollectorsCreatePage } from '../dataCollectors/DataCollectorsCreatePage';
 import { DataCollectorsEditPage } from '../dataCollectors/DataCollectorsEditPage';
 import { NationalSocietyStructurePage } from '../nationalSocietyStructure/NationalSocietyStructurePage';
+import { ReportsListPage } from '../reports/ReportsListPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -87,6 +88,8 @@ export const App = ({ history }) => (
         <AuthRoute exact path='/projects/:projectId/datacollectors' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
         <AuthRoute exact path='/projects/:projectId/datacollectors/add' component={DataCollectorsCreatePage} roles={accessMap.dataCollectors.add} />
         <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
+
+        <AuthRoute exact path='/projects/:projectId/reports' component={ReportsListPage} roles={accessMap.reports.list} />
       </Switch>
     </ConnectedRouter>
   </ThemeProvider>

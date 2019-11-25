@@ -257,6 +257,28 @@ export const stringKeys = {
       }
     }
   },
+  reports: {
+    list: {
+      title: "reports.list.title",
+      date: "reports.list.date",
+      time: "reports.list.time",
+      healthRisk: "reports.list.healthRisk",
+      status: "reports.list.status",
+      region: "reports.list.region",
+      district: "reports.list.district",
+      village: "reports.list.village",
+      location: "reports.list.location",
+      zone: "reports.list.zone",
+      dataCollectorDisplayName: "reports.list.dataCollectorDisplayName",
+      dataCollectorPhoneNumber: "reports.list.dataCollectorPhoneNumber",
+      malesBelowFive: "reports.list.malesBelowFive",
+      malesAtLeastFive: "reports.list.malesAtLeastFive",
+      femalesBelowFive: "reports.list.femalesBelowFive",
+      femalesAtLeastFive: "reports.list.femalesAtLeastFive",
+      success: "reports.list.success",
+      error: "reports.list.error",       
+    },
+  },
   form: {
     cancel: "form.cancel",
     inlineSave: "form.inlineSave"

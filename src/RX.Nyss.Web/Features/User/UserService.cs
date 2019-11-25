@@ -22,6 +22,7 @@ namespace RX.Nyss.Web.Features.User
         Task<bool> IsHeadManagerToNationalSociety(string identityName, int nationalSocietyId);
         Task<Result> AddExisting(int nationalSocietyId, string userEmail);
         Task<bool> HasUserAccessToNationalSociety(int nationalSocietyId, string identityName);
+        Task<string> GetUserApplicationLanguageCode(string userIdentityName);
     }
 
     public class UserService : IUserService
@@ -145,6 +146,12 @@ namespace RX.Nyss.Web.Features.User
             await _dataContext.SaveChangesAsync();
             return Success();
         }
+
+        public async Task<string> GetUserApplicationLanguageCode(string userIdentityName) =>
+            await _dataContext.Users
+                .Where(u => u.EmailAddress == userIdentityName)
+                .Select(u => u.ApplicationLanguage.LanguageCode)
+                .SingleAsync();
     }
 }
 

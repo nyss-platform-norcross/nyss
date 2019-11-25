@@ -76,6 +76,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
         {
             // Arrange
             const int existingProjectId = 2;
+            const int healthRiskId = 1;
 
             var project = new[]
             {
@@ -83,6 +84,13 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 {
                     Id = 1,
                     NationalSocietyId = 1,
+                    NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                    {
+                        ContentLanguage = new ContentLanguage
+                        {
+                            Id = 2
+                        }
+                    },
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
                     AlertRecipients = new List<AlertRecipient>()
                 },
@@ -132,7 +140,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             },
                             Reports = new[]
                             {
-                                new Report()
+                                new RX.Nyss.Data.Models.Report()
                             }
                         }
                     },
@@ -150,6 +158,10 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
+            var healthRisks = new RX.Nyss.Data.Models.HealthRisk[0]  ;
+            var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
+
             // Act
             var result = await _projectService.GetProject(existingProjectId);
 
@@ -157,7 +169,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.IsSuccess.ShouldBeTrue();
             result.Value.Id.ShouldBe(existingProjectId);
             result.Value.Name.ShouldBe("Name");
-            result.Value.TimeZone.ShouldBe("Time Zone");
+            result.Value.TimeZoneId.ShouldBe("Time Zone");
             result.Value.State.ShouldBe(ProjectState.Open);
             result.Value.ProjectHealthRisks.Count().ShouldBe(1);
             result.Value.ProjectHealthRisks.ElementAt(0).Id.ShouldBe(1);
@@ -186,7 +198,11 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                 {
                     Id = 1,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
-                    AlertRecipients = new List<AlertRecipient>()
+                    AlertRecipients = new List<AlertRecipient>(),
+                    NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                    {
+                        ContentLanguage = new ContentLanguage { Id = 1 }
+                    }
                 }
             };
 
@@ -246,7 +262,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectRequestDto = new ProjectRequestDto
             {
                 Name = "New Project",
-                TimeZone = "Time Zone",
+                TimeZoneId = "Time Zone",
                 HealthRisks = new[]
                 {
                     new ProjectHealthRiskRequestDto
@@ -302,7 +318,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
             
-            var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZone = "Time Zone" };
+            var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZoneId = "Time Zone" };
 
             // Act
             var result = await _projectService.AddProject(nonExistentNationalSocietyId, projectRequestDto);
@@ -341,7 +357,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectRequestDto = new ProjectRequestDto
             {
                 Name = "New Project",
-                TimeZone = "Time Zone",
+                TimeZoneId = "Time Zone",
                 HealthRisks = new[]
                 {
                     new ProjectHealthRiskRequestDto
@@ -390,7 +406,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZone = "Time Zone" };
+            var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZoneId = "Time Zone" };
 
             // Act
             var result = await _projectService.AddProject(nationalSocietyId, projectRequestDto);
@@ -438,7 +454,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<Report>()
+                            Reports = new List<RX.Nyss.Data.Models.Report>()
                         },
                         new ProjectHealthRisk
                         {
@@ -451,7 +467,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<Report>()
+                            Reports = new List<RX.Nyss.Data.Models.Report>()
                         }
                     },
                     AlertRecipients = new List<AlertRecipient>
@@ -477,7 +493,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectRequestDto = new ProjectRequestDto
             {
                 Name = "Updated Project",
-                TimeZone = "Updated Time Zone",
+                TimeZoneId = "Updated Time Zone",
                 HealthRisks = new[]
                 {
                     new ProjectHealthRiskRequestDto
@@ -556,7 +572,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(nonExistentProjectId).ReturnsNull();
 
-            var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZone = "Updated Time Zone" };
+            var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZoneId = "Updated Time Zone" };
 
             // Act
             var result = await _projectService.UpdateProject(nonExistentProjectId, projectRequestDto);
@@ -600,9 +616,9 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<Report>()
+                            Reports = new List<RX.Nyss.Data.Models.Report>()
                             {
-                                new Report()
+                                new RX.Nyss.Data.Models.Report()
                             }
                         }
                     },
@@ -617,7 +633,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectRequestDto = new ProjectRequestDto
             {
                 Name = "Updated Project",
-                TimeZone = "Updated Time Zone",
+                TimeZoneId = "Updated Time Zone",
                 HealthRisks = new List<ProjectHealthRiskRequestDto>(),
                 AlertRecipients = new List<AlertRecipientDto>()
             };
@@ -658,7 +674,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
 
-            var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZone = "Updated Time Zone" };
+            var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZoneId = "Updated Time Zone" };
 
             // Act
             var result = await _projectService.UpdateProject(projectId, projectRequestDto);
@@ -779,7 +795,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     EndDate = null,
                     NationalSocietyId = nationalSocietyId,
                     DataCollectors = new[] { new RX.Nyss.Data.Models.DataCollector() },
-                    ProjectHealthRisks = new[] { new ProjectHealthRisk { Reports = new[] { new Report() }, Alerts = new[] { new Alert() } } }
+                    ProjectHealthRisks = new[] { new ProjectHealthRisk { Reports = new[] { new RX.Nyss.Data.Models.Report() }, Alerts = new[] { new Alert() } } }
                 },
                 new RX.Nyss.Data.Models.Project
                 {
@@ -798,7 +814,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     {
                         new ProjectHealthRisk
                         {
-                            Reports = new[] { new Report() },
+                            Reports = new[] { new RX.Nyss.Data.Models.Report() },
                             Alerts = new[]
                             {
                                 new Alert { Id = 1, Status = AlertStatus.Pending },
@@ -807,7 +823,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         },
                         new ProjectHealthRisk
                         {
-                            Reports = new[] { new Report(), new Report() },
+                            Reports = new[] { new RX.Nyss.Data.Models.Report(), new RX.Nyss.Data.Models.Report() },
                             Alerts = new[]
                             {
                                 new Alert { Id = 4, Status = AlertStatus.Pending },

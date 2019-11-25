@@ -8,7 +8,7 @@ namespace RX.Nyss.Web.Features.Project.Dto
     {
         public string Name { get; set; }
 
-        public string TimeZone { get; set; }
+        public string TimeZoneId { get; set; }
 
         public IEnumerable<ProjectHealthRiskRequestDto> HealthRisks { get; set; }
 

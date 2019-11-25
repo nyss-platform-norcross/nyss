@@ -18,25 +18,25 @@ export function projectsReducer(state = initialState.projects, action) {
       return { ...state, listFetching: false, listData: [] };
 
     case actions.OPEN_PROJECT_CREATION.INVOKE:
-      return { ...state, formFetching: true, formHealthRisks: [] };
+      return { ...state, formFetching: true, formHealthRisks: [] , formTimeZones: []};
 
     case actions.OPEN_PROJECT_CREATION.REQUEST:
-      return { ...state, formFetching: true, formHealthRisks: [] };
+      return { ...state, formFetching: true, formHealthRisks: [], formTimeZones: [] };
 
     case actions.OPEN_PROJECT_CREATION.SUCCESS:
-      return { ...state, formFetching: false, formHealthRisks: action.healthRisks };
+      return { ...state, formFetching: false, formHealthRisks: action.healthRisks, formTimeZones: action.timeZones};
 
     case actions.OPEN_PROJECT_CREATION.FAILURE:
       return { ...state, formFetching: false };
 
     case actions.OPEN_PROJECT_EDITION.INVOKE:
-      return { ...state, formFetching: true, formData: null, formHealthRisks: [] };
+      return { ...state, formFetching: true, formData: null, formHealthRisks: [], formTimeZones: [] };
 
     case actions.OPEN_PROJECT_EDITION.REQUEST:
-      return { ...state, formFetching: true, formData: null, formHealthRisks: [] };
+      return { ...state, formFetching: true, formData: null, formHealthRisks: [], formTimeZones: [] };
 
     case actions.OPEN_PROJECT_EDITION.SUCCESS:
-      return { ...state, formFetching: false, formData: action.data, formHealthRisks: action.healthRisks };
+      return { ...state, formFetching: false, formData: action.data, formHealthRisks: action.healthRisks, formTimeZones: action.timeZones };
 
     case actions.OPEN_PROJECT_EDITION.FAILURE:
       return { ...state, formFetching: false };

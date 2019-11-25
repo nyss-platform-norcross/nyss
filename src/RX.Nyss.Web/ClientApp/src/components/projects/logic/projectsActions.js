@@ -29,7 +29,7 @@ export const getList = {
 export const openCreation = {
   invoke: (nationalSocietyId) => ({ type: OPEN_PROJECT_CREATION.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_PROJECT_CREATION.REQUEST }),
-  success: (healthRisks) => ({ type: OPEN_PROJECT_CREATION.SUCCESS, healthRisks }),
+  success: (healthRisks, timeZones) => ({ type: OPEN_PROJECT_CREATION.SUCCESS, healthRisks, timeZones }),
   failure: (message) => ({ type: OPEN_PROJECT_CREATION.FAILURE, message })
 };
 
@@ -43,7 +43,7 @@ export const create = {
 export const openEdition = {
   invoke: (nationalSocietyId, projectId) => ({ type: OPEN_PROJECT_EDITION.INVOKE, nationalSocietyId, projectId }),
   request: () => ({ type: OPEN_PROJECT_EDITION.REQUEST }),
-  success: (data, healthRisks) => ({ type: OPEN_PROJECT_EDITION.SUCCESS, data, healthRisks }),
+  success: (data, healthRisks, timeZones) => ({ type: OPEN_PROJECT_EDITION.SUCCESS, data, healthRisks, timeZones }),
   failure: (message) => ({ type: OPEN_PROJECT_EDITION.FAILURE, message })
 };
 

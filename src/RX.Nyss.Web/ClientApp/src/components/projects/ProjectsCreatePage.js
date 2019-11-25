@@ -19,6 +19,8 @@ import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { ProjectNotificationItem } from './ProjectNotificationItem';
 import { getSaveFormModel } from './logic/projectsService';
+import SelectField from '../forms/SelectField';
+import MenuItem from "@material-ui/core/MenuItem";
 
 const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -32,12 +34,12 @@ const ProjectsCreatePageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
       name: "",
-      timeZone: ""
+      timeZoneId: ""
     };
 
     const validation = {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      timeZone: [validators.required, validators.minLength(1), validators.maxLength(50)]
+      timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)]
     };
 
     return createForm(fields, validation);
@@ -102,13 +104,19 @@ const ProjectsCreatePageComponent = (props) => {
               field={form.fields.name}
             />
           </Grid>
-
-          <Grid item xs={9}>
-            <TextInputField
+  
+          <Grid item xs={12}>
+            <SelectField
               label={strings(stringKeys.project.form.timeZone)}
-              name="timeZone"
-              field={form.fields.timeZone}
-            />
+              field={form.fields.timeZoneId}
+              name="timeZoneId"
+            >
+              {props.timeZones.map(timeZone => (
+                <MenuItem key={timeZone.id} value={timeZone.id}>
+                  {timeZone.displayName}
+                </MenuItem>
+              ))}
+            </SelectField>
           </Grid>
 
           <Grid item xs={12}>
@@ -168,6 +176,7 @@ ProjectsCreatePageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   healthRisks: state.projects.formHealthRisks,
+  timeZones: state.projects.formTimeZones,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isSaving: state.projects.formSaving,
   error: state.projects.formError

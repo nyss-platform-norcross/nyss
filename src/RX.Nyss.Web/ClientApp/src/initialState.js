@@ -62,6 +62,7 @@ export const initialState = {
     listData: [],
     formFetching: false,
     formHealthRisks: [],
+    formTimeZones: [],
     formSaving: false,
     formData: null,
     dashboard: {
@@ -112,5 +113,11 @@ export const initialState = {
   },
   headManagerConsents: {
     nationalSocieties: []
+  },
+  reports: {
+    listFetching: false,
+    listRemoving: {},
+    listStale: true, 
+    paginatedListData: null
   }
 };

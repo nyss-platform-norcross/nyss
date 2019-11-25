@@ -10,11 +10,27 @@ namespace RX.Nyss.Data
         {
             SeedContentLanguages(modelBuilder);
             SeedCountries(modelBuilder);
+            SeedApplicationLanguages(modelBuilder);
             SeedAdministrator(modelBuilder);
         }
 
+        private static void SeedApplicationLanguages(ModelBuilder modelBuilder) =>
+            modelBuilder.Entity<ApplicationLanguage>().HasData(
+                new ApplicationLanguage
+                {
+                    Id = 1,
+                    LanguageCode = "en",
+                    DisplayName = "English",
+                },
+                new ApplicationLanguage
+                {
+                    Id = 2,
+                    LanguageCode = "fr",
+                    DisplayName = "Français",
+                });
+
         private static void SeedAdministrator(ModelBuilder modelBuilder) =>
-            modelBuilder.Entity<AdministratorUser>().HasData(new AdministratorUser
+            modelBuilder.Entity<AdministratorUser>().HasData(new 
             {
                 Id = 1,
                 IdentityUserId = "9c1071c1-fa69-432a-9cd0-2c4baa703a67",
@@ -22,7 +38,8 @@ namespace RX.Nyss.Data
                 Role = Role.Administrator,
                 EmailAddress = "admin@domain.com",
                 PhoneNumber = "",
-                IsFirstLogin = false
+                IsFirstLogin = false,
+                ApplicationLanguageId = 1
             });
 
         private static void SeedCountries(ModelBuilder modelBuilder) =>
@@ -273,8 +290,8 @@ namespace RX.Nyss.Data
 
         private static void SeedContentLanguages(ModelBuilder modelBuilder) =>
             modelBuilder.Entity<ContentLanguage>().HasData(
-                new ContentLanguage { Id = 1, DisplayName = "English", LanguageCode = "EN" },
-                new ContentLanguage { Id = 2, DisplayName = "Français", LanguageCode = "FR" }
+                new ContentLanguage { Id = 1, DisplayName = "English", LanguageCode = "en" },
+                new ContentLanguage { Id = 2, DisplayName = "Français", LanguageCode = "fr" }
             );
     }
 }
