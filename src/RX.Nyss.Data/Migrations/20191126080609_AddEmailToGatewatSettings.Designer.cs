@@ -12,8 +12,8 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191121154213_AddEmailAddressToGatewaySettings")]
-    partial class AddEmailAddressToGatewaySettings
+    [Migration("20191126080609_AddEmailToGatewatSettings")]
+    partial class AddEmailToGatewatSettings
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -161,6 +161,20 @@ namespace RX.Nyss.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("ApplicationLanguages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DisplayName = "English",
+                            LanguageCode = "en"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DisplayName = "Français",
+                            LanguageCode = "fr"
+                        });
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.ContentLanguage", b =>
@@ -191,13 +205,13 @@ namespace RX.Nyss.Data.Migrations
                         {
                             Id = 1,
                             DisplayName = "English",
-                            LanguageCode = "EN"
+                            LanguageCode = "en"
                         },
                         new
                         {
                             Id = 2,
                             DisplayName = "Français",
-                            LanguageCode = "FR"
+                            LanguageCode = "fr"
                         });
                 });
 
@@ -2145,7 +2159,7 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<int>("ProjectHealthRiskId")
+                    b.Property<int?>("ProjectHealthRiskId")
                         .HasColumnType("int");
 
                     b.Property<string>("RawContent")
@@ -2310,6 +2324,7 @@ namespace RX.Nyss.Data.Migrations
                         new
                         {
                             Id = 1,
+                            ApplicationLanguageId = 1,
                             EmailAddress = "admin@domain.com",
                             IdentityUserId = "9c1071c1-fa69-432a-9cd0-2c4baa703a67",
                             IsFirstLogin = false,
@@ -2439,9 +2454,9 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.District", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Region", "Region")
-                        .WithMany()
+                        .WithMany("Districts")
                         .HasForeignKey("RegionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2560,7 +2575,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
                         .HasForeignKey("NationalSocietyId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -2575,8 +2590,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
                         .WithMany("Reports")
                         .HasForeignKey("ProjectHealthRiskId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.OwnsOne("RX.Nyss.Data.Models.DataCollectionPointCase", "DataCollectionPointCase", b1 =>
                         {
@@ -2698,18 +2712,18 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.Village", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.District", "District")
-                        .WithMany()
+                        .WithMany("Villages")
                         .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Zone", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Village", "Village")
-                        .WithMany()
+                        .WithMany("Zones")
                         .HasForeignKey("VillageId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -145,5 +145,6 @@ export const validators = {
   minLength: (minLength) => [() => strings(stringKeys.validation.tooShortString).replace("{value}", minLength), (value) => !value || value.length >= minLength],
   maxLength: (maxLength) => [() => strings(stringKeys.validation.tooLongString).replace("{value}", maxLength), (value) => !value || value.length <= maxLength],
   email: [() => strings(stringKeys.validation.invalidEmail), (value) => emailRegex.test(value)],
+  emailWhen: (fieldGetter) => [() => strings(stringKeys.validation.invalidEmail), (value, fields) => !fieldGetter(fields) || emailRegex.test(value)],
   moduloTen: [() => strings(stringKeys.validation.invalidModuloTen), (value) => (Number(value) % 10 === 0)]
 };

@@ -7,7 +7,6 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
@@ -43,7 +42,7 @@ const SmsGatewaysEditPageComponent = (props) => {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
       apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
       gatewayType: [validators.required],
-      emailAddress: [validators.email]
+      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === "SmsEagle")]
     };
 
     setForm(createForm(fields, validation));

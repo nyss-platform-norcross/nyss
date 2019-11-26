@@ -47,7 +47,8 @@ namespace RX.Nyss.Web.Features.SmsGateway
                     Id = gs.Id,
                     Name = gs.Name,
                     ApiKey = gs.ApiKey,
-                    GatewayType = gs.GatewayType
+                    GatewayType = gs.GatewayType,
+                    EmailAddress = gs.EmailAddress
                 })
                 .FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
