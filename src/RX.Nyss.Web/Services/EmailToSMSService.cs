@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Utils.Logging;
 
 namespace RX.Nyss.Web.Services
 {
