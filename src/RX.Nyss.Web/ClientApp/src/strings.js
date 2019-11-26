@@ -291,7 +291,8 @@ export const stringKeys = {
       sex: "dataCollectors.list.sex",
       location: "dataCollectors.list.location",
       status: "dataCollectors.list.status",
-      removalConfirmation: "dataCollectors.list.removalConfirmation"
+      removalConfirmation: "dataCollectors.list.removalConfirmation",
+      title: "dataCollectors.list.title"
     },
     constants: {
       sex: {
@@ -299,6 +300,9 @@ export const stringKeys = {
         female: "dataCollectors.sex.female",
         other: "dataCollectors.sex.other",
       }
+    },
+    mapOverview: {
+      title: "dataCollectors.mapOverview.title"
     }
   },
   reports: {
@@ -322,6 +326,7 @@ export const stringKeys = {
       success: "reports.list.success",
       error: "reports.list.error"     
     },
+    title: "reports.title"
   },
   filters: {
     area: {

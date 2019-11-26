@@ -3,10 +3,12 @@ import {
   OPEN_DATA_COLLECTORS_LIST, GET_DATA_COLLECTORS,
   OPEN_DATA_COLLECTOR_CREATION, CREATE_DATA_COLLECTOR,
   OPEN_DATA_COLLECTOR_EDITION, EDIT_DATA_COLLECTOR,
-  REMOVE_DATA_COLLECTOR
+  REMOVE_DATA_COLLECTOR, OPEN_DATA_COLLECTORS_MAP_OVERVIEW,
+  GET_DATA_COLLECTORS_MAP_OVERVIEW
 } from "./dataCollectorsConstants";
 
-export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors`);
+export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors/list`);
+export const goToOverview = (projectId) => push(`/projects/${projectId}/datacollectors/mapoverview`);
 export const goToCreation = (projectId) => push(`/projects/${projectId}/datacollectors/add`);
 export const goToEdition = (projectId, dataCollectorId) => push(`/projects/${projectId}/datacollectors/${dataCollectorId}/edit`);
 
@@ -22,6 +24,20 @@ export const getList = {
   request: () => ({ type: GET_DATA_COLLECTORS.REQUEST }),
   success: (list) => ({ type: GET_DATA_COLLECTORS.SUCCESS, list }),
   failure: (message) => ({ type: GET_DATA_COLLECTORS.FAILURE, message })
+};
+
+export const openMapOverview = {
+  invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId }),
+  request: () => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.REQUEST }),
+  success: (projectId) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS, projectId }),
+  failure: (message) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE, message })
+};
+
+export const getMapOverview = {
+  invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId }),
+  request: () => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.REQUEST }),
+  success: (list) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS, list }),
+  failure: (message) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE, message })
 };
 
 export const openCreation = {
