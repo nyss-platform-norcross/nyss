@@ -28,6 +28,7 @@ export function projectDashboardReducer(state = initialState.projectDashboard, a
         reportsGroupedByDate: action.reportsGroupedByDate,
         reportsGroupedByFeaturesAndDate: action.reportsGroupedByFeaturesAndDate,
         reportsGroupedByFeatures: action.reportsGroupedByFeatures,
+        reportsGroupedByLocation: action.reportsGroupedByLocation,
         isFetching: false
       };
 

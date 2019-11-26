@@ -47,7 +47,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
               <ProjectsDashboardNumbers projectSummary={props.projectSummary} />
             </Grid>
             <Grid item xs={12}>
-              <ProjectsDashboardReportsMap data={props.reportsMapData} />
+              <ProjectsDashboardReportsMap data={props.reportsGroupedByLocation} />
             </Grid>
             <Grid item xs={12}>
               <ProjectsDashboardReportChart data={props.reportsGroupedByDate} />
@@ -77,6 +77,7 @@ const mapStateToProps = state => ({
   reportsGroupedByDate: state.projectDashboard.reportsGroupedByDate,
   reportsGroupedByFeaturesAndDate: state.projectDashboard.reportsGroupedByFeaturesAndDate,
   reportsGroupedByFeatures: state.projectDashboard.reportsGroupedByFeatures,
+  reportsGroupedByLocation: state.projectDashboard.reportsGroupedByLocation,
   isFetching: state.projectDashboard.isFetching
 });
 

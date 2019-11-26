@@ -45,7 +45,8 @@ function* getProjectDashboardData({ projectId, filters }) {
       response.value.summary,
       response.value.reportsGroupedByDate,
       response.value.reportsGroupedByFeaturesAndDate,
-      response.value.reportsGroupedByFeatures
+      response.value.reportsGroupedByFeatures,
+      response.value.reportsGroupedByLocation
     ));
   } catch (error) {
     yield put(actions.getDashboardData.failure(error.message));
