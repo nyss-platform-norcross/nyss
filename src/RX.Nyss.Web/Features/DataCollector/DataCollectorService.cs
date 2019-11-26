@@ -30,6 +30,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
         Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId);
         Task<Result<List<MapOverviewLocationResponseDto>>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName, IEnumerable<string> roles);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -299,7 +300,8 @@ namespace RX.Nyss.Web.Features.DataCollector
             await _nyssContext.DataCollectors.AnyAsync(dc => dc.Id == dataCollectorId && dc.Supervisor.EmailAddress == supervisorIdentityName);
 
 
-        public async Task<Result<List<MapOverviewLocationResponseDto>>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles)
+        public async Task<Result<List<MapOverviewLocationResponseDto>>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName,
+            IEnumerable<string> roles)
         {
             var dataCollectors = roles.Contains(Role.Supervisor.ToString())
                 ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
@@ -310,7 +312,6 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
                 {
-                    DataCollectorName = dc.DisplayName,
                     dc.Location.X,
                     dc.Location.Y,
                     InvalidReport = 0,
@@ -319,15 +320,18 @@ namespace RX.Nyss.Web.Features.DataCollector
                 });
 
             var dataCollectorsWithReports = dataCollectors
-                .Where(dc => dc.Reports.Any(r => r.CreatedAt >= from.Date && r.CreatedAt < to.Date.AddDays(1)))
                 .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
                 {
-                    DataCollectorName = dc.DisplayName,
-                    dc.Location.X,
-                    dc.Location.Y,
-                    InvalidReport = dc.Reports.Where(r => r.CreatedAt >= from.Date && r.CreatedAt < to.Date.AddDays(1)).Any(r => !r.IsValid) ? 1 : 0,
-                    ValidReport = dc.Reports.Where(r => r.CreatedAt >= from.Date && r.CreatedAt < to.Date.AddDays(1)).All(r => r.IsValid) ? 1 : 0,
+                    DataCollector = dc,
+                    ReportsInTimeRange = dc.Reports.Where(r => r.CreatedAt >= from.Date && r.CreatedAt < to.Date.AddDays(1))
+                })
+                .Select(dc => new
+                {
+                    dc.DataCollector.Location.X,
+                    dc.DataCollector.Location.Y,
+                    InvalidReport = dc.ReportsInTimeRange.Any(r => !r.IsValid) ? 1 : 0,
+                    ValidReport = dc.ReportsInTimeRange.All(r => r.IsValid) ? 1 : 0,
                     NoReport = 0
                 });
 
@@ -344,6 +348,35 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .ToListAsync();
 
             return Success(locations);
+        }
+
+        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName,
+            IEnumerable<string> roles)
+        {
+            var dataCollectors = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.DataCollectors;
+
+            var result = await dataCollectors
+                .Where(dc => dc.Location.X == x && dc.Location.Y == y)
+                .Where(dc => dc.Project.Id == projectId)
+                .Select(dc => new
+                {
+                    DataCollector = dc,
+                    ReportsInTimeRange = dc.Reports.Where(r => r.CreatedAt >= from.Date && r.CreatedAt < to.Date.AddDays(1))
+                })
+                .Select(dc => new MapOverviewDataCollectorResponseDto
+                {
+                    DisplayName = dc.DataCollector.DisplayName,
+                    Status = dc.ReportsInTimeRange.Any()
+                        ? dc.ReportsInTimeRange.All(r => r.IsValid)
+                            ? MapOverviewDataCollectorStatus.ReportingCorrectly
+                            : MapOverviewDataCollectorStatus.ReportingWithErrors
+                        : MapOverviewDataCollectorStatus.NotReporting
+                })
+                .ToListAsync();
+
+            return Success(result);
         }
     }
 }
