@@ -88,6 +88,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                 ApplicationLanguage = defaultUserApplicationLanguage,
                 DecadeOfBirth = createSupervisorRequestDto.DecadeOfBirth,
                 Sex = createSupervisorRequestDto.Sex,
+                Organization = createSupervisorRequestDto.Organization
             };
 
             await AddNewSupervisorToProject(user, createSupervisorRequestDto.ProjectId, nationalSocietyId);
@@ -156,6 +157,8 @@ namespace RX.Nyss.Web.Features.Supervisor
                         .Where(sup => sup.Project.State == ProjectState.Open)
                         .Select(sup => sup.ProjectId)
                         .SingleOrDefault(),
+                    Organization = u.Organization,
+                    
                 })
                 .SingleOrDefaultAsync();
 
@@ -197,6 +200,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                 supervisorUser.DecadeOfBirth = editSupervisorRequestDto.DecadeOfBirth;
                 supervisorUser.PhoneNumber = editSupervisorRequestDto.PhoneNumber;
                 supervisorUser.AdditionalPhoneNumber = editSupervisorRequestDto.AdditionalPhoneNumber;
+                supervisorUser.Organization = editSupervisorRequestDto.Organization;
 
                 await UpdateSupervisorProjectReferences(supervisorUser, supervisorUserData.CurrentProjectReference, editSupervisorRequestDto.ProjectId);
 
@@ -271,6 +275,7 @@ namespace RX.Nyss.Web.Features.Supervisor
             var supervisorUser = await _dataContext.Users
                 .OfType<SupervisorUser>()
                 .Include(u => u.SupervisorUserProjects)
+                .Include(u => u.UserNationalSocieties)
                 .Where(u => u.Id == supervisorUserId)
                 .SingleOrDefaultAsync();
 
