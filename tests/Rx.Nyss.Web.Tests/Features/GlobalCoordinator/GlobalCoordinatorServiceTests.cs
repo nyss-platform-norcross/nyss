@@ -37,7 +37,39 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
+
+            ArrangeApplicationLanguages();
         }
+
+        private void ArrangeApplicationLanguages()
+        {
+            var applicationLanguages = new List<ApplicationLanguage>();
+            var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
+            _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
+        }
+
+        private void ArrangeUsersDbSetWithOneAdministratorUser() =>
+            ArrangeUsersDbSetWithExistingUsers(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
+
+        private void ArrangeUsersDbSetWithExistingUsers(IEnumerable<User> existingUsers)
+        {
+            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users.Returns(usersDbSet);
+        }
+
+        private void ArrangeUSersDbSetWithOneGlobalCoordinator() =>
+            ArrangeUsersDbSetWithExistingUsers(new List<User>
+            {
+                new GlobalCoordinatorUser
+                {
+                    Id = 123,
+                    Role = Role.GlobalCoordinator,
+                    EmailAddress = "emailTest1@domain.com",
+                    Name = "emailTest1@domain.com",
+                    Organization = "org org",
+                    PhoneNumber = "123"
+                }
+            });
 
         [Fact]
         public async Task RegisterGlobalCoordinator_WhenIdentityUserCreationSuccessful_ShouldReturnSuccessResult()
@@ -114,7 +146,6 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto).ShouldThrowAsync<Exception>();
         }
 
-
         [Fact]
         public async Task EditGlobalCoordinator_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
@@ -139,15 +170,6 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             result.IsSuccess.ShouldBeFalse();
         }
 
-        private void ArrangeUsersDbSetWithOneAdministratorUser() =>
-            ArrangeUsersDbSetWithExistingUsers(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
-
-        private void ArrangeUsersDbSetWithExistingUsers(IEnumerable<User> existingUsers)
-        {
-            var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
-            _nyssContext.Users.Returns(usersDbSet);
-        }
-
         [Fact]
         public async Task EditGlobalCoordinator_WhenEditingUserThatIsNotGlobalCoordinator_SaveChangesShouldNotBeCalled()
         {
@@ -157,7 +179,6 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
-
 
         [Fact]
         public async Task EditGlobalCoordinator_WhenEditingExistingGlobalCoordinator_ReturnsSuccess()
@@ -169,21 +190,6 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             result.IsSuccess.ShouldBeTrue();
         }
 
-        private void ArrangeUSersDbSetWithOneGlobalCoordinator() =>
-            ArrangeUsersDbSetWithExistingUsers(new List<User>
-            {
-                new GlobalCoordinatorUser
-                {
-                    Id = 123,
-                    Role = Role.GlobalCoordinator,
-                    EmailAddress = "emailTest1@domain.com",
-                    Name = "emailTest1@domain.com",
-                    Organization = "org org",
-                    PhoneNumber = "123"
-                }
-            });
-
-
         [Fact]
         public async Task EditGlobalCoordinator_WhenEditingExistingGlobalCoordinator_SaveChangesAsyncIsCalled()
         {
@@ -193,7 +199,6 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
 
             await _nyssContext.Received().SaveChangesAsync();
         }
-
 
         [Fact]
         public async Task EditGlobalCoordinator_WhenEditingExistingUser_ExpectedFieldsGetEdited()
