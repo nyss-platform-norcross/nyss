@@ -3,7 +3,7 @@ using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Data
 {
-    public class NyssContext : DbContext, INyssContext, INyssReportContext
+    public class NyssContext : DbContext, INyssContext
     {
         public NyssContext(DbContextOptions<NyssContext> options)
             : base(options)
@@ -50,6 +50,8 @@ namespace RX.Nyss.Data
         public DbSet<SupervisorUserProject> SupervisorUserProjects { get; set; }
 
         public DbSet<ProjectHealthRisk> ProjectHealthRisks { get; set; }
+
+        public DbSet<RawReport> RawReports { get; set; }
 
         public DbSet<Region> Regions { get; set; }
 

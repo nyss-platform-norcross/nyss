@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.ReportApi.Exceptions;
+using RX.Nyss.ReportApi.Models;
 using RX.Nyss.ReportApi.Services;
 using RX.Nyss.ReportApi.Utils;
 using RX.Nyss.ReportApi.Utils.Logging;
@@ -18,7 +20,7 @@ namespace RX.Nyss.ReportApi.Handlers
         private const string SenderParameterName = "sender";
         private const string TimestampParameterName = "timestamp";
         private const string TextParameterName = "text";
-        private const string MessageIdParameterName = "msgid";
+        private const string IncomingMessageIdParameterName = "msgid";
         private const string OutgoingMessageIdParameterName = "oid";
         private const string ModemNumberParameterName = "modemno";
         private const string ApiKeyParameterName = "apikey";
@@ -28,21 +30,21 @@ namespace RX.Nyss.ReportApi.Handlers
             SenderParameterName,
             TimestampParameterName,
             TextParameterName,
-            MessageIdParameterName,
+            IncomingMessageIdParameterName,
             OutgoingMessageIdParameterName,
             ModemNumberParameterName,
             ApiKeyParameterName
         };
 
         private readonly IReportMessageService _reportMessageService;
-        private readonly INyssReportContext _nyssReportContext;
+        private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SmsEagleHandler(IReportMessageService reportMessageService, INyssReportContext nyssReportContext, ILoggerAdapter loggerAdapter, IDateTimeProvider dateTimeProvider)
+        public SmsEagleHandler(IReportMessageService reportMessageService, INyssContext nyssContext, ILoggerAdapter loggerAdapter, IDateTimeProvider dateTimeProvider)
         {
             _reportMessageService = reportMessageService;
-            _nyssReportContext = nyssReportContext;
+            _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
         }
@@ -59,137 +61,131 @@ namespace RX.Nyss.ReportApi.Handlers
             var sender = parsedQueryString[SenderParameterName];
             var timestamp = parsedQueryString[TimestampParameterName];
             var text = parsedQueryString[TextParameterName];
+            var incomingMessageId = parsedQueryString[IncomingMessageIdParameterName].ParseToNullableInt();
+            var outgoingMessageId = parsedQueryString[OutgoingMessageIdParameterName].ParseToNullableInt();
+            var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
             var apiKey = parsedQueryString[ApiKeyParameterName];
 
-            // ToDo: messageId, outgoingMessageId and modemNumber are not used
-            var messageId = parsedQueryString[MessageIdParameterName].ParseToNullableInt();
-            var outgoingMessageId = parsedQueryString[OutgoingMessageIdParameterName];
-            var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
-            
-            var isValid = true;
-
-            var (gatewayValidationResult, gatewayNationalSocietyId) = await ValidateGatewaySetting(apiKey);
-
-            isValid &= gatewayValidationResult;
-
-            var (dataCollectorValidationResult, dataCollector) = await ValidateDataCollector(sender, gatewayNationalSocietyId);
-
-            isValid &= dataCollectorValidationResult;
-
-            var (reportParsedSuccessfully, parsedReport) = _reportMessageService.ParseReport(text);
-
-            var (reportValidationResult, projectHealthRisk) = await ValidateReport(reportParsedSuccessfully, parsedReport, sender, dataCollector);
-
-            isValid &= reportValidationResult;
-
-            var receivedAt = ParseTimestamp(timestamp, dataCollector?.Project?.TimeZone);
-
-            if (receivedAt > _dateTimeProvider.UtcNow)
+            var rawReport = new RawReport
             {
-                _loggerAdapter.Warn("The receipt time cannot be in the future.");
-                isValid = false;
-            }
-
-            var report = new Report
-            {
-                RawContent = text,
-                IsValid = isValid,
-                IsTraining = dataCollector?.IsInTrainingMode,
-                ReportType = parsedReport.ReportType,
-                Status = ReportStatus.Pending,
-                //ToDo: NULL vs current date
-                ReceivedAt = receivedAt ?? _dateTimeProvider.UtcNow,
-                CreatedAt = _dateTimeProvider.UtcNow,
-                DataCollector = dataCollector,
-                Location = dataCollector?.Location,
-                ReportedCase = parsedReport.ReportedCase,
-                KeptCase = new ReportCase
-                {
-                    CountMalesBelowFive = null,
-                    CountMalesAtLeastFive = null,
-                    CountFemalesBelowFive = null,
-                    CountFemalesAtLeastFive = null
-                },
-                DataCollectionPointCase = parsedReport.DataCollectionPointCase,
-                ProjectHealthRisk = projectHealthRisk
+                Sender = sender,
+                Timestamp = timestamp,
+                ReceivedAt = _dateTimeProvider.UtcNow,
+                Text = text,
+                IncomingMessageId = incomingMessageId,
+                OutgoingMessageId = outgoingMessageId,
+                ModemNumber = modemNumber,
+                ApiKey = apiKey
             };
 
-            await _nyssReportContext.Reports.AddAsync(report);
+            await _nyssContext.AddAsync(rawReport);
+            await _nyssContext.SaveChangesAsync();
 
-            await _nyssReportContext.SaveChangesAsync();
+            //ToDo: extract try-catch block to a separate service?
+            try
+            {
+                var gatewayNationalSociety = await ValidateGatewaySetting(apiKey);
+                rawReport.NationalSociety = gatewayNationalSociety;
+                await _nyssContext.SaveChangesAsync();
+
+                var dataCollector = await ValidateDataCollector(sender, gatewayNationalSociety);
+                var parsedReport = _reportMessageService.ParseReport(text);
+                var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
+
+                var receivedAt = ParseTimestamp(timestamp, dataCollector.Project.TimeZone);
+                ValidateReceiptTime(receivedAt);
+                rawReport.ReceivedAt = receivedAt;
+                await _nyssContext.SaveChangesAsync();
+
+                var report = new Report
+                {
+                    IsTraining = dataCollector.IsInTrainingMode,
+                    ReportType = parsedReport.ReportType,
+                    Status = ReportStatus.Pending,
+                    ReceivedAt = receivedAt,
+                    CreatedAt = _dateTimeProvider.UtcNow,
+                    DataCollector = dataCollector,
+                    //ToDo
+                    EpiWeek = -1,
+                    PhoneNumber = sender,
+                    Location = dataCollector.Location,
+                    ReportedCase = parsedReport.ReportedCase,
+                    KeptCase = new ReportCase
+                    {
+                        CountMalesBelowFive = null,
+                        CountMalesAtLeastFive = null,
+                        CountFemalesBelowFive = null,
+                        CountFemalesAtLeastFive = null
+                    },
+                    DataCollectionPointCase = parsedReport.DataCollectionPointCase,
+                    ProjectHealthRisk = projectHealthRisk
+                };
+
+                rawReport.Report = report;
+
+                await _nyssContext.Reports.AddAsync(report);
+                await _nyssContext.SaveChangesAsync();
+            }
+            catch (ReportValidationException e)
+            {
+                _loggerAdapter.Warn(e.Message);
+            }
         }
 
-        private async Task<(bool gatewayValidationResult, int? gatewayNationalSocietyId)> ValidateGatewaySetting(string apiKey)
+        private async Task<NationalSociety> ValidateGatewaySetting(string apiKey)
         {
-            var isValid = true;
-
-            var gatewaySetting = await _nyssReportContext.GatewaySettings
+            var gatewaySetting = await _nyssContext.GatewaySettings
+                .Include(gs => gs.NationalSociety)
                 .SingleOrDefaultAsync(gs => gs.ApiKey == apiKey);
 
             if (gatewaySetting == null)
             {
-                _loggerAdapter.Warn($"A gateway setting with API key '{apiKey}' does not exist.");
-                isValid = false;
+                throw new ReportValidationException("A gateway setting with API key '{apiKey}' does not exist.");
             }
 
-            if (gatewaySetting != null && gatewaySetting.GatewayType != GatewayType.SmsEagle)
+            if (gatewaySetting.GatewayType != GatewayType.SmsEagle)
             {
-                _loggerAdapter.Warn($"A gateway type ('{gatewaySetting.GatewayType}') is different than '{GatewayType.SmsEagle}'.");
-                isValid = false;
+                throw new ReportValidationException($"A gateway type ('{gatewaySetting.GatewayType}') is different than '{GatewayType.SmsEagle}'.");
             }
 
-            return (isValid, gatewaySetting?.NationalSocietyId);
+            return gatewaySetting.NationalSociety;
         }
 
-        private async Task<(bool dataCollectorValidationResult, DataCollector dataCollector)> ValidateDataCollector(string phoneNumber, int? gatewayNationalSocietyId)
+        private async Task<DataCollector> ValidateDataCollector(string phoneNumber, NationalSociety gatewayNationalSociety)
         {
-            var isValid = true;
-
-            var dataCollector = await _nyssReportContext.DataCollectors
+            var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
                 .SingleOrDefaultAsync(dc => dc.PhoneNumber == phoneNumber || dc.AdditionalPhoneNumber == phoneNumber);
 
             if (dataCollector == null)
             {
-                _loggerAdapter.Warn($"A Data Collector with phone number '{phoneNumber}' does not exist.");
-                isValid = false;
+                throw new ReportValidationException("A Data Collector with phone number '{phoneNumber}' does not exist.");
             }
 
-            if (gatewayNationalSocietyId.HasValue && dataCollector != null && dataCollector.Project.NationalSocietyId != gatewayNationalSocietyId)
+            if (dataCollector.Project.NationalSocietyId != gatewayNationalSociety.Id)
             {
-                _loggerAdapter.Warn($"A Data Collector's National Society identifier ('{dataCollector.Project.NationalSocietyId}') " +
-                                    $"is different than SMS Gateway's ('{gatewayNationalSocietyId}').");
-                isValid = false;
+                throw new ReportValidationException($"A Data Collector's National Society identifier ('{dataCollector.Project.NationalSocietyId}') " +
+                                                    $"is different from SMS Gateway's ('{gatewayNationalSociety.Id}').");
             }
 
-            return (isValid, dataCollector);
+            return dataCollector;
         }
 
-        private async Task<(bool reportValidationResult, ProjectHealthRisk projectHealthRisk)> ValidateReport(bool reportParsedSuccessfully, ReportMessageService.ParsedReport parsedReport, string sender, DataCollector dataCollector)
+        private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
         {
-            var isValid = true;
-
-            if (!reportParsedSuccessfully)
+            if (dataCollector.DataCollectorType != parsedReport.DataCollectorType)
             {
-                _loggerAdapter.Warn("A report cannot be parsed.");
-                isValid = false;
+                throw new ReportValidationException($"A detected Data Collector type ('{parsedReport.DataCollectorType}') is different than the real Data Collector type {dataCollector.DataCollectorType}.");
             }
 
-            if (reportParsedSuccessfully && dataCollector != null && dataCollector.DataCollectorType != parsedReport.DataCollectorType)
-            {
-                _loggerAdapter.Warn($"A detected Data Collector type ('{parsedReport.DataCollectorType}') is different than the real Data Collector type {dataCollector.DataCollectorType}.");
-                isValid = false;
-            }
-
-            var projectHealthRisk = await _nyssReportContext.ProjectHealthRisks
+            var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
                 .SingleOrDefaultAsync(phr => phr.HealthRisk.HealthRiskCode == parsedReport.HealthRiskCode &&
                                              phr.Project.Id == dataCollector.Project.Id);
 
             if (projectHealthRisk == null)
             {
-                _loggerAdapter.Warn($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.");
-                isValid = false;
+                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.");
             }
 
             if (parsedReport.ReportType == ReportType.Aggregate &&
@@ -198,53 +194,37 @@ namespace RX.Nyss.ReportApi.Handlers
                 parsedReport.ReportedCase.CountFemalesBelowFive == 0 &&
                 parsedReport.ReportedCase.CountFemalesAtLeastFive == 0)
             {
-                _loggerAdapter.Warn($"At least one number in aggregated report must be greater than 0 " +
+                throw new ReportValidationException($"At least one number in aggregated report must be greater than 0 " +
                                     $"(males below five: {parsedReport.ReportedCase.CountMalesBelowFive}, " +
                                     $"males at least five: {parsedReport.ReportedCase.CountMalesAtLeastFive}, " +
                                     $"females below five: {parsedReport.ReportedCase.CountFemalesBelowFive}, " +
                                     $"females at least five: {parsedReport.ReportedCase.CountFemalesAtLeastFive}).");
-
-                isValid = false;
             }
 
-            if (projectHealthRisk != null)
+            switch (parsedReport.ReportType)
             {
-                switch (parsedReport.ReportType)
-                {
-                    case ReportType.Single when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human:
-                        _loggerAdapter.Warn($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.");
-                        isValid = false;
-                        break;
-                    case ReportType.Aggregate when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human:
-                        _loggerAdapter.Warn($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.");
-                        isValid = false;
-                        break;
-                    case ReportType.NonHuman when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman && projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent:
-                        _loggerAdapter.Warn($"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.");
-                        isValid = false;
-                        break;
-                    case ReportType.Activity when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity:
-                        _loggerAdapter.Warn($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.");
-                        isValid = false;
-                        break;
-                    case ReportType.DataCollectionPoint:
-                        //ToDo: implement DataCollectionPoint logic
-                        break;
-                    case ReportType.Unknown:
-                        isValid = false;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                case ReportType.Single when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human:
+                    throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                case ReportType.Aggregate when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human:
+                    throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                case ReportType.NonHuman when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
+                                              projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent:
+                    throw new ReportValidationException(
+                        $"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.");
+                case ReportType.Activity when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity:
+                    throw new ReportValidationException($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.");
+                case ReportType.DataCollectionPoint:
+                    //ToDo: implement DataCollectionPoint logic
+                    break;
+                default:
+                    break;
             }
 
-            return (isValid, projectHealthRisk);
+            return projectHealthRisk;
         }
 
-        private DateTime? ParseTimestamp(string timestamp, string timeZoneName)
+        private DateTime ParseTimestamp(string timestamp, string timeZoneName)
         {
-            DateTime utcDateTime;
-
             try
             {
                 var formatProvider = CultureInfo.InvariantCulture;
@@ -256,18 +236,27 @@ namespace RX.Nyss.ReportApi.Handlers
 
                 if (!parsedSuccessfully)
                 {
-                    return null;
+                    throw new ReportValidationException($"Cannot parse timestamp '{timestamp}' to datetime.");
                 }
 
-                utcDateTime = TimeZoneInfo.ConvertTimeToUtc(dateTime, timeZone);
+                var parsedTimestampInUtc = TimeZoneInfo.ConvertTimeToUtc(dateTime, timeZone);
+
+                return parsedTimestampInUtc;
             }
             catch (Exception e)
             {
-                _loggerAdapter.Warn($"Cannot parse timestamp '{timestamp}' for time zone '{timeZoneName}'. Exception: {e.Message} Stack trace: {e.StackTrace}");
-                return null;
+                throw new ReportValidationException($"Cannot parse timestamp '{timestamp}' for time zone '{timeZoneName}'. Exception: {e.Message} Stack trace: {e.StackTrace}");
             }
-            
-            return utcDateTime;
+        }
+
+        private void ValidateReceiptTime(DateTime receivedAt)
+        {
+            const int maxAllowedPrecedenceInMinutes = 3;
+
+            if (receivedAt > _dateTimeProvider.UtcNow.AddMinutes(maxAllowedPrecedenceInMinutes))
+            {
+                throw new ReportValidationException("The receipt time cannot be in the future.");
+            }
         }
     }
 }

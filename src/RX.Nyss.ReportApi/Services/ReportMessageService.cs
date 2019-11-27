@@ -1,12 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Models;
+using RX.Nyss.ReportApi.Exceptions;
+using RX.Nyss.ReportApi.Models;
 
 namespace RX.Nyss.ReportApi.Services
 {
     public interface IReportMessageService
     {
-        (bool reportParsedSuccessfully, ReportMessageService.ParsedReport parsedReport) ParseReport(string reportMessage);
+        ParsedReport ParseReport(string reportMessage);
     }
 
     public class ReportMessageService : IReportMessageService
@@ -26,35 +27,28 @@ namespace RX.Nyss.ReportApi.Services
         private const string EventReportPattern = @"^(?<eventCode>[1-9][0-9]*)$";
         private static readonly Regex EventReportRegex = new Regex(EventReportPattern, RegexOptions.Compiled);
 
-        public (bool reportParsedSuccessfully, ParsedReport parsedReport) ParseReport(string reportMessage)
+        public ParsedReport ParseReport(string reportMessage)
         {
-            bool isValid;
-            var parsedReportMessage = new ParsedReport();
-            
             if (SingleReportRegex.IsMatch(reportMessage))
             {
-                isValid = ParseSingleReport(reportMessage, parsedReportMessage);
-            }
-            else if (AggregatedReportRegex.IsMatch(reportMessage))
-            {
-                isValid = ParseAggregatedReport(reportMessage, parsedReportMessage);
-            }
-            else if (EventReportRegex.IsMatch(reportMessage))
-            {
-                isValid = ParseEventReport(reportMessage, parsedReportMessage);
-            }
-            else
-            {
-                isValid = false;
+                return ParseSingleReport(reportMessage);
             }
 
-            return (isValid, parsedReportMessage);
+            if (AggregatedReportRegex.IsMatch(reportMessage))
+            {
+                return ParseAggregatedReport(reportMessage);
+            }
+
+            if (EventReportRegex.IsMatch(reportMessage))
+            {
+                return ParseEventReport(reportMessage);
+            }
+
+            throw new ReportValidationException("A report format was not recognized.");
         }
 
-        internal static bool ParseSingleReport(string reportMessage, ParsedReport report)
+        internal static ParsedReport ParseSingleReport(string reportMessage)
         {
-            var isValid = true;
-
             var singleReportMatch = SingleReportRegex.Match(reportMessage);
             var healthRiskCodeMatch = singleReportMatch.Groups["healthRiskCode"].Value;
             var sexMatch = singleReportMatch.Groups["sex"].Value;
@@ -64,29 +58,40 @@ namespace RX.Nyss.ReportApi.Services
             var sexParsedSuccessfully = int.TryParse(sexMatch, out var sex);
             var ageGroupParsedSuccessfully = int.TryParse(ageGroupMatch, out var ageGroup);
 
-            isValid &= healthRiskCodeParsedSuccessfully;
-            isValid &= sexParsedSuccessfully;
-            isValid &= ageGroupParsedSuccessfully;
-
-            if (sexParsedSuccessfully && ageGroupParsedSuccessfully)
+            if (!healthRiskCodeParsedSuccessfully)
             {
-                report.ReportedCase.CountMalesBelowFive = sex == Male && ageGroup == BelowFive ? 1 : 0;
-                report.ReportedCase.CountMalesAtLeastFive = sex == Male && ageGroup == AtLeastFive ? 1 : 0;
-                report.ReportedCase.CountFemalesBelowFive = sex == Female && ageGroup == BelowFive ? 1 : 0;
-                report.ReportedCase.CountFemalesAtLeastFive = sex == Female && ageGroup == AtLeastFive ? 1 : 0;
+                throw new ReportValidationException($"Cannot parse health risk code '{healthRiskCodeMatch}'.");
             }
 
-            report.HealthRiskCode = healthRiskCodeParsedSuccessfully ? (int?) healthRiskCode : null;
-            report.ReportType = ReportType.Single;
-            report.DataCollectorType = DataCollectorType.Human;
+            if (!sexParsedSuccessfully)
+            {
+                throw new ReportValidationException($"Cannot parse sex '{sexMatch}'.");
+            }
 
-            return isValid;
+            if (!ageGroupParsedSuccessfully)
+            {
+                throw new ReportValidationException($"Cannot parse age group '{ageGroup}'.");
+            }
+
+            var parsedReport = new ParsedReport
+            {
+                HealthRiskCode = healthRiskCode,
+                ReportType = ReportType.Single,
+                DataCollectorType = DataCollectorType.Human,
+                ReportedCase =
+                {
+                    CountMalesBelowFive = sex == Male && ageGroup == BelowFive ? 1 : 0,
+                    CountMalesAtLeastFive = sex == Male && ageGroup == AtLeastFive ? 1 : 0,
+                    CountFemalesBelowFive = sex == Female && ageGroup == BelowFive ? 1 : 0,
+                    CountFemalesAtLeastFive = sex == Female && ageGroup == AtLeastFive ? 1 : 0
+                }
+            };
+
+            return parsedReport;
         }
 
-        internal static bool ParseAggregatedReport(string reportMessage, ParsedReport report)
+        internal static ParsedReport ParseAggregatedReport(string reportMessage)
         {
-            var isValid = true;
-
             var aggregatedReportMatch = AggregatedReportRegex.Match(reportMessage);
             var healthRiskCodeMatch = aggregatedReportMatch.Groups["healthRiskCode"].Value;
             var malesBelowFiveMatch = aggregatedReportMatch.Groups["malesBelowFive"].Value;
@@ -100,53 +105,68 @@ namespace RX.Nyss.ReportApi.Services
             var femalesBelowFiveParsedSuccessfully = int.TryParse(femalesBelowFiveMatch, out var femalesBelowFive);
             var femalesAtLeastFiveParsedSuccessfully = int.TryParse(femalesAtLeastFiveMatch, out var femalesAtLeastFive);
 
-            isValid &= healthRiskCodeParsedSuccessfully;
-            isValid &= malesBelowFiveParsedSuccessfully;
-            isValid &= malesAtLeastFiveParsedSuccessfully;
-            isValid &= femalesBelowFiveParsedSuccessfully;
-            isValid &= femalesAtLeastFiveParsedSuccessfully;
+            if (!healthRiskCodeParsedSuccessfully)
+            {
+                throw new ReportValidationException($"Cannot parse health risk code '{healthRiskCodeMatch}'.");
+            }
 
-            report.ReportedCase.CountMalesBelowFive = malesBelowFiveParsedSuccessfully ? (int?) malesBelowFive : null;
-            report.ReportedCase.CountMalesAtLeastFive = malesAtLeastFiveParsedSuccessfully ? (int?) malesAtLeastFive : null;
-            report.ReportedCase.CountFemalesBelowFive = femalesBelowFiveParsedSuccessfully ? (int?) femalesBelowFive : null;
-            report.ReportedCase.CountFemalesAtLeastFive = femalesAtLeastFiveParsedSuccessfully ? (int?) femalesAtLeastFive : null;
+            if (!malesBelowFiveParsedSuccessfully)
+            {
+                throw new ReportValidationException($"Cannot parse number of males below five '{malesBelowFiveMatch}'.");
+            }
 
-            report.HealthRiskCode = healthRiskCodeParsedSuccessfully ? (int?) healthRiskCode : null;
-            report.ReportType = ReportType.Aggregate;
-            report.DataCollectorType = DataCollectorType.Human;
+            if (!malesAtLeastFiveParsedSuccessfully)
+            {
+                throw new ReportValidationException($"Cannot parse number of males at least five '{malesAtLeastFiveMatch}'.");
+            }
 
-            return isValid;
+            if (!femalesBelowFiveParsedSuccessfully)
+            {
+                throw new ReportValidationException($"Cannot parse number of females below five '{femalesBelowFiveMatch}'.");
+            }
+
+            if (!femalesAtLeastFiveParsedSuccessfully)
+            {
+                throw new ReportValidationException($"Cannot parse number of females at least five '{femalesAtLeastFiveMatch}'.");
+            }
+
+            var parsedReport = new ParsedReport
+            {
+                HealthRiskCode = healthRiskCode,
+                ReportType = ReportType.Aggregate,
+                DataCollectorType = DataCollectorType.Human,
+                ReportedCase =
+                {
+                    CountMalesBelowFive = malesBelowFive,
+                    CountMalesAtLeastFive = malesAtLeastFive,
+                    CountFemalesBelowFive = femalesBelowFive,
+                    CountFemalesAtLeastFive = femalesAtLeastFive
+                }
+            };
+
+            return parsedReport;
         }
 
-        private static bool ParseEventReport(string reportMessage, ParsedReport report)
+        private static ParsedReport ParseEventReport(string reportMessage)
         {
-            var isValid = true;
-
             var eventReportMatch = EventReportRegex.Match(reportMessage);
             var eventCodeMatch = eventReportMatch.Groups["eventCode"].Value;
 
             var eventCodeParsedSuccessfully = int.TryParse(eventCodeMatch, out var eventCode);
 
-            isValid &= eventCodeParsedSuccessfully;
+            if (!eventCodeParsedSuccessfully)
+            {
+                throw new ReportValidationException($"Cannot parse event code '{eventCodeMatch}'.");
+            }
 
-            report.HealthRiskCode = eventCodeParsedSuccessfully ? (int?) eventCode : null;
-            report.ReportType = eventCode == ActivityCode ? ReportType.Activity : ReportType.NonHuman;
-            report.DataCollectorType = DataCollectorType.Human;
+            var parsedReport = new ParsedReport
+            {
+                HealthRiskCode = eventCode,
+                ReportType = eventCode == ActivityCode ? ReportType.Activity : ReportType.NonHuman,
+                DataCollectorType = DataCollectorType.Human
+            };
 
-            return isValid;
-        }
-
-        public class ParsedReport
-        {
-            public int? HealthRiskCode { get; set; }
-
-            public ReportType ReportType { get; set; }
-
-            public ReportCase ReportedCase { get; set; } = new ReportCase();
-
-            public DataCollectorType DataCollectorType { get; set; }
-
-            public DataCollectionPointCase DataCollectionPointCase { get; set; } = new DataCollectionPointCase();
+            return parsedReport;
         }
     }
 }

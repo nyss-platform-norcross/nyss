@@ -24,11 +24,13 @@ namespace RX.Nyss.Data.Models
         public virtual ContentLanguage ContentLanguage { get; set; }
 
         public virtual Country Country { get; set; }
-
-        public virtual ICollection<UserNationalSociety> NationalSocietyUsers { get; set; }
         
         public virtual User HeadManager { get; set; }
         
         public virtual User PendingHeadManager { get; set; }
+
+        public virtual ICollection<UserNationalSociety> NationalSocietyUsers { get; set; }
+
+        public virtual ICollection<RawReport> RawReports { get; set; }
     }
 }

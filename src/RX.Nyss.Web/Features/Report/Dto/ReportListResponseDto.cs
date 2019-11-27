@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Report.Dto
 {
@@ -10,7 +8,7 @@ namespace RX.Nyss.Web.Features.Report.Dto
         public int Id { get; set; }
         public DateTime DateTime { get; set; }
         public string HealthRiskName { get; set; }
-        public bool IsValid { get; set; }
+        public ReportStatus ReportStatus { get; set; }
         public string Region { get; set; }
         public string District { get; set; }
         public string Village { get; set; }

@@ -214,7 +214,7 @@ export const stringKeys = {
       removalConfirmation: "nationalSocietyUser.list.removalConfirmation",
       headManager: "nationalSocietyUser.list.headManager"
     },
-    messages:{
+    messages: {
       creationSuccessful: "nationalSocietyUser.messages.creationSuccessful",
     }
   },
@@ -275,8 +275,6 @@ export const stringKeys = {
       malesAtLeastFive: "reports.list.malesAtLeastFive",
       femalesBelowFive: "reports.list.femalesBelowFive",
       femalesAtLeastFive: "reports.list.femalesAtLeastFive",
-      success: "reports.list.success",
-      error: "reports.list.error",       
     },
   },
   form: {

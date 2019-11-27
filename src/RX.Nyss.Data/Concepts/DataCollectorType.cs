@@ -2,7 +2,6 @@
 {
     public enum DataCollectorType
     {
-        Unknown,
         Human,
         CollectionPoint
     }

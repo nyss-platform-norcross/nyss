@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
@@ -26,7 +27,8 @@ namespace RX.Nyss.ReportFuncApp
         {
             _logger.Log(LogLevel.Debug, $"Dequeued report: {report}");
             var client = _httpClientFactory.CreateClient();
-            await client.PostAsync(_configuration.ReportApiUrl, new StringContent(report, Encoding.UTF8, "application/x-www-form-urlencoded"));
+            client.BaseAddress = new Uri(_configuration.ReportApiUrl);
+            await client.PostAsync($"?{report}", null);
         }
     }
 }
