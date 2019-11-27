@@ -75,7 +75,7 @@ const ProjectsEditPageComponent = (props) => {
   const onHealthRiskChange = (value, eventData) => {
     if (eventData.action === "select-option") {
       setSelectedHealthRisks([...selectedHealthRisks, eventData.option.data]);
-    } else if (eventData.action === "remove-value") {
+    } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
       setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
     } else if (eventData.action === "clear") {
       setSelectedHealthRisks([]);

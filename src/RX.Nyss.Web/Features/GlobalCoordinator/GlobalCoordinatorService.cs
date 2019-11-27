@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IVerificationEmailService _verificationEmailService;
-
+        private const string EnglishLanguageCode = "en";
         public GlobalCoordinatorService(
             IIdentityUserRegistrationService identityUserRegistrationService,
             INyssContext dataContext,
@@ -56,6 +56,9 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
                     var identityUser = await _identityUserRegistrationService.CreateIdentityUser(dto.Email, Role.GlobalCoordinator);
                     securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
+                    var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+                        .SingleOrDefaultAsync(al => al.LanguageCode == EnglishLanguageCode);
+
                     user = new GlobalCoordinatorUser
                     {
                         IdentityUserId = identityUser.Id,
@@ -64,7 +67,8 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
                         PhoneNumber = dto.PhoneNumber,
                         AdditionalPhoneNumber = dto.AdditionalPhoneNumber,
                         Organization = dto.Organization,
-                        Role = Role.GlobalCoordinator
+                        Role = Role.GlobalCoordinator,
+                        ApplicationLanguage = defaultUserApplicationLanguage,
                     };
                     await _dataContext.AddAsync(user);
 

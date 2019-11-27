@@ -6,7 +6,7 @@ import { LOCATION_CHANGE } from "connected-react-router";
 export function dataCollectorsReducer(state = initialState.dataCollectors, action) {
   switch (action.type) {
     case LOCATION_CHANGE: // cleanup
-      return { ...state, formData: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null }
+      return { ...state, formData: null, formError: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null }
 
     case actions.OPEN_DATA_COLLECTORS_LIST.SUCCESS:
       return { ...state, listProjectId: action.projectId };
@@ -42,7 +42,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formFetching: false, formError: action.message };
 
     case actions.CREATE_DATA_COLLECTOR.REQUEST:
-      return { ...state, formSaving: true };
+      return { ...state, formSaving: true, formError: null };
 
     case actions.CREATE_DATA_COLLECTOR.SUCCESS:
       return { ...state, formSaving: false, listStale: true };
@@ -51,13 +51,13 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formSaving: false, formError: action.message };
 
     case actions.EDIT_DATA_COLLECTOR.REQUEST:
-      return { ...state, formSaving: true };
+      return { ...state, formSaving: true, formError: null };
 
     case actions.EDIT_DATA_COLLECTOR.SUCCESS:
       return { ...state, formSaving: false, listStale: true };
 
     case actions.EDIT_DATA_COLLECTOR.FAILURE:
-      return { ...state, formSaving: false };
+      return { ...state, formSaving: false, formError: action.message };
 
     case actions.REMOVE_DATA_COLLECTOR.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };

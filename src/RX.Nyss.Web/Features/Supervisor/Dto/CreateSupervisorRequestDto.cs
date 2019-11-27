@@ -14,6 +14,7 @@ namespace RX.Nyss.Web.Features.Supervisor.Dto
         public string AdditionalPhoneNumber { get; set; }
         public string Email { get; set; }
         public int? ProjectId { get; set; }
+        public string Organization { get; set; }
 
         public class CreateSupervisorValidator : AbstractValidator<CreateSupervisorRequestDto>
         {

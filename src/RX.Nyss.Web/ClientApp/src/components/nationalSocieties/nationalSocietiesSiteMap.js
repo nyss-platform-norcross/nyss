@@ -20,7 +20,7 @@ export const nationalSocietiesSiteMap = [
     parentPath: "/nationalsocieties",
     path: "/nationalsocieties/:nationalSocietyId",
     title: () => "{nationalSocietyName} ({nationalSocietyCountry})",
-    access: [Administrator, GlobalCoordinator, DataConsumer]
+    access: [Administrator, GlobalCoordinator, DataConsumer, Manager]
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",

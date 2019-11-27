@@ -13,6 +13,7 @@ namespace RX.Nyss.Web.Features.Supervisor.Dto
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public int? ProjectId { get; set; }
+        public string Organization { get; set; }
 
         public class EditSupervisorRequestValidator : AbstractValidator<EditSupervisorRequestDto>
         {

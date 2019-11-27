@@ -212,6 +212,14 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         public async Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto)
         {
+            var phoneNumberExists = await _nyssContext.DataCollectors
+                .AnyAsync(dc => dc.PhoneNumber == editDto.PhoneNumber);
+
+            if (phoneNumberExists)
+            {
+                return Error(ResultKey.DataCollector.PhoneNumberAlreadyExists).Cast<int>();
+            }
+
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
                     .ThenInclude(x => x.NationalSociety)
