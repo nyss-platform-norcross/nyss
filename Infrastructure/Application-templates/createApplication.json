@@ -191,7 +191,8 @@
           "cors": {
             "allowedOrigins": [
             ]
-          }
+          },
+          "alwaysOn": "[parameters('alwaysOn')]"
         }
       }
     },
@@ -299,7 +300,8 @@
               "name": "[variables('subnetName')]",
               "description": "Isolate traffic to only coming from subnet"
             }
-          ]
+          ],
+          "alwaysOn": "[parameters('alwaysOn')]"
         },
         "httpsOnly": false,
         "appSettings": [
@@ -373,12 +375,9 @@
             {
               "name": "SERVICEBUS_SENDEMAILQUEUE",
               "value": "[variables('sendEmailQueueName')]"
-            },
-            {
-              "name": "ReportApiUrl",
-              "value": "[concat('https://', variables('funcapp_name'), '.azurewebsites.net/api/report')]"
             }
-          ]
+          ],
+          "alwaysOn": "[parameters('alwaysOn')]"
         }
       }
     },
@@ -476,7 +475,7 @@
               "type": "containers",
               "apiVersion": "2018-07-01",
               "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', variables('funcStorageAccountName'))]"
+                "[concat('Microsoft.Storage/storageAccounts/', variables('funcStorageAccountName'), '/blobServices/default')]"
               ]
             }
           ]
@@ -521,7 +520,7 @@
               "type": "containers",
               "apiVersion": "2018-07-01",
               "dependsOn": [
-                "[concat('Microsoft.Storage/storageAccounts/', variables('generalStorageAccountName'))]"
+                "[concat('Microsoft.Storage/storageAccounts/', variables('generalStorageAccountName'), '/blobServices/default')]"
               ]
             }
           ]

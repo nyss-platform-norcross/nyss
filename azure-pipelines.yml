@@ -25,7 +25,7 @@ steps:
   inputs:
     command: test
     projects: 'RX.Nyss.sln'
-    arguments: '/p:NoNpmInstall=true /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[RX.Nyss.Web.Views]*%2c[RX.Nyss.Data]*%2c[RX.Nyss.Web]RX.Nyss.Web.Data.*%2c[RX.Nyss.Web]*Dto.*%2c[RX.Nyss.Web]RX.Nyss.Web.Configuration.*%2c[RX.Nyss.Web]RX.Nyss.Web.Migrations.*%2c[RX.Nyss.Web]RX.Nyss.Web.Utils.Logging.*%2c[RX.Nyss.Web]RX.Nyss.Web.Startup%2c[RX.Nyss.Web]RX.Nyss.Web.Program%2c[RX.Nyss.Web]RX.Nyss.Web.Pages.ErrorModel"'
+    arguments: '/p:NoNpmInstall=true /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:Exclude="[RX.Nyss.Web.Views]*%2c[RX.Nyss.Data]*%2c[RX.Nyss.Web]RX.Nyss.Web.Data.*%2c[RX.Nyss.*]*.Dto.*%2c[RX.Nyss.*]*.Contracts.*%2c[RX.Nyss.*]*.Models.*%2c[RX.Nyss.*]*.Configuration.*%2c[RX.Nyss.*]*.Migrations.*%2c[RX.Nyss.*]*.Utils.Logging.*%2c[RX.Nyss.*]*.Startup%2c[RX.Nyss.*]*.Program%2c[RX.Nyss.*]*.Pages.ErrorModel"'
 
 - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
   displayName: ReportGenerator
@@ -64,6 +64,24 @@ steps:
     command: publish
     publishWebProjects: false
     arguments: 'src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/funcapp" /p:Version=$(GitVersion.MajorMinorPatch)'
+    zipAfterPublish: true
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish RX.Nyss.ReportFuncApp'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: 'src/RX.Nyss.ReportFuncApp/RX.Nyss.ReportFuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/reportfuncapp" /p:Version=$(GitVersion.MajorMinorPatch)'
+    zipAfterPublish: true
+    modifyOutputPath: false
+
+- task: DotNetCoreCLI@2          
+  displayName: 'Publish RX.Nyss.ReportApi'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: 'src/RX.Nyss.ReportApi/RX.Nyss.ReportApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/reportapi" /p:Version=$(GitVersion.MajorMinorPatch)'
     zipAfterPublish: true
     modifyOutputPath: false
 
