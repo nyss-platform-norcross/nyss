@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.ReportFuncApp.Models
+﻿namespace RX.Nyss.ReportApi.Contracts
 {
     public class Sms
     {

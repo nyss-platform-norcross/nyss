@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using RX.Nyss.ReportApi.Contracts;
 using RX.Nyss.ReportApi.Models;
 using RX.Nyss.ReportApi.Services;
 
