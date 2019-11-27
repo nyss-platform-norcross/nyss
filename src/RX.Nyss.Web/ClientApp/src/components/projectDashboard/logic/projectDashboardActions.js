@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import {
-  OPEN_PROJECT_DASHBOARD, GET_PROJECT_DASHBOARD_DATA
+  OPEN_PROJECT_DASHBOARD, GET_PROJECT_DASHBOARD_DATA, UPDATE_PROJECT_DASHBOARD_FILTERS
 } from "./projectDashboardConstants";
 
 export const goToDashboard = (nationalSocietyId, projectId) => push(`/nationalsocieties/${nationalSocietyId}/projects/${projectId}/dashboard`);
@@ -15,6 +15,6 @@ export const openDashbaord = {
 export const getDashboardData = {
   invoke: (projectId, filters) => ({ type: GET_PROJECT_DASHBOARD_DATA.INVOKE, projectId, filters }),
   request: () => ({ type: GET_PROJECT_DASHBOARD_DATA.REQUEST }),
-  success: (summary) => ({ type: GET_PROJECT_DASHBOARD_DATA.SUCCESS, summary }),
+  success: (filters, summary, reportsGroupedByDate) => ({ type: GET_PROJECT_DASHBOARD_DATA.SUCCESS, filters, summary, reportsGroupedByDate }),
   failure: (message) => ({ type: GET_PROJECT_DASHBOARD_DATA.FAILURE, message })
 };

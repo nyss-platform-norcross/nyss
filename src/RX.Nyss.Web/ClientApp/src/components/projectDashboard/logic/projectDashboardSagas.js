@@ -4,6 +4,7 @@ import * as actions from "./projectDashboardActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import dayjs from "dayjs";
 
 export const projectDashboardSagas = () => [
   takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard),
@@ -16,7 +17,21 @@ function* openProjectDashboard({ projectId }) {
     const project = yield call(openProjectDashboardModule, projectId);
     const filtersData = yield call(http.get, `/api/project/${projectId}/dashboard/filters`);
 
-    yield call(getProjectDashboardData, { projectId, filters: null })
+    const endDate = dayjs(new Date());
+
+
+    const filters = (yield select(state => state.projectDashboard.filters)) ||
+      {
+        healthRiskId: null,
+        area: null,
+        startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+        groupingType: "Day"
+      };
+
+    console.log(filters);
+
+    yield call(getProjectDashboardData, { projectId, filters: filters })
 
     yield put(actions.openDashbaord.success(project.name, filtersData.value));
   } catch (error) {
@@ -28,7 +43,7 @@ function* getProjectDashboardData({ projectId, filters }) {
   yield put(actions.getDashboardData.request());
   try {
     const response = yield call(http.post, `/api/project/${projectId}/dashboard/data`, filters);
-    yield put(actions.getDashboardData.success(response.value.summary));
+    yield put(actions.getDashboardData.success(filters, response.value.summary, response.value.reportsGroupedByDate));
   } catch (error) {
     yield put(actions.getDashboardData.failure(error.message));
   }

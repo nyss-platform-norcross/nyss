@@ -11,6 +11,8 @@
     "babel-eslint": "^10.0.3",
     "connected-react-router": "^6.5.2",
     "dayjs": "^1.8.16",
+    "highcharts": "^7.2.1",
+    "highcharts-react-official": "^2.2.2",
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.5.1",
     "node-sass": "^4.12.0",

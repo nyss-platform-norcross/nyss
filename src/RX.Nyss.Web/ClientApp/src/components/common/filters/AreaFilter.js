@@ -1,7 +1,6 @@
 import styles from "./AreaFilter.module.scss";
 
 import React, { Fragment, useRef, useState } from 'react';
-import { connect } from "react-redux";
 import Menu from "@material-ui/core/Menu";
 import { get } from '../../../utils/http';
 import TreeView from '@material-ui/lab/TreeView';
@@ -10,7 +9,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TextField from "@material-ui/core/TextField";
 
-export const StructureTreeItem = ({ nodeId, data, label, onSelect, isSelected, children }) => {
+const StructureTreeItem = ({ nodeId, data, label, onSelect, isSelected, children }) => {
   const handleChange = (e) => {
     e.stopPropagation();
     onSelect(data);
@@ -32,7 +31,7 @@ export const StructureTreeItem = ({ nodeId, data, label, onSelect, isSelected, c
   );
 }
 
-const AreaFilterComponent = ({ nationalSocietyId, selectedItem, onChange }) => {
+export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isFetching, setIsFetching] = useState(false);
   const [structureLoaded, setStructureLoaded] = useState(false);
@@ -141,12 +140,3 @@ const AreaFilterComponent = ({ nationalSocietyId, selectedItem, onChange }) => {
     </Fragment>
   );
 }
-
-
-const mapStateToProps = state => ({
-});
-
-const mapDispatchToProps = {
-};
-
-export const AreaFilter = connect(mapStateToProps, mapDispatchToProps)(AreaFilterComponent);

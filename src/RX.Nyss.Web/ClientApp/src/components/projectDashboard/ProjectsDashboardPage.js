@@ -10,8 +10,9 @@ import { useMount } from '../../utils/lifecycle';
 import { ProjectsDashboardFilters } from "./components/ProjectsDashboardFilters";
 import { ProjectsDashboardNumbers } from './components/ProjectsDashboardNumbers';
 import { ProjectsDashboardReportsMap } from './components/ProjectsDashboardReportsMap';
+import { ProjectsDashboardReportChart } from './components/ProjectsDashboardReportChart';
 
-const ProjectDashboardPageComponent = ({ openDashbaord, reportsMapData, getDashboardData, healthRisks, projectId, isFetching, match, name, projectSummary, ...props }) => {
+const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projectId, isFetching, ...props }) => {
   useMount(() => {
     openDashbaord(projectId);
   });
@@ -19,44 +20,51 @@ const ProjectDashboardPageComponent = ({ openDashbaord, reportsMapData, getDashb
   const handleFiltersChange = (filters) =>
     getDashboardData(projectId, filters);
 
+  if (!props.filters) {
+    return <Loading />;
+  }
+
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12}>
+      <Grid item xs={12} style={{ position: "sticky", top: -12 }}>
         <ProjectsDashboardFilters
-          healthRisks={healthRisks}
+          healthRisks={props.healthRisks}
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
+          filters={props.filters}
         />
       </Grid>
 
-      {isFetching && <Loading />}
-
-      {!isFetching && projectSummary && <Grid item xs={12}>
-        <ProjectsDashboardNumbers
-          projectSummary={projectSummary}
-        />
-      </Grid>}
-
-      {!isFetching && <Grid item xs={12}>
-        <ProjectsDashboardReportsMap
-          data={reportsMapData}
-        />
-      </Grid>}
+      {!props.projectSummary
+        ? <Loading />
+        : (
+          <Fragment>
+            <Grid item xs={12}>
+              <ProjectsDashboardNumbers projectSummary={props.projectSummary} />
+            </Grid>
+            <Grid item xs={12}>
+              <ProjectsDashboardReportsMap data={props.reportsMapData} />
+            </Grid>
+            <Grid item xs={12}>
+              <ProjectsDashboardReportChart data={props.reportsGroupedByDate} />
+            </Grid>
+          </Fragment>
+        )}
     </Grid>
   );
 }
 
 ProjectDashboardPageComponent.propTypes = {
-  openDashbaord: PropTypes.func,
-  name: PropTypes.string
+  openDashbaord: PropTypes.func
 };
 
 const mapStateToProps = state => ({
   projectId: state.appData.route.params.projectId,
   nationalSocietyId: state.appData.route.params.nationalSocietyId,
-  name: state.projectDashboard.name,
   healthRisks: state.projectDashboard.filtersData.healthRisks,
   projectSummary: state.projectDashboard.projectSummary,
+  filters: state.projectDashboard.filters,
+  reportsGroupedByDate: state.projectDashboard.reportsGroupedByDate,
   isFetching: state.projectDashboard.isFetching
 });
 

@@ -9,13 +9,8 @@ import CardContent from '@material-ui/core/CardContent';
 import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 
-export const ProjectsDashboardFilters = ({ nationalSocietyId, healthRisks, onChange }) => {
-  const [value, setValue] = useState({
-    healthRisk: [],
-    area: null,
-    dateFrom: new Date(),
-    dateTo: new Date()
-  });
+export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, onChange }) => {
+  const [value, setValue] = useState(filters);
 
   const [selectedArea, setSelectedArea] = useState(null);
 
@@ -35,24 +30,31 @@ export const ProjectsDashboardFilters = ({ nationalSocietyId, healthRisks, onCha
   }
 
   const handleHealthRiskChange = event =>
-    onChange(updateValue({ healthRisk: event.target.value ? event.target.value : null }))
+    onChange(updateValue({ healthRiskId: event.target.value === 0 ? null : event.target.value }))
 
   const handleDateFromChange = date =>
-    onChange(updateValue({ dateFrom: date["$d"] }))
+    onChange(updateValue({ startDate: date.format('YYYY-MM-DD') }))
 
   const handleDateToChange = date =>
-    onChange(updateValue({ dateTo: date["$d"] }))
+    onChange(updateValue({ endDate: date.format('YYYY-MM-DD') }))
+
+  const handleGroupingTypeChange = event =>
+    onChange(updateValue({ groupingType: event.target.value }))
+
+  if (!value) {
+    return null;
+  }
 
   return (
-    <Card>
+    <Card className={styles.filters}>
       <CardContent>
-        <Grid container spacing={3} className={styles.filters}>
+        <Grid container spacing={3}>
           <Grid item>
             <DatePicker
               className={styles.filterDate}
               onChange={handleDateFromChange}
               label="Date from"
-              value={value.dateFrom}
+              value={value.startDate}
             />
           </Grid>
 
@@ -61,8 +63,22 @@ export const ProjectsDashboardFilters = ({ nationalSocietyId, healthRisks, onCha
               className={styles.filterDate}
               onChange={handleDateToChange}
               label="Date to"
-              value={value.dateTo}
+              value={value.endDate}
             />
+          </Grid>
+
+          <Grid item>
+            <TextField
+              select
+              label="Group values by"
+              onChange={handleGroupingTypeChange}
+              value={value.groupingType}
+              style={{ width: 130 }}
+              InputLabelProps={{ shrink: true }}
+            >
+              <MenuItem value="Day">Day</MenuItem>
+              <MenuItem value="Week">Week</MenuItem>
+            </TextField>
           </Grid>
 
           <Grid item>
@@ -75,15 +91,14 @@ export const ProjectsDashboardFilters = ({ nationalSocietyId, healthRisks, onCha
 
           <Grid item>
             <TextField
-              id="standard-select-currency"
               select
               label="Health risk"
               onChange={handleHealthRiskChange}
-              value={value.healthRisk}
+              value={value.healthRiskId || 0}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             >
-              <MenuItem value={""}>(all)</MenuItem>
+              <MenuItem value={0}>All</MenuItem>
 
               {healthRisks.map(healthRisk => (
                 <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>

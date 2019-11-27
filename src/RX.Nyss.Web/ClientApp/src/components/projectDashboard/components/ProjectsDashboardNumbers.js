@@ -26,7 +26,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary }) => {
         <Card className={styles.card}>
           <CardHeader title={"Reports"} />
           <CardContent>
-            {renderNumber(strings(stringKeys.project.dashboard.numbers.totalReportCount), projectSummary.activeDataCollectorCount)}
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.totalReportCount), projectSummary.reportCount)}
           </CardContent>
         </Card>
       </Grid>

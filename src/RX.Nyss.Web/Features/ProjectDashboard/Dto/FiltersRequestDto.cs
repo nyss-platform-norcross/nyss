@@ -6,21 +6,33 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
     {
         public int? HealthRiskId { get; set; }
 
-        public DateTime? StartDate { get; set; }
+        public DateTime StartDate { get; set; }
 
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         public AreaDto Area { get; set; }
 
+        public GroupingTypeDto GroupingType { get; set; }
+
         public class AreaDto
         {
-            public int? RegionId { get; set; }
+            public AreaTypeDto Type { get; set; }
 
-            public int? DistrictId { get; set; }
+            public int Id { get; set; }
+        }
 
-            public int? VillageId { get; set; }
+        public enum GroupingTypeDto
+        {
+            Day,
+            Week
+        }
 
-            public int? ZoneId { get; set; }
+        public enum AreaTypeDto
+        {
+            Region,
+            District,
+            Village,
+            Zone
         }
     }
 }
