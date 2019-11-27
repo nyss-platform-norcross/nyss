@@ -213,7 +213,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         public async Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto)
         {
             var phoneNumberExists = await _nyssContext.DataCollectors
-                .AnyAsync(dc => dc.PhoneNumber == editDto.PhoneNumber);
+                .AnyAsync(dc => dc.PhoneNumber == editDto.PhoneNumber && dc.Id != editDto.Id);
 
             if (phoneNumberExists)
             {

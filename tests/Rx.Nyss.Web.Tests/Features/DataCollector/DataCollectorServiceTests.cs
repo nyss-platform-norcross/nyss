@@ -29,7 +29,9 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
 
         private const int DataCollectorId = 1;
         private const int SecondDataCollectorId = 2;
-        private const string DataCollectorPhoneNumber = "+4712345678";
+        private const string DataCollectorPhoneNumber1 = "+4712345678";
+        private const string DataCollectorPhoneNumber2 = "+4712345679";
+        private const string DataCollectorPhoneNumber3 = "+4712345680";
         private const int ProjectId = 1;
         private const int SupervisorId = 1;
         private const int NationalSocietyId = 1;
@@ -80,7 +82,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                 new RX.Nyss.Data.Models.DataCollector
                 {
                     Id = DataCollectorId,
-                    PhoneNumber = DataCollectorPhoneNumber,
+                    PhoneNumber = DataCollectorPhoneNumber1,
                     Project = projects[0],
                     Village = villages[0],
                     Supervisor = (SupervisorUser)users[0],
@@ -95,7 +97,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                 new RX.Nyss.Data.Models.DataCollector
                 {
                     Id = SecondDataCollectorId,
-                    PhoneNumber = DataCollectorPhoneNumber,
+                    PhoneNumber = DataCollectorPhoneNumber2,
                     Project = projects[0],
                     Village = villages[0],
                     Supervisor = (SupervisorUser)users[0],
@@ -165,7 +167,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             // Arrange
             var dataCollector = new CreateDataCollectorRequestDto
             {
-                PhoneNumber = DataCollectorPhoneNumber,
+                PhoneNumber = DataCollectorPhoneNumber1,
                 SupervisorId = SupervisorId,
                 VillageId = _nyssContextMock.Villages.ToList()[0].Id,
                 Latitude = 15,
@@ -187,7 +189,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             var dataCollector = new EditDataCollectorRequestDto
             {
                 Id = 3,
-                PhoneNumber = DataCollectorPhoneNumber,
+                PhoneNumber = DataCollectorPhoneNumber3,
                 SupervisorId = SupervisorId,
                 VillageId = _nyssContextMock.Villages.ToList()[0].Id,
                 Latitude = 15,
@@ -204,7 +206,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             var dataCollector = new EditDataCollectorRequestDto
             {
                 Id = DataCollectorId,
-                PhoneNumber = DataCollectorPhoneNumber,
+                PhoneNumber = DataCollectorPhoneNumber1,
                 SupervisorId = SupervisorId,
                 VillageId = _nyssContextMock.Villages.ToList()[0].Id,
                 Latitude = 15,
@@ -270,7 +272,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             var dataCollector = result.Value.First();
             dataCollector.Id.ShouldBe(DataCollectorId);
             dataCollector.DisplayName.ShouldBe("");
-            dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber);
+            dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
             dataCollector.Village.ShouldBe(Village);
             dataCollector.District.ShouldBe("Layuna");
             dataCollector.Name.ShouldBe("");
