@@ -26,6 +26,7 @@ const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
   const [notificationEmails, setNotificationEmails] = useState([]);
+  const [healthRisksFieldTouched, setHealthRisksFieldTouched] = useState(false);
 
   useEffect(() => {
     setHealthRiskDataSource(props.healthRisks.map(hr => ({ label: hr.healthRiskName, value: hr.healthRiskId, data: hr })));
@@ -66,7 +67,7 @@ const ProjectsCreatePageComponent = (props) => {
   const onHealthRiskChange = (value, eventData) => {
     if (eventData.action === "select-option") {
       setSelectedHealthRisks([...selectedHealthRisks, eventData.option.data]);
-    } else if (eventData.action === "remove-value") {
+    } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
       setSelectedHealthRisks(selectedHealthRisks.filter(hr => hr.healthRiskId !== eventData.removedValue.value));
     } else if (eventData.action === "clear") {
       setSelectedHealthRisks([]);
@@ -102,6 +103,7 @@ const ProjectsCreatePageComponent = (props) => {
               label={strings(stringKeys.project.form.name)}
               name="name"
               field={form.fields.name}
+              autoFocus
             />
           </Grid>
   
@@ -124,7 +126,8 @@ const ProjectsCreatePageComponent = (props) => {
               label={strings(stringKeys.project.form.healthRisks)}
               options={healthRiskDataSource}
               onChange={onHealthRiskChange}
-              error={selectedHealthRisks.length === 0 ? `${strings(stringKeys.validation.fieldRequired)}` : null}
+              onBlur={e => setHealthRisksFieldTouched(true)}
+              error={(healthRisksFieldTouched && selectedHealthRisks.length === 0) ? `${strings(stringKeys.validation.fieldRequired)}` : null}
             />
           </Grid>
 

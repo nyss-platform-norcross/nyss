@@ -31,9 +31,10 @@ const customMultiselectStyle = {
   })
 }
 
-export const MultiSelect = ({ name, error, label, value, defaultValue, options, onChange }) => {
+export const MultiSelect = ({ name, error, label, value, defaultValue, options, onChange, ...restProps }) => {
   return (
     <Select
+      {...restProps}
       defaultValue={defaultValue}
       isMulti
       name={name}

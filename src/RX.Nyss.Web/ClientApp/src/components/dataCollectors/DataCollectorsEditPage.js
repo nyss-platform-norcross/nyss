@@ -9,10 +9,8 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
 import MenuItem from "@material-ui/core/MenuItem";
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
@@ -23,6 +21,7 @@ import { GeoStructureSelect } from './GeoStructureSelect';
 import SelectField from '../forms/SelectField';
 import { getBirthDecades } from './logic/dataCollectorsService';
 import { DataCollectorMap } from './DataCollectorMap';
+import { ValidationMessage } from "../forms/ValidationMessage";
 
 const DataCollectorsEditPageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
@@ -114,7 +113,7 @@ const DataCollectorsEditPageComponent = (props) => {
   return (
     <Fragment>
       {props.error &&
-        <SnackbarContent
+        <ValidationMessage
           message={props.error}
         />
       }
