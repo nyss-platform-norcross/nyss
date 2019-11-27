@@ -347,7 +347,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
-            await _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
+            _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
         }
 
         [Fact]
@@ -373,7 +373,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
-            await _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
+            _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
         }
 
         [Fact]

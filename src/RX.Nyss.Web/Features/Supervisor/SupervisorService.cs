@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
@@ -236,6 +236,7 @@ namespace RX.Nyss.Web.Features.Supervisor
 
                 await AttachSupervisorToProject(user, project);
             }
+
             RemoveExistingProjectReference(currentProjectReference);
         }
 
@@ -256,7 +257,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                 var supervisorUser = await GetSupervisorUser(supervisorId);
 
                 DetachSupervisorFromAllProjects(supervisorUser);
-                await _nationalSocietyUserService.DeleteNationalSocietyUser(supervisorUser);
+                _nationalSocietyUserService.DeleteNationalSocietyUser(supervisorUser);
                 await _identityUserRegistrationService.DeleteIdentityUser(supervisorUser.IdentityUserId);
 
                 await _dataContext.SaveChangesAsync();

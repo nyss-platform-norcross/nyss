@@ -397,7 +397,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('reportQueueName')]",
-          "type": "Queues",
+          "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
           ],
@@ -418,7 +418,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('sendEmailQueueName')]",
-          "type": "Queues",
+          "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
           ],

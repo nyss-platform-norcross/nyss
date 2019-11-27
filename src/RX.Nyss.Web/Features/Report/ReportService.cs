@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Features.Report
                         ? r.DataCollector.Zone.Name
                         : null,
                     DataCollectorDisplayName = r.DataCollector.DisplayName,
-                    DataCollectorPhoneNumber = r.DataCollector.PhoneNumber,
+                    PhoneNumber = r.PhoneNumber,
                     CountMalesBelowFive = r.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.ReportedCase.CountFemalesBelowFive,
                     CountMalesAtLeastFive = r.ReportedCase.CountMalesAtLeastFive,

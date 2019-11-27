@@ -18,5 +18,8 @@
     "FromName": "Nyss Platform",
     "SendToAll": "False",
     "SendMailUrl": "https://api.mailjet.com/v3.1/send"
+  },
+  "Host": {
+    "LocalHttpPort": 7070
   }
 }

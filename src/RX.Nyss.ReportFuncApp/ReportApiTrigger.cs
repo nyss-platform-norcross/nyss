@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Net.Http;
-using System.Text;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using RX.Nyss.ReportFuncApp.Configuration;
+using RX.Nyss.ReportFuncApp.Models;
 
 namespace RX.Nyss.ReportFuncApp
 {
@@ -25,10 +26,16 @@ namespace RX.Nyss.ReportFuncApp
         public async Task DequeueReport(
             [ServiceBusTrigger("%SERVICEBUS_REPORTQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] string report)
         {
-            _logger.Log(LogLevel.Debug, $"Dequeued report: {report}");
+            _logger.Log(LogLevel.Debug, $"Dequeued report: '{report}'");
+
             var client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri(_configuration.ReportApiUrl);
-            await client.PostAsync($"?{report}", null);
+            var postResult = await client.PostAsync(_configuration.ReportApiUrl, new Sms { Content = report }, new JsonMediaTypeFormatter());
+
+            if (!postResult.IsSuccessStatusCode)
+            {
+                _logger.LogError($"Status code: {(int) postResult.StatusCode} ReasonPhrase: {postResult.ReasonPhrase}");
+                throw new Exception($"A report '{report}' was not handled properly by the Report API.");
+            }
         }
     }
 }

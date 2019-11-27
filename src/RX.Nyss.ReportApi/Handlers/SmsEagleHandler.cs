@@ -84,11 +84,11 @@ namespace RX.Nyss.ReportApi.Handlers
             //ToDo: extract try-catch block to a separate service?
             try
             {
-                var gatewayNationalSociety = await ValidateGatewaySetting(apiKey);
-                rawReport.NationalSociety = gatewayNationalSociety;
+                var gatewaySetting = await ValidateGatewaySetting(apiKey);
+                rawReport.NationalSociety = gatewaySetting.NationalSociety;
                 await _nyssContext.SaveChangesAsync();
 
-                var dataCollector = await ValidateDataCollector(sender, gatewayNationalSociety);
+                var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSociety);
                 var parsedReport = _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
 
@@ -131,8 +131,8 @@ namespace RX.Nyss.ReportApi.Handlers
                 _loggerAdapter.Warn(e.Message);
             }
         }
-
-        private async Task<NationalSociety> ValidateGatewaySetting(string apiKey)
+       
+        private async Task<GatewaySetting> ValidateGatewaySetting(string apiKey)
         {
             var gatewaySetting = await _nyssContext.GatewaySettings
                 .Include(gs => gs.NationalSociety)
@@ -148,7 +148,7 @@ namespace RX.Nyss.ReportApi.Handlers
                 throw new ReportValidationException($"A gateway type ('{gatewaySetting.GatewayType}') is different than '{GatewayType.SmsEagle}'.");
             }
 
-            return gatewaySetting.NationalSociety;
+            return gatewaySetting;
         }
 
         private async Task<DataCollector> ValidateDataCollector(string phoneNumber, NationalSociety gatewayNationalSociety)

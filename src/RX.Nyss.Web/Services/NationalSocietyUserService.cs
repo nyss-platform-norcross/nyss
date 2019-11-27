@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Services
     {
         Task<Result> DeleteUser<T>(int nationalSocietyUserId) where T : User;
         Task<T> GetNationalSocietyUser<T>(int nationalSocietyUserId) where T : User;
-        Task DeleteNationalSocietyUser<T>(T nationalSocietyUser) where T : User;
+        void DeleteNationalSocietyUser<T>(T nationalSocietyUser) where T : User;
         Task<T> GetNationalSocietyUserIncludingNationalSocieties<T>(int nationalSocietyUserId) where T : User;
     }
 
@@ -73,7 +73,7 @@ namespace RX.Nyss.Web.Services
 
                 var nationalSocietyUser = await GetNationalSocietyUserIncludingNationalSocieties<T>(nationalSocietyUserId);
 
-                await DeleteNationalSocietyUser<T>(nationalSocietyUser);
+                DeleteNationalSocietyUser<T>(nationalSocietyUser);
                 await _identityUserRegistrationService.DeleteIdentityUser(nationalSocietyUser.IdentityUserId);
 
                 await _dataContext.SaveChangesAsync();
@@ -88,7 +88,7 @@ namespace RX.Nyss.Web.Services
             }
         }
 
-        public async Task DeleteNationalSocietyUser<T>(T nationalSocietyUser) where T : User
+        public void DeleteNationalSocietyUser<T>(T nationalSocietyUser) where T : User
         {
             var userNationalSocieties = nationalSocietyUser.UserNationalSocieties;
 

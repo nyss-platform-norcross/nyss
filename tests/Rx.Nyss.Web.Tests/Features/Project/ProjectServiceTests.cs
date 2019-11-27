@@ -76,7 +76,6 @@ namespace Rx.Nyss.Web.Tests.Features.Project
         {
             // Arrange
             const int existingProjectId = 2;
-            const int healthRiskId = 1;
 
             var project = new[]
             {
@@ -158,7 +157,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
-            var healthRisks = new RX.Nyss.Data.Models.HealthRisk[0]  ;
+            var healthRisks = Array.Empty<RX.Nyss.Data.Models.HealthRisk>();
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
 

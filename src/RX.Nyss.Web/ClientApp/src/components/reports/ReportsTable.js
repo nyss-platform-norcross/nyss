@@ -47,9 +47,9 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
               <TableCell>{dayjs(row.dateTime).format('HH:mm')}</TableCell>
               <TableCell>{row.reportStatus}</TableCell>
               <TableCell>{row.dataCollectorDisplayName}</TableCell>
-              <TableCell>{row.dataCollectorPhoneNumber}</TableCell>
+              <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{row.region}, {row.district}, {row.village}{row.zone ? ',' : null} {row.zone}</TableCell>
-              <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>              
+              <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
               <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>

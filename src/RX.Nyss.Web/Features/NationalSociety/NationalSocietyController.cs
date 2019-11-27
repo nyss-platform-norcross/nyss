@@ -50,6 +50,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <summary>
         /// Edits an existing National Society.
         /// </summary>
+        /// <param name="nationalSocietyId"></param>
         /// <param name="nationalSociety"></param>
         /// <returns></returns>
         [Route("{nationalSocietyId}/edit"), HttpPost]
@@ -81,7 +82,6 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <summary>
         /// Will set the current user as the head for the given national societies
         /// </summary>
-        /// <param name="id"></param>
         /// <returns></returns>
         [Route("consentAsHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> ConsentAsHeadManager() =>
