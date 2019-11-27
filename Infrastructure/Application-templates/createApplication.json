@@ -192,8 +192,7 @@
             "allowedOrigins": [
             ]
           },
-          // Consumption Plan does not support AlwaysOn feature
-          "alwaysOn": false
+          "alwaysOn": "[parameters('alwaysOn')]"
         }
       }
     },
