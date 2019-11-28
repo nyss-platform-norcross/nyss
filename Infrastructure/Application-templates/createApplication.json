@@ -621,7 +621,7 @@
         "[variables('virtualNetworkId')]"
       ],
       "properties": {
-        "vnetResourceId": "[variables('virtualNetworkSubnetId')]",
+        "vnetResourceId": "[variables('virtualNetworkId')]",
         "isSwift": false
       }
     }

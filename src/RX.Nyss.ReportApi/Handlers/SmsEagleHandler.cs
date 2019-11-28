@@ -140,7 +140,7 @@ namespace RX.Nyss.ReportApi.Handlers
 
             if (gatewaySetting == null)
             {
-                throw new ReportValidationException("A gateway setting with API key '{apiKey}' does not exist.");
+                throw new ReportValidationException($"A gateway setting with API key '{apiKey}' does not exist.");
             }
 
             if (gatewaySetting.GatewayType != GatewayType.SmsEagle)
@@ -159,7 +159,7 @@ namespace RX.Nyss.ReportApi.Handlers
 
             if (dataCollector == null)
             {
-                throw new ReportValidationException("A Data Collector with phone number '{phoneNumber}' does not exist.");
+                throw new ReportValidationException($"A Data Collector with phone number '{phoneNumber}' does not exist.");
             }
 
             if (dataCollector.Project.NationalSocietyId != gatewayNationalSociety.Id)
@@ -194,7 +194,7 @@ namespace RX.Nyss.ReportApi.Handlers
                 parsedReport.ReportedCase.CountFemalesBelowFive == 0 &&
                 parsedReport.ReportedCase.CountFemalesAtLeastFive == 0)
             {
-                throw new ReportValidationException($"At least one number in aggregated report must be greater than 0 " +
+                throw new ReportValidationException("At least one number in aggregated report must be greater than 0 " +
                                     $"(males below five: {parsedReport.ReportedCase.CountMalesBelowFive}, " +
                                     $"males at least five: {parsedReport.ReportedCase.CountMalesAtLeastFive}, " +
                                     $"females below five: {parsedReport.ReportedCase.CountFemalesBelowFive}, " +
