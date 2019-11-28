@@ -804,7 +804,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new []
                             {
-                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
                             }
                         }
                     },
@@ -813,7 +813,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     {
                         Reports = new[]
                         {
-                            new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                            new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
                         },
                         Alerts = new[]
                         {
@@ -840,7 +840,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new []
                             {
-                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
                             }
                         },
                         new RX.Nyss.Data.Models.DataCollector
@@ -848,8 +848,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new []
                             {
-                                new Report { ReceivedAt = new DateTime(2019, 1, 1)},
-                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)},
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
                             }
                         }
                     },
@@ -860,7 +860,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         {
                             Reports = new[]
                             {
-                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
                             },
                             Alerts = new[]
                             {
@@ -872,8 +872,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         {
                             Reports = new[]
                             {
-                                new Report { ReceivedAt = new DateTime(2019, 1, 1)},
-                                new Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)},
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
                             },
                             Alerts = new[]
                             {

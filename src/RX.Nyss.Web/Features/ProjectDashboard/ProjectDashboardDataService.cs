@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Utils;
@@ -72,7 +71,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             return await GroupReportsByFeaturesAndDay(reports, filtersDto.StartDate.Date, filtersDto.EndDate.Date);
         }
 
-        private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
+        private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .Select(r => new
@@ -121,7 +120,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private static async Task<IList<ReportByDateResponseDto>> GroupReportsByDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
+        private static async Task<IList<ReportByDateResponseDto>> GroupReportsByDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .Select(r => new
@@ -155,7 +154,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private async Task<IList<ReportByDateResponseDto>> GroupReportsByWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<IList<ReportByDateResponseDto>> GroupReportsByWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .GroupBy(r => new
@@ -192,7 +191,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private IQueryable<Report> GetFilteredReports(int projectId, FiltersRequestDto filtersDto)
+        private IQueryable<Nyss.Data.Models.Report> GetFilteredReports(int projectId, FiltersRequestDto filtersDto)
         {
             var startDate = filtersDto.StartDate.Date;
             var endDate = filtersDto.EndDate.Date.AddDays(1);
@@ -203,7 +202,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     && (!filtersDto.HealthRiskId.HasValue || r.ProjectHealthRisk.HealthRiskId == filtersDto.HealthRiskId.Value));
         }
 
-        private static IQueryable<Report> FilterReportsByRegion(IQueryable<Report> reports, FiltersRequestDto.AreaDto area) =>
+        private static IQueryable<Nyss.Data.Models.Report> FilterReportsByRegion(IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto.AreaDto area) =>
             area?.Type switch
             {
                 FiltersRequestDto.AreaTypeDto.Region =>
