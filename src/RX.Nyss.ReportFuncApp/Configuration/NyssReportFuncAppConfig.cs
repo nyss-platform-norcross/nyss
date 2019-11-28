@@ -1,11 +1,11 @@
 ﻿namespace RX.Nyss.ReportFuncApp.Configuration
 {
-    public interface INyssReportFuncAppConfig
+    public interface IConfig
     {
         string ReportApiUrl { get; set; }
     }
 
-    public class NyssReportFuncAppConfig : INyssReportFuncAppConfig
+    public class NyssReportFuncAppConfig : IConfig
     {
         public string ReportApiUrl { get; set; }
     }

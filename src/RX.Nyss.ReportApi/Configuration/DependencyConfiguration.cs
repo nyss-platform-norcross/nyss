@@ -87,7 +87,7 @@ namespace RX.Nyss.ReportApi.Configuration
 
         private static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssReportApiConfig nyssReportApiConfig)
         {
-            serviceCollection.AddSingleton<INyssReportApiConfig>(nyssReportApiConfig);
+            serviceCollection.AddSingleton<IConfig>(nyssReportApiConfig);
             serviceCollection.AddScoped<ISmsHandler, SmsEagleHandler>();
             RegisterTypes(serviceCollection, "RX.Nyss");
         }

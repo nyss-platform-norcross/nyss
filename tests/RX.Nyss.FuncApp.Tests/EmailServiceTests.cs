@@ -12,13 +12,13 @@ namespace RX.Nyss.FuncApp.Tests
     {
         private readonly IEmailService _emailService;
         private readonly ILogger<EmailService> _loggerMock;
-        private readonly INyssFuncAppConfig _configurationMock;
+        private readonly IConfig _configurationMock;
         private readonly IMailjetEmailClient _mailjetEmailClientMock;
 
         public EmailServiceTests()
         {
             _loggerMock = Substitute.For<ILogger<EmailService>>();
-            _configurationMock = Substitute.For<INyssFuncAppConfig>();
+            _configurationMock = Substitute.For<IConfig>();
             _configurationMock.MailjetConfig = new NyssFuncAppConfig.MailjetConfigOptions();
             _mailjetEmailClientMock = Substitute.For<IMailjetEmailClient>();
             _emailService = new EmailService(

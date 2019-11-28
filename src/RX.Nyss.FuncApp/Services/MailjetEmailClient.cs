@@ -17,12 +17,12 @@ namespace RX.Nyss.FuncApp.Services
     public class MailjetEmailClient : IMailjetEmailClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly INyssFuncAppConfig _nyssFuncAppConfig;
+        private readonly IConfig _config;
 
-        public MailjetEmailClient(IHttpClientFactory httpClientFactory, INyssFuncAppConfig nyssFuncAppConfig)
+        public MailjetEmailClient(IHttpClientFactory httpClientFactory, IConfig config)
         {
             _httpClientFactory = httpClientFactory;
-            _nyssFuncAppConfig = nyssFuncAppConfig;
+            _config = config;
         }
 
         public async Task<HttpResponseMessage> SendEmail(SendEmailMessage message, bool sandboxMode)
@@ -35,16 +35,16 @@ namespace RX.Nyss.FuncApp.Services
                     new MailjetEmail
                     {
                         To = new List<MailjetContact> {new MailjetContact {Email = message.To.Email, Name = message.To.Name}},
-                        From = new MailjetContact {Email = _nyssFuncAppConfig.MailjetConfig.FromAddress, Name = _nyssFuncAppConfig.MailjetConfig.FromName},
+                        From = new MailjetContact {Email = _config.MailjetConfig.FromAddress, Name = _config.MailjetConfig.FromName},
                         Subject = message.Subject,
                         HTMLPart = message.Body
                     }
                 }
             };
 
-            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_nyssFuncAppConfig.MailjetConfig.ApiKey}:{_nyssFuncAppConfig.MailjetConfig.ApiSecret}"));
+            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
 
-            return await PostJsonAsync(new Uri(_nyssFuncAppConfig.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
+            return await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
             {
                 ("Authorization", basicAuthHeader)
             });

@@ -42,7 +42,7 @@ namespace RX.Nyss.FuncApp
             var newConfiguration = configurationBuilder.Build();
             var nyssFuncAppConfig = newConfiguration.Get<NyssFuncAppConfig>();
             builder.Services.AddSingleton<IConfiguration>(newConfiguration);
-            builder.Services.AddSingleton<INyssFuncAppConfig>(nyssFuncAppConfig);
+            builder.Services.AddSingleton<IConfig>(nyssFuncAppConfig);
             builder.Services.AddLogging();
         }
     }

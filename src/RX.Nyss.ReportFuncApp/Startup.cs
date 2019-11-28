@@ -39,7 +39,7 @@ namespace RX.Nyss.ReportFuncApp
             var newConfiguration = configurationBuilder.Build();
             var nyssFuncAppConfig = newConfiguration.Get<NyssReportFuncAppConfig>();
             builder.Services.AddSingleton<IConfiguration>(newConfiguration);
-            builder.Services.AddSingleton<INyssReportFuncAppConfig>(nyssFuncAppConfig);
+            builder.Services.AddSingleton<IConfig>(nyssFuncAppConfig);
             builder.Services.AddHttpClient();
             builder.Services.AddLogging();
         }

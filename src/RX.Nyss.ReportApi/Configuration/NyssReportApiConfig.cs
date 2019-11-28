@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.ReportApi.Configuration
 {
-    public interface INyssReportApiConfig
+    public interface IConfig
     {
         NyssReportApiConfig.LoggingOptions Logging { get; set; }
         NyssReportApiConfig.ConnectionStringOptions ConnectionStrings { get; set; }
@@ -9,7 +9,7 @@
         string StringsResourcesBlobObjectName { get; set; }
     }
 
-    public class NyssReportApiConfig : INyssReportApiConfig
+    public class NyssReportApiConfig : IConfig
     {
         public LoggingOptions Logging { get; set; }
 
