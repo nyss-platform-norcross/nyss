@@ -50,7 +50,7 @@ namespace RX.Nyss.FuncApp
                 return new UnauthorizedResult();
             }
 
-            await reportQueue.AddAsync(decodedHttpRequestContent);
+            await reportQueue.AddAsync(httpRequestContent);
 
             return new OkResult();
         }

@@ -5,5 +5,12 @@
     "logLevel": {
       "default": "Debug"
     }
+  },
+  "extensions": {
+    "serviceBus": {
+      "messageHandlerOptions": {
+        "maxConcurrentCalls": 1
+      }
+    }
   }
 }

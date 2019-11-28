@@ -281,4 +281,5 @@ yarn-error.log*
 
 src/RX.Nyss.Web/RX.Nyss.Web.xml
 /src/RX.Nyss.Web/*.db
-src/RX.Nyss.Web/appsettings.Development.json
+**/appsettings.Development.json
+**/local.settings.json
