@@ -105,8 +105,7 @@ namespace RX.Nyss.ReportApi.Handlers
                     ReceivedAt = receivedAt,
                     CreatedAt = _dateTimeProvider.UtcNow,
                     DataCollector = dataCollector,
-                    //ToDo
-                    EpiWeek = -1,
+                    EpiWeek = _dateTimeProvider.GetEpiWeek(receivedAt),
                     PhoneNumber = sender,
                     Location = dataCollector.Location,
                     ReportedCase = parsedReport.ReportedCase,

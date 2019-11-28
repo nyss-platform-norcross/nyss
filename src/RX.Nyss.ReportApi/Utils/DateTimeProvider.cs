@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 
 namespace RX.Nyss.ReportApi.Utils
@@ -8,6 +9,8 @@ namespace RX.Nyss.ReportApi.Utils
         DateTime UtcNow { get; }
 
         TimeZoneInfo GetTimeZoneInfo(string timeZoneName);
+
+        int GetEpiWeek(DateTime date);
     }
 
     public class DateTimeProvider : IDateTimeProvider
@@ -18,5 +21,24 @@ namespace RX.Nyss.ReportApi.Utils
                                                                                                                    tzi.DisplayName == timeZoneName ||
                                                                                                                    tzi.StandardName == timeZoneName ||
                                                                                                                    tzi.DaylightName == timeZoneName);
+
+        public int GetEpiWeek(DateTime date)
+        {
+            DateTime GetAdjustedDate()
+            {
+                if (date.Month != 12 || date.Day <= 28)
+                {
+                    return date;
+                }
+
+                var day = CultureInfo.InvariantCulture.Calendar.GetDayOfWeek(date);
+                return day >= DayOfWeek.Sunday && day <= DayOfWeek.Tuesday
+                    ? date.AddDays(3)
+                    : date;
+            }
+
+            var adjustedDate = GetAdjustedDate();
+            return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(adjustedDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+        }
     }
 }
