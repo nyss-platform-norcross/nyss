@@ -6,6 +6,7 @@ import MarkerClusterGroup from 'react-leaflet-markercluster';
 import L from 'leaflet'
 import { Loading } from "../common/loading/Loading";
 import CircleMarkerX from "./CircleMarkerX";
+import Icon from "@material-ui/core/Icon";
 
 
 const calculateBounds = (dataCollectorLocations) => {
@@ -49,6 +50,15 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
 
   const handleMarkerClick = (e) => getMapDetails(projectId, e.latlng.lat, e.latlng.lng);
 
+  const getIconFromStatus = (status) => {
+    switch (status) {
+      case "ReportingCorrectly": return "check";
+      case "ReportingWithErrors": return "cancel";
+      case "NotReporting": return "hourglass_empty";
+      default: return "contact_support";
+    }
+  }
+
   return (
     <Map
       center={{ lat: centerLocation.latitude, lng: centerLocation.longitude }}
@@ -81,7 +91,12 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
                 {!detailsFetching
                   ? (
                     <div>
-                      {details.map(d => (<div>{d.displayName} {d.status}</div>))}
+                      {details.map(d => (
+                        <div className={styles.dataCollectorDetails}>
+                          <Icon>{getIconFromStatus(d.status)}</Icon>
+                          {d.displayName}
+                        </div>
+                      ))}
                     </div>
                   )
                   : (<Loading inline />)
