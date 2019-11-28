@@ -1,0 +1,35 @@
+.cluster {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+
+  &.valid {
+    background: green;
+  }
+
+  &.invalid {
+    background: #b35959;
+  }
+}
+
+.marker {
+  fill-opacity: 0.6;
+
+  &.markerValid {
+    stroke: green;
+    fill: green;
+  }
+
+  &.markerInvalid {
+    stroke: red;
+    fill: red;
+  }
+}
+
+.popup {
+  max-height: 300px;
+  overflow-y: auto;
+}

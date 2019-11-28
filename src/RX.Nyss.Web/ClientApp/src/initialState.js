@@ -122,7 +122,9 @@ export const initialState = {
     formSaving: false,
     formData: null,
     mapOverviewDataCollectorLocations: [],
-    mapOverviewCenterLocation: null
+    mapOverviewCenterLocation: null,
+    mapOverviewDetails: [],
+    mapOverviewDetailsFetching: false
   },
   headManagerConsents: {
     nationalSocieties: []

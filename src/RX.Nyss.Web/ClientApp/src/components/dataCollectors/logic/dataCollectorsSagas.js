@@ -14,7 +14,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.GET_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, getDataCollectorMapOverview),
   takeEvery(consts.CREATE_DATA_COLLECTOR.INVOKE, createDataCollector),
   takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
-  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector)
+  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector),
+  takeEvery(consts.GET_DATA_COLLECTORS_MAP_DETAILS.INVOKE, getMapDetails)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -114,6 +115,19 @@ function* removeDataCollector({ dataCollectorId }) {
     yield call(getDataCollectors, projectId);
   } catch (error) {
     yield put(actions.remove.failure(dataCollectorId, error.message));
+  }
+};
+
+function* getMapDetails({ projectId, lat, lng }) {
+  const from = "2019-01-01";
+  const to = "2020-01-01";
+
+  yield put(actions.getMapDetails.request());
+  try {
+    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverviewDetails?from=${from}&to=${to}&lat=${lat}&lng=${lng}`);
+    yield put(actions.getMapDetails.success(response.value));
+  } catch (error) {
+    yield put(actions.getMapDetails.failure(error.message));
   }
 };
 
