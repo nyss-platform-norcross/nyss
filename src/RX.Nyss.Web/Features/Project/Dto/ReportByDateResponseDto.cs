@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RX.Nyss.Web.Features.Project.Dto
+﻿namespace RX.Nyss.Web.Features.Project.Dto
 {
     public class ReportByDateResponseDto
     {

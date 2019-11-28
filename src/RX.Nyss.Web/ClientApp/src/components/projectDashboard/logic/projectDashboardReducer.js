@@ -20,7 +20,16 @@ export function projectDashboardReducer(state = initialState.projectDashboard, a
       return { ...state, isFetching: true };
 
     case actions.GET_PROJECT_DASHBOARD_DATA.SUCCESS:
-      return { ...state, name: action.name, filters: action.filters, projectSummary: action.summary, reportsGroupedByDate: action.reportsGroupedByDate, isFetching: false };
+      return {
+        ...state,
+        name: action.name,
+        filters: action.filters,
+        projectSummary: action.summary,
+        reportsGroupedByDate: action.reportsGroupedByDate,
+        reportsGroupedByFeaturesAndDate: action.reportsGroupedByFeaturesAndDate,
+        reportsGroupedByFeatures: action.reportsGroupedByFeatures,
+        isFetching: false
+      };
 
     case actions.GET_PROJECT_DASHBOARD_DATA.FAILURE:
       return { ...state, isFetching: false };

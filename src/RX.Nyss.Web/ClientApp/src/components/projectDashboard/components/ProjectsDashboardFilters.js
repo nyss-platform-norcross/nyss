@@ -8,6 +8,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
+import { strings, stringKeys } from "../../../strings";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, onChange }) => {
   const [value, setValue] = useState(filters);
@@ -53,7 +54,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
             <DatePicker
               className={styles.filterDate}
               onChange={handleDateFromChange}
-              label="Date from"
+              label={strings(stringKeys.project.dashboard.filters.startDate)}
               value={value.startDate}
             />
           </Grid>
@@ -62,7 +63,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
             <DatePicker
               className={styles.filterDate}
               onChange={handleDateToChange}
-              label="Date to"
+              label={strings(stringKeys.project.dashboard.filters.endDate)}
               value={value.endDate}
             />
           </Grid>
@@ -70,14 +71,14 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
           <Grid item>
             <TextField
               select
-              label="Group values by"
+              label={strings(stringKeys.project.dashboard.filters.timeGrouping)}
               onChange={handleGroupingTypeChange}
               value={value.groupingType}
               style={{ width: 130 }}
               InputLabelProps={{ shrink: true }}
             >
-              <MenuItem value="Day">Day</MenuItem>
-              <MenuItem value="Week">Week</MenuItem>
+              <MenuItem value="Day">{strings(stringKeys.project.dashboard.filters.timeGroupingDay)}</MenuItem>
+              <MenuItem value="Week">{strings(stringKeys.project.dashboard.filters.timeGroupingWeek)}</MenuItem>
             </TextField>
           </Grid>
 
@@ -92,13 +93,13 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
           <Grid item>
             <TextField
               select
-              label="Health risk"
+              label={strings(stringKeys.project.dashboard.filters.healthRisk)}
               onChange={handleHealthRiskChange}
               value={value.healthRiskId || 0}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             >
-              <MenuItem value={0}>All</MenuItem>
+              <MenuItem value={0}>{strings(stringKeys.project.dashboard.filters.healthRiskAll)}</MenuItem>
 
               {healthRisks.map(healthRisk => (
                 <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>

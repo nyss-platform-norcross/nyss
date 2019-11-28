@@ -1,3 +1,5 @@
+import styles from "./ProjectsDashboardPage.module.scss";
+
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -11,6 +13,8 @@ import { ProjectsDashboardFilters } from "./components/ProjectsDashboardFilters"
 import { ProjectsDashboardNumbers } from './components/ProjectsDashboardNumbers';
 import { ProjectsDashboardReportsMap } from './components/ProjectsDashboardReportsMap';
 import { ProjectsDashboardReportChart } from './components/ProjectsDashboardReportChart';
+import { ProjectsDashboardReportSexAgeChart } from './components/ProjectsDashboardReportSexAgeChart';
+import { ProjectsDashboardReportSexAgeTable } from './components/ProjectsDashboardReportSexAgeTable';
 
 const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projectId, isFetching, ...props }) => {
   useMount(() => {
@@ -26,7 +30,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12} style={{ position: "sticky", top: -12 }}>
+      <Grid item xs={12} className={styles.filtersGrid}>
         <ProjectsDashboardFilters
           healthRisks={props.healthRisks}
           nationalSocietyId={props.nationalSocietyId}
@@ -48,6 +52,12 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
             <Grid item xs={12}>
               <ProjectsDashboardReportChart data={props.reportsGroupedByDate} />
             </Grid>
+            <Grid item xs={12}>
+              <ProjectsDashboardReportSexAgeChart data={props.reportsGroupedByFeaturesAndDate} />
+            </Grid>
+            <Grid item xs={6}>
+              <ProjectsDashboardReportSexAgeTable data={props.reportsGroupedByFeatures} />
+            </Grid>
           </Fragment>
         )}
     </Grid>
@@ -65,6 +75,8 @@ const mapStateToProps = state => ({
   projectSummary: state.projectDashboard.projectSummary,
   filters: state.projectDashboard.filters,
   reportsGroupedByDate: state.projectDashboard.reportsGroupedByDate,
+  reportsGroupedByFeaturesAndDate: state.projectDashboard.reportsGroupedByFeaturesAndDate,
+  reportsGroupedByFeatures: state.projectDashboard.reportsGroupedByFeatures,
   isFetching: state.projectDashboard.isFetching
 });
 

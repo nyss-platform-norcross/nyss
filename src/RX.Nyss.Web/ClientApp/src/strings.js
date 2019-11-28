@@ -160,6 +160,36 @@ export const stringKeys = {
       numbers: {
         totalReportCount: "project.dashboard.totalReportCount"
       },
+      filters: {
+        startDate: "project.dashboard.filters.startDate",
+        endDate: "project.dashboard.filters.endDate",
+        timeGrouping: "project.dashboard.filters.timeGrouping",
+        timeGroupingDay: "project.dashboard.filters.timeGrouping.day",
+        timeGroupingWeek: "project.dashboard.filters.timeGrouping.week",
+        healthRisk: "project.dashboard.filters.healthRisk",
+        healthRiskAll: "project.dashboard.filters.healthRiskAll",
+      },
+      allReportsChart: {
+        title: "project.dashboard.allReportsChart.title",
+        numberOfReports: "project.dashboard.allReportsChart.numberOfReports",
+        periods: "project.dashboard.allReportsChart.periods"
+      },
+      reportsPerFeature: {
+        title: "project.dashboard.reportsPerFeature.title",
+        female: "project.dashboard.reportsPerFeature.female",
+        male: "project.dashboard.reportsPerFeature.male",
+        total: "project.dashboard.reportsPerFeature.total",
+        below5: "project.dashboard.reportsPerFeature.below5",
+        above5: "project.dashboard.reportsPerFeature.above5",
+      },
+      reportsPerFeatureAndDate: {
+        femalesBelow5: "project.dashboard.reportsPerFeatureAndDate.femalesBelow5",
+        femalesAbove5: "project.dashboard.reportsPerFeatureAndDate.femalesAbove5",
+        malesBelow5: "project.dashboard.reportsPerFeatureAndDate.malesBelow5",
+        malesAbove5: "project.dashboard.reportsPerFeatureAndDate.malesAbove5",
+        numberOfReports: "project.dashboard.reportsPerFeatureAndDate.numberOfReports",
+        title: "project.dashboard.reportsPerFeatureAndDate.title"
+      },
       activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
       inactiveDataCollectorCount: "project.dashboard.inactiveDataCollectorCount",
       inTrainingDataCollectorCount: "project.dashboard.inTrainingDataCollectorCount",
@@ -343,8 +373,10 @@ export const stringKeys = {
 export const strings = (key, noEditor) => {
   const value = stringList[key];
 
-  if (showKeys && !noEditor) {
-    return <StringsEditor stringKey={key} />;
+  if (showKeys) {
+    return noEditor
+      ? key
+      : <StringsEditor stringKey={key} />;
   }
 
   return value === undefined ? key : value;

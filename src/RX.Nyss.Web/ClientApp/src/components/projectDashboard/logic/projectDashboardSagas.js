@@ -29,8 +29,6 @@ function* openProjectDashboard({ projectId }) {
         groupingType: "Day"
       };
 
-    console.log(filters);
-
     yield call(getProjectDashboardData, { projectId, filters: filters })
 
     yield put(actions.openDashbaord.success(project.name, filtersData.value));
@@ -43,7 +41,13 @@ function* getProjectDashboardData({ projectId, filters }) {
   yield put(actions.getDashboardData.request());
   try {
     const response = yield call(http.post, `/api/project/${projectId}/dashboard/data`, filters);
-    yield put(actions.getDashboardData.success(filters, response.value.summary, response.value.reportsGroupedByDate));
+    yield put(actions.getDashboardData.success(
+      filters,
+      response.value.summary,
+      response.value.reportsGroupedByDate,
+      response.value.reportsGroupedByFeaturesAndDate,
+      response.value.reportsGroupedByFeatures
+    ));
   } catch (error) {
     yield put(actions.getDashboardData.failure(error.message));
   }

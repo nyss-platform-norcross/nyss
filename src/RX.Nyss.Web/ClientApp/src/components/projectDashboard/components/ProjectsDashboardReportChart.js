@@ -1,17 +1,12 @@
-import styles from "./ProjectsDashboardReportsMap.module.scss";
-
-import React, { useRef } from 'react';
+import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
-import { Loading } from '../../common/loading/Loading';
-import Grid from '@material-ui/core/Grid';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
-import dayjs from "dayjs"
-import { useMount } from "../../../utils/lifecycle";
+import { strings, stringKeys } from '../../../strings';
 
-const options = {
+const getOptions = (valuesLabel, series) => ({
   chart: {
     type: 'column',
     backgroundColor: "transparent",
@@ -24,7 +19,7 @@ const options = {
   },
   yAxis: {
     title: {
-      text: 'Number of reports'
+      text: valuesLabel
     },
     allowDecimals: false
   },
@@ -44,25 +39,26 @@ const options = {
   tooltip: {
     headerFormat: '',
     pointFormat: '{point.name}: <b>{point.y}</b>'
-  }
-}
+  },
+  series
+});
 
 export const ProjectsDashboardReportChart = ({ data }) => {
   const resizeChart = element => { element && element.chart.reflow() };
 
-  const chartData = {
-    ...options,
-    series: [
-      {
-        name: "Periods",
-        data: data.map(d => ({ name: d.period, y: d.count }))
-      }
-    ]
-  }
+  const series = [
+    {
+      name: strings(stringKeys.project.dashboard.allReportsChart.periods, true),
+      data: data.map(d => ({ name: d.period, y: d.count })),
+      color: "#72d5fb"
+    }
+  ];
+
+  const chartData = getOptions(strings(stringKeys.project.dashboard.allReportsChart.numberOfReports, true), series)
 
   return (
     <Card>
-      <CardHeader title="Number of reports" />
+      <CardHeader title={strings(stringKeys.project.dashboard.allReportsChart.title)} />
       <CardContent>
         <HighchartsReact
           highcharts={Highcharts}

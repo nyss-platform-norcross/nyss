@@ -7,5 +7,9 @@ namespace RX.Nyss.Web.Features.Project.Dto
         public ProjectSummaryResponseDto Summary { get; set; }
 
         public IEnumerable<ReportByDateResponseDto> ReportsGroupedByDate { get; set; }
+
+        public IEnumerable<ReportByFeaturesAndDateResponseDto> ReportsGroupedByFeaturesAndDate { get; set; }
+
+        public ReportByFeaturesAndDateResponseDto ReportsGroupedByFeatures { get; set; }
     }
 }
