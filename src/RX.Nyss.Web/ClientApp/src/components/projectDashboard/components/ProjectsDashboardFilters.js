@@ -27,7 +27,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
-    onChange(updateValue({ area: { type: item.type, id: item.id } }))
+    onChange(updateValue({ area: item ? { type: item.type, id: item.id } : null }))
   }
 
   const handleHealthRiskChange = event =>
