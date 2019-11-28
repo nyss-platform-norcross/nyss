@@ -173,7 +173,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
 
                 if (isUsersLastNationalSociety)
                 { 
-                    await _nationalSocietyUserService.DeleteNationalSocietyUser(dataConsumerUser);
+                    _nationalSocietyUserService.DeleteNationalSocietyUser(dataConsumerUser);
                     await _identityUserRegistrationService.DeleteIdentityUser(dataConsumerUser.IdentityUserId);
                 }
 

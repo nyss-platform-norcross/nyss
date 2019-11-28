@@ -1711,6 +1711,9 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
+                    b.Property<bool>("IsInTrainingMode")
+                        .HasColumnType("bit");
+
                     b.Property<Point>("Location")
                         .IsRequired()
                         .HasColumnType("geography");
@@ -2102,6 +2105,59 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("ProjectHealthRisks");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.RawReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApiKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int?>("IncomingMessageId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ModemNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NationalSocietyId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OutgoingMessageId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReceivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ReportId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Sender")
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<string>("Text")
+                        .HasColumnType("nvarchar(160)")
+                        .HasMaxLength(160);
+
+                    b.Property<string>("Timestamp")
+                        .HasColumnType("nvarchar(14)")
+                        .HasMaxLength(14);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NationalSocietyId");
+
+                    b.HasIndex("ReportId")
+                        .IsUnique()
+                        .HasFilter("[ReportId] IS NOT NULL");
+
+                    b.ToTable("RawReports");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.Region", b =>
                 {
                     b.Property<int>("Id")
@@ -2136,10 +2192,10 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("DataCollectorId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsTraining")
-                        .HasColumnType("bit");
+                    b.Property<int>("EpiWeek")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("IsValid")
+                    b.Property<bool>("IsTraining")
                         .HasColumnType("bit");
 
                     b.Property<Point>("Location")
@@ -2153,13 +2209,13 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
                     b.Property<int?>("ProjectHealthRiskId")
                         .HasColumnType("int");
-
-                    b.Property<string>("RawContent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(160)")
-                        .HasMaxLength(160);
 
                     b.Property<DateTime>("ReceivedAt")
                         .HasColumnType("datetime2");
@@ -2562,6 +2618,19 @@ namespace RX.Nyss.Data.Migrations
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.RawReport", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
+                        .WithMany("RawReports")
+                        .HasForeignKey("NationalSocietyId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RX.Nyss.Data.Models.Report", "Report")
+                        .WithOne("RawReport")
+                        .HasForeignKey("RX.Nyss.Data.Models.RawReport", "ReportId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Region", b =>

@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         /// <summary>
         /// Get a data consumer
         /// </summary>
-        /// <param name="id">The ID of the requested data consumer</param>
+        /// <param name="dataConsumerId">The ID of the requested data consumer</param>
         /// <returns></returns>
         [HttpGet("nationalSociety/dataConsumer/{dataConsumerId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]

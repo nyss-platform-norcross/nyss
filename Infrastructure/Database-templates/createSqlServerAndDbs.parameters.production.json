@@ -54,7 +54,7 @@
             "value": {
                 "Team": "CBS",
                 "System": "Nyss",
-                "Environment": "Development"
+                "Environment": "Production"
             }
         },
         "TestTagValues": {

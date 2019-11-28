@@ -15,11 +15,11 @@ namespace RX.Nyss.FuncApp.Services
 
     public class EmailService : IEmailService
     {
-        private readonly INyssFuncappConfig _config;
+        private readonly IConfig _config;
         private readonly ILogger<EmailService> _logger;
         private readonly IMailjetEmailClient _emailClient;
 
-        public EmailService(ILogger<EmailService> logger, INyssFuncappConfig config, IMailjetEmailClient emailClient)
+        public EmailService(ILogger<EmailService> logger, IConfig config, IMailjetEmailClient emailClient)
         {
             _logger = logger;
             _config = config;

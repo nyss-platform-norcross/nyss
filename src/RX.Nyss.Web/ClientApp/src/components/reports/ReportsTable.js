@@ -21,12 +21,6 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
     return text || "-";
   };
 
-  const getSuccessText = (isValid) => {
-    return isValid
-      ? strings(stringKeys.reports.list.success)
-      : strings(stringKeys.reports.list.error);
-  };
-
   return (
     <div className={styles.tableContainer}>
       {isListFetching && <Loading absolute />}
@@ -51,11 +45,11 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
             <TableRow key={row.id} hover>
               <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD')}</TableCell>
               <TableCell>{dayjs(row.dateTime).format('HH:mm')}</TableCell>
-              <TableCell>{getSuccessText(row.isValid)}</TableCell>
+              <TableCell>{row.reportStatus}</TableCell>
               <TableCell>{row.dataCollectorDisplayName}</TableCell>
-              <TableCell>{row.dataCollectorPhoneNumber}</TableCell>
+              <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{row.region}, {row.district}, {row.village}{row.zone ? ',' : null} {row.zone}</TableCell>
-              <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>              
+              <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
               <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>

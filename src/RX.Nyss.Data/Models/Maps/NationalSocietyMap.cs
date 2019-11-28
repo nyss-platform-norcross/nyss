@@ -20,6 +20,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasOne(ns => ns.Country).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(uns => uns.HeadManager).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(uns => uns.PendingHeadManager).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(ns => ns.RawReports).WithOne(rr => rr.NationalSociety).OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

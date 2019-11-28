@@ -23,6 +23,8 @@ namespace RX.Nyss.Data.Models
 
         public Point Location { get; set; }
 
+        public bool IsInTrainingMode { get; set; }
+
         public virtual SupervisorUser Supervisor { get; set; }
 
         public virtual Project Project { get; set; }

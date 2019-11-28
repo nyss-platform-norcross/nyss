@@ -17,9 +17,9 @@ namespace RX.Nyss.FuncApp.Services
     public class MailjetEmailClient : IMailjetEmailClient
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly INyssFuncappConfig _config;
+        private readonly IConfig _config;
 
-        public MailjetEmailClient(IHttpClientFactory httpClientFactory, INyssFuncappConfig config)
+        public MailjetEmailClient(IHttpClientFactory httpClientFactory, IConfig config)
         {
             _httpClientFactory = httpClientFactory;
             _config = config;

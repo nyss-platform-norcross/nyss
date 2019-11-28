@@ -38,10 +38,9 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         /// <summary>
         /// Edit a global coordinator user
         /// </summary>
-        /// <param name="dto">The global coordinator user to be edited</param>
+        /// <param name="editGlobalCoordinatorRequestDto">The global coordinator user to be edited</param>
         /// <returns></returns>
         [HttpPost("{id:int}/edit"), NeedsRole(Role.Administrator)]
-        
         public async Task<Result> Edit([FromBody]EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto) =>
             await _globalCoordinatorService.UpdateGlobalCoordinator(editGlobalCoordinatorRequestDto);
 

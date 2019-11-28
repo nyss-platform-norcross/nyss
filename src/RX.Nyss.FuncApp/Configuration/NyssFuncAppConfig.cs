@@ -1,14 +1,12 @@
 ﻿namespace RX.Nyss.FuncApp.Configuration
 {
-    public interface INyssFuncappConfig
+    public interface IConfig
     {
-        NyssFuncappConfig.MailjetConfigOptions MailjetConfig { get; set; }
-        string InternalApiReportUrl { get; set; }
+        NyssFuncAppConfig.MailjetConfigOptions MailjetConfig { get; set; }
     }
 
-    public class NyssFuncappConfig : INyssFuncappConfig
+    public class NyssFuncAppConfig : IConfig
     {
-        public string InternalApiReportUrl { get; set; }
         public MailjetConfigOptions MailjetConfig { get; set; }
 
         public class MailjetConfigOptions

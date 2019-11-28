@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.Report
                     Id = r.Id,
                     DateTime = r.CreatedAt,
                     HealthRiskName = r.ProjectHealthRisk.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Name,
-                    IsValid = r.IsValid,
+                    ReportStatus = r.Status,
                     Region = r.DataCollector.Village.District.Region.Name,
                     District = r.DataCollector.Village.District.Name,
                     Village = r.DataCollector.Village.Name,
@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Features.Report
                         ? r.DataCollector.Zone.Name
                         : null,
                     DataCollectorDisplayName = r.DataCollector.DisplayName,
-                    DataCollectorPhoneNumber = r.DataCollector.PhoneNumber,
+                    PhoneNumber = r.PhoneNumber,
                     CountMalesBelowFive = r.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.ReportedCase.CountFemalesBelowFive,
                     CountMalesAtLeastFive = r.ReportedCase.CountMalesAtLeastFive,

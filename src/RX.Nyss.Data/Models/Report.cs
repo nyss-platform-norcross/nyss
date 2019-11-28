@@ -11,11 +11,7 @@ namespace RX.Nyss.Data.Models
 
         public ReportType ReportType { get; set; }
         
-        public string RawContent { get; set; }
-        
         public DateTime ReceivedAt { get; set; }
-        
-        public bool IsValid { get; set; }
         
         public DateTime CreatedAt { get; set; }
         
@@ -27,6 +23,10 @@ namespace RX.Nyss.Data.Models
 
         public bool IsTraining { get; set; }
 
+        public int EpiWeek { get; set; }
+
+        public string PhoneNumber { get; set; }
+
         public Point Location { get; set; }
 
         public ReportCase ReportedCase { get; set; }
@@ -34,6 +34,8 @@ namespace RX.Nyss.Data.Models
         public ReportCase KeptCase { get; set; }
 
         public DataCollectionPointCase DataCollectionPointCase { get; set; }
+
+        public virtual RawReport RawReport { get; set; }
 
         public virtual ProjectHealthRisk ProjectHealthRisk { get; set; }
 

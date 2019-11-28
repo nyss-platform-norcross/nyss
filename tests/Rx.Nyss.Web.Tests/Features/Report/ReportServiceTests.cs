@@ -129,6 +129,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     NationalSociety = nationalSocieties[0]
                 }
             };
+
             var districts = new List<District>
             {
                 new District()
@@ -138,6 +139,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     Region = regions[0]
                 }
             };
+
             var villages = new List<Village>
             {
                 new Village()
@@ -147,7 +149,6 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     District = districts[0]
                 }
             };
-
 
             var projects = new List<RX.Nyss.Data.Models.Project>
             {
@@ -176,7 +177,6 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     Id = 1,
                     Project = projects[0],
                     Village = villages[0]
-                    
                 },
                 new RX.Nyss.Data.Models.DataCollector
                 {
@@ -189,9 +189,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
             var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0]);
             _reports = reports1.Concat(reports2).ToList();
-
-
-
+            
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
             var languageContentsMockDbSet = languageContents.AsQueryable().BuildMockDbSet();
@@ -231,7 +229,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                 {
                     Id = i,
                     DataCollector =  dataCollector,
-                    IsValid = true,
+                    Status = ReportStatus.Pending,
                     ProjectHealthRisk =  projectHealthRisk,
                     ReportedCase = new ReportCase(),
                     CreatedAt = new DateTime(2020,1,1)

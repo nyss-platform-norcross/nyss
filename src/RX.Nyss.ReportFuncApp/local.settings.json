@@ -1,0 +1,14 @@
+{
+  "IsEncrypted": false,
+  "LogLevel": "Debug",
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "SERVICEBUS_CONNECTIONSTRING": "",
+    "SERVICEBUS_REPORTQUEUE": "nrx-cbs-dev-nyss-bus-report-queue",
+    "ReportApiUrl": "https://localhost:5003/api/Report"
+  },
+  "Host": {
+    "LocalHttpPort": 7071
+  }
+}
