@@ -14,6 +14,30 @@
             "problemMatcher": "$msCompile"
         },
         {
+          "label": "build reportapi",
+          "command": "dotnet",
+          "type": "process",
+          "args": [
+              "build",
+              "${workspaceFolder}/src/RX.Nyss.ReportApi/RX.Nyss.ReportApi.csproj",
+              "/property:GenerateFullPaths=true",
+              "/consoleloggerparameters:NoSummary"
+          ],
+          "problemMatcher": "$msCompile"
+        },
+        {
+          "label": "build funcapp",
+          "command": "dotnet",
+          "type": "process",
+          "args": [
+              "build",
+              "${workspaceFolder}/src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj",
+              "/property:GenerateFullPaths=true",
+              "/consoleloggerparameters:NoSummary"
+          ],
+          "problemMatcher": "$msCompile"
+        },
+        {
             "label": "publish",
             "command": "dotnet",
             "type": "process",
@@ -37,6 +61,16 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+          "type": "func",
+          "dependsOn": "build",
+          "options": {
+            "cwd": "${workspaceFolder}/src/RX.Nyss.FuncApp/bin/Debug/netcoreapp2.2"
+          },
+          "command": "host start",
+          "isBackground": true,
+          "problemMatcher": "$func-watch"
         }
     ]
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace RX.Nyss.ReportApi.Handlers
         private const string OutgoingMessageIdParameterName = "oid";
         private const string ModemNumberParameterName = "modemno";
         private const string ApiKeyParameterName = "apikey";
-        
+
         private static readonly string[] RequiredQueryStringParameters =
         {
             SenderParameterName,
@@ -40,13 +41,15 @@ namespace RX.Nyss.ReportApi.Handlers
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IEmailToSMSPublisherService _emailToSMSPublisherService;
 
-        public SmsEagleHandler(IReportMessageService reportMessageService, INyssContext nyssContext, ILoggerAdapter loggerAdapter, IDateTimeProvider dateTimeProvider)
+        public SmsEagleHandler(IReportMessageService reportMessageService, INyssContext nyssContext, ILoggerAdapter loggerAdapter, IDateTimeProvider dateTimeProvider, IEmailToSMSPublisherService emailToSMSPublisherService)
         {
             _reportMessageService = reportMessageService;
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
+            _emailToSMSPublisherService = emailToSMSPublisherService;
         }
 
         public bool CanHandle(string queryString)
@@ -124,13 +127,16 @@ namespace RX.Nyss.ReportApi.Handlers
 
                 await _nyssContext.Reports.AddAsync(report);
                 await _nyssContext.SaveChangesAsync();
+
+                var recipients = new List<string>{ sender };
+                await _emailToSMSPublisherService.SendMessage(gatewaySetting.Id, recipients, projectHealthRisk.FeedbackMessage);
             }
             catch (ReportValidationException e)
             {
                 _loggerAdapter.Warn(e.Message);
             }
         }
-       
+
         private async Task<GatewaySetting> ValidateGatewaySetting(string apiKey)
         {
             var gatewaySetting = await _nyssContext.GatewaySettings
