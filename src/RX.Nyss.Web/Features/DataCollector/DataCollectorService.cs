@@ -29,7 +29,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId, string userIdentityName, IEnumerable<string> roles);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
         Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId);
-        Task<Result<List<MapOverviewLocationResponseDto>>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName, IEnumerable<string> roles);
     }
 
@@ -300,7 +300,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             await _nyssContext.DataCollectors.AnyAsync(dc => dc.Id == dataCollectorId && dc.Supervisor.EmailAddress == supervisorIdentityName);
 
 
-        public async Task<Result<List<MapOverviewLocationResponseDto>>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName,
+        public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName,
             IEnumerable<string> roles)
         {
             var dataCollectors = roles.Contains(Role.Supervisor.ToString())
@@ -347,7 +347,19 @@ namespace RX.Nyss.Web.Features.DataCollector
                 })
                 .ToListAsync();
 
-            return Success(locations);
+            var averageLocation = new LocationDto
+            {
+                Latitude = locations.Sum(l => l.Location.Latitude)/locations.Count,
+                Longitude = locations.Sum(l => l.Location.Longitude) / locations.Count
+            };
+
+            var result = new MapOverviewResponseDto
+            {
+                CenterLocation = averageLocation,
+                DataCollectorLocations = locations
+            };
+            
+            return Success(result);
         }
 
         public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName,

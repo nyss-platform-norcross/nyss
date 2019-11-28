@@ -27,17 +27,17 @@ export const getList = {
 };
 
 export const openMapOverview = {
-  invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId }),
+  invoke: (projectId, from, to) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId, from, to }),
   request: () => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.REQUEST }),
-  success: (projectId) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS, projectId }),
+  success: () => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS }),
   failure: (message) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE, message })
 };
 
 export const getMapOverview = {
-  invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId }),
-  request: () => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.REQUEST }),
-  success: (list) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS, list }),
-  failure: (message) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE, message })
+  invoke: (projectId, from, to) => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId, from, to }),
+  request: () => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.REQUEST }),
+  success: (dataCollectorLocations, centerLocation) => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS, dataCollectorLocations, centerLocation }),
+  failure: (message) => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE, message })
 };
 
 export const openCreation = {

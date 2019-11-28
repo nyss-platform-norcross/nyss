@@ -1,40 +1,61 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
-import TableActions from '../common/tableActions/TableActions';
-import DataCollectorsTable from './DataCollectorsTable';
 import { useMount } from '../../utils/lifecycle';
-import { strings, stringKeys } from '../../strings';
+import { Map, TileLayer } from 'react-leaflet'
 
 const DataCollectorsMapOverviewPageComponent = (props) => {
   useMount(() => {
-    props.openDataCollectorsMapOverview(props.projectId);
+    props.openDataCollectorsMapOverview(props.projectId, '2019-11-01', '2019-11-30' );
   });
+  const mapRef = useRef(null);
+  
+  if (!props.centerLocation) {
+    return null;
+  }
 
+
+
+  const calculateBounds = (dataCollectorLocations) => {  
+    
+    function getMinLat(points) {
+      return points.reduce((min, p) => p.lat < min ? p.lat : min, points[0].lat);
+    }
+    function getMaxLat(points) {
+      return points.reduce((max, p) => p.lat > max ? p.lat : max, points[0].lat);
+    }
+    function getMinLng(points) {
+      return points.reduce((min, p) => p.lng < min ? p.lng : min, points[0].lng);
+    }
+    function getMaxLng(points) {
+      return points.reduce((max, p) => p.lng > max ? p.lng : max, points[0].lng);
+    }
+
+    let points = dataCollectorLocations.map(loc => ({lat: loc.location.latitude, lng: loc.location.longitude}));
+    return [[getMinLat(points), getMinLng(points)],[getMaxLat(points),getMaxLng(points)]];
+  };
+
+  const bounds = calculateBounds(props.dataCollectorLocations);
+
+     
   return (
     <Fragment>
-      {'bla'}
-      {/* <TableActions>
-        <Button onClick={() => props.goToCreation(props.projectId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          {strings(stringKeys.dataCollector.addNew)}
-       </Button>
-      </TableActions>
-
-      <DataCollectorsTable
-        list={props.list}
-        goToEdition={props.goToEdition}
-        goToDashboard={props.goToDashboard}
-        isListFetching={props.isListFetching}
-        isRemoving={props.isRemoving}
-        remove={props.remove}
-        projectId={props.projectId}
-      /> */}
+      <Map
+         center={{lat: props.centerLocation.latitude, lng: props.centerLocation.longitude}}
+         length={4}        
+         bounds = {bounds}
+         ref={mapRef}
+         zoom={1}
+        >
+        <TileLayer
+          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        
+      </Map>
     </Fragment>
   );
 }
@@ -44,11 +65,14 @@ DataCollectorsMapOverviewPageComponent.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-  projectId: ownProps.match.params.projectId
+  projectId: ownProps.match.params.projectId,
+  dataCollectorLocations: state.dataCollectors.mapOverviewDataCollectorLocations,
+  centerLocation: state.dataCollectors.mapOverviewCenterLocation,
 });
 
 const mapDispatchToProps = {
-  openDataCollectorsMapOverview: dataCollectorsActions.openMapOverview.invoke
+  openDataCollectorsMapOverview: dataCollectorsActions.openMapOverview.invoke,
+  getDataCollectorsMapOverview: dataCollectorsActions.getMapOverview.invoke
 };
 
 export const DataCollectorsMapOverviewPage = useLayout(

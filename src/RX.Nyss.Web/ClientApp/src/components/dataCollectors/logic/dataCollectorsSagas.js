@@ -10,6 +10,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
   takeEvery(consts.OPEN_DATA_COLLECTOR_CREATION.INVOKE, openDataCollectorCreation),
   takeEvery(consts.OPEN_DATA_COLLECTOR_EDITION.INVOKE, openDataCollectorEdition),
+  takeEvery(consts.OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, openDataCollectorMapOverview),
+  takeEvery(consts.GET_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, getDataCollectorMapOverview),
   takeEvery(consts.CREATE_DATA_COLLECTOR.INVOKE, createDataCollector),
   takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
   takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector)
@@ -43,6 +45,29 @@ function* openDataCollectorCreation({ projectId }) {
     yield put(actions.openCreation.success(response.value.regions, response.value.supervisors, response.value.defaultLocation, response.value.defaultSupervisorId));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
+  }
+};
+
+function* openDataCollectorMapOverview({ projectId, from, to }) {
+  yield put(actions.openMapOverview.request());
+  try {
+    yield openDataCollectorsModule(projectId);
+   
+    yield call(getDataCollectorMapOverview, { projectId, from, to });
+   
+    yield put(actions.openMapOverview.success());
+  } catch (error) {
+    yield put(actions.openMapOverview.failure(error.message));
+  }
+};
+
+function* getDataCollectorMapOverview({ projectId, from, to }) {
+  yield put(actions.getMapOverview.request());
+  try {
+    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverview?from=${from}&to=${to}`);
+    yield put(actions.getMapOverview.success(response.value.dataCollectorLocations, response.value.centerLocation));
+  } catch (error) {
+    yield put(actions.getMapOverview.failure(error.message));
   }
 };
 
