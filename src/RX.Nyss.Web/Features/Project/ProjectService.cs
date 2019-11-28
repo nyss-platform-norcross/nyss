@@ -131,7 +131,7 @@ namespace RX.Nyss.Web.Features.Project
                     ActiveDataCollectorCount = p.DataCollectors.Count(dc =>
                         dc.DataCollectorType == DataCollectorType.Human &&
                         dc.Reports.Any(r => r.ReceivedAt >= minReportDate)),
-                    SupervisorCount = p.SupervisorUserProjects.Count()
+                    SupervisorCount = p.SupervisorUserProjects.Count
                 })
                 .ToListAsync();
 
