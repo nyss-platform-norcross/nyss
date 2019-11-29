@@ -46,7 +46,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
     return null;
   }
 
-  const bounds = calculateBounds(dataCollectorLocations);
+  const bounds = dataCollectorLocations.length > 1 ? calculateBounds(dataCollectorLocations) : null;
 
   const handleMarkerClick = (e) => getMapDetails(projectId, e.latlng.lat, e.latlng.lng);
 
@@ -64,7 +64,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
       center={{ lat: centerLocation.latitude, lng: centerLocation.longitude }}
       length={4}
       bounds={bounds}
-      zoom={1}
+      zoom={5}
       maxZoom={25}
     >
       <TileLayer
@@ -94,7 +94,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
                   ? (
                     <div>
                       {details.map(d => (
-                        <div className={styles.dataCollectorDetails}>
+                        <div key={`dataCollector_${d.id}`} className={styles.dataCollectorDetails}>
                           <Icon>{getIconFromStatus(d.status)}</Icon>
                           {d.displayName}
                         </div>

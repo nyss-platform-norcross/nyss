@@ -303,63 +303,64 @@ namespace RX.Nyss.Web.Features.DataCollector
         public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName,
             IEnumerable<string> roles)
         {
-            //var dataCollectors = roles.Contains(Role.Supervisor.ToString())
-            //    ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
-            //    : _nyssContext.DataCollectors;
+            var rawReports = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.RawReports.Where(dc => dc.DataCollector.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.RawReports;
 
-            //var dataCollectorsWithNoReports = dataCollectors
-            //    .Where(dc => !dc.Reports.Any(r => r.CreatedAt >= from.Date && r.CreatedAt < to.Date.AddDays(1)))
-            //    .Where(dc => dc.Project.Id == projectId)
-            //    .Select(dc => new
-            //    {
-            //        dc.Location.X,
-            //        dc.Location.Y,
-            //        InvalidReport = 0,
-            //        ValidReport = 0,
-            //        NoReport = 1
-            //    });
+            var dataCollectors = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.DataCollectors;
 
-            //var dataCollectorsWithReports = dataCollectors
-            //    .Where(dc => dc.Project.Id == projectId)
-            //    .Select(dc => new
-            //    {
-            //        DataCollector = dc,
-            //        ReportsInTimeRange = dc.Reports.Where(r => r.CreatedAt >= from.Date && r.CreatedAt < to.Date.AddDays(1))
-            //    })
-            //    .Select(dc => new
-            //    {
-            //        dc.DataCollector.Location.X,
-            //        dc.DataCollector.Location.Y,
-            //        InvalidReport = dc.ReportsInTimeRange.Any(r => !r.IsValid) ? 1 : 0,
-            //        ValidReport = dc.ReportsInTimeRange.All(r => r.IsValid) ? 1 : 0,
-            //        NoReport = 0
-            //    });
+            var endDate = to.Date.AddDays(1);
 
-            //var locations = await dataCollectorsWithReports
-            //    .Union(dataCollectorsWithNoReports)
-            //    .GroupBy(x => new { x.X, x.Y })
-            //    .Select(location => new MapOverviewLocationResponseDto
-            //    {
-            //        Location = new LocationDto { Latitude = location.Key.X, Longitude = location.Key.Y },
-            //        CountReportingCorrectly = location.Sum(x => x.ValidReport),
-            //        CountReportingWithErrors = location.Sum(x => x.InvalidReport),
-            //        CountNotReporting = location.Sum(x => x.NoReport)
-            //    })
-            //    .ToListAsync();
+            var dataCollectorsWithNoReports = dataCollectors
+                .Where(dc => !dc.RawReports.Any(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
+                .Where(dc => dc.Project.Id == projectId)
+                .Select(dc => new
+                {
+                    dc.Location.X,
+                    dc.Location.Y,
+                    InvalidReport = 0,
+                    ValidReport = 0,
+                    NoReport = 1
+                });
 
-            //var averageLocation = new LocationDto
-            //{
-            //    Latitude = locations.Sum(l => l.Location.Latitude)/locations.Count,
-            //    Longitude = locations.Sum(l => l.Location.Longitude) / locations.Count
-            //};
+            var dataCollectorsWithReports = rawReports
+                .Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate)
+                .Where(dc => dc.DataCollector.Project.Id == projectId)
+                .Select(r => new
+                {
+                    r.DataCollector.Location.X,
+                    r.DataCollector.Location.Y,
+                    InvalidReport = r.Report == null ? 1 : 0,
+                    ValidReport = r.Report != null ? 1 : 0,
+                    NoReport = 0
+                });
 
-            //var result = new MapOverviewResponseDto
-            //{
-            //    CenterLocation = averageLocation,
-            //    DataCollectorLocations = locations
-            //};
+            var locations = await dataCollectorsWithReports
+                .Union(dataCollectorsWithNoReports)
+                .GroupBy(x => new { x.X, x.Y })
+                .Select(location => new MapOverviewLocationResponseDto
+                {
+                    Location = new LocationDto { Latitude = location.Key.X, Longitude = location.Key.Y },
+                    CountReportingCorrectly = location.Sum(x => x.ValidReport),
+                    CountReportingWithErrors = location.Sum(x => x.InvalidReport),
+                    CountNotReporting = location.Sum(x => x.NoReport)
+                })
+                .ToListAsync();
 
-            var result = new MapOverviewResponseDto();
+            var averageLocation = new LocationDto
+            {
+                Latitude = locations.Sum(l => l.Location.Latitude) / locations.Count,
+                Longitude = locations.Sum(l => l.Location.Longitude) / locations.Count
+            };
+
+            var result = new MapOverviewResponseDto
+            {
+                CenterLocation = averageLocation,
+                DataCollectorLocations = locations
+            };
+
             return Success(result);
         }
 
@@ -370,26 +371,27 @@ namespace RX.Nyss.Web.Features.DataCollector
                 ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
                 : _nyssContext.DataCollectors;
 
-            //var result = await dataCollectors
-            //    .Where(dc => dc.Location.X == x && dc.Location.Y == y)
-            //    .Where(dc => dc.Project.Id == projectId)
-            //    .Select(dc => new
-            //    {
-            //        DataCollector = dc,
-            //        ReportsInTimeRange = dc.Reports.Where(r => r.CreatedAt >= from.Date && r.CreatedAt < to.Date.AddDays(1))
-            //    })
-            //    .Select(dc => new MapOverviewDataCollectorResponseDto
-            //    {
-            //        DisplayName = dc.DataCollector.DisplayName,
-            //        Status = dc.ReportsInTimeRange.Any()
-            //            ? dc.ReportsInTimeRange.All(r => r.IsValid)
-            //                ? MapOverviewDataCollectorStatus.ReportingCorrectly
-            //                : MapOverviewDataCollectorStatus.ReportingWithErrors
-            //            : MapOverviewDataCollectorStatus.NotReporting
-            //    })
-            //    .ToListAsync();
+            var result = await dataCollectors
+                .Where(dc => dc.Location.X == x && dc.Location.Y == y)
+                .Where(dc => dc.Project.Id == projectId)
+                .Select(dc => new
+                {
+                    DataCollector = dc,
+                    ReportsInTimeRange = dc.RawReports.Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
+                })
+                .Select(dc => new MapOverviewDataCollectorResponseDto
+                {
+                    Id = dc.DataCollector.Id,
+                    DisplayName = dc.DataCollector.DisplayName,
+                    Status = dc.ReportsInTimeRange.Any()
+                        ? dc.ReportsInTimeRange.All(r => r.Report != null)
+                            ? MapOverviewDataCollectorStatus.ReportingCorrectly
+                            : MapOverviewDataCollectorStatus.ReportingWithErrors
+                        : MapOverviewDataCollectorStatus.NotReporting
+                })
+                .ToListAsync();
 
-            var result = new List<MapOverviewDataCollectorResponseDto>();
+
             return Success(result);
         }
     }

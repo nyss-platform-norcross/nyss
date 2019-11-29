@@ -2,6 +2,7 @@
 {
     public class MapOverviewDataCollectorResponseDto
     {
+        public int Id { get; set; }
         public string DisplayName { get; set; }
         public MapOverviewDataCollectorStatus Status { get; set; }
     }
