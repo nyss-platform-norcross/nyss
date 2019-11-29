@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 
 const HomeComponent = ({ user, push }) => {
   useEffect(() => {
-    if (!user.homePage){
+    if (!user.homePage) {
       return;
     }
     push(getHomePageUrl(user))
@@ -23,15 +23,15 @@ const HomeComponent = ({ user, push }) => {
 const getHomePageUrl = (user) => {
   switch (user.homePage.page) {
     case "Root":
-        return "/nationalsocieties";
+      return "/nationalsocieties";
     case "NationalSociety":
-        return `/nationalSocieties/${user.homePage.nationalSocietyId}`;
+      return `/nationalSocieties/${user.homePage.nationalSocietyId}`;
     case "Project":
-        return `/nationalsocieties/${user.homePage.nationalSocietyId}/projects/${user.homePage.projectId}`;
+      return `/nationalsocieties/${user.homePage.nationalSocietyId}/projects/${user.homePage.projectId}`;
     case "ProjectList":
-        return `/nationalSocieties/${user.homePage.nationalSocietyId}/projects`;
+      return `/nationalSocieties/${user.homePage.nationalSocietyId}/projects`;
     default:
-        return '/';
+      return '/';
   }
 };
 

@@ -16,7 +16,7 @@ export const accessMap = {
   },
   projects: {
     get: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    list: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
     add: [Administrator, Manager, TechnicalAdvisor],
     edit: [Administrator, Manager, TechnicalAdvisor],
     delete: [Administrator, Manager, TechnicalAdvisor]
@@ -46,6 +46,6 @@ export const accessMap = {
     delete: [Administrator, Manager, TechnicalAdvisor, Supervisor]
   },
   reports: {
-    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],    
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
   }
 };

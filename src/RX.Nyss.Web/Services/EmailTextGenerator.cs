@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Services
                   Please follow this link to set your password for login to the NYSS platform.
                 </p>
 
-                <a href=""{{link}}"">Verify you email</a>
+                <a href=""{{link}}"">Verify your email</a>
 
                 <p>
                   Your username and password is private and should not be shared with anyone else.
