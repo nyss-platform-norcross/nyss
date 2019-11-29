@@ -353,15 +353,16 @@ namespace RX.Nyss.Web.Features.DataCollector
                 })
                 .ToListAsync();
 
-            var averageLocation = new LocationDto
-            {
-                Latitude = locations.Sum(l => l.Location.Latitude) / locations.Count,
-                Longitude = locations.Sum(l => l.Location.Longitude) / locations.Count
-            };
 
             var result = new MapOverviewResponseDto
             {
-                CenterLocation = averageLocation,
+                CenterLocation = locations.Count == 0
+                    ? await GetCountryLocationFromProject(projectId)
+                    : new LocationDto
+                    {
+                        Latitude = locations.Sum(l => l.Location.Latitude) / locations.Count,
+                        Longitude = locations.Sum(l => l.Location.Longitude) / locations.Count
+                    },
                 DataCollectorLocations = locations
             };
 
@@ -397,6 +398,16 @@ namespace RX.Nyss.Web.Features.DataCollector
 
 
             return Success(result);
+        }
+
+        private async Task<LocationDto> GetCountryLocationFromProject(int projectId)
+        {
+            var countryName = _nyssContext.Projects.Where(p => p.Id == projectId)
+                .Select(p => p.NationalSociety.Country.Name)
+                .Single();
+
+            var result = await _geolocationService.GetLocationFromCountry(countryName);
+            return result.IsSuccess ? result.Value : null;
         }
     }
 }
