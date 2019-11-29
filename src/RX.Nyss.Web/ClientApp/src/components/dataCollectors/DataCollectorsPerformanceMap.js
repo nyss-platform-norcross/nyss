@@ -65,26 +65,28 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
       length={4}
       bounds={bounds}
       zoom={1}
-      maxZoom={15}
+      maxZoom={25}
     >
       <TileLayer
         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      <MarkerClusterGroup iconCreateFunction={createClusterCustomIcon}>
-        {dataCollectorLocations.map(dc => (
-          <CircleMarkerX
-            className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
-            key={`marker_${dc.location.latitude}_${dc.location.longitude}`}
-            center={{ lat: dc.location.latitude, lng: dc.location.longitude }}
-            position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
-            onclick={handleMarkerClick}
-            dataCollectorInfo={{
-              countReportingCorrectly: dc.countReportingCorrectly,
-              countReportingWithErrors: dc.countReportingWithErrors,
-              countNotReporting: dc.countNotReporting
-            }}
+      <MarkerClusterGroup 
+        showCoverageOnHover={false}
+        iconCreateFunction={createClusterCustomIcon}>
+          {dataCollectorLocations.map(dc => (
+            <CircleMarkerX
+              className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
+              key={`marker_${dc.location.latitude}_${dc.location.longitude}`}
+              center={{ lat: dc.location.latitude, lng: dc.location.longitude }}
+              position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
+              onclick={handleMarkerClick}
+              dataCollectorInfo={{
+                countReportingCorrectly: dc.countReportingCorrectly,
+                countReportingWithErrors: dc.countReportingWithErrors,
+                countNotReporting: dc.countNotReporting
+              }}
           >
             <Popup>
               <div className={styles.popup}>
