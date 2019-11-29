@@ -86,14 +86,15 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/globalcoordinators/add' component={GlobalCoordinatorsCreatePage} roles={accessMap.globalCoordinators.add} />
           <AuthRoute exact path='/globalcoordinators/:globalCoordinatorId/edit' component={GlobalCoordinatorsEditPage} roles={accessMap.globalCoordinators.edit} />
 
-        <Redirect exact from='/projects/:projectId/datacollectors' to='/projects/:projectId/datacollectors/list' />
-        <AuthRoute exact path='/projects/:projectId/datacollectors/mapoverview' component={DataCollectorsMapOverviewPage} roles={accessMap.dataCollectors.list} />
+          <Redirect exact from='/projects/:projectId/datacollectors' to='/projects/:projectId/datacollectors/list' />
+          <AuthRoute exact path='/projects/:projectId/datacollectors/mapoverview' component={DataCollectorsMapOverviewPage} roles={accessMap.dataCollectors.list} />
 
           <AuthRoute exact path='/healthrisks' component={HealthRisksListPage} roles={accessMap.healthRisks.list} />
           <AuthRoute exact path='/healthrisks/add' component={HealthRisksCreatePage} roles={accessMap.healthRisks.add} />
           <AuthRoute exact path='/healthrisks/:healthRiskId/edit' component={HealthRisksEditPage} roles={accessMap.healthRisks.edit} />
 
           <AuthRoute exact path='/projects/:projectId/datacollectors' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
+          <AuthRoute exact path='/projects/:projectId/datacollectors/list' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/add' component={DataCollectorsCreatePage} roles={accessMap.dataCollectors.add} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
 

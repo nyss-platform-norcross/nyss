@@ -13,7 +13,6 @@ import { dataCollectorsReducer } from "../components/dataCollectors/logic/dataCo
 import { headManagerConsentsReducer } from "../components/headManagerConsents/logic/headManagerConsentsReducer";
 import { reportsReducer } from "../components/reports/logic/reportsReducer";
 import { nationalSocietyStructureReducer } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureReducer";
-import { reportsReducer } from "../components/reports/logic/reportsReducer";
 import { projectDashboardReducer } from "../components/projectDashboard/logic/projectDashboardReducer";
 
 export const createRootReducer = (history) => combineReducers({

@@ -8,7 +8,6 @@ import { dataCollectorsSiteMap } from "./components/dataCollectors/logic/dataCol
 import { reportsSiteMap } from "./components/reports/logic/reportsSiteMap";
 import { nationalSocietyStructureSiteMap } from "./components/nationalSocietyStructure/nationalSocietyStructureSiteMap";
 import { projectDashboardSiteMap } from "./components/projectDashboard/logic/projectDashboardSiteMap";
-import { reportsSiteMap } from "./components/reports/logic/reportsSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
