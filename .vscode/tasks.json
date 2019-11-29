@@ -64,7 +64,7 @@
         },
         {
           "type": "func",
-          "dependsOn": "build",
+          "dependsOn": "build funcapp",
           "options": {
             "cwd": "${workspaceFolder}/src/RX.Nyss.FuncApp/bin/Debug/netcoreapp2.2"
           },

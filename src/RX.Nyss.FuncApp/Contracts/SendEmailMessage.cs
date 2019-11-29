@@ -7,6 +7,8 @@
         public string Subject { get; set; }
 
         public string Body { get; set; }
+
+        public bool SendAsTextOnly { get; set; }
     }
 
     public class Contact

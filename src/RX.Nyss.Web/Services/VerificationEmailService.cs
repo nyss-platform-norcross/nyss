@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Services
                 callbackUrl: verificationUrl,
                 name: user.Name);
 
-            return _emailPublisherService.SendEmail((user.EmailAddress, user.Name), emailSubject, emailBody);
+            return _emailPublisherService.SendEmail((user.EmailAddress, user.Name), emailSubject, emailBody, false);
         }
     }
 }

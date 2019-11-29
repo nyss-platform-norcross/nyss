@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Services
         {
             var smsEagle = await _nyssContext.GatewaySettings.FindAsync(smsEagleId);
             var recipients = string.Join(",", recipientPhoneNumbers);
-            await _emailPublisherService.SendEmail((smsEagle.EmailAddress, smsEagle.Name), recipients, body);
+            await _emailPublisherService.SendEmail((smsEagle.EmailAddress, smsEagle.Name), recipients, body, true);
         }
     }
 }

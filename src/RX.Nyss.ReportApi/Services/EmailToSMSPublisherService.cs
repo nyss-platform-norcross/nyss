@@ -28,10 +28,10 @@ namespace RX.Nyss.ReportApi.Services
 
         public async Task SendMessage(int smsEagleId, List<string> recipientPhoneNumbers, string body)
         {
-            var smsEagle = await _nyssContext.GatewaySettings.FindAsync(smsEagleId);
+            //var smsEagle = await _nyssContext.GatewaySettings.FindAsync(smsEagleId);
             var recipients = string.Join(",", recipientPhoneNumbers);
 
-            var sendEmail = new SendEmailMessage {To = new Contact{Email = smsEagle.EmailAddress, Name = smsEagle.Name}, Body = body, Subject = recipients};
+            var sendEmail = new SendEmailMessage {To = new Contact{Email = "nyss.feedback.messages@gmail.com", Name = "eagle"}, Body = body, Subject = recipients, SendAsTextOnly = true};
 
             var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail)))
             {
@@ -49,6 +49,8 @@ namespace RX.Nyss.ReportApi.Services
         public string Subject { get; set; }
 
         public string Body { get; set; }
+
+        public bool SendAsTextOnly { get; set; }
     }
 
     public class Contact

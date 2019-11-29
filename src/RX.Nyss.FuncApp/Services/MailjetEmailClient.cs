@@ -32,6 +32,14 @@ namespace RX.Nyss.FuncApp.Services
                 SandboxMode = sandboxMode,
                 Messages = new List<MailjetEmail>
                 {
+                    message.SendAsTextOnly ? new MailjetEmail
+                    {
+                        To = new List<MailjetContact> {new MailjetContact {Email = message.To.Email, Name = message.To.Name}},
+                        From = new MailjetContact {Email = _config.MailjetConfig.FromAddress, Name = _config.MailjetConfig.FromName},
+                        Subject = message.Subject,
+                        TextPart = message.Body
+                    }
+                    :
                     new MailjetEmail
                     {
                         To = new List<MailjetContact> {new MailjetContact {Email = message.To.Email, Name = message.To.Name}},

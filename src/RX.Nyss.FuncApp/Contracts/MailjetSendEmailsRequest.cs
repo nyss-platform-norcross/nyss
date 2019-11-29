@@ -14,6 +14,7 @@ namespace RX.Nyss.FuncApp.Contracts
         public List<MailjetContact> To { get; set; }
         public string Subject { get; set; }
         public string HTMLPart { get; set; }
+        public string TextPart { get; set; }
     }
 
     public class MailjetContact

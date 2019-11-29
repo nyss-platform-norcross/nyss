@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Services
         private readonly IConfig _config;
         private readonly IEmailPublisherService _emailPublisherService;
 
-        public IdentityUserRegistrationService(UserManager<IdentityUser> userManager, 
+        public IdentityUserRegistrationService(UserManager<IdentityUser> userManager,
             ILoggerAdapter loggerAdapter, IConfig config, IEmailPublisherService emailPublisherService, INyssContext nyssContext)
         {
             _userManager = userManager;
@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Services
             {
                 return Error(ResultKey.User.ResetPassword.UserNotFound);
             }
-            
+
             var nyssUser = await _nyssContext.Users.SingleAsync(x => x.IdentityUserId == user.Id);
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
@@ -90,24 +90,24 @@ namespace RX.Nyss.Web.Services
 
             var (emailSubject, emailBody) = EmailTextGenerator.GenerateResetPasswordEmail(resetUrl, nyssUser.Name);
 
-            await _emailPublisherService.SendEmail((email, nyssUser.Name), emailSubject, emailBody);
+            await _emailPublisherService.SendEmail((email, nyssUser.Name), emailSubject, emailBody, false);
 
 
             return Success(ResultKey.User.ResetPassword.Success);
         }
 
         public async Task<Result> AddPassword(string email, string newPassword)
-        { 
+        {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 return Error(ResultKey.User.ResetPassword.UserNotFound);
             }
             var passwordAddResult = await _userManager.AddPasswordAsync(user, newPassword);
-            
+
             var isPasswordTooWeak = passwordAddResult.Errors.Any(x => x.IsPasswordTooWeak());
             if (isPasswordTooWeak)
-            { 
+            {
                 return Error(ResultKey.User.Registration.PasswordTooWeak, string.Join(", ", passwordAddResult.Errors.Select(x => x.Description)));
             }
 
@@ -190,7 +190,7 @@ namespace RX.Nyss.Web.Services
             var assignmentToRoleResult = await _userManager.AddToRoleAsync(user, role);
 
             if (!assignmentToRoleResult.Succeeded)
-            { 
+            {
                 if (assignmentToRoleResult.Errors.Any(x => x.Code == IdentityErrorCode.UserAlreadyInRole.ToString()))
                 {
                     throw new ResultException(ResultKey.User.Registration.UserAlreadyInRole);
