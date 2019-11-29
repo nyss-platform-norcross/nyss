@@ -10,6 +10,9 @@ const getOptions = (valuesLabel, series, categories) => ({
   chart: {
     type: 'column',
     backgroundColor: "transparent",
+    style: {
+      fontFamily: 'Poppins,"Helvetica Neue",Arial'
+    }
   },
   title: {
     text: ''
@@ -24,7 +27,8 @@ const getOptions = (valuesLabel, series, categories) => ({
     allowDecimals: false
   },
   legend: {
-    enabled: false
+    enabled: true,
+    itemStyle: { fontWeight: "regular" }
   },
   credits: {
     enabled: false
