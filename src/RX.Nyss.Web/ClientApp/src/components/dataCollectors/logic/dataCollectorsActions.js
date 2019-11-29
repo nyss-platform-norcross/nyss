@@ -35,9 +35,9 @@ export const openMapOverview = {
 };
 
 export const getMapOverview = {
-  invoke: (projectId, from, to) => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId, from, to }),
+  invoke: (projectId, filters) => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId, filters }),
   request: () => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.REQUEST }),
-  success: (dataCollectorLocations, centerLocation) => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS, dataCollectorLocations, centerLocation }),
+  success: (filters, dataCollectorLocations, centerLocation) => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS, filters, dataCollectorLocations, centerLocation }),
   failure: (message) => ({ type: GET_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE, message })
 };
 

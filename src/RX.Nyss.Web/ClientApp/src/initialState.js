@@ -123,6 +123,7 @@ export const initialState = {
     formData: null,
     mapOverviewDataCollectorLocations: [],
     mapOverviewCenterLocation: null,
+    mapOverviewFilters: null,
     mapOverviewDetails: [],
     mapOverviewDetailsFetching: false
   },

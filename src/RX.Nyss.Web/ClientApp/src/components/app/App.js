@@ -93,12 +93,11 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/healthrisks/add' component={HealthRisksCreatePage} roles={accessMap.healthRisks.add} />
           <AuthRoute exact path='/healthrisks/:healthRiskId/edit' component={HealthRisksEditPage} roles={accessMap.healthRisks.edit} />
 
-          <AuthRoute exact path='/projects/:projectId/datacollectors' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/list' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/add' component={DataCollectorsCreatePage} roles={accessMap.dataCollectors.add} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
 
-        <AuthRoute exact path='/projects/:projectId/reports' component={ReportsListPage} roles={accessMap.reports.list} />
+          <AuthRoute exact path='/projects/:projectId/reports' component={ReportsListPage} roles={accessMap.reports.list} />
         </Switch>
       </ConnectedRouter>
     </MuiPickersUtilsProvider>

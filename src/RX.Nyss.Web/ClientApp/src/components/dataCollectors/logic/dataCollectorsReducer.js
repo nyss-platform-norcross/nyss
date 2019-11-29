@@ -45,8 +45,8 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, mapOverviewCenterLocation: null, mapOverviewDataCollectorLocations: [] };
 
     case actions.GET_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS:
-      return { ...state, mapOverviewCenterLocation: action.centerLocation , mapOverviewDataCollectorLocations: action.dataCollectorLocations };
-      
+      return { ...state, mapOverviewFilters: action.filters, mapOverviewCenterLocation: action.centerLocation , mapOverviewDataCollectorLocations: action.dataCollectorLocations };
+
     case actions.GET_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE:
       return { ...state, mapOverviewCenterLocation: null , mapOverviewDataCollectorLocations: [] };
 
@@ -55,7 +55,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
 
     case actions.GET_DATA_COLLECTORS_MAP_DETAILS.SUCCESS:
       return { ...state, mapOverviewDetails: action.details, mapOverviewDetailsFetching: false };
-      
+
     case actions.GET_DATA_COLLECTORS_MAP_DETAILS.FAILURE:
       return { ...state, mapOverviewDetailsFetching: false };
 

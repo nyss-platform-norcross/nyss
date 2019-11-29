@@ -13,7 +13,7 @@ const pageContentId = "pageContent";
 export const resetPageContentScroll = () =>
   document.getElementById(pageContentId).scrollTo(0, 0)
 
-export const Layout = ({ children }) => (
+export const Layout = ({ fillPage, children }) => (
   <BaseLayout>
     <div className={styles.sideMenu}>
       <SideMenu />
@@ -24,11 +24,11 @@ export const Layout = ({ children }) => (
         <Header />
       </div>
 
-      <div className={styles.pageContentContainer} id={pageContentId}>
-        <div className={styles.pageContent}>
+      <div className={`${styles.pageContentContainer} ${fillPage ? styles.fillPage : null}`} id={pageContentId}>
+        <div className={`${styles.pageContent} ${fillPage ? styles.fillPage : null}`}>
           <Breadcrumb />
 
-          <div>
+          <div className={fillPage ? styles.fillPage : null}>
             <TabMenu />
             {children}
           </div>

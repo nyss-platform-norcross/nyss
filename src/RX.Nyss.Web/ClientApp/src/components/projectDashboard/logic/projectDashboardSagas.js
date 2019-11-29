@@ -19,7 +19,6 @@ function* openProjectDashboard({ projectId }) {
 
     const endDate = dayjs(new Date());
 
-
     const filters = (yield select(state => state.projectDashboard.filters)) ||
       {
         healthRiskId: null,

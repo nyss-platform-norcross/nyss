@@ -1,13 +1,12 @@
 import styles from "./DataCollectorsPerformanceMap.module.scss"
 
-import React, { useRef, useState, Fragment } from 'react';
-import { Map, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import React, { useState } from 'react';
+import { Map, TileLayer, Popup } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import L from 'leaflet'
 import { Loading } from "../common/loading/Loading";
 import CircleMarkerX from "./CircleMarkerX";
 import Icon from "@material-ui/core/Icon";
-
 
 const calculateBounds = (dataCollectorLocations) => {
   function getMinLat(points) {
@@ -66,34 +65,35 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
       bounds={bounds}
       zoom={5}
       maxZoom={25}
+      className={styles.map}
     >
       <TileLayer
-        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        attribution=''
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      <MarkerClusterGroup 
+      <MarkerClusterGroup
         showCoverageOnHover={false}
         iconCreateFunction={createClusterCustomIcon}>
-          {dataCollectorLocations.map(dc => (
-            <CircleMarkerX
-              className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
-              key={`marker_${dc.location.latitude}_${dc.location.longitude}`}
-              center={{ lat: dc.location.latitude, lng: dc.location.longitude }}
-              position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
-              onclick={handleMarkerClick}
-              dataCollectorInfo={{
-                countReportingCorrectly: dc.countReportingCorrectly,
-                countReportingWithErrors: dc.countReportingWithErrors,
-                countNotReporting: dc.countNotReporting
-              }}
+        {dataCollectorLocations.map(dc => (
+          <CircleMarkerX
+            className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
+            key={`marker_${dc.location.latitude}_${dc.location.longitude}`}
+            center={{ lat: dc.location.latitude, lng: dc.location.longitude }}
+            position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
+            onclick={handleMarkerClick}
+            dataCollectorInfo={{
+              countReportingCorrectly: dc.countReportingCorrectly,
+              countReportingWithErrors: dc.countReportingWithErrors,
+              countNotReporting: dc.countNotReporting
+            }}
           >
             <Popup>
               <div className={styles.popup}>
                 {!detailsFetching
                   ? (
                     <div>
-                      {details.map(d => (
+                      {details && details.map(d => (
                         <div key={`dataCollector_${d.id}`} className={styles.dataCollectorDetails}>
                           <Icon>{getIconFromStatus(d.status)}</Icon>
                           {d.displayName}
@@ -101,7 +101,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
                       ))}
                     </div>
                   )
-                  : (<Loading inline />)
+                  : (<Loading inline noWait />)
                 }
               </div>
             </Popup>

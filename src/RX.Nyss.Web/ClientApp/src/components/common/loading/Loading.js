@@ -3,8 +3,8 @@ import styles from "./Loading.module.scss";
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-export const Loading = ({ style, inline, absolute }) => {
-  const [visible, setVisible] = useState(false);
+export const Loading = ({ style, inline, noWait, absolute }) => {
+  const [visible, setVisible] = useState(noWait);
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(true), 200);

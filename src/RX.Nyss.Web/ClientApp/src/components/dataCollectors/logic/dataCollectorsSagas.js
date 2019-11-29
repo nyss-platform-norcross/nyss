@@ -5,6 +5,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { strings, stringKeys } from "../../../strings";
+import dayjs from "dayjs";
 
 export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
@@ -49,24 +50,30 @@ function* openDataCollectorCreation({ projectId }) {
   }
 };
 
-function* openDataCollectorMapOverview({ projectId, from, to }) {
+function* openDataCollectorMapOverview({ projectId }) {
   yield put(actions.openMapOverview.request());
   try {
     yield openDataCollectorsModule(projectId);
-   
-    yield call(getDataCollectorMapOverview, { projectId, from, to });
-   
+
+    const endDate = dayjs(new Date());
+    const filters = (yield select(state => state.dataCollectors.mapOverviewFilters)) ||
+      {
+        startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+      };
+
+    yield call(getDataCollectorMapOverview, { projectId, filters })
     yield put(actions.openMapOverview.success());
   } catch (error) {
     yield put(actions.openMapOverview.failure(error.message));
   }
 };
 
-function* getDataCollectorMapOverview({ projectId, from, to }) {
+function* getDataCollectorMapOverview({ projectId, filters }) {
   yield put(actions.getMapOverview.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverview?from=${from}&to=${to}`);
-    yield put(actions.getMapOverview.success(response.value.dataCollectorLocations, response.value.centerLocation));
+    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverview?from=${filters.startDate}&to=${filters.endDate}`);
+    yield put(actions.getMapOverview.success(filters, response.value.dataCollectorLocations, response.value.centerLocation));
   } catch (error) {
     yield put(actions.getMapOverview.failure(error.message));
   }
@@ -119,12 +126,10 @@ function* removeDataCollector({ dataCollectorId }) {
 };
 
 function* getMapDetails({ projectId, lat, lng }) {
-  const from = "2019-01-01";
-  const to = "2020-01-01";
-
   yield put(actions.getMapDetails.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverviewDetails?from=${from}&to=${to}&lat=${lat}&lng=${lng}`);
+    const filters = yield select(state => state.dataCollectors.mapOverviewFilters);
+    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverviewDetails?from=${filters.startDate}&to=${filters.endDate}&lat=${lat}&lng=${lng}`);
     yield put(actions.getMapDetails.success(response.value));
   } catch (error) {
     yield put(actions.getMapDetails.failure(error.message));
