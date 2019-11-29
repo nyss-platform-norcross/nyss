@@ -24,6 +24,7 @@ namespace RX.Nyss.Data.Models
 
         public int? ReportId { get; set; }
         public virtual Report Report { get; set; }
+        public virtual DataCollector DataCollector { get; set; }
 
         public virtual NationalSociety NationalSociety { get; set; }
     }

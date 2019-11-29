@@ -6,7 +6,7 @@ export const reportsSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
     path: "/projects/:projectId/reports",
-    title: () => strings(stringKeys.reports.list.title),
+    title: () => strings(stringKeys.reports.title),
     placeholder: placeholders.leftMenu,
     access: accessMap.reports.list,
     placeholderIndex: 1

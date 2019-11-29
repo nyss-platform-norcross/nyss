@@ -120,7 +120,12 @@ export const initialState = {
     formSupervisors: [],
     formFetching: false,
     formSaving: false,
-    formData: null
+    formData: null,
+    mapOverviewDataCollectorLocations: [],
+    mapOverviewCenterLocation: null,
+    mapOverviewFilters: null,
+    mapOverviewDetails: [],
+    mapOverviewDetailsFetching: false
   },
   headManagerConsents: {
     nationalSocieties: []

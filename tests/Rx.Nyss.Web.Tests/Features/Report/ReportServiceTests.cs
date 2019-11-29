@@ -22,6 +22,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
         private readonly INyssContext _nyssContextMock;
         private readonly IConfig _config;
         private List<RX.Nyss.Data.Models.Report> _reports;
+        private List<RX.Nyss.Data.Models.RawReport> _rawReports;
 
 
         private readonly int _rowsPerPage = 10;
@@ -187,9 +188,13 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             };
 
             var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
+            var rawReports1 = BuildRawReports(reports1);
+
             var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0]);
+            var rawReports2 = BuildRawReports(reports2);
             _reports = reports1.Concat(reports2).ToList();
-            
+            _rawReports = rawReports1.Concat(rawReports2).ToList();
+
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
             var languageContentsMockDbSet = languageContents.AsQueryable().BuildMockDbSet();
@@ -203,6 +208,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             var villagesDbSet = villages.AsQueryable().BuildMockDbSet();
             var dataCollectorsDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
             var reportsDbSet = _reports.AsQueryable().BuildMockDbSet();
+            var rawReportsDbSet = _rawReports.AsQueryable().BuildMockDbSet();
 
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContextMock.ContentLanguages.Returns(contentLanguageMockDbSet);
@@ -217,6 +223,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             _nyssContextMock.Villages.Returns(villagesDbSet);
             _nyssContextMock.DataCollectors.Returns(dataCollectorsDbSet);
             _nyssContextMock.Reports.Returns(reportsDbSet);
+            _nyssContextMock.RawReports.Returns(rawReportsDbSet);
 
             _nyssContextMock.Projects.FindAsync(1).Returns(projects.Single(x => x.Id == 1));
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
@@ -237,6 +244,17 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                 .ToList();
             return reports;
         }
+
+        private static List<RX.Nyss.Data.Models.RawReport> BuildRawReports(List<RX.Nyss.Data.Models.Report> reports) =>
+            reports.Select(r => new RawReport
+                {
+                    Id = r.Id,
+                    Report = r,
+                    ReportId = r.Id,
+                    DataCollector = r.DataCollector,
+                    ReceivedAt = r.ReceivedAt,
+                })
+                .ToList();
 
         [Fact]
         public async Task List_ShouldReturnPagedResultsFromSpecifiedProject()

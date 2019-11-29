@@ -11,8 +11,8 @@ import { healthRisksReducer } from "../components/healthRisks/logic/healthRisksR
 import { nationalSocietyUsersReducer } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersReducer";
 import { dataCollectorsReducer } from "../components/dataCollectors/logic/dataCollectorsReducer";
 import { headManagerConsentsReducer } from "../components/headManagerConsents/logic/headManagerConsentsReducer";
-import { nationalSocietyStructureReducer } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureReducer";
 import { reportsReducer } from "../components/reports/logic/reportsReducer";
+import { nationalSocietyStructureReducer } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureReducer";
 import { projectDashboardReducer } from "../components/projectDashboard/logic/projectDashboardReducer";
 
 export const createRootReducer = (history) => combineReducers({

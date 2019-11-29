@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -50,5 +51,16 @@ namespace RX.Nyss.Web.Features.DataCollector
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
         public async Task<Result<DataCollectorFormDataResponse>> GetDataCollectorFormData(int projectId) =>
             await _dataCollectorService.GetFormData(projectId, User.Identity.Name);
+
+
+        [HttpGet, Route("project/{projectId:int}/dataCollector/mapOverview")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to) =>
+            await _dataCollectorService.GetMapOverview(projectId, from, to, User.Identity.Name, User.GetRoles());
+
+        [HttpGet, Route("project/{projectId:int}/dataCollector/mapOverviewDetails")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng) =>
+            await _dataCollectorService.GetMapOverviewDetails(projectId, from, to, lat, lng, User.Identity.Name, User.GetRoles());
     }
 }

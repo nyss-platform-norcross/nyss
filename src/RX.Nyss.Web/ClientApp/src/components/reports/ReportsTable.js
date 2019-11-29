@@ -45,7 +45,7 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
             <TableRow key={row.id} hover>
               <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD')}</TableCell>
               <TableCell>{dayjs(row.dateTime).format('HH:mm')}</TableCell>
-              <TableCell>{row.reportStatus}</TableCell>
+              <TableCell>{row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error) }</TableCell>
               <TableCell>{row.dataCollectorDisplayName}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{row.region}, {row.district}, {row.village}{row.zone ? ',' : null} {row.zone}</TableCell>

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
@@ -13,6 +15,7 @@ using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.DataCollector
@@ -26,6 +29,8 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId, string userIdentityName, IEnumerable<string> roles);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
         Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId);
+        Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName, IEnumerable<string> roles);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -293,5 +298,116 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         public async Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId) =>
             await _nyssContext.DataCollectors.AnyAsync(dc => dc.Id == dataCollectorId && dc.Supervisor.EmailAddress == supervisorIdentityName);
+
+
+        public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName,
+            IEnumerable<string> roles)
+        {
+            var endDate = to.Date.AddDays(1);
+
+            var dataCollectors = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.DataCollectors;
+
+            var dataCollectorsWithNoReports = dataCollectors
+                .Where(dc => dc.CreatedAt < endDate && (dc.DeletedAt > from || dc.DeletedAt == null))
+                .Where(dc => !dc.RawReports.Any(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
+                .Where(dc => dc.Project.Id == projectId)
+                .Select(dc => new
+                {
+                    dc.Location.X,
+                    dc.Location.Y,
+                    InvalidReport = 0,
+                    ValidReport = 0,
+                    NoReport = 1
+                });
+
+
+            var rawReports = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.RawReports.Where(dc => dc.DataCollector.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.RawReports;
+
+            var dataCollectorsWithReports = rawReports
+                .Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate)
+                .Where(r => r.DataCollector.CreatedAt < endDate && (r.DataCollector.DeletedAt > from || r.DataCollector.DeletedAt == null))
+                .Where(dc => dc.DataCollector.Project.Id == projectId)
+                .Select(r => new
+                {
+                    r.DataCollector.Location.X,
+                    r.DataCollector.Location.Y,
+                    InvalidReport = r.Report == null ? 1 : 0,
+                    ValidReport = r.Report != null ? 1 : 0,
+                    NoReport = 0
+                });
+
+
+            var locations = await dataCollectorsWithReports
+                .Union(dataCollectorsWithNoReports)
+                .GroupBy(x => new { x.X, x.Y })
+                .Select(location => new MapOverviewLocationResponseDto
+                {
+                    Location = new LocationDto { Latitude = location.Key.X, Longitude = location.Key.Y },
+                    CountReportingCorrectly = location.Sum(x => x.ValidReport),
+                    CountReportingWithErrors = location.Sum(x => x.InvalidReport),
+                    CountNotReporting = location.Sum(x => x.NoReport)
+                })
+                .ToListAsync();
+
+
+            var result = new MapOverviewResponseDto
+            {
+                CenterLocation = locations.Count == 0
+                    ? await GetCountryLocationFromProject(projectId)
+                    : new LocationDto
+                    {
+                        Latitude = locations.Sum(l => l.Location.Latitude) / locations.Count,
+                        Longitude = locations.Sum(l => l.Location.Longitude) / locations.Count
+                    },
+                DataCollectorLocations = locations
+            };
+
+            return Success(result);
+        }
+
+        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName,
+            IEnumerable<string> roles)
+        {
+            var dataCollectors = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.DataCollectors;
+
+            var result = await dataCollectors
+                .Where(dc => dc.Location.X == x && dc.Location.Y == y)
+                .Where(dc => dc.Project.Id == projectId)
+                .Select(dc => new
+                {
+                    DataCollector = dc,
+                    ReportsInTimeRange = dc.RawReports.Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
+                })
+                .Select(dc => new MapOverviewDataCollectorResponseDto
+                {
+                    Id = dc.DataCollector.Id,
+                    DisplayName = dc.DataCollector.DisplayName,
+                    Status = dc.ReportsInTimeRange.Any()
+                        ? dc.ReportsInTimeRange.All(r => r.Report != null)
+                            ? MapOverviewDataCollectorStatus.ReportingCorrectly
+                            : MapOverviewDataCollectorStatus.ReportingWithErrors
+                        : MapOverviewDataCollectorStatus.NotReporting
+                })
+                .ToListAsync();
+
+
+            return Success(result);
+        }
+
+        private async Task<LocationDto> GetCountryLocationFromProject(int projectId)
+        {
+            var countryName = _nyssContext.Projects.Where(p => p.Id == projectId)
+                .Select(p => p.NationalSociety.Country.Name)
+                .Single();
+
+            var result = await _geolocationService.GetLocationFromCountry(countryName);
+            return result.IsSuccess ? result.Value : null;
+        }
     }
 }

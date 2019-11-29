@@ -10,8 +10,8 @@ import { healthRisksSagas } from "../components/healthRisks/logic/healthRisksSag
 import { nationalSocietyUsersSagas } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersSagas";
 import { dataCollectorsSagas } from "../components/dataCollectors/logic/dataCollectorsSagas";
 import { headManagerConsentsSagas } from "../components/headManagerConsents/logic/headManagerConsentsSagas";
-import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
 import { reportsSagas } from "../components/reports/logic/reportsSagas";
+import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
 import { projectDashboardSagas } from "../components/projectDashboard/logic/projectDashboardSagas";
 
 function* rootSaga() {

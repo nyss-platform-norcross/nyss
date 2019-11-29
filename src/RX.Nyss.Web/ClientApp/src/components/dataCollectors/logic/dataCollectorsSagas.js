@@ -5,14 +5,18 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { strings, stringKeys } from "../../../strings";
+import dayjs from "dayjs";
 
 export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
   takeEvery(consts.OPEN_DATA_COLLECTOR_CREATION.INVOKE, openDataCollectorCreation),
   takeEvery(consts.OPEN_DATA_COLLECTOR_EDITION.INVOKE, openDataCollectorEdition),
+  takeEvery(consts.OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, openDataCollectorMapOverview),
+  takeEvery(consts.GET_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, getDataCollectorMapOverview),
   takeEvery(consts.CREATE_DATA_COLLECTOR.INVOKE, createDataCollector),
   takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
-  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector)
+  takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector),
+  takeEvery(consts.GET_DATA_COLLECTORS_MAP_DETAILS.INVOKE, getMapDetails)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -43,6 +47,35 @@ function* openDataCollectorCreation({ projectId }) {
     yield put(actions.openCreation.success(response.value.regions, response.value.supervisors, response.value.defaultLocation, response.value.defaultSupervisorId));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
+  }
+};
+
+function* openDataCollectorMapOverview({ projectId }) {
+  yield put(actions.openMapOverview.request());
+  try {
+    yield openDataCollectorsModule(projectId);
+
+    const endDate = dayjs(new Date());
+    const filters = (yield select(state => state.dataCollectors.mapOverviewFilters)) ||
+      {
+        startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
+        endDate: endDate.format('YYYY-MM-DD'),
+      };
+
+    yield call(getDataCollectorMapOverview, { projectId, filters })
+    yield put(actions.openMapOverview.success());
+  } catch (error) {
+    yield put(actions.openMapOverview.failure(error.message));
+  }
+};
+
+function* getDataCollectorMapOverview({ projectId, filters }) {
+  yield put(actions.getMapOverview.request());
+  try {
+    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverview?from=${filters.startDate}&to=${filters.endDate}`);
+    yield put(actions.getMapOverview.success(filters, response.value.dataCollectorLocations, response.value.centerLocation));
+  } catch (error) {
+    yield put(actions.getMapOverview.failure(error.message));
   }
 };
 
@@ -89,6 +122,17 @@ function* removeDataCollector({ dataCollectorId }) {
     yield call(getDataCollectors, projectId);
   } catch (error) {
     yield put(actions.remove.failure(dataCollectorId, error.message));
+  }
+};
+
+function* getMapDetails({ projectId, lat, lng }) {
+  yield put(actions.getMapDetails.request());
+  try {
+    const filters = yield select(state => state.dataCollectors.mapOverviewFilters);
+    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverviewDetails?from=${filters.startDate}&to=${filters.endDate}&lat=${lat}&lng=${lng}`);
+    yield put(actions.getMapDetails.success(response.value));
+  } catch (error) {
+    yield put(actions.getMapDetails.failure(error.message));
   }
 };
 

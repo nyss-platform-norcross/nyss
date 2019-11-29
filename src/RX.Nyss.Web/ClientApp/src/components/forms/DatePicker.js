@@ -1,9 +1,11 @@
+import styles from "./DatePicker.module.scss"
+
 import React from 'react';
 import { KeyboardDatePicker } from '@material-ui/pickers';
 
 export const DatePicker = ({ label, value, onChange, className }) => (
   <KeyboardDatePicker
-    className={className}
+    className={`${className} ${styles.datePicker}`}
     autoOk
     disableFuture
     disableToolbar
