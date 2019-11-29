@@ -1,4 +1,6 @@
-﻿using NetTopologySuite.Geometries;
+﻿using System;
+using System.Collections.Generic;
+using NetTopologySuite.Geometries;
 using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
@@ -32,5 +34,11 @@ namespace RX.Nyss.Data.Models
         public virtual Village Village { get; set; }
 
         public virtual Zone Zone { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime? DeletedAt { get; set; }
+
+        public ICollection<Report> Reports { get; set; }
     }
 }

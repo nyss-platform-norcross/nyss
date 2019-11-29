@@ -167,6 +167,17 @@ export const theme = createMuiTheme({
         height: 3
       }
     },
+    MuiCard: {
+      root: {
+        border: "2px solid #f3f3f3"
+      }
+    },
+    MuiCardHeader: {
+      title: {
+        fontSize: "16px",
+        fontWeight: "bold"
+      }
+    },
     MuiTab: {
       root: {
         fontSize: "1rem !important"

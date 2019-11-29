@@ -1701,10 +1701,16 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("BirthGroupDecade")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("DataCollectorType")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
@@ -2645,7 +2651,7 @@ namespace RX.Nyss.Data.Migrations
             modelBuilder.Entity("RX.Nyss.Data.Models.Report", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.DataCollector", "DataCollector")
-                        .WithMany()
+                        .WithMany("Reports")
                         .HasForeignKey("DataCollectorId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();

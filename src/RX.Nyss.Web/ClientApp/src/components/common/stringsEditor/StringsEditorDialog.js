@@ -57,7 +57,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
     post("/api/resources/saveString", dto)
       .then(() => {
         updateStrings({
-          [stringKey]: values[`value_${currentLanguageCode}`]
+          [values.key]: values[`value_${currentLanguageCode}`]
         });
 
         close();
@@ -77,8 +77,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
           {form && (
             <Fragment>
               <Grid item xs={12}>
-                <div>Key:</div>
-                <div><b>{stringKey}</b></div>
+                <TextInputField label="Key" name="key" field={form.fields.key} />
               </Grid>
 
               {languageCodes.map(lang => (

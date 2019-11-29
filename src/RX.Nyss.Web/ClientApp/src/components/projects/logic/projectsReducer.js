@@ -68,15 +68,6 @@ export function projectsReducer(state = initialState.projects, action) {
     case actions.REMOVE_PROJECT.FAILURE:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
 
-    case actions.OPEN_PROJECT_DASHBOARD.REQUEST:
-      return { ...state, dashboard: { ...state.dashboard, isFetching: true } };
-
-    case actions.OPEN_PROJECT_DASHBOARD.SUCCESS:
-      return { ...state, dashboard: { ...state.dashboard, name: action.name, isFetching: false } };
-
-    case actions.OPEN_PROJECT_DASHBOARD.FAILURE:
-      return { ...state, dashboard: { ...state.dashboard, name: null, isFetching: false } };
-
     default:
       return state;
   }

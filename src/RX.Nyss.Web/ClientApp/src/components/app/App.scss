@@ -25,3 +25,11 @@ html {
   height: 400px;
   width: 100%;
 }
+
+.highcharts-container {
+  width: 100% !important;
+
+  svg {
+    width: 100%;
+  }
+}

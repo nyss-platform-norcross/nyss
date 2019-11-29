@@ -1,0 +1,22 @@
+.tree {
+  min-width: 500px;
+  min-height: 300px;
+}
+
+.dropDown {
+  max-height: 600px !important;
+}
+
+.selected {
+  > div {
+    background: #dadada !important;
+  }
+}
+
+.areaSelect {
+  cursor: pointer !important;
+}
+
+.field {
+  min-width: 300px;
+}

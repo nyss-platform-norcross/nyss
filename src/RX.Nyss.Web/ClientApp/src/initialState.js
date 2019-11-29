@@ -36,6 +36,7 @@ export const initialState = {
     structureFetching: false,
     dashboard: {
       name: null,
+      filters: null,
       isFetching: false
     }
   },
@@ -67,8 +68,18 @@ export const initialState = {
     formData: null,
     dashboard: {
       name: null,
+      projectSummary: null,
       isFetching: false
-    }
+    },
+  },
+  projectDashboard: {
+    name: null,
+    projectSummary: null,
+    isFetching: true,
+    filtersData: {
+      healthRisks: []
+    },
+    filters: null
   },
   globalCoordinators: {
     listFetching: false,
@@ -117,7 +128,8 @@ export const initialState = {
   reports: {
     listFetching: false,
     listRemoving: {},
-    listStale: true, 
+    listStale: true,
+    listProjectId: null,
     paginatedListData: null
   }
 };
