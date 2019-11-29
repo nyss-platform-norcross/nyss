@@ -7,8 +7,14 @@ export function reportsReducer(state = initialState.reports, action) {
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null }
 
+    case actions.OPEN_REPORTS_LIST.INVOKE:
+      return { ...state, listStale: action.projectId !== state.listProjectId };
+
+    case actions.OPEN_REPORTS_LIST.SUCCESS:
+      return { ...state, listProjectId: action.projectId };
+
     case actions.GET_REPORTS.REQUEST:
-      return { ...state, listFetching: true };
+      return { ...state, paginatedListData: state.listStale ? null : state.paginatedListData, listFetching: true };
 
     case actions.GET_REPORTS.SUCCESS:
       return { ...state, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows} };

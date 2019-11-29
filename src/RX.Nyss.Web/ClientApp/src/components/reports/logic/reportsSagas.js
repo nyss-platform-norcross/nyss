@@ -4,7 +4,6 @@ import * as actions from "./reportsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
-import { strings, stringKeys } from "../../../strings";
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
@@ -12,15 +11,17 @@ export const reportsSagas = () => [
 ];
 
 function* openReportsList({ projectId }) {
+  const listStale = yield select(state => state.reports.listStale);
+
   yield put(actions.openList.request());
   try {
     yield openReportsModule(projectId);
 
-    if (yield select(state => state.reports.listStale)) {
+    if (listStale) {
       yield call(getReports, { projectId });
     }
 
-    yield put(actions.openList.success());
+    yield put(actions.openList.success(projectId));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
   }
