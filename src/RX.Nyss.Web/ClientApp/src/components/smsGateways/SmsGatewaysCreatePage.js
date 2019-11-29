@@ -23,7 +23,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
       name: "",
       apiKey: "",
       gatewayType: smsEagle,
-      "emailAddress": ""
+      emailAddress: ""
     };
 
     const validation = {

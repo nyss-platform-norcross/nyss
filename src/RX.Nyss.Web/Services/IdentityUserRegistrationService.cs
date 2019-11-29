@@ -90,7 +90,7 @@ namespace RX.Nyss.Web.Services
 
             var (emailSubject, emailBody) = EmailTextGenerator.GenerateResetPasswordEmail(resetUrl, nyssUser.Name);
 
-            await _emailPublisherService.SendEmail((email, nyssUser.Name), emailSubject, emailBody, false);
+            await _emailPublisherService.SendEmail((email, nyssUser.Name), emailSubject, emailBody);
 
 
             return Success(ResultKey.User.ResetPassword.Success);
