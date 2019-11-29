@@ -191,9 +191,7 @@
           "cors": {
             "allowedOrigins": [
             ]
-          },
-          // Consumption Plan does not support AlwaysOn feature
-          "alwaysOn": false
+          }
         }
       }
     },

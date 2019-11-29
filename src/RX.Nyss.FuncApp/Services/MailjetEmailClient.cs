@@ -12,6 +12,7 @@ namespace RX.Nyss.FuncApp.Services
     public interface IMailjetEmailClient
     {
         Task<HttpResponseMessage> SendEmail(SendEmailMessage message, bool sandboxMode);
+        Task<HttpResponseMessage> SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode);
     }
 
     public class MailjetEmailClient : IMailjetEmailClient
@@ -38,6 +39,31 @@ namespace RX.Nyss.FuncApp.Services
                         From = new MailjetContact {Email = _config.MailjetConfig.FromAddress, Name = _config.MailjetConfig.FromName},
                         Subject = message.Subject,
                         HTMLPart = message.Body
+                    }
+                }
+            };
+
+            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
+
+            return await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
+            {
+                ("Authorization", basicAuthHeader)
+            });
+        }
+
+        public async Task<HttpResponseMessage> SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode)
+        {
+            var mailjetRequest = new MailjetSendTextEmailsRequest
+            {
+                SandboxMode = sandboxMode,
+                Messages = new List<MailjetTextEmail>
+                {
+                    new MailjetTextEmail
+                    {
+                        To = new List<MailjetContact> {new MailjetContact {Email = message.To.Email, Name = message.To.Name}},
+                        From = new MailjetContact {Email = _config.MailjetConfig.FromAddress, Name = _config.MailjetConfig.FromName},
+                        Subject = message.Subject,
+                        TextPart = message.Body
                     }
                 }
             };

@@ -47,7 +47,8 @@ namespace RX.Nyss.Web.Features.SmsGateway
                     Id = gs.Id,
                     Name = gs.Name,
                     ApiKey = gs.ApiKey,
-                    GatewayType = gs.GatewayType
+                    GatewayType = gs.GatewayType,
+                    EmailAddress = gs.EmailAddress
                 })
                 .FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
@@ -103,6 +104,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
                     Name = gatewaySettingRequestDto.Name,
                     ApiKey = gatewaySettingRequestDto.ApiKey,
                     GatewayType = gatewaySettingRequestDto.GatewayType,
+                    EmailAddress = gatewaySettingRequestDto.EmailAddress,
                     NationalSocietyId = nationalSocietyId
                 };
 
@@ -141,6 +143,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
                 gatewaySettingToUpdate.Name = gatewaySettingRequestDto.Name;
                 gatewaySettingToUpdate.ApiKey = gatewaySettingRequestDto.ApiKey;
                 gatewaySettingToUpdate.GatewayType = gatewaySettingRequestDto.GatewayType;
+                gatewaySettingToUpdate.EmailAddress = gatewaySettingRequestDto.EmailAddress;
 
                 await _nyssContext.SaveChangesAsync();
 

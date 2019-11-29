@@ -8,12 +8,26 @@ namespace RX.Nyss.FuncApp.Contracts
         public List<MailjetEmail> Messages { get; set; }
     }
 
+    public class MailjetSendTextEmailsRequest
+    {
+        public bool SandboxMode { get; set; }
+        public List<MailjetTextEmail> Messages { get; set; }
+    }
+
     public class MailjetEmail
     {
         public MailjetContact From { get; set; }
         public List<MailjetContact> To { get; set; }
         public string Subject { get; set; }
         public string HTMLPart { get; set; }
+    }
+
+    public class MailjetTextEmail
+    {
+        public MailjetContact From { get; set; }
+        public List<MailjetContact> To { get; set; }
+        public string Subject { get; set; }
+        public string TextPart { get; set; }
     }
 
     public class MailjetContact

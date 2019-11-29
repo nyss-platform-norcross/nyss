@@ -35,6 +35,10 @@ namespace RX.Nyss.FuncApp.Services
             }
 
             _logger.LogDebug($"Sending email to '{message.To.Email.Substring(0, Math.Min(message.To.Email.Length, 4))}...' SandboxMode: {sandboxMode}");
+            if (message.SendAsTextOnly)
+            {
+                return await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
+            }
             return await _emailClient.SendEmail(message, sandboxMode);
         }
 

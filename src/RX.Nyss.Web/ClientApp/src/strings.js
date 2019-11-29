@@ -108,6 +108,7 @@ export const stringKeys = {
       name: "smsGateway.form.name",
       apiKey: "smsGateway.form.apiKey",
       gatewayType: "smsGateway.form.gatewayType",
+      emailAddress: "smsGateway.form.emailAddress",
       create: "smsGateway.form.create",
       update: "smsGateway.form.update"
     },

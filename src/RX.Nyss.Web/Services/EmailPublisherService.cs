@@ -8,7 +8,7 @@ namespace RX.Nyss.Web.Services
 {
     public interface IEmailPublisherService
     {
-        Task SendEmail((string email, string name) to, string subject, string body);
+        Task SendEmail((string email, string name) to, string subject, string body, bool sendAsTextOnly = false);
     }
 
     public class EmailPublisherService : IEmailPublisherService
@@ -21,16 +21,16 @@ namespace RX.Nyss.Web.Services
             _config = config;
             _queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, _config.ServiceBusQueues.SendEmailQueue);
         }
-        
-        public async Task SendEmail((string email, string name) to, string subject, string body)
+
+        public async Task SendEmail((string email, string name) to, string subject, string body, bool sendAsTextOnly = false)
         {
-            var sendEmail = new SendEmailMessage {To = new Contact{Email = to.email, Name = to.name}, Body = body, Subject = subject,};
+            var sendEmail = new SendEmailMessage {To = new Contact{Email = to.email, Name = to.name}, Body = body, Subject = subject, SendAsTextOnly = sendAsTextOnly};
 
             var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail)))
             {
                 Label = "RX.Nyss.Web",
             };
-            
+
             await _queueClient.SendAsync(message);
         }
     }
@@ -42,6 +42,8 @@ namespace RX.Nyss.Web.Services
         public string Subject { get; set; }
 
         public string Body { get; set; }
+
+        public bool SendAsTextOnly { get; set; }
     }
 
     public class Contact

@@ -21,7 +21,7 @@
 
         public string StringsResourcesBlobObjectName { get; set; }
 
-        public class LoggingOptions 
+        public class LoggingOptions
         {
             public string LogsLocation { get; set; }
             public string LogMessageTemplate { get; set; }
