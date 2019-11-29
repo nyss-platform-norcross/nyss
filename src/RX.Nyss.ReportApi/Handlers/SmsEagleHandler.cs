@@ -128,8 +128,11 @@ namespace RX.Nyss.ReportApi.Handlers
                 await _nyssContext.Reports.AddAsync(report);
                 await _nyssContext.SaveChangesAsync();
 
-                var recipients = new List<string>{ sender };
-                await _emailToSMSPublisherService.SendMessage(gatewaySetting.Id, recipients, projectHealthRisk.FeedbackMessage);
+                if (!string.IsNullOrEmpty(gatewaySetting.EmailAddress))
+                {
+                    var recipients = new List<string>{ sender };
+                    await _emailToSMSPublisherService.SendMessage(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
+                }
             }
             catch (ReportValidationException e)
             {

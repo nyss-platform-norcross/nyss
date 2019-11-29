@@ -12,7 +12,7 @@ import SelectInput from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
-import { smsGatewayTypes } from "./logic/smsGatewayTypes";
+import { smsGatewayTypes, smsEagle } from "./logic/smsGatewayTypes";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
@@ -22,7 +22,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
     const fields = {
       name: "",
       apiKey: "",
-      gatewayType: "SmsEagle",
+      gatewayType: smsEagle,
       "emailAddress": ""
     };
 
@@ -30,7 +30,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
       apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
       gatewayType: [validators.required],
-      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === "SmsEagle")]
+      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle)]
     };
 
     return createForm(fields, validation);

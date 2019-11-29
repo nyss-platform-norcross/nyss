@@ -23,6 +23,7 @@ namespace RX.Nyss.Web.Services
         public async Task SendMessage(int smsEagleId, List<string> recipientPhoneNumbers, string body)
         {
             var smsEagle = await _nyssContext.GatewaySettings.FindAsync(smsEagleId);
+            if (string.IsNullOrEmpty(smsEagle.EmailAddress)) return;
             var recipients = string.Join(",", recipientPhoneNumbers);
             await _emailPublisherService.SendEmail((smsEagle.EmailAddress, smsEagle.Name), recipients, body, true);
         }

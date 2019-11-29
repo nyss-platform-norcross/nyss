@@ -10,28 +10,25 @@ namespace RX.Nyss.ReportApi.Services
 {
     public interface IEmailToSMSPublisherService
     {
-        Task SendMessage(int smsEagleId, List<string> recipientPhoneNumbers, string body);
+        Task SendMessage(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
     }
 
     public class EmailToSMSPublisherService : IEmailToSMSPublisherService
     {
         private readonly IConfig _config;
-        private readonly INyssContext _nyssContext;
         private readonly IQueueClient _queueClient;
 
         public EmailToSMSPublisherService(INyssContext nyssContext, IConfig config)
         {
             _config = config;
-            _nyssContext = nyssContext;
             _queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, _config.ServiceBusQueues.SendEmailQueue);
         }
 
-        public async Task SendMessage(int smsEagleId, List<string> recipientPhoneNumbers, string body)
+        public async Task SendMessage(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body)
         {
-            //var smsEagle = await _nyssContext.GatewaySettings.FindAsync(smsEagleId);
             var recipients = string.Join(",", recipientPhoneNumbers);
 
-            var sendEmail = new SendEmailMessage {To = new Contact{Email = "nyss.feedback.messages@gmail.com", Name = "eagle"}, Body = body, Subject = recipients, SendAsTextOnly = true};
+            var sendEmail = new SendEmailMessage {To = new Contact{Email = smsEagleEmailAddress, Name = smsEagleName}, Body = body, Subject = recipients, SendAsTextOnly = true};
 
             var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail)))
             {

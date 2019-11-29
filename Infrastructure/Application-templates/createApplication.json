@@ -191,8 +191,7 @@
           "cors": {
             "allowedOrigins": [
             ]
-          },
-          "alwaysOn": "[parameters('alwaysOn')]"
+          }
         }
       }
     },
