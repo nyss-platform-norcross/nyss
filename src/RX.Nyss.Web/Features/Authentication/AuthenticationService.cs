@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -101,6 +101,8 @@ namespace RX.Nyss.Web.Features.Authentication
                 ManagerUser user => await GetNationalSocietyHomePage(user),
                 TechnicalAdvisorUser user => await GetNationalSocietyHomePage(user),
                 DataConsumerUser user => await GetNationalSocietyHomePage(user),
+                GlobalCoordinatorUser user => GetRootHomePage(),
+                AdministratorUser user => GetRootHomePage(),
                 _ => GetRootHomePage()
             };
 
@@ -108,15 +110,15 @@ namespace RX.Nyss.Web.Features.Authentication
         {
             var nationalSocietyIds = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == user.Id)
-                .Select(uns => (int?) uns.NationalSocietyId)
+                .Select(uns => uns.NationalSocietyId)
                 .ToListAsync();
 
-            if (!nationalSocietyIds.Any() || nationalSocietyIds.Count > 1)
+            if (nationalSocietyIds.Count == 0 || nationalSocietyIds.Count > 1)
             {
                 return new StatusResponseDto.HomePageDto { Page = HomePageType.Root };
             }
 
-            return new StatusResponseDto.HomePageDto { Page = HomePageType.NationalSociety, NationalSocietyId = nationalSocietyIds.Single() };
+            return new StatusResponseDto.HomePageDto { Page = HomePageType.ProjectList, NationalSocietyId = nationalSocietyIds.Single() };
         }
 
         private async Task<StatusResponseDto.HomePageDto> GetProjectHomePage(SupervisorUser user)
@@ -149,7 +151,6 @@ namespace RX.Nyss.Web.Features.Authentication
                     .Select(uns => uns.NationalSocietyId)
                     .SingleAsync()
             };
-
         }
 
         private StatusResponseDto.HomePageDto GetRootHomePage() =>

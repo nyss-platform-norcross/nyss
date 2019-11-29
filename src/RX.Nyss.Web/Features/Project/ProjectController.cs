@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Authentication.Policies;
-using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -37,7 +36,7 @@ namespace RX.Nyss.Web.Features.Project
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns>A list of projects assigned to the national society</returns>
         [HttpGet("api/nationalSociety/{nationalSocietyId:int}/project/list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId) =>
             _projectService.ListProjects(nationalSocietyId, User.Identity.Name, User.GetRoles());
 
