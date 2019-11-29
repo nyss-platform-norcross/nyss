@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191118202453_UpdateDataCollectorsTable")]
+    [Migration("20191127094045_UpdateDataCollectorsTable")]
     partial class UpdateDataCollectorsTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
