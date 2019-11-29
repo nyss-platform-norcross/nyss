@@ -39,6 +39,7 @@ namespace RX.Nyss.Data.Models
 
         public DateTime? DeletedAt { get; set; }
 
+        public ICollection<RawReport> RawReports { get; set; }
         public ICollection<Report> Reports { get; set; }
     }
 }

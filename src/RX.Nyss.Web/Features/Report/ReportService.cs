@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.Report
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(userIdentityName);
             var rowsPerPage = _config.PaginationRowsPerPage;
-            var baseQuery = _nyssContext.Reports
+            var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId);
 
             var rowCount = baseQuery.Count();
@@ -42,9 +42,9 @@ namespace RX.Nyss.Web.Features.Report
             var result = await baseQuery.Select(r => new ReportListResponseDto
                 {
                     Id = r.Id,
-                    DateTime = r.CreatedAt,
-                    HealthRiskName = r.ProjectHealthRisk.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Name,
-                    ReportStatus = r.Status,
+                    DateTime = r.ReceivedAt,
+                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Name,
+                    IsValid = r.Report != null,
                     Region = r.DataCollector.Village.District.Region.Name,
                     District = r.DataCollector.Village.District.Name,
                     Village = r.DataCollector.Village.Name,
@@ -52,11 +52,11 @@ namespace RX.Nyss.Web.Features.Report
                         ? r.DataCollector.Zone.Name
                         : null,
                     DataCollectorDisplayName = r.DataCollector.DisplayName,
-                    PhoneNumber = r.PhoneNumber,
-                    CountMalesBelowFive = r.ReportedCase.CountMalesBelowFive,
-                    CountFemalesBelowFive = r.ReportedCase.CountFemalesBelowFive,
-                    CountMalesAtLeastFive = r.ReportedCase.CountMalesAtLeastFive,
-                    CountFemalesAtLeastFive = r.ReportedCase.CountFemalesAtLeastFive,
+                    PhoneNumber = r.DataCollector.PhoneNumber,
+                    CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
+                    CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
+                    CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
+                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
                 })
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync();
