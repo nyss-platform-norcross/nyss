@@ -303,17 +303,14 @@ namespace RX.Nyss.Web.Features.DataCollector
         public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName,
             IEnumerable<string> roles)
         {
-            var rawReports = roles.Contains(Role.Supervisor.ToString())
-                ? _nyssContext.RawReports.Where(dc => dc.DataCollector.Supervisor.EmailAddress == userIdentityName)
-                : _nyssContext.RawReports;
+            var endDate = to.Date.AddDays(1);
 
             var dataCollectors = roles.Contains(Role.Supervisor.ToString())
                 ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
                 : _nyssContext.DataCollectors;
 
-            var endDate = to.Date.AddDays(1);
-
             var dataCollectorsWithNoReports = dataCollectors
+                .Where(dc => dc.CreatedAt < endDate && (dc.DeletedAt > from || dc.DeletedAt == null))
                 .Where(dc => !dc.RawReports.Any(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
                 .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
@@ -325,8 +322,14 @@ namespace RX.Nyss.Web.Features.DataCollector
                     NoReport = 1
                 });
 
+
+            var rawReports = roles.Contains(Role.Supervisor.ToString())
+                ? _nyssContext.RawReports.Where(dc => dc.DataCollector.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.RawReports;
+
             var dataCollectorsWithReports = rawReports
                 .Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate)
+                .Where(r => r.DataCollector.CreatedAt < endDate && (r.DataCollector.DeletedAt > from || r.DataCollector.DeletedAt == null))
                 .Where(dc => dc.DataCollector.Project.Id == projectId)
                 .Select(r => new
                 {
@@ -336,6 +339,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                     ValidReport = r.Report != null ? 1 : 0,
                     NoReport = 0
                 });
+
 
             var locations = await dataCollectorsWithReports
                 .Union(dataCollectorsWithNoReports)
