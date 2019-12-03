@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Utils;
@@ -67,7 +68,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(int projectId, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto);
+            var reports = GetFilteredReports(projectId, filtersDto)
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human);
 
             // TODO: add grouping by EpiWeek when the reports flow is done
             return await GroupReportsByFeaturesAndDay(reports, filtersDto.StartDate.Date, filtersDto.EndDate.Date);
@@ -107,6 +109,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                         .Select(lc => lc.Name).FirstOrDefault(),
                     Total = (int)(r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive),
                 })
+                .Where(r => r.Total > 0)
                 .GroupBy(r => r.HealthRiskId)
                 .Select(grouping => new ProjectSummaryReportHealthRiskResponseDto
                 {
@@ -244,6 +247,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             return FilterReportsByRegion(_nyssContext.Reports, filtersDto.Area)
                 .Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate
                     && r.DataCollector.Project.Id == projectId
+                    && r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity
                     && (!filtersDto.HealthRiskId.HasValue || r.ProjectHealthRisk.HealthRiskId == filtersDto.HealthRiskId.Value));
         }
 

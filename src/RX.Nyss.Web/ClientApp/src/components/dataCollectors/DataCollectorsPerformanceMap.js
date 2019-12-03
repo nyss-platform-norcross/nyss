@@ -9,6 +9,12 @@ import CircleMapMarker from "../common/map/CircleMapMarker";
 import { ClusterIcon } from "../common/map/ClusterIcon";
 import { calculateBounds } from "../../utils/map";
 
+const createClusterIcon = (cluster) => {
+  const data = cluster.getAllChildMarkers().map(m => m.options.dataCollectorInfo);
+  const isInvalid = data.some(d => d.countNotReporting || d.countReportingWithErrors);
+  return ClusterIcon({ cluster, isValid: !isInvalid });
+}
+
 export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLocations, projectId, details, getMapDetails, detailsFetching }) => {
   const [bounds, setBounds] = useState(null);
 
@@ -45,7 +51,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
 
       <MarkerClusterGroup
         showCoverageOnHover={false}
-        iconCreateFunction={cluster => ClusterIcon({ cluster })}>
+        iconCreateFunction={createClusterIcon}>
         {dataCollectorLocations.map(dc => (
           <CircleMapMarker
             className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}

@@ -90,7 +90,7 @@ namespace RX.Nyss.Web.Features.Project
 
         public async Task<IEnumerable<ProjectHealthRiskName>> GetProjectHealthRiskNames(int projectId) =>
             await _nyssContext.ProjectHealthRisks
-                .Where(ph => ph.Project.Id == projectId)
+                .Where(ph => ph.Project.Id == projectId && ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                 .Select(ph => new ProjectHealthRiskName
                 {
                     Id = ph.HealthRiskId,
