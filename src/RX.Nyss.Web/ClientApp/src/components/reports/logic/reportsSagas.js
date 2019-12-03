@@ -27,11 +27,15 @@ function* openReportsList({ projectId }) {
   }
 };
 
-function* getReports({ projectId, pageNumber }) {
+function* getReports({ projectId, pageNumber, reportListFilter }) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/report/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`);
-    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows));
+    const filter = reportListFilter || {
+      reportListType: "main"
+    };
+
+    const response = yield call(http.post, `/api/reportlist?projectId=${projectId}&pageNumber=${pageNumber || 1}`, filter);
+    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filter));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }

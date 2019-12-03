@@ -330,7 +330,11 @@ export const stringKeys = {
       femalesBelowFive: "reports.list.femalesBelowFive",
       femalesAtLeastFive: "reports.list.femalesAtLeastFive",
       success: "reports.list.success",
-      error: "reports.list.error"
+      error: "reports.list.error",
+      selectReportListType: "reports.list.selectReportListType",
+      mainReportsListType: "reports.list.mainReportsListType",
+      trainingReportsListType: "reports.list.trainingReportsListType"
+
     },
     title: "reports.title"
   },

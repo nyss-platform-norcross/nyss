@@ -138,6 +138,9 @@ export const initialState = {
     listRemoving: {},
     listStale: true,
     listProjectId: null,
-    paginatedListData: null
+    paginatedListData: null,
+    reportListFilter: {
+      reportListType: "main"
+    }
   }
 };

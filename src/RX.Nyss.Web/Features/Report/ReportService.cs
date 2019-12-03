@@ -14,14 +14,14 @@ namespace RX.Nyss.Web.Features.Report
 {
     public interface IReportService
     {
-        Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber, string userIdentityName);
+        Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber, string identityName, ListFilterRequestDto userIdentityName);
     }
 
-    public class ReportService: IReportService
+    public class ReportService : IReportService
     {
+        private readonly IConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
-        private readonly IConfig _config;
 
         public ReportService(INyssContext nyssContext, IUserService userService, IConfig config)
         {
@@ -30,12 +30,15 @@ namespace RX.Nyss.Web.Features.Report
             _config = config;
         }
 
-        public async Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber, string userIdentityName)
+        public async Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber, string userIdentityName, ListFilterRequestDto filter)
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(userIdentityName);
             var rowsPerPage = _config.PaginationRowsPerPage;
             var baseQuery = _nyssContext.RawReports
-                .Where(r => r.DataCollector.Project.Id == projectId);
+                .Where(r => r.DataCollector.Project.Id == projectId)
+                .Where(r => filter.ReportListType == ReportListTypeDto.Training ?
+                    r.Report != null && r.Report.IsTraining :
+                    r.Report == null || !r.Report.IsTraining);
 
             var rowCount = baseQuery.Count();
 
@@ -56,7 +59,7 @@ namespace RX.Nyss.Web.Features.Report
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
-                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
+                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive
                 })
                 .OrderByDescending(r => r.DateTime)
                 .Page(pageNumber, rowsPerPage)

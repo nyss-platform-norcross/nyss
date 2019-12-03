@@ -12,7 +12,7 @@ namespace RX.Nyss.Web.Features.Report
     [Route("api/report")]
     public class ReportController : BaseController
     {
-        public IReportService _reportService;
+        private readonly IReportService _reportService;
 
         public ReportController(IReportService reportService)
         {
@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.Report
         /// </summary>
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber) =>
-            await _reportService.List(projectId, pageNumber, User.Identity.Name);
+        public async Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber, [FromBody] ListFilterRequestDto filterRequest) =>
+            await _reportService.List(projectId, pageNumber, User.Identity.Name, filterRequest);
     }
 }

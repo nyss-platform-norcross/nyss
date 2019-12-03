@@ -13,8 +13,8 @@ export const openList = {
 };
 
 export const getList = {
-  invoke: (projectId, pageNumber) => ({ type: GET_REPORTS.INVOKE, projectId, pageNumber }),
+  invoke: (projectId, pageNumber, reportListFilter) => ({ type: GET_REPORTS.INVOKE, projectId, pageNumber, reportListFilter }),
   request: () => ({ type: GET_REPORTS.REQUEST }),
-  success: (data, page, rowsPerPage, totalRows) => ({ type: GET_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows }),
+  success: (data, page, rowsPerPage, totalRows, filter) => ({ type: GET_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filter }),
   failure: (message) => ({ type: GET_REPORTS.FAILURE, message })
 };
