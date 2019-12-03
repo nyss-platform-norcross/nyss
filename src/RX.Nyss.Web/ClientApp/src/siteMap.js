@@ -17,7 +17,7 @@ export const siteMap = [
   ...healthRisksSiteMap,
   ...globalCoordinatorsSiteMap,
   ...projectsSiteMap,
-  ...dataCollectorsSiteMap,
   ...projectDashboardSiteMap,
+  ...dataCollectorsSiteMap,
   ...reportsSiteMap
 ];
