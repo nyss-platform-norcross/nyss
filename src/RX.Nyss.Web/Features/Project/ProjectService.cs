@@ -123,7 +123,9 @@ namespace RX.Nyss.Web.Features.Project
                     Name = p.Name,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
-                    TotalReportCount = p.ProjectHealthRisks.SelectMany(phr => phr.Reports).Count(),
+                    TotalReportCount = (int)p.ProjectHealthRisks
+                      .SelectMany(phr => phr.Reports)
+                      .Sum(r => r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive),
                     EscalatedAlertCount = p.ProjectHealthRisks
                         .SelectMany(phr => phr.Alerts
                             .Where(a => a.Status == AlertStatus.Escalated)
@@ -139,7 +141,7 @@ namespace RX.Nyss.Web.Features.Project
 
             return result;
         }
-        
+
         public async Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto)
         {
             try
