@@ -58,6 +58,7 @@ namespace RX.Nyss.Web.Features.Report
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
                     CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
                 })
+                .OrderByDescending(r => r.DateTime)
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync();
 
