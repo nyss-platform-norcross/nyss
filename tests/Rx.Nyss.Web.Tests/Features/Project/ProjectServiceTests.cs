@@ -320,7 +320,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
-            
+
             var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZoneId = "Time Zone" };
 
             // Act
@@ -804,7 +804,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new []
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
                             }
                         }
                     },
@@ -813,7 +813,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                     {
                         Reports = new[]
                         {
-                            new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                            new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
                         },
                         Alerts = new[]
                         {
@@ -840,7 +840,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new []
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
                             }
                         },
                         new RX.Nyss.Data.Models.DataCollector
@@ -848,8 +848,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new []
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)},
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}},
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
                             }
                         }
                     },
@@ -860,7 +860,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         {
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
                             },
                             Alerts = new[]
                             {
@@ -872,8 +872,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         {
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)},
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1)}
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}},
+                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
                             },
                             Alerts = new[]
                             {
