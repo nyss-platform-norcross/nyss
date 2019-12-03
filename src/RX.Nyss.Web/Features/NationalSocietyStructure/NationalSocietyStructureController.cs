@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         }
 
         /// <summary>
-        /// Gets all regions in a National Society
+        /// Gets a National Society structure
         /// </summary>
         [Route("nationalSociety/{nationalSocietyId:int}/structure/get"), HttpGet]
         [NeedsPolicy(Policy.NationalSocietyAccess)]
