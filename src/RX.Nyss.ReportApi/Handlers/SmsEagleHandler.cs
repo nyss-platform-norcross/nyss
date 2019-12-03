@@ -168,6 +168,8 @@ namespace RX.Nyss.ReportApi.Handlers
         {
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
+                .Include(dc => dc.Village)
+                .Include(dc => dc.Zone)
                 .SingleOrDefaultAsync(dc => dc.PhoneNumber == phoneNumber || dc.AdditionalPhoneNumber == phoneNumber);
 
             if (dataCollector == null)
