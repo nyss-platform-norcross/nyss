@@ -79,7 +79,9 @@ export const initialState = {
     filtersData: {
       healthRisks: []
     },
-    filters: null
+    filters: null,
+    reportsGroupedByLocationDetails: null,
+    reportsGroupedByLocationDetailsFetching: false
   },
   globalCoordinators: {
     listFetching: false,
