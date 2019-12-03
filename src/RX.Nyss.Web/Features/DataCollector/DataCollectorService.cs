@@ -163,7 +163,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                     Village = dc.Village.Name,
                     District = dc.Village.District.Name,
                     Region = dc.Village.District.Region.Name,
-                    Sex = dc.Sex
+                    Sex = dc.Sex,
+                    IsInTrainingMode = dc.IsInTrainingMode
                 })
                 .ToListAsync();
 

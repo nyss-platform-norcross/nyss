@@ -295,7 +295,10 @@ export const stringKeys = {
       location: "dataCollectors.list.location",
       status: "dataCollectors.list.status",
       removalConfirmation: "dataCollectors.list.removalConfirmation",
-      title: "dataCollectors.list.title"
+      title: "dataCollectors.list.title",
+      trainingStatus: "dataCollectors.list.trainingStatus",
+      isInTrainingMode: "dataCollectors.list.isInTrainingMode",
+      isNotInTrainingMode: "dataCollectors.list.isNotInTrainingMode"
     },
     constants: {
       sex: {
@@ -327,7 +330,7 @@ export const stringKeys = {
       femalesBelowFive: "reports.list.femalesBelowFive",
       femalesAtLeastFive: "reports.list.femalesAtLeastFive",
       success: "reports.list.success",
-      error: "reports.list.error"     
+      error: "reports.list.error"
     },
     title: "reports.title"
   },
