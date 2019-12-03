@@ -13,7 +13,7 @@ import { strings, stringKeys } from "../../../strings";
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, onChange }) => {
   const [value, setValue] = useState(filters);
 
-  const [selectedArea, setSelectedArea] = useState(null);
+  const [selectedArea, setSelectedArea] = useState(filters && filters.area);
 
   const updateValue = (change) => {
     const newValue = {
@@ -27,7 +27,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
-    onChange(updateValue({ area: item ? { type: item.type, id: item.id } : null }))
+    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }))
   }
 
   const handleHealthRiskChange = event =>

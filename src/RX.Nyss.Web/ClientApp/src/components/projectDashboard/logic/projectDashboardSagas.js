@@ -15,11 +15,8 @@ export const projectDashboardSagas = () => [
 function* openProjectDashboard({ projectId }) {
   yield put(actions.openDashbaord.request());
   try {
-    const project = yield call(openProjectDashboardModule, projectId);
     const filtersData = yield call(http.get, `/api/project/${projectId}/dashboard/filters`);
-
     const endDate = dayjs(new Date());
-
     const filters = (yield select(state => state.projectDashboard.filters)) ||
       {
         healthRiskId: null,
@@ -31,7 +28,7 @@ function* openProjectDashboard({ projectId }) {
 
     yield call(getProjectDashboardData, { projectId, filters: filters })
 
-    yield put(actions.openDashbaord.success(project.name, filtersData.value));
+    yield put(actions.openDashbaord.success(projectId, filtersData.value));
   } catch (error) {
     yield put(actions.openDashbaord.failure(error.message));
   }
