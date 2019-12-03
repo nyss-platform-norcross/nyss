@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Gets all regions in a National Society
         /// </summary>
         [Route("nationalSociety/{nationalSocietyId:int}/structure/get"), HttpGet]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<StructureResponseDto>> GetStructure(int nationalSocietyId) =>
             await _nationalSocietyStructureService.GetStructure(nationalSocietyId);
 
