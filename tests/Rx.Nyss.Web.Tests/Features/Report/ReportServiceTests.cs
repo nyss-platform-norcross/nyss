@@ -44,7 +44,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             ArrangeData();
         }
 
-        
+
         private void ArrangeData()
         {
             var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
@@ -159,7 +159,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
                     ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 1).ToList(),
-                    TimeZone = "Dateline Standard Time",
+                    TimeZone = "UTC",
                 },
                 new RX.Nyss.Data.Models.Project
                 {
@@ -167,7 +167,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
                     ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 2).ToList(),
-                    TimeZone = "Dateline Standard Time",
+                    TimeZone = "UTC",
                 }
             };
 
