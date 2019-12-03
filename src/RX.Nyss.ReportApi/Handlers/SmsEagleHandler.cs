@@ -92,6 +92,9 @@ namespace RX.Nyss.ReportApi.Handlers
                 await _nyssContext.SaveChangesAsync();
 
                 var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSociety);
+                rawReport.DataCollector = dataCollector;
+                await _nyssContext.SaveChangesAsync();
+
                 var parsedReport = _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
 
