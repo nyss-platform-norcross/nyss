@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Services
                 return Error(ResultKey.User.ResetPassword.UserNotFound);
             }
 
-            var nyssUser = await _nyssContext.Users.SingleAsync(x => x.IdentityUserId == user.Id);
+            var nyssUser = await _nyssContext.Users.Include(u => u.ApplicationLanguage).SingleAsync(x => x.IdentityUserId == user.Id);
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var baseUrl = new Uri(_config.BaseUrl);
