@@ -200,7 +200,10 @@ export const stringKeys = {
       supervisors: "project.dashboard.supervisors",
       supervisorEmailAddress: "project.dashboard.supervisorEmailAddress",
       supervisorPhoneNumber: "project.dashboard.supervisorPhoneNumber",
-      supervisorAdditionalPhoneNumber: "project.dashboard.supervisorAdditionalPhoneNumber"
+      supervisorAdditionalPhoneNumber: "project.dashboard.supervisorAdditionalPhoneNumber",
+      map: {
+        reportCount: "project.dashboard.map.reportCount"
+      }
     },
     settings: "project.settings.title"
   },

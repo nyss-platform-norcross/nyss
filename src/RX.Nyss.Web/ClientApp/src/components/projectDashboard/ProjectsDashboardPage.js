@@ -47,7 +47,13 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
               <ProjectsDashboardNumbers projectSummary={props.projectSummary} />
             </Grid>
             <Grid item xs={12}>
-              <ProjectsDashboardReportsMap data={props.reportsMapData} />
+              <ProjectsDashboardReportsMap
+                projectId={projectId}
+                data={props.reportsGroupedByLocation}
+                detailsFetching={props.reportsGroupedByLocationDetailsFetching}
+                details={props.reportsGroupedByLocationDetails}
+                getReportHealthRisks={props.getReportHealthRisks}
+              />
             </Grid>
             <Grid item xs={12}>
               <ProjectsDashboardReportChart data={props.reportsGroupedByDate} />
@@ -77,11 +83,15 @@ const mapStateToProps = state => ({
   reportsGroupedByDate: state.projectDashboard.reportsGroupedByDate,
   reportsGroupedByFeaturesAndDate: state.projectDashboard.reportsGroupedByFeaturesAndDate,
   reportsGroupedByFeatures: state.projectDashboard.reportsGroupedByFeatures,
+  reportsGroupedByLocation: state.projectDashboard.reportsGroupedByLocation,
+  reportsGroupedByLocationDetails: state.projectDashboard.reportsGroupedByLocationDetails,
+  reportsGroupedByLocationDetailsFetching: state.projectDashboard.reportsGroupedByLocationDetailsFetching,
   isFetching: state.projectDashboard.isFetching
 });
 
 const mapDispatchToProps = {
   openDashbaord: projectDashboardActions.openDashbaord.invoke,
+  getReportHealthRisks: projectDashboardActions.getReportHealthRisks.invoke,
   getDashboardData: projectDashboardActions.getDashboardData.invoke
 };
 

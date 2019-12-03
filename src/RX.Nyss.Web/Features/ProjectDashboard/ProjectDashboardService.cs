@@ -16,26 +16,29 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     public interface IProjectDashboardService
     {
         Task<Result<ProjectDashboardFiltersResponseDto>> GetDashboardFiltersData(int projectId);
+        
         Task<Result<ProjectDashboardResponseDto>> GetDashboardData(int projectId, FiltersRequestDto filtersDto);
     }
 
     public class ProjectDashboardService : IProjectDashboardService
     {
-        private readonly INyssContext _nyssContext;
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
-        private readonly IProjectService _projectService;
+        private readonly INyssContext _nyssContext;
         private readonly IProjectDashboardDataService _projectDashboardDataService;
+        private readonly IProjectService _projectService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public ProjectDashboardService(
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService,
             IProjectService projectService,
-            IProjectDashboardDataService projectDashboardDataService)
+            IProjectDashboardDataService projectDashboardDataService, IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _nationalSocietyStructureService = nationalSocietyStructureService;
             _projectService = projectService;
             _projectDashboardDataService = projectDashboardDataService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<Result<ProjectDashboardFiltersResponseDto>> GetDashboardFiltersData(int projectId)
@@ -58,10 +61,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             {
                 Regions = structure.Value.Regions,
                 HealthRisks = projectHealthRiskNames
-                    .Select(p => new ProjectDashboardFiltersResponseDto.HealthRiskDto
-                    {
-                        Id = p.Id, Name = p.Name
-                    })
+                    .Select(p => new ProjectDashboardFiltersResponseDto.HealthRiskDto { Id = p.Id, Name = p.Name })
             };
 
             return Success(dto);
@@ -73,13 +73,15 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var reportsByDate = await _projectDashboardDataService.GetReportsGroupedByDate(projectId, filtersDto);
             var reportsByFeaturesAndDate = await _projectDashboardDataService.GetReportsGroupedByFeaturesAndDate(projectId, filtersDto);
             var reportsByFeatures = GetReportsGroupedByFeatures(reportsByFeaturesAndDate);
+            var reportsGroupedByLocation = await _projectDashboardDataService.GetProjectSummaryMap(projectId, filtersDto);
 
             var dashboardDataDto = new ProjectDashboardResponseDto
             {
                 Summary = projectSummary,
                 ReportsGroupedByDate = reportsByDate,
                 ReportsGroupedByFeaturesAndDate = reportsByFeaturesAndDate,
-                ReportsGroupedByFeatures = reportsByFeatures
+                ReportsGroupedByLocation = reportsGroupedByLocation,
+                ReportsGroupedByFeatures = reportsByFeatures,
             };
 
             return Success(dashboardDataDto);
@@ -92,7 +94,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 CountFemalesAtLeastFive = reportByFeaturesAndDate.Sum(r => r.CountFemalesAtLeastFive),
                 CountFemalesBelowFive = reportByFeaturesAndDate.Sum(r => r.CountFemalesBelowFive),
                 CountMalesAtLeastFive = reportByFeaturesAndDate.Sum(r => r.CountMalesAtLeastFive),
-                CountMalesBelowFive = reportByFeaturesAndDate.Sum(r => r.CountMalesBelowFive),
+                CountMalesBelowFive = reportByFeaturesAndDate.Sum(r => r.CountMalesBelowFive)
             };
     }
 }

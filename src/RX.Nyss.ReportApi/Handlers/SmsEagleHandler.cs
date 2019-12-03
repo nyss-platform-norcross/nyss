@@ -123,7 +123,9 @@ namespace RX.Nyss.ReportApi.Handlers
                         CountFemalesAtLeastFive = null
                     },
                     DataCollectionPointCase = parsedReport.DataCollectionPointCase,
-                    ProjectHealthRisk = projectHealthRisk
+                    ProjectHealthRisk = projectHealthRisk,
+                    Village = dataCollector.Village,
+                    Zone = dataCollector.Zone
                 };
 
                 rawReport.Report = report;

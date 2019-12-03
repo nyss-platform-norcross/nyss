@@ -15,6 +15,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto);
         Task<IList<ReportByDateResponseDto>> GetReportsGroupedByDate(int projectId, FiltersRequestDto filtersDto);
         Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(int projectId, FiltersRequestDto filtersDto);
+        Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto);
+        Task<IEnumerable<ProjectSummaryReportHealthRiskResponseDto>> GetProjectReportHealthRisks(int projectId, double latitude, double longitude, FiltersRequestDto filtersDto);
     }
 
     public class ProjectDashboardDataService : IProjectDashboardDataService
@@ -69,6 +71,49 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
             // TODO: add grouping by EpiWeek when the reports flow is done
             return await GroupReportsByFeaturesAndDay(reports, filtersDto.StartDate.Date, filtersDto.EndDate.Date);
+        }
+
+        public async Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto)
+        {
+            var reports = GetFilteredReports(projectId, filtersDto);
+
+            var groupedByLocation = await reports
+                .GroupBy(report => new { report.Location.X, report.Location.Y })
+                .Select(grouping => new ProjectSummaryMapResponseDto
+                {
+                    ReportsCount = grouping.Count(),
+                    Location = new ProjectSummaryMapResponseDto.MapReportLocation
+                    {
+                        Latitude = grouping.Key.X,
+                        Longitude = grouping.Key.Y
+                    }
+                })
+                .ToListAsync();
+
+            return groupedByLocation;
+        }
+
+        public async Task<IEnumerable<ProjectSummaryReportHealthRiskResponseDto>> GetProjectReportHealthRisks(int projectId, double latitude, double longitude, FiltersRequestDto filtersDto)
+        {
+            var reports = GetFilteredReports(projectId, filtersDto);
+
+            return await reports
+                .Where(r => r.Location.X == latitude && r.Location.Y == longitude)
+                .Select(r => new
+                {
+                    r.ProjectHealthRisk.HealthRiskId,
+                    HealthRiskName = r.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage.Id == r.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
+                        .Select(lc => lc.Name).FirstOrDefault(),
+                    Total = (int)(r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive),
+                })
+                .GroupBy(r => r.HealthRiskId)
+                .Select(grouping => new ProjectSummaryReportHealthRiskResponseDto
+                {
+                    Name = _nyssContext.HealthRiskLanguageContents.Where(f => f.HealthRisk.Id == grouping.Key).Select(s => s.Name).FirstOrDefault(),
+                    Value = grouping.Sum(r => r.Total),
+                })
+                .ToListAsync();
         }
 
         private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)

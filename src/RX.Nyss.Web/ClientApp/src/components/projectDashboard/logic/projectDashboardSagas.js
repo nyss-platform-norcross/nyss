@@ -1,4 +1,4 @@
-import { call, put, takeEvery, select } from "redux-saga/effects";
+import { call, put, takeEvery, select, delay } from "redux-saga/effects";
 import * as consts from "./projectDashboardConstants";
 import * as actions from "./projectDashboardActions";
 import * as appActions from "../../app/logic/appActions";
@@ -8,7 +8,8 @@ import dayjs from "dayjs";
 
 export const projectDashboardSagas = () => [
   takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard),
-  takeEvery(consts.GET_PROJECT_DASHBOARD_DATA.INVOKE, getProjectDashboardData)
+  takeEvery(consts.GET_PROJECT_DASHBOARD_DATA.INVOKE, getProjectDashboardData),
+  takeEvery(consts.GET_PROJECT_DASHBOARD_REPORT_HEALTH_RISKS.INVOKE, getProjectDashboardReportHealthRisks)
 ];
 
 function* openProjectDashboard({ projectId }) {
@@ -45,10 +46,22 @@ function* getProjectDashboardData({ projectId, filters }) {
       response.value.summary,
       response.value.reportsGroupedByDate,
       response.value.reportsGroupedByFeaturesAndDate,
-      response.value.reportsGroupedByFeatures
+      response.value.reportsGroupedByFeatures,
+      response.value.reportsGroupedByLocation
     ));
   } catch (error) {
     yield put(actions.getDashboardData.failure(error.message));
+  }
+};
+
+function* getProjectDashboardReportHealthRisks({ projectId, latitude, longitude }) {
+  yield put(actions.getReportHealthRisks.request());
+  try {
+    const filters = yield select(state => state.projectDashboard.filters);
+    const response = yield call(http.post, `/api/project/${projectId}/dashboard/reportHealthRisks?latitude=${latitude}&longitude=${longitude}`, filters);
+    yield put(actions.getReportHealthRisks.success(response.value));
+  } catch (error) {
+    yield put(actions.getReportHealthRisks.failure(error.message));
   }
 };
 

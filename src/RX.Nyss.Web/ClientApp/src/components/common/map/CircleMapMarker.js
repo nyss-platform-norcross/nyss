@@ -9,7 +9,7 @@ LeafletCircleMarker.include({
   },
 })
 
-class CircleMarker extends Path {
+class CircleMapMarker extends Path {
   createLeafletElement({ position, leaflet, ...options }) {
     return new LeafletCircleMarker(position, options);
   }
@@ -24,4 +24,4 @@ class CircleMarker extends Path {
   }
 }
 
-export default withLeaflet(CircleMarker);
+export default withLeaflet(CircleMapMarker);

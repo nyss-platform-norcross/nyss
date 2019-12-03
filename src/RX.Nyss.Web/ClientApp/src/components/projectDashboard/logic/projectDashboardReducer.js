@@ -28,11 +28,21 @@ export function projectDashboardReducer(state = initialState.projectDashboard, a
         reportsGroupedByDate: action.reportsGroupedByDate,
         reportsGroupedByFeaturesAndDate: action.reportsGroupedByFeaturesAndDate,
         reportsGroupedByFeatures: action.reportsGroupedByFeatures,
+        reportsGroupedByLocation: action.reportsGroupedByLocation,
         isFetching: false
       };
 
     case actions.GET_PROJECT_DASHBOARD_DATA.FAILURE:
       return { ...state, isFetching: false };
+
+    case actions.GET_PROJECT_DASHBOARD_REPORT_HEALTH_RISKS.REQUEST:
+      return { ...state, reportsGroupedByLocationDetails: null, reportsGroupedByLocationDetailsFetching: true };
+
+    case actions.GET_PROJECT_DASHBOARD_REPORT_HEALTH_RISKS.SUCCESS:
+      return { ...state, reportsGroupedByLocationDetails: action.data, reportsGroupedByLocationDetailsFetching: false };
+
+    case actions.GET_PROJECT_DASHBOARD_REPORT_HEALTH_RISKS.FAILURE:
+      return { ...state, reportsGroupedByLocationDetailsFetching: false };
 
     default:
       return state;

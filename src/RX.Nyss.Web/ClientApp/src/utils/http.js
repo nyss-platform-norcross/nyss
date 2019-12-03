@@ -31,7 +31,7 @@ export const getCached = ({ path, dependencies }) =>
 
 export const ensureResponseIsSuccess = (response, message) => {
   if (!response.isSuccess) {
-    throw new Error(message || getResponseErrorMessage(response.message));
+    throw new Error(message || getResponseErrorMessage(response.message) || "Response was not successful");
   }
 };
 

@@ -25,7 +25,9 @@ export const DataCollectorMap = ({ onChange, location, zoom }) => {
       onClick={handleClick}
       onLocationfound={handleLocationFound}
       ref={mapRef}
-      zoom={zoom || 13}>
+      zoom={zoom || 13}
+      scrollWheelZoom={false}
+    >
       <TileLayer
         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
