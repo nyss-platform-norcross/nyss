@@ -212,7 +212,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                 Supervisor = supervisor,
                 Project = project,
                 Zone = zone,
-                CreatedAt = _dateTimeProvider.UtcNow
+                CreatedAt = _dateTimeProvider.UtcNow,
+                IsInTrainingMode = true
             };
 
             await _nyssContext.AddAsync(dataCollector);
