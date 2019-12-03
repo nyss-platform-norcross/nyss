@@ -38,6 +38,15 @@
         },
         "serviceBusSku": {
             "value": "Standard"
+        },
+        "sendgridAccountName": {
+          "value": "nrx-cbs-dev-nyss-sendgrid"
+        },
+        "sendgridPassword": {
+          "value": "634ce6fe-d281-08ab-448d-26ddcf94a25b"
+        },
+        "sendgridEmailAddress": {
+          "value": "cbs01@redcross.no"
         }
     }
 }
