@@ -20,6 +20,7 @@ namespace Rx.Nyss.Web.Tests.Services
         private readonly ILoggerAdapter _loggerAdapterMock;
         private readonly IConfig _configMock;
         private readonly IEmailPublisherService _emailPublisherServiceMock;
+        private readonly IEmailTextGeneratorService _emailTextGeneratorServiceMock;
         private readonly INyssContext _nyssContextMock;
 
         public IdentityUserServiceTests()
@@ -28,6 +29,7 @@ namespace Rx.Nyss.Web.Tests.Services
             _configMock = new NyssConfig();
             _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
             _nyssContextMock = Substitute.For<INyssContext>();
+            _emailTextGeneratorServiceMock = Substitute.For<IEmailTextGeneratorService>();
         }
 
         [Fact]
@@ -57,7 +59,7 @@ namespace Rx.Nyss.Web.Tests.Services
             var userManager = MockUserManager(users);
 
             var userService = new IdentityUserRegistrationService(
-                userManager, _loggerAdapterMock, _configMock, _emailPublisherServiceMock, _nyssContextMock);
+                userManager, _loggerAdapterMock, _configMock, _emailPublisherServiceMock, _nyssContextMock, _emailTextGeneratorServiceMock);
             return userService;
         }
 

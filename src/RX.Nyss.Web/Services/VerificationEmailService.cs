@@ -15,25 +15,28 @@ namespace RX.Nyss.Web.Services
     public class VerificationEmailService : IVerificationEmailService
     {
         private readonly IEmailPublisherService _emailPublisherService;
+        private readonly IEmailTextGeneratorService _emailTextGeneratorService;
         private readonly IConfig _config;
 
-        public VerificationEmailService(IConfig config, IEmailPublisherService emailPublisherService)
+        public VerificationEmailService(IConfig config, IEmailPublisherService emailPublisherService, IEmailTextGeneratorService emailTextGeneratorService)
         {
             _config = config;
             _emailPublisherService = emailPublisherService;
+            _emailTextGeneratorService = emailTextGeneratorService;
         }
 
-        public Task SendVerificationEmail(User user, string securityStamp)
+        public async Task SendVerificationEmail(User user, string securityStamp)
         {
             var baseUrl = new Uri(_config.BaseUrl);
             var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(user.EmailAddress)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
 
-            var (emailSubject, emailBody) = EmailTextGenerator.GenerateEmailVerificationEmail(
+            var (emailSubject, emailBody) = await _emailTextGeneratorService.GenerateEmailVerificationEmail(
                 role:user.Role,
                 callbackUrl: verificationUrl,
-                name: user.Name);
+                name: user.Name,
+                user.ApplicationLanguage.LanguageCode);
 
-            return _emailPublisherService.SendEmail((user.EmailAddress, user.Name), emailSubject, emailBody);
+            await _emailPublisherService.SendEmail((user.EmailAddress, user.Name), emailSubject, emailBody);
         }
     }
 }

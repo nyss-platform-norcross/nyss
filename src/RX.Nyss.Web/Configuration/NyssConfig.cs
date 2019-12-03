@@ -12,6 +12,7 @@
         string GeneralBlobContainerName { get; set; }
         string AuthorizedApiKeysBlobObjectName { get; set; }
         string StringsResourcesBlobObjectName { get; set; }
+        string EmailContentResourcesBlobObjectName { get; set; }
         int PaginationRowsPerPage { get; set; }
     }
 
@@ -32,9 +33,11 @@
 
         public string StringsResourcesBlobObjectName { get; set; }
 
+        public string EmailContentResourcesBlobObjectName { get; set; }
+
         public int PaginationRowsPerPage { get; set; }
 
-        public class LoggingOptions 
+        public class LoggingOptions
         {
             public string LogsLocation { get; set; }
             public string LogMessageTemplate { get; set; }
