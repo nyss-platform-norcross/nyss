@@ -24,12 +24,12 @@ namespace RX.Nyss.ReportFuncApp
 
         [FunctionName("DequeueReport")]
         public async Task DequeueReport(
-            [ServiceBusTrigger("%SERVICEBUS_REPORTQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] string report)
+            [ServiceBusTrigger("%SERVICEBUS_REPORTQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] Report report)
         {
             _logger.Log(LogLevel.Debug, $"Dequeued report: '{report}'");
 
             var client = _httpClientFactory.CreateClient();
-            var postResult = await client.PostAsync(_config.ReportApiUrl, new Sms { Content = report }, new JsonMediaTypeFormatter());
+            var postResult = await client.PostAsync(_config.ReportApiUrl, report, new JsonMediaTypeFormatter());
 
             if (!postResult.IsSuccessStatusCode)
             {

@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.EntityFrameworkCore;
@@ -16,7 +15,12 @@ using RX.Nyss.ReportApi.Utils.Logging;
 
 namespace RX.Nyss.ReportApi.Handlers
 {
-    public class SmsEagleHandler : ISmsHandler
+    public interface ISmsEagleHandler
+    {
+        Task Handle(string queryString);
+    }
+
+    public class SmsEagleHandler : ISmsEagleHandler
     {
         private const string SenderParameterName = "sender";
         private const string TimestampParameterName = "timestamp";
@@ -50,12 +54,6 @@ namespace RX.Nyss.ReportApi.Handlers
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
             _emailToSMSPublisherService = emailToSMSPublisherService;
-        }
-
-        public bool CanHandle(string queryString)
-        {
-            var parsedQueryString = HttpUtility.ParseQueryString(queryString);
-            return RequiredQueryStringParameters.All(parsedQueryString.AllKeys.Contains);
         }
 
         public async Task Handle(string queryString)

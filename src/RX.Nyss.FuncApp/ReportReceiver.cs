@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using RX.Nyss.FuncApp.Contracts;
 
 namespace RX.Nyss.FuncApp
 {
@@ -22,24 +23,24 @@ namespace RX.Nyss.FuncApp
             _logger = logger;
         }
 
-        [FunctionName("EnqueueReport")]
-        public async Task<IActionResult> EnqueueReport(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "enqueueReport")] HttpRequestMessage httpRequest,
-            [ServiceBus("%SERVICEBUS_REPORTQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] IAsyncCollector<string> reportQueue,
+        [FunctionName("EnqueueSmsEagleReport")]
+        public async Task<IActionResult> EnqueueSmsEagleReport(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "enqueueSmsEagleReport")] HttpRequestMessage httpRequest,
+            [ServiceBus("%SERVICEBUS_REPORTQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] IAsyncCollector<Report> reportQueue,
             [Blob("%AuthorizedApiKeysBlobPath%", FileAccess.Read)] string authorizedApiKeys)
         {
             if ((httpRequest.Content.Headers.ContentLength ?? int.MaxValue) > MaxContentLength)
             {
-                _logger.Log(LogLevel.Warning, $"Received a request with length more than {MaxContentLength} bytes.");
+                _logger.Log(LogLevel.Warning, $"Received a SMS Eagle request with length more than {MaxContentLength} bytes.");
                 return new BadRequestResult();
             }
 
             var httpRequestContent = await httpRequest.Content.ReadAsStringAsync();
-            _logger.Log(LogLevel.Debug, $"Received report: {httpRequestContent}.{Environment.NewLine}HTTP request: {httpRequest}");
+            _logger.Log(LogLevel.Debug, $"Received SMS Eagle report: {httpRequestContent}.{Environment.NewLine}HTTP request: {httpRequest}");
 
             if (string.IsNullOrWhiteSpace(httpRequestContent))
             {
-                _logger.Log(LogLevel.Warning, "Received an empty report.");
+                _logger.Log(LogLevel.Warning, "Received an empty SMS Eagle report.");
                 return new BadRequestResult();
             }
 
@@ -50,7 +51,9 @@ namespace RX.Nyss.FuncApp
                 return new UnauthorizedResult();
             }
 
-            await reportQueue.AddAsync(httpRequestContent);
+            var reportMessage = new Report { Content = httpRequestContent, ReportSource = ReportSource.SmsEagle };
+
+            await reportQueue.AddAsync(reportMessage);
 
             return new OkResult();
         }
@@ -68,13 +71,13 @@ namespace RX.Nyss.FuncApp
 
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                _logger.Log(LogLevel.Warning, "Received a report with an empty API key.");
+                _logger.Log(LogLevel.Warning, "Received a SMS Eagle report with an empty API key.");
                 return false;
             }
             
             if (!authorizedApiKeyList.Contains(apiKey))
             {
-                _logger.Log(LogLevel.Warning, $"Received a report with not authorized API key: {apiKey}.");
+                _logger.Log(LogLevel.Warning, $"Received a SMS Eagle report with not authorized API key: {apiKey}.");
                 return false;
             }
 

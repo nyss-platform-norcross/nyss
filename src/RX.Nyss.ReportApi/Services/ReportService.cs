@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using RX.Nyss.ReportApi.Contracts;
 using RX.Nyss.ReportApi.Handlers;
 using RX.Nyss.ReportApi.Utils.Logging;
 
@@ -8,39 +7,35 @@ namespace RX.Nyss.ReportApi.Services
 {
     public interface IReportService
     {
-        Task<bool> ReceiveSms(string sms);
+        Task<bool> ReceiveReport(Report report);
     }
 
     public class ReportService : IReportService
     {
-        private readonly IEnumerable<ISmsHandler> _smsHandlers;
+        private readonly ISmsEagleHandler _smsEagleHandler;
         private readonly ILoggerAdapter _loggerAdapter;
 
-        public ReportService(IEnumerable<ISmsHandler> smsHandlers, ILoggerAdapter loggerAdapter)
+        public ReportService(ISmsEagleHandler smsEagleHandler, ILoggerAdapter loggerAdapter)
         {
-            _smsHandlers = smsHandlers;
+            _smsEagleHandler = smsEagleHandler;
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<bool> ReceiveSms(string sms)
+        public async Task<bool> ReceiveReport(Report report)
         {
-            if (sms == null)
+            if (report == null)
             {
-                _loggerAdapter.Error("Received SMS with null value.");
+                _loggerAdapter.Error("Received a report with null value.");
                 return false;
             }
 
-            _loggerAdapter.Debug($"Received SMS: {sms}");
+            _loggerAdapter.Debug($"Received report: {report}");
 
-            var smsHandlers = _smsHandlers.Where(h => h.CanHandle(sms)).ToList();
-
-            switch (smsHandlers.Count)
+            switch (report.ReportSource)
             {
-                case 0: _loggerAdapter.Error($"Could not find a handler to handle SMS message ({sms}).");
+                case ReportSource.SmsEagle: await _smsEagleHandler.Handle(report.Content);
                     break;
-                case 1: await _smsHandlers.Single().Handle(sms);
-                    break;
-                default: _loggerAdapter.Error($"Found many handlers ({smsHandlers.Select(h => h.GetType().Name)}) which can handle SMS message ({sms}).");                          
+                default: _loggerAdapter.Error($"Could not find a proper handler to handle a report '{report}'.");                       
                     break;
             }
 
