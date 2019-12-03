@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +9,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -19,7 +22,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto);
         Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int technicalAdvisorId);
         Task<Result> UpdateTechnicalAdvisor(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto);
-        Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId);
+        Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId, IEnumerable<string> deletingUserRoles);
     }
 
     public class TechnicalAdvisorService : ITechnicalAdvisorService
@@ -29,14 +32,16 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
+        private readonly IUserService _userService;
 
-        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
+        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _nationalSocietyUserService = nationalSocietyUserService;
             _verificationEmailService = verificationEmailService;
+            _userService = userService;
         }
 
         public async Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
@@ -148,13 +153,14 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
             }
         }
 
-        public async Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId)
+        public async Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId, IEnumerable<string> deletingUserRoles)
         {
             try
             {
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
+                _userService.EnsureHasPermissionsToDelteUser(technicalAdvisor.Role, deletingUserRoles);
 
                 var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
                 

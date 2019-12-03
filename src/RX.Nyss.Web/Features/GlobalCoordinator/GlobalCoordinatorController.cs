@@ -4,6 +4,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.GlobalCoordinator.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.GlobalCoordinator
 {
@@ -51,7 +52,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         /// <returns></returns>
         [HttpPost("{id:int}/remove"), NeedsRole(Role.Administrator)]
         public async Task<Result> Remove(int id) =>
-            await _globalCoordinatorService.RemoveGlobalCoordinator(id);
+            await _globalCoordinatorService.RemoveGlobalCoordinator(id, User.GetRoles());
 
         /// <summary>
         /// Lists all global coordinators available in the system.

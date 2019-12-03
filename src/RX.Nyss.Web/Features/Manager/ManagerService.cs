@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +14,15 @@ using RX.Nyss.Web.Utils.Logging;
 
 namespace RX.Nyss.Web.Features.Manager
 {
+    public interface IManagerService
+    {
+        Task<Result> CreateManager(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto);
+        Task<Result<GetManagerResponseDto>> GetManager(int managerId);
+        Task<Result> UpdateManager(int managerId, EditManagerRequestDto editManagerRequestDto);
+        Task<Result> DeleteManager(int managerId, IEnumerable<string> deletingUserRoles);
+    }
+
+
     public class ManagerService : IManagerService
     {
         private readonly ILoggerAdapter _loggerAdapter;
@@ -140,7 +150,7 @@ namespace RX.Nyss.Web.Features.Manager
             }
         }
 
-        public Task<Result> DeleteManager(int managerId) =>
-            _nationalSocietyUserService.DeleteUser<ManagerUser>(managerId);
+        public Task<Result> DeleteManager(int managerId, IEnumerable<string> deletingUserRoles) =>
+            _nationalSocietyUserService.DeleteUser<ManagerUser>(managerId, deletingUserRoles);
     }
 }

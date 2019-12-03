@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Features.Supervisor.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Supervisor
 {
@@ -58,7 +60,7 @@ namespace RX.Nyss.Web.Features.Supervisor
         [HttpPost("{supervisorId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]
         public async Task<Result> Remove(int supervisorId) =>
-            await _supervisorService.Remove(supervisorId);
+            await _supervisorService.Remove(supervisorId, User.GetRoles());
     }
 }
 

@@ -10,6 +10,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Supervisor;
 using RX.Nyss.Web.Features.Supervisor.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -26,6 +27,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
+        private IUserService _userService;
 
         public SupervisorServiceTests()
         {
@@ -34,12 +36,13 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
+            _userService = Substitute.For<IUserService>();
 
             var applicationLanguages = new List<ApplicationLanguage>();
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
+            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -461,7 +464,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             ArrangeUsersDbSetWithOneSupervisor();
             
             //Act
-            var result = await _supervisorService.Remove(123);
+            var result = await _supervisorService.Remove(123, new List<string> { Role.Administrator.ToString() });
 
             //Assert
             _nyssContext.SupervisorUserProjects.Received(1).RemoveRange(Arg.Any<List<SupervisorUserProject>>());
@@ -474,7 +477,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             ArrangeUsersDbSetWithOneSupervisor();
 
             //Act
-            var result = await _supervisorService.Remove(666);
+            var result = await _supervisorService.Remove(666, new List<string>{Role.Administrator.ToString()});
 
             //Assert
             result.IsSuccess.ShouldBeFalse();
@@ -516,6 +519,20 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             //Assert
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
+        }
+
+        [Fact]
+        public async Task Remove_WhenDeleting_EnsureHasPermissionsIsCalled()
+        {
+            //arrange
+            ArrangeUsersDbSetWithOneSupervisor();
+            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
+
+            //act
+            await _supervisorService.Remove(123,  deletingUserRoles);
+
+            //assert
+            _userService.Received().EnsureHasPermissionsToDelteUser(Role.Supervisor, deletingUserRoles);
         }
     }
 }

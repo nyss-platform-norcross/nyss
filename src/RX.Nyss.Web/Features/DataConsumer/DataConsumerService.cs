@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +10,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.DataConsumer.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -20,7 +23,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         Task<Result> CreateDataConsumer(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
         Task<Result<GetDataConsumerResponseDto>> GetDataConsumer(int dataConsumerId);
         Task<Result> UpdateDataConsumer(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
-        Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId);
+        Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId, IEnumerable<string> deletingUserRoles);
     }
 
     public class DataConsumerService : IDataConsumerService
@@ -30,14 +33,15 @@ namespace RX.Nyss.Web.Features.DataConsumer
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
+        private readonly IUserService _userService;
 
-        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
+        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
-
+            _userService = userService;
             _nationalSocietyUserService = nationalSocietyUserService;
         }
 
@@ -152,13 +156,15 @@ namespace RX.Nyss.Web.Features.DataConsumer
             }
         }
 
-        public async Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId)
+        public async Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId, IEnumerable<string> deletingUserRoles)
         {
             try
             {
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var dataConsumerUser = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<DataConsumerUser>(dataConsumerId);
+                _userService.EnsureHasPermissionsToDelteUser(dataConsumerUser.Role, deletingUserRoles);
+                
                 var userNationalSocieties = dataConsumerUser.UserNationalSocieties;
 
                 var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);

@@ -10,6 +10,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.DataConsumer;
 using RX.Nyss.Web.Features.DataConsumer.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -26,6 +27,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
+        private readonly IUserService _userService;
 
         public DataConsumerServiceTests()
         {
@@ -34,8 +36,9 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
+            _userService = Substitute.For<IUserService>();
 
-            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
+            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -302,7 +305,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string>{Role.Administrator.ToString()});
 
             //assert
             await _nyssContext.Received(1).SaveChangesAsync();
@@ -315,7 +318,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            var result = await _dataConsumerService.DeleteDataConsumer(2, 123);
+            var result = await _dataConsumerService.DeleteDataConsumer(2, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -329,7 +332,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            var result = await _dataConsumerService.DeleteDataConsumer(2, 321);
+            var result = await _dataConsumerService.DeleteDataConsumer(2, 321, new List<string> { Role.Administrator.ToString() });
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -344,7 +347,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
@@ -357,7 +360,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
@@ -370,7 +373,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
@@ -383,10 +386,24 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureHasPermissionsIsCalled()
+        {
+            //arrange
+            ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
+            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
+
+            //act
+            await _dataConsumerService.DeleteDataConsumer(1, 123, deletingUserRoles);
+
+            //assert
+            _userService.Received().EnsureHasPermissionsToDelteUser(Role.DataConsumer, deletingUserRoles);
         }
     }
 }

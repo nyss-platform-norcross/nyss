@@ -23,12 +23,14 @@ namespace RX.Nyss.Web.Features.User
         Task<Result> AddExisting(int nationalSocietyId, string userEmail);
         Task<bool> HasUserAccessToNationalSociety(int nationalSocietyId, string identityName);
         Task<string> GetUserApplicationLanguageCode(string userIdentityName);
+        void EnsureHasPermissionsToDelteUser(Role deletedUserRole, IEnumerable<string> deletingUserRoles);
     }
 
     public class UserService : IUserService
     {
         private readonly INyssContext _dataContext;
         private readonly IEnumerable<string> _rolesWithAccessToAllNationalSocieties;
+        private readonly IDictionary<string, int> _userRoleHierarchyDictionary = new Dictionary<string, int>();
 
         public UserService(INyssContext dataContext)
         {
@@ -36,6 +38,18 @@ namespace RX.Nyss.Web.Features.User
 
             _rolesWithAccessToAllNationalSocieties = new List<Role> { Role.Administrator, Role.GlobalCoordinator }
                 .Select(role => role.ToString());
+
+            SetupUserRolesHierarchy();
+        }
+
+        private void SetupUserRolesHierarchy()
+        {
+            _userRoleHierarchyDictionary[Role.Administrator.ToString()] = 1;
+            _userRoleHierarchyDictionary[Role.GlobalCoordinator.ToString()] = 2;
+            _userRoleHierarchyDictionary[Role.DataConsumer.ToString()] = 3;
+            _userRoleHierarchyDictionary[Role.Manager.ToString()] = 3;
+            _userRoleHierarchyDictionary[Role.TechnicalAdvisor.ToString()] = 3;
+            _userRoleHierarchyDictionary[Role.Supervisor.ToString()] = 4;
         }
 
         public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsersInNationalSociety(int nationalSocietyId, IEnumerable<string> callingUserRoles)
@@ -152,6 +166,17 @@ namespace RX.Nyss.Web.Features.User
                 .Where(u => u.EmailAddress == userIdentityName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
+
+        public void EnsureHasPermissionsToDelteUser(Role deletedUserRole, IEnumerable<string> deletingUserRoles)
+        {
+            var deletingUserRole = deletingUserRoles.Single();
+            if (deletingUserRole == Role.Supervisor.ToString()
+                || deletingUserRole == Role.DataConsumer.ToString()
+                || _userRoleHierarchyDictionary[deletingUserRole] > _userRoleHierarchyDictionary[deletedUserRole.ToString()])
+            {
+                throw new ResultException(ResultKey.User.Common.NoPermissionsToDeleteThisUser);
+            }
+        }
     }
 }
 

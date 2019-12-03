@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
@@ -11,6 +12,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.GlobalCoordinator;
 using RX.Nyss.Web.Features.GlobalCoordinator.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -26,6 +28,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
+        private IUserService _userService;
 
         public GlobalCoordinatorServiceTests()
         {
@@ -33,8 +36,9 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             _nyssContext = Substitute.For<INyssContext>();
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
+            _userService = Substitute.For<IUserService>();
 
-            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
+            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -55,6 +59,12 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         {
             var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
+
+
+            foreach (var user in existingUsers)
+            {
+                _nyssContext.Users.FindAsync(user.Id).Returns(user);
+            }
         }
 
         private void ArrangeUSersDbSetWithOneGlobalCoordinator() =>
@@ -243,6 +253,20 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             var result = await _globalCoordinatorService.GetGlobalCoordinators();
 
             result.Value.Count.ShouldBe(2);
+        }
+
+        [Fact]
+        public async Task RemoveGlobalCoordinator_WhenDeleting_EnsureHasPermissionsIsCalled()
+        {
+            //arrange
+            ArrangeUSersDbSetWithOneGlobalCoordinator();
+            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
+
+            //act
+            await _globalCoordinatorService.RemoveGlobalCoordinator(123, deletingUserRoles);
+
+            //assert
+            _userService.Received().EnsureHasPermissionsToDelteUser(Role.GlobalCoordinator, deletingUserRoles);
         }
     }
 }

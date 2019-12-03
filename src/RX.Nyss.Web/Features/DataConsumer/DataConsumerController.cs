@@ -5,6 +5,7 @@ using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Features.DataConsumer.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.DataConsumer
 {
@@ -61,7 +62,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         [HttpPost("{dataConsumerId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId, int dataConsumerId) =>
-            await _dataConsumerService.DeleteDataConsumer(nationalSocietyId, dataConsumerId);
+            await _dataConsumerService.DeleteDataConsumer(nationalSocietyId, dataConsumerId, User.GetRoles());
     }
 }
 

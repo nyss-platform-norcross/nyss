@@ -246,7 +246,5 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
             editedUser.EmailAddress.ShouldBe(existingUserEmail);
             editedUser.AdditionalPhoneNumber.ShouldBe(editRequest.AdditionalPhoneNumber);
         }
-
-        
     }
 }

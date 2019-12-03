@@ -6,6 +6,7 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -20,15 +21,17 @@ namespace Rx.Nyss.Web.Tests.Services
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
+        private IUserService _userService;
 
         public NationalSocietyUserServiceTests()
         {
             _loggerAdapter = Substitute.For<ILoggerAdapter>();
             _identityUserRegistrationService = Substitute.For<IIdentityUserRegistrationService>();
             _nyssContext = Substitute.For<INyssContext>();
+            _userService = Substitute.For<IUserService>();
             SetupTestNationalSociety();
 
-            _nationalSocietyUserService = new NationalSocietyUserService(_nyssContext, _loggerAdapter, _identityUserRegistrationService);
+            _nationalSocietyUserService = new NationalSocietyUserService(_nyssContext, _loggerAdapter, _identityUserRegistrationService, _userService);
         }
 
         private void SetupTestNationalSociety()
@@ -65,7 +68,7 @@ namespace Rx.Nyss.Web.Tests.Services
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
+            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123, new List<string> { Role.Administrator.ToString() });
 
             
             await _nyssContext.Received().SaveChangesAsync();
@@ -86,7 +89,7 @@ namespace Rx.Nyss.Web.Tests.Services
             manager.UserNationalSocieties = usersNationalSocieties;
 
             //act
-            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
+            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nyssContext.Users.Received().Remove(manager);
@@ -106,7 +109,7 @@ namespace Rx.Nyss.Web.Tests.Services
             manager.UserNationalSocieties = usersNationalSocieties;
 
             //act
-            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
+            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nyssContext.UserNationalSocieties.Received().RemoveRange(Arg.Is<IEnumerable<UserNationalSociety>>(x => x.Contains(userNationalSociety)));
@@ -122,7 +125,7 @@ namespace Rx.Nyss.Web.Tests.Services
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
+            await _nationalSocietyUserService.DeleteUser<ManagerUser>(123, new List<string> { Role.Administrator.ToString() });
 
 
             await _identityUserRegistrationService.Received().DeleteIdentityUser(Arg.Any<string>());
@@ -138,7 +141,7 @@ namespace Rx.Nyss.Web.Tests.Services
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            var result = await _nationalSocietyUserService.DeleteUser<ManagerUser>(123);
+            var result = await _nationalSocietyUserService.DeleteUser<ManagerUser>(123, new List<string> { Role.Administrator.ToString() });
 
 
             result.IsSuccess.ShouldBeTrue();
@@ -154,7 +157,7 @@ namespace Rx.Nyss.Web.Tests.Services
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
 
 
-            var result = await _nationalSocietyUserService.DeleteUser<TechnicalAdvisorUser>(123);
+            var result = await _nationalSocietyUserService.DeleteUser<TechnicalAdvisorUser>(123, new List<string>{Role.Administrator.ToString()});
 
 
             result.IsSuccess.ShouldBeFalse();
@@ -170,7 +173,7 @@ namespace Rx.Nyss.Web.Tests.Services
             ArrangeUserNationalSocietiesFrom(new List<UserNationalSociety> { userNationalSociety });
             
 
-            var result = await _nationalSocietyUserService.DeleteUser<TechnicalAdvisorUser>(999);
+            var result = await _nationalSocietyUserService.DeleteUser<TechnicalAdvisorUser>(999, new List<string> { Role.Administrator.ToString() });
 
 
             result.IsSuccess.ShouldBeFalse();

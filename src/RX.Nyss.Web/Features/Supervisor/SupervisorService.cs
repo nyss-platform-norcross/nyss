@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -7,6 +9,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Supervisor.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -19,7 +22,7 @@ namespace RX.Nyss.Web.Features.Supervisor
         Task<Result> Create(int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto);
         Task<Result<GetSupervisorResponseDto>> Get(int supervisorId);
         Task<Result> Edit(int supervisorId, EditSupervisorRequestDto editSupervisorRequestDto);
-        Task<Result> Remove(int supervisorId);
+        Task<Result> Remove(int supervisorId, IEnumerable<string> deletingUserRoles);
         Task<bool> GetSupervisorHasAccessToProject(string supervisorIdentityName, int projectId);
     }
 
@@ -30,14 +33,16 @@ namespace RX.Nyss.Web.Features.Supervisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
+        private IUserService _userService;
 
-        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
+        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
+            _userService = userService;
         }
 
         public async Task<Result> Create(int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto)
@@ -248,13 +253,14 @@ namespace RX.Nyss.Web.Features.Supervisor
             }
         }
 
-        public async Task<Result> Remove(int supervisorId)
+        public async Task<Result> Remove(int supervisorId, IEnumerable<string> deletingUserRoles)
         {
             try
             {
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var supervisorUser = await GetSupervisorUser(supervisorId);
+                _userService.EnsureHasPermissionsToDelteUser(supervisorUser.Role, deletingUserRoles);
 
                 DetachSupervisorFromAllProjects(supervisorUser);
                 _nationalSocietyUserService.DeleteNationalSocietyUser(supervisorUser);

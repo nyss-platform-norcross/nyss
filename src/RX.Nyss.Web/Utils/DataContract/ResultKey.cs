@@ -7,6 +7,7 @@
             public static class Common
             {
                 public const string UserNotFound = "user.common.userNotFound";
+                public const string NoPermissionsToDeleteThisUser = "user.common.noPermissionsToDeleteThisUser";
             }
 
             public static class Registration

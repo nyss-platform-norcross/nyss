@@ -5,6 +5,7 @@ using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.TechnicalAdvisor
 {
@@ -62,6 +63,6 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         [HttpPost("{technicalAdvisorId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.TechnicalAdvisorAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId) =>
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(nationalSocietyId, technicalAdvisorId);
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(nationalSocietyId, technicalAdvisorId, User.GetRoles());
     }
 }

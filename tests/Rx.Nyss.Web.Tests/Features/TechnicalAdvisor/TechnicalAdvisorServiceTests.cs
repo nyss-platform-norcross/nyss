@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.TechnicalAdvisor;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -26,6 +28,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
+        private IUserService _userService;
 
         public TechnicalAdvisorServiceTests()
         {
@@ -34,12 +37,13 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
+            _userService = Substitute.For<IUserService>();
 
             var applicationLanguages = new List<ApplicationLanguage>();
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
+            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -309,7 +313,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             await _nyssContext.Received(1).SaveChangesAsync();
@@ -322,7 +326,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 123);
+            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -336,7 +340,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 321);
+            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 321, new List<string> { Role.Administrator.ToString() });
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -351,7 +355,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
@@ -364,7 +368,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
@@ -377,7 +381,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
@@ -390,10 +394,25 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
+        }
+
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureHasPermissionsIsCalled()
+        {
+            //arrange
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, deletingUserRoles);
+
+            //assert
+            _userService.Received().EnsureHasPermissionsToDelteUser(Role.TechnicalAdvisor, deletingUserRoles);
         }
     }
 }
