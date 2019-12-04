@@ -54,24 +54,9 @@ namespace RX.Nyss.ReportApi.Services
             var sexMatch = singleReportMatch.Groups["sex"].Value;
             var ageGroupMatch = singleReportMatch.Groups["ageGroup"].Value;
 
-            var healthRiskCodeParsedSuccessfully = int.TryParse(healthRiskCodeMatch, out var healthRiskCode);
-            var sexParsedSuccessfully = int.TryParse(sexMatch, out var sex);
-            var ageGroupParsedSuccessfully = int.TryParse(ageGroupMatch, out var ageGroup);
-
-            if (!healthRiskCodeParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse health risk code '{healthRiskCodeMatch}'.");
-            }
-
-            if (!sexParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse sex '{sexMatch}'.");
-            }
-
-            if (!ageGroupParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse age group '{ageGroup}'.");
-            }
+            var healthRiskCode = int.Parse(healthRiskCodeMatch);
+            var sex = int.Parse(sexMatch);
+            var ageGroup = int.Parse(ageGroupMatch);
 
             var parsedReport = new ParsedReport
             {
@@ -99,36 +84,11 @@ namespace RX.Nyss.ReportApi.Services
             var femalesBelowFiveMatch = aggregatedReportMatch.Groups["femalesBelowFive"].Value;
             var femalesAtLeastFiveMatch = aggregatedReportMatch.Groups["femalesAtLeastFive"].Value;
 
-            var healthRiskCodeParsedSuccessfully = int.TryParse(healthRiskCodeMatch, out var healthRiskCode);
-            var malesBelowFiveParsedSuccessfully = int.TryParse(malesBelowFiveMatch, out var malesBelowFive);
-            var malesAtLeastFiveParsedSuccessfully = int.TryParse(malesAtLeastFiveMatch, out var malesAtLeastFive);
-            var femalesBelowFiveParsedSuccessfully = int.TryParse(femalesBelowFiveMatch, out var femalesBelowFive);
-            var femalesAtLeastFiveParsedSuccessfully = int.TryParse(femalesAtLeastFiveMatch, out var femalesAtLeastFive);
-
-            if (!healthRiskCodeParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse health risk code '{healthRiskCodeMatch}'.");
-            }
-
-            if (!malesBelowFiveParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse number of males below five '{malesBelowFiveMatch}'.");
-            }
-
-            if (!malesAtLeastFiveParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse number of males at least five '{malesAtLeastFiveMatch}'.");
-            }
-
-            if (!femalesBelowFiveParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse number of females below five '{femalesBelowFiveMatch}'.");
-            }
-
-            if (!femalesAtLeastFiveParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse number of females at least five '{femalesAtLeastFiveMatch}'.");
-            }
+            var healthRiskCode = int.Parse(healthRiskCodeMatch);
+            var malesBelowFive = int.Parse(malesBelowFiveMatch);
+            var malesAtLeastFive = int.Parse(malesAtLeastFiveMatch);
+            var femalesBelowFive = int.Parse(femalesBelowFiveMatch);
+            var femalesAtLeastFive = int.Parse(femalesAtLeastFiveMatch);
 
             var parsedReport = new ParsedReport
             {
@@ -152,12 +112,7 @@ namespace RX.Nyss.ReportApi.Services
             var eventReportMatch = EventReportRegex.Match(reportMessage);
             var eventCodeMatch = eventReportMatch.Groups["eventCode"].Value;
 
-            var eventCodeParsedSuccessfully = int.TryParse(eventCodeMatch, out var eventCode);
-
-            if (!eventCodeParsedSuccessfully)
-            {
-                throw new ReportValidationException($"Cannot parse event code '{eventCodeMatch}'.");
-            }
+            var eventCode = int.Parse(eventCodeMatch);
 
             var parsedReport = new ParsedReport
             {
