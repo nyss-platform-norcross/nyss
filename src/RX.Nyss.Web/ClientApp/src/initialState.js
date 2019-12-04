@@ -48,6 +48,7 @@ export const initialState = {
     zones: []
   },
   smsGateways: {
+    listNationalSocietyId: null,
     listFetching: false,
     listRemoving: {},
     listStale: true,

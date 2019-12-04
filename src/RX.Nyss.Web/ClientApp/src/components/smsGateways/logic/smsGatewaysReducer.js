@@ -8,6 +8,12 @@ export function smsGatewaysReducer(state = initialState.smsGateways, action) {
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null }
 
+    case actions.OPEN_SMS_GATEWAYS_LIST.INVOKE:
+        return { ...state, listStale: action.nationalSocietyId !== state.listNationalSocietyId };
+
+    case actions.OPEN_SMS_GATEWAYS_LIST.SUCCESS:
+      return { ...state, listNationalSocietyId: action.nationalSocietyId };
+
     case actions.GET_SMS_GATEWAYS.REQUEST:
       return { ...state, listFetching: true, listData: [] };
 
