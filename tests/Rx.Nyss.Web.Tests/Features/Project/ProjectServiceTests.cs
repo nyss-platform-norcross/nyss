@@ -786,8 +786,14 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
 
-        private IEnumerable<RX.Nyss.Data.Models.Project> GenerateExemplaryProjects(int nationalSocietyId) =>
-            new[]
+        private IEnumerable<RX.Nyss.Data.Models.Project> GenerateExemplaryProjects(int nationalSocietyId)
+        {
+            var projectHealthRisk = new ProjectHealthRisk
+            {
+                HealthRisk = new RX.Nyss.Data.Models.HealthRisk()
+            };
+
+            return new[]
             {
                 new RX.Nyss.Data.Models.Project
                 {
@@ -802,24 +808,46 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         new RX.Nyss.Data.Models.DataCollector
                         {
                             DataCollectorType = DataCollectorType.Human,
-                            Reports = new []
+                            Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                }
                             }
                         }
                     },
                     SupervisorUserProjects = new List<SupervisorUserProject>(),
-                    ProjectHealthRisks = new[] { new ProjectHealthRisk
+                    ProjectHealthRisks = new[]
                     {
-                        Reports = new[]
+                        new ProjectHealthRisk
                         {
-                            new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
-                        },
-                        Alerts = new[]
-                        {
-                            new Alert { Id = 10, Status = AlertStatus.Pending }
+                            Reports = new[]
+                            {
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                }
+                            },
+                            Alerts = new[]
+                            {
+                                new Alert
+                                {
+                                    Id = 10, Status = AlertStatus.Pending
+                                }
+                            }
                         }
-                    } }
+                    }
                 },
                 new RX.Nyss.Data.Models.Project
                 {
@@ -838,18 +866,42 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         new RX.Nyss.Data.Models.DataCollector
                         {
                             DataCollectorType = DataCollectorType.Human,
-                            Reports = new []
+                            Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                }
                             }
                         },
                         new RX.Nyss.Data.Models.DataCollector
                         {
                             DataCollectorType = DataCollectorType.Human,
-                            Reports = new []
+                            Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}},
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                },
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                }
                             }
                         }
                     },
@@ -860,30 +912,70 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                         {
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                }
                             },
                             Alerts = new[]
                             {
-                                new Alert { Id = 1, Status = AlertStatus.Pending },
-                                new Alert { Id = 3, Status = AlertStatus.Escalated }
+                                new Alert
+                                {
+                                    Id = 1, Status = AlertStatus.Pending
+                                },
+                                new Alert
+                                {
+                                    Id = 3, Status = AlertStatus.Escalated
+                                }
                             }
                         },
                         new ProjectHealthRisk
                         {
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}},
-                                new RX.Nyss.Data.Models.Report { ReceivedAt = new DateTime(2019, 1, 1), ReportedCase = new ReportCase { CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0}}
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                },
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                }
                             },
                             Alerts = new[]
                             {
-                                new Alert { Id = 4, Status = AlertStatus.Pending },
-                                new Alert { Id = 5, Status = AlertStatus.Dismissed },
-                                new Alert { Id = 6, Status = AlertStatus.Escalated }
+                                new Alert
+                                {
+                                    Id = 4, Status = AlertStatus.Pending
+                                },
+                                new Alert
+                                {
+                                    Id = 5, Status = AlertStatus.Dismissed
+                                },
+                                new Alert
+                                {
+                                    Id = 6, Status = AlertStatus.Escalated
+                                }
                             }
                         }
                     }
                 }
             };
+        }
     }
 }
