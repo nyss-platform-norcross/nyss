@@ -65,6 +65,10 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             {
                 new RX.Nyss.Data.Models.Project { Id = ProjectId, NationalSociety = nationalSocieties[0] }
             };
+            var supervisorUserProjects = new List<SupervisorUserProject>
+            {
+                new SupervisorUserProject { SupervisorUserId = SupervisorId, SupervisorUser = (SupervisorUser)users[0], ProjectId = ProjectId, Project = projects[0] }
+            };
             var regions = new List<Region>
             {
                 new Region { Id = RegionId, NationalSociety = nationalSocieties[0], Name = "Layuna" }
@@ -116,6 +120,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesMockDbSet = usersNationalSocieties.AsQueryable().BuildMockDbSet();
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
+            var supervisorUserProjectsMockDbSet = supervisorUserProjects.AsQueryable().BuildMockDbSet();
             var regionsMockDbSet = regions.AsQueryable().BuildMockDbSet();
             var districtsMockDbSet = districts.AsQueryable().BuildMockDbSet();
             var villagesMockDbSet = villages.AsQueryable().BuildMockDbSet();
@@ -126,6 +131,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             _nyssContextMock.Users.Returns(usersMockDbSet);
             _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesMockDbSet);
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
+            _nyssContextMock.SupervisorUserProjects.Returns(supervisorUserProjectsMockDbSet);
             _nyssContextMock.Regions.Returns(regionsMockDbSet);
             _nyssContextMock.Districts.Returns(districtsMockDbSet);
             _nyssContextMock.Villages.Returns(villagesMockDbSet);
