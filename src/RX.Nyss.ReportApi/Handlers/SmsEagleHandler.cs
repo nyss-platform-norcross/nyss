@@ -96,7 +96,7 @@ namespace RX.Nyss.ReportApi.Handlers
                 var parsedReport = _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
 
-                var receivedAt = ParseTimestamp(timestamp, dataCollector.Project.TimeZone);
+                var receivedAt = ParseTimestamp(timestamp);
                 ValidateReceiptTime(receivedAt);
                 rawReport.ReceivedAt = receivedAt;
                 await _nyssContext.SaveChangesAsync();
@@ -236,29 +236,27 @@ namespace RX.Nyss.ReportApi.Handlers
             return projectHealthRisk;
         }
 
-        private DateTime ParseTimestamp(string timestamp, string timeZoneName)
+        private DateTime ParseTimestamp(string timestamp)
         {
             try
             {
                 var formatProvider = CultureInfo.InvariantCulture;
                 const string timestampFormat = "yyyyMMddHHmmss";
 
-                var timeZone = _dateTimeProvider.GetTimeZoneInfo(timeZoneName);
-
-                var parsedSuccessfully = DateTime.TryParseExact(timestamp, timestampFormat, formatProvider, DateTimeStyles.None, out var dateTime);
-
+                var parsedSuccessfully = DateTime.TryParseExact(timestamp, timestampFormat, formatProvider, DateTimeStyles.None, out var parsedTimestamp);
+                
                 if (!parsedSuccessfully)
                 {
                     throw new ReportValidationException($"Cannot parse timestamp '{timestamp}' to datetime.");
                 }
 
-                var parsedTimestampInUtc = TimeZoneInfo.ConvertTimeToUtc(dateTime, timeZone);
+                var parsedTimestampInUtc = DateTime.SpecifyKind(parsedTimestamp, DateTimeKind.Utc);
 
                 return parsedTimestampInUtc;
             }
             catch (Exception e)
             {
-                throw new ReportValidationException($"Cannot parse timestamp '{timestamp}' for time zone '{timeZoneName}'. Exception: {e.Message} Stack trace: {e.StackTrace}");
+                throw new ReportValidationException($"Cannot parse timestamp '{timestamp}'. Exception: {e.Message} Stack trace: {e.StackTrace}");
             }
         }
 
