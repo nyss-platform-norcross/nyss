@@ -128,7 +128,8 @@ export const initialState = {
     mapOverviewCenterLocation: null,
     mapOverviewFilters: null,
     mapOverviewDetails: [],
-    mapOverviewDetailsFetching: false
+    mapOverviewDetailsFetching: false,
+    settingTrainingState: {}
   },
   headManagerConsents: {
     nationalSocieties: []

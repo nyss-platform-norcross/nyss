@@ -155,6 +155,8 @@
             public const string EditError = "dataCollector.edit.error";
             public const string RemoveSuccess = "dataCollector.remove.success";
             public const string RemoveError = "dataCollector.remove.error";
+            public const string SetInTrainingSuccess = "dataCollector.setInTraining.success";
+            public const string SetOutOfTrainingSuccess = "dataCollector.setOutOfTraining.success";
         }
 
         public static class Geolocation

@@ -301,7 +301,9 @@ export const stringKeys = {
       title: "dataCollectors.list.title",
       trainingStatus: "dataCollectors.list.trainingStatus",
       isInTrainingMode: "dataCollectors.list.isInTrainingMode",
-      isNotInTrainingMode: "dataCollectors.list.isNotInTrainingMode"
+      isNotInTrainingMode: "dataCollectors.list.isNotInTrainingMode",
+      setToInTraining: "dataCollectors.list.setToInTraining",
+      takeOutOfTraining: "dataCollectors.list.takeOutOfTraining"
     },
     constants: {
       sex: {

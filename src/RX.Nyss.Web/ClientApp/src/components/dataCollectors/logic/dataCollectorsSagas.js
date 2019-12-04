@@ -16,7 +16,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.CREATE_DATA_COLLECTOR.INVOKE, createDataCollector),
   takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
   takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector),
-  takeEvery(consts.GET_DATA_COLLECTORS_MAP_DETAILS.INVOKE, getMapDetails)
+  takeEvery(consts.GET_DATA_COLLECTORS_MAP_DETAILS.INVOKE, getMapDetails),
+  takeEvery(consts.SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, setTrainingState)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -159,4 +160,19 @@ function* openDataCollectorsModule(projectId) {
     projectId: project.value.id,
     projectName: project.value.name
   }));
-}
+};
+
+function* setTrainingState({ dataCollectorId, inTraining }) {
+  yield put(actions.setTrainingState.request(dataCollectorId));
+  try {
+    const response = yield call(http.post, `/api/dataCollector/${dataCollectorId}/setTrainingState?isIntraining=${inTraining}`);
+    http.ensureResponseIsSuccess(response);
+    yield put(actions.setTrainingState.success(dataCollectorId, inTraining));
+    yield put(appActions.showMessage(strings(response.message.key)));
+    const projectId = yield select(state => state.dataCollectors.listProjectId);
+    yield call(getDataCollectors, projectId);
+  } catch (error) {
+    yield put(appActions.showMessage(error.message));
+    yield put(actions.setTrainingState.failure(dataCollectorId));
+  }
+};

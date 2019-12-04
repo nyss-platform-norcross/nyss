@@ -5,7 +5,8 @@ import {
   OPEN_DATA_COLLECTOR_EDITION, EDIT_DATA_COLLECTOR,
   REMOVE_DATA_COLLECTOR, OPEN_DATA_COLLECTORS_MAP_OVERVIEW,
   GET_DATA_COLLECTORS_MAP_OVERVIEW,
-  GET_DATA_COLLECTORS_MAP_DETAILS
+  GET_DATA_COLLECTORS_MAP_DETAILS,
+  SET_DATA_COLLECTORS_TRAINING_STATE
 } from "./dataCollectorsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors/list`);
@@ -81,4 +82,11 @@ export const getMapDetails = {
   request: () => ({ type: GET_DATA_COLLECTORS_MAP_DETAILS.REQUEST }),
   success: (details) => ({ type: GET_DATA_COLLECTORS_MAP_DETAILS.SUCCESS, details }),
   failure: (message) => ({ type: GET_DATA_COLLECTORS_MAP_DETAILS.FAILURE, message })
+};
+
+export const setTrainingState = {
+  invoke: (dataCollectorId, inTraining) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, dataCollectorId, inTraining }),
+  request: (dataCollectorId) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.REQUEST, dataCollectorId }),
+  success: (dataCollectorId, inTraining) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.SUCCESS, dataCollectorId, inTraining }),
+  failure: (dataCollectorId) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE, dataCollectorId })
 };

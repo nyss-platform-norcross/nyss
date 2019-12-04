@@ -34,7 +34,8 @@ function* getReports({ projectId, pageNumber, reportListFilter }) {
       reportListType: "main"
     };
 
-    const response = yield call(http.post, `/api/reportlist?projectId=${projectId}&pageNumber=${pageNumber || 1}`, filter);
+    const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`, filter);
+    http.ensureResponseIsSuccess(response);
     yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filter));
   } catch (error) {
     yield put(actions.getList.failure(error.message));

@@ -1,6 +1,6 @@
 import * as actions from "./dataCollectorsConstants";
 import { initialState } from "../../../initialState";
-import { setProperty } from "../../../utils/immutable";
+import { setProperty, removeProperty } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";
 
 export function dataCollectorsReducer(state = initialState.dataCollectors, action) {
@@ -85,6 +85,15 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
 
     case actions.REMOVE_DATA_COLLECTOR.FAILURE:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
+
+    case actions.SET_DATA_COLLECTORS_TRAINING_STATE.REQUEST:
+      return { ...state, settingTrainingState: setProperty(state.settingTrainingState, action.dataCollectorId, true) };
+
+    case actions.SET_DATA_COLLECTORS_TRAINING_STATE.SUCCESS:
+      return { ...state, settingTrainingState: removeProperty(state.settingTrainingState, action.dataCollectorId), listStale: true };
+
+    case actions.SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE:
+      return { ...state, settingTrainingState: removeProperty(state.settingTrainingState, action.dataCollectorId) };
 
     default:
       return state;

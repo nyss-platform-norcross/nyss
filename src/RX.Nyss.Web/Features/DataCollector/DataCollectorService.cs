@@ -30,6 +30,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId);
         Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName, IEnumerable<string> roles);
+        Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -429,6 +430,23 @@ namespace RX.Nyss.Web.Features.DataCollector
 
 
             return Success(result);
+        }
+
+        public async Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining)
+        {
+            var dataCollector = await _nyssContext.DataCollectors.FindAsync(dataCollectorId);
+
+            if (dataCollector == null)
+            {
+                return Error(ResultKey.DataCollector.DataCollectorNotFound);
+            }
+
+            dataCollector.IsInTrainingMode = isInTraining;
+            await _nyssContext.SaveChangesAsync();
+
+            return SuccessMessage(isInTraining ?
+                ResultKey.DataCollector.SetInTrainingSuccess :
+                ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
         private async Task<LocationDto> GetCountryLocationFromProject(int projectId)
