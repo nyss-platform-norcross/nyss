@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, TechnicalAdvisorAccessRequirement requirement)
         {
-            var technicalAdvisorId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            var technicalAdvisorId = _httpContextAccessor.GetResourceParameter(RouteParameterName);
             if (!context.User.Identity.IsAuthenticated || !technicalAdvisorId.HasValue)
             {
                 return;

@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
             DataConsumerAccessRequirement requirement)
         {
-            var dataConsumerId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            var dataConsumerId = _httpContextAccessor.GetResourceParameter(RouteParameterName);
             if (!context.User.Identity.IsAuthenticated || !dataConsumerId.HasValue)
             {
                 return;

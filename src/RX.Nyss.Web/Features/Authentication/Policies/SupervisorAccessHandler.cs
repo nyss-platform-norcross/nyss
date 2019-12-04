@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, SupervisorAccessRequirement requirement)
         {
-            var supervisorId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            var supervisorId = _httpContextAccessor.GetResourceParameter(RouteParameterName);
             if (!context.User.Identity.IsAuthenticated || !supervisorId.HasValue)
             {
                 return;

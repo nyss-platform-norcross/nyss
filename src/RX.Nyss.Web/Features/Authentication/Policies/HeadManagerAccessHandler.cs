@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, HeadManagerAccessHandlerRequirement requirement)
         {
-            var nationalSocietyId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            var nationalSocietyId = _httpContextAccessor.GetResourceParameter(RouteParameterName);
 
             if (!context.User.Identity.IsAuthenticated || !nationalSocietyId.HasValue)
             {
