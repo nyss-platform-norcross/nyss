@@ -8,7 +8,7 @@ using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.DataConsumer
 {
-    [Route("api")]
+    [Route("api/dataConsumer")]
     public class DataConsumerController : BaseController
     {
         private readonly IDataConsumerService _dataConsumerService;
@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         /// <param name="nationalSocietyId">The ID of the national society the data consumer should be registered in</param>
         /// <param name="createDataConsumerRequestDto">The data consumer to be created</param>
         /// <returns></returns>
-        [HttpPost("nationalSociety/{nationalSocietyId:int}/dataConsumer/create")]
+        [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> CreateDataConsumer(int nationalSocietyId, [FromBody]CreateDataConsumerRequestDto createDataConsumerRequestDto) =>
             await _dataConsumerService.CreateDataConsumer(nationalSocietyId, createDataConsumerRequestDto);
@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         /// </summary>
         /// <param name="dataConsumerId">The ID of the requested data consumer</param>
         /// <returns></returns>
-        [HttpGet("nationalSociety/dataConsumer/{dataConsumerId:int}/get")]
+        [HttpGet("{dataConsumerId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
         public async Task<Result> Get(int dataConsumerId) =>
             await _dataConsumerService.GetDataConsumer(dataConsumerId);
@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         /// <param name="dataConsumerId">The id of the data consumer to be edited</param>
         /// <param name="editDataConsumerRequestDto">The data used to update the specified data consumer</param>
         /// <returns></returns>
-        [HttpPost("nationalSociety/dataConsumer/{dataConsumerId:int}/edit")]
+        [HttpPost("{dataConsumerId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
         public async Task<Result> Edit(int dataConsumerId, [FromBody]EditDataConsumerRequestDto editDataConsumerRequestDto) =>
             await _dataConsumerService.UpdateDataConsumer(dataConsumerId, editDataConsumerRequestDto);
@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         /// <param name="nationalSocietyId">The ID of the national society the data consumer should be removed from</param>
         /// <param name="dataConsumerId">The ID of the data consumer to be removed</param>
         /// <returns></returns>
-        [HttpPost("nationalSociety/{nationalSocietyId:int}/dataConsumer/{dataConsumerId:int}/remove")]
+        [HttpPost("{dataConsumerId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId, int dataConsumerId) =>
             await _dataConsumerService.DeleteDataConsumer(nationalSocietyId, dataConsumerId);
