@@ -125,7 +125,8 @@ namespace RX.Nyss.Web.Features.Project
                     EndDate = p.EndDate,
                     TotalReportCount = (int)p.ProjectHealthRisks
                       .SelectMany(phr => phr.Reports)
-                      .Sum(r => r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive),
+                      .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                      .Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
                     EscalatedAlertCount = p.ProjectHealthRisks
                         .SelectMany(phr => phr.Alerts
                             .Where(a => a.Status == AlertStatus.Escalated)

@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Where(ph => ph.Id == projectId)
                 .Select(p => new ProjectSummaryResponseDto
                 {
-                    ReportCount = (int)reports.Sum(r => r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive),
+                    ReportCount = (int)reports.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
                     ActiveDataCollectorCount = reports
                         .Select(r => r.DataCollector.Id)
                         .Distinct().Count(),
@@ -125,7 +125,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     HealthRiskName = r.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == r.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name).FirstOrDefault(),
-                    Total = (int)(r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive),
+                    Total = (int)(r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
                 })
                 .Where(r => r.Total > 0)
                 .GroupBy(r => r.HealthRiskId)
@@ -214,7 +214,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Select(r => new
                 {
                     r.ReceivedAt,
-                    Total = r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive,
+                    Total = r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1,
                 })
                 .GroupBy(r => r.ReceivedAt.Date)
                 .Select(grouping => new
@@ -249,7 +249,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 {
                     r.ReceivedAt.Year,
                     r.EpiWeek,
-                    Total = r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive,
+                    Total = r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1,
                 })
                 .GroupBy(r => new { r.Year, r.EpiWeek })
                 .Select(grouping => new { EpiPeriod = grouping.Key, Count = (int)grouping.Sum(r => r.Total) })
