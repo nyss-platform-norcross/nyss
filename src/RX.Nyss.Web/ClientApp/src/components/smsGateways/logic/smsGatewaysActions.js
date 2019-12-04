@@ -13,7 +13,7 @@ export const goToEdition = (nationalSocietyId, smsGatewayId) => push(`/nationals
 export const openList = {
   invoke: (nationalSocietyId) => ({ type: OPEN_SMS_GATEWAYS_LIST.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_SMS_GATEWAYS_LIST.REQUEST }),
-  success: () => ({ type: OPEN_SMS_GATEWAYS_LIST.SUCCESS }),
+  success: (nationalSocietyId) => ({ type: OPEN_SMS_GATEWAYS_LIST.SUCCESS, nationalSocietyId }),
   failure: (message) => ({ type: OPEN_SMS_GATEWAYS_LIST.FAILURE, message })
 };
 

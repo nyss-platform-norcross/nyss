@@ -23,7 +23,7 @@ function* openSmsGatewaysList({ nationalSocietyId }) {
       yield call(getSmsGateways, nationalSocietyId);
     }
 
-    yield put(actions.openList.success());
+    yield put(actions.openList.success(nationalSocietyId));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
   }
