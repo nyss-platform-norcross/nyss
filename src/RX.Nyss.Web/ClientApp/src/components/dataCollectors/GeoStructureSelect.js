@@ -20,7 +20,7 @@ export const GeoStructureSelect = ({ regions, initialDistricts, initialVillages,
     setVillages([]);
     setZones([]);
 
-    http.get(`/api/region/${regionId}/district/list`)
+    http.get(`/api/nationalSocietyStructure/district/list?regionId=${regionId}`)
       .then(response => setDistricts(response.value))
   }
 
@@ -32,7 +32,7 @@ export const GeoStructureSelect = ({ regions, initialDistricts, initialVillages,
     setVillages([]);
     setZones([]);
 
-    http.get(`/api/district/${districtId}/village/list`)
+    http.get(`/api/nationalSocietyStructure/village/list?districtId=${districtId}`)
       .then(response => setVillages(response.value))
   }
 
@@ -42,7 +42,7 @@ export const GeoStructureSelect = ({ regions, initialDistricts, initialVillages,
 
     setZones([]);
 
-    http.get(`/api/village/${villageId}/zone/list`)
+    http.get(`/api/nationalSocietyStructure/zone/list?villageId=${villageId}`)
       .then(response => setZones(response.value))
   }
 
