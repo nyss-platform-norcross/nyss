@@ -6,7 +6,7 @@ import { LOCATION_CHANGE } from "connected-react-router";
 export function nationalSocietiesReducer(state = initialState.nationalSocieties, action) {
   switch (action.type) {
     case LOCATION_CHANGE: // cleanup
-      return { ...state, formData: null }
+      return { ...state, formData: null, formError: null }
 
     case actions.GET_NATIONAL_SOCIETIES.REQUEST:
       return { ...state, listFetching: true, listData: [] };

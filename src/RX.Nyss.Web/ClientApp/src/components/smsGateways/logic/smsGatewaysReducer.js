@@ -6,10 +6,10 @@ import { LOCATION_CHANGE } from "connected-react-router";
 export function smsGatewaysReducer(state = initialState.smsGateways, action) {
   switch (action.type) {
     case LOCATION_CHANGE: // cleanup
-      return { ...state, formData: null }
+      return { ...state, formData: null, formError: null }
 
     case actions.OPEN_SMS_GATEWAYS_LIST.INVOKE:
-        return { ...state, listStale: action.nationalSocietyId !== state.listNationalSocietyId };
+        return { ...state, listStale: state.listStale || action.nationalSocietyId !== state.listNationalSocietyId };
 
     case actions.OPEN_SMS_GATEWAYS_LIST.SUCCESS:
       return { ...state, listNationalSocietyId: action.nationalSocietyId };
