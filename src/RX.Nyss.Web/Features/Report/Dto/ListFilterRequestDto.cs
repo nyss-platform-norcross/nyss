@@ -4,4 +4,9 @@
     {
         public ReportListTypeDto ReportListType { get; set; } = ReportListTypeDto.Main;
     }
+    public enum ReportListTypeDto
+    {
+        Main,
+        Training
+    }
 }

@@ -35,13 +35,16 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto);
+            var reports = GetFilteredReports(projectId, filtersDto, combineTrainingAndMain: true);
+            var reportsFilteredOnTrainingAndMain = reports.Where(r => filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.Training ?
+                r.IsTraining :
+                !r.IsTraining);
 
             return await _nyssContext.Projects
                 .Where(ph => ph.Id == projectId)
                 .Select(p => new ProjectSummaryResponseDto
                 {
-                    ReportCount = (int)reports.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
+                    ReportCount = (int)reportsFilteredOnTrainingAndMain.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
                     ActiveDataCollectorCount = reports
                         .Select(r => r.DataCollector.Id)
                         .Distinct().Count(),
@@ -219,7 +222,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .GroupBy(r => r.ReceivedAt.Date)
                 .Select(grouping => new
                 {
-                    Period = grouping.Key, Count = (int)grouping.Sum(r => r.Total)
+                    Period = grouping.Key,
+                    Count = (int)grouping.Sum(r => r.Total)
                 })
                 .ToListAsync();
 
@@ -229,7 +233,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Where(day => !groupedReports.Any(r => r.Period == day))
                 .Select(day => new
                 {
-                    Period = day, Count = 0
+                    Period = day,
+                    Count = 0
                 });
 
             return groupedReports
@@ -237,7 +242,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .OrderBy(r => r.Period)
                 .Select(x => new ReportByDateResponseDto
                 {
-                    Period = x.Period.ToString("dd/MM"), Count = x.Count
+                    Period = x.Period.ToString("dd/MM"),
+                    Count = x.Count
                 })
                 .ToList();
         }
@@ -269,12 +275,17 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private IQueryable<Nyss.Data.Models.Report> GetFilteredReports(int projectId, FiltersRequestDto filtersDto)
+        private IQueryable<Nyss.Data.Models.Report> GetFilteredReports(int projectId, FiltersRequestDto filtersDto, bool? combineTrainingAndMain = false)
         {
             var startDate = filtersDto.StartDate.Date;
             var endDate = filtersDto.EndDate.Date.AddDays(1);
+            var reportsFilteredOnTrainingStatus = combineTrainingAndMain ?? false ?
+                    _nyssContext.Reports :
+                    _nyssContext.Reports.Where(r => filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.Training ?
+                    r.IsTraining :
+                    !r.IsTraining);
 
-            return FilterReportsByRegion(_nyssContext.Reports, filtersDto.Area)
+            return FilterReportsByRegion(reportsFilteredOnTrainingStatus, filtersDto.Area)
                 .Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate
                     && r.DataCollector.Project.Id == projectId
                     && r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity

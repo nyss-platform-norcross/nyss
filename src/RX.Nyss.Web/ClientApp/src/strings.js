@@ -169,6 +169,9 @@ export const stringKeys = {
         timeGroupingWeek: "project.dashboard.filters.timeGrouping.week",
         healthRisk: "project.dashboard.filters.healthRisk",
         healthRiskAll: "project.dashboard.filters.healthRiskAll",
+        reportsType: "project.dashboard.filters.reportsType",
+        mainReportsType: "project.dashboard.filters.mainReportsType",
+        trainingReportsType: "project.dashboard.filters.trainingReportsType",
       },
       allReportsChart: {
         title: "project.dashboard.allReportsChart.title",

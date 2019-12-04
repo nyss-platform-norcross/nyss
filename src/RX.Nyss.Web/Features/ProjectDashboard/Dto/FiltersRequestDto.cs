@@ -1,4 +1,5 @@
 ﻿using System;
+using RX.Nyss.Web.Features.Report.Dto;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
@@ -13,6 +14,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
         public AreaDto Area { get; set; }
 
         public GroupingTypeDto GroupingType { get; set; }
+
+        public ReportsTypeDto ReportsType { get; set; }
 
         public class AreaDto
         {
@@ -33,6 +36,12 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
             District,
             Village,
             Zone
+        }
+
+        public enum ReportsTypeDto
+        {
+            Main,
+            Training
         }
     }
 }
