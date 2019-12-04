@@ -32,7 +32,7 @@ function* openProjectsList({ nationalSocietyId }) {
 function* openProjectCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
-    const formData = yield call(http.get, `/api/getFormData?nationalSocietyId=${nationalSocietyId}`);
+    const formData = yield call(http.get, `/api/project/getFormData?nationalSocietyId=${nationalSocietyId}`);
     yield openProjectsModule(nationalSocietyId);
     yield put(actions.openCreation.success(formData.value.healthRisks, formData.value.timeZones));
   } catch (error) {

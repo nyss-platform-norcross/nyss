@@ -187,7 +187,7 @@ function* removeZone({ id }) {
 
 function* openNationalSocietyModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSocietyStructure/get?nationalSocietyId=${nationalSocietyId}`,
+    path: `/api/nationalSociety/${nationalSocietyId}/get`,
     dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
   });
 

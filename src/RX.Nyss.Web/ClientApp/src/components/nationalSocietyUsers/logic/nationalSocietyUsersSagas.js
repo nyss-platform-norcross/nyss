@@ -120,7 +120,7 @@ function* removeNationalSocietyUser({ nationalSocietyUserId, role, nationalSocie
 function* getNationalSocietyUsers(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/user/list?nationalSociety=${nationalSocietyId}`);
+    const response = yield call(http.get, `/api/user/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(nationalSocietyId, response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
