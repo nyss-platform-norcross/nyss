@@ -31,15 +31,17 @@ namespace RX.Nyss.Web.Services
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IConfig _config;
         private readonly IEmailPublisherService _emailPublisherService;
+        private readonly IEmailTextGeneratorService _emailTextGeneratorService;
 
         public IdentityUserRegistrationService(UserManager<IdentityUser> userManager,
-            ILoggerAdapter loggerAdapter, IConfig config, IEmailPublisherService emailPublisherService, INyssContext nyssContext)
+            ILoggerAdapter loggerAdapter, IConfig config, IEmailPublisherService emailPublisherService, INyssContext nyssContext, IEmailTextGeneratorService emailTextGeneratorService)
         {
             _userManager = userManager;
             _loggerAdapter = loggerAdapter;
             _config = config;
             _emailPublisherService = emailPublisherService;
             _nyssContext = nyssContext;
+            _emailTextGeneratorService = emailTextGeneratorService;
         }
 
         public async Task<IdentityUser> CreateIdentityUser(string email, Role role)
@@ -82,13 +84,13 @@ namespace RX.Nyss.Web.Services
                 return Error(ResultKey.User.ResetPassword.UserNotFound);
             }
 
-            var nyssUser = await _nyssContext.Users.SingleAsync(x => x.IdentityUserId == user.Id);
+            var nyssUser = await _nyssContext.Users.Include(u => u.ApplicationLanguage).SingleAsync(x => x.IdentityUserId == user.Id);
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var baseUrl = new Uri(_config.BaseUrl);
             var resetUrl = new Uri(baseUrl, $"resetPasswordCallback?email={WebUtility.UrlEncode(email)}&token={WebUtility.UrlEncode(token)}").ToString();
 
-            var (emailSubject, emailBody) = EmailTextGenerator.GenerateResetPasswordEmail(resetUrl, nyssUser.Name);
+            var (emailSubject, emailBody) = await _emailTextGeneratorService.GenerateResetPasswordEmail(resetUrl, nyssUser.Name, nyssUser.ApplicationLanguage.LanguageCode);
 
             await _emailPublisherService.SendEmail((email, nyssUser.Name), emailSubject, emailBody);
 
