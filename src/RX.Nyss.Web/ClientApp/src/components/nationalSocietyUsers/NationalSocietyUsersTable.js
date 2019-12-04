@@ -54,8 +54,6 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             }
             </TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
               {
                 hasHeadManagerAccess &&
                 !row.isHeadManager && (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() ||
@@ -64,6 +62,8 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
                   { title: strings(stringKeys.headManagerConsents.setAsHeadManager), action: () => setAsHeadManager(nationalSocietyId, row.id) }
                 ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
               }
+              <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
+              <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />             
             </TableCell>
 
           </TableRow>
