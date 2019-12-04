@@ -15,6 +15,7 @@ export const projectDashboardSagas = () => [
 function* openProjectDashboard({ projectId }) {
   yield put(actions.openDashbaord.request());
   try {
+    yield call(openProjectDashboardModule, projectId);
     const filtersData = yield call(http.get, `/api/project/${projectId}/dashboard/filters`);
     const endDate = dayjs(new Date());
     const filters = (yield select(state => state.projectDashboard.filters)) ||
