@@ -76,6 +76,9 @@ namespace RX.Nyss.ReportApi.Handlers
             await _nyssContext.AddAsync(rawReport);
             await _nyssContext.SaveChangesAsync();
 
+            var recipient = new List<string>{ sender };
+            await _emailToSMSPublisherService.SendMessage("gatewaySetting.EmailAddress", "gatewaySetting.Name", recipient, "projectHealthRisk.FeedbackMessage");
+
             //ToDo: extract try-catch block to a separate service?
             try
             {
