@@ -97,7 +97,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                     Districts = districts.Value,
                     Villages = villages.Value,
                     Zones = zones.Value,
-                    Supervisors = await GetSupervisors(dataCollector.Project.NationalSociety.Id)
+                    Supervisors = await GetSupervisors(dataCollector.Project.Id)
                 }
             };
 
@@ -128,7 +128,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             {
                 NationalSocietyId = projectData.NationalSocietyId,
                 Regions = regions.Value,
-                Supervisors = await GetSupervisors(projectData.NationalSocietyId),
+                Supervisors = await GetSupervisors(projectId),
                 DefaultSupervisorId = defaultSupervisorId,
                 DefaultLocation = locationFromCountry.IsSuccess
                     ? new LocationDto
@@ -281,12 +281,13 @@ namespace RX.Nyss.Web.Features.DataCollector
             return SuccessMessage(ResultKey.DataCollector.RemoveSuccess);
         }
 
-        private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int nationalSocietyId) =>
-            await _nyssContext.UserNationalSocieties.Where(u => u.NationalSocietyId == nationalSocietyId && u.User is SupervisorUser)
+        private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>
+            await _nyssContext.SupervisorUserProjects
+                .Where(sup => sup.ProjectId == projectId)
                 .Select(u => new DataCollectorSupervisorResponseDto
                 {
-                    Id = u.User.Id,                
-                    Name = u.User.Name,                
+                    Id = u.SupervisorUserId,
+                    Name = u.SupervisorUser.Name
                 })
                 .ToListAsync();
 
