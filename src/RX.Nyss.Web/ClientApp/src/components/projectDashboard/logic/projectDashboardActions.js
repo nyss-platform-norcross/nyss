@@ -8,7 +8,7 @@ export const goToDashboard = (nationalSocietyId, projectId) => push(`/nationalso
 export const openDashbaord = {
   invoke: (projectId, filters) => ({ type: OPEN_PROJECT_DASHBOARD.INVOKE, projectId, filters }),
   request: () => ({ type: OPEN_PROJECT_DASHBOARD.REQUEST }),
-  success: (name, filtersData) => ({ type: OPEN_PROJECT_DASHBOARD.SUCCESS, name, filtersData }),
+  success: (projectId, filtersData) => ({ type: OPEN_PROJECT_DASHBOARD.SUCCESS, projectId, filtersData }),
   failure: (message) => ({ type: OPEN_PROJECT_DASHBOARD.FAILURE, message })
 };
 

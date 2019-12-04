@@ -7,11 +7,14 @@ export function projectDashboardReducer(state = initialState.projectDashboard, a
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null }
 
+    case actions.OPEN_PROJECT_DASHBOARD.INVOKE:
+      return { ...state, filters: action.projectId === state.projectId ? state.filters : null };
+
     case actions.OPEN_PROJECT_DASHBOARD.REQUEST:
       return { ...state, isFetching: true };
 
     case actions.OPEN_PROJECT_DASHBOARD.SUCCESS:
-      return { ...state, name: action.name, filtersData: action.filtersData, isFetching: false };
+      return { ...state, projectId: action.projectId, filtersData: action.filtersData, isFetching: false };
 
     case actions.OPEN_PROJECT_DASHBOARD.FAILURE:
       return { ...state, isFetching: false };

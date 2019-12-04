@@ -1,14 +1,14 @@
-import { Map, TileLayer, Popup } from 'react-leaflet'
 import styles from "./ProjectsDashboardReportsMap.module.scss";
 
 import React, { useEffect, useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
-import { calculateBounds, calculateCenter } from '../../../utils/map';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
-import { ClusterIcon } from '../../common/map/ClusterIcon';
 import CircleMapMarker from '../../common/map/CircleMapMarker';
+import { Map, TileLayer, Popup } from 'react-leaflet'
+import { calculateBounds, calculateCenter } from '../../../utils/map';
+import { ClusterIcon } from '../../common/map/ClusterIcon';
 import { Loading } from '../../common/loading/Loading';
 
 export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, projectId, getReportHealthRisks }) => {

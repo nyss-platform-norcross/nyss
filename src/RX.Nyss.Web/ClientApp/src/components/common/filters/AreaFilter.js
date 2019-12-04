@@ -34,7 +34,7 @@ const StructureTreeItem = ({ nodeId, data, label, onSelect, isSelected, children
 
 export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [isFetching, setIsFetching] = useState(false);
+  const [, setIsFetching] = useState(false);
   const [structureLoaded, setStructureLoaded] = useState(false);
   const [regions, setRegions] = useState([]);
   const triggerRef = useRef(null);
@@ -99,8 +99,6 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
         className={styles.dropDown}
         PaperProps={{ className: styles.dropDown }}
       >
-
-
         <TreeView
           className={styles.tree}
           defaultCollapseIcon={<ExpandMoreIcon />}
