@@ -32,7 +32,7 @@ function* openProjectsList({ nationalSocietyId }) {
 function* openProjectCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
-    const formData = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/getFormData`);
+    const formData = yield call(http.get, `/api/getFormData?nationalSocietyId=${nationalSocietyId}`);
     yield openProjectsModule(nationalSocietyId);
     yield put(actions.openCreation.success(formData.value.healthRisks, formData.value.timeZones));
   } catch (error) {
@@ -43,7 +43,7 @@ function* openProjectCreation({ nationalSocietyId }) {
 function* openProjectEdition({ nationalSocietyId, projectId }) {
   yield put(actions.openEdition.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/get`);    
+    const response = yield call(http.get, `/api/project/${projectId}/get`);
     yield call(openProjectDashboardModule, projectId);
     yield put(actions.openEdition.success(response.value, response.value.formData.healthRisks, response.value.formData.timeZones));
   } catch (error) {
@@ -54,7 +54,7 @@ function* openProjectEdition({ nationalSocietyId, projectId }) {
 function* createProject({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/project/add`, data);
+    const response = yield call(http.post, `/api/project/add?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage("The project was added successfully"));
@@ -89,7 +89,7 @@ function* removeProject({ nationalSocietyId, projectId }) {
 function* getProjects(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/project/list`);
+    const response = yield call(http.get, `/api/project/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
