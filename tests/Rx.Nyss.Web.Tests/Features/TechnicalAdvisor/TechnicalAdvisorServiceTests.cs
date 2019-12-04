@@ -414,5 +414,38 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             //assert
             _userService.Received().EnsureHasPermissionsToDelteUser(Role.TechnicalAdvisor, deletingUserRoles);
         }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingAPendingHeadManager_NationalSocietyPendngManagerGetsNullified()
+        {
+            //arrange
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+            var technicalAdvisor = _nyssContext.Users.Single(x => x.Id == 123);
+            var nationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1);
+            nationalSociety.PendingHeadManager = technicalAdvisor;
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+
+            //assert
+            nationalSociety.PendingHeadManager.ShouldBe(null);
+        }
+
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromNotLastNationalSociety_NationalSocietyPendngManagerGetsNullified()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
+            var technicalAdvisor = _nyssContext.Users.Single(x => x.Id == 123);
+            var nationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1);
+            nationalSociety.PendingHeadManager = technicalAdvisor;
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+
+            //assert
+            nationalSociety.PendingHeadManager.ShouldBe(null);
+        }
     }
 }

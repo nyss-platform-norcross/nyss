@@ -8,9 +8,11 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Manager.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Manager
 {
@@ -30,14 +32,16 @@ namespace RX.Nyss.Web.Features.Manager
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
+        private readonly IUserService _userService;
 
-        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
+        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
+            _userService = userService;
         }
 
         public async Task<Result> CreateManager(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
@@ -56,7 +60,7 @@ namespace RX.Nyss.Web.Features.Manager
                     transactionScope.Complete();
                 }
                 await _verificationEmailService.SendVerificationEmail(user, securityStamp);
-                return Result.Success(ResultKey.User.Registration.Success);
+                return Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
             {
@@ -123,7 +127,7 @@ namespace RX.Nyss.Web.Features.Manager
             if (manager == null)
             {
                 _loggerAdapter.Debug($"Data manager with id {nationalSocietyUserId} was not found");
-                return Result.Error<GetManagerResponseDto>(ResultKey.User.Common.UserNotFound);
+                return Error<GetManagerResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
             return new Result<GetManagerResponseDto>(manager, true);
@@ -141,7 +145,7 @@ namespace RX.Nyss.Web.Features.Manager
                 user.AdditionalPhoneNumber = editManagerRequestDto.AdditionalPhoneNumber;
 
                 await _dataContext.SaveChangesAsync();
-                return Result.Success();
+                return Success();
             }
             catch (ResultException e)
             {
@@ -150,7 +154,34 @@ namespace RX.Nyss.Web.Features.Manager
             }
         }
 
-        public Task<Result> DeleteManager(int managerId, IEnumerable<string> deletingUserRoles) =>
-            _nationalSocietyUserService.DeleteUser<ManagerUser>(managerId, deletingUserRoles);
+        public async Task<Result> DeleteManager(int managerId, IEnumerable<string> deletingUserRoles)
+        {
+            try
+            {
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
+                _userService.EnsureHasPermissionsToDelteUser(manager.Role, deletingUserRoles);
+
+                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(manager.UserNationalSocieties.Single().NationalSocietyId);
+                if (nationalSociety.PendingHeadManager == manager)
+                {
+                    nationalSociety.PendingHeadManager = null;
+                }
+
+                _nationalSocietyUserService.DeleteNationalSocietyUser<ManagerUser>(manager);
+                await _identityUserRegistrationService.DeleteIdentityUser(manager.IdentityUserId);
+
+                await _dataContext.SaveChangesAsync();
+
+                transactionScope.Complete();
+                return Success(ResultKey.User.Registration.Success);
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result;
+            }
+        }
     }
 }

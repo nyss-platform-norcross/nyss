@@ -170,6 +170,12 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                     return Error(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
                 }
 
+                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyReferenceToRemove.NationalSocietyId);
+                if (nationalSociety.PendingHeadManager == technicalAdvisor)
+                {
+                    nationalSociety.PendingHeadManager = null;
+                }
+
                 var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
                 _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
 
