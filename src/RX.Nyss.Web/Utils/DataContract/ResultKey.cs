@@ -7,7 +7,13 @@
             public static class Common
             {
                 public const string UserNotFound = "user.common.userNotFound";
-                public const string NoPermissionsToDeleteThisUser = "user.common.noPermissionsToDeleteThisUser";
+            }
+
+            public static class Deletion
+            {
+                public const string NoPermissionsToDeleteThisUser = "user.deletion.noPermissionsToDeleteThisUser";
+                public const string CannotDeleteHeadManager = "user.deletion.cannotDeleteHeadManager";
+                public const string CannotDeleteSupervisorWithDataCollectors = "user.deletion.cannotDeleteSupervisorWithDataCollectors";
             }
 
             public static class Registration

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -262,6 +263,8 @@ namespace RX.Nyss.Web.Features.Supervisor
                 var supervisorUser = await GetSupervisorUser(supervisorId);
                 _userService.EnsureHasPermissionsToDelteUser(supervisorUser.Role, deletingUserRoles);
 
+                await EnsureSupervisorHasNoDataCollectors(supervisorUser);
+
                 DetachSupervisorFromAllProjects(supervisorUser);
                 _nationalSocietyUserService.DeleteNationalSocietyUser(supervisorUser);
                 await _identityUserRegistrationService.DeleteIdentityUser(supervisorUser.IdentityUserId);
@@ -274,6 +277,29 @@ namespace RX.Nyss.Web.Features.Supervisor
             {
                 _loggerAdapter.Debug(e);
                 return e.Result;
+            }
+
+            async Task EnsureSupervisorHasNoDataCollectors(SupervisorUser supervisorUser)
+            {
+                var dataCollectorInfo = await _dataContext.DataCollectors
+                    .Where(dc => dc.Supervisor == supervisorUser)
+                    .Select(dc => new { dc, IsDeleted = (dc.DeletedAt != null) })
+                    .GroupBy(dc => dc.IsDeleted)
+                    .Select(g => new { IsDeleted = g.Key, Count = g.Count() })
+                    .ToListAsync();
+
+                var notDeletedDataCollectorCount = dataCollectorInfo.SingleOrDefault(dc => !dc.IsDeleted)?.Count;
+                if (notDeletedDataCollectorCount > 0)
+                {
+                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteSupervisorWithDataCollectors);
+                }
+
+                var deletedDataCollectorCount = dataCollectorInfo.SingleOrDefault(dc => dc.IsDeleted)?.Count;
+                if (deletedDataCollectorCount > 0)
+                {
+                    FormattableString updateDataCollectorsCommand = $"UPDATE Nyss.DataCollectors SET SupervisorId = null WHERE SupervisorId = {supervisorUser.Id}";
+                    await _dataContext.Database.ExecuteSqlInterpolatedAsync(updateDataCollectorsCommand);
+                }
             }
         }
 

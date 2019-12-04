@@ -249,7 +249,7 @@ namespace RX.Nyss.Web.Tests.Features.User
         {
             //assert
             Should.Throw<ResultException>(() => _userService.EnsureHasPermissionsToDelteUser(deletedUserRole, new List<string> { Role.Supervisor.ToString() }))
-                .Result.Message.Key.ShouldBe(ResultKey.User.Common.NoPermissionsToDeleteThisUser);
+                .Result.Message.Key.ShouldBe(ResultKey.User.Deletion.NoPermissionsToDeleteThisUser);
         }
 
         [Theory]
@@ -262,7 +262,7 @@ namespace RX.Nyss.Web.Tests.Features.User
         {
             //assert
             Should.Throw<ResultException>(() => _userService.EnsureHasPermissionsToDelteUser(deletedUserRole, new List<string> { Role.DataConsumer.ToString() }))
-                .Result.Message.Key.ShouldBe(ResultKey.User.Common.NoPermissionsToDeleteThisUser);
+                .Result.Message.Key.ShouldBe(ResultKey.User.Deletion.NoPermissionsToDeleteThisUser);
         }
 
         [Theory]
@@ -307,7 +307,7 @@ namespace RX.Nyss.Web.Tests.Features.User
         {
             //assert
             Should.Throw<ResultException>(() => _userService.EnsureHasPermissionsToDelteUser(deletedUserRole, new List<string> { deletingUserRole.ToString() }))
-                .Result.Message.Key.ShouldBe(ResultKey.User.Common.NoPermissionsToDeleteThisUser);
+                .Result.Message.Key.ShouldBe(ResultKey.User.Deletion.NoPermissionsToDeleteThisUser);
         }
 
         

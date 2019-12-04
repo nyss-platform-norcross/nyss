@@ -174,7 +174,7 @@ namespace RX.Nyss.Web.Features.User
                 || deletingUserRole == Role.DataConsumer.ToString()
                 || _userRoleHierarchyDictionary[deletingUserRole] > _userRoleHierarchyDictionary[deletedUserRole.ToString()])
             {
-                throw new ResultException(ResultKey.User.Common.NoPermissionsToDeleteThisUser);
+                throw new ResultException(ResultKey.User.Deletion.NoPermissionsToDeleteThisUser);
             }
         }
     }

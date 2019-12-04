@@ -169,16 +169,11 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 {
                     return Error(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
                 }
-
-                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyReferenceToRemove.NationalSocietyId);
-                if (nationalSociety.PendingHeadManager == technicalAdvisor)
-                {
-                    nationalSociety.PendingHeadManager = null;
-                }
-
-                var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
                 _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
 
+                await HandleHeadManagerStatus(technicalAdvisor, nationalSocietyReferenceToRemove);
+
+                var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
                 if (isUsersLastNationalSociety)
                 {
                     _nationalSocietyUserService.DeleteNationalSocietyUser(technicalAdvisor);
@@ -193,6 +188,19 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
             {
                 _loggerAdapter.Debug(e);
                 return e.Result;
+            }
+
+            async Task HandleHeadManagerStatus(TechnicalAdvisorUser technicalAdvisor, UserNationalSociety nationalSocietyReferenceToRemove)
+            {
+                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyReferenceToRemove.NationalSocietyId);
+                if (nationalSociety.PendingHeadManager == technicalAdvisor)
+                {
+                    nationalSociety.PendingHeadManager = null;
+                }
+                if (nationalSociety.HeadManager == technicalAdvisor)
+                {
+                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
+                }
             }
         }
     }

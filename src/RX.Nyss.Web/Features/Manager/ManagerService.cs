@@ -163,11 +163,7 @@ namespace RX.Nyss.Web.Features.Manager
                 var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
                 _userService.EnsureHasPermissionsToDelteUser(manager.Role, deletingUserRoles);
 
-                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(manager.UserNationalSocieties.Single().NationalSocietyId);
-                if (nationalSociety.PendingHeadManager == manager)
-                {
-                    nationalSociety.PendingHeadManager = null;
-                }
+                await HandleHeadManagerStatus(manager);
 
                 _nationalSocietyUserService.DeleteNationalSocietyUser<ManagerUser>(manager);
                 await _identityUserRegistrationService.DeleteIdentityUser(manager.IdentityUserId);
@@ -181,6 +177,19 @@ namespace RX.Nyss.Web.Features.Manager
             {
                 _loggerAdapter.Debug(e);
                 return e.Result;
+            }
+
+            async Task HandleHeadManagerStatus(ManagerUser manager)
+            {
+                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(manager.UserNationalSocieties.Single().NationalSocietyId);
+                if (nationalSociety.PendingHeadManager == manager)
+                {
+                    nationalSociety.PendingHeadManager = null;
+                }
+                if (nationalSociety.HeadManager == manager)
+                {
+                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
+                }
             }
         }
     }

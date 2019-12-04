@@ -19,7 +19,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.DeletedAt);
             builder.HasOne(x => x.Project).WithMany(x => x.DataCollectors).IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.Supervisor).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.Supervisor).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Zone).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(x => x.Reports).WithOne(x => x.DataCollector).IsRequired().OnDelete(DeleteBehavior.Restrict);
