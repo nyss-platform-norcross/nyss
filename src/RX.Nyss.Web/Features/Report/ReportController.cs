@@ -9,7 +9,7 @@ using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.Report
 {
-    [Route("api")]
+    [Route("api/report")]
     public class ReportController : BaseController
     {
         public IReportService _reportService;
@@ -22,8 +22,7 @@ namespace RX.Nyss.Web.Features.Report
         /// <summary>
         /// Gets a list of reports in a project
         /// </summary>
-        /// <returns></returns>
-        [HttpGet("project/{projectId:int}/report/list")]
+        [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber) =>
             await _reportService.List(projectId, pageNumber, User.Identity.Name);
