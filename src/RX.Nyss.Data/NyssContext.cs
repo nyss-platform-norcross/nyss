@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Data
@@ -64,6 +66,8 @@ namespace RX.Nyss.Data
         public DbSet<Village> Villages { get; set; }
 
         public DbSet<Zone> Zones { get; set; }
+        public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
+            Database.ExecuteSqlInterpolatedAsync(sql);
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

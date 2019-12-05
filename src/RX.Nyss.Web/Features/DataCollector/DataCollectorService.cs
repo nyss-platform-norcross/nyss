@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
@@ -306,7 +305,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             dataCollector.DeletedAt = DateTime.UtcNow;
 
             FormattableString updateRawReportsCommand = $"UPDATE Nyss.RawReports SET Sender = {AnonymizationText} WHERE DataCollectorId = {dataCollector.Id}";
-            return _nyssContext.Database.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
+            return _nyssContext.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
         }
 
         private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>

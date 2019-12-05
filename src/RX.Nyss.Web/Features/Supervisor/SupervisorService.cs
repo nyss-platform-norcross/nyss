@@ -298,7 +298,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                 if (deletedDataCollectorCount > 0)
                 {
                     FormattableString updateDataCollectorsCommand = $"UPDATE Nyss.DataCollectors SET SupervisorId = null WHERE SupervisorId = {supervisorUser.Id}";
-                    await _dataContext.Database.ExecuteSqlInterpolatedAsync(updateDataCollectorsCommand);
+                    await _dataContext.ExecuteSqlInterpolatedAsync(updateDataCollectorsCommand);
                 }
             }
         }

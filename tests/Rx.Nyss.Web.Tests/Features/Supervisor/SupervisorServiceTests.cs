@@ -39,7 +39,9 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         private readonly int _administratorId = 1;
         private readonly int _supervisorWithDataCollectorsId = 2;
         private readonly int _supervisorWithoutDataCollectorsId = 3;
+        private readonly int _supervisorWithDeletedDataCollectorsId = 4;
         private readonly int _dataCollectorId = 1;
+        private readonly int _deletedDataCollectorId = 2;
 
 
         public SupervisorServiceTests()
@@ -114,27 +116,43 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
                     AdditionalPhoneNumber = "321",
                     Sex = Sex.Male,
                     DecadeOfBirth = 1990,
+                },
+                new SupervisorUser
+                {
+                    Id = _supervisorWithDeletedDataCollectorsId,
+                    Role = Role.Supervisor,
+                    EmailAddress = "emailTest2@domain.com",
+                    Name = "emailTest1@domain.com",
+                    PhoneNumber = "123456",
+                    AdditionalPhoneNumber = "321",
+                    Sex = Sex.Male,
+                    DecadeOfBirth = 1990,
                 }
             };
 
             var supervisorWithDataCollectors = (SupervisorUser)users[1];
             var supervisorWithoutDataCollectors = (SupervisorUser)users[2];
+            var supervisorWithDeletedDataCollectors = (SupervisorUser)users[3];
             var supervisorUserProjects = new List<SupervisorUserProject>
             {
-                new SupervisorUserProject { Project = projects[0], ProjectId = 1, SupervisorUser = supervisorWithDataCollectors, SupervisorUserId = _supervisorWithDataCollectorsId },
-                new SupervisorUserProject { Project = projects[2], ProjectId = 3, SupervisorUser = supervisorWithDataCollectors, SupervisorUserId = _supervisorWithDataCollectorsId },
-                new SupervisorUserProject { Project = projects[2], ProjectId = 3, SupervisorUser = supervisorWithoutDataCollectors, SupervisorUserId = _supervisorWithoutDataCollectorsId }
+                new SupervisorUserProject { Project = projects[0], ProjectId = _projectId1, SupervisorUser = supervisorWithDataCollectors, SupervisorUserId = _supervisorWithDataCollectorsId },
+                new SupervisorUserProject { Project = projects[2], ProjectId = _projectId3, SupervisorUser = supervisorWithDataCollectors, SupervisorUserId = _supervisorWithDataCollectorsId },
+                new SupervisorUserProject { Project = projects[2], ProjectId = _projectId3, SupervisorUser = supervisorWithoutDataCollectors, SupervisorUserId = _supervisorWithoutDataCollectorsId },
+                new SupervisorUserProject { Project = projects[0], ProjectId = _projectId1, SupervisorUser = supervisorWithDeletedDataCollectors, SupervisorUserId = _supervisorWithDeletedDataCollectorsId }
             };
             supervisorWithDataCollectors.SupervisorUserProjects = new List<SupervisorUserProject> { supervisorUserProjects[0], supervisorUserProjects[1] };
             supervisorWithoutDataCollectors.SupervisorUserProjects = new List<SupervisorUserProject> { supervisorUserProjects[2] };
+            supervisorWithDeletedDataCollectors.SupervisorUserProjects = new List<SupervisorUserProject> { supervisorUserProjects[3] };
 
             var userNationalSocieties = new List<UserNationalSociety>
             {
                 new UserNationalSociety { NationalSociety = nationalSocieties[0], NationalSocietyId = _nationalSocietyId1, User =  supervisorWithDataCollectors, UserId = _supervisorWithDataCollectorsId},
-                new UserNationalSociety { NationalSociety = nationalSocieties[0], NationalSocietyId = _nationalSocietyId1, User =  supervisorWithoutDataCollectors, UserId = _supervisorWithoutDataCollectorsId}
+                new UserNationalSociety { NationalSociety = nationalSocieties[0], NationalSocietyId = _nationalSocietyId1, User =  supervisorWithoutDataCollectors, UserId = _supervisorWithoutDataCollectorsId},
+                new UserNationalSociety { NationalSociety = nationalSocieties[0], NationalSocietyId = _nationalSocietyId1, User =  supervisorWithDeletedDataCollectors, UserId = _supervisorWithDeletedDataCollectorsId}
             };
             supervisorWithDataCollectors.UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[0] };
             supervisorWithoutDataCollectors.UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[1] };
+            supervisorWithDeletedDataCollectors.UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[2] };
 
             var dataCollectors = new List<RX.Nyss.Data.Models.DataCollector>
             {
@@ -142,8 +160,15 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
                 {
                     Id = _dataCollectorId,
                     Supervisor = supervisorWithDataCollectors
+                },
+                new RX.Nyss.Data.Models.DataCollector
+                {
+                    Id = _deletedDataCollectorId,
+                    Supervisor = supervisorWithDeletedDataCollectors,
+                    DeletedAt = new DateTime(2020,01,01)
                 }
             };
+
 
 
             var supervisorUserProjectsDbSet = supervisorUserProjects.AsQueryable().BuildMockDbSet();
@@ -427,13 +452,14 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
                 AdditionalPhoneNumber = "123123",
                 ProjectId = 2,
             };
+            var projectReferenceToBeRemoved = _nyssContext.SupervisorUserProjects.Single(x => x.ProjectId == _projectId1 && x.SupervisorUserId == _supervisorWithDataCollectorsId);
+
 
             //Act
             await _supervisorService.Edit(_supervisorWithDataCollectorsId, editRequest);
 
             //Assert
-            var removedReference = _nyssContext.SupervisorUserProjects.Single(x => x.ProjectId == _projectId1);
-            _nyssContext.SupervisorUserProjects.Received(1).Remove(removedReference);
+            _nyssContext.SupervisorUserProjects.Received(1).Remove(projectReferenceToBeRemoved);
             await _nyssContext.Received(1).AddAsync(Arg.Any<SupervisorUserProject>());
         }
 
@@ -561,6 +587,36 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             //assert
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.User.Deletion.CannotDeleteSupervisorWithDataCollectors);
+        }
+
+
+        [Fact]
+        public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_ReturnsSuccess()
+        {
+            //arrange
+            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
+
+            //act
+            var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId, deletingUserRoles);
+
+            //assert
+            result.IsSuccess.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_DetachDataCollectorsFromSupervisorCommandShouldBeCalled()
+        {
+            //arrange
+            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
+            var anonymizationString = "--Data removed--";
+            FormattableString expectedSqlCommand = $"UPDATE Nyss.DataCollectors SET SupervisorId = null WHERE SupervisorId = {_supervisorWithDeletedDataCollectorsId}";
+
+            // Act
+            var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId, deletingUserRoles);
+
+            //Assert
+            result.IsSuccess.ShouldBeTrue();
+            await _nyssContext.Received().ExecuteSqlInterpolatedAsync(Arg.Is<FormattableString>(arg => arg.ToString() == expectedSqlCommand.ToString()));
         }
     }
 }

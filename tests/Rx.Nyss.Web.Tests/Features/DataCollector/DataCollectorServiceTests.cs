@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using MockQueryable.NSubstitute;
 using NetTopologySuite.Geometries;
 using NSubstitute;
@@ -26,8 +27,8 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
 
-        private const int DataCollectorId = 1;
-        private const int SecondDataCollectorId = 2;
+        private const int DataCollectorWithoutReportsId = 1;
+        private const int DataCollectorWithReportsId = 2;
         private const string DataCollectorPhoneNumber1 = "+4712345678";
         private const string DataCollectorPhoneNumber2 = "+4712345679";
         private const string DataCollectorPhoneNumber3 = "+4712345680";
@@ -45,6 +46,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             var nationalSocietyStructureService = Substitute.For<INationalSocietyStructureService>();
             var geolocationService = Substitute.For<IGeolocationService>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
+            
             dateTimeProvider.UtcNow.Returns(new DateTime(2019, 1, 1));
             _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider);
 
@@ -86,7 +88,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             {
                 new RX.Nyss.Data.Models.DataCollector
                 {
-                    Id = DataCollectorId,
+                    Id = DataCollectorWithoutReportsId,
                     PhoneNumber = DataCollectorPhoneNumber1,
                     Project = projects[0],
                     Village = villages[0],
@@ -101,7 +103,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                 },
                 new RX.Nyss.Data.Models.DataCollector
                 {
-                    Id = SecondDataCollectorId,
+                    Id = DataCollectorWithReportsId,
                     PhoneNumber = DataCollectorPhoneNumber2,
                     Project = projects[0],
                     Village = villages[0],
@@ -116,6 +118,24 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
                 }
             };
 
+            var rawReports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    Id = 1,
+                    DataCollector = dataCollectors[1],
+                    Sender = "+123456",
+                },
+                new RawReport
+                {
+                    Id = 2,
+                    DataCollector = dataCollectors[1],
+                    Sender = "+123456",
+                }
+            };
+            dataCollectors[0].RawReports = new List<RawReport>();
+            dataCollectors[1].RawReports = new List<RawReport>{ rawReports[0], rawReports[1] };
+
             var nationalSocietyMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesMockDbSet = usersNationalSocieties.AsQueryable().BuildMockDbSet();
@@ -126,6 +146,8 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             var villagesMockDbSet = villages.AsQueryable().BuildMockDbSet();
             var dataCollectorsMockDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
             var zonesMockDbSet = zones.AsQueryable().BuildMockDbSet();
+            var dataCollectorsDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
+            var rawReportsDbSet = rawReports.AsQueryable().BuildMockDbSet();
 
             _nyssContextMock.NationalSocieties.Returns(nationalSocietyMockDbSet);
             _nyssContextMock.Users.Returns(usersMockDbSet);
@@ -137,8 +159,10 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             _nyssContextMock.Villages.Returns(villagesMockDbSet);
             _nyssContextMock.DataCollectors.Returns(dataCollectorsMockDbSet);
             _nyssContextMock.Zones.Returns(zonesMockDbSet);
+            _nyssContextMock.DataCollectors.Returns(dataCollectorsDbSet);
+            _nyssContextMock.RawReports.Returns(rawReportsDbSet);
 
-            _nyssContextMock.DataCollectors.FindAsync(DataCollectorId).Returns(dataCollectors[0]);
+            _nyssContextMock.DataCollectors.FindAsync(DataCollectorWithoutReportsId).Returns(dataCollectors[0]);
             _nyssContextMock.DataCollectors.FindAsync(2).Returns((RX.Nyss.Data.Models.DataCollector)null);
 
             nationalSocietyStructureService.GetRegions(NationalSocietyId).Returns(Success(new List<RegionResponseDto>()));
@@ -211,7 +235,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             // Arrange
             var dataCollector = new EditDataCollectorRequestDto
             {
-                Id = DataCollectorId,
+                Id = DataCollectorWithoutReportsId,
                 PhoneNumber = DataCollectorPhoneNumber1,
                 SupervisorId = SupervisorId,
                 VillageId = _nyssContextMock.Villages.ToList()[0].Id,
@@ -231,7 +255,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         public async Task RemoveDataCollector_WhenDataCollectorDoesNotExist_ShouldReturnError()
         {
             // Act
-            var result = await _dataCollectorService.RemoveDataCollector(2);
+            var result = await _dataCollectorService.RemoveDataCollector(999);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -242,7 +266,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         public async Task RemoveDataCollector_WhenDataCollectorExists_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.RemoveDataCollector(DataCollectorId);
+            var result = await _dataCollectorService.RemoveDataCollector(DataCollectorWithoutReportsId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -253,11 +277,11 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         public async Task GetDataCollector_WhenDataCollectorExists_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.GetDataCollector(DataCollectorId);
+            var result = await _dataCollectorService.GetDataCollector(DataCollectorWithoutReportsId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Id.ShouldBe(DataCollectorId);
+            result.Value.Id.ShouldBe(DataCollectorWithoutReportsId);
         }
 
         [Fact]
@@ -276,7 +300,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             result.IsSuccess.ShouldBeTrue();
             result.Value.Count().ShouldBe(2);
             var dataCollector = result.Value.First();
-            dataCollector.Id.ShouldBe(DataCollectorId);
+            dataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
             dataCollector.DisplayName.ShouldBe("");
             dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
             dataCollector.Village.ShouldBe(Village);
@@ -286,8 +310,43 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             dataCollector.Region.ShouldBe("Layuna");
 
             var secondDataCollector = result.Value.Last();
-            secondDataCollector.Id.ShouldBe(SecondDataCollectorId);
+            secondDataCollector.Id.ShouldBe(DataCollectorWithReportsId);
             secondDataCollector.Sex.ShouldBe(Sex.Female);
         }
+
+        [Fact]
+        public async Task RemoveDataCollector_WhenDataCollectorHasReports_ShouldAnonymizeDataCollector()
+        {
+            //Arrange
+            var dataCollector = _nyssContextMock.DataCollectors.Single(x => x.Id == DataCollectorWithReportsId);
+            var anonymizationString = "--Data removed--";
+
+            // Act
+            var result = await _dataCollectorService.RemoveDataCollector(DataCollectorWithReportsId);
+
+            //Assert
+            result.IsSuccess.ShouldBeTrue();
+            dataCollector.Name.ShouldBe(anonymizationString);
+            dataCollector.DisplayName.ShouldBe(anonymizationString);
+            dataCollector.PhoneNumber.ShouldBe(anonymizationString);
+            dataCollector.AdditionalPhoneNumber.ShouldBe(anonymizationString);
+        }
+
+        [Fact]
+        public async Task RemoveDataCollector_WhenDataCollectorHasReports_AnonymizationUpdateForReportsWasReceived()
+        {
+            //Arrange
+            var dataCollector = _nyssContextMock.DataCollectors.Single(x => x.Id == DataCollectorWithReportsId);
+            var anonymizationString = "--Data removed--";
+            FormattableString expectedSqlCommand = $"UPDATE Nyss.RawReports SET Sender = {anonymizationString} WHERE DataCollectorId = {dataCollector.Id}";
+
+            // Act
+            var result = await _dataCollectorService.RemoveDataCollector(DataCollectorWithReportsId);
+
+            //Assert
+            result.IsSuccess.ShouldBeTrue();
+            await _nyssContextMock.Received().ExecuteSqlInterpolatedAsync(Arg.Is<FormattableString>(arg => arg.ToString() == expectedSqlCommand.ToString()));
+        }
+
     }
 }
