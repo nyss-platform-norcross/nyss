@@ -2,7 +2,7 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "base_name": {
+    "baseNameSuffix": {
       "type": "String",
       "defaultValue": "nyss"
     },
@@ -61,25 +61,25 @@
   "variables": {
     "location": "[resourceGroup().location]",
     "subscriptionId": "[subscription().subscriptionId]",
-    "webapp_name": "[concat(parameters('base_name'), '-webapp')]",
-    "funcapp_name": "[concat(parameters('base_name'), '-funcapp')]",
-    "reportapi_webapp_name": "[concat(parameters('base_name'), '-reportapi-webapp')]",
-    "report_funcapp_name": "[concat(parameters('base_name'), '-report-funcapp')]",
-    "standardPlanName": "[concat(parameters('base_name'), '-sp')]",
+    "webAppName": "[concat('nrx-cbs-nyss-webapp-', parameters('baseNameSuffix'))]",
+    "funcAppName": "[concat('nrx-cbs-nyss-funcapp-', parameters('baseNameSuffix'))]",
+    "reportApiWebAppName": "[concat('nrx-cbs-nyss-reportapi-webapp-', parameters('baseNameSuffix'))]",
+    "reportFuncAppName": "[concat('nrx-cbs-nyss-report-funcapp-', parameters('baseNameSuffix'))]",
+    "standardPlanName": "[concat('nrx-cbs-nyss-sp-', parameters('baseNameSuffix'))]",
     "standardPlanId": "[resourceId('Microsoft.Web/serverfarms', variables('standardPlanName'))]",
-    "consumptionPlanName": "[concat(parameters('base_name'), '-consumption-sp')]",
+    "consumptionPlanName": "[concat('nrx-cbs-nyss-consumption-sp-', parameters('baseNameSuffix'))]",
     "consumptionPlanId": "[resourceId('Microsoft.Web/serverfarms', variables('consumptionPlanName'))]",
-    "serviceBusNamespaceName": "[concat(parameters('base_name'), '-bus')]",
+    "serviceBusNamespaceName": "[concat('nrx-cbs-nyss-bus-', parameters('baseNameSuffix'))]",
     "reportQueueName": "[concat(variables('serviceBusNamespaceName'), '-report-queue')]",
     "sendEmailQueueName": "[concat(variables('serviceBusNamespaceName'), '-send-email-queue')]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
     "defaultAuthRuleResourceId": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespaceName'), variables('defaultSASKeyName'))]",
     "sbVersion": "2017-04-01",
-    "funcStorageAccountName": "[concat(replace(variables('funcapp_name'),'-',''),'st')]",
-    "generalStorageAccountName": "[concat(replace(parameters('base_name'),'-',''),'st')]",
+    "funcStorageAccountName": "[concat('nrxcbsnyssfuncappst', parameters('baseNameSuffix'))]",
+    "generalStorageAccountName": "[concat('nrxcbsnyssst', parameters('baseNameSuffix'))]",
     "generalBlobContainerName": "nyss-blob-container",
     "smsGatewayBlobContainerName": "sms-gateway",
-    "vnetName": "[concat(parameters('base_name'), '-vnet')]",
+    "vnetName": "[concat('nrx-cbs-nyss-vnet-', parameters('baseNameSuffix'))]",
     "vnetAddressPrefix": "10.0.0.0/16",
     "subnetName": "internal",
     "subnetPrefix": "10.0.0.0/24",
@@ -123,10 +123,10 @@
     {
       "apiVersion": "2018-11-01",
       "type": "Microsoft.Web/sites",
-      "name": "[variables('funcapp_name')]",
+      "name": "[variables('funcAppName')]",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('microsoft.insights/components/', variables('funcapp_name'))]",
+        "[concat('microsoft.insights/components/', variables('funcAppName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('consumptionPlanName'))]",
@@ -138,7 +138,7 @@
         "type": "SystemAssigned"
       },
       "properties": {
-        "name": "[variables('funcapp_name')]",
+        "name": "[variables('funcAppName')]",
         "serverFarmId": "[variables('consumptionPlanId')]",
         "siteConfig": {
           "appSettings": [
@@ -156,7 +156,7 @@
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
-              "value": "[concat(toLower(variables('funcapp_name')),uniqueString(variables('funcapp_name')))]"
+              "value": "[concat(toLower(variables('funcAppName')),uniqueString(variables('funcAppName')))]"
             },
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
@@ -164,7 +164,7 @@
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('microsoft.insights/components/', variables('funcapp_name')), '2015-05-01').InstrumentationKey]"
+              "value": "[reference(concat('microsoft.insights/components/', variables('funcAppName')), '2015-05-01').InstrumentationKey]"
             },
             {
               "name": "WEBSITE_TIME_ZONE",
@@ -193,22 +193,22 @@
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-02-01",
-      "name": "[variables('webapp_name')]",
+      "name": "[variables('webAppName')]",
       "location": "[variables('location')]",
       "dependsOn": [
-        "[concat('microsoft.insights/components/', variables('webapp_name'))]",
+        "[concat('microsoft.insights/components/', variables('webAppName'))]",
         "[concat('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName'))]",
         "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
       ],
       "tags": "[parameters('tagValues')]",
       "properties": {
-        "name": "[variables('webapp_name')]",
+        "name": "[variables('webAppName')]",
         "siteConfig": {
           "appSettings": [
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('microsoft.insights/components/', variables('webapp_name')), '2015-05-01').InstrumentationKey]"
+              "value": "[reference(concat('microsoft.insights/components/', variables('webAppName')), '2015-05-01').InstrumentationKey]"
             },
             {
               "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
@@ -257,13 +257,13 @@
       }
     },
     {
-      "name": "[variables('reportapi_webapp_name')]",
+      "name": "[variables('reportApiWebAppName')]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "dependsOn": [
-        "[concat('microsoft.insights/components/', variables('reportapi_webapp_name'))]",
+        "[concat('microsoft.insights/components/', variables('reportApiWebAppName'))]",
         "[variables('standardPlanId')]",
         "[variables('virtualNetworkId')]"
       ],
@@ -289,7 +289,7 @@
         "appSettings": [
           {
             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-            "value": "[reference(concat('microsoft.insights/components/', variables('reportapi_webapp_name')), '2015-05-01').InstrumentationKey]"
+            "value": "[reference(concat('microsoft.insights/components/', variables('reportApiWebAppName')), '2015-05-01').InstrumentationKey]"
           },
           {
             "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
@@ -301,11 +301,11 @@
     {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
-      "name": "[variables('report_funcapp_name')]",
+      "name": "[variables('reportFuncAppName')]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "dependsOn": [
-        "[concat('microsoft.insights/components/', variables('report_funcapp_name'))]",
+        "[concat('microsoft.insights/components/', variables('reportFuncAppName'))]",
         "[concat('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName'))]",
         "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
@@ -328,7 +328,7 @@
             },
             {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('microsoft.insights/components/', variables('report_funcapp_name')), '2015-05-01').InstrumentationKey]"
+              "value": "[reference(concat('microsoft.insights/components/', variables('reportFuncAppName')), '2015-05-01').InstrumentationKey]"
             },
             {
               "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
@@ -336,7 +336,7 @@
             },
             {
               "name": "WEBSITE_CONTENTSHARE",
-              "value": "[concat(toLower(variables('report_funcapp_name')),uniqueString(variables('report_funcapp_name')))]"
+              "value": "[concat(toLower(variables('reportFuncAppName')),uniqueString(variables('reportFuncAppName')))]"
             },
             {
               "name": "WEBSITE_TIME_ZONE",
@@ -369,7 +369,7 @@
           "name": "virtualNetwork",
           "location": "[variables('location')]",
           "dependsOn": [
-            "[concat('Microsoft.Web/sites/', variables('report_funcapp_name'))]"
+            "[concat('Microsoft.Web/sites/', variables('reportFuncAppName'))]"
           ],
           "properties": {
             "subnetResourceId": "[variables('virtualNetworkSubnetId')]",
@@ -527,12 +527,12 @@
     {
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
-      "name": "[variables('funcapp_name')]",
+      "name": "[variables('funcAppName')]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "funcapp",
       "properties": {
-        "ApplicationId": "[variables('funcapp_name')]",
+        "ApplicationId": "[variables('funcAppName')]",
         "Application_Type": "other",
         "Request_Source": "rest"
       }
@@ -540,12 +540,12 @@
     {
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
-      "name": "[variables('report_funcapp_name')]",
+      "name": "[variables('reportFuncAppName')]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "funcapp",
       "properties": {
-        "ApplicationId": "[variables('report_funcapp_name')]",
+        "ApplicationId": "[variables('reportFuncAppName')]",
         "Application_Type": "other",
         "Request_Source": "rest"
       }
@@ -553,12 +553,12 @@
     {
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
-      "name": "[variables('reportapi_webapp_name')]",
+      "name": "[variables('reportApiWebAppName')]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "api",
       "properties": {
-        "ApplicationId": "[variables('reportapi_webapp_name')]",
+        "ApplicationId": "[variables('reportApiWebAppName')]",
         "Application_Type": "web",
         "Request_Source": "rest"
       }
@@ -566,12 +566,12 @@
     {
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
-      "name": "[variables('webapp_name')]",
+      "name": "[variables('webAppName')]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "web",
       "properties": {
-        "ApplicationId": "[variables('webapp_name')]",
+        "ApplicationId": "[variables('webAppName')]",
         "Application_Type": "web",
         "Request_Source": "rest"
       }
