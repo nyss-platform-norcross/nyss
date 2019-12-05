@@ -14,10 +14,11 @@ export const dataCollectorsSiteMap = [
   {
     parentPath: "/projects/:projectId/datacollectors",
     path: "/projects/:projectId/datacollectors/list",
-    title: () => strings(stringKeys.dataCollector.title),
+    title: () => strings(stringKeys.dataCollector.list.title),
     placeholder: placeholders.tabMenu,
     access: accessMap.dataCollectors.list,
-    placeholderIndex: 1
+    placeholderIndex: 1,
+    middleStepOnly: true
   },
   {
     parentPath: "/projects/:projectId/datacollectors/list",
@@ -37,6 +38,7 @@ export const dataCollectorsSiteMap = [
     title: () => strings(stringKeys.dataCollector.mapOverview.title),
     placeholder: placeholders.tabMenu,
     access: accessMap.dataCollectors.list,
-    placeholderIndex: 2
+    placeholderIndex: 2,
+    middleStepOnly: true
   },
 ];
