@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
-using NSubstitute.ReceivedExtensions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -13,11 +11,11 @@ using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Users
+namespace RX.Nyss.Web.Tests.Features.User
 {
     public class UserServiceTest
     {
-        private IUserService _userService;
+        private readonly IUserService _userService;
         private readonly INyssContext _nyssContext;
 
         const string NationalSociety1Tag = "NationalSociety1";
@@ -26,7 +24,6 @@ namespace Rx.Nyss.Web.Tests.Features.Users
 
         public UserServiceTest()
         {
-
             _nyssContext = Substitute.For<INyssContext>();
             _userService = new UserService(_nyssContext);
             ArrangeNationalSocieties();
@@ -97,7 +94,7 @@ namespace Rx.Nyss.Web.Tests.Features.Users
 
         private void ArrangeUsers(List<RX.Nyss.Data.Models.NationalSociety> nationalSocieties)
         {
-            var users = new List<User>
+            var users = new List<Nyss.Data.Models.User>
             {
                 new AdministratorUser {Id = 1, Role = Role.Administrator, EmailAddress = "admin1@domain.com"},
                 new GlobalCoordinatorUser {Id = 2, Role = Role.GlobalCoordinator, EmailAddress = "globalAdministrator2@domain.com"},
