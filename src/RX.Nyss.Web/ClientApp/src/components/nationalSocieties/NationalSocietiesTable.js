@@ -12,6 +12,9 @@ import dayjs from "dayjs"
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
+import { accessMap } from '../../authentication/accessMap';
+import { HasAccess } from '../common/hasAccess/HasAccess';
+import { hslToRgb } from '@material-ui/core/styles';
 
 export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition, goToDashboard, remove, list }) => {
   if (isListFetching) {
@@ -39,8 +42,12 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
             <TableCell>{row.headManagerName}</TableCell>
             <TableCell>{row.technicalAdvisor}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <HasAccess roles={accessMap.nationalSocieties.edit}>
+                <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+              </HasAccess>
+              <HasAccess roles={accessMap.nationalSocieties.delete}>
+                <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              </HasAccess>
             </TableCell>
           </TableRow>
         ))}
