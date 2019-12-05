@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
         /// </summary>
         /// <param name="smsGatewayId">An identifier of SMS Gateway to be removed</param>
         /// <returns></returns>
-        [HttpPost("/{smsGatewayId:int}/remove"), NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
+        [HttpPost("{smsGatewayId:int}/remove"), NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
         [NeedsPolicy(Policy.SmsGatewayAccess)]
         public Task<Result> UpdateSmsGateway(int smsGatewayId) =>
             _smsGatewayService.DeleteSmsGateway(smsGatewayId);
