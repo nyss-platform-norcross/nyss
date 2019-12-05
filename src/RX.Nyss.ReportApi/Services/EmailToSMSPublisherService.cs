@@ -12,12 +12,12 @@ namespace RX.Nyss.ReportApi.Services
         Task SendMessage(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
     }
 
-    public class EmailToSMSPublisherService : IEmailToSmsPublisherService
+    public class EmailToSmsPublisherService : IEmailToSmsPublisherService
     {
         private readonly IConfig _config;
         private readonly IQueueClient _queueClient;
 
-        public EmailToSMSPublisherService(IConfig config)
+        public EmailToSmsPublisherService(IConfig config)
         {
             _config = config;
             _queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, _config.ServiceBusQueues.SendEmailQueue);
