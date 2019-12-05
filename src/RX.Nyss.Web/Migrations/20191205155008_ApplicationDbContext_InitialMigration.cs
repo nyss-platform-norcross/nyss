@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace RX.Nyss.Web.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class ApplicationDbContext_InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
