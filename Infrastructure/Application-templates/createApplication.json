@@ -79,7 +79,6 @@
     "generalStorageAccountName": "[concat(replace(parameters('base_name'),'-',''),'st')]",
     "generalBlobContainerName": "nyss-blob-container",
     "smsGatewayBlobContainerName": "sms-gateway",
-    "authorizedApiKeysBlobObjectName": "authorized-api-keys.txt",
     "vnetName": "[concat(parameters('base_name'), '-vnet')]",
     "vnetAddressPrefix": "10.0.0.0/16",
     "subnetName": "internal",
@@ -182,10 +181,6 @@
             {
               "name": "SERVICEBUS_SENDEMAILQUEUE",
               "value": "[variables('sendEmailQueueName')]"
-            },
-            {
-              "name": "AuthorizedApiKeysBlobPath",
-              "value": "[concat(variables('smsGatewayBlobContainerName'),'/',variables('authorizedApiKeysBlobObjectName'))]"
             }
           ],
           "cors": {
@@ -246,18 +241,6 @@
             {
               "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
               "value": "disabled"
-            },
-            {
-              "name": "SmsGatewayBlobContainerName",
-              "value": "[variables('smsGatewayBlobContainerName')]"
-            },
-            {
-              "name": "GeneralBlobContainerName",
-              "value": "[variables('generalBlobContainerName')]"
-            },
-            {
-              "name": "AuthorizedApiKeysBlobObjectName",
-              "value": "[variables('authorizedApiKeysBlobObjectName')]"
             }
           ],
           "metadata": [
