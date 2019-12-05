@@ -28,7 +28,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
 
     public class GlobalCoordinatorService : IGlobalCoordinatorService
     {
-        
+
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly ILoggerAdapter _loggerAdapter;
@@ -91,7 +91,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         {
             var globalCoordinator = await _dataContext.Users
                 .SingleOrDefaultAsync(u => u.Id == dto.Id && u.Role == Role.GlobalCoordinator);
-            
+
             if (globalCoordinator == null)
             {
                 _loggerAdapter.Debug($"Global coordinator with id {dto.Id} was not found");
@@ -144,6 +144,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
                     AdditionalPhoneNumber = u.AdditionalPhoneNumber,
                     Organization = u.Organization
                 })
+                .OrderBy(gc => gc.Name)
                 .ToListAsync();
 
             return Success(globalCoordinators);
@@ -180,6 +181,6 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
             }
         }
 
-       
+
     }
 }
