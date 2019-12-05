@@ -44,7 +44,7 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
 
     if (!structureLoaded) {
       setIsFetching(true);
-      get(`/api/nationalSociety/${nationalSocietyId}/structure/get`)
+      get(`/api/nationalSocietyStructure/get?nationalSocietyId=${nationalSocietyId}`)
         .then(response => {
           setIsFetching(false);
           setStructureLoaded(true);

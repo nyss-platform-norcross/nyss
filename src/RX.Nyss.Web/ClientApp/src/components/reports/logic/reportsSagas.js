@@ -30,7 +30,7 @@ function* openReportsList({ projectId }) {
 function* getReports({ projectId, pageNumber }) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/report/list?pageNumber=${pageNumber || 1}`);
+    const response = yield call(http.get, `/api/report/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`);
     yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows));
   } catch (error) {
     yield put(actions.getList.failure(error.message));

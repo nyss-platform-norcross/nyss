@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, VillageAccessRequirement requirement)
         {
-            var villageId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            var villageId = _httpContextAccessor.GetResourceParameter(RouteParameterName);
             if (!context.User.Identity.IsAuthenticated || !villageId.HasValue)
             {
                 return;

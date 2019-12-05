@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, ManagerAccessRequirement requirement)
         {
-            var managerId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            var managerId = _httpContextAccessor.GetResourceParameter(RouteParameterName);
             if (!context.User.Identity.IsAuthenticated || !managerId.HasValue)
             {
                 return;

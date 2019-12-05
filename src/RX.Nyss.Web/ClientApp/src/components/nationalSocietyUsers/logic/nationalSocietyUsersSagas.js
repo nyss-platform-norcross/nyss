@@ -41,7 +41,7 @@ function* openNationalSocietyUserCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    const projects = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/project/listOpenedProjects`)
+    const projects = yield call(http.get, `/api/project/listOpenedProjects?nationalSocietyId=${nationalSocietyId}`)
     yield put(actions.openCreation.success(projects.value));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
@@ -61,10 +61,10 @@ function* openNationalSocietyAddExistingUser({ nationalSocietyId }) {
 function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
   yield put(actions.openEdition.request());
   try {
-    const user = yield call(http.get, `/api/nationalSociety/user/${nationalSocietyUserId}/basicData`);
+    const user = yield call(http.get, `/api/user/basicData?nationalSocietyUserId=${nationalSocietyUserId}`);
     const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
     const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, user.value.role));
-    const projects = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/project/listOpenedProjects`)
+    const projects = yield call(http.get, `/api/project/listOpenedProjects?nationalSocietyId=${nationalSocietyId}`)
     yield openNationalSocietyUsersModule(nationalSocietyId);
     yield put(actions.openEdition.success(response.value, projects.value));
   } catch (error) {
@@ -87,7 +87,7 @@ function* createNationalSocietyUser({ nationalSocietyId, data }) {
 function* addExistingNationalSocietyUser({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/user/addExisting`, data);
+    const response = yield call(http.post, `/api/user/addExisting?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage("The User was added successfully"));
@@ -120,7 +120,7 @@ function* removeNationalSocietyUser({ nationalSocietyUserId, role, nationalSocie
 function* getNationalSocietyUsers(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/user/list`);
+    const response = yield call(http.get, `/api/user/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(nationalSocietyId, response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
@@ -143,13 +143,13 @@ function* setAsHeadManagerInNationalSociety({ nationalSocietyId, nationalSociety
 function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/nationalSociety/${nationalSocietyId}/technicalAdvisor/create`;
+      return `/api/technicalAdvisor/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.Manager:
-      return `/api/nationalSociety/${nationalSocietyId}/manager/create`;
+      return `/api/manager/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.DataConsumer:
-      return `/api/nationalSociety/${nationalSocietyId}/dataConsumer/create`;
+      return `/api/dataConsumer/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
-      return `/api/nationalSociety/${nationalSocietyId}/supervisor/create`;
+      return `/api/supervisor/create?nationalSocietyId=${nationalSocietyId}`;
     default:
       throw new Error("Role is not valid");
   }
@@ -158,13 +158,13 @@ function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
 function getSpecificRoleUserEditionUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/nationalSociety/technicalAdvisor/${userId}/edit`;
+      return `/api/technicalAdvisor/${userId}/edit`;
     case roles.Manager:
-      return `/api/nationalSociety/manager/${userId}/edit`;
+      return `/api/manager/${userId}/edit`;
     case roles.DataConsumer:
-      return `/api/nationalSociety/dataConsumer/${userId}/edit`;
+      return `/api/dataConsumer/${userId}/edit`;
     case roles.Supervisor:
-      return `/api/nationalSociety/supervisor/${userId}/edit`;
+      return `/api/supervisor/${userId}/edit`;
     default:
       throw new Error("Role is not valid");
   }
@@ -173,13 +173,13 @@ function getSpecificRoleUserEditionUrl(userId, role) {
 function getSpecificRoleUserRetrievalUrl(userId, role) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/nationalSociety/technicalAdvisor/${userId}/get`;
+      return `/api/technicalAdvisor/${userId}/get`;
     case roles.Manager:
-      return `/api/nationalSociety/manager/${userId}/get`;
+      return `/api/manager/${userId}/get`;
     case roles.DataConsumer:
-      return `/api/nationalSociety/dataConsumer/${userId}/get`;
+      return `/api/dataConsumer/${userId}/get`;
     case roles.Supervisor:
-      return `/api/nationalSociety/supervisor/${userId}/get`;
+      return `/api/supervisor/${userId}/get`;
     default:
       throw new Error("Role is not valid");
   }
@@ -188,13 +188,13 @@ function getSpecificRoleUserRetrievalUrl(userId, role) {
 function getSpecificRoleUserRemovalUrl(userId, role, nationalSocietyId) {
   switch (role) {
     case roles.TechnicalAdvisor:
-        return `/api/nationalSociety/${nationalSocietyId}/technicalAdvisor/${userId}/remove`;
+      return `/api/technicalAdvisor/${userId}/remove?nationalSocietyId=${nationalSocietyId}`;
     case roles.Manager:
-      return `/api/nationalSociety/manager/${userId}/remove`;
+      return `/api/manager/${userId}/remove`;
     case roles.DataConsumer:
-      return `/api/nationalSociety/dataConsumer/${userId}/remove`;
+      return `/api/dataConsumer/${userId}/remove?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
-      return `/api/nationalSociety/supervisor/${userId}/remove`;
+      return `/api/supervisor/${userId}/remove`;
     default:
       throw new Error("Role is not valid");
   }

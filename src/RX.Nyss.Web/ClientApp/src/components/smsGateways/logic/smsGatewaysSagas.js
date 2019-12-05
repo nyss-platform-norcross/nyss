@@ -53,7 +53,7 @@ function* openSmsGatewayEdition({ nationalSocietyId, smsGatewayId }) {
 function* createSmsGateway({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/smsGateway/add`, data);
+    const response = yield call(http.post, `/api/smsGateway/add?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage("The SMS Gateway was added successfully"));
@@ -87,7 +87,7 @@ function* removeSmsGateway({ nationalSocietyId, smsGatewayId }) {
 function* getSmsGateways(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/nationalSociety/${nationalSocietyId}/smsGateway/list`);
+    const response = yield call(http.get, `/api/smsGateway/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));

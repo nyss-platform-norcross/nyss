@@ -9,7 +9,7 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.User
 {
-    [Route("api")]
+    [Route("api/user")]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.User
         /// </summary>
         /// <param name="nationalSocietyId">The id of the national society to list the users from</param>
         /// <returns></returns>
-        [HttpGet("nationalSociety/{nationalSocietyId:int}/user/list")]
+        [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> List(int nationalSocietyId) =>
             await _userService.GetUsersInNationalSociety(nationalSocietyId, User.GetRoles());
@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.User
         /// </summary>
         /// <param name="nationalSocietyUserId">User Id</param>
         /// <returns></returns>
-        [HttpGet("nationalSociety/user/{nationalSocietyUserId:int}/basicData")]
+        [HttpGet("basicData")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> GetBasicData(int nationalSocietyUserId) =>
             await _userService.GetBasicData(nationalSocietyUserId);
@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.User
         /// <param name="nationalSocietyId">The id of the national society</param>
         /// <param name="existingUser">The data of the existing user to be added</param>
         /// <returns></returns>
-        [HttpPost("nationalSociety/{nationalSocietyId:int}/user/addExisting")]
+        [HttpPost("addExisting")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> AddExisting(int nationalSocietyId, AddExistingUserToNationalSocietyRequestDto existingUser) =>
             await _userService.AddExisting(nationalSocietyId, existingUser.Email);

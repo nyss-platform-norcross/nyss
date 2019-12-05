@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RegionAccessRequirement requirement)
         {
-            var regionId = _httpContextAccessor.GetRouteParameterAsInt(RouteParameterName);
+            var regionId = _httpContextAccessor.GetResourceParameter(RouteParameterName);
             if (!context.User.Identity.IsAuthenticated || !regionId.HasValue)
             {
                 return;

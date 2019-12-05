@@ -42,7 +42,7 @@ function* openDataCollectorCreation({ projectId }) {
   try {
     yield openDataCollectorsModule(projectId);
 
-    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/formData`);
+    const response = yield call(http.get, `/api/dataCollector/formData?projectId=${projectId}`);
 
     yield put(actions.openCreation.success(response.value.regions, response.value.supervisors, response.value.defaultLocation, response.value.defaultSupervisorId));
   } catch (error) {
@@ -72,7 +72,7 @@ function* openDataCollectorMapOverview({ projectId }) {
 function* getDataCollectorMapOverview({ projectId, filters }) {
   yield put(actions.getMapOverview.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverview?from=${filters.startDate}&to=${filters.endDate}`);
+    const response = yield call(http.get, `/api/dataCollector/mapOverview?projectId=${projectId}&from=${filters.startDate}&to=${filters.endDate}`);
     yield put(actions.getMapOverview.success(filters, response.value.dataCollectorLocations, response.value.centerLocation));
   } catch (error) {
     yield put(actions.getMapOverview.failure(error.message));
@@ -93,7 +93,7 @@ function* openDataCollectorEdition({ dataCollectorId }) {
 function* createDataCollector({ projectId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/project/${projectId}/dataCollector/create`, data);
+    const response = yield call(http.post, `/api/dataCollector/create?projectId=${projectId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage(strings(stringKeys.nationalSocietyUser.messages.creationSuccessful)));
@@ -129,7 +129,7 @@ function* getMapDetails({ projectId, lat, lng }) {
   yield put(actions.getMapDetails.request());
   try {
     const filters = yield select(state => state.dataCollectors.mapOverviewFilters);
-    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/mapOverviewDetails?from=${filters.startDate}&to=${filters.endDate}&lat=${lat}&lng=${lng}`);
+    const response = yield call(http.get, `/api/dataCollector/mapOverviewDetails?projectId=${projectId}&from=${filters.startDate}&to=${filters.endDate}&lat=${lat}&lng=${lng}`);
     yield put(actions.getMapDetails.success(response.value));
   } catch (error) {
     yield put(actions.getMapDetails.failure(error.message));
@@ -139,7 +139,7 @@ function* getMapDetails({ projectId, lat, lng }) {
 function* getDataCollectors(projectId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/project/${projectId}/dataCollector/list`);
+    const response = yield call(http.get, `/api/dataCollector/list?projectId=${projectId}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));

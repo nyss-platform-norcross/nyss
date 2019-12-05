@@ -16,7 +16,7 @@ function* openProjectDashboard({ projectId }) {
   yield put(actions.openDashbaord.request());
   try {
     yield call(openProjectDashboardModule, projectId);
-    const filtersData = yield call(http.get, `/api/project/${projectId}/dashboard/filters`);
+    const filtersData = yield call(http.get, `/api/projectDashboard/filters?projectId=${projectId}`);
     const endDate = dayjs(new Date());
     const filters = (yield select(state => state.projectDashboard.filters)) ||
       {
@@ -38,7 +38,7 @@ function* openProjectDashboard({ projectId }) {
 function* getProjectDashboardData({ projectId, filters }) {
   yield put(actions.getDashboardData.request());
   try {
-    const response = yield call(http.post, `/api/project/${projectId}/dashboard/data`, filters);
+    const response = yield call(http.post, `/api/projectDashboard/data?projectId=${projectId}`, filters);
     yield put(actions.getDashboardData.success(
       filters,
       response.value.summary,
@@ -56,7 +56,7 @@ function* getProjectDashboardReportHealthRisks({ projectId, latitude, longitude 
   yield put(actions.getReportHealthRisks.request());
   try {
     const filters = yield select(state => state.projectDashboard.filters);
-    const response = yield call(http.post, `/api/project/${projectId}/dashboard/reportHealthRisks?latitude=${latitude}&longitude=${longitude}`, filters);
+    const response = yield call(http.post, `/api/projectDashboard/reportHealthRisks?projectId=${projectId}&latitude=${latitude}&longitude=${longitude}`, filters);
     yield put(actions.getReportHealthRisks.success(response.value));
   } catch (error) {
     yield put(actions.getReportHealthRisks.failure(error.message));
