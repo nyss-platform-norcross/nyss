@@ -32,16 +32,16 @@ namespace RX.Nyss.Web.Features.Manager
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
-        private readonly IUserService _userService;
+        private readonly IDeleteUserService _deleteUserService;
 
-        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
+        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
-            _userService = userService;
+            _deleteUserService = deleteUserService;
         }
 
         public async Task<Result> CreateManager(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
@@ -161,7 +161,7 @@ namespace RX.Nyss.Web.Features.Manager
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
-                _userService.EnsureHasPermissionsToDelteUser(manager.Role, deletingUserRoles);
+                _deleteUserService.EnsureHasPermissionsToDelteUser(manager.Role, deletingUserRoles);
 
                 await HandleHeadManagerStatus(manager);
 

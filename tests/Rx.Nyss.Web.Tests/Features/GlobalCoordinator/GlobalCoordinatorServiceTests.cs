@@ -28,7 +28,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
-        private IUserService _userService;
+        private IDeleteUserService _deleteUserService;
 
         public GlobalCoordinatorServiceTests()
         {
@@ -36,9 +36,9 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             _nyssContext = Substitute.For<INyssContext>();
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
-            _userService = Substitute.For<IUserService>();
+            _deleteUserService = Substitute.For<IDeleteUserService>();
 
-            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
+            _globalCoordinatorService = new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -266,7 +266,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             await _globalCoordinatorService.RemoveGlobalCoordinator(123, deletingUserRoles);
 
             //assert
-            _userService.Received().EnsureHasPermissionsToDelteUser(Role.GlobalCoordinator, deletingUserRoles);
+            _deleteUserService.Received().EnsureHasPermissionsToDelteUser(Role.GlobalCoordinator, deletingUserRoles);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
-        private readonly IUserService _userService;
+        private readonly IDeleteUserService _deleteUserService;
 
         public DataConsumerServiceTests()
         {
@@ -36,9 +36,9 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
-            _userService = Substitute.For<IUserService>();
+            _deleteUserService = Substitute.For<IDeleteUserService>();
 
-            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
+            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -403,7 +403,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             await _dataConsumerService.DeleteDataConsumer(1, 123, deletingUserRoles);
 
             //assert
-            _userService.Received().EnsureHasPermissionsToDelteUser(Role.DataConsumer, deletingUserRoles);
+            _deleteUserService.Received().EnsureHasPermissionsToDelteUser(Role.DataConsumer, deletingUserRoles);
         }
     }
 }

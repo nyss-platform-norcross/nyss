@@ -21,17 +21,17 @@ namespace Rx.Nyss.Web.Tests.Services
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
-        private IUserService _userService;
+        private IDeleteUserService _deleteUserService;
 
         public NationalSocietyUserServiceTests()
         {
             _loggerAdapter = Substitute.For<ILoggerAdapter>();
             _identityUserRegistrationService = Substitute.For<IIdentityUserRegistrationService>();
             _nyssContext = Substitute.For<INyssContext>();
-            _userService = Substitute.For<IUserService>();
+            _deleteUserService = Substitute.For<IDeleteUserService>();
             SetupTestNationalSociety();
 
-            _nationalSocietyUserService = new NationalSocietyUserService(_nyssContext, _loggerAdapter, _identityUserRegistrationService, _userService);
+            _nationalSocietyUserService = new NationalSocietyUserService(_nyssContext, _loggerAdapter, _identityUserRegistrationService, _deleteUserService);
         }
 
         private void SetupTestNationalSociety()

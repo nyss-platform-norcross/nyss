@@ -34,16 +34,16 @@ namespace RX.Nyss.Web.Features.Supervisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
-        private IUserService _userService;
+        private IDeleteUserService _deleteUserService;
 
-        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
+        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
-            _userService = userService;
+            _deleteUserService = deleteUserService;
         }
 
         public async Task<Result> Create(int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto)
@@ -261,7 +261,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var supervisorUser = await GetSupervisorUser(supervisorId);
-                _userService.EnsureHasPermissionsToDelteUser(supervisorUser.Role, deletingUserRoles);
+                _deleteUserService.EnsureHasPermissionsToDelteUser(supervisorUser.Role, deletingUserRoles);
 
                 await EnsureSupervisorHasNoDataCollectors(supervisorUser);
 

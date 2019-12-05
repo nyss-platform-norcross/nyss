@@ -27,7 +27,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
-        private IUserService _userService;
+        private IDeleteUserService _deleteUserService;
 
         private readonly int _administratorId = 1;
         private readonly int _managerId = 2;
@@ -41,9 +41,9 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
-            _userService = Substitute.For<IUserService>();
+            _deleteUserService = Substitute.For<IDeleteUserService>();
             
-            _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
+            _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
 
             var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { new RX.Nyss.Data.Models.NationalSociety { Id = _nationalSocietyId, Name = "Test national society" } };

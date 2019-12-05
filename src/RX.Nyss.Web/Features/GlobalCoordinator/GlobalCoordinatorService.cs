@@ -34,19 +34,19 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IVerificationEmailService _verificationEmailService;
-        private readonly IUserService _userService;
+        private readonly IDeleteUserService _deleteUserService;
         private const string EnglishLanguageCode = "en";
 
         public GlobalCoordinatorService(
             IIdentityUserRegistrationService identityUserRegistrationService,
             INyssContext dataContext,
-            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
-            _userService = userService;
+            _deleteUserService = deleteUserService;
         }
 
         public async Task<Result> RegisterGlobalCoordinator(CreateGlobalCoordinatorRequestDto dto)
@@ -167,7 +167,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
                         _loggerAdapter.Debug($"Global coordinator with id {id} was not found");
                         throw new ResultException(ResultKey.User.Common.UserNotFound);
                     }
-                    _userService.EnsureHasPermissionsToDelteUser(globalCoordinator.Role, deletingUserRoles);
+                    _deleteUserService.EnsureHasPermissionsToDelteUser(globalCoordinator.Role, deletingUserRoles);
 
 
                     _dataContext.Users.Remove(globalCoordinator);

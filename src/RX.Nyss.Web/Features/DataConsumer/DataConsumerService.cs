@@ -33,15 +33,16 @@ namespace RX.Nyss.Web.Features.DataConsumer
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
-        private readonly IUserService _userService;
+        
+        private readonly IDeleteUserService _deleteService;
 
-        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
+        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
-            _userService = userService;
+            _deleteService = deleteService;
             _nationalSocietyUserService = nationalSocietyUserService;
         }
 
@@ -163,7 +164,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var dataConsumerUser = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<DataConsumerUser>(dataConsumerId);
-                _userService.EnsureHasPermissionsToDelteUser(dataConsumerUser.Role, deletingUserRoles);
+                _deleteService.EnsureHasPermissionsToDelteUser(dataConsumerUser.Role, deletingUserRoles);
                 
                 var userNationalSocieties = dataConsumerUser.UserNationalSocieties;
 

@@ -14,6 +14,7 @@
                 public const string NoPermissionsToDeleteThisUser = "user.deletion.noPermissionsToDeleteThisUser";
                 public const string CannotDeleteHeadManager = "user.deletion.cannotDeleteHeadManager";
                 public const string CannotDeleteSupervisorWithDataCollectors = "user.deletion.cannotDeleteSupervisorWithDataCollectors";
+                public const string CannotDeleteYourself = "user.deletion.cannotDeleteYourself";
             }
 
             public static class Registration

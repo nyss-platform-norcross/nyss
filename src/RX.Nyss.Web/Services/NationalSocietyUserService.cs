@@ -25,14 +25,14 @@ namespace RX.Nyss.Web.Services
         private readonly INyssContext _dataContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
-        private readonly IUserService _userService;
+        private readonly IDeleteUserService _deleteUserService;
 
-        public NationalSocietyUserService(INyssContext dataContext, ILoggerAdapter loggerAdapter, IIdentityUserRegistrationService identityUserRegistrationService, IUserService userService)
+        public NationalSocietyUserService(INyssContext dataContext, ILoggerAdapter loggerAdapter, IIdentityUserRegistrationService identityUserRegistrationService, IDeleteUserService deleteUserService)
         {
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _identityUserRegistrationService = identityUserRegistrationService;
-            _userService = userService;
+            _deleteUserService = deleteUserService;
         }
 
         public async Task<T> GetNationalSocietyUser<T>(int nationalSocietyUserId) where T : User
@@ -76,7 +76,7 @@ namespace RX.Nyss.Web.Services
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var nationalSocietyUser = await GetNationalSocietyUserIncludingNationalSocieties<T>(nationalSocietyUserId);
-                _userService.EnsureHasPermissionsToDelteUser(nationalSocietyUser.Role, deletingUserRoles);
+                _deleteUserService.EnsureHasPermissionsToDelteUser(nationalSocietyUser.Role, deletingUserRoles);
 
                 DeleteNationalSocietyUser<T>(nationalSocietyUser);
                 await _identityUserRegistrationService.DeleteIdentityUser(nationalSocietyUser.IdentityUserId);

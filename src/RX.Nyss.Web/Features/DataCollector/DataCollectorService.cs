@@ -151,6 +151,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 : _nyssContext.DataCollectors;
 
             var dataCollectors = await dataCollectorsQuery
+                .Where(dc => dc.DeletedAt == null)
                 .Where(dc => dc.Project.Id == projectId)
                 .OrderBy(dc => dc.Name)
                 .Select(dc => new DataCollectorResponseDto

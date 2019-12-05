@@ -32,16 +32,16 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
-        private readonly IUserService _userService;
+        private readonly IDeleteUserService _deleteUserService;
 
-        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IUserService userService)
+        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _nationalSocietyUserService = nationalSocietyUserService;
             _verificationEmailService = verificationEmailService;
-            _userService = userService;
+            _deleteUserService = deleteUserService;
         }
 
         public async Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
@@ -160,7 +160,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
-                _userService.EnsureHasPermissionsToDelteUser(technicalAdvisor.Role, deletingUserRoles);
+                _deleteUserService.EnsureHasPermissionsToDelteUser(technicalAdvisor.Role, deletingUserRoles);
 
                 var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
                 

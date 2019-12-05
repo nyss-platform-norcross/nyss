@@ -27,7 +27,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
-        private IUserService _userService;
+        private IDeleteUserService _deleteUserService;
 
         private readonly int _nationalSocietyId1 = 1;
         private readonly int _nationalSocietyId2 = 2;
@@ -51,13 +51,13 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
-            _userService = Substitute.For<IUserService>();
+            _deleteUserService = Substitute.For<IDeleteUserService>();
 
             var applicationLanguages = new List<ApplicationLanguage>();
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
+            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -572,7 +572,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             await _supervisorService.Remove(_supervisorWithoutDataCollectorsId,  deletingUserRoles);
 
             //assert
-            _userService.Received().EnsureHasPermissionsToDelteUser(Role.Supervisor, deletingUserRoles);
+            _deleteUserService.Received().EnsureHasPermissionsToDelteUser(Role.Supervisor, deletingUserRoles);
         }
 
         [Fact]

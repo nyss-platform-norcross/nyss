@@ -28,7 +28,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
-        private IUserService _userService;
+        private IDeleteUserService _deleteUserService;
 
         public TechnicalAdvisorServiceTests()
         {
@@ -37,13 +37,13 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
-            _userService = Substitute.For<IUserService>();
+            _deleteUserService = Substitute.For<IDeleteUserService>();
 
             var applicationLanguages = new List<ApplicationLanguage>();
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _userService);
+            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -412,7 +412,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, deletingUserRoles);
 
             //assert
-            _userService.Received().EnsureHasPermissionsToDelteUser(Role.TechnicalAdvisor, deletingUserRoles);
+            _deleteUserService.Received().EnsureHasPermissionsToDelteUser(Role.TechnicalAdvisor, deletingUserRoles);
         }
 
         [Fact]
