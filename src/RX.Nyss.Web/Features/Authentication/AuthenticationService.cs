@@ -75,7 +75,7 @@ namespace RX.Nyss.Web.Features.Authentication
                 UserData = user.Identity.IsAuthenticated
                     ? new StatusResponseDto.UserDataDto
                     {
-                        Name = user.Identity.Name,
+                        Name = userEntity.Name,
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),

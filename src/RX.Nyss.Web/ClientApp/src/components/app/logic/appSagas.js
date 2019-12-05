@@ -90,6 +90,7 @@ function* getUserStatus() {
     const user = status.value.isAuthenticated
       ? {
         name: status.value.userData.name,
+        email: status.value.userData.email,
         roles: status.value.userData.roles,
         languageCode: status.value.userData.languageCode,
         homePage: status.value.userData.homePage,
