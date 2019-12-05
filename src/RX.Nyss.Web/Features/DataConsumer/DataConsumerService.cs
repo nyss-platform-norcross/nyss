@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         Task<Result> CreateDataConsumer(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
         Task<Result<GetDataConsumerResponseDto>> GetDataConsumer(int dataConsumerId);
         Task<Result> UpdateDataConsumer(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
-        Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId, IEnumerable<string> deletingUserRoles);
+        Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId);
     }
 
     public class DataConsumerService : IDataConsumerService
@@ -157,15 +157,15 @@ namespace RX.Nyss.Web.Features.DataConsumer
             }
         }
 
-        public async Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId, IEnumerable<string> deletingUserRoles)
+        public async Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId)
         {
             try
             {
+                await _deleteService.EnsureCanDelteUser(dataConsumerId, Role.DataConsumer);
+
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var dataConsumerUser = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<DataConsumerUser>(dataConsumerId);
-                _deleteService.EnsureHasPermissionsToDelteUser(dataConsumerUser.Role, deletingUserRoles);
-                
                 var userNationalSocieties = dataConsumerUser.UserNationalSocieties;
 
                 var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);

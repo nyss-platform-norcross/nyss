@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.Supervisor
         Task<Result> Create(int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto);
         Task<Result<GetSupervisorResponseDto>> Get(int supervisorId);
         Task<Result> Edit(int supervisorId, EditSupervisorRequestDto editSupervisorRequestDto);
-        Task<Result> Remove(int supervisorId, IEnumerable<string> deletingUserRoles);
+        Task<Result> Remove(int supervisorId);
         Task<bool> GetSupervisorHasAccessToProject(string supervisorIdentityName, int projectId);
     }
 
@@ -254,14 +254,15 @@ namespace RX.Nyss.Web.Features.Supervisor
             }
         }
 
-        public async Task<Result> Remove(int supervisorId, IEnumerable<string> deletingUserRoles)
+        public async Task<Result> Remove(int supervisorId)
         {
             try
             {
+                await _deleteUserService.EnsureCanDelteUser(supervisorId, Role.Supervisor);
+
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var supervisorUser = await GetSupervisorUser(supervisorId);
-                _deleteUserService.EnsureHasPermissionsToDelteUser(supervisorUser.Role, deletingUserRoles);
 
                 await EnsureSupervisorHasNoDataCollectors(supervisorUser);
 

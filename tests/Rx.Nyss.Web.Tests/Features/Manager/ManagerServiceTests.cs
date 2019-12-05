@@ -244,7 +244,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
             nationalSociety.PendingHeadManager = manager;
 
             //act
-            await _managerService.DeleteManager(_managerId, new List<string> { Role.Administrator.ToString() });
+            await _managerService.DeleteManager(_managerId);
 
             //assert
             nationalSociety.PendingHeadManager.ShouldBe(null);

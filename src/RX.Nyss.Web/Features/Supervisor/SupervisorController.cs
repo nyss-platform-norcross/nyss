@@ -60,7 +60,7 @@ namespace RX.Nyss.Web.Features.Supervisor
         [HttpPost("{supervisorId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]
         public async Task<Result> Remove(int supervisorId) =>
-            await _supervisorService.Remove(supervisorId, User.GetRoles());
+            await _supervisorService.Remove(supervisorId);
     }
 }
 

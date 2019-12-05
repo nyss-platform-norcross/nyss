@@ -31,11 +31,13 @@ namespace RX.Nyss.Web.Tests.Services
         [InlineData(Role.Manager)]
         [InlineData(Role.GlobalCoordinator)]
         [InlineData(Role.Supervisor)]
-        public void EnsureHasPermissionsToDelteUser_WhenSupervisorDeletesAnyOtherUser_ShouldThrowException(Role deletedUserRole)
+        public void GetCanRoleDeleteRole_WhenSupervisorDeletesAnyOtherUser_ShouldReturnFalse(Role deletedUserRole)
         {
+            //Act
+            var result = _deleteUserService.GetCanRoleDeleteRole(deletedUserRole, Role.Supervisor);
+
             //assert
-            Should.Throw<ResultException>(() => _deleteUserService.EnsureHasPermissionsToDelteUser(deletedUserRole, new List<string> { Role.Supervisor.ToString() }))
-                .Result.Message.Key.ShouldBe(ResultKey.User.Deletion.NoPermissionsToDeleteThisUser);
+            result.ShouldBeFalse();
         }
 
         [Theory]
@@ -44,11 +46,13 @@ namespace RX.Nyss.Web.Tests.Services
         [InlineData(Role.Manager)]
         [InlineData(Role.GlobalCoordinator)]
         [InlineData(Role.Supervisor)]
-        public void EnsureHasPermissionsToDelteUser_WhenDataConsumerDeletesAnyOtherUser_ShouldThrowException(Role deletedUserRole)
+        public void GetCanRoleDeleteRole_WhenDataConsumerDeletesAnyOtherUser_ShouldReturnFalse(Role deletedUserRole)
         {
+            //Act
+            var result = _deleteUserService.GetCanRoleDeleteRole(deletedUserRole, Role.DataConsumer);
+
             //assert
-            Should.Throw<ResultException>(() => _deleteUserService.EnsureHasPermissionsToDelteUser(deletedUserRole, new List<string> { Role.DataConsumer.ToString() }))
-                .Result.Message.Key.ShouldBe(ResultKey.User.Deletion.NoPermissionsToDeleteThisUser);
+            result.ShouldBeFalse();
         }
 
         [Theory]
@@ -64,10 +68,13 @@ namespace RX.Nyss.Web.Tests.Services
         [InlineData(Role.GlobalCoordinator, Role.Manager)]
         [InlineData(Role.GlobalCoordinator, Role.DataConsumer)]
         [InlineData(Role.GlobalCoordinator, Role.GlobalCoordinator)]
-        public void EnsureHasPermissionsToDelteUser_WhenManagerLevelUserOrGlobalCoordinatorDeletesUsersEqualOrBelowInHierarchy_ShouldNotThrow(Role deletingUserRole, Role deletedUserRole)
+        public void GetCanRoleDeleteRole_WhenManagerLevelUserOrGlobalCoordinatorDeletesUsersEqualOrBelowInHierarchy_ShouldReturnSuccess(Role deletingUserRole, Role deletedUserRole)
         {
+            //Act
+            var result = _deleteUserService.GetCanRoleDeleteRole(deletedUserRole, deletingUserRole);
+
             //assert
-            Should.NotThrow(() => _deleteUserService.EnsureHasPermissionsToDelteUser(deletedUserRole, new List<string> { deletingUserRole.ToString() }));
+            result.ShouldBeTrue();
         }
 
         [Theory]
@@ -77,10 +84,13 @@ namespace RX.Nyss.Web.Tests.Services
         [InlineData(Role.Administrator, Role.Manager)]
         [InlineData(Role.Administrator, Role.DataConsumer)]
         [InlineData(Role.Administrator, Role.Supervisor)]
-        public void EnsureHasPermissionsToDelteUser_WhenAdministratorDeletesUSer_ShouldNotThrow(Role deletingUserRole, Role deletedUserRole)
+        public void GetCanRoleDeleteRole_WhenAdministratorDeletesUSer_ShouldReturnSuccess(Role deletingUserRole, Role deletedUserRole)
         {
+            //Act
+            var result = _deleteUserService.GetCanRoleDeleteRole(deletedUserRole, deletingUserRole);
+
             //assert
-            Should.NotThrow(() => _deleteUserService.EnsureHasPermissionsToDelteUser(deletedUserRole, new List<string> { deletingUserRole.ToString() }));
+            result.ShouldBeTrue();
         }
 
         [Theory]
@@ -89,11 +99,13 @@ namespace RX.Nyss.Web.Tests.Services
         [InlineData(Role.TechnicalAdvisor, Role.GlobalCoordinator)]
         [InlineData(Role.TechnicalAdvisor, Role.Administrator)]
         [InlineData(Role.GlobalCoordinator, Role.Administrator)]
-        public void EnsureHasPermissionsToDelteUser_WhenManagerLevelUserOrGlobalCoordinatorDeletesUsersHigherInHierarchy_ShouldThrow(Role deletingUserRole, Role deletedUserRole)
+        public void GetCanRoleDeleteRole_WhenManagerLevelUserOrGlobalCoordinatorDeletesUsersHigherInHierarchy_ShouldReturnFalse(Role deletingUserRole, Role deletedUserRole)
         {
+            //Act
+            var result = _deleteUserService.GetCanRoleDeleteRole(deletedUserRole, deletingUserRole);
+
             //assert
-            Should.Throw<ResultException>(() => _deleteUserService.EnsureHasPermissionsToDelteUser(deletedUserRole, new List<string> { deletingUserRole.ToString() }))
-                .Result.Message.Key.ShouldBe(ResultKey.User.Deletion.NoPermissionsToDeleteThisUser);
+            result.ShouldBeFalse();
         }
     }
 }

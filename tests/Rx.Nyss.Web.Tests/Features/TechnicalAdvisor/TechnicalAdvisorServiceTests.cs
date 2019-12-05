@@ -313,7 +313,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
             await _nyssContext.Received(1).SaveChangesAsync();
@@ -326,7 +326,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 123, new List<string> { Role.Administrator.ToString() });
+            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 123);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -340,7 +340,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 321, new List<string> { Role.Administrator.ToString() });
+            var result = await _technicalAdvisorService.DeleteTechnicalAdvisor(2, 321);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -355,7 +355,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
             _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
@@ -368,7 +368,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
@@ -381,7 +381,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
             _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
@@ -394,7 +394,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
@@ -402,17 +402,16 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
 
 
         [Fact]
-        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureHasPermissionsIsCalled()
+        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDelteUserIsCalled()
         {
             //arrange
             ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
-            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, deletingUserRoles);
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
-            _deleteUserService.Received().EnsureHasPermissionsToDelteUser(Role.TechnicalAdvisor, deletingUserRoles);
+            await _deleteUserService.Received().EnsureCanDelteUser(123, Role.TechnicalAdvisor);
         }
 
         [Fact]
@@ -425,12 +424,11 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             nationalSociety.PendingHeadManager = technicalAdvisor;
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
             nationalSociety.PendingHeadManager.ShouldBe(null);
         }
-
 
         [Fact]
         public async Task DeleteTechnicalAdvisor_WhenDeletingFromNotLastNationalSociety_NationalSocietyPendngManagerGetsNullified()
@@ -442,7 +440,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             nationalSociety.PendingHeadManager = technicalAdvisor;
 
             //act
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
             nationalSociety.PendingHeadManager.ShouldBe(null);

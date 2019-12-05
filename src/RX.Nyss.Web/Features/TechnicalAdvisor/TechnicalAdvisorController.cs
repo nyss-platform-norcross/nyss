@@ -63,6 +63,6 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         [HttpPost("{technicalAdvisorId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.TechnicalAdvisorAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId) =>
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(nationalSocietyId, technicalAdvisorId, User.GetRoles());
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(nationalSocietyId, technicalAdvisorId);
     }
 }

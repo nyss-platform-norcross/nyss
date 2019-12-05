@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         /// <returns></returns>
         [HttpPost("{id:int}/remove"), NeedsRole(Role.Administrator)]
         public async Task<Result> Remove(int id) =>
-            await _globalCoordinatorService.RemoveGlobalCoordinator(id, User.GetRoles());
+            await _globalCoordinatorService.RemoveGlobalCoordinator(id);
 
         /// <summary>
         /// Lists all global coordinators available in the system.

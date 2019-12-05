@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
         Task<Result> UpdateGlobalCoordinator(EditGlobalCoordinatorRequestDto dto);
         Task<Result<GetGlobalCoordinatorResponseDto>> GetGlobalCoordinator(int id);
         Task<Result<List<GetGlobalCoordinatorResponseDto>>> GetGlobalCoordinators();
-        Task<Result> RemoveGlobalCoordinator(int id, IEnumerable<string> deletingUserRoles);
+        Task<Result> RemoveGlobalCoordinator(int id);
     }
 
     public class GlobalCoordinatorService : IGlobalCoordinatorService
@@ -154,7 +154,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
             return Success(globalCoordinators);
         }
 
-        public async Task<Result> RemoveGlobalCoordinator(int id, IEnumerable<string> deletingUserRoles)
+        public async Task<Result> RemoveGlobalCoordinator(int id)
         {
             try
             {
@@ -167,7 +167,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
                         _loggerAdapter.Debug($"Global coordinator with id {id} was not found");
                         throw new ResultException(ResultKey.User.Common.UserNotFound);
                     }
-                    _deleteUserService.EnsureHasPermissionsToDelteUser(globalCoordinator.Role, deletingUserRoles);
+                    _deleteUserService.EnsureCanDelteUser(id, Role.GlobalCoordinator);
 
 
                     _dataContext.Users.Remove(globalCoordinator);

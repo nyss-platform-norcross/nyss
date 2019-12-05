@@ -305,7 +305,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string>{Role.Administrator.ToString()});
+            await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
             await _nyssContext.Received(1).SaveChangesAsync();
@@ -318,7 +318,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            var result = await _dataConsumerService.DeleteDataConsumer(2, 123, new List<string> { Role.Administrator.ToString() });
+            var result = await _dataConsumerService.DeleteDataConsumer(2, 123);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -332,7 +332,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            var result = await _dataConsumerService.DeleteDataConsumer(2, 321, new List<string> { Role.Administrator.ToString() });
+            var result = await _dataConsumerService.DeleteDataConsumer(2, 321);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -347,7 +347,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
             _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
@@ -360,7 +360,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
@@ -373,7 +373,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
             _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
@@ -386,24 +386,23 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123, new List<string> { Role.Administrator.ToString() });
+            await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
         }
 
         [Fact]
-        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureHasPermissionsIsCalled()
+        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDelteUserIsCalled()
         {
             //arrange
             ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
-            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123, deletingUserRoles);
+            await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
-            _deleteUserService.Received().EnsureHasPermissionsToDelteUser(Role.DataConsumer, deletingUserRoles);
+            await _deleteUserService.Received().EnsureCanDelteUser(123, Role.DataConsumer);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace RX.Nyss.Web.Features.Manager
         Task<Result> CreateManager(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto);
         Task<Result<GetManagerResponseDto>> GetManager(int managerId);
         Task<Result> UpdateManager(int managerId, EditManagerRequestDto editManagerRequestDto);
-        Task<Result> DeleteManager(int managerId, IEnumerable<string> deletingUserRoles);
+        Task<Result> DeleteManager(int managerId);
     }
 
 
@@ -154,14 +154,15 @@ namespace RX.Nyss.Web.Features.Manager
             }
         }
 
-        public async Task<Result> DeleteManager(int managerId, IEnumerable<string> deletingUserRoles)
+        public async Task<Result> DeleteManager(int managerId)
         {
             try
             {
+                await _deleteUserService.EnsureCanDelteUser(managerId, Role.Manager);
+
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
-                _deleteUserService.EnsureHasPermissionsToDelteUser(manager.Role, deletingUserRoles);
 
                 await HandleHeadManagerStatus(manager);
 

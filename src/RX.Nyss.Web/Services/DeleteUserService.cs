@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Utils.DataContract;
@@ -9,12 +11,13 @@ namespace RX.Nyss.Web.Services
 {
     public interface IDeleteUserService
     {
-        void EnsureHasPermissionsToDelteUser(Role deletedUserRole, IEnumerable<string> deletingUserRoles);
+        Task EnsureCanDelteUser(int deletedUserId, Role deletedUserRole);
+        bool GetCanRoleDeleteRole(Role deletedUserRole, Role deletingUserRole);
     }
 
     public class DeleteUserService: IDeleteUserService
     {
-        private readonly IDictionary<string, int> _userRoleHierarchyDictionary = new Dictionary<string, int>();
+        private readonly IDictionary<Role, int> _userRoleHierarchyDictionary = new Dictionary<Role, int>();
         private readonly IHttpContextAccessor _httpContextAccessor;
         private INyssContext _nyssContext;
 
@@ -27,23 +30,44 @@ namespace RX.Nyss.Web.Services
 
         private void SetupUserRolesHierarchy()
         {
-            _userRoleHierarchyDictionary[Role.Administrator.ToString()] = 1;
-            _userRoleHierarchyDictionary[Role.GlobalCoordinator.ToString()] = 2;
-            _userRoleHierarchyDictionary[Role.DataConsumer.ToString()] = 3;
-            _userRoleHierarchyDictionary[Role.Manager.ToString()] = 3;
-            _userRoleHierarchyDictionary[Role.TechnicalAdvisor.ToString()] = 3;
-            _userRoleHierarchyDictionary[Role.Supervisor.ToString()] = 4;
+            _userRoleHierarchyDictionary[Role.Administrator] = 1;
+            _userRoleHierarchyDictionary[Role.GlobalCoordinator] = 2;
+            _userRoleHierarchyDictionary[Role.DataConsumer] = 3;
+            _userRoleHierarchyDictionary[Role.Manager] = 3;
+            _userRoleHierarchyDictionary[Role.TechnicalAdvisor] = 3;
+            _userRoleHierarchyDictionary[Role.Supervisor] = 4;
         }
 
-        public void EnsureHasPermissionsToDelteUser(Role deletedUserRole, IEnumerable<string> deletingUserRoles)
+        public async Task EnsureCanDelteUser(int deletedUserId, Role deletedUserRole)
         {
-            var deletingUserRole = deletingUserRoles.Single();
-            if (deletingUserRole == Role.Supervisor.ToString()
-                || deletingUserRole == Role.DataConsumer.ToString()
-                || _userRoleHierarchyDictionary[deletingUserRole] > _userRoleHierarchyDictionary[deletedUserRole.ToString()])
+            var callingUserEmail = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var callingUserData = await _nyssContext.Users
+                .Where(u => u.EmailAddress == callingUserEmail)
+                .Select(u => new{u.Id, u.Role})
+                .SingleAsync();
+
+            if (deletedUserId == callingUserData.Id)
+            {
+                throw new ResultException(ResultKey.User.Deletion.CannotDeleteYourself);
+            }
+
+            var hasRolePermissions = GetCanRoleDeleteRole(deletedUserRole, callingUserData.Role);
+            if (!hasRolePermissions)
             {
                 throw new ResultException(ResultKey.User.Deletion.NoPermissionsToDeleteThisUser);
             }
+        }
+
+        public bool GetCanRoleDeleteRole(Role deletedUserRole, Role deletingUserRole)
+        {
+            if (deletingUserRole == Role.Supervisor
+                || deletingUserRole == Role.DataConsumer
+                || _userRoleHierarchyDictionary[deletingUserRole] > _userRoleHierarchyDictionary[deletedUserRole])
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

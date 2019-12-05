@@ -514,7 +514,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         public async Task Remove_WhenSupervisorHasSomeProjectReferencesAndNoDataCollectors_RemoveRangeIsCalled()
         {
             //Act
-            var result = await _supervisorService.Remove(_supervisorWithoutDataCollectorsId, new List<string> { Role.Administrator.ToString() });
+            var result = await _supervisorService.Remove(_supervisorWithoutDataCollectorsId);
 
             //Assert
             _nyssContext.SupervisorUserProjects.Received(1).RemoveRange(Arg.Any<List<SupervisorUserProject>>());
@@ -524,7 +524,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         public async Task Remove_WhenRemovingNonExistantSupervisor_ReturnsError()
         {
             //Act
-            var result = await _supervisorService.Remove(999, new List<string>{Role.Administrator.ToString()});
+            var result = await _supervisorService.Remove(999);
 
             //Assert
             result.IsSuccess.ShouldBeFalse();
@@ -563,26 +563,20 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         }
 
         [Fact]
-        public async Task Remove_WhenDeleting_EnsureHasPermissionsIsCalled()
+        public async Task Remove_WhenDeleting_EnsureCanDelteUserIsCalled()
         {
-            //arrange
-            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
-
             //act
-            await _supervisorService.Remove(_supervisorWithoutDataCollectorsId,  deletingUserRoles);
+            await _supervisorService.Remove(_supervisorWithoutDataCollectorsId);
 
             //assert
-            _deleteUserService.Received().EnsureHasPermissionsToDelteUser(Role.Supervisor, deletingUserRoles);
+            await _deleteUserService.Received().EnsureCanDelteUser(_supervisorWithoutDataCollectorsId, Role.Supervisor);
         }
 
         [Fact]
         public async Task Remove_WhenDeletingSupervisorWithDataCollectors_ReturnsError()
         {
-            //arrange
-            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
-
             //act
-            var result = await _supervisorService.Remove(_supervisorWithDataCollectorsId, deletingUserRoles);
+            var result = await _supervisorService.Remove(_supervisorWithDataCollectorsId);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -593,11 +587,8 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         [Fact]
         public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_ReturnsSuccess()
         {
-            //arrange
-            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
-
             //act
-            var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId, deletingUserRoles);
+            var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId);
 
             //assert
             result.IsSuccess.ShouldBeTrue();
@@ -607,12 +598,11 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_DetachDataCollectorsFromSupervisorCommandShouldBeCalled()
         {
             //arrange
-            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
             var anonymizationString = "--Data removed--";
             FormattableString expectedSqlCommand = $"UPDATE Nyss.DataCollectors SET SupervisorId = null WHERE SupervisorId = {_supervisorWithDeletedDataCollectorsId}";
 
             // Act
-            var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId, deletingUserRoles);
+            var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId);
 
             //Assert
             result.IsSuccess.ShouldBeTrue();

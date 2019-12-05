@@ -62,7 +62,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         [HttpPost("{dataConsumerId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId, int dataConsumerId) =>
-            await _dataConsumerService.DeleteDataConsumer(nationalSocietyId, dataConsumerId, User.GetRoles());
+            await _dataConsumerService.DeleteDataConsumer(nationalSocietyId, dataConsumerId);
     }
 }
 

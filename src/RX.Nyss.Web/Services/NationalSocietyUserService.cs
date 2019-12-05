@@ -76,7 +76,7 @@ namespace RX.Nyss.Web.Services
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var nationalSocietyUser = await GetNationalSocietyUserIncludingNationalSocieties<T>(nationalSocietyUserId);
-                _deleteUserService.EnsureHasPermissionsToDelteUser(nationalSocietyUser.Role, deletingUserRoles);
+                await _deleteUserService.EnsureCanDelteUser(nationalSocietyUserId, nationalSocietyUser.Role);
 
                 DeleteNationalSocietyUser<T>(nationalSocietyUser);
                 await _identityUserRegistrationService.DeleteIdentityUser(nationalSocietyUser.IdentityUserId);

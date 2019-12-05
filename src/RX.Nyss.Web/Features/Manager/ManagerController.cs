@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Features.Manager
         [HttpPost("{managerId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Delete(int managerId) =>
-            await _managerService.DeleteManager(managerId, User.GetRoles());
+            await _managerService.DeleteManager(managerId);
     }
 }
 

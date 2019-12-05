@@ -256,17 +256,16 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         }
 
         [Fact]
-        public async Task RemoveGlobalCoordinator_WhenDeleting_EnsureHasPermissionsIsCalled()
+        public async Task RemoveGlobalCoordinator_WhenDeleting_EnsureCanDelteUserIsCalled()
         {
             //arrange
             ArrangeUSersDbSetWithOneGlobalCoordinator();
-            var deletingUserRoles = new List<string> { Role.Administrator.ToString() };
 
             //act
-            await _globalCoordinatorService.RemoveGlobalCoordinator(123, deletingUserRoles);
+            await _globalCoordinatorService.RemoveGlobalCoordinator(123);
 
             //assert
-            _deleteUserService.Received().EnsureHasPermissionsToDelteUser(Role.GlobalCoordinator, deletingUserRoles);
+            await _deleteUserService.Received().EnsureCanDelteUser(123, Role.GlobalCoordinator);
         }
     }
 }

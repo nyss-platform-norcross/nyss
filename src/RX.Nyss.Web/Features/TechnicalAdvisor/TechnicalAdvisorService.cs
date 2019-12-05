@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto);
         Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int technicalAdvisorId);
         Task<Result> UpdateTechnicalAdvisor(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto);
-        Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId, IEnumerable<string> deletingUserRoles);
+        Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId);
     }
 
     public class TechnicalAdvisorService : ITechnicalAdvisorService
@@ -153,14 +153,15 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
             }
         }
 
-        public async Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId, IEnumerable<string> deletingUserRoles)
+        public async Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId)
         {
             try
             {
+                await _deleteUserService.EnsureCanDelteUser(technicalAdvisorId, Role.TechnicalAdvisor);
+
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
-                _deleteUserService.EnsureHasPermissionsToDelteUser(technicalAdvisor.Role, deletingUserRoles);
 
                 var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
                 
