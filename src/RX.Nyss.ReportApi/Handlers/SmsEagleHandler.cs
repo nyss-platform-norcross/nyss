@@ -30,30 +30,24 @@ namespace RX.Nyss.ReportApi.Handlers
         private const string ModemNumberParameterName = "modemno";
         private const string ApiKeyParameterName = "apikey";
 
-        private static readonly string[] RequiredQueryStringParameters =
-        {
-            SenderParameterName,
-            TimestampParameterName,
-            TextParameterName,
-            IncomingMessageIdParameterName,
-            OutgoingMessageIdParameterName,
-            ModemNumberParameterName,
-            ApiKeyParameterName
-        };
-
         private readonly IReportMessageService _reportMessageService;
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IEmailToSMSPublisherService _emailToSMSPublisherService;
+        private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
 
-        public SmsEagleHandler(IReportMessageService reportMessageService, INyssContext nyssContext, ILoggerAdapter loggerAdapter, IDateTimeProvider dateTimeProvider, IEmailToSMSPublisherService emailToSMSPublisherService)
+        public SmsEagleHandler(
+            IReportMessageService reportMessageService,
+            INyssContext nyssContext,
+            ILoggerAdapter loggerAdapter,
+            IDateTimeProvider dateTimeProvider,
+            IEmailToSmsPublisherService emailToSmsPublisherService)
         {
             _reportMessageService = reportMessageService;
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
-            _emailToSMSPublisherService = emailToSMSPublisherService;
+            _emailToSmsPublisherService = emailToSmsPublisherService;
         }
 
         public async Task Handle(string queryString)
@@ -123,7 +117,10 @@ namespace RX.Nyss.ReportApi.Handlers
                     DataCollectionPointCase = parsedReport.DataCollectionPointCase,
                     ProjectHealthRisk = projectHealthRisk,
                     Village = dataCollector.Village,
-                    Zone = dataCollector.Zone
+                    Zone = dataCollector.Zone,
+                    ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
+                        ? parsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0 + parsedReport.ReportedCase.CountFemalesBelowFive ?? 0 + parsedReport.ReportedCase.CountMalesAtLeastFive ?? 0 + parsedReport.ReportedCase.CountMalesBelowFive ?? 0
+                        : 1
                 };
 
                 rawReport.Report = report;
@@ -134,7 +131,7 @@ namespace RX.Nyss.ReportApi.Handlers
                 if (!string.IsNullOrEmpty(gatewaySetting.EmailAddress))
                 {
                     var recipients = new List<string>{ sender };
-                    await _emailToSMSPublisherService.SendMessage(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
+                    await _emailToSmsPublisherService.SendMessage(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
                 }
             }
             catch (ReportValidationException e)

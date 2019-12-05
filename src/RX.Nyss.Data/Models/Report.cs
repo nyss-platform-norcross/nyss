@@ -29,6 +29,8 @@ namespace RX.Nyss.Data.Models
 
         public Point Location { get; set; }
 
+        public int ReportedCaseCount { get; set; }
+
         public virtual Village Village { get; set; }
 
         public virtual Zone Zone { get; set; }
