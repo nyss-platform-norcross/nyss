@@ -19,8 +19,8 @@ namespace RX.Nyss.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CountThreshold = table.Column<int>(nullable: false),
-                    HoursThreshold = table.Column<int>(nullable: true),
-                    MetersThreshold = table.Column<int>(nullable: true)
+                    DaysThreshold = table.Column<int>(nullable: true),
+                    KilometersThreshold = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -73,25 +73,21 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AlertRecipients",
+                name: "HeadManagerConsents",
                 schema: "nyss",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EmailAddress = table.Column<string>(maxLength: 100, nullable: true),
-                    AlertRuleId = table.Column<int>(nullable: false)
+                    NationalSocietyId = table.Column<int>(nullable: false),
+                    UserEmailAddress = table.Column<string>(maxLength: 100, nullable: false),
+                    UserPhoneNumber = table.Column<string>(maxLength: 20, nullable: false),
+                    ConsentedFrom = table.Column<DateTime>(nullable: false),
+                    ConsentedUntil = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AlertRecipients", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AlertRecipients_AlertRules_AlertRuleId",
-                        column: x => x.AlertRuleId,
-                        principalSchema: "nyss",
-                        principalTable: "AlertRules",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                    table.PrimaryKey("PK_HeadManagerConsents", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -160,37 +156,32 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "NationalSocieties",
+                name: "Users",
                 schema: "nyss",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 100, nullable: true),
-                    StartDate = table.Column<DateTime>(nullable: false),
-                    IsArchived = table.Column<bool>(nullable: false),
-                    RegionCustomName = table.Column<string>(maxLength: 100, nullable: true),
-                    DistrictCustomName = table.Column<string>(maxLength: 100, nullable: true),
-                    VillageCustomName = table.Column<string>(maxLength: 100, nullable: true),
-                    ZoneCustomName = table.Column<string>(maxLength: 100, nullable: true),
-                    ContentLanguageId = table.Column<int>(nullable: true),
-                    CountryId = table.Column<int>(nullable: true)
+                    IdentityUserId = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
+                    Role = table.Column<string>(maxLength: 50, nullable: false),
+                    EmailAddress = table.Column<string>(maxLength: 100, nullable: false),
+                    PhoneNumber = table.Column<string>(maxLength: 20, nullable: false),
+                    AdditionalPhoneNumber = table.Column<string>(maxLength: 20, nullable: true),
+                    Organization = table.Column<string>(maxLength: 100, nullable: true),
+                    IsFirstLogin = table.Column<bool>(nullable: false),
+                    ApplicationLanguageId = table.Column<int>(nullable: true),
+                    Sex = table.Column<string>(maxLength: 10, nullable: true),
+                    DecadeOfBirth = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_NationalSocieties", x => x.Id);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_NationalSocieties_ContentLanguages_ContentLanguageId",
-                        column: x => x.ContentLanguageId,
+                        name: "FK_Users_ApplicationLanguages_ApplicationLanguageId",
+                        column: x => x.ApplicationLanguageId,
                         principalSchema: "nyss",
-                        principalTable: "ContentLanguages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_NationalSocieties_Countries_CountryId",
-                        column: x => x.CountryId,
-                        principalSchema: "nyss",
-                        principalTable: "Countries",
+                        principalTable: "ApplicationLanguages",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -228,6 +219,83 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NationalSocieties",
+                schema: "nyss",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(maxLength: 100, nullable: true),
+                    StartDate = table.Column<DateTime>(nullable: false),
+                    IsArchived = table.Column<bool>(nullable: false),
+                    RegionCustomName = table.Column<string>(maxLength: 100, nullable: true),
+                    DistrictCustomName = table.Column<string>(maxLength: 100, nullable: true),
+                    VillageCustomName = table.Column<string>(maxLength: 100, nullable: true),
+                    ZoneCustomName = table.Column<string>(maxLength: 100, nullable: true),
+                    ContentLanguageId = table.Column<int>(nullable: true),
+                    CountryId = table.Column<int>(nullable: true),
+                    HeadManagerId = table.Column<int>(nullable: true),
+                    PendingHeadManagerId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NationalSocieties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_NationalSocieties_ContentLanguages_ContentLanguageId",
+                        column: x => x.ContentLanguageId,
+                        principalSchema: "nyss",
+                        principalTable: "ContentLanguages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_NationalSocieties_Countries_CountryId",
+                        column: x => x.CountryId,
+                        principalSchema: "nyss",
+                        principalTable: "Countries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_NationalSocieties_Users_HeadManagerId",
+                        column: x => x.HeadManagerId,
+                        principalSchema: "nyss",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_NationalSocieties_Users_PendingHeadManagerId",
+                        column: x => x.PendingHeadManagerId,
+                        principalSchema: "nyss",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                schema: "nyss",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsOpened = table.Column<bool>(nullable: false),
+                    NotificationType = table.Column<string>(maxLength: 20, nullable: false),
+                    Content = table.Column<string>(maxLength: 500, nullable: false),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "nyss",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GatewaySettings",
                 schema: "nyss",
                 columns: table => new
@@ -237,6 +305,7 @@ namespace RX.Nyss.Data.Migrations
                     Name = table.Column<string>(maxLength: 100, nullable: false),
                     ApiKey = table.Column<string>(maxLength: 100, nullable: false),
                     GatewayType = table.Column<string>(maxLength: 100, nullable: false),
+                    EmailAddress = table.Column<string>(maxLength: 100, nullable: true),
                     NationalSocietyId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -258,22 +327,16 @@ namespace RX.Nyss.Data.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 200, nullable: true),
+                    Name = table.Column<string>(maxLength: 200, nullable: false),
                     TimeZone = table.Column<string>(maxLength: 50, nullable: true),
                     State = table.Column<string>(maxLength: 50, nullable: false),
-                    ContentLanguageId = table.Column<int>(nullable: false),
+                    StartDate = table.Column<DateTime>(nullable: false),
+                    EndDate = table.Column<DateTime>(nullable: true),
                     NationalSocietyId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Projects", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Projects_ContentLanguages_ContentLanguageId",
-                        column: x => x.ContentLanguageId,
-                        principalSchema: "nyss",
-                        principalTable: "ContentLanguages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Projects_NationalSocieties_NationalSocietyId",
                         column: x => x.NationalSocietyId,
@@ -302,7 +365,56 @@ namespace RX.Nyss.Data.Migrations
                         principalSchema: "nyss",
                         principalTable: "NationalSocieties",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserNationalSocieties",
+                schema: "nyss",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(nullable: false),
+                    NationalSocietyId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserNationalSocieties", x => new { x.UserId, x.NationalSocietyId });
+                    table.ForeignKey(
+                        name: "FK_UserNationalSocieties_NationalSocieties_NationalSocietyId",
+                        column: x => x.NationalSocietyId,
+                        principalSchema: "nyss",
+                        principalTable: "NationalSocieties",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserNationalSocieties_Users_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "nyss",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AlertRecipients",
+                schema: "nyss",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EmailAddress = table.Column<string>(maxLength: 100, nullable: true),
+                    ProjectId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AlertRecipients", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AlertRecipients_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalSchema: "nyss",
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -313,6 +425,7 @@ namespace RX.Nyss.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FeedbackMessage = table.Column<string>(maxLength: 160, nullable: true),
+                    CaseDefinition = table.Column<string>(maxLength: 500, nullable: true),
                     ProjectId = table.Column<int>(nullable: false),
                     HealthRiskId = table.Column<int>(nullable: false),
                     AlertRuleId = table.Column<int>(nullable: true)
@@ -344,6 +457,33 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SupervisorUserProjects",
+                schema: "nyss",
+                columns: table => new
+                {
+                    SupervisorUserId = table.Column<int>(nullable: false),
+                    ProjectId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SupervisorUserProjects", x => new { x.SupervisorUserId, x.ProjectId });
+                    table.ForeignKey(
+                        name: "FK_SupervisorUserProjects_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalSchema: "nyss",
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_SupervisorUserProjects_Users_SupervisorUserId",
+                        column: x => x.SupervisorUserId,
+                        principalSchema: "nyss",
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Districts",
                 schema: "nyss",
                 columns: table => new
@@ -362,7 +502,7 @@ namespace RX.Nyss.Data.Migrations
                         principalSchema: "nyss",
                         principalTable: "Regions",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -408,86 +548,7 @@ namespace RX.Nyss.Data.Migrations
                         principalSchema: "nyss",
                         principalTable: "Districts",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Zones",
-                schema: "nyss",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 100, nullable: true),
-                    VillageId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Zones", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Zones_Villages_VillageId",
-                        column: x => x.VillageId,
-                        principalSchema: "nyss",
-                        principalTable: "Villages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users",
-                schema: "nyss",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IdentityUserId = table.Column<string>(nullable: true),
-                    Name = table.Column<string>(maxLength: 100, nullable: false),
-                    Role = table.Column<string>(maxLength: 50, nullable: false),
-                    EmailAddress = table.Column<string>(maxLength: 100, nullable: false),
-                    PhoneNumber = table.Column<string>(maxLength: 20, nullable: false),
-                    AdditionalPhoneNumber = table.Column<string>(maxLength: 20, nullable: true),
-                    Organization = table.Column<string>(maxLength: 100, nullable: true),
-                    IsFirstLogin = table.Column<bool>(nullable: false),
-                    ApplicationLanguageId = table.Column<int>(nullable: true),
-                    IsDataOwner = table.Column<bool>(nullable: true),
-                    HasConsented = table.Column<bool>(nullable: true),
-                    ConsentedAt = table.Column<DateTime>(nullable: true),
-                    Sex = table.Column<string>(maxLength: 20, nullable: true),
-                    VillageId = table.Column<int>(nullable: true),
-                    ZoneId = table.Column<int>(nullable: true),
-                    ManagerUserId = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Users_Users_ManagerUserId",
-                        column: x => x.ManagerUserId,
-                        principalSchema: "nyss",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Users_Villages_VillageId",
-                        column: x => x.VillageId,
-                        principalSchema: "nyss",
-                        principalTable: "Villages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Users_Zones_ZoneId",
-                        column: x => x.ZoneId,
-                        principalSchema: "nyss",
-                        principalTable: "Zones",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Users_ApplicationLanguages_ApplicationLanguageId",
-                        column: x => x.ApplicationLanguageId,
-                        principalSchema: "nyss",
-                        principalTable: "ApplicationLanguages",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -522,6 +583,28 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Zones",
+                schema: "nyss",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(maxLength: 100, nullable: true),
+                    VillageId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Zones", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Zones_Villages_VillageId",
+                        column: x => x.VillageId,
+                        principalSchema: "nyss",
+                        principalTable: "Villages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "DataCollectors",
                 schema: "nyss",
                 columns: table => new
@@ -533,11 +616,16 @@ namespace RX.Nyss.Data.Migrations
                     DisplayName = table.Column<string>(maxLength: 100, nullable: false),
                     PhoneNumber = table.Column<string>(maxLength: 20, nullable: false),
                     AdditionalPhoneNumber = table.Column<string>(maxLength: 20, nullable: true),
+                    Sex = table.Column<string>(maxLength: 10, nullable: false),
+                    BirthGroupDecade = table.Column<int>(nullable: false),
                     Location = table.Column<Point>(nullable: false),
+                    IsInTrainingMode = table.Column<bool>(nullable: false),
                     SupervisorId = table.Column<int>(nullable: false),
                     ProjectId = table.Column<int>(nullable: false),
                     VillageId = table.Column<int>(nullable: false),
-                    ZoneId = table.Column<int>(nullable: true)
+                    ZoneId = table.Column<int>(nullable: true),
+                    CreatedAt = table.Column<DateTime>(nullable: false),
+                    DeletedAt = table.Column<DateTime>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -573,58 +661,6 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Notifications",
-                schema: "nyss",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    IsOpened = table.Column<bool>(nullable: false),
-                    NotificationType = table.Column<string>(maxLength: 20, nullable: false),
-                    Content = table.Column<string>(maxLength: 500, nullable: false),
-                    CreatedAt = table.Column<DateTime>(nullable: false),
-                    UserId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Notifications", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Notifications_Users_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "nyss",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserNationalSocieties",
-                schema: "nyss",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(nullable: false),
-                    NationalSocietyId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserNationalSocieties", x => new { x.UserId, x.NationalSocietyId });
-                    table.ForeignKey(
-                        name: "FK_UserNationalSocieties_NationalSocieties_NationalSocietyId",
-                        column: x => x.NationalSocietyId,
-                        principalSchema: "nyss",
-                        principalTable: "NationalSocieties",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_UserNationalSocieties_Users_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "nyss",
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Reports",
                 schema: "nyss",
                 columns: table => new
@@ -632,15 +668,18 @@ namespace RX.Nyss.Data.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ReportType = table.Column<string>(maxLength: 20, nullable: false),
-                    RawContent = table.Column<string>(maxLength: 160, nullable: false),
                     ReceivedAt = table.Column<DateTime>(nullable: false),
-                    IsValid = table.Column<bool>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false),
                     ModifiedAt = table.Column<DateTime>(nullable: true),
                     ModifiedBy = table.Column<string>(maxLength: 100, nullable: true),
                     Status = table.Column<string>(maxLength: 20, nullable: false),
                     IsTraining = table.Column<bool>(nullable: false),
+                    EpiWeek = table.Column<int>(nullable: false),
+                    PhoneNumber = table.Column<string>(maxLength: 20, nullable: false),
                     Location = table.Column<Point>(nullable: false),
+                    ReportedCaseCount = table.Column<int>(nullable: false, defaultValue: 0),
+                    VillageId = table.Column<int>(nullable: false),
+                    ZoneId = table.Column<int>(nullable: true),
                     ReportedCase_CountFemalesBelowFive = table.Column<int>(nullable: true),
                     ReportedCase_CountFemalesAtLeastFive = table.Column<int>(nullable: true),
                     ReportedCase_CountMalesBelowFive = table.Column<int>(nullable: true),
@@ -652,7 +691,7 @@ namespace RX.Nyss.Data.Migrations
                     DataCollectionPointCase_ReferredCount = table.Column<int>(nullable: true),
                     DataCollectionPointCase_DeathCount = table.Column<int>(nullable: true),
                     DataCollectionPointCase_FromOtherVillagesCount = table.Column<int>(nullable: true),
-                    ProjectHealthRiskId = table.Column<int>(nullable: false),
+                    ProjectHealthRiskId = table.Column<int>(nullable: true),
                     DataCollectorId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -670,6 +709,20 @@ namespace RX.Nyss.Data.Migrations
                         column: x => x.ProjectHealthRiskId,
                         principalSchema: "nyss",
                         principalTable: "ProjectHealthRisks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Reports_Villages_VillageId",
+                        column: x => x.VillageId,
+                        principalSchema: "nyss",
+                        principalTable: "Villages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Reports_Zones_ZoneId",
+                        column: x => x.ZoneId,
+                        principalSchema: "nyss",
+                        principalTable: "Zones",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -701,14 +754,69 @@ namespace RX.Nyss.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RawReports",
+                schema: "nyss",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Sender = table.Column<string>(maxLength: 20, nullable: true),
+                    Timestamp = table.Column<string>(maxLength: 14, nullable: true),
+                    ReceivedAt = table.Column<DateTime>(nullable: false),
+                    Text = table.Column<string>(maxLength: 160, nullable: true),
+                    IncomingMessageId = table.Column<int>(nullable: true),
+                    OutgoingMessageId = table.Column<int>(nullable: true),
+                    ModemNumber = table.Column<int>(nullable: true),
+                    ApiKey = table.Column<string>(maxLength: 100, nullable: false),
+                    ReportId = table.Column<int>(nullable: true),
+                    DataCollectorId = table.Column<int>(nullable: true),
+                    NationalSocietyId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RawReports", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RawReports_DataCollectors_DataCollectorId",
+                        column: x => x.DataCollectorId,
+                        principalSchema: "nyss",
+                        principalTable: "DataCollectors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RawReports_NationalSocieties_NationalSocietyId",
+                        column: x => x.NationalSocietyId,
+                        principalSchema: "nyss",
+                        principalTable: "NationalSocieties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_RawReports_Reports_ReportId",
+                        column: x => x.ReportId,
+                        principalSchema: "nyss",
+                        principalTable: "Reports",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                schema: "nyss",
+                table: "ApplicationLanguages",
+                columns: new[] { "Id", "DisplayName", "LanguageCode" },
+                values: new object[,]
+                {
+                    { 1, "English", "en" },
+                    { 2, "Français", "fr" }
+                });
+
             migrationBuilder.InsertData(
                 schema: "nyss",
                 table: "ContentLanguages",
                 columns: new[] { "Id", "DisplayName", "LanguageCode" },
                 values: new object[,]
                 {
-                    { 1, "English", "EN" },
-                    { 2, "Français", "FR" }
+                    { 1, "English", "en" },
+                    { 2, "Français", "fr" }
                 });
 
             migrationBuilder.InsertData(
@@ -717,22 +825,21 @@ namespace RX.Nyss.Data.Migrations
                 columns: new[] { "Id", "CountryCode", "Name" },
                 values: new object[,]
                 {
-                    { 122, "LS", "Lesotho" },
-                    { 3, "DZ", "Algeria" },
-                    { 4, "AS", "American Samoa" },
-                    { 5, "AD", "AndorrA" },
-                    { 6, "AO", "Angola" },
-                    { 7, "AI", "Anguilla" },
-                    { 8, "AQ", "Antarctica" },
-                    { 9, "AG", "Antigua and Barbuda" },
-                    { 10, "AR", "Argentina" },
-                    { 11, "AM", "Armenia" },
-                    { 12, "AW", "Aruba" },
                     { 13, "AU", "Australia" },
+                    { 12, "AW", "Aruba" },
+                    { 11, "AM", "Armenia" },
+                    { 10, "AR", "Argentina" },
+                    { 9, "AG", "Antigua and Barbuda" },
+                    { 7, "AI", "Anguilla" },
                     { 14, "AT", "Austria" },
+                    { 6, "AO", "Angola" },
+                    { 5, "AD", "AndorrA" },
+                    { 4, "AS", "American Samoa" },
+                    { 3, "DZ", "Algeria" },
+                    { 8, "AQ", "Antarctica" },
                     { 15, "AZ", "Azerbaijan" },
-                    { 16, "BS", "Bahamas" },
                     { 17, "BH", "Bahrain" },
+                    { 2, "AL", "Albania" },
                     { 18, "BD", "Bangladesh" },
                     { 19, "BB", "Barbados" },
                     { 20, "BY", "Belarus" },
@@ -744,7 +851,7 @@ namespace RX.Nyss.Data.Migrations
                     { 26, "BO", "Bolivia" },
                     { 27, "BA", "Bosnia and Herzegovina" },
                     { 28, "BW", "Botswana" },
-                    { 2, "AL", "Albania" },
+                    { 16, "BS", "Bahamas" },
                     { 29, "BV", "Bouvet Island" },
                     { 31, "IO", "British Indian Ocean Territory" },
                     { 59, "DJ", "Djibouti" },
@@ -777,8 +884,8 @@ namespace RX.Nyss.Data.Migrations
                     { 46, "CC", "Cocos (Keeling) Islands" },
                     { 30, "BR", "Brazil" },
                     { 241, "ZM", "Zambia" },
-                    { 60, "DM", "Dominica" },
                     { 62, "EC", "Ecuador" },
+                    { 120, "LV", "Latvia" },
                     { 64, "SV", "El Salvador" },
                     { 65, "GQ", "Equatorial Guinea" },
                     { 66, "ER", "Eritrea" },
@@ -836,10 +943,10 @@ namespace RX.Nyss.Data.Migrations
                     { 118, "KG", "Kyrgyzstan" },
                     { 119, "LA", "Lao People\"S Democratic Republic" },
                     { 107, "IT", "Italy" },
-                    { 120, "LV", "Latvia" },
+                    { 60, "DM", "Dominica" },
                     { 121, "LB", "Lebanon" },
-                    { 242, "ZW", "Zimbabwe" },
                     { 123, "LR", "Liberia" },
+                    { 61, "DO", "Dominican Republic" },
                     { 124, "LY", "Libyan Arab Jamahiriya" },
                     { 125, "LI", "Liechtenstein" },
                     { 126, "LT", "Lithuania" },
@@ -898,7 +1005,7 @@ namespace RX.Nyss.Data.Migrations
                     { 178, "RE", "Reunion" },
                     { 179, "RO", "Romania" },
                     { 137, "MQ", "Martinique" },
-                    { 61, "DO", "Dominican Republic" },
+                    { 122, "LS", "Lesotho" },
                     { 181, "RW", "RWANDA" },
                     { 183, "KN", "Saint Kitts and Nevis" },
                     { 185, "PM", "Saint Pierre and Miquelon" },
@@ -958,14 +1065,15 @@ namespace RX.Nyss.Data.Migrations
                     { 239, "EH", "Western Sahara" },
                     { 240, "YE", "Yemen" },
                     { 228, "GB", "United Kingdom" },
-                    { 182, "SH", "Saint Helena" }
+                    { 182, "SH", "Saint Helena" },
+                    { 242, "ZW", "Zimbabwe" }
                 });
 
             migrationBuilder.InsertData(
                 schema: "nyss",
                 table: "Users",
                 columns: new[] { "Id", "AdditionalPhoneNumber", "ApplicationLanguageId", "EmailAddress", "IdentityUserId", "IsFirstLogin", "Name", "Organization", "PhoneNumber", "Role" },
-                values: new object[] { 1, null, null, "admin@domain.com", "9c1071c1-fa69-432a-9cd0-2c4baa703a67", false, "Administrator", null, "", "Administrator" });
+                values: new object[] { 1, null, 1, "admin@domain.com", "9c1071c1-fa69-432a-9cd0-2c4baa703a67", false, "Administrator", null, "", "Administrator" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AlertEvents_AlertId",
@@ -980,10 +1088,10 @@ namespace RX.Nyss.Data.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AlertRecipients_AlertRuleId",
+                name: "IX_AlertRecipients_ProjectId",
                 schema: "nyss",
                 table: "AlertRecipients",
-                column: "AlertRuleId");
+                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AlertReports_ReportId",
@@ -1078,12 +1186,24 @@ namespace RX.Nyss.Data.Migrations
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_NationalSocieties_HeadManagerId",
+                schema: "nyss",
+                table: "NationalSocieties",
+                column: "HeadManagerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_NationalSocieties_Name",
                 schema: "nyss",
                 table: "NationalSocieties",
                 column: "Name",
                 unique: true,
                 filter: "[Name] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_NationalSocieties_PendingHeadManagerId",
+                schema: "nyss",
+                table: "NationalSocieties",
+                column: "PendingHeadManagerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
@@ -1110,16 +1230,30 @@ namespace RX.Nyss.Data.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_ContentLanguageId",
-                schema: "nyss",
-                table: "Projects",
-                column: "ContentLanguageId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Projects_NationalSocietyId",
                 schema: "nyss",
                 table: "Projects",
                 column: "NationalSocietyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RawReports_DataCollectorId",
+                schema: "nyss",
+                table: "RawReports",
+                column: "DataCollectorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RawReports_NationalSocietyId",
+                schema: "nyss",
+                table: "RawReports",
+                column: "NationalSocietyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RawReports_ReportId",
+                schema: "nyss",
+                table: "RawReports",
+                column: "ReportId",
+                unique: true,
+                filter: "[ReportId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Regions_NationalSocietyId",
@@ -1140,28 +1274,28 @@ namespace RX.Nyss.Data.Migrations
                 column: "ProjectHealthRiskId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Reports_VillageId",
+                schema: "nyss",
+                table: "Reports",
+                column: "VillageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reports_ZoneId",
+                schema: "nyss",
+                table: "Reports",
+                column: "ZoneId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SupervisorUserProjects_ProjectId",
+                schema: "nyss",
+                table: "SupervisorUserProjects",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserNationalSocieties_NationalSocietyId",
                 schema: "nyss",
                 table: "UserNationalSocieties",
                 column: "NationalSocietyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_ManagerUserId",
-                schema: "nyss",
-                table: "Users",
-                column: "ManagerUserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_VillageId",
-                schema: "nyss",
-                table: "Users",
-                column: "VillageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_ZoneId",
-                schema: "nyss",
-                table: "Users",
-                column: "ZoneId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_ApplicationLanguageId",
@@ -1201,6 +1335,10 @@ namespace RX.Nyss.Data.Migrations
                 schema: "nyss");
 
             migrationBuilder.DropTable(
+                name: "HeadManagerConsents",
+                schema: "nyss");
+
+            migrationBuilder.DropTable(
                 name: "HealthRiskLanguageContents",
                 schema: "nyss");
 
@@ -1214,6 +1352,14 @@ namespace RX.Nyss.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Notifications",
+                schema: "nyss");
+
+            migrationBuilder.DropTable(
+                name: "RawReports",
+                schema: "nyss");
+
+            migrationBuilder.DropTable(
+                name: "SupervisorUserProjects",
                 schema: "nyss");
 
             migrationBuilder.DropTable(
@@ -1237,7 +1383,7 @@ namespace RX.Nyss.Data.Migrations
                 schema: "nyss");
 
             migrationBuilder.DropTable(
-                name: "Users",
+                name: "Zones",
                 schema: "nyss");
 
             migrationBuilder.DropTable(
@@ -1249,19 +1395,11 @@ namespace RX.Nyss.Data.Migrations
                 schema: "nyss");
 
             migrationBuilder.DropTable(
-                name: "Zones",
-                schema: "nyss");
-
-            migrationBuilder.DropTable(
-                name: "ApplicationLanguages",
+                name: "Villages",
                 schema: "nyss");
 
             migrationBuilder.DropTable(
                 name: "AlertRules",
-                schema: "nyss");
-
-            migrationBuilder.DropTable(
-                name: "Villages",
                 schema: "nyss");
 
             migrationBuilder.DropTable(
@@ -1282,6 +1420,14 @@ namespace RX.Nyss.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Countries",
+                schema: "nyss");
+
+            migrationBuilder.DropTable(
+                name: "Users",
+                schema: "nyss");
+
+            migrationBuilder.DropTable(
+                name: "ApplicationLanguages",
                 schema: "nyss");
         }
     }
