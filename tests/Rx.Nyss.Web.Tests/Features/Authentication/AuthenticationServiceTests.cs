@@ -32,7 +32,7 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         {
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
-            _user = new AdministratorUser { EmailAddress = UserEmail };
+            _user = new AdministratorUser { EmailAddress = UserEmail, Name = UserName };
             _nyssContext.Users = new List<User>{ _user }.AsQueryable().BuildMockDbSet();
             _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
         }
@@ -92,7 +92,7 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         }
 
         [Fact]
-        public async Task GetStatus_CallsLogoutOnIdentityService()
+        public async Task GetStatus_ReturnsUserData()
         {
             const string languageCode = "en";
             const string role = "Administrator";
