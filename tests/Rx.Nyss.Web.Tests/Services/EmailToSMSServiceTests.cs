@@ -17,15 +17,12 @@ namespace Rx.Nyss.Web.Tests.Services
         private readonly IEmailToSMSService _emailToSMSService;
         private readonly IEmailPublisherService _emailPublisherServiceMock;
         private readonly IConfig _configMock;
-        private readonly INyssBlobProvider _blobProviderMock;
 
         public EmailToSMSServiceTests()
         {
             _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
             _configMock = Substitute.For<IConfig>();
-            _blobProviderMock = Substitute.For<INyssBlobProvider>();
-            _configMock.SendFeedbackToAll = true;
-            _emailToSMSService = new EmailToSMSService(_emailPublisherServiceMock, _blobProviderMock, _configMock);
+            _emailToSMSService = new EmailToSMSService(_emailPublisherServiceMock, _configMock);
         }
 
         [Fact]
@@ -48,29 +45,6 @@ namespace Rx.Nyss.Web.Tests.Services
             await _emailToSMSService.SendMessage(gatewaySetting, recipients, message);
 
             await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Is<string>(_ => _ == "+47123143513"), Arg.Is<string>(body => body == "Thanks for your message"), Arg.Is<bool>(_ => _ == true));
-        }
-
-        [Fact]
-        public async Task SendMessage_WhenSendFeedbackToAllIsFalseAndNumberNotWhitelisted_ShouldNotSendEmail()
-        {
-            // Arrange
-            List<string> recipients = new List<string>
-            {
-                "+47123143513"
-            };
-            var message = "Thanks for your message";
-
-            var gatewaySetting = new GatewaySetting
-            {
-                Id = 1,
-                EmailAddress = "test@domain.com"
-            };
-            _configMock.SendFeedbackToAll = false;
-
-            // Act
-            await _emailToSMSService.SendMessage(gatewaySetting, recipients, message);
-
-            await _emailPublisherServiceMock.Received(0).SendEmail(Arg.Any<(string, string)>(), Arg.Is<string>(_ => _ == "+47123143513"), Arg.Is<string>(body => body == "Thanks for your message"), Arg.Is<bool>(_ => _ == true));
         }
     }
 }

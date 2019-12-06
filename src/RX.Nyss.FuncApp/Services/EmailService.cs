@@ -10,7 +10,7 @@ namespace RX.Nyss.FuncApp.Services
 {
     public interface IEmailService
     {
-        Task<HttpResponseMessage> SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses);
+        Task SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers);
     }
 
     public class EmailService : IEmailService
@@ -26,7 +26,7 @@ namespace RX.Nyss.FuncApp.Services
             _emailClient = emailClient;
         }
 
-        public async Task<HttpResponseMessage> SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses)
+        public async Task SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers)
         {
             var sandboxMode = false;
             if (!_config.MailjetConfig.SendToAll)
@@ -37,9 +37,19 @@ namespace RX.Nyss.FuncApp.Services
             _logger.LogDebug($"Sending email to '{message.To.Email.Substring(0, Math.Min(message.To.Email.Length, 4))}...' SandboxMode: {sandboxMode}");
             if (message.SendAsTextOnly)
             {
-                return await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
+                if (!_config.MailjetConfig.SendFeedbackSmsToAll)
+                {
+                    message.Subject = RemoveNotWhitelistedPhoneNumbers(message.Subject, whitelistedPhoneNumbers);
+                    if (string.IsNullOrEmpty(message.Subject))
+                    {
+                        _logger.LogWarning($"Phone number(s): {message.Subject} not whitelisted. Skip sending email.");
+                        return;
+                    }
+                }
+                await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
+                return;
             }
-            return await _emailClient.SendEmail(message, sandboxMode);
+            await _emailClient.SendEmail(message, sandboxMode);
         }
 
         private bool IsWhitelisted(string whitelistedEmailAddresses, string email)
@@ -61,6 +71,13 @@ namespace RX.Nyss.FuncApp.Services
             }
 
             return isWhitelisted;
+        }
+
+        private string RemoveNotWhitelistedPhoneNumbers(string phoneNumbers, string whitelistedPhoneNumbers)
+        {
+            var numbers = phoneNumbers.Split(",");
+            var whitelisted = whitelistedPhoneNumbers.Split("\n");
+            return String.Join(",", numbers.Where(number => whitelisted.Contains(number)).ToList());
         }
     }
 }

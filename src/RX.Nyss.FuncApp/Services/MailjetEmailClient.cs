@@ -11,8 +11,8 @@ namespace RX.Nyss.FuncApp.Services
 {
     public interface IMailjetEmailClient
     {
-        Task<HttpResponseMessage> SendEmail(SendEmailMessage message, bool sandboxMode);
-        Task<HttpResponseMessage> SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode);
+        Task SendEmail(SendEmailMessage message, bool sandboxMode);
+        Task SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode);
     }
 
     public class MailjetEmailClient : IMailjetEmailClient
@@ -26,7 +26,7 @@ namespace RX.Nyss.FuncApp.Services
             _config = config;
         }
 
-        public async Task<HttpResponseMessage> SendEmail(SendEmailMessage message, bool sandboxMode)
+        public async Task SendEmail(SendEmailMessage message, bool sandboxMode)
         {
             var mailjetRequest = new MailjetSendEmailsRequest
             {
@@ -45,13 +45,13 @@ namespace RX.Nyss.FuncApp.Services
 
             var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
 
-            return await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
+            await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
             {
                 ("Authorization", basicAuthHeader)
             });
         }
 
-        public async Task<HttpResponseMessage> SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode)
+        public async Task SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode)
         {
             var mailjetRequest = new MailjetSendTextEmailsRequest
             {
@@ -70,7 +70,7 @@ namespace RX.Nyss.FuncApp.Services
 
             var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
 
-            return await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
+            await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
             {
                 ("Authorization", basicAuthHeader)
             });

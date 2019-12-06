@@ -14,7 +14,6 @@
         string StringsResourcesBlobObjectName { get; set; }
         string EmailContentResourcesBlobObjectName { get; set; }
         string WhitelistedPhoneNumbers { get; set; }
-        bool SendFeedbackToAll { get; set; }
         int PaginationRowsPerPage { get; set; }
     }
 
@@ -38,8 +37,6 @@
         public string EmailContentResourcesBlobObjectName { get; set; }
 
         public string WhitelistedPhoneNumbers { get; set; }
-
-        public bool SendFeedbackToAll { get; set; }
 
         public int PaginationRowsPerPage { get; set; }
 
