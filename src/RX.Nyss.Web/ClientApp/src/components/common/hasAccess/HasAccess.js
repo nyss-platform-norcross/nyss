@@ -4,16 +4,8 @@ import PropTypes from "prop-types";
 
 export const HasAccessComponent = ({ user, roles, children }) => {
 
-  const hasAccess = () => {
-    var access = false;
-    user.roles.forEach(role => {
-      if (roles.indexOf(role) > -1) {
-        access = true;
-      }
-    });
-
-    return access;
-  }
+  const hasAccess = () =>
+    user.roles.some(role => roles.indexOf(role) > -1);
 
   return hasAccess() ? (
     <Fragment>
