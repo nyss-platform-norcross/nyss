@@ -164,7 +164,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                         .Select(sup => sup.ProjectId)
                         .SingleOrDefault(),
                     Organization = u.Organization,
-                    
+
                 })
                 .SingleOrDefaultAsync();
 
@@ -258,7 +258,7 @@ namespace RX.Nyss.Web.Features.Supervisor
         {
             try
             {
-                await _deleteUserService.EnsureCanDelteUser(supervisorId, Role.Supervisor);
+                await _deleteUserService.EnsureCanDeleteUser(supervisorId, Role.Supervisor);
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 

@@ -88,7 +88,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             var userName = "Mickey Mouse";
             var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto
             {
-                Name = userName, 
+                Name = userName,
                 Email = userEmail
             };
 
@@ -134,7 +134,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
 
             var userEmail = "emailTest1@domain.com";
             var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
-            
+
 
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
@@ -256,7 +256,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         }
 
         [Fact]
-        public async Task RemoveGlobalCoordinator_WhenDeleting_EnsureCanDelteUserIsCalled()
+        public async Task RemoveGlobalCoordinator_WhenDeleting_EnsureCanDeleteUserIsCalled()
         {
             //arrange
             ArrangeUSersDbSetWithOneGlobalCoordinator();
@@ -265,7 +265,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             await _globalCoordinatorService.RemoveGlobalCoordinator(123);
 
             //assert
-            await _deleteUserService.Received().EnsureCanDelteUser(123, Role.GlobalCoordinator);
+            await _deleteUserService.Received().EnsureCanDeleteUser(123, Role.GlobalCoordinator);
         }
     }
 }

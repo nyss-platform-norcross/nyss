@@ -11,7 +11,7 @@ namespace RX.Nyss.Web.Services
 {
     public interface IDeleteUserService
     {
-        Task EnsureCanDelteUser(int deletedUserId, Role deletedUserRole);
+        Task EnsureCanDeleteUser(int deletedUserId, Role deletedUserRole);
         bool GetCanRoleDeleteRole(Role deletedUserRole, Role deletingUserRole);
     }
 
@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Services
             _userRoleHierarchyDictionary[Role.Supervisor] = 4;
         }
 
-        public async Task EnsureCanDelteUser(int deletedUserId, Role deletedUserRole)
+        public async Task EnsureCanDeleteUser(int deletedUserId, Role deletedUserRole)
         {
             var callingUserEmail = _httpContextAccessor.HttpContext.User.Identity.Name;
             var callingUserData = await _nyssContext.Users

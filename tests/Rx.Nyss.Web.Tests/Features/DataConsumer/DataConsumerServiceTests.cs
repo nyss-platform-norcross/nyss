@@ -128,7 +128,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         {
             var nationalSociety1 = new RX.Nyss.Data.Models.NationalSociety {Id = 1, Name = "Test national society 1"};
             var nationalSociety2 = new RX.Nyss.Data.Models.NationalSociety { Id = 2, Name = "Test national society 2" };
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety1 , nationalSociety2 }; 
+            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety1 , nationalSociety2 };
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
 
@@ -393,7 +393,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         }
 
         [Fact]
-        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDelteUserIsCalled()
+        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDeleteUserIsCalled()
         {
             //arrange
             ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
@@ -402,7 +402,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             await _dataConsumerService.DeleteDataConsumer(1, 123);
 
             //assert
-            await _deleteUserService.Received().EnsureCanDelteUser(123, Role.DataConsumer);
+            await _deleteUserService.Received().EnsureCanDeleteUser(123, Role.DataConsumer);
         }
     }
 }

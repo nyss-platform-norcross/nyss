@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
-        
+
         private readonly IDeleteUserService _deleteService;
 
         public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteService)
@@ -99,7 +99,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
 
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
-            
+
             return user;
         }
 
@@ -161,7 +161,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
         {
             try
             {
-                await _deleteService.EnsureCanDelteUser(dataConsumerId, Role.DataConsumer);
+                await _deleteService.EnsureCanDeleteUser(dataConsumerId, Role.DataConsumer);
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
@@ -179,7 +179,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
                 _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
 
                 if (isUsersLastNationalSociety)
-                { 
+                {
                     _nationalSocietyUserService.DeleteNationalSocietyUser(dataConsumerUser);
                     await _identityUserRegistrationService.DeleteIdentityUser(dataConsumerUser.IdentityUserId);
                 }

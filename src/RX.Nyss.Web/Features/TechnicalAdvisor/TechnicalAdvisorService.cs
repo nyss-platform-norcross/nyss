@@ -157,14 +157,14 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         {
             try
             {
-                await _deleteUserService.EnsureCanDelteUser(technicalAdvisorId, Role.TechnicalAdvisor);
+                await _deleteUserService.EnsureCanDeleteUser(technicalAdvisorId, Role.TechnicalAdvisor);
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
 
                 var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
-                
+
                 var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
                 if (nationalSocietyReferenceToRemove == null)
                 {

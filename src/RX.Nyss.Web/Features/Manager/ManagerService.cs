@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.Manager
                     securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
                     user = await CreateManagerUser(identityUser, nationalSocietyId, createManagerRequestDto);
-                    
+
                     transactionScope.Complete();
                 }
                 await _verificationEmailService.SendVerificationEmail(user, securityStamp);
@@ -158,7 +158,7 @@ namespace RX.Nyss.Web.Features.Manager
         {
             try
             {
-                await _deleteUserService.EnsureCanDelteUser(managerId, Role.Manager);
+                await _deleteUserService.EnsureCanDeleteUser(managerId, Role.Manager);
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 

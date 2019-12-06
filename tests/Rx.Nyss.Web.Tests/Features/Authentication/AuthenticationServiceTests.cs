@@ -99,7 +99,7 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
             var nationalSocietiesDbSet = new List<RX.Nyss.Data.Models.NationalSociety>().AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _user.ApplicationLanguage = new ApplicationLanguage { LanguageCode = languageCode };
-            
+
             var user = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {
                 new Claim(ClaimTypes.Name, UserName),

@@ -563,13 +563,13 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         }
 
         [Fact]
-        public async Task Remove_WhenDeleting_EnsureCanDelteUserIsCalled()
+        public async Task Remove_WhenDeleting_EnsureCanDeleteUserIsCalled()
         {
             //act
             await _supervisorService.Remove(_supervisorWithoutDataCollectorsId);
 
             //assert
-            await _deleteUserService.Received().EnsureCanDelteUser(_supervisorWithoutDataCollectorsId, Role.Supervisor);
+            await _deleteUserService.Received().EnsureCanDeleteUser(_supervisorWithoutDataCollectorsId, Role.Supervisor);
         }
 
         [Fact]

@@ -265,7 +265,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             result.IsSuccess.ShouldBeTrue();
         }
 
-        
+
 
 
         [Fact]
@@ -402,7 +402,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
 
 
         [Fact]
-        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDelteUserIsCalled()
+        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDeleteUserIsCalled()
         {
             //arrange
             ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
@@ -411,7 +411,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
 
             //assert
-            await _deleteUserService.Received().EnsureCanDelteUser(123, Role.TechnicalAdvisor);
+            await _deleteUserService.Received().EnsureCanDeleteUser(123, Role.TechnicalAdvisor);
         }
 
         [Fact]
