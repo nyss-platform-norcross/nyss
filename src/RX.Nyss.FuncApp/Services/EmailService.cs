@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using RX.Nyss.FuncApp.Configuration;
@@ -46,9 +45,11 @@ namespace RX.Nyss.FuncApp.Services
                         return;
                     }
                 }
+
                 await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
                 return;
             }
+
             await _emailClient.SendEmail(message, sandboxMode);
         }
 
@@ -76,8 +77,8 @@ namespace RX.Nyss.FuncApp.Services
         private string RemoveNotWhitelistedPhoneNumbers(string phoneNumbers, string whitelistedPhoneNumbers)
         {
             var numbers = phoneNumbers.Split(",");
-            var whitelisted = whitelistedPhoneNumbers.Split("\n");
-            return String.Join(",", numbers.Where(number => whitelisted.Contains(number)).ToList());
+            var whitelisted = whitelistedPhoneNumbers.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            return string.Join(",", numbers.Where(number => whitelisted.Contains(number)).ToList());
         }
     }
 }

@@ -8,7 +8,6 @@ namespace RX.Nyss.Web.Services
     {
         Task<string> GetStringsResources();
         Task<string> GetEmailContentResources();
-        Task<string> GetWhitelistedPhoneNumbers();
         Task SaveStringsResources(string value);
     }
 
@@ -31,8 +30,5 @@ namespace RX.Nyss.Web.Services
 
         public async Task<string> GetEmailContentResources() =>
             await _blobProvider.GetBlobValue(_config.EmailContentResourcesBlobObjectName);
-
-        public async Task<string> GetWhitelistedPhoneNumbers() =>
-            await _blobProvider.GetBlobValue(_config.WhitelistedPhoneNumbers);
     }
 }

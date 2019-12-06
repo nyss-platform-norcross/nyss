@@ -7,8 +7,6 @@
         NyssReportApiConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
         string GeneralBlobContainerName { get; set; }
         string StringsResourcesBlobObjectName { get; set; }
-        string WhitelistedPhoneNumbersBlobObjectName { get; set; }
-        bool SendFeedbackToAll { get; set; }
     }
 
     public class NyssReportApiConfig : IConfig
@@ -22,10 +20,6 @@
         public string GeneralBlobContainerName { get; set; }
 
         public string StringsResourcesBlobObjectName { get; set; }
-
-        public string WhitelistedPhoneNumbersBlobObjectName { get; set; }
-
-        public bool SendFeedbackToAll { get; set; }
 
         public class LoggingOptions
         {
