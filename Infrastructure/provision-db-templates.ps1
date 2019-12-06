@@ -17,7 +17,7 @@
 
 param(
     [string] $subscriptionId,
-    [ValidateSet("dev","production")] 
+    [ValidateSet("dev", "production")] 
     [Parameter(Mandatory = $true)][string] $environment,
     [switch] $complete
 )
@@ -47,7 +47,7 @@ if ($subscriptionId) {
 $resourceGroup = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
 
 if (!$resourceGroup) {
-    Write-Error "Resource group $resourceGroupName not found!"serviceBusNamespaceName
+    Write-Error "Resource group $resourceGroupName not found!"
 }
 
 
@@ -59,8 +59,7 @@ if ($complete) {
         -TemplateFile "$PSScriptRoot\Database-templates\createSqlServerAndDbs.json" `
         -TemplateParameterFile "$PSScriptRoot\Database-templates\createSqlServerAndDbs.parameters.$environment.json";
 }
-else
-{
+else {
     Write-Host "Deploying new resources (Incremental mode)"
     New-AzResourceGroupDeployment `
         -Mode "Incremental" `
