@@ -1,13 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MockQueryable.NSubstitute;
 using NSubstitute;
-using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils.Logging;
 using Xunit;
 
 namespace Rx.Nyss.Web.Tests.Services
@@ -16,20 +11,18 @@ namespace Rx.Nyss.Web.Tests.Services
     {
         private readonly IEmailToSMSService _emailToSMSService;
         private readonly IEmailPublisherService _emailPublisherServiceMock;
-        private readonly IConfig _configMock;
 
         public EmailToSMSServiceTests()
         {
             _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
-            _configMock = Substitute.For<IConfig>();
-            _emailToSMSService = new EmailToSMSService(_emailPublisherServiceMock, _configMock);
+            _emailToSMSService = new EmailToSMSService(_emailPublisherServiceMock);
         }
 
         [Fact]
         public async Task SendMessage_WhenSuccessful_ShouldCallEmailPublisherService()
         {
             // Arrange
-            List<string> recipients = new List<string>
+            var recipients = new List<string>
             {
                 "+47123143513"
             };
