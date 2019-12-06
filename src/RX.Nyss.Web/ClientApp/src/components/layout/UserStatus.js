@@ -40,7 +40,13 @@ export const UserStatusComponent = ({ user, logout }) => {
             onClick={handleClose}
             disabled
             className={styles.authCaption}>
-            <ListItemText primary={user.name} secondary={user.name} />
+            <ListItemText primary={user.name} secondary={user.roles[0]} />
+          </ListItem>
+          <ListItem
+            onClick={handleClose}
+            disabled
+            className={styles.authCaption}>
+            <ListItemText secondary={user.email} />
           </ListItem>
           <MenuItem onClick={logout} className={styles.authButton}>
             <Icon className={styles.logoutIcon}>exit_to_app</Icon>
