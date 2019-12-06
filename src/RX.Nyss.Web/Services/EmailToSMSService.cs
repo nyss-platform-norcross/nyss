@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Web.Services
@@ -22,6 +21,7 @@ namespace RX.Nyss.Web.Services
         public async Task SendMessage(GatewaySetting gatewaySetting, List<string> recipientPhoneNumbers, string body)
         {
             if (string.IsNullOrEmpty(gatewaySetting.EmailAddress)) return;
+
             var recipients = string.Join(",", recipientPhoneNumbers);
             await _emailPublisherService.SendEmail((gatewaySetting.EmailAddress, gatewaySetting.Name), recipients, body, true);
         }

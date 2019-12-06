@@ -16,11 +16,13 @@ namespace Rx.Nyss.Web.Tests.Services
     {
         private readonly IEmailToSMSService _emailToSMSService;
         private readonly IEmailPublisherService _emailPublisherServiceMock;
+        private readonly IConfig _configMock;
 
         public EmailToSMSServiceTests()
         {
             _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
-            _emailToSMSService = new EmailToSMSService(_emailPublisherServiceMock);
+            _configMock = Substitute.For<IConfig>();
+            _emailToSMSService = new EmailToSMSService(_emailPublisherServiceMock, _configMock);
         }
 
         [Fact]
