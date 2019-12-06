@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +10,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.DataConsumer.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -31,13 +34,15 @@ namespace RX.Nyss.Web.Features.DataConsumer
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
 
-        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
+        private readonly IDeleteUserService _deleteService;
+
+        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
-
+            _deleteService = deleteService;
             _nationalSocietyUserService = nationalSocietyUserService;
         }
 
@@ -94,7 +99,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
 
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
-            
+
             return user;
         }
 
@@ -156,6 +161,8 @@ namespace RX.Nyss.Web.Features.DataConsumer
         {
             try
             {
+                await _deleteService.EnsureCanDeleteUser(dataConsumerId, Role.DataConsumer);
+
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var dataConsumerUser = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<DataConsumerUser>(dataConsumerId);
@@ -172,7 +179,7 @@ namespace RX.Nyss.Web.Features.DataConsumer
                 _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
 
                 if (isUsersLastNationalSociety)
-                { 
+                {
                     _nationalSocietyUserService.DeleteNationalSocietyUser(dataConsumerUser);
                     await _identityUserRegistrationService.DeleteIdentityUser(dataConsumerUser.IdentityUserId);
                 }

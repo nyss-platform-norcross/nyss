@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
@@ -15,7 +15,6 @@ using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Extensions;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.DataCollector
@@ -42,6 +41,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
         private readonly IGeolocationService _geolocationService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private const string AnonymizationText = "--Data removed--";
 
         public DataCollectorService(
             INyssContext nyssContext,
@@ -151,6 +151,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 : _nyssContext.DataCollectors;
 
             var dataCollectors = await dataCollectorsQuery
+                .Where(dc => dc.DeletedAt == null)
                 .Where(dc => dc.Project.Id == projectId)
                 .OrderBy(dc => dc.Name)
                 .Select(dc => new DataCollectorResponseDto
@@ -269,16 +270,43 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         public async Task<Result> RemoveDataCollector(int dataCollectorId)
         {
-            var dataCollector = await _nyssContext.DataCollectors.FindAsync(dataCollectorId);
+            var dataCollector = await _nyssContext.DataCollectors
+                .Select(dc => new { dc, HasReports = dc.RawReports.Any() })
+                .SingleOrDefaultAsync(dc => dc.dc.Id == dataCollectorId);
 
             if (dataCollector == null)
             {
                 return Error(ResultKey.DataCollector.DataCollectorNotFound);
             }
 
-            _nyssContext.DataCollectors.Remove(dataCollector);
-            await _nyssContext.SaveChangesAsync();
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                if (dataCollector.HasReports)
+                {
+                    await AnonymizeDataCollector(dataCollector.dc);
+                }
+                else
+                {
+                    _nyssContext.DataCollectors.Remove(dataCollector.dc);
+                }
+
+                await _nyssContext.SaveChangesAsync();
+                transactionScope.Complete();
+            }
+
             return SuccessMessage(ResultKey.DataCollector.RemoveSuccess);
+        }
+
+        private Task AnonymizeDataCollector(Nyss.Data.Models.DataCollector dataCollector)
+        {
+            dataCollector.Name = AnonymizationText;
+            dataCollector.DisplayName = AnonymizationText;
+            dataCollector.PhoneNumber = AnonymizationText;
+            dataCollector.AdditionalPhoneNumber = AnonymizationText;
+            dataCollector.DeletedAt = DateTime.UtcNow;
+
+            FormattableString updateRawReportsCommand = $"UPDATE Nyss.RawReports SET Sender = {AnonymizationText} WHERE DataCollectorId = {dataCollector.Id}";
+            return _nyssContext.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
         }
 
         private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>

@@ -1,4 +1,5 @@
 import * as actions from "./reportsConstants";
+import * as dataCollectorActions from '../../dataCollectors/logic/dataCollectorsConstants';
 import { initialState } from "../../../initialState";
 import { LOCATION_CHANGE } from "connected-react-router";
 
@@ -21,6 +22,9 @@ export function reportsReducer(state = initialState.reports, action) {
 
     case actions.GET_REPORTS.FAILURE:
       return { ...state, listFetching: false, paginatedListData: null };
+
+    case dataCollectorActions.REMOVE_DATA_COLLECTOR.SUCCESS:
+      return { ...state, listStale: true };
 
     default:
       return state;

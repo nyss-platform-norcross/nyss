@@ -10,6 +10,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.DataConsumer;
 using RX.Nyss.Web.Features.DataConsumer.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -26,6 +27,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
+        private readonly IDeleteUserService _deleteUserService;
 
         public DataConsumerServiceTests()
         {
@@ -34,8 +36,9 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
+            _deleteUserService = Substitute.For<IDeleteUserService>();
 
-            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
+            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -125,7 +128,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         {
             var nationalSociety1 = new RX.Nyss.Data.Models.NationalSociety {Id = 1, Name = "Test national society 1"};
             var nationalSociety2 = new RX.Nyss.Data.Models.NationalSociety { Id = 2, Name = "Test national society 2" };
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety1 , nationalSociety2 }; 
+            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety1 , nationalSociety2 };
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
 
@@ -387,6 +390,19 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDeleteUserIsCalled()
+        {
+            //arrange
+            ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
+
+            //act
+            await _dataConsumerService.DeleteDataConsumer(1, 123);
+
+            //assert
+            await _deleteUserService.Received().EnsureCanDeleteUser(123, Role.DataConsumer);
         }
     }
 }

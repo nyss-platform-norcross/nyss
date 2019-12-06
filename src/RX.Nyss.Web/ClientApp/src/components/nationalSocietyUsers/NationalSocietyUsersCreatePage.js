@@ -16,7 +16,7 @@ import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import { userRoles, sexValues } from './logic/nationalSocietyUsersConstants';
+import { userRoles, globalCoordinatorUserRoles, sexValues } from './logic/nationalSocietyUsersConstants';
 import * as roles from '../../authentication/roles';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
@@ -75,7 +75,11 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null
     });
-  };
+  };  
+    
+  const availableUserRoles = props.callingUserRoles.some(r => r === roles.GlobalCoordinator)
+    ? globalCoordinatorUserRoles
+    : userRoles;
 
   return (
     <Fragment>
@@ -102,7 +106,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
               name="role"
               field={form.fields.role}
             >
-              {userRoles.map(role => (
+              {availableUserRoles.map(role => (
                 <MenuItem
                   key={`role${role}`}
                   value={role}>
@@ -209,7 +213,8 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   projects: state.nationalSocietyUsers.formProjects,
   isSaving: state.nationalSocietyUsers.formSaving,
-  error: state.nationalSocietyUsers.formError
+  error: state.nationalSocietyUsers.formError,
+  callingUserRoles: state.appData.user.roles
 });
 
 const mapDispatchToProps = {

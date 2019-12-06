@@ -9,6 +9,14 @@
                 public const string UserNotFound = "user.common.userNotFound";
             }
 
+            public static class Deletion
+            {
+                public const string NoPermissionsToDeleteThisUser = "user.deletion.noPermissionsToDeleteThisUser";
+                public const string CannotDeleteHeadManager = "user.deletion.cannotDeleteHeadManager";
+                public const string CannotDeleteSupervisorWithDataCollectors = "user.deletion.cannotDeleteSupervisorWithDataCollectors";
+                public const string CannotDeleteYourself = "user.deletion.cannotDeleteYourself";
+            }
+
             public static class Registration
             {
                 public const string Success = "user.registration.success";

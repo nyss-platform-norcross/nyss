@@ -113,6 +113,7 @@ function* removeNationalSocietyUser({ nationalSocietyUserId, role, nationalSocie
     yield call(http.post, getSpecificRoleUserRemovalUrl(nationalSocietyUserId, role, nationalSocietyId));
     yield put(actions.remove.success(nationalSocietyUserId));
   } catch (error) {
+    yield put(appActions.showMessage(strings(error.message)));
     yield put(actions.remove.failure(nationalSocietyUserId, error.message));
   }
 };

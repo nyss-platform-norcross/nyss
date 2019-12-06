@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.TechnicalAdvisor;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -26,6 +28,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
+        private IDeleteUserService _deleteUserService;
 
         public TechnicalAdvisorServiceTests()
         {
@@ -34,12 +37,13 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
+            _deleteUserService = Substitute.For<IDeleteUserService>();
 
             var applicationLanguages = new List<ApplicationLanguage>();
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock);
+            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -261,7 +265,7 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
             result.IsSuccess.ShouldBeTrue();
         }
 
-        
+
 
 
         [Fact]
@@ -394,6 +398,52 @@ namespace Rx.Nyss.Web.Tests.Features.TechnicalAdvisor
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
+        }
+
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeleting_EnsureCanDeleteUserIsCalled()
+        {
+            //arrange
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+
+            //assert
+            await _deleteUserService.Received().EnsureCanDeleteUser(123, Role.TechnicalAdvisor);
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingAPendingHeadManager_NationalSocietyPendngManagerGetsNullified()
+        {
+            //arrange
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+            var technicalAdvisor = _nyssContext.Users.Single(x => x.Id == 123);
+            var nationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1);
+            nationalSociety.PendingHeadManager = technicalAdvisor;
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+
+            //assert
+            nationalSociety.PendingHeadManager.ShouldBe(null);
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromNotLastNationalSociety_NationalSocietyPendngManagerGetsNullified()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
+            var technicalAdvisor = _nyssContext.Users.Single(x => x.Id == 123);
+            var nationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1);
+            nationalSociety.PendingHeadManager = technicalAdvisor;
+
+            //act
+            await _technicalAdvisorService.DeleteTechnicalAdvisor(1, 123);
+
+            //assert
+            nationalSociety.PendingHeadManager.ShouldBe(null);
         }
     }
 }

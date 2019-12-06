@@ -4,6 +4,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.GlobalCoordinator.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.GlobalCoordinator
 {

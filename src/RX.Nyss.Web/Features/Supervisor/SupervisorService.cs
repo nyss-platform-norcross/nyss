@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -7,6 +10,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Supervisor.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -30,14 +34,16 @@ namespace RX.Nyss.Web.Features.Supervisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
+        private IDeleteUserService _deleteUserService;
 
-        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
+        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
+            _deleteUserService = deleteUserService;
         }
 
         public async Task<Result> Create(int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto)
@@ -158,7 +164,7 @@ namespace RX.Nyss.Web.Features.Supervisor
                         .Select(sup => sup.ProjectId)
                         .SingleOrDefault(),
                     Organization = u.Organization,
-                    
+
                 })
                 .SingleOrDefaultAsync();
 
@@ -252,9 +258,13 @@ namespace RX.Nyss.Web.Features.Supervisor
         {
             try
             {
+                await _deleteUserService.EnsureCanDeleteUser(supervisorId, Role.Supervisor);
+
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var supervisorUser = await GetSupervisorUser(supervisorId);
+
+                await EnsureSupervisorHasNoDataCollectors(supervisorUser);
 
                 DetachSupervisorFromAllProjects(supervisorUser);
                 _nationalSocietyUserService.DeleteNationalSocietyUser(supervisorUser);
@@ -268,6 +278,29 @@ namespace RX.Nyss.Web.Features.Supervisor
             {
                 _loggerAdapter.Debug(e);
                 return e.Result;
+            }
+
+            async Task EnsureSupervisorHasNoDataCollectors(SupervisorUser supervisorUser)
+            {
+                var dataCollectorInfo = await _dataContext.DataCollectors
+                    .Where(dc => dc.Supervisor == supervisorUser)
+                    .Select(dc => new { dc, IsDeleted = (dc.DeletedAt != null) })
+                    .GroupBy(dc => dc.IsDeleted)
+                    .Select(g => new { IsDeleted = g.Key, Count = g.Count() })
+                    .ToListAsync();
+
+                var notDeletedDataCollectorCount = dataCollectorInfo.SingleOrDefault(dc => !dc.IsDeleted)?.Count;
+                if (notDeletedDataCollectorCount > 0)
+                {
+                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteSupervisorWithDataCollectors);
+                }
+
+                var deletedDataCollectorCount = dataCollectorInfo.SingleOrDefault(dc => dc.IsDeleted)?.Count;
+                if (deletedDataCollectorCount > 0)
+                {
+                    FormattableString updateDataCollectorsCommand = $"UPDATE Nyss.DataCollectors SET SupervisorId = null WHERE SupervisorId = {supervisorUser.Id}";
+                    await _dataContext.ExecuteSqlInterpolatedAsync(updateDataCollectorsCommand);
+                }
             }
         }
 

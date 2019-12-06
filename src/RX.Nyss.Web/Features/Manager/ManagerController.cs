@@ -5,6 +5,7 @@ using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Features.Manager.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Manager
 {

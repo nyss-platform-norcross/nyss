@@ -239,4 +239,4 @@ namespace RX.Nyss.Web.Tests.Features.User
         }
     }
 }
-;
+

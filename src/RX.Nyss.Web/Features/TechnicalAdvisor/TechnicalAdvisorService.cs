@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +9,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -29,14 +32,16 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
+        private readonly IDeleteUserService _deleteUserService;
 
-        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService)
+        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _nationalSocietyUserService = nationalSocietyUserService;
             _verificationEmailService = verificationEmailService;
+            _deleteUserService = deleteUserService;
         }
 
         public async Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
@@ -152,21 +157,24 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
         {
             try
             {
+                await _deleteUserService.EnsureCanDeleteUser(technicalAdvisorId, Role.TechnicalAdvisor);
+
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
                 var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
 
                 var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
-                
+
                 var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
                 if (nationalSocietyReferenceToRemove == null)
                 {
                     return Error(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
                 }
-
-                var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
                 _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
 
+                await HandleHeadManagerStatus(technicalAdvisor, nationalSocietyReferenceToRemove);
+
+                var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
                 if (isUsersLastNationalSociety)
                 {
                     _nationalSocietyUserService.DeleteNationalSocietyUser(technicalAdvisor);
@@ -181,6 +189,19 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisor
             {
                 _loggerAdapter.Debug(e);
                 return e.Result;
+            }
+
+            async Task HandleHeadManagerStatus(TechnicalAdvisorUser technicalAdvisor, UserNationalSociety nationalSocietyReferenceToRemove)
+            {
+                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyReferenceToRemove.NationalSocietyId);
+                if (nationalSociety.PendingHeadManager == technicalAdvisor)
+                {
+                    nationalSociety.PendingHeadManager = null;
+                }
+                if (nationalSociety.HeadManager == technicalAdvisor)
+                {
+                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
+                }
             }
         }
     }
