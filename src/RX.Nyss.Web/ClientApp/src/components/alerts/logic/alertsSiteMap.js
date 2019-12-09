@@ -3,13 +3,13 @@ import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
 import { projectLeftMenuOrder } from "../../projects/logic/projectsSiteMap";
 
-export const reportsSiteMap = [
+export const alertsSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
-    path: "/projects/:projectId/reports",
-    title: () => strings(stringKeys.reports.title),
+    path: "/projects/:projectId/alerts",
+    title: () => strings(stringKeys.alerts.title),
     placeholder: placeholders.leftMenu,
-    access: accessMap.reports.list,
-    placeholderIndex: projectLeftMenuOrder.reports
+    access: accessMap.alerts.list,
+    placeholderIndex: projectLeftMenuOrder.alerts
   }
 ];

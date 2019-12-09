@@ -43,6 +43,7 @@ import { ReportsListPage } from '../reports/ReportsListPage';
 import { ProjectDashboardPage } from '../projectDashboard/ProjectsDashboardPage';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DayJsUtils from '@date-io/dayjs';
+import { AlertsListPage } from '../alerts/AlertsListPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -98,6 +99,8 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
 
           <AuthRoute exact path='/projects/:projectId/reports' component={ReportsListPage} roles={accessMap.reports.list} />
+
+          <AuthRoute exact path='/projects/:projectId/alerts' component={AlertsListPage} roles={accessMap.alerts.list} />
         </Switch>
       </ConnectedRouter>
     </MuiPickersUtilsProvider>

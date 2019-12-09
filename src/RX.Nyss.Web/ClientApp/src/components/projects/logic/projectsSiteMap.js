@@ -2,6 +2,14 @@ import { placeholders } from "../../../siteMapPlaceholders";
 import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
 
+export const projectLeftMenuOrder = {
+  dashboard: 0,
+  alerts: 10,
+  dataCollectors: 20,
+  reports: 30,
+  settings: 40
+};
+
 export const projectsSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
@@ -29,6 +37,6 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.settings),
     access: accessMap.projects.edit,
     placeholder: placeholders.leftMenu,
-    placeholderIndex: 4
+    placeholderIndex: projectLeftMenuOrder.settings
   },
 ];

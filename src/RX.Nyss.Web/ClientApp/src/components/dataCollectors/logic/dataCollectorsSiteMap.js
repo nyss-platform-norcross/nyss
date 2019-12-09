@@ -1,6 +1,7 @@
 import { placeholders } from "../../../siteMapPlaceholders";
 import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
+import { projectLeftMenuOrder } from "../../projects/logic/projectsSiteMap";
 
 export const dataCollectorsSiteMap = [
   {
@@ -9,7 +10,7 @@ export const dataCollectorsSiteMap = [
     title: () => strings(stringKeys.dataCollector.title),
     placeholder: placeholders.leftMenu,
     access: accessMap.dataCollectors.list,
-    placeholderIndex: 1
+    placeholderIndex: projectLeftMenuOrder.dataCollectors
   },
   {
     parentPath: "/projects/:projectId/datacollectors",

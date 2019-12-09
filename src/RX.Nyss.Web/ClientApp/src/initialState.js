@@ -143,5 +143,12 @@ export const initialState = {
     reportListFilter: {
       reportListType: "main"
     }
+  },
+  alerts: {
+    listFetching: false,
+    listRemoving: {},
+    listStale: true,
+    listProjectId: null,
+    listData: null
   }
 };

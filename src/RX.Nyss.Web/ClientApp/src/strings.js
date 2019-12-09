@@ -364,11 +364,35 @@ export const stringKeys = {
     },
     title: "reports.title"
   },
+  alerts: {
+    list: {
+      title: "alerts.list.title",
+      dateTime: "alerts.list.dateTime",
+      healthRisk: "alerts.list.healthRisk",
+      reportCount: "alerts.list.reportCount",
+      village: "alerts.list.village",
+      status: "alerts.list.status",
+      success: "alerts.list.success",
+      error: "alerts.list.error"
+    },
+    constants: {
+      alertStatus: {
+        "Pending": "alerts.alertStatus.pending",
+        "Dismissed": "alerts.alertStatus.dismissed",
+        "Escalated": "alerts.alertStatus.escalated",
+        "Closed": "alerts.alertStatus.closed"
+      }
+    },
+    title: "alerts.title"
+  },
   filters: {
     area: {
       title: "filters.area.title",
       all: "filters.area.all"
     }
+  },
+  table: {
+    noData: "table.noData"
   },
   form: {
     cancel: "form.cancel",
