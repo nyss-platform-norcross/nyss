@@ -140,6 +140,7 @@
       "properties": {
         "name": "[variables('funcAppName')]",
         "serverFarmId": "[variables('consumptionPlanId')]",
+        "httpsOnly": true,
         "siteConfig": {
           "appSettings": [
             {
@@ -253,7 +254,8 @@
         },
         "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
         "hostingEnvironment": "[parameters('hostingEnvironment')]",
-        "clientAffinityEnabled": true
+        "clientAffinityEnabled": true,
+        "httpsOnly": true
       }
     },
     {
@@ -283,19 +285,19 @@
               "description": "Isolate traffic to only coming from subnet"
             }
           ],
-          "alwaysOn": "[parameters('alwaysOn')]"
+          "alwaysOn": "[parameters('alwaysOn')]",
+          "appSettings": [
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(concat('microsoft.insights/components/', variables('reportApiWebAppName')), '2015-05-01').InstrumentationKey]"
+            },
+            {
+              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+              "value": "~2"
+            }
+          ]
         },
-        "httpsOnly": false,
-        "appSettings": [
-          {
-            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-            "value": "[reference(concat('microsoft.insights/components/', variables('reportApiWebAppName')), '2015-05-01').InstrumentationKey]"
-          },
-          {
-            "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-            "value": "~2"
-          }
-        ]
+        "httpsOnly": true
       }
     },
     {
@@ -314,7 +316,7 @@
       "properties": {
         "enabled": true,
         "serverFarmId": "[variables('standardPlanId')]",
-        "httpsOnly": false,
+        "httpsOnly": true,
         "redundancyMode": "None",
         "siteConfig": {
           "appSettings": [
