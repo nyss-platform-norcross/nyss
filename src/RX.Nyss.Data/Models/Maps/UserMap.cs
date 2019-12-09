@@ -25,6 +25,8 @@ namespace RX.Nyss.Data.Models.Maps
                 .HasValue<DataConsumerUser>(Role.DataConsumer)
                 .HasValue<TechnicalAdvisorUser>(Role.TechnicalAdvisor);
             builder.HasOne(u => u.ApplicationLanguage).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(u => u.EmailAddress);
         }
     }
 }

@@ -23,6 +23,12 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Zone).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(x => x.Reports).WithOne(x => x.DataCollector).IsRequired().OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.PhoneNumber);
+            builder.HasIndex(x => x.AdditionalPhoneNumber);
+            builder.HasIndex(x => x.CreatedAt);
+            builder.HasIndex(x => x.DeletedAt);
+            builder.HasIndex(x => x.DataCollectorType);
         }
     }
 }
