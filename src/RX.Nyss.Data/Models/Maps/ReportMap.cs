@@ -18,7 +18,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.Location).IsRequired();
             builder.Property(x => x.ReportType).HasConversion<string>().HasMaxLength(20).IsRequired();
             builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
-            builder.Property(x => x.ReportedCaseCount).IsRequired().HasDefaultValue(0);
+            builder.Property(x => x.ReportedCaseCount).IsRequired();
             builder.OwnsOne(x => x.ReportedCase).Property(x => x.CountFemalesBelowFive);
             builder.OwnsOne(x => x.ReportedCase).Property(x => x.CountFemalesAtLeastFive);
             builder.OwnsOne(x => x.ReportedCase).Property(x => x.CountMalesBelowFive);

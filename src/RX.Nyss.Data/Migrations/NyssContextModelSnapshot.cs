@@ -2244,9 +2244,7 @@ namespace RX.Nyss.Data.Migrations
                         .HasMaxLength(20);
 
                     b.Property<int>("ReportedCaseCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()

@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191209114721_InitialMigration")]
+    [Migration("20191209122820_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2246,9 +2246,7 @@ namespace RX.Nyss.Data.Migrations
                         .HasMaxLength(20);
 
                     b.Property<int>("ReportedCaseCount")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()

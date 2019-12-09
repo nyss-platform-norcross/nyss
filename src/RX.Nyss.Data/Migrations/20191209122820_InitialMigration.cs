@@ -677,7 +677,7 @@ namespace RX.Nyss.Data.Migrations
                     EpiWeek = table.Column<int>(nullable: false),
                     PhoneNumber = table.Column<string>(maxLength: 20, nullable: false),
                     Location = table.Column<Point>(nullable: false),
-                    ReportedCaseCount = table.Column<int>(nullable: false, defaultValue: 0),
+                    ReportedCaseCount = table.Column<int>(nullable: false),
                     VillageId = table.Column<int>(nullable: false),
                     ZoneId = table.Column<int>(nullable: true),
                     ReportedCase_CountFemalesBelowFive = table.Column<int>(nullable: true),
