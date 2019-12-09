@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
-using RX.Nyss.ReportApi.Contracts;
-using RX.Nyss.ReportApi.Handlers;
+using RX.Nyss.ReportApi.Features.Reports.Contracts;
+using RX.Nyss.ReportApi.Features.Reports.Handlers;
 using RX.Nyss.ReportApi.Utils.Logging;
 
-namespace RX.Nyss.ReportApi.Services
+namespace RX.Nyss.ReportApi.Features.Reports
 {
     public interface IReportService
     {

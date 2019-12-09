@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RX.Nyss.ReportApi.Exceptions
+namespace RX.Nyss.ReportApi.Features.Reports.Exceptions
 {
     public class ReportValidationException : Exception
     {

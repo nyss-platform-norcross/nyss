@@ -7,13 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.ReportApi.Exceptions;
-using RX.Nyss.ReportApi.Models;
+using RX.Nyss.ReportApi.Features.Reports.Exceptions;
+using RX.Nyss.ReportApi.Features.Reports.Models;
 using RX.Nyss.ReportApi.Services;
 using RX.Nyss.ReportApi.Utils;
 using RX.Nyss.ReportApi.Utils.Logging;
 
-namespace RX.Nyss.ReportApi.Handlers
+namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 {
     public interface ISmsEagleHandler
     {

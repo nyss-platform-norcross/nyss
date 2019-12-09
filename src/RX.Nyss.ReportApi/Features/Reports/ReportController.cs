@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using RX.Nyss.ReportApi.Contracts;
-using RX.Nyss.ReportApi.Services;
+using RX.Nyss.ReportApi.Features.Reports.Contracts;
 
-namespace RX.Nyss.ReportApi.Controllers
+namespace RX.Nyss.ReportApi.Features.Reports
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -2,10 +2,10 @@
 using System.Text.RegularExpressions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.ReportApi.Exceptions;
-using RX.Nyss.ReportApi.Models;
+using RX.Nyss.ReportApi.Features.Reports.Exceptions;
+using RX.Nyss.ReportApi.Features.Reports.Models;
 
-namespace RX.Nyss.ReportApi.Services
+namespace RX.Nyss.ReportApi.Features.Reports
 {
     public interface IReportMessageService
     {
