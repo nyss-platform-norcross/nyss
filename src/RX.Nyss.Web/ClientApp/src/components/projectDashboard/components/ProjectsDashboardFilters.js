@@ -42,6 +42,9 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
   const handleGroupingTypeChange = event =>
     onChange(updateValue({ groupingType: event.target.value }))
 
+  const handleReportsTypeChange = event =>
+    onChange(updateValue({ reportsType: event.target.value }))
+
   if (!value) {
     return null;
   }
@@ -106,6 +109,24 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
                   {healthRisk.name}
                 </MenuItem>
               ))}
+            </TextField>
+          </Grid>
+
+          <Grid item>
+            <TextField
+              select
+              label={strings(stringKeys.project.dashboard.filters.reportsType)}
+              onChange={handleReportsTypeChange}
+              value={value.reportsType || "main"}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+              <MenuItem value="main">
+                {strings(stringKeys.project.dashboard.filters.mainReportsType)}
+              </MenuItem>
+              <MenuItem value="training">
+                {strings(stringKeys.project.dashboard.filters.trainingReportsType)}
+              </MenuItem>
             </TextField>
           </Grid>
         </Grid>

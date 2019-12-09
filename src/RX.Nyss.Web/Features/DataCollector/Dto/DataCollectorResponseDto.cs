@@ -19,5 +19,7 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
         public string District { get; set; }
 
         public string Region { get; set; }
+
+        public bool IsInTrainingMode { get; set; }
     }
 }

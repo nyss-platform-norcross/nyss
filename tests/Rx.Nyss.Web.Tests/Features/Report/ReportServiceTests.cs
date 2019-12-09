@@ -9,6 +9,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Report;
+using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
 using Shouldly;
 using Xunit;
@@ -28,6 +29,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
         private readonly List<int> _reportIdsFromProject2 = Enumerable.Range(14, 11).ToList();
+        private readonly List<int> _trainingReportIds = Enumerable.Range(15, 100).ToList();
 
         public ReportServiceTests()
         {
@@ -192,8 +194,12 @@ namespace Rx.Nyss.Web.Tests.Features.Report
 
             var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0]);
             var rawReports2 = BuildRawReports(reports2);
-            _reports = reports1.Concat(reports2).ToList();
-            _rawReports = rawReports1.Concat(rawReports2).ToList();
+
+            var trainingReports = BuildReports(dataCollectors[0], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], isTraining: true);
+            var trainingRawReports = BuildRawReports(trainingReports);
+
+            _reports = reports1.Concat(reports2).Concat(trainingReports).ToList();
+            _rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).ToList();
 
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
@@ -229,7 +235,8 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
         }
 
-        private static List<RX.Nyss.Data.Models.Report> BuildReports(RX.Nyss.Data.Models.DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk)
+        private static List<RX.Nyss.Data.Models.Report> BuildReports(RX.Nyss.Data.Models.DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk,
+            bool? isTraining = false)
         {
             var reports = ids
                 .Select(i => new RX.Nyss.Data.Models.Report
@@ -239,7 +246,8 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     Status = ReportStatus.Pending,
                     ProjectHealthRisk =  projectHealthRisk,
                     ReportedCase = new ReportCase(),
-                    CreatedAt = new DateTime(2020,1,1)
+                    CreatedAt = new DateTime(2020,1,1),
+                    IsTraining = isTraining ?? false
                 })
                 .ToList();
             return reports;
@@ -253,6 +261,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     ReportId = r.Id,
                     DataCollector = r.DataCollector,
                     ReceivedAt = r.ReceivedAt,
+                    IsTraining = r.IsTraining
                 })
                 .ToList();
 
@@ -263,7 +272,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             _config.PaginationRowsPerPage.Returns(9999);
 
             //act
-            var result = await _reportService.List(1, 1, "");
+            var result = await _reportService.List(1, 1, "", new ListFilterRequestDto());
 
             //assert
             result.Value.Data.ShouldAllBe(x => _reportIdsFromProject1.Contains(x.Id));
@@ -276,7 +285,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             _config.PaginationRowsPerPage.Returns(13);
 
             //act
-            var result = await _reportService.List(1, 1, "");
+            var result = await _reportService.List(1, 1, "", new ListFilterRequestDto());
 
             //assert
             result.Value.Data.Count.ShouldBe(13);
@@ -286,10 +295,21 @@ namespace Rx.Nyss.Web.Tests.Features.Report
         public async Task List_WhenSelectedLastPageThatHasLessRows_ShouldReturnLessRows()
         {
             //act
-            var result = await _reportService.List(1, 2, "");
+            var result = await _reportService.List(1, 2, "", new ListFilterRequestDto());
 
             //assert
             result.Value.Data.Count.ShouldBe(3);
+        }
+
+        [Fact]
+        public async Task List_WhenListTypeFilterIsTraining_ShouldReturnOnlyTraining()
+        {
+            //act
+            var result = await _reportService.List(1, 1, "", new ListFilterRequestDto{ ReportListType = ReportListTypeDto.Training });
+
+            //assert
+            result.Value.Data.Count.ShouldBe(Math.Min(100, _rowsPerPage));
+            result.Value.TotalRows.ShouldBe(100);
         }
     }
 }

@@ -128,7 +128,8 @@ export const initialState = {
     mapOverviewCenterLocation: null,
     mapOverviewFilters: null,
     mapOverviewDetails: [],
-    mapOverviewDetailsFetching: false
+    mapOverviewDetailsFetching: false,
+    settingTrainingState: {}
   },
   headManagerConsents: {
     nationalSocieties: []
@@ -138,6 +139,9 @@ export const initialState = {
     listRemoving: {},
     listStale: true,
     listProjectId: null,
-    paginatedListData: null
+    paginatedListData: null,
+    reportListFilter: {
+      reportListType: "main"
+    }
   }
 };

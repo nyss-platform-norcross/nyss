@@ -33,13 +33,18 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result> CreateDataCollector(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) =>
+        public async Task<Result> CreateDataCollector(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) => 
             await _dataCollectorService.CreateDataCollector(projectId, createDataCollectorDto);
 
         [HttpPost, Route("{dataCollectorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
         public async Task<Result> EditDataCollector([FromBody]EditDataCollectorRequestDto editDataCollectorDto) =>
             await _dataCollectorService.EditDataCollector(editDataCollectorDto);
+
+        [HttpPost, Route("{dataCollectorId:int}/setTrainingState")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
+        public async Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining) =>
+            await _dataCollectorService.SetTrainingState(dataCollectorId, isInTraining);
 
         [HttpPost, Route("{dataCollectorId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]

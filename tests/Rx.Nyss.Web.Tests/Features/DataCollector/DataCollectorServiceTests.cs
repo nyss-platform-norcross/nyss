@@ -291,6 +291,23 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         }
 
         [Fact]
+        public void SetTrainingState_WhenDataCollectorDoesNotExist_ShouldThrowException()
+        {
+            Should.ThrowAsync<Exception>(() => _dataCollectorService.SetTrainingState(3, true));
+        }
+
+        [Fact]
+        public async Task SetTrainingState_WhenDataCollectorExists_ShouldReturnSuccess()
+        {
+            // Act
+            var result = await _dataCollectorService.SetTrainingState(DataCollectorWithoutReportsId, true);
+
+            // Assert
+            await _nyssContextMock.Received(1).SaveChangesAsync();
+            result.IsSuccess.ShouldBeTrue();
+        }
+
+        [Fact]
         public async Task ListDataCollector_WhenSuccessful_ShouldReturnSuccess()
         {
             // Act

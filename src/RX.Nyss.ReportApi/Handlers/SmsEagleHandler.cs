@@ -70,7 +70,8 @@ namespace RX.Nyss.ReportApi.Handlers
                 IncomingMessageId = incomingMessageId,
                 OutgoingMessageId = outgoingMessageId,
                 ModemNumber = modemNumber,
-                ApiKey = apiKey
+                ApiKey = apiKey,
+               // IsTraining = dataCollector.IsInTrainingMode,
             };
 
             await _nyssContext.AddAsync(rawReport);
@@ -124,6 +125,7 @@ namespace RX.Nyss.ReportApi.Handlers
                 };
 
                 rawReport.Report = report;
+                rawReport.IsTraining = dataCollector.IsInTrainingMode;
 
                 await _nyssContext.Reports.AddAsync(report);
                 await _nyssContext.SaveChangesAsync();

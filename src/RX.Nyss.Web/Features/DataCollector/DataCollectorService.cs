@@ -30,6 +30,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId);
         Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName, IEnumerable<string> roles);
+        Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -163,7 +164,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                     Village = dc.Village.Name,
                     District = dc.Village.District.Name,
                     Region = dc.Village.District.Region.Name,
-                    Sex = dc.Sex
+                    Sex = dc.Sex,
+                    IsInTrainingMode = dc.IsInTrainingMode
                 })
                 .ToListAsync();
 
@@ -212,7 +214,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                 Supervisor = supervisor,
                 Project = project,
                 Zone = zone,
-                CreatedAt = _dateTimeProvider.UtcNow
+                CreatedAt = _dateTimeProvider.UtcNow,
+                IsInTrainingMode = true
             };
 
             await _nyssContext.AddAsync(dataCollector);
@@ -340,7 +343,8 @@ namespace RX.Nyss.Web.Features.DataCollector
 
             var dataCollectorsWithNoReports = dataCollectors
                 .Where(dc => dc.CreatedAt < endDate && (dc.DeletedAt > from || dc.DeletedAt == null))
-                .Where(dc => !dc.RawReports.Any(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
+                .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value
+                                                                           && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
                 .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
                 {
@@ -357,6 +361,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 : _nyssContext.RawReports;
 
             var dataCollectorsWithReports = rawReports
+                .Where(r => r.IsTraining.HasValue && !r.IsTraining.Value)
                 .Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate)
                 .Where(r => r.DataCollector.CreatedAt < endDate && (r.DataCollector.DeletedAt > from || r.DataCollector.DeletedAt == null))
                 .Where(dc => dc.DataCollector.Project.Id == projectId)
@@ -411,7 +416,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .Select(dc => new
                 {
                     DataCollector = dc,
-                    ReportsInTimeRange = dc.RawReports.Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
+                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
+                                                                  &&  r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1) )
                 })
                 .Select(dc => new MapOverviewDataCollectorResponseDto
                 {
@@ -427,6 +433,23 @@ namespace RX.Nyss.Web.Features.DataCollector
 
 
             return Success(result);
+        }
+
+        public async Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining)
+        {
+            var dataCollector = await _nyssContext.DataCollectors.FindAsync(dataCollectorId);
+
+            if (dataCollector == null)
+            {
+                return Error(ResultKey.DataCollector.DataCollectorNotFound);
+            }
+
+            dataCollector.IsInTrainingMode = isInTraining;
+            await _nyssContext.SaveChangesAsync();
+
+            return SuccessMessage(isInTraining ?
+                ResultKey.DataCollector.SetInTrainingSuccess :
+                ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
         private async Task<LocationDto> GetCountryLocationFromProject(int projectId)

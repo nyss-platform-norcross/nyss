@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -33,6 +32,8 @@ const DataCollectorsListPageComponent = (props) => {
         isRemoving={props.isRemoving}
         remove={props.remove}
         projectId={props.projectId}
+        setTrainingState={props.setTrainingState}
+        isSettingTrainingState={props.isSettingTrainingState}
       />
     </Fragment>
   );
@@ -51,14 +52,16 @@ const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   list: state.dataCollectors.listData,
   isListFetching: state.dataCollectors.listFetching,
-  isRemoving: state.dataCollectors.listRemoving
+  isRemoving: state.dataCollectors.listRemoving,
+  isSettingTrainingState: state.dataCollectors.settingTrainingState
 });
 
 const mapDispatchToProps = {
   openDataCollectorsList: dataCollectorsActions.openList.invoke,
   goToCreation: dataCollectorsActions.goToCreation,
   goToEdition: dataCollectorsActions.goToEdition,
-  remove: dataCollectorsActions.remove.invoke
+  remove: dataCollectorsActions.remove.invoke,
+  setTrainingState: dataCollectorsActions.setTrainingState.invoke,
 };
 
 export const DataCollectorsListPage = useLayout(

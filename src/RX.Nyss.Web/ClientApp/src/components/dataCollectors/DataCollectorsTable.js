@@ -8,11 +8,13 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
+import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 
-export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId }) => {
+export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isSettingTrainingState }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -22,11 +24,12 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
       <TableHead>
         <TableRow>
           <TableCell>{strings(stringKeys.dataCollector.list.name)}</TableCell>
-          <TableCell style={{ width: "16%" }}>{strings(stringKeys.dataCollector.list.displayName)}</TableCell>
-          <TableCell style={{ width: "16%" }}>{strings(stringKeys.dataCollector.list.phoneNumber)}</TableCell>
-          <TableCell style={{ width: "16%" }}>{strings(stringKeys.dataCollector.list.sex)}</TableCell>
-          <TableCell style={{ width: "16%" }}>{strings(stringKeys.dataCollector.list.location)}</TableCell>
-          <TableCell style={{ width: "16%" }} />
+          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.displayName)}</TableCell>
+          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.phoneNumber)}</TableCell>
+          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.sex)}</TableCell>
+          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.location)}</TableCell>
+          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.trainingStatus)}</TableCell>
+          <TableCell style={{ width: "14%" }} />
         </TableRow>
       </TableHead>
       <TableBody>
@@ -37,7 +40,13 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
             <TableCell>{row.phoneNumber}</TableCell>
             <TableCell>{row.sex}</TableCell>
             <TableCell>{row.region}, {row.district}, {row.village}</TableCell>
+            <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.list.isInTrainingMode) : strings(stringKeys.dataCollector.list.isNotInTrainingMode)}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
+            <TableRowMenu id={row.id} items={[
+                  row.isInTrainingMode ?
+                  { title: strings(stringKeys.dataCollector.list.takeOutOfTraining), action: () => setTrainingState(row.id, false) } :
+                  { title: strings(stringKeys.dataCollector.list.setToInTraining), action: () => setTrainingState(row.id, true) }
+                ]} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />
               <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
               <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>

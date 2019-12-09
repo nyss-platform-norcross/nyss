@@ -169,6 +169,9 @@ export const stringKeys = {
         timeGroupingWeek: "project.dashboard.filters.timeGrouping.week",
         healthRisk: "project.dashboard.filters.healthRisk",
         healthRiskAll: "project.dashboard.filters.healthRiskAll",
+        reportsType: "project.dashboard.filters.reportsType",
+        mainReportsType: "project.dashboard.filters.mainReportsType",
+        trainingReportsType: "project.dashboard.filters.trainingReportsType",
       },
       allReportsChart: {
         title: "project.dashboard.allReportsChart.title",
@@ -295,7 +298,12 @@ export const stringKeys = {
       location: "dataCollectors.list.location",
       status: "dataCollectors.list.status",
       removalConfirmation: "dataCollectors.list.removalConfirmation",
-      title: "dataCollectors.list.title"
+      title: "dataCollectors.list.title",
+      trainingStatus: "dataCollectors.list.trainingStatus",
+      isInTrainingMode: "dataCollectors.list.isInTrainingMode",
+      isNotInTrainingMode: "dataCollectors.list.isNotInTrainingMode",
+      setToInTraining: "dataCollectors.list.setToInTraining",
+      takeOutOfTraining: "dataCollectors.list.takeOutOfTraining"
     },
     constants: {
       sex: {
@@ -327,7 +335,11 @@ export const stringKeys = {
       femalesBelowFive: "reports.list.femalesBelowFive",
       femalesAtLeastFive: "reports.list.femalesAtLeastFive",
       success: "reports.list.success",
-      error: "reports.list.error"     
+      error: "reports.list.error",
+      selectReportListType: "reports.list.selectReportListType",
+      mainReportsListType: "reports.list.mainReportsListType",
+      trainingReportsListType: "reports.list.trainingReportsListType"
+
     },
     title: "reports.title"
   },
