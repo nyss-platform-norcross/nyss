@@ -3,7 +3,7 @@
 ### Application resources
 Most resources are put into the same resource group per environment, except for the database. This way we can be a bit more sure to not delete any stored data we don't want to lose.
 
-The following resources are per environment (`dev`, `test`, or `production`):
+The following resources are per environment (`dev`, `test`, or `prod`):
 
 | Type                 | Name                                       | Remarks                           |
 | -------------------- | ------------------------------------------ | --------------------------------- |
@@ -44,12 +44,12 @@ From a Powershell shell run:
 
 ```powershell
 # For provisioning most resources:
-.\Infrastructure\provision-application-templates.ps1 -environment "<env>"
+.\Infrastructure\provision-application-templates.ps1 -environment "<dev|test|production>"
 # ..or to do a complete deployment:
-.\Infrastructure\provision-application-templates.ps1 -environment "<env>" -complete
+.\Infrastructure\provision-application-templates.ps1 -environment "<dev|test|production>" -complete
 
 # For provisioning the DB resources:
-.\Infrastructure\provision-db-templates.ps1 -environment "<env>"
+.\Infrastructure\provision-db-templates.ps1 -environment "<dev|production>"
 # ..or
-.\Infrastructure\provision-db-templates.ps1 -environment "<env>" -complete
+.\Infrastructure\provision-db-templates.ps1 -environment "<dev|production>" -complete
 ```
