@@ -8,7 +8,7 @@ using NSubstitute.ReturnsExtensions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.Alert.Dto;
+using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Utils;
