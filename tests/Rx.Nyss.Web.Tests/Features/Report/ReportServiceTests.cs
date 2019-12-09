@@ -253,7 +253,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             return reports;
         }
 
-        private static List<RX.Nyss.Data.Models.RawReport> BuildRawReports(List<RX.Nyss.Data.Models.Report> reports) =>
+        private static List<RawReport> BuildRawReports(List<RX.Nyss.Data.Models.Report> reports) =>
             reports.Select(r => new RawReport
                 {
                     Id = r.Id,
@@ -288,7 +288,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             var result = await _reportService.List(1, 1, "", new ListFilterRequestDto());
 
             //assert
-            result.Value.Data.Count.ShouldBe(13);
+            result.Value.Data.Count().ShouldBe(13);
         }
 
         [Fact]
@@ -298,7 +298,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
             var result = await _reportService.List(1, 2, "", new ListFilterRequestDto());
 
             //assert
-            result.Value.Data.Count.ShouldBe(3);
+            result.Value.Data.Count().ShouldBe(3);
         }
 
         [Fact]

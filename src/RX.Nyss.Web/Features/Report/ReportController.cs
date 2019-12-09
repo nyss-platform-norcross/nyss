@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.Report
         /// </summary>
         [HttpPost("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber, [FromBody] ListFilterRequestDto filterRequest) =>
+        public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, [FromBody] ListFilterRequestDto filterRequest) =>
             await _reportService.List(projectId, pageNumber, User.Identity.Name, filterRequest);
     }
 }

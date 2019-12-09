@@ -25,9 +25,6 @@ namespace RX.Nyss.Web.Utils.DataContract
 
         public Result<T> Cast<T>() => Error<T>(Message.Key, Message.Data);
 
-        public PagedResult<T> CastToPagedResult<T>() where T : IEnumerable =>
-            PagedResult.Error<T>(Message.Key, Message.Data);
-
         public override string ToString() => $"{nameof(IsSuccess)}: {IsSuccess}, {nameof(Message)}: {Message}";
     }
 
