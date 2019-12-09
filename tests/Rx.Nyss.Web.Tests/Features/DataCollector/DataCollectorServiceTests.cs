@@ -300,7 +300,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         public async Task SetTrainingState_WhenDataCollectorExists_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.SetTrainingState(DataCollectorId, true);
+            var result = await _dataCollectorService.SetTrainingState(DataCollectorWithoutReportsId, true);
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
