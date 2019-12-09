@@ -147,6 +147,10 @@ namespace RX.Nyss.Web.Features.HealthRisk
             }
             else
             {
+                if (healthRisk.AlertRule != null)
+                {
+                    _nyssContext.AlertRules.Remove(healthRisk.AlertRule);
+                }
                 healthRisk.AlertRule = null;
             }
 

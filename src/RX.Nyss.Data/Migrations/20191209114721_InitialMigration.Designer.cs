@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191209081001_InitialMigration")]
+    [Migration("20191209114721_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -2558,7 +2558,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.AlertRule", "AlertRule")
                         .WithMany()
                         .HasForeignKey("AlertRuleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRiskLanguageContent", b =>
