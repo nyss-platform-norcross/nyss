@@ -9,7 +9,7 @@
             "value": "SQL_Latin1_General_CP1_CI_AS"
         },
         "databaseName": {
-            "value": "nrx-cbs-prod-nyss-sqldb"
+            "value": "nrx-cbs-nyss-sqldb-prod"
         },
         "tier": {
             "value": "Standard"
@@ -21,7 +21,7 @@
             "value": 32212254720
         },
         "serverName": {
-            "value": "nrx-cbs-prod-nyss-sqlserver"
+            "value": "nrx-cbs-nyss-sqlserver-prod"
         },
         "sampleName": {
             "value": ""
