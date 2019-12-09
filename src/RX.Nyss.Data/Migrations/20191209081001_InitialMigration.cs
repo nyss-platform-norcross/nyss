@@ -620,7 +620,7 @@ namespace RX.Nyss.Data.Migrations
                     BirthGroupDecade = table.Column<int>(nullable: false),
                     Location = table.Column<Point>(nullable: false),
                     IsInTrainingMode = table.Column<bool>(nullable: false),
-                    SupervisorId = table.Column<int>(nullable: false),
+                    SupervisorId = table.Column<int>(nullable: true),
                     ProjectId = table.Column<int>(nullable: false),
                     VillageId = table.Column<int>(nullable: false),
                     ZoneId = table.Column<int>(nullable: true),
@@ -770,6 +770,7 @@ namespace RX.Nyss.Data.Migrations
                     ModemNumber = table.Column<int>(nullable: true),
                     ApiKey = table.Column<string>(maxLength: 100, nullable: false),
                     ReportId = table.Column<int>(nullable: true),
+                    IsTraining = table.Column<bool>(nullable: true),
                     DataCollectorId = table.Column<int>(nullable: true),
                     NationalSocietyId = table.Column<int>(nullable: true)
                 },

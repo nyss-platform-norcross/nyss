@@ -12,8 +12,8 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20191204115159_MakeDataCollectorsSupervisorRelationNullable")]
-    partial class MakeDataCollectorsSupervisorRelationNullable
+    [Migration("20191209081001_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -2135,6 +2135,9 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int?>("IncomingMessageId")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("IsTraining")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("ModemNumber")
                         .HasColumnType("int");
 
@@ -2242,16 +2245,31 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
 
+                    b.Property<int>("ReportedCaseCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
+
+                    b.Property<int>("VillageId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ZoneId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DataCollectorId");
 
                     b.HasIndex("ProjectHealthRiskId");
+
+                    b.HasIndex("VillageId");
+
+                    b.HasIndex("ZoneId");
 
                     b.ToTable("Reports");
                 });
@@ -2675,6 +2693,17 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
                         .WithMany("Reports")
                         .HasForeignKey("ProjectHealthRiskId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RX.Nyss.Data.Models.Village", "Village")
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.Zone", "Zone")
+                        .WithMany()
+                        .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.OwnsOne("RX.Nyss.Data.Models.DataCollectionPointCase", "DataCollectionPointCase", b1 =>
