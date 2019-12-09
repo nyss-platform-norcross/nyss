@@ -37,8 +37,8 @@ namespace RX.Nyss.Web.Features.Report
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
                 .Where(r => filter.ReportListType == ReportListTypeDto.Training ?
-                    r.Report != null && r.Report.IsTraining :
-                    r.Report == null || !r.Report.IsTraining);
+                      r.IsTraining.HasValue && r.IsTraining.Value :
+                      r.IsTraining.HasValue && !r.IsTraining.Value);
 
             var rowCount = baseQuery.Count();
 

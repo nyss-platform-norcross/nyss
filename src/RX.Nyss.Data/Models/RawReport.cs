@@ -23,6 +23,7 @@ namespace RX.Nyss.Data.Models
         public string ApiKey { get; set; }
 
         public int? ReportId { get; set; }
+        public bool? IsTraining { get; set; }
         public virtual Report Report { get; set; }
         public virtual DataCollector DataCollector { get; set; }
 

@@ -261,6 +261,7 @@ namespace Rx.Nyss.Web.Tests.Features.Report
                     ReportId = r.Id,
                     DataCollector = r.DataCollector,
                     ReceivedAt = r.ReceivedAt,
+                    IsTraining = r.IsTraining
                 })
                 .ToList();
 

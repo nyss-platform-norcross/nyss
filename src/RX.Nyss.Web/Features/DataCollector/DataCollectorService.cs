@@ -343,7 +343,8 @@ namespace RX.Nyss.Web.Features.DataCollector
 
             var dataCollectorsWithNoReports = dataCollectors
                 .Where(dc => dc.CreatedAt < endDate && (dc.DeletedAt > from || dc.DeletedAt == null))
-                .Where(dc => !dc.RawReports.Any(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
+                .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value
+                                                                           && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
                 .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
                 {
@@ -360,6 +361,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 : _nyssContext.RawReports;
 
             var dataCollectorsWithReports = rawReports
+                .Where(r => r.IsTraining.HasValue && !r.IsTraining.Value)
                 .Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate)
                 .Where(r => r.DataCollector.CreatedAt < endDate && (r.DataCollector.DeletedAt > from || r.DataCollector.DeletedAt == null))
                 .Where(dc => dc.DataCollector.Project.Id == projectId)
@@ -414,7 +416,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .Select(dc => new
                 {
                     DataCollector = dc,
-                    ReportsInTimeRange = dc.RawReports.Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
+                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
+                                                                  &&  r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1) )
                 })
                 .Select(dc => new MapOverviewDataCollectorResponseDto
                 {
