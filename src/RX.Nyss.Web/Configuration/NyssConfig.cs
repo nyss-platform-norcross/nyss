@@ -4,6 +4,7 @@
     {
         string BaseUrl { get; set; }
         string Environment { get; set; }
+        bool IsProduction { get; }
         NyssConfig.LoggingOptions Logging { get; set; }
         NyssConfig.ConnectionStringOptions ConnectionStrings { get; set; }
         NyssConfig.AuthenticationOptions Authentication { get; set; }
@@ -20,6 +21,7 @@
     {
         public string BaseUrl { get; set; }
         public string Environment { get; set; }
+        public bool IsProduction => Environment == "Prod";
         public LoggingOptions Logging { get; set; }
         public ConnectionStringOptions ConnectionStrings { get; set; }
         public AuthenticationOptions Authentication { get; set; }
