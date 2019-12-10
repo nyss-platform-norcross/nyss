@@ -21,7 +21,7 @@
     {
         public string BaseUrl { get; set; }
         public string Environment { get; set; }
-        public bool IsProduction => Environment == "Prod";
+        public bool IsProduction => Environment == NyssEnvironments.Prod;
         public LoggingOptions Logging { get; set; }
         public ConnectionStringOptions ConnectionStrings { get; set; }
         public AuthenticationOptions Authentication { get; set; }
