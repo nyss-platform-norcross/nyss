@@ -8,6 +8,9 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<Report> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.HasIndex(x => x.ReportGroupLabel);
+            //builder.HasIndex(x => x.Location);
+            builder.HasIndex(x => x.ReceivedAt);
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.ReceivedAt).IsRequired();
             builder.Property(x => x.ModifiedAt);
@@ -18,6 +21,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.Location).IsRequired();
             builder.Property(x => x.ReportType).HasConversion<string>().HasMaxLength(20).IsRequired();
             builder.Property(x => x.Status).HasConversion<string>().HasMaxLength(20).IsRequired();
+            builder.Property(x => x.ReportGroupLabel).IsRequired();
             builder.Property(x => x.ReportedCaseCount).IsRequired();
             builder.OwnsOne(x => x.ReportedCase).Property(x => x.CountFemalesBelowFive);
             builder.OwnsOne(x => x.ReportedCase).Property(x => x.CountFemalesAtLeastFive);

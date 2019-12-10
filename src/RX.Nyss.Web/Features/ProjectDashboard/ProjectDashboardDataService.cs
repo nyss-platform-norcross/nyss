@@ -100,8 +100,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     ReportsCount = grouping.Count(),
                     Location = new ProjectSummaryMapResponseDto.MapReportLocation
                     {
-                        Latitude = grouping.Key.X,
-                        Longitude = grouping.Key.Y
+                        Latitude = grouping.Key.Y,
+                        Longitude = grouping.Key.X
                     }
                 })
                 .ToListAsync();
@@ -115,7 +115,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
             return await reports
-                .Where(r => r.Location.X == latitude && r.Location.Y == longitude)
+                .Where(r => r.Location.X == longitude && r.Location.Y == latitude)
                 .Select(r => new
                 {
                     r.ProjectHealthRisk.HealthRiskId,
