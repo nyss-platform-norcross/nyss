@@ -160,6 +160,10 @@
               "value": "~2"
             },
             {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
+            },
+            {
               "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
               "value": "[reference(concat('microsoft.insights/components/', variables('funcAppName')), '2015-05-01').InstrumentationKey]"
             },
@@ -343,6 +347,10 @@
             {
               "name": "FUNCTIONS_EXTENSION_VERSION",
               "value": "~2"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
             },
             {
               "name": "SERVICEBUS_CONNECTIONSTRING",
