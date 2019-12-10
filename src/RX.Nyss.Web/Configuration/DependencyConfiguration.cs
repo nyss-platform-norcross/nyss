@@ -36,7 +36,11 @@ namespace RX.Nyss.Web.Configuration
             RegisterDatabases(serviceCollection, config.ConnectionStrings);
             RegisterAuth(serviceCollection, config.Authentication);
             RegisterWebFramework(serviceCollection);
-            RegisterSwagger(serviceCollection);
+            if (!config.IsProduction)
+            {
+                RegisterSwagger(serviceCollection);
+            }
+
             RegisterServiceCollection(serviceCollection, config);
         }
 
