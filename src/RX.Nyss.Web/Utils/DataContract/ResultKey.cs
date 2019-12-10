@@ -122,6 +122,7 @@
             public const string RemoveSuccess = "healthRisk.remove.success";
             public const string HealthRiskNotFound = "healthRisk.notFound";
             public const string HealthRiskNumberAlreadyExists = "healthRisk.healthRiskNumberAlreadyExists";
+            public const string HealthRiskContainsReports = "healthRisk.healthRiskContainsReports";
         }
 
         public static class Project

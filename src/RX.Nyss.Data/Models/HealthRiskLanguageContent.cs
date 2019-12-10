@@ -12,6 +12,7 @@
 
         public virtual HealthRisk HealthRisk { get; set; }
 
+        public int ContentLanguageId { get; set; }
         public virtual ContentLanguage ContentLanguage { get; set; }
     }
 }
