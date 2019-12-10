@@ -138,6 +138,7 @@
         "type": "SystemAssigned"
       },
       "properties": {
+        "enabled": true,
         "name": "[variables('funcAppName')]",
         "serverFarmId": "[variables('consumptionPlanId')]",
         "httpsOnly": true,
