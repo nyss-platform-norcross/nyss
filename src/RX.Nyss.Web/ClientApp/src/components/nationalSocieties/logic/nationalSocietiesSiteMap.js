@@ -1,7 +1,6 @@
-import { placeholders } from "../../siteMapPlaceholders";
-import { accessMap } from "../../authentication/accessMap";
-import { Administrator, GlobalCoordinator, DataConsumer, Manager, TechnicalAdvisor } from "../../authentication/roles";
-import { strings, stringKeys } from "../../strings";
+import { placeholders } from "../../../siteMapPlaceholders";
+import { accessMap } from "../../../authentication/accessMap";
+import { strings, stringKeys } from "../../../strings";
 
 export const nationalSocietiesSiteMap = [
   {
@@ -20,7 +19,7 @@ export const nationalSocietiesSiteMap = [
     parentPath: "/nationalsocieties",
     path: "/nationalsocieties/:nationalSocietyId",
     title: () => "{nationalSocietyName} ({nationalSocietyCountry})",
-    access: [Administrator, GlobalCoordinator, DataConsumer, Manager]
+    access: accessMap.nationalSocieties.get
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
@@ -34,7 +33,7 @@ export const nationalSocietiesSiteMap = [
     parentPath: "/nationalsocieties/:nationalSocietyId/overview",
     path: "/nationalsocieties/:nationalSocietyId/edit",
     title: () => strings(stringKeys.nationalSociety.form.editionTitle),
-    access: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor]
+    access: accessMap.nationalSocieties.edit
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId",
@@ -42,7 +41,7 @@ export const nationalSocietiesSiteMap = [
     title: () => strings(stringKeys.nationalSociety.settings.title),
     placeholder: placeholders.leftMenu,
     placeholderIndex: 4,
-    access: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor]
+    access: accessMap.nationalSocieties.edit
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/settings",
@@ -50,7 +49,7 @@ export const nationalSocietiesSiteMap = [
     title: () => strings(stringKeys.nationalSociety.overview.title),
     placeholder: placeholders.tabMenu,
     placeholderIndex: 1,
-    access: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
+    access: accessMap.nationalSocieties.edit,
     middleStepOnly: true
   }
 ];

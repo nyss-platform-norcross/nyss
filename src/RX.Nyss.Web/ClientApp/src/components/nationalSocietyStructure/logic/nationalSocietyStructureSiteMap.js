@@ -1,6 +1,6 @@
-import { placeholders } from "../../siteMapPlaceholders";
-import { accessMap } from "../../authentication/accessMap";
-import { strings, stringKeys } from "../../strings";
+import { placeholders } from "../../../siteMapPlaceholders";
+import { accessMap } from "../../../authentication/accessMap";
+import { strings, stringKeys } from "../../../strings";
 
 export const nationalSocietyStructureSiteMap = [
   {
