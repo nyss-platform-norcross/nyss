@@ -17,7 +17,7 @@ import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import { healthRiskTypes } from './logic/healthRisksConstants';
 import { getSaveFormModel } from './logic/healthRisksService';
-import { strings, stringKeys } from '../../strings';
+import { strings, stringKeys, stringsFormat } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 
 const HealthRisksEditPageComponent = (props) => {
@@ -121,7 +121,7 @@ const HealthRisksEditPageComponent = (props) => {
           {props.contentLanguages.map(lang => (
             <Fragment key={`contentLanguage${lang.id}`}>
               <Grid item xs={12}>
-                <Typography variant="h3">{strings(stringKeys.healthRisk.form.translationsSetion, true).replace("{language}", lang.name)}</Typography>
+                <Typography variant="h3">{stringsFormat(stringKeys.healthRisk.form.translationsSetion, { language: lang.name })}</Typography>
 
                 <Grid container spacing={3}>
                   <Grid item xs={12}>

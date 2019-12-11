@@ -410,6 +410,22 @@ export const strings = (key, noEditor) => {
   return value === undefined ? key : value;
 }
 
+export const stringsFormat = (key, data, noEditor) => {
+  const value = stringList[key];
+
+  if (showKeys) {
+    return noEditor
+      ? key
+      : <StringsEditor stringKey={key} />;
+  }
+
+  if (value === undefined) {
+    return key;
+  }
+
+  return Object.keys(data || {}).reduce((result, key) => result.replace(`{${key}}`, data[key]), value || "");
+}
+
 export function updateStrings(strings) {
   Object.assign(stringList, strings);
 }
