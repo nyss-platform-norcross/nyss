@@ -20,5 +20,20 @@ namespace RX.Nyss.Web.Utils.Extensions
 
             return null;
         }
+
+        public static int? GetResourceParameter(this HttpRequest request, string parameterName)
+        {
+            if (request.RouteValues.ContainsKey(parameterName) && int.TryParse(request.RouteValues[parameterName].ToString(), out var idFromRoute))
+            {
+                return idFromRoute;
+            }
+
+            if (request.Query.ContainsKey(parameterName) && int.TryParse(request.Query[parameterName].ToString(), out var idFromQuery))
+            {
+                return idFromQuery;
+            }
+
+            return null;
+        }
     }
 }

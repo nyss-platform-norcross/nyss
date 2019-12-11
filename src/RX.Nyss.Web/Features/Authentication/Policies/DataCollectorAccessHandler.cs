@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.DataCollector;
-using RX.Nyss.Web.Features.Supervisor;
-using RX.Nyss.Web.Features.User;
+using RX.Nyss.Web.Features.NationalSociety;
+using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Authentication.Policies
@@ -22,16 +22,21 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
         private const string RouteParameterName = "dataCollectorId";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INyssContext _nyssContext;
-        private readonly IUserService _userService;
-        private readonly ISupervisorService _supervisorService;
+        private readonly INationalSocietyService _nationalSocietyService;
+        private readonly IProjectService _projectService;
         private readonly IDataCollectorService _dataCollectorService;
 
-        public DataCollectorAccessHandler(IHttpContextAccessor httpContextAccessor, INyssContext nyssContext, ISupervisorService supervisorService, IUserService userService, IDataCollectorService dataCollectorService)
+        public DataCollectorAccessHandler(
+            IHttpContextAccessor httpContextAccessor,
+            INyssContext nyssContext,
+            INationalSocietyService nationalSocietyService,
+            IProjectService projectService,
+            IDataCollectorService dataCollectorService)
         {
             _httpContextAccessor = httpContextAccessor;
             _nyssContext = nyssContext;
-            _supervisorService = supervisorService;
-            _userService = userService;
+            _nationalSocietyService = nationalSocietyService;
+            _projectService = projectService;
             _dataCollectorService = dataCollectorService;
         }
 
@@ -60,14 +65,14 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
                 .Select(dc => new { dc.Id, ProjectId = dc.Project.Id, dc.Project.NationalSocietyId })
                 .SingleAsync(dc => dc.Id == dataCollectorId);
 
-            var hasAccessToNationalSociety = await _userService.GetUserHasAccessToAnyOfProvidedNationalSocieties(new List<int> { dataCollectorData.NationalSocietyId }, identityName, roles);
+            var hasAccessToNationalSociety = await _nationalSocietyService.HasUserAccessNationalSocieties(new List<int> { dataCollectorData.NationalSocietyId }, identityName, roles);
 
             if (!IsSupervisor(roles))
             {
                 return hasAccessToNationalSociety;
             }
 
-            var hasAccessToProject = await _supervisorService.GetSupervisorHasAccessToProject(identityName, dataCollectorData.ProjectId);
+            var hasAccessToProject = await _projectService.HasSupervisorAccessToProject(identityName, dataCollectorData.ProjectId);
             var hasAccessToDataCollector = await _dataCollectorService.GetDataCollectorIsSubordinateOfSupervisor(identityName, dataCollectorId);
 
             return hasAccessToNationalSociety && hasAccessToProject && hasAccessToDataCollector;
