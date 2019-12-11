@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using RX.Nyss.ReportApi.Features.Alerts;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
 
 namespace RX.Nyss.ReportApi.Features.Reports
@@ -18,5 +19,9 @@ namespace RX.Nyss.ReportApi.Features.Reports
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Report report) =>
             await _reportService.ReceiveReport(report) ? (StatusCodeResult) new OkResult() : new BadRequestResult();
+
+        [HttpPost("reject")]
+        public async Task<IActionResult> Reject(int reportId) =>
+            await _reportService.RejectReport(reportId) ? (StatusCodeResult)new OkResult() : new BadRequestResult();
     }
 }

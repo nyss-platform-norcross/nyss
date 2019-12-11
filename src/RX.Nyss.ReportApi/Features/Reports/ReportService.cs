@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using RX.Nyss.ReportApi.Features.Alerts;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Handlers;
 using RX.Nyss.ReportApi.Utils.Logging;
@@ -8,17 +10,20 @@ namespace RX.Nyss.ReportApi.Features.Reports
     public interface IReportService
     {
         Task<bool> ReceiveReport(Report report);
+        Task<bool> RejectReport(int reportId);
     }
 
     public class ReportService : IReportService
     {
         private readonly ISmsEagleHandler _smsEagleHandler;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IAlertService _alertService;
 
-        public ReportService(ISmsEagleHandler smsEagleHandler, ILoggerAdapter loggerAdapter)
+        public ReportService(ISmsEagleHandler smsEagleHandler, ILoggerAdapter loggerAdapter, IAlertService alertService)
         {
             _smsEagleHandler = smsEagleHandler;
             _loggerAdapter = loggerAdapter;
+            _alertService = alertService;
         }
 
         public async Task<bool> ReceiveReport(Report report)
@@ -40,6 +45,20 @@ namespace RX.Nyss.ReportApi.Features.Reports
             }
 
             return true;
+        }
+
+        public async Task<bool> RejectReport(int reportId)
+        {
+            try
+            {
+                await _alertService.ReportRejected(reportId);
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+           
         }
     }
 }
