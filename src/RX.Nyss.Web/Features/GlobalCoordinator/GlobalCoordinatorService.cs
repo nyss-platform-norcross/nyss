@@ -167,8 +167,8 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
                         _loggerAdapter.Debug($"Global coordinator with id {id} was not found");
                         throw new ResultException(ResultKey.User.Common.UserNotFound);
                     }
-                    _deleteUserService.EnsureCanDeleteUser(id, Role.GlobalCoordinator);
 
+                    await _deleteUserService.EnsureCanDeleteUser(id, Role.GlobalCoordinator);
 
                     _dataContext.Users.Remove(globalCoordinator);
                     await _dataContext.SaveChangesAsync();
