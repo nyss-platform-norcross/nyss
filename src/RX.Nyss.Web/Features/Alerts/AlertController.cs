@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Alerts.Dto;
@@ -28,5 +27,58 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber) =>
             _alertService.List(projectId, pageNumber);
+
+        /// <summary>
+        /// Gets information about the alert
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        [HttpGet("{alertId:int}/get")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result<AlertAssessmentResponseDto>> GetAlert(int alertId) =>
+            _alertService.GetAlert(alertId);
+
+        /// <summary>
+        /// Accepts the report
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        /// <param name="reportId">An identifier of the report</param>
+        [HttpGet("{alertId:int}/acceptReport")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId) =>
+            _alertService.AcceptReport(alertId, reportId);
+
+        /// <summary>
+        /// Dismisses the report
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        /// <param name="reportId">An identifier of the report</param>
+        [HttpGet("{alertId:int}/dismissReport")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result<AcceptReportResponseDto>> DismissReport(int alertId, int reportId) =>
+            _alertService.AcceptReport(alertId, reportId);
+
+        /// <summary>
+        /// Escalates the alert
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        [HttpGet("{alertId:int}/escalate")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result> EscalateAlert(int alertId) =>
+            _alertService.EscalateAlert(alertId);
+
+        /// <summary>
+        /// Dismisses the alert
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        [HttpGet("{alertId:int}/escalate")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result> DismissAlert(int alertId) =>
+            _alertService.DismissAlert(alertId);
+
     }
 }

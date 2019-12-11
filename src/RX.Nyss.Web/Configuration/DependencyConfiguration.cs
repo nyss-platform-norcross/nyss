@@ -177,6 +177,10 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.ZoneAccess.ToString(),
                     policy => policy.Requirements.Add(new ZoneAccessRequirement()));
+
+                options.AddPolicy(Policy.AlertAccess.ToString(),
+                    policy => policy.Requirements.Add(new AlertAccessRequirement()));
+
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();

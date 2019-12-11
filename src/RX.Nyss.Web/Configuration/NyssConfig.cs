@@ -64,6 +64,7 @@
         public class ServiceBusQueuesOptions
         {
             public string SendEmailQueue { get; set; }
+            public string ReportDismissalQueue { get; set; }
         }
     }
 }

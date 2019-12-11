@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Services.StringsResources;
@@ -9,6 +10,7 @@ namespace RX.Nyss.Web.Services
     {
         Task<(string subject, string body)> GenerateResetPasswordEmail(string resetUrl, string name, string languageCode);
         Task<(string subject, string body)> GenerateEmailVerificationEmail(Role role, string callbackUrl, string name, string languageCode);
+        Task<(string subject, string body)> GenerateEscalatedAlertEmail(string languageCode);
     }
 
     public class EmailTextGeneratorService : IEmailTextGeneratorService
@@ -17,6 +19,15 @@ namespace RX.Nyss.Web.Services
         public EmailTextGeneratorService(IStringsResourcesService stringsResourcesService)
         {
             _stringsResourcesService = stringsResourcesService;
+        }
+
+        public async Task<(string subject, string body)> GenerateEscalatedAlertEmail(string languageCode)
+        {
+            var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
+            var subject = GetTranslation("email.alertEscalated.subject", languageCode, emailContents.Value);
+            var body = GetTranslation("email.alertEscalated.body", languageCode, emailContents.Value);
+
+            return (subject, body);
         }
 
         public async Task<(string subject, string body)> GenerateResetPasswordEmail(string resetUrl, string name, string languageCode)
@@ -57,6 +68,16 @@ namespace RX.Nyss.Web.Services
                 .Replace("{{link}}", callbackUrl);
 
             return (subject, body);
+        }
+
+        private static string GetTranslation(string key, string languageCode, IDictionary<string, string> translations)
+        {
+            if (!translations.TryGetValue(key, out var value))
+            {
+                throw new Exception($"Could not find translations for {key} with language: {languageCode}");
+            }
+
+            return value;
         }
 
         private static string GetRoleName(Role userRole) =>
