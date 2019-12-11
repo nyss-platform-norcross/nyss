@@ -171,8 +171,8 @@ export const stringKeys = {
     dashboard: {
       title: "project.dashboard.title",
       numbers: {
-        totalReportCount: "project.dashboard.totalReportCount",
-        totalReportCount: "project.dashboard.totalReportCountTitle"
+        totalReportCount: "project.dashboard.numbers.totalReportCount",
+        totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle"
       },
       filters: {
         startDate: "project.dashboard.filters.startDate",
