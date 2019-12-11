@@ -111,7 +111,7 @@ const HealthRisksCreatePageComponent = (props) => {
           {props.contentLanguages.map(lang => (
             <Fragment key={`contentLanguage${lang.id}`}>
               <Grid item xs={12}>
-                <Typography variant="h3">{strings(stringKeys.healthRisk.form.translationsSetion).replace("{language}", lang.name)}</Typography>
+                <Typography variant="h3">{strings(stringKeys.healthRisk.form.translationsSetion, true).replace("{language}", lang.name)}</Typography>
 
                 <Grid container spacing={3}>
                   <Grid item xs={12}>
