@@ -4,7 +4,7 @@ import * as authActions from "../authentication/authActions";
 import * as appActions from "../components/app/logic/appActions";
 import * as http from "../utils/http";
 import * as auth from "./auth";
-import { strings } from "../strings";
+import { strings, stringKeys } from "../strings";
 
 export const authSagas = () => [
   takeEvery(consts.LOGIN.INVOKE, login),
@@ -64,7 +64,7 @@ function* resetPassword({ email }) {
   try {
     yield call(http.post, "/api/userverification/resetPassword", { email }, true);
     yield put(authActions.resetPassword.success());
-    yield put(appActions.showMessage("An e-mail with a link to reset your password has been sent."));
+    yield put(appActions.showMessage(strings(stringKeys.user.resetPassword.emailSent)));
   } catch (error) {
     yield put(authActions.resetPassword.failure(error.message));
   }

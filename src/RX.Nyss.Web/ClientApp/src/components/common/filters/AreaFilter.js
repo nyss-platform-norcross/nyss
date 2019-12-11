@@ -83,7 +83,7 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
         onClick={handleDropdownClick}
         ref={triggerRef}
         className={styles.field}
-        label={"Area"}
+        label={strings(stringKeys.filters.area.title)}
         InputProps={{
           readOnly: true
         }}
