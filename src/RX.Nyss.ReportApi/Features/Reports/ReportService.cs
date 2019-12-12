@@ -10,7 +10,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
     public interface IReportService
     {
         Task<bool> ReceiveReport(Report report);
-        Task<bool> RejectReport(int reportId);
+        Task<bool> DismissReport(int reportId);
     }
 
     public class ReportService : IReportService
@@ -47,11 +47,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
             return true;
         }
 
-        public async Task<bool> RejectReport(int reportId)
+        public async Task<bool> DismissReport(int reportId)
         {
             try
             {
-                await _alertService.ReportRejected(reportId);
+                await _alertService.ReportDismissed(reportId);
                 return true;
             }
             catch (Exception e)

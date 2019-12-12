@@ -13,7 +13,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
     public interface IAlertService
     {
         Task<Alert> ReportAdded(Report report);
-        Task ReportRejected(int reportId);
+        Task ReportDismissed(int reportId);
         void SendNotificationsForNewAlert(Alert alert);
     }
 
@@ -121,7 +121,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return _nyssContext.AlertReports.AddRangeAsync(alertReports);
         }
 
-        public async Task ReportRejected(int reportId)
+        public async Task ReportDismissed(int reportId)
         {
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
