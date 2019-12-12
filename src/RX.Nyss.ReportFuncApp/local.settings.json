@@ -5,7 +5,7 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "SERVICEBUS_CONNECTIONSTRING": "",
-    "SERVICEBUS_REPORTQUEUE": "nrx-cbs-dev-nyss-bus-report-queue",
+    "SERVICEBUS_REPORTQUEUE": "nrx-cbs-nyss-bus-report-queue-dev",
     "ReportApiUrl": "https://localhost:5003/api/Report"
   },
   "Host": {
