@@ -812,6 +812,17 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             {
                                 new RX.Nyss.Data.Models.Report
                                 {
+                                    IsTraining = false,
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                },
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
@@ -831,6 +842,17 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             {
                                 new RX.Nyss.Data.Models.Report
                                 {
+                                    IsTraining = false,
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                },
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
@@ -870,6 +892,17 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             {
                                 new RX.Nyss.Data.Models.Report
                                 {
+                                    IsTraining = false,
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                },
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
@@ -886,6 +919,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             {
                                 new RX.Nyss.Data.Models.Report
                                 {
+                                    IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
@@ -895,6 +929,17 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                                 },
                                 new RX.Nyss.Data.Models.Report
                                 {
+                                    IsTraining = false,
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                },
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
@@ -914,6 +959,17 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             {
                                 new RX.Nyss.Data.Models.Report
                                 {
+                                    IsTraining = false,
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                },
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
@@ -940,6 +996,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                             {
                                 new RX.Nyss.Data.Models.Report
                                 {
+                                    IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
@@ -949,6 +1006,17 @@ namespace Rx.Nyss.Web.Tests.Features.Project
                                 },
                                 new RX.Nyss.Data.Models.Report
                                 {
+                                    IsTraining = false,
+                                    ProjectHealthRisk = projectHealthRisk,
+                                    ReceivedAt = new DateTime(2019, 1, 1),
+                                    ReportedCase = new ReportCase
+                                    {
+                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                    }
+                                },
+                                new RX.Nyss.Data.Models.Report
+                                {
+                                    IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
