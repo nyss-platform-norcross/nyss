@@ -26,7 +26,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
 
   const headManagers = list.filter((u) => { return u.isHeadManager; });
   const hasSimilarAccess = user.roles.filter((r) => { return accessMap.nationalSocietyUsers.headManagerAccess.indexOf(r) !== -1; }).length > 0;
-  const hasHeadManagerAccess = hasSimilarAccess || user.name === (headManagers.length > 0 && headManagers[0].email)
+  const hasHeadManagerAccess = hasSimilarAccess || user.email === (headManagers.length > 0 && headManagers[0].email)
 
   return (
     <Table>

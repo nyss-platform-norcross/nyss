@@ -77,7 +77,6 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <param name="requestDto"></param>
         /// <returns></returns>
         [HttpPost("{nationalSocietyId}/setHeadManager")]
-        //ToDo: 
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.HeadManagerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> SetHeadManager(int nationalSocietyId, [FromBody]SetAsHeadManagerRequestDto requestDto) =>
             await _nationalSocietyService.SetPendingHeadManager(nationalSocietyId, requestDto.UserId);
