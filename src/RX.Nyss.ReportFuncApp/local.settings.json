@@ -6,6 +6,7 @@
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "SERVICEBUS_CONNECTIONSTRING": "",
     "SERVICEBUS_REPORTQUEUE": "nrx-cbs-nyss-bus-report-queue-dev",
+    "SERVICEBUS_REPORTDISMISSALQUEUE": "nrx-cbs-nyss-bus-reportdismissal-queue-dev",
     "ReportApiUrl": "https://localhost:5003/api/Report"
   },
   "Host": {
