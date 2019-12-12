@@ -1,18 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Features.HealthRisk;
-using Xunit;
 using RX.Nyss.Data.Concepts;
-using System.Collections.Generic;
-using Shouldly;
 using RX.Nyss.Data.Models;
-using System.Linq;
-using MockQueryable.NSubstitute;
-using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.HealthRisk.Dto;
+using RX.Nyss.Web.Utils.DataContract;
+using Shouldly;
+using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.HealthRisk
+namespace RX.Nyss.Web.Tests.Features.HealthRisk
 {
     public class HealthRiskServiceTests
     {
@@ -39,7 +39,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             _nyssContextMock = Substitute.For<INyssContext>();
             _healthRiskService = new HealthRiskService(_nyssContextMock);
 
-            var users = new List<User>
+            var users = new List<Nyss.Data.Models.User>
             {
                 new GlobalCoordinatorUser
                 {
@@ -456,7 +456,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             _nyssContextMock.HealthRisks.DidNotReceiveWithAnyArgs().Remove(null);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskNotFound);
-        }
+    }
 
         [Fact]
         public async Task RemoveHealthRisk_WhenHealthRiskContainsReports_ShouldReturnError()
@@ -469,7 +469,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     Reports = new List<RX.Nyss.Data.Models.Report>
                     {
                         new RX.Nyss.Data.Models.Report()
-                    }
+}
                 }
             };
 

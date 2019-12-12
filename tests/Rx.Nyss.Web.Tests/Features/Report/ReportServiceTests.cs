@@ -14,7 +14,7 @@ using RX.Nyss.Web.Features.User;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Report
+namespace RX.Nyss.Web.Tests.Features.Report
 {
     public class ReportServiceTests
     {

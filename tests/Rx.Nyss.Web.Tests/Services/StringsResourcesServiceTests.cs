@@ -8,7 +8,7 @@ using RX.Nyss.Web.Services.StringsResources;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Services
+namespace RX.Nyss.Web.Tests.Services
 {
     public class StringsResourcesServiceTests
     {

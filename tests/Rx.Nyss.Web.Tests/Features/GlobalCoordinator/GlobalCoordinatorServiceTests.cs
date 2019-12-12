@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.GlobalCoordinator;
 using RX.Nyss.Web.Features.GlobalCoordinator.Dto;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
+namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
 {
     public class GlobalCoordinatorServiceTests
     {
@@ -53,9 +50,9 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         }
 
         private void ArrangeUsersDbSetWithOneAdministratorUser() =>
-            ArrangeUsersDbSetWithExistingUsers(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
+            ArrangeUsersDbSetWithExistingUsers(new List<Nyss.Data.Models.User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
 
-        private void ArrangeUsersDbSetWithExistingUsers(IEnumerable<User> existingUsers)
+        private void ArrangeUsersDbSetWithExistingUsers(IEnumerable<Nyss.Data.Models.User> existingUsers)
         {
             var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
@@ -68,7 +65,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         }
 
         private void ArrangeUSersDbSetWithOneGlobalCoordinator() =>
-            ArrangeUsersDbSetWithExistingUsers(new List<User>
+            ArrangeUsersDbSetWithExistingUsers(new List<Nyss.Data.Models.User>
             {
                 new GlobalCoordinatorUser
                 {
@@ -95,7 +92,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<Nyss.Data.Models.User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 
@@ -159,7 +156,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         [Fact]
         public async Task EditGlobalCoordinator_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            var nyssUsers = new List<User>();
+            var nyssUsers = new List<Nyss.Data.Models.User>();
             var usersDbSet = nyssUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
 
@@ -236,7 +233,7 @@ namespace Rx.Nyss.Web.Tests.Features.GlobalCoordinator
         [Fact]
         public async Task GetGlobalCoordinators_OnlyGlobalCoordinatorsAreReturned()
         {
-            var nyssUsers = new List<User>()
+            var nyssUsers = new List<Nyss.Data.Models.User>()
             {
                 new GlobalCoordinatorUser() { Id = 1, Role = Role.GlobalCoordinator },
                 new GlobalCoordinatorUser() { Id = 2, Role = Role.GlobalCoordinator },

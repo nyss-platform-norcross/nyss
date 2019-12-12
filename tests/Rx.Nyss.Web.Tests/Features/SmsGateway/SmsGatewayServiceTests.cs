@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
@@ -17,7 +16,7 @@ using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.SmsGateway
+namespace RX.Nyss.Web.Tests.Features.SmsGateway
 {
     public class SmsGatewayServiceTests
     {

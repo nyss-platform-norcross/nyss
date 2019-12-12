@@ -19,7 +19,7 @@ using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Project
+namespace RX.Nyss.Web.Tests.Features.Project
 {
     public class ProjectServiceTests
     {

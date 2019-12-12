@@ -10,14 +10,13 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Supervisor;
 using RX.Nyss.Web.Features.Supervisor.Dto;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Supervisor
+namespace RX.Nyss.Web.Tests.Features.Supervisor
 {
     public class SupervisorServiceTests
     {
@@ -92,7 +91,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
                 }
             };
 
-            var users = new List<User>
+            var users = new List<Nyss.Data.Models.User>
             {
                 new AdministratorUser() { Id = _administratorId, Role = Role.Administrator },
                 new SupervisorUser
@@ -213,7 +212,7 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
             var result = await _supervisorService.Create(nationalSocietyId, registerSupervisorRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<Nyss.Data.Models.User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 

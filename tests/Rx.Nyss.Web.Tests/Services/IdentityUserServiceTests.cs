@@ -13,7 +13,7 @@ using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Services
+namespace RX.Nyss.Web.Tests.Services
 {
     public class IdentityUserServiceTests
     {

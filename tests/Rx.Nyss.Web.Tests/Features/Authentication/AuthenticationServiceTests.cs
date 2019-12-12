@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -16,7 +15,7 @@ using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Authentication
+namespace RX.Nyss.Web.Tests.Features.Authentication
 {
     public class AuthenticationServiceTests
     {
@@ -33,7 +32,7 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
             _user = new AdministratorUser { EmailAddress = UserEmail, Name = UserName };
-            _nyssContext.Users = new List<User>{ _user }.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users = new List<Nyss.Data.Models.User>{ _user }.AsQueryable().BuildMockDbSet();
             _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
         }
 
@@ -56,7 +55,7 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         [Fact]
         public async Task Login_WhenSuccessful_ReturnsToken()
         {
-            var nyssUsers = new List<User>();
+            var nyssUsers = new List<Nyss.Data.Models.User>();
             var userNationalSocieties = new List<UserNationalSociety>();
             var usersDbSet = nyssUsers.AsQueryable().BuildMockDbSet();
             var usersNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();

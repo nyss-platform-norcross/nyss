@@ -10,14 +10,13 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.DataConsumer;
 using RX.Nyss.Web.Features.DataConsumer.Dto;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.DataConsumer
+namespace RX.Nyss.Web.Tests.Features.DataConsumer
 {
     public class DataConsumerServiceTests
     {
@@ -47,7 +46,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             SetupTestNationalSocieties();
         }
 
-        private User ArrangeUsersDbSetWithOneDataConsumer()
+        private Nyss.Data.Models.User ArrangeUsersDbSetWithOneDataConsumer()
         {
             var dataConsumer = new DataConsumerUser
             {
@@ -59,11 +58,11 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
                 PhoneNumber = "123",
                 AdditionalPhoneNumber = "321"
             };
-            ArrangeUsersFrom(new List<User> { dataConsumer });
+            ArrangeUsersFrom(new List<Nyss.Data.Models.User> { dataConsumer });
             return dataConsumer;
         }
 
-        private User ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety()
+        private Nyss.Data.Models.User ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety()
         {
             var dataConsumer = ArrangeUsersDbSetWithOneDataConsumer();
 
@@ -79,7 +78,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         }
 
 
-        private User ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties()
+        private Nyss.Data.Models.User ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties()
         {
             var dataConsumer = ArrangeUsersDbSetWithOneDataConsumer();
 
@@ -95,7 +94,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             return dataConsumer;
         }
 
-        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
+        private void ArrangeUsersFrom(IEnumerable<Nyss.Data.Models.User> existingUsers)
         {
             var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
@@ -121,7 +120,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         }
 
         private void ArrangeUsersWithOneAdministratorUser() =>
-            ArrangeUsersFrom(new List<User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
+            ArrangeUsersFrom(new List<Nyss.Data.Models.User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
 
 
         private void SetupTestNationalSocieties()
@@ -155,7 +154,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
             var result = await _dataConsumerService.CreateDataConsumer(nationalSocietyId, registerDataConsumerRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<Nyss.Data.Models.User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 
@@ -220,7 +219,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataConsumer
         [Fact]
         public async Task EditDataConsumer_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            ArrangeUsersFrom(new List<User> { });
+            ArrangeUsersFrom(new List<Nyss.Data.Models.User> { });
 
 
             var result = await _dataConsumerService.UpdateDataConsumer(123, new EditDataConsumerRequestDto() {});

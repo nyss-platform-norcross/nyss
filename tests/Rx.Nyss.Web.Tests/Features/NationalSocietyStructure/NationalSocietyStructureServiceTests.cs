@@ -9,7 +9,7 @@ using RX.Nyss.Web.Features.NationalSocietyStructure;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.NationalSocietyStructure
+namespace RX.Nyss.Web.Tests.Features.NationalSocietyStructure
 {
     public class NationalSocietyStructureServiceTests
     {

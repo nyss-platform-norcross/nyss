@@ -13,7 +13,7 @@ using RX.Nyss.Web.Features.Authentication.Policies;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Authentication.Policies
+namespace RX.Nyss.Web.Tests.Features.Authentication.Policies
 {
     public class SmsGatewayAccessHandlerTests
     {

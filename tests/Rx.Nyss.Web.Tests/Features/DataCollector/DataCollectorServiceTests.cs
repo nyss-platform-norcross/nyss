@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using MockQueryable.NSubstitute;
 using NetTopologySuite.Geometries;
 using NSubstitute;
@@ -20,7 +19,7 @@ using Shouldly;
 using Xunit;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
-namespace Rx.Nyss.Web.Tests.Features.DataCollector
+namespace RX.Nyss.Web.Tests.Features.DataCollector
 {
     public class DataCollectorServiceTests
     {
@@ -55,7 +54,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             {
                 new RX.Nyss.Data.Models.NationalSociety { Id = NationalSocietyId }
             };
-            var users = new List<User>
+            var users = new List<Nyss.Data.Models.User>
             {
                 new SupervisorUser { Id = SupervisorId, Role = Role.Supervisor }
             };

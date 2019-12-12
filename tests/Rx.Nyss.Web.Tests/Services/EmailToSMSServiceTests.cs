@@ -5,7 +5,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Services;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Services
+namespace RX.Nyss.Web.Tests.Services
 {
     public class EmailToSMSServiceTests
     {

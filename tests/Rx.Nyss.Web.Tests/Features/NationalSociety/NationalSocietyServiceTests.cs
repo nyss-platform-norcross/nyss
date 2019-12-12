@@ -1,23 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MockQueryable.NSubstitute;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSociety;
+using RX.Nyss.Web.Features.NationalSociety.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
-using NSubstitute.ExceptionExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using MockQueryable.NSubstitute;
-using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Features.NationalSociety.Dto;
-using RX.Nyss.Web.Features.User;
 
-namespace Rx.Nyss.Web.Tests.Features.NationalSociety
+namespace RX.Nyss.Web.Tests.Features.NationalSociety
 {
     public class NationalSocietyServiceTests
     {
@@ -44,7 +43,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 
             // Arrange
 
-            var users = new List<User> { new ManagerUser { EmailAddress = "yo" } };
+            var users = new List<Nyss.Data.Models.User> { new ManagerUser { EmailAddress = "yo" } };
 
             var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
             {
@@ -240,7 +239,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         public async Task SetAsHead_WhenUserNotFound_ShouldReturnNotFound()
         {
             // Arrange
-            var users = new List<User>{new ManagerUser{EmailAddress = "no-yo"}};
+            var users = new List<Nyss.Data.Models.User>{new ManagerUser{EmailAddress = "no-yo"}};
             var mockDbSet = users.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Users.Returns(mockDbSet);
 
