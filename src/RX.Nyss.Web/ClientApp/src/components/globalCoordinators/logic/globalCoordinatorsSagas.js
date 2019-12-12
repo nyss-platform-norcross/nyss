@@ -3,6 +3,7 @@ import * as consts from "./globalCoordinatorsConstants";
 import * as actions from "./globalCoordinatorsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
+import { strings, stringKeys } from "../../../strings";
 
 export const globalCoordinatorsSagas = () => [
   takeEvery(consts.GET_GLOBAL_COORDINATORS.INVOKE, getGlobalCoordinators),
@@ -52,7 +53,7 @@ function* createGlobalCoordinator({ data }) {
     http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList());
-    yield put(appActions.showMessage("The Global Coordinator was added successfully"));
+    yield put(appActions.showMessage(strings(stringKeys.globalCoordinator.create.success)));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }

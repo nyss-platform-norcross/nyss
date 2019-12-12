@@ -5,6 +5,7 @@ import * as actions from "./nationalSocietiesActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { push } from "connected-react-router";
+import { strings, stringKeys } from "../../../strings";
 
 export const nationalSocietiesSagas = () => [
   takeEvery(consts.GET_NATIONAL_SOCIETIES.INVOKE, getNationalSocieties),
@@ -89,7 +90,7 @@ function* createNationalSociety({ data }) {
     const response = yield call(http.post, "/api/nationalSociety/create", data);
     yield put(actions.create.success(response.value));
     yield put(push(`/nationalsocieties/${response.value}`));
-    yield put(appActions.showMessage("The National Society was added successfully"));
+    yield put(appActions.showMessage(strings(stringKeys.nationalSociety.create.success)));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }

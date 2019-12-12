@@ -10,6 +10,7 @@ import { Map, TileLayer, Popup } from 'react-leaflet'
 import { calculateBounds, calculateCenter } from '../../../utils/map';
 import { ClusterIcon } from '../../common/map/ClusterIcon';
 import { Loading } from '../../common/loading/Loading';
+import { strings, stringKeys } from "../../../strings";
 
 export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, projectId, getReportHealthRisks }) => {
   const [bounds, setBounds] = useState(null);
@@ -29,7 +30,7 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
 
   return (
     <Card>
-      <CardHeader title="Map" />
+      <CardHeader title={strings(stringKeys.project.dashboard.map.title)} />
       <CardContent>
         <Map
           style={{ height: "500px" }}
@@ -60,7 +61,7 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
                         <div>
                           {details && details.map(h => (
                             <div className={styles.reportHealthRiskDetails} key={`reportHealthRisk_${h.name}`}>
-                              {h.name}: {h.value} reports
+                              {h.name}: {h.value} {strings(stringKeys.project.dashboard.map.reports)}
                             </div>
                           ))}
                         </div>

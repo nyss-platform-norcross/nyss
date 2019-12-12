@@ -31,6 +31,9 @@ export const stringKeys = {
       create: "nationalSociety.form.create",
       update: "nationalSociety.form.update"
     },
+    create: {
+      success: "nationalSociety.create.success"
+    },
     list: {
       name: "nationalSociety.list.name",
       country: "nationalSociety.list.country",
@@ -90,6 +93,9 @@ export const stringKeys = {
       healthRiskType: "healthRisk.list.healthRiskType",
       removalConfirmation: "healthRisk.list.removalConfirmation"
     },
+    create: {
+      success: "healthRisk.create.success"
+    },
     constants: {
       healthRiskType: {
         human: "healthRisk.type.human",
@@ -111,6 +117,9 @@ export const stringKeys = {
       emailAddress: "smsGateway.form.emailAddress",
       create: "smsGateway.form.create",
       update: "smsGateway.form.update"
+    },
+    create: {
+      success: "smsGateway.create.success"
     },
     list: {
       name: "smsGateway.list.name",
@@ -142,6 +151,9 @@ export const stringKeys = {
       create: "project.form.create",
       update: "project.form.update"
     },
+    create: {
+      success: "project.create.success"
+    },
     list: {
       name: "project.list.name",
       totalReportCount: "project.list.totalReportCount",
@@ -159,7 +171,8 @@ export const stringKeys = {
     dashboard: {
       title: "project.dashboard.title",
       numbers: {
-        totalReportCount: "project.dashboard.totalReportCount"
+        totalReportCount: "project.dashboard.numbers.totalReportCount",
+        totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle"
       },
       filters: {
         startDate: "project.dashboard.filters.startDate",
@@ -205,7 +218,9 @@ export const stringKeys = {
       supervisorPhoneNumber: "project.dashboard.supervisorPhoneNumber",
       supervisorAdditionalPhoneNumber: "project.dashboard.supervisorAdditionalPhoneNumber",
       map: {
-        reportCount: "project.dashboard.map.reportCount"
+        reportCount: "project.dashboard.map.reportCount",
+        title: "project.dashboard.map.title",
+        reports: "project.dashboard.map.reports",
       }
     },
     settings: "project.settings.title"
@@ -231,6 +246,9 @@ export const stringKeys = {
       organization: "globalCoordinator.list.organization",
       removalConfirmation: "globalCoordinator.list.removalConfirmation"
     },
+    create: {
+      success: "globalCoordinator.create.success"
+    }
   },
   nationalSocietyUser: {
     title: "nationalSocietyUser.title",
@@ -254,6 +272,9 @@ export const stringKeys = {
       create: "nationalSocietyUser.form.create",
       addExisting: "nationalSocietyUser.form.addExisting",
       update: "nationalSocietyUser.form.update"
+    },
+    create: {
+      success: "nationalSocietyUser.create.success"
     },
     list: {
       name: "nationalSocietyUser.list.name",
@@ -345,6 +366,7 @@ export const stringKeys = {
   },
   filters: {
     area: {
+      title: "filters.area.title",
       all: "filters.area.all"
     }
   },
@@ -371,7 +393,8 @@ export const stringKeys = {
       emailAddress: "user.resetPassword.emailAddress",
       submit: "user.resetPassword.submit",
       enterNewPassword: "user.resetPassword.enterNewPassword",
-      notFound: "user.resetPassword.notFound"
+      notFound: "user.resetPassword.notFound",
+      emailSent: "user.resetPassword.emailSent"
     }
   },
   validation: {

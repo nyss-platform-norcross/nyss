@@ -1,3 +1,5 @@
+import styles from "./NationalSocietiesOverviewPage.module.scss";
+
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -9,7 +11,6 @@ import { Loading } from '../common/loading/Loading';
 import Button from '@material-ui/core/Button';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
-import ReadOnlyField from '../forms/ReadOnlyField';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from '../../strings';
@@ -26,26 +27,32 @@ const NationalSocietiesOverviewPageComponent = (props) => {
   return (
     <Fragment>
       <Form>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} className={styles.overviewData}>
           <Grid item xs={12}>
-            <ReadOnlyField
-              label={strings(stringKeys.nationalSociety.form.name)}
-              value={props.data.name}
-            />
+            <Typography variant="h6" className={styles.label}>
+              {strings(stringKeys.nationalSociety.form.name)}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.name}
+            </Typography>
           </Grid>
 
           <Grid item xs={12}>
-            <ReadOnlyField
-              label={strings(stringKeys.nationalSociety.form.country)}
-              value={props.data.countryName}
-            />
+            <Typography variant="h6" className={styles.label}>
+              {strings(stringKeys.nationalSociety.form.country)}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.countryName}
+            </Typography>
           </Grid>
 
           <Grid item xs={12}>
-            <ReadOnlyField
-              label={strings(stringKeys.nationalSociety.form.contentLanguage)}
-              value={props.data.contentLanguageName}
-            />
+            <Typography variant="h6" className={styles.label}>
+              {strings(stringKeys.nationalSociety.form.contentLanguage)}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.contentLanguageName}
+            </Typography>
           </Grid>
         </Grid>
 

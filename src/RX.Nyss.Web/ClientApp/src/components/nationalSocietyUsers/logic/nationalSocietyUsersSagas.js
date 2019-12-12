@@ -90,7 +90,7 @@ function* addExistingNationalSocietyUser({ nationalSocietyId, data }) {
     const response = yield call(http.post, `/api/user/addExisting?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
-    yield put(appActions.showMessage("The User was added successfully"));
+    yield put(appActions.showMessage(strings(stringKeys.nationalSocietyUser.create.success)));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
