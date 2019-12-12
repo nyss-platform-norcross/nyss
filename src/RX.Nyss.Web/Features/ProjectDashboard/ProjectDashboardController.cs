@@ -29,8 +29,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// Gets filters data for the project dashboard
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
-        [HttpGet("filters"), NeedsPolicy(Policy.ProjectAccess)]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        [HttpGet("filters")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<ProjectDashboardFiltersResponseDto>> GetFilters(int projectId) =>
             _projectDashboardService.GetDashboardFiltersData(projectId);
 
@@ -39,8 +39,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
         /// <returns>A summary of specified project</returns>
-        [HttpPost("data"), NeedsPolicy(Policy.ProjectAccess)]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
+        [HttpPost("data")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<ProjectDashboardResponseDto>> GetData(int projectId, [FromBody]FiltersRequestDto dto) =>
             _projectDashboardService.GetDashboardData(projectId, dto);
 
@@ -51,8 +51,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// <param name="latitude">Latitude of chosen location</param>
         /// <param name="longitude">Longitude of chosen location</param>
         /// <param name="filters">Filters</param>
-        [HttpPost("reportHealthRisks"), NeedsPolicy(Policy.ProjectAccess)]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
+        [HttpPost("reportHealthRisks")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<IEnumerable<ProjectSummaryReportHealthRiskResponseDto>>> GetReportHealthRisks(int projectId, double latitude, double longitude, [FromBody]FiltersRequestDto filters) =>
             Success(await _projectDashboardDataService.GetProjectReportHealthRisks(projectId, latitude, longitude, filters));
     }

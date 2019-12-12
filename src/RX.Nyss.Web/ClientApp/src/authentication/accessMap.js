@@ -15,7 +15,7 @@ export const accessMap = {
     delete: [Administrator, Manager, TechnicalAdvisor]
   },
   projects: {
-    get: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    get: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
     list: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
     add: [Administrator, Manager, TechnicalAdvisor],
     edit: [Administrator, Manager, TechnicalAdvisor],
@@ -25,7 +25,8 @@ export const accessMap = {
     list: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
     add: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
     edit: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
-    delete: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor]
+    delete: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
+    headManagerAccess: [GlobalCoordinator, Administrator, TechnicalAdvisor]
   },
   globalCoordinators: {
     list: [Administrator, GlobalCoordinator],

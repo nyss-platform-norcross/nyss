@@ -5,7 +5,6 @@ using RX.Nyss.Web.Features.Authentication.Policies;
 using RX.Nyss.Web.Features.Manager.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Manager
 {
@@ -36,7 +35,7 @@ namespace RX.Nyss.Web.Features.Manager
         /// <param name="managerId">The ID of the requested manager</param>
         /// <returns></returns>
         [HttpGet("{managerId:int}/get")]
-        //[NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Get(int managerId) =>
             await _managerService.GetManager(managerId);
 
