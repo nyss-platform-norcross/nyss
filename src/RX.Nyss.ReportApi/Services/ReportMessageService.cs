@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Linq;
+using System.Text.RegularExpressions;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.ReportApi.Exceptions;
 using RX.Nyss.ReportApi.Models;
@@ -16,7 +18,6 @@ namespace RX.Nyss.ReportApi.Services
         private const int Female = 2;
         private const int BelowFive = 1;
         private const int AtLeastFive = 2;
-        private const int ActivityCode = 99;
 
         private const string SingleReportPattern = @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<sex>[1-2])\k<separator>(?<ageGroup>[1-2])$";
         private static readonly Regex SingleReportRegex = new Regex(SingleReportPattern, RegexOptions.Compiled);
@@ -26,6 +27,13 @@ namespace RX.Nyss.ReportApi.Services
 
         private const string EventReportPattern = @"^(?<eventCode>[1-9][0-9]*)$";
         private static readonly Regex EventReportRegex = new Regex(EventReportPattern, RegexOptions.Compiled);
+
+        private readonly INyssContext _nyssContext;
+
+        public ReportMessageService(INyssContext nyssContext)
+        {
+            _nyssContext = nyssContext;
+        }
 
         public ParsedReport ParseReport(string reportMessage)
         {
@@ -107,17 +115,22 @@ namespace RX.Nyss.ReportApi.Services
             return parsedReport;
         }
 
-        private static ParsedReport ParseEventReport(string reportMessage)
+        private ParsedReport ParseEventReport(string reportMessage)
         {
             var eventReportMatch = EventReportRegex.Match(reportMessage);
             var eventCodeMatch = eventReportMatch.Groups["eventCode"].Value;
 
             var eventCode = int.Parse(eventCodeMatch);
 
+            var activityCodes = _nyssContext.HealthRisks
+                .Where(hr => hr.HealthRiskType == HealthRiskType.Activity)
+                .Select(hr => hr.HealthRiskCode)
+                .ToList();
+            
             var parsedReport = new ParsedReport
             {
                 HealthRiskCode = eventCode,
-                ReportType = eventCode == ActivityCode ? ReportType.Activity : ReportType.NonHuman,
+                ReportType = activityCodes.Contains(eventCode) ? ReportType.Activity : ReportType.NonHuman,
                 DataCollectorType = DataCollectorType.Human
             };
 
