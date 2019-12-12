@@ -85,7 +85,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         {
             if (await _nyssContext.HealthRisks.AnyAsync(hr => hr.HealthRiskCode == healthRiskRequestDto.HealthRiskCode))
             {
-                return Error(ResultKey.HealthRisk.HealthRiskNumberAlreadyExists).Cast<int>();
+                return Error(ResultKey.HealthRisk.HealthRiskNumberAlreadyExists);
             }
 
             var languageContentIds = healthRiskRequestDto.LanguageContent.Select(lc => lc.LanguageId).ToArray();
@@ -122,7 +122,8 @@ namespace RX.Nyss.Web.Features.HealthRisk
         {
             var healthRisk = await _nyssContext.HealthRisks
                 .Include(hr => hr.AlertRule)
-                .Include(hr => hr.LanguageContents).ThenInclude(lc => lc.ContentLanguage)
+                .Include(hr => hr.LanguageContents)
+                    .ThenInclude(lc => lc.ContentLanguage)
                 .SingleOrDefaultAsync(hr => hr.Id == id);
 
             if (healthRisk == null)
@@ -132,7 +133,12 @@ namespace RX.Nyss.Web.Features.HealthRisk
 
             if (await _nyssContext.HealthRisks.AnyAsync(hr => hr.Id != id && hr.HealthRiskCode == healthRiskRequestDto.HealthRiskCode))
             {
-                return Error(ResultKey.HealthRisk.HealthRiskNumberAlreadyExists).Cast<int>();
+                return Error(ResultKey.HealthRisk.HealthRiskNumberAlreadyExists);
+            }
+
+            if (CodeOrNameWasChanged(healthRiskRequestDto, healthRisk) && await HealthRiskContainsReports(id))
+            {
+                return Error(ResultKey.HealthRisk.HealthRiskContainsReports);
             }
 
             healthRisk.HealthRiskCode = healthRiskRequestDto.HealthRiskCode;
@@ -151,6 +157,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
                 {
                     _nyssContext.AlertRules.Remove(healthRisk.AlertRule);
                 }
+
                 healthRisk.AlertRule = null;
             }
 
@@ -169,25 +176,22 @@ namespace RX.Nyss.Web.Features.HealthRisk
             return SuccessMessage(ResultKey.HealthRisk.EditSuccess);
         }
 
-        private HealthRiskLanguageContent CreateNewLanguageContent(Nyss.Data.Models.HealthRisk healthRisk, int languageId)
-        {
-            var newLanguageContent = new HealthRiskLanguageContent
-            {
-                HealthRisk = healthRisk,
-                ContentLanguage = _nyssContext.ContentLanguages.Attach(new ContentLanguage { Id = languageId }).Entity
-            };
-
-            healthRisk.LanguageContents.Add(newLanguageContent);
-
-            return newLanguageContent;
-        }
-
         public async Task<Result> RemoveHealthRisk(int id)
         {
             var healthRisk = await _nyssContext.HealthRisks
                 .Include(hr => hr.AlertRule)
                 .Include(hr => hr.LanguageContents)
                 .SingleOrDefaultAsync(hr => hr.Id == id);
+
+            if (healthRisk == null)
+            {
+                return Error(ResultKey.HealthRisk.HealthRiskNotFound);
+            }
+
+            if (await HealthRiskContainsReports(id))
+            {
+                return Error(ResultKey.HealthRisk.HealthRiskContainsReports);
+            }
 
             if (healthRisk.AlertRule != null)
             {
@@ -198,6 +202,29 @@ namespace RX.Nyss.Web.Features.HealthRisk
             await _nyssContext.SaveChangesAsync();
 
             return SuccessMessage(ResultKey.HealthRisk.RemoveSuccess);
+        }
+
+        private static bool CodeOrNameWasChanged(HealthRiskRequestDto healthRiskRequestDto, Nyss.Data.Models.HealthRisk healthRisk) =>
+            healthRiskRequestDto.HealthRiskCode != healthRisk.HealthRiskCode  ||
+            healthRiskRequestDto.LanguageContent.Any(lcDto =>
+                healthRisk.LanguageContents.Any(lc =>
+                    lc.ContentLanguage.Id == lcDto.LanguageId) &&
+                lcDto.Name != healthRisk.LanguageContents.Single(lc => lc.ContentLanguage.Id == lcDto.LanguageId).Name);
+
+        private async Task<bool> HealthRiskContainsReports(int healthRiskId) =>
+            await _nyssContext.ProjectHealthRisks.AnyAsync(phr => phr.HealthRiskId == healthRiskId && phr.Reports.Any());
+
+        private HealthRiskLanguageContent CreateNewLanguageContent(Nyss.Data.Models.HealthRisk healthRisk, int languageId)
+        {
+            var newLanguageContent = new HealthRiskLanguageContent
+            {
+                HealthRisk = healthRisk,
+                ContentLanguageId = languageId,
+            };
+
+            healthRisk.LanguageContents.Add(newLanguageContent);
+
+            return newLanguageContent;
         }
     }
 }

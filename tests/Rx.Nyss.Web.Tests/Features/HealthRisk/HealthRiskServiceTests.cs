@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NSubstitute;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Utils.Logging;
 using RX.Nyss.Web.Features.HealthRisk;
 using Xunit;
 using RX.Nyss.Data.Concepts;
@@ -28,6 +27,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         private const string FeedbackMessage = "Clean yo self";
         private const string CaseDefinition = "Some symptoms";
         private const int LanguageId = 1;
+        private const int NewLanguageId = 2;
         private const int AlertRuleId = 1;
         private const int AlertRuleCountThreshold = 5;
         private const int AlertRuleKilometersThreshold = 10;
@@ -37,7 +37,6 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         {
             // Arrange
             _nyssContextMock = Substitute.For<INyssContext>();
-            var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _healthRiskService = new HealthRiskService(_nyssContextMock);
 
             var users = new List<User>
@@ -53,6 +52,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     }
                 }
             };
+
             var contentLanguages = new List<ContentLanguage>
             {
                 new ContentLanguage
@@ -60,8 +60,15 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     Id = LanguageId,
                     DisplayName = "English",
                     LanguageCode = "EN"
+                },
+                new ContentLanguage
+                {
+                    Id = NewLanguageId,
+                    DisplayName = "New language",
+                    LanguageCode = "NEW"
                 }
             };
+
             var languageContents = new List<HealthRiskLanguageContent>
             {
                 new HealthRiskLanguageContent
@@ -73,6 +80,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     ContentLanguage = contentLanguages[0]
                 }
             };
+
             var alertRules = new List<AlertRule>
             {
                 new AlertRule
@@ -205,9 +213,158 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         }
 
         [Fact]
+        public async Task EditHealthRisk_WhenHealthRiskCodeWasChangedAndHealthRiskContainsReports_ShouldReturnError()
+        {
+            // Arrange
+            var projectHealthRisks = new List<ProjectHealthRisk>
+            {
+                new ProjectHealthRisk
+                {
+                    HealthRiskId = HealthRiskId,
+                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    {
+                        new RX.Nyss.Data.Models.Report()
+                    }
+                }
+            };
+
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+
+            var healthRiskRequestDto = new HealthRiskRequestDto
+            {
+                HealthRiskCode = 100,
+                HealthRiskType = HealthRiskType,
+                AlertRuleCountThreshold = AlertRuleCountThreshold,
+                AlertRuleDaysThreshold = AlertRuleDaysThreshold,
+                AlertRuleKilometersThreshold = 1,
+                LanguageContent = new List<HealthRiskLanguageContentDto>
+                {
+                    new HealthRiskLanguageContentDto
+                    {
+                        LanguageId = LanguageId,
+                        CaseDefinition = CaseDefinition,
+                        FeedbackMessage = FeedbackMessage,
+                        Name = HealthRiskName
+                    }
+                }
+            };
+
+            // Act
+            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskContainsReports);
+        }
+
+        [Fact]
+        public async Task EditHealthRisk_WhenNameInAnyLanguageWasChangedAndHealthRiskContainsReports_ShouldReturnError()
+        {
+            // Arrange
+            var projectHealthRisks = new List<ProjectHealthRisk>
+            {
+                new ProjectHealthRisk
+                {
+                    HealthRiskId = HealthRiskId,
+                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    {
+                        new RX.Nyss.Data.Models.Report()
+                    }
+                }
+            };
+
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+
+            var healthRiskRequestDto = new HealthRiskRequestDto
+            {
+                HealthRiskCode = HealthRiskCode,
+                HealthRiskType = HealthRiskType,
+                AlertRuleCountThreshold = AlertRuleCountThreshold,
+                AlertRuleDaysThreshold = AlertRuleDaysThreshold,
+                AlertRuleKilometersThreshold = 1,
+                LanguageContent = new List<HealthRiskLanguageContentDto>
+                {
+                    new HealthRiskLanguageContentDto
+                    {
+                        LanguageId = LanguageId,
+                        CaseDefinition = CaseDefinition,
+                        FeedbackMessage = FeedbackMessage,
+                        Name = "New health risk name"
+                    }
+                }
+            };
+
+            // Act
+            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskContainsReports);
+        }
+
+        [Fact]
+        public async Task EditHealthRisk_WhenHealthRiskNameForNewLanguageIsProvided_ShouldReturnSuccess()
+        {
+            // Arrange
+            var projectHealthRisks = new List<ProjectHealthRisk>
+            {
+                new ProjectHealthRisk
+                {
+                    HealthRiskId = HealthRiskId,
+                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    {
+                        new RX.Nyss.Data.Models.Report()
+                    }
+                }
+            };
+
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+
+            var healthRiskRequestDto = new HealthRiskRequestDto
+            {
+                HealthRiskCode = HealthRiskCode,
+                HealthRiskType = HealthRiskType,
+                AlertRuleCountThreshold = AlertRuleCountThreshold,
+                AlertRuleDaysThreshold = AlertRuleDaysThreshold,
+                AlertRuleKilometersThreshold = 1,
+                LanguageContent = new List<HealthRiskLanguageContentDto>
+                {
+                    new HealthRiskLanguageContentDto
+                    {
+                        LanguageId = LanguageId,
+                        CaseDefinition = CaseDefinition,
+                        FeedbackMessage = FeedbackMessage,
+                        Name = HealthRiskName
+                    },
+                    new HealthRiskLanguageContentDto
+                    {
+                        LanguageId = NewLanguageId,
+                        CaseDefinition = CaseDefinition,
+                        FeedbackMessage = FeedbackMessage,
+                        Name = "New health risk name"
+                    }
+                }
+            };
+
+            // Act
+            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.EditSuccess);
+        }
+
+        [Fact]
         public async Task EditHealthRisk_WhenSuccess_ShouldReturnSuccess()
         {
             // Arrange
+            var projectHealthRisks = new List<ProjectHealthRisk>();
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+
             var healthRiskRequestDto = new HealthRiskRequestDto
             {
                 HealthRiskCode = HealthRiskCode,
@@ -238,6 +395,11 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         [Fact]
         public async Task RemoveHealthRisk_WhenSuccess_ShouldReturnSuccess()
         {
+            // Arrange
+            var projectHealthRisks = new List<ProjectHealthRisk>();
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+
             // Act
             var result = await _healthRiskService.RemoveHealthRisk(HealthRiskId);
 
@@ -249,6 +411,11 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         [Fact]
         public async Task RemoveHealthRisk_WhenAlertIsNotNull_ShouldRemoveAlertFromTheContext()
         {
+            // Arrange
+            var projectHealthRisks = new List<ProjectHealthRisk>();
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+
             var alertRule = new AlertRule();
             _healthRisk.AlertRule = alertRule;
 
@@ -262,6 +429,11 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
         [Fact]
         public async Task RemoveHealthRisk_WhenAlertIsNull_ShouldNotCallRemoveAlertFromTheContext()
         {
+            // Arrange
+            var projectHealthRisks = new List<ProjectHealthRisk>();
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+
             _healthRisk.AlertRule = null;
 
             // Act
@@ -269,6 +441,48 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
 
             // Assert
             _nyssContextMock.AlertRules.DidNotReceiveWithAnyArgs().Remove(null);
+        }
+
+        [Fact]
+        public async Task RemoveHealthRisk_WhenHealthRiskDoesNotExist_ShouldReturnError()
+        {
+            // Arrange
+            const int nonExistentHealthRiskId = 2;
+
+            // Act
+            var result = await _healthRiskService.RemoveHealthRisk(nonExistentHealthRiskId);
+
+            // Assert
+            _nyssContextMock.HealthRisks.DidNotReceiveWithAnyArgs().Remove(null);
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskNotFound);
+        }
+
+        [Fact]
+        public async Task RemoveHealthRisk_WhenHealthRiskContainsReports_ShouldReturnError()
+        {
+            var projectHealthRisks = new List<ProjectHealthRisk>
+            {
+                new ProjectHealthRisk
+                {
+                    HealthRiskId = HealthRiskId,
+                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    {
+                        new RX.Nyss.Data.Models.Report()
+                    }
+                }
+            };
+
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+
+            // Act
+            var result = await _healthRiskService.RemoveHealthRisk(HealthRiskId);
+
+            // Assert
+            _nyssContextMock.HealthRisks.DidNotReceiveWithAnyArgs().Remove(null);
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskContainsReports);
         }
     }
 }
