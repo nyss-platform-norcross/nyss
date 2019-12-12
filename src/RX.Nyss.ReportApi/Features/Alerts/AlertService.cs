@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
 {
@@ -38,12 +39,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Where(phr => phr == report.ProjectHealthRisk)
                 .Include(phr => phr.AlertRule)
-                .SingleOrDefaultAsync();
-
-            if (projectHealthRisk?.AlertRule == null)
-            {
-                return null;
-            }
+                .SingleAsync();
 
             await _reportLabelingService.ResolveLabelsOnReportAdded(report, projectHealthRisk);
             await _nyssContext.SaveChangesAsync();
@@ -129,28 +125,20 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(ar => ar.ReportId == reportId)
                 .Where(ar => ar.Alert.Status == AlertStatus.Pending || ar.Alert.Status == AlertStatus.Escalated)
                 .Select(ar => ar.Alert)
-                .SingleOrDefaultAsync();
-
-            if (inspectedAlert == null)
-            {
-                return;
-            }
+                .SingleAsync();
 
             var report = await _nyssContext.Reports
                 .Include(r => r.ProjectHealthRisk)
                 .ThenInclude(phr => phr.AlertRule)
                 .Where(r => r.Id == reportId)
-                .SingleOrDefaultAsync();
-
-            if (report == null)
-            {
-                //todo: throw exception
-                return;
-            }
+                .SingleAsync();
 
             var alertRule = report.ProjectHealthRisk.AlertRule;
             if (alertRule.CountThreshold == 1)
             {
+                report.Status = ReportStatus.Rejected;
+                inspectedAlert.Status = AlertStatus.Rejected;
+                await _nyssContext.SaveChangesAsync();
                 return;
             }
 
@@ -168,8 +156,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var updatedReportsGroupedByLabel = alertReportsWitUpdatedLabels.GroupBy(r => r.ReportGroupLabel);
 
-            var reportNoLongerSatisfiesCountThreshold = !updatedReportsGroupedByLabel.Any(g => g.Count() > alertRule.CountThreshold);
-            if (reportNoLongerSatisfiesCountThreshold)
+            var noGroupWithinAlertSatisfiesCountThreshold = !updatedReportsGroupedByLabel.Any(g => g.Count() >= alertRule.CountThreshold);
+            if (noGroupWithinAlertSatisfiesCountThreshold)
             {
                 inspectedAlert.Status = AlertStatus.Rejected;
                 await _nyssContext.SaveChangesAsync();
