@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
@@ -46,8 +45,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 return null;
             }
 
-            var reportsInRange = await FindReportsSatisfyingRangeAndTimeRequirements(report, projectHealthRisk);
-            await _reportLabelingService.ResolveReportLabels(report, reportsInRange);
+            await _reportLabelingService.ResolveLabelsOnReportAdded(report, projectHealthRisk);
             await _nyssContext.SaveChangesAsync();
 
             var triggeredAlert = await HandleAlerts(report);
@@ -55,35 +53,12 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return triggeredAlert;
         }
 
-        private Task<List<Report>> FindReportsSatisfyingRangeAndTimeRequirements(Report report, ProjectHealthRisk projectHealthRisk)
-        {
-            var searchRadiusInMeters = projectHealthRisk.AlertRule.KilometersThreshold * 1000 * 2;
-
-            var reportsQuery = _nyssContext.Reports
-                .Where(r => r.ProjectHealthRisk == projectHealthRisk)
-                .Where(r => !r.IsTraining)
-                .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
-                .Where(r => r.Id != report.Id)
-                .Where(r => r.Location.Distance(report.Location) < searchRadiusInMeters);
-
-            if (projectHealthRisk.AlertRule.DaysThreshold.HasValue)
-            {
-                var utcNow = DateTime.UtcNow;
-                var receivalThreshold = utcNow.AddDays(-projectHealthRisk.AlertRule.DaysThreshold.Value);
-                reportsQuery = reportsQuery.Where(r => r.ReceivedAt > receivalThreshold);
-            }
-
-            return reportsQuery.ToListAsync();
-        }
-
-        
-
         private async Task<Alert> HandleAlerts(Report report)
         {
             var reportGroupLabel = report.ReportGroupLabel;
             var projectHealthRisk = report.ProjectHealthRisk;
 
-            var existingAlert = await IncludeAllReportsInExistingAlert(reportGroupLabel);
+            var existingAlert = await IncludeAllReportsWithLabelInExistingAlert(reportGroupLabel);
 
             if (existingAlert == null)
             {
@@ -103,7 +78,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return null;
         }
 
-        private async Task<Alert> IncludeAllReportsInExistingAlert(Guid reportGroupLabel)
+        private async Task<Alert> IncludeAllReportsWithLabelInExistingAlert(Guid reportGroupLabel)
         {
             var existingActiveAlertForLabel = await _nyssContext.Reports
                 .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
@@ -115,13 +90,13 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             if (existingActiveAlertForLabel != null)
             {
-                var reportsInLabelNotInAnyActiveAlert = await _nyssContext.Reports
-                    .Where(r => r.ReportGroupLabel == reportGroupLabel)
+                var reportsInLabelWithNoActiveAlert = await _nyssContext.Reports
                     .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
+                    .Where(r => r.ReportGroupLabel == reportGroupLabel)
                     .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated))
                     .ToListAsync();
 
-                await AddReportsToAlert(existingActiveAlertForLabel, reportsInLabelNotInAnyActiveAlert);
+                await AddReportsToAlert(existingActiveAlertForLabel, reportsInLabelWithNoActiveAlert);
             }
 
             return existingActiveAlertForLabel;
@@ -182,26 +157,26 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             report.Status = ReportStatus.Rejected;
             await _nyssContext.SaveChangesAsync();
 
-            await _reportLabelingService.RedoLabelingForReportGroupMembers(report, alertRule.KilometersThreshold.Value * 1000 * 2);
+            var pointsWithLabels = await _reportLabelingService.CalculateNewLabelsInLabelGroup(report.ReportGroupLabel, alertRule.KilometersThreshold.Value * 1000 * 2);
+            await _reportLabelingService.UpdateLabelsInDatabaseDirect(pointsWithLabels);
 
-            var reports = await _nyssContext.AlertReports
+            var alertReportsWitUpdatedLabels = await _nyssContext.AlertReports
                 .Where(ar => ar.AlertId == inspectedAlert.Id)
                 .Where(ar => ar.ReportId != reportId)
                 .Select(ar => ar.Report)
                 .ToListAsync();
 
-            var reportsGroupedByLabel = reports.GroupBy(r => r.ReportGroupLabel);
+            var updatedReportsGroupedByLabel = alertReportsWitUpdatedLabels.GroupBy(r => r.ReportGroupLabel);
 
-            var reportHasGroupsThatSatisfyCountThreshold = reportsGroupedByLabel.Any(g => g.Count() > alertRule.CountThreshold);
-            if (!reportHasGroupsThatSatisfyCountThreshold)
+            var reportNoLongerSatisfiesCountThreshold = !updatedReportsGroupedByLabel.Any(g => g.Count() > alertRule.CountThreshold);
+            if (reportNoLongerSatisfiesCountThreshold)
             {
                 inspectedAlert.Status = AlertStatus.Rejected;
                 await _nyssContext.SaveChangesAsync();
-                foreach (var groupNotSatisfyingThreshold in reportsGroupedByLabel)
+                foreach (var groupNotSatisfyingThreshold in updatedReportsGroupedByLabel)
                 {
                     var reportGroupLabel = groupNotSatisfyingThreshold.Key;
-
-                    await IncludeAllReportsInExistingAlert(reportGroupLabel);
+                    await IncludeAllReportsWithLabelInExistingAlert(reportGroupLabel);
                 }
             }
 
