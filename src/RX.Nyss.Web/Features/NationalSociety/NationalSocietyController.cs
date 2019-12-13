@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Gets all countries with country codes.
         /// </summary>
         /// <returns></returns>
-        [Route("{nationalSocietyId}/get"), HttpGet]
+        [HttpGet("{nationalSocietyId}/get")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<NationalSocietyResponseDto>> Get(int nationalSocietyId) =>
             await _nationalSocietyService.GetNationalSociety(nationalSocietyId);
@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Gets all countries with country codes.
         /// </summary>
         /// <returns></returns>
-        [Route("list"), HttpGet]
+        [HttpGet("list")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.TechnicalAdvisor, Role.DataConsumer)]
         public async Task<Result<List<NationalSocietyListResponseDto>>> List() =>
             await _nationalSocietyService.GetNationalSocieties(User.Identity.Name, User.GetRoles());
@@ -43,7 +43,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// </summary>
         /// <param name="nationalSociety"></param>
         /// <returns></returns>
-        [Route("create"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
+        [HttpPost("create")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
         public async Task<Result<int>> Create([FromBody]CreateNationalSocietyRequestDto nationalSociety) => 
             await _nationalSocietyService.CreateNationalSociety(nationalSociety);
 
@@ -53,7 +54,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <param name="nationalSocietyId"></param>
         /// <param name="nationalSociety"></param>
         /// <returns></returns>
-        [Route("{nationalSocietyId}/edit"), HttpPost]
+        [HttpPost("{nationalSocietyId}/edit")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Edit(int nationalSocietyId, [FromBody]EditNationalSocietyRequestDto nationalSociety) => 
             await _nationalSocietyService.EditNationalSociety(nationalSocietyId, nationalSociety);
@@ -63,7 +64,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// </summary>
         /// <param name="nationalSocietyId"></param>
         /// <returns></returns>
-        [Route("{nationalSocietyId}/remove"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
+        [HttpPost("{nationalSocietyId}/remove")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Remove(int nationalSocietyId) =>
             await _nationalSocietyService.RemoveNationalSociety(nationalSocietyId);
 
@@ -74,7 +76,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// <param name="nationalSocietyId"></param>
         /// <param name="requestDto"></param>
         /// <returns></returns>
-        [Route("{nationalSocietyId}/setHeadManager"), HttpPost, NeedsPolicy(Policy.HeadManagerAccess)]
+        [HttpPost("{nationalSocietyId}/setHeadManager")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.HeadManagerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> SetHeadManager(int nationalSocietyId, [FromBody]SetAsHeadManagerRequestDto requestDto) =>
             await _nationalSocietyService.SetPendingHeadManager(nationalSocietyId, requestDto.UserId);
 
@@ -83,7 +86,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Will set the current user as the head for the given national societies
         /// </summary>
         /// <returns></returns>
-        [Route("consentAsHeadManager"), HttpPost, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
+        [HttpPost("consentAsHeadManager")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> ConsentAsHeadManager() =>
             await _nationalSocietyService.SetAsHeadManager(User.Identity.Name);
 
@@ -91,7 +95,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
         /// Get the current user's list of national societies that he is assigned as pending head manager
         /// </summary>
         /// <returns></returns>
-        [Route("pendingConsents"), HttpGet, NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
+        [HttpGet("pendingConsents")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> GetPendingConsents() =>
             await _nationalSocietyService.GetPendingHeadManagerConsents(User.Identity.Name);
     }

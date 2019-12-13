@@ -17,6 +17,7 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { Tooltip } from '@material-ui/core';
+import { accessMap } from '../../authentication/accessMap';
 
 export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, setAsHeadManager, isSettingAsHead, user }) => {
   if (isListFetching) {
@@ -24,8 +25,8 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
   }
 
   const headManagers = list.filter((u) => { return u.isHeadManager; });
-  const hasSimilarAccess = user.roles.filter((r) => { return ["GlobalCoordinator", "Administrator", "TechnicalAdvisor"].indexOf(r) !== -1; }).length > 0;
-  const hasHeadManagerAccess = hasSimilarAccess || user.name === (headManagers.length > 0 && headManagers[0].email)
+  const hasSimilarAccess = user.roles.filter((r) => { return accessMap.nationalSocietyUsers.headManagerAccess.indexOf(r) !== -1; }).length > 0;
+  const hasHeadManagerAccess = hasSimilarAccess || user.email === (headManagers.length > 0 && headManagers[0].email)
 
   return (
     <Table>
@@ -56,14 +57,14 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               {
                 hasHeadManagerAccess &&
-                !row.isHeadManager && (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() ||
-                  Roles.Manager.toLowerCase() === row.role.toLowerCase()) &&
+                !row.isHeadManager &&
+                (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() || Roles.Manager.toLowerCase() === row.role.toLowerCase()) &&
                 <TableRowMenu id={row.id} items={[
                   { title: strings(stringKeys.headManagerConsents.setAsHeadManager), action: () => setAsHeadManager(nationalSocietyId, row.id) }
                 ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
               }
               <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />             
+              <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
 
           </TableRow>
