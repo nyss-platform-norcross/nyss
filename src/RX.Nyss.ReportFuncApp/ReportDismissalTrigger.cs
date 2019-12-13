@@ -31,7 +31,7 @@ namespace RX.Nyss.ReportFuncApp
             _logger.Log(LogLevel.Debug, $"Dismissing report: '{dismissReportMessage.ReportId}'");
 
             var client = _httpClientFactory.CreateClient();
-            var postResult = await client.PostAsync(new Uri(_reportApiBaseUrl, "api/DismissReport"), dismissReportMessage, new JsonMediaTypeFormatter());
+            var postResult = await client.PostAsync(new Uri(_reportApiBaseUrl, $"api/report/dismiss?reportId={dismissReportMessage.ReportId}"), null);
 
             if (!postResult.IsSuccessStatusCode)
             {
