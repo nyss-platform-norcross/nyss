@@ -201,6 +201,21 @@ export const theme = createMuiTheme({
         padding: "8px",
         background: "inherit !important"
       }
+    },
+    MuiExpansionPanel: {
+      root: {
+        border: "2px solid #f3f3f3"
+      }
+    },
+    MuiExpansionPanelActions: {
+      root: {
+        padding: "15px 20px"
+      }
+    },
+    MuiDivider: {
+      root: {
+        backgroundColor: "#f3f3f3"
+      }
     }
   },
 });

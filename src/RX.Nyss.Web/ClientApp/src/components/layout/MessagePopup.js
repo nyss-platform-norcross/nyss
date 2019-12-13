@@ -4,16 +4,19 @@ import { connect } from "react-redux";
 import Snackbar from "@material-ui/core/Snackbar";
 import Icon from "@material-ui/core/Icon";
 import * as appActions from '../app/logic/appActions';
+import { strings, areStringKeysDisplayed } from '../../strings';
 
-const MessagePopupComponent = ({ message, closeMessage }) => {
+const MessagePopupComponent = ({ message, messageStringKey, closeMessage }) => {
+  const messageContent = messageStringKey ? strings(messageStringKey) : message;
+
   return (
     <Snackbar
       action={<Icon>close</Icon>}
-      open={!!message}
-      message={message}
-      autoHideDuration={5000}
-      onClick={closeMessage}
-      onClose={closeMessage}
+      open={!!messageContent}
+      message={messageContent}
+      autoHideDuration={areStringKeysDisplayed() ? null : 5000}
+      onClick={areStringKeysDisplayed() ? null : closeMessage}
+      onClose={areStringKeysDisplayed() ? null : closeMessage}
     />
   );
 }
@@ -24,7 +27,8 @@ MessagePopupComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  message: state.appData.message
+  message: state.appData.message,
+  messageStringKey: state.appData.messageStringKey
 });
 
 const mapDispatchToProps = {

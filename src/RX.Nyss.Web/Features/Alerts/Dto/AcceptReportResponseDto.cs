@@ -2,6 +2,6 @@
 {
     public class AcceptReportResponseDto
     {
-        public bool IsAcceptedReportsThresholdReached { get; set; }
+        public AlertAssessmentStatus AssessmentStatus { get; set; }
     }
 }

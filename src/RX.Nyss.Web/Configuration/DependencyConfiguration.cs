@@ -196,6 +196,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, DistrictAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, VillageAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ZoneAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, AlertAccessHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

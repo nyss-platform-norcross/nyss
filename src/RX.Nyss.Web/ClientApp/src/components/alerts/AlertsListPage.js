@@ -19,6 +19,7 @@ const AlertsListPageComponent = (props) => {
   return (
     <AlertsTable
       list={props.data.data}
+      goToAssessment={props.goToAssessment}
       isListFetching={props.isListFetching}
       getList={props.getList}
       projectId={props.projectId}
@@ -44,6 +45,7 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openAlertsList: alertsActions.openList.invoke,
+  goToAssessment: alertsActions.goToAssessment,
   getList: alertsActions.getList.invoke
 };
 

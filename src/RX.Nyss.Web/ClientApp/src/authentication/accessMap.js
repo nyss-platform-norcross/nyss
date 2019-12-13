@@ -51,5 +51,6 @@ export const accessMap = {
   },
   alerts: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    assess: [Administrator, Manager, TechnicalAdvisor, Supervisor],
   }
 };

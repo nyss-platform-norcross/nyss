@@ -4,6 +4,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
 {
     public class AlertListItemResponseDto
     {
+        public int Id { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public string HealthRisk { get; set; }

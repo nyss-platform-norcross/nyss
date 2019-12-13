@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 import { TableNoData } from '../common/table/TableNoData';
 
-export const AlertsTable = ({ isListFetching, list, projectId, getList, page, rowsPerPage, totalRows }) => {
+export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, getList, page, rowsPerPage, totalRows }) => {
 
   const onChangePage = (event, page) => {
     getList(projectId, page);
@@ -37,7 +37,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, getList, page, ro
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={row.id} hover>
+            <TableRow key={row.id} hover onClick={() => goToAssessment(projectId, row.id)} className={styles.clickableRow}>
               <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
               <TableCell>{row.healthRisk}</TableCell>
               <TableCell>{row.reportCount}</TableCell>

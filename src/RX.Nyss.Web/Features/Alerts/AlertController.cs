@@ -57,8 +57,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpGet("{alertId:int}/dismissReport")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result<AcceptReportResponseDto>> DismissReport(int alertId, int reportId) =>
-            _alertService.AcceptReport(alertId, reportId);
+        public Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId) =>
+            _alertService.DismissReport(alertId, reportId);
 
         /// <summary>
         /// Escalates the alert
@@ -74,11 +74,20 @@ namespace RX.Nyss.Web.Features.Alerts
         /// Dismisses the alert
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
-        [HttpGet("{alertId:int}/escalate")]
+        [HttpGet("{alertId:int}/dismiss")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> DismissAlert(int alertId) =>
             _alertService.DismissAlert(alertId);
 
+        /// <summary>
+        /// Closes the alert
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        [HttpPost("{alertId:int}/close")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result> CloseAlert(int alertId, [FromBody]CloseAlertRequestDto dto) =>
+            _alertService.CloseAlert(alertId, dto.Comments);
     }
 }

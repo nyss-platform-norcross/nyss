@@ -375,12 +375,53 @@ export const stringKeys = {
       success: "alerts.list.success",
       error: "alerts.list.error"
     },
+    assess: {
+      title: "alerts.assess.title",
+      caseDefinition: "alerts.assess.caseDefinition",
+      introduction: "alerts.assess.introduction",
+      reports: "alerts.assess.reports",
+      comments: "alerts.assess.comments",
+      statusDescription: {
+        closed: "alerts.assess.statusDescription.closed",
+        escalated: "alerts.assess.statusDescription.escalated",
+        dismissed: "alerts.assess.statusDescription.dismissed",
+      },
+      alert: {
+        close: "alerts.assess.alert.close",
+        escalate: "alerts.assess.alert.escalate",
+        dismiss: "alerts.assess.alert.dismiss",
+        escalationPossible: "alerts.assess.alert.escalationPossible",
+        dismissalPossible: "alerts.assess.alert.dismissalPossible",
+        escalatedSuccessfully: "alerts.assess.alert.escalatedSuccessfully",
+        dismissedSuccessfully: "alerts.assess.alert.dismissedSuccessfully",
+        closedSuccessfully: "alerts.assess.alert.closedSuccessfully",
+      },
+      report: {
+        accept: "alerts.assess.report.accept",
+        acceptedSuccessfully: "alerts.assess.report.acceptedSuccessfully",
+        dismiss: "alerts.assess.report.dismiss",
+        dismissedSuccessfully: "alerts.assess.report.dismissedSuccessfully",
+        sender: "alerts.assess.report.sender",
+        phoneNumber: "alerts.assess.report.phoneNumber",
+        village: "alerts.assess.report.village",
+        sex: "alerts.assess.report.sex",
+        age: "alerts.assess.report.age",
+      }
+    },
     constants: {
       alertStatus: {
         "Pending": "alerts.alertStatus.pending",
         "Dismissed": "alerts.alertStatus.dismissed",
         "Escalated": "alerts.alertStatus.escalated",
         "Closed": "alerts.alertStatus.closed"
+      },
+      sex: {
+        "Female": "alerts.sex.female",
+        "Male": "alerts.sex.female",
+      },
+      age: {
+        "BelowFive": "alerts.age.belowFive",
+        "AtLeastFive": "alerts.age.atLeastFive",
       }
     },
     title: "alerts.title"

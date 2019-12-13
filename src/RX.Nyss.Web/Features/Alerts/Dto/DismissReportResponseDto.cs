@@ -2,6 +2,6 @@
 {
     public class DismissReportResponseDto
     {
-        public bool IsAcceptedReportsThresholdReachable { get; set; }
+        public AlertAssessmentStatus AssessmentStatus { get; set; }
     }
 }

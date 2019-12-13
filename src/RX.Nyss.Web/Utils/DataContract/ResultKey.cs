@@ -175,6 +175,10 @@
 
             public const string DismissAlertWrongStatus = "alert.dismissAlert.wrongStatus";
             public const string DismissAlertPossibleEscalation = "alert.dismissAlert.possibleEscalation";
+
+            public const string InconsistentReportData = "alert.inconsistentReportData";
+
+            public const string CloseAlertWrongStatus = "alert.closeAlert.wrongStatus";
         }
     }
 }
