@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
                 return;
             }
 
-            var projectId = await _nyssContext.Alerts.Where(a => a.Id == alertId).Select(p => p.Id).SingleAsync();
+            var projectId = await _nyssContext.Alerts.Where(a => a.Id == alertId).Select(p => p.ProjectHealthRisk.Project.Id).SingleAsync();
 
             if (await _projectService.HasCurrentUserAccessToProject(projectId))
             {

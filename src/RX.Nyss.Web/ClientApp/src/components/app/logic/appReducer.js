@@ -8,7 +8,9 @@ export function appReducer(state = initialState.appData, action) {
       return {
         ...state,
         moduleError: null,
-        message: null
+        message: null,
+        messageStringKey: null,
+        messageTime: null
       };
 
     case actions.SWITCH_STRINGS:
@@ -106,14 +108,16 @@ export function appReducer(state = initialState.appData, action) {
       return {
         ...state,
         message: null,
-        messageStringKey: action.stringKey
+        messageStringKey: action.stringKey,
+        messageTime: action.time
       }
 
     case actions.CLOSE_MESSAGE.INVOKE:
       return {
         ...state,
         message: null,
-        messageStringKey: null
+        messageStringKey: null,
+        messageTime: null
       }
 
     default:

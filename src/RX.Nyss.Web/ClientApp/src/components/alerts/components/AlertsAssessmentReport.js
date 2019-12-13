@@ -7,10 +7,10 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
-import { stringKeys, strings } from "../../strings";
+import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
 import Icon from "@material-ui/core/Icon";
-import SubmitButton from "../forms/submitButton/SubmitButton";
+import SubmitButton from "../../forms/submitButton/SubmitButton";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>
@@ -60,20 +60,26 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
         />
       </ExpansionPanelDetails>
 
-      {showActions && (
-        <Fragment>
-          <Divider />
-          <ExpansionPanelActions>
-            <SubmitButton onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing}>
-              {strings(stringKeys.alerts.assess.report.dismiss)}
-            </SubmitButton>
+      <Fragment>
+        <Divider />
+        <ExpansionPanelActions>
+          {showActions && (
+            <Fragment>
+              <SubmitButton onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing}>
+                {strings(stringKeys.alerts.assess.report.dismiss)}
+              </SubmitButton>
 
-            <SubmitButton onClick={() => acceptReport(alertId, report.id)} isFetching={report.isAccepting}>
-              {strings(stringKeys.alerts.assess.report.accept)}
-            </SubmitButton>
-          </ExpansionPanelActions>
-        </Fragment>
-      )}
+              <SubmitButton onClick={() => acceptReport(alertId, report.id)} isFetching={report.isAccepting}>
+                {strings(stringKeys.alerts.assess.report.accept)}
+              </SubmitButton>
+            </Fragment>
+          )}
+
+          {!showActions && (
+            <div className={styles.reportStatus}>{strings(stringKeys.alerts.constants.reportStatus[report.status])}</div>
+          )}
+        </ExpansionPanelActions>
+      </Fragment>
     </ExpansionPanel>
   );
 }

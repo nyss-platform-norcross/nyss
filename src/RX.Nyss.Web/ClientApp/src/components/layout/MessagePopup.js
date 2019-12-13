@@ -6,7 +6,7 @@ import Icon from "@material-ui/core/Icon";
 import * as appActions from '../app/logic/appActions';
 import { strings, areStringKeysDisplayed } from '../../strings';
 
-const MessagePopupComponent = ({ message, messageStringKey, closeMessage }) => {
+const MessagePopupComponent = ({ message, messageStringKey, messageTime, closeMessage }) => {
   const messageContent = messageStringKey ? strings(messageStringKey) : message;
 
   return (
@@ -14,7 +14,7 @@ const MessagePopupComponent = ({ message, messageStringKey, closeMessage }) => {
       action={<Icon>close</Icon>}
       open={!!messageContent}
       message={messageContent}
-      autoHideDuration={areStringKeysDisplayed() ? null : 5000}
+      autoHideDuration={areStringKeysDisplayed() ? null : (messageTime || 5000)}
       onClick={areStringKeysDisplayed() ? null : closeMessage}
       onClose={areStringKeysDisplayed() ? null : closeMessage}
     />
@@ -28,7 +28,8 @@ MessagePopupComponent.propTypes = {
 
 const mapStateToProps = state => ({
   message: state.appData.message,
-  messageStringKey: state.appData.messageStringKey
+  messageStringKey: state.appData.messageStringKey,
+  messageTime: state.appData.messageTime
 });
 
 const mapDispatchToProps = {

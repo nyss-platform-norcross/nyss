@@ -1,4 +1,4 @@
-import styles from '../common/table/Table.module.scss';
+import styles from '../../common/table/Table.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
@@ -6,11 +6,11 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { Loading } from '../common/loading/Loading';
-import { strings, stringKeys } from '../../strings';
+import { Loading } from '../../common/loading/Loading';
+import { strings, stringKeys } from '../../../strings';
 import dayjs from "dayjs";
-import TablePager from '../common/tablePagination/TablePager';
-import { TableNoData } from '../common/table/TableNoData';
+import TablePager from '../../common/tablePagination/TablePager';
+import { TableNoData } from '../../common/table/TableNoData';
 
 export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, getList, page, rowsPerPage, totalRows }) => {
 

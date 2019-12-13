@@ -389,6 +389,8 @@ export const stringKeys = {
       alert: {
         close: "alerts.assess.alert.close",
         escalate: "alerts.assess.alert.escalate",
+        escalateConfirmation: "alerts.assess.alert.escalateConfirmation",
+        escalateNotificationEmails: "alerts.assess.alert.escalateNotificationEmails",
         dismiss: "alerts.assess.alert.dismiss",
         escalationPossible: "alerts.assess.alert.escalationPossible",
         dismissalPossible: "alerts.assess.alert.dismissalPossible",
@@ -414,6 +416,11 @@ export const stringKeys = {
         "Dismissed": "alerts.alertStatus.dismissed",
         "Escalated": "alerts.alertStatus.escalated",
         "Closed": "alerts.alertStatus.closed"
+      },
+      reportStatus: {
+        "Rejected": "alerts.reportStatus.rejected",
+        "Accepted": "alerts.reportStatus.accepted",
+        "Pending": "alerts.reportStatus.pending"
       },
       sex: {
         "Female": "alerts.sex.female",

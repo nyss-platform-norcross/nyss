@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import * as alertsActions from './logic/alertsActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import AlertsTable from './AlertsTable';
+import AlertsTable from './components/AlertsTable';
 import { useMount } from '../../utils/lifecycle';
 
 const AlertsListPageComponent = (props) => {

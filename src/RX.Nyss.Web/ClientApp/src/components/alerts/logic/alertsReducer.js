@@ -12,7 +12,7 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state, formData: null }
 
     case actions.OPEN_ALERTS_LIST.INVOKE:
-      return { ...state, listStale: action.projectId !== state.listProjectId };
+      return { ...state, listStale: state.listStale || action.projectId !== state.listProjectId };
 
     case actions.OPEN_ALERTS_LIST.SUCCESS:
       return { ...state, listProjectId: action.projectId };

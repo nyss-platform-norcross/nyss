@@ -1,5 +1,5 @@
 import styles from "./AlertsAssessment.module.scss";
-import React, { useEffect, Fragment, useState } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import * as alertsActions from './logic/alertsActions';
@@ -8,15 +8,11 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
 import { stringKeys, strings } from '../../strings';
-import FormActions from '../forms/formActions/FormActions';
-import Button from "@material-ui/core/Button";
-import SubmitButton from '../forms/submitButton/SubmitButton';
 import DisplayField from "../forms/DisplayField";
-import { AlertsAssessmentReport } from "./AlertsAssessmentReport";
+import { AlertsAssessmentReport } from "./components/AlertsAssessmentReport";
 import { assessmentStatus } from "./logic/alertsConstants";
 import Divider from "@material-ui/core/Divider";
-import TextInputField from "../forms/TextInputField";
-import { validators, createForm } from "../../utils/forms";
+import { AlertsAssessmentActions } from "./components/AlertsAssessmentActions";
 
 const getAssessmentStatusInformation = (status) => {
   switch (status) {
@@ -36,9 +32,9 @@ const getAssessmentStatusInformation = (status) => {
   }
 }
 
-const AlertsAssessmentPageComponent = ({ alertId, data, ...props }) => {
+const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) => {
   useMount(() => {
-    props.openAssessment(props.projectId, alertId);
+    props.openAssessment(projectId, alertId);
   });
 
   useEffect(() => {
@@ -48,18 +44,8 @@ const AlertsAssessmentPageComponent = ({ alertId, data, ...props }) => {
 
   }, [props.data, props.match]);
 
-  const [form] = useState(() => {
-    const fields = { comments: "" };
-    const validation = { comments: [validators.maxLength(500)] };
-    return createForm(fields, validation);
-  })
-
   if (props.isFetching || !data) {
     return <Loading />;
-  }
-
-  const handleCloseAlert = () => {
-    props.closeAlert(alertId, form.fields.comments.value);
   }
 
   return (
@@ -97,39 +83,27 @@ const AlertsAssessmentPageComponent = ({ alertId, data, ...props }) => {
               />
             </Grid>
           ))}
-
-          {data.assessmentStatus === assessmentStatus.escalated && (
-            <Grid item xs={12}>
-              <TextInputField
-                label={strings(stringKeys.alerts.assess.comments)}
-                name="comments"
-                field={form.fields.comments}
-              />
-            </Grid>
-          )}
         </Grid>
 
-        <FormActions>
-          <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
+        <AlertsAssessmentActions
+          alertId={alertId}
+          projectId={projectId}
+          alertAssessmentStatus={data.assessmentStatus}
 
-          {data.assessmentStatus === assessmentStatus.toEscalate && (
-            <SubmitButton isFetching={props.isEscalating} onClick={() => props.escalateAlert(alertId)}>
-              {strings(stringKeys.alerts.assess.alert.escalate)}
-            </SubmitButton>
-          )}
+          goToList={props.goToList}
 
-          {data.assessmentStatus === assessmentStatus.toDismiss && (
-            <SubmitButton isFetching={props.isDismissing} onClick={() => props.dismissAlert(alertId)}>
-              {strings(stringKeys.alerts.assess.alert.dismiss)}
-            </SubmitButton>
-          )}
+          closeAlert={props.closeAlert}
+          isClosing={props.isClosing}
 
-          {data.assessmentStatus === assessmentStatus.escalated && (
-            <SubmitButton isFetching={props.isClosing} onClick={handleCloseAlert}>
-              {strings(stringKeys.alerts.assess.alert.close)}
-            </SubmitButton>
-          )}
-        </FormActions>
+          escalateAlert={props.escalateAlert}
+          isEscalating={props.isEscalating}
+
+          dismissAlert={props.dismissAlert}
+          isDismissing={props.isDismissing}
+
+          notificationEmails={data.notificationEmails}
+          notificationPhoneNumbers={data.notificationPhoneNumbers}
+        />
       </div>
     </Fragment>
   );
