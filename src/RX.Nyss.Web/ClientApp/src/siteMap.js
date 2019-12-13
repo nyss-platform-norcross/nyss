@@ -8,6 +8,7 @@ import { dataCollectorsSiteMap } from "./components/dataCollectors/logic/dataCol
 import { reportsSiteMap } from "./components/reports/logic/reportsSiteMap";
 import { nationalSocietyStructureSiteMap } from "./components/nationalSocietyStructure/logic/nationalSocietyStructureSiteMap";
 import { projectDashboardSiteMap } from "./components/projectDashboard/logic/projectDashboardSiteMap";
+import { headManagerConsentsSiteMap } from "./components/headManagerConsents/logic/headManagerConsentsSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
@@ -19,5 +20,6 @@ export const siteMap = [
   ...projectsSiteMap,
   ...projectDashboardSiteMap,
   ...dataCollectorsSiteMap,
-  ...reportsSiteMap
+  ...reportsSiteMap,
+  ...headManagerConsentsSiteMap
 ];
