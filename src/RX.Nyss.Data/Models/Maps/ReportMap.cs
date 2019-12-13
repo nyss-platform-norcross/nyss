@@ -9,7 +9,6 @@ namespace RX.Nyss.Data.Models.Maps
         {
             builder.HasKey(x => x.Id);
             builder.HasIndex(x => x.ReportGroupLabel);
-            //builder.HasIndex(x => x.Location);
             builder.HasIndex(x => x.ReceivedAt);
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.ReceivedAt).IsRequired();

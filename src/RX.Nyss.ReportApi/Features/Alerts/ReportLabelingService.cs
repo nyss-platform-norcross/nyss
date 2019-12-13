@@ -17,7 +17,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         /// <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with care.
         /// </Summary>
         Task ResolveLabelsOnReportAdded(Report addedReport, ProjectHealthRisk projectHealthRisk);
+
         Task<IEnumerable<(int ReportId, Guid Label)>> CalculateNewLabelsInLabelGroup(Guid label, double distanceThreshold);
+
+        Task<List<Report>> FindReportsSatisfyingRangeAndTimeRequirements(Report report, ProjectHealthRisk projectHealthRisk);
 
         ///<Summary>
         /// <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with care.
@@ -58,7 +61,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             addedReport.ReportGroupLabel = labelForNewConnectedArea;
         }
 
-        private Task<List<Report>> FindReportsSatisfyingRangeAndTimeRequirements(Report report, ProjectHealthRisk projectHealthRisk)
+        public Task<List<Report>> FindReportsSatisfyingRangeAndTimeRequirements(Report report, ProjectHealthRisk projectHealthRisk)
         {
             var searchRadiusInMeters = projectHealthRisk.AlertRule.KilometersThreshold * 1000 * 2;
 

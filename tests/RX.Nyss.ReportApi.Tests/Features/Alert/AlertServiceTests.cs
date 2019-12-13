@@ -50,7 +50,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
 
         private const int ProjectHealthRiskWithThreshold1Id = 1;
-        private const int HealthRiskId2 = 2;
+        private const int ProjectHealthRiskId2 = 2;
         private const int AlertRuleId1 = 1;
         private const int AlertRuleId2 = 2;
         private const int AlertRuleCountThreshold1 = 1;
@@ -93,7 +93,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var projectHealthRisks = new List<ProjectHealthRisk>
             {
                 new ProjectHealthRisk { Id = ProjectHealthRiskWithThreshold1Id, AlertRule = alertRules[0] },
-                new ProjectHealthRisk { Id = HealthRiskId2, AlertRule = alertRules[1] }
+                new ProjectHealthRisk { Id = ProjectHealthRiskId2, AlertRule = alertRules[1] }
             };
 
             var reports = new List<Report>
