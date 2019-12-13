@@ -12,10 +12,14 @@ namespace RX.Nyss.Web.Features.Alerts
     public class AlertController : BaseController
     {
         private readonly IAlertService _alertService;
+        private readonly IAlertReportService _alertReportService;
 
-        public AlertController(IAlertService alertService)
+        public AlertController(
+            IAlertService alertService,
+            IAlertReportService alertReportService)
         {
             _alertService = alertService;
+            _alertReportService = alertReportService;
         }
 
         /// <summary>
@@ -47,7 +51,7 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId) =>
-            _alertService.AcceptReport(alertId, reportId);
+            _alertReportService.AcceptReport(alertId, reportId);
 
         /// <summary>
         /// Dismisses the report
@@ -58,7 +62,7 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId) =>
-            _alertService.DismissReport(alertId, reportId);
+            _alertReportService.DismissReport(alertId, reportId);
 
         /// <summary>
         /// Escalates the alert

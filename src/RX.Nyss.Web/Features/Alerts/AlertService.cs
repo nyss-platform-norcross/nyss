@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -15,7 +12,6 @@ using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
 using static RX.Nyss.Web.Utils.DataContract.Result;
-using Message = Microsoft.Azure.ServiceBus.Message;
 
 namespace RX.Nyss.Web.Features.Alerts
 {
@@ -23,20 +19,23 @@ namespace RX.Nyss.Web.Features.Alerts
     {
         Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber);
         Task<Result<AlertAssessmentResponseDto>> GetAlert(int alertId);
-        Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId);
-        Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId);
         Task<Result> EscalateAlert(int alertId);
         Task<Result> DismissAlert(int alertId);
         Task<Result> CloseAlert(int alertId, string comments);
+        Task<AlertAssessmentStatus> GetAlertAssessmentStatus(int alertId);
     }
 
     public class AlertService : IAlertService
     {
+        private const string SexFemale = "Female";
+        private const string SexMale = "Male";
+        private const string AgeAtLeastFive = "AtLeastFive";
+        private const string AgeBelowFive = "BelowFive";
+
         private readonly INyssContext _nyssContext;
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
         private readonly IConfig _config;
-        private readonly QueueClient _queueClient;
 
         public AlertService(
             INyssContext nyssContext,
@@ -48,7 +47,6 @@ namespace RX.Nyss.Web.Features.Alerts
             _emailPublisherService = emailPublisherService;
             _emailTextGeneratorService = emailTextGeneratorService;
             _config = config;
-            // _queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, _config.ServiceBusQueues.ReportDismissalQueue);
         }
 
         public async Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber)
@@ -155,67 +153,6 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(dto);
         }
 
-        public async Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId)
-        {
-            var alertReport = await _nyssContext.AlertReports
-                .Include(ar => ar.Alert)
-                .Include(ar => ar.Report)
-                .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
-                .SingleAsync();
-
-            if (alertReport.Alert.Status != AlertStatus.Pending)
-            {
-                return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportWrongAlertStatus);
-            }
-
-            if (alertReport.Report.Status != ReportStatus.Pending)
-            {
-                return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportWrongReportStatus);
-            }
-
-            alertReport.Report.Status = ReportStatus.Accepted;
-            await _nyssContext.SaveChangesAsync();
-
-            var response = new AcceptReportResponseDto
-            {
-                AssessmentStatus = await GetAlertAssessmentStatus(alertId)
-            };
-
-            return Success(response);
-        }
-
-        public async Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId)
-        {
-            var alertReport = await _nyssContext.AlertReports
-                .Include(ar => ar.Alert)
-                .Include(ar => ar.Report)
-                .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
-                .SingleAsync();
-
-            if (alertReport.Alert.Status != AlertStatus.Pending)
-            {
-                return Error<DismissReportResponseDto>(ResultKey.Alert.AcceptReportWrongAlertStatus);
-            }
-
-            if (alertReport.Report.Status != ReportStatus.Pending)
-            {
-                return Error<DismissReportResponseDto>(ResultKey.Alert.AcceptReportWrongReportStatus);
-            }
-
-            alertReport.Report.Status = ReportStatus.Rejected;
-
-            // await SendToQueue(new DismissReportMessage { ReportId = reportId });
-
-            await _nyssContext.SaveChangesAsync();
-
-            var response = new DismissReportResponseDto
-            {
-                AssessmentStatus = await GetAlertAssessmentStatus(alertId)
-            };
-
-            return Success(response);
-        }
-
         public async Task<Result> EscalateAlert(int alertId)
         {
             var alertData = await _nyssContext.Alerts
@@ -313,7 +250,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success();
         }
 
-        private async Task<AlertAssessmentStatus> GetAlertAssessmentStatus(int alertId)
+        public async Task<AlertAssessmentStatus> GetAlertAssessmentStatus(int alertId)
         {
             var alertData = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
@@ -355,12 +292,12 @@ namespace RX.Nyss.Web.Features.Alerts
         {
             if (reportedCase.CountFemalesAtLeastFive > 0 || reportedCase.CountFemalesBelowFive > 0)
             {
-                return "Female";
+                return SexFemale;
             }
 
             if (reportedCase.CountMalesBelowFive > 0 || reportedCase.CountMalesAtLeastFive > 0)
             {
-                return "Male";
+                return SexMale;
             }
 
             throw new ResultException(ResultKey.Alert.InconsistentReportData);
@@ -370,12 +307,12 @@ namespace RX.Nyss.Web.Features.Alerts
         {
             if (reportedCase.CountFemalesAtLeastFive > 0 || reportedCase.CountMalesAtLeastFive > 0)
             {
-                return "AtLeastFive";
+                return AgeAtLeastFive;
             }
 
             if (reportedCase.CountFemalesBelowFive > 0 || reportedCase.CountMalesBelowFive > 0)
             {
-                return "BelowFive";
+                return AgeBelowFive;
             }
 
             throw new ResultException(ResultKey.Alert.InconsistentReportData);
@@ -400,16 +337,6 @@ namespace RX.Nyss.Web.Features.Alerts
         {
             // TODO
             return Task.CompletedTask;
-        }
-
-        private async Task SendToQueue<T>(T data)
-        {
-            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)))
-            {
-                Label = "RX.Nyss.Web",
-            };
-
-            await _queueClient.SendAsync(message);
         }
     }
 }
