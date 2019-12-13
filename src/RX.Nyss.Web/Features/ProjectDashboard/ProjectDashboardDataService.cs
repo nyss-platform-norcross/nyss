@@ -25,6 +25,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         private readonly INyssContext _nyssContext;
         private readonly IDateTimeProvider _dateTimeProvider;
 
+        private const string AnonymizationText = "--Data removed--";
+
         public ProjectDashboardDataService(
             INyssContext nyssContext,
             IDateTimeProvider dateTimeProvider)
@@ -35,28 +37,18 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto, combineTrainingAndMain: true);
-            var reportsFilteredOnTrainingAndMain = reports.Where(r => filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.Training ?
-                r.IsTraining :
-                !r.IsTraining);
+            var reports = GetFilteredReports(projectId, filtersDto);
 
             return await _nyssContext.Projects
                 .Where(ph => ph.Id == projectId)
                 .Select(p => new ProjectSummaryResponseDto
                 {
-                    ReportCount = (int)reportsFilteredOnTrainingAndMain.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
+                    ReportCount = (int)reports.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
                     ActiveDataCollectorCount = reports
+                        .Where(r => r.DataCollector.Name != AnonymizationText)
                         .Select(r => r.DataCollector.Id)
                         .Distinct().Count(),
-                    InactiveDataCollectorCount = reports
-                        .Where(r => r.DataCollector.CreatedAt < filtersDto.StartDate.Date &&
-                            (!r.DataCollector.DeletedAt.HasValue || r.DataCollector.DeletedAt >= filtersDto.StartDate.Date))
-                        .Select(r => r.DataCollector.Id)
-                        .Distinct().Count(),
-                    InTrainingDataCollectorCount = reports
-                        .Where(r => r.IsTraining)
-                        .Select(r => r.DataCollector.Id)
-                        .Distinct().Count(),
+                    InactiveDataCollectorCount = InactiveDataCollectorCount(reports, filtersDto)
                 })
                 .FirstOrDefaultAsync();
         }
@@ -275,13 +267,12 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private IQueryable<Nyss.Data.Models.Report> GetFilteredReports(int projectId, FiltersRequestDto filtersDto, bool? combineTrainingAndMain = false)
+        private IQueryable<Nyss.Data.Models.Report> GetFilteredReports(int projectId, FiltersRequestDto filtersDto)
         {
             var startDate = filtersDto.StartDate.Date;
             var endDate = filtersDto.EndDate.Date.AddDays(1);
-            var reportsFilteredOnTrainingStatus = combineTrainingAndMain ?? false ?
-                    _nyssContext.Reports :
-                    _nyssContext.Reports.Where(r => filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.Training ?
+            var reportsFilteredOnTrainingStatus = _nyssContext.Reports
+                .Where(r => filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.Training ?
                     r.IsTraining :
                     !r.IsTraining);
 
@@ -310,5 +301,17 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 _ =>
                 reports
             };
+
+        private int InactiveDataCollectorCount(IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto filtersDto)
+        {
+            var activeDataCollectors = reports.Select(r => r.DataCollector.Id).Distinct();
+            var dataCollectorsWithoutReports = _nyssContext.DataCollectors
+                .Where(dc => !activeDataCollectors.Contains(dc.Id) &&
+                    (filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.Training ? dc.IsInTrainingMode : !dc.IsInTrainingMode) &&
+                    dc.Name != AnonymizationText)
+                .Count();
+
+            return dataCollectorsWithoutReports;
+        }
     }
 }

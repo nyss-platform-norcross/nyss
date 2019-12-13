@@ -13,10 +13,10 @@ namespace RX.Nyss.Web.Features.Project.Dto
 
         public int EscalatedAlertCount { get; set; }
 
-        public int ActiveDataCollectorCount { get; set; }
+        public int TotalDataCollectorCount { get; set; }
 
         public int SupervisorCount { get; set; }
-        
+
         public DateTime StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }

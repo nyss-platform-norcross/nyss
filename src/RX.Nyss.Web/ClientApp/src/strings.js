@@ -157,7 +157,7 @@ export const stringKeys = {
     list: {
       name: "project.list.name",
       totalReportCount: "project.list.totalReportCount",
-      activeDataCollectorCount: "project.list.activeDataCollectorCount",
+      totalDataCollectorCount: "project.list.totalDataCollectorCount",
       startDate: "project.list.startDate",
       escalatedAlertCount: "project.list.escalatedAlertCount",
       supervisorCount: "project.list.supervisorCount",
