@@ -64,12 +64,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var outgoingMessageId = parsedQueryString[OutgoingMessageIdParameterName].ParseToNullableInt();
             var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
             var apiKey = parsedQueryString[ApiKeyParameterName];
-            GatewaySetting gatewaySetting = null;
-            ProjectHealthRisk projectHealthRisk = null;
-            Alert triggeredAlert = null;
 
             try
             {
+                Alert triggeredAlert = null;
+                ProjectHealthRisk projectHealthRisk = null;
+                GatewaySetting gatewaySetting = null;
+
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     var rawReport = new RawReport

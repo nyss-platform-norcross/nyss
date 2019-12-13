@@ -8,6 +8,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
+using RX.Nyss.ReportApi.Utils.Logging;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
 {
@@ -22,11 +23,13 @@ namespace RX.Nyss.ReportApi.Features.Alerts
     {
         private readonly INyssContext _nyssContext;
         private readonly IReportLabelingService _reportLabelingService;
+        private readonly ILoggerAdapter _loggerAdapter;
 
-        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService)
+        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter)
         {
             _nyssContext = nyssContext;
             _reportLabelingService = reportLabelingService;
+            _loggerAdapter = loggerAdapter;
         }
 
         public async Task<Alert> ReportAdded(Report report)
@@ -113,7 +116,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         private Task AddReportsToAlert(Alert alert, IEnumerable<Report> reports)
         {
             var alertReports = reports.Select(r => new AlertReport { Report = r, Alert = alert });
-            reports.ToList().ForEach(r => r.Status = ReportStatus.Pending);
+            reports.Where(r => r.Status == ReportStatus.New).ToList()
+                .ForEach(r => r.Status = ReportStatus.Pending);
             return _nyssContext.AlertReports.AddRangeAsync(alertReports);
         }
 
@@ -123,15 +127,27 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var inspectedAlert = await _nyssContext.AlertReports
                 .Where(ar => ar.ReportId == reportId)
-                .Where(ar => ar.Alert.Status == AlertStatus.Pending || ar.Alert.Status == AlertStatus.Escalated)
+                .Where(ar => ar.Alert.Status == AlertStatus.Pending)
                 .Select(ar => ar.Alert)
-                .SingleAsync();
+                .SingleOrDefaultAsync();
+
+            if (inspectedAlert == null)
+            {
+                _loggerAdapter.Warn($"The alert for report with id {reportId} does not exist or has status different than pending.");
+                return;
+            }
 
             var report = await _nyssContext.Reports
                 .Include(r => r.ProjectHealthRisk)
                 .ThenInclude(phr => phr.AlertRule)
                 .Where(r => r.Id == reportId)
                 .SingleAsync();
+
+            if (report == null)
+            {
+                _loggerAdapter.Warn($"The report with id {reportId} does not exist.");
+                return;
+            }
 
             var alertRule = report.ProjectHealthRisk.AlertRule;
             if (alertRule.CountThreshold == 1)

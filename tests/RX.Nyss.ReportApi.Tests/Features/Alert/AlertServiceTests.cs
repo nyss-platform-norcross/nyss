@@ -9,6 +9,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Features.Alerts;
+using RX.Nyss.ReportApi.Utils.Logging;
 using Shouldly;
 using Xunit;
 
@@ -19,8 +20,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private readonly INyssContext _nyssContextMock;
         private readonly IReportLabelingService _reportLabelingServiceMock;
         private readonly IAlertService _alertService;
+        private readonly ILoggerAdapter _loggerAdapterMock;
 
-        
+        private const int NotExistingReportId = 9999;
         private const int AddedReportWithThreshold1Id = 1;
         private const int AddedReportWithThreshold2Id = 2;
         private const int ExistingReportWithNoAlertId1 = 3;
@@ -82,7 +84,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             _nyssContextMock = Substitute.For<INyssContext>();
             _reportLabelingServiceMock = Substitute.For<IReportLabelingService>();
-            _alertService = new AlertService(_nyssContextMock, _reportLabelingServiceMock);
+            _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
+            _alertService = new AlertService(_nyssContextMock, _reportLabelingServiceMock, _loggerAdapterMock);
 
             var alertRules = new List<AlertRule>
             {
@@ -111,7 +114,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
             var reportsInAlertBrokenApart1 = new List<Report>
             {
-                new Report{ Id = ReportInAlert1BrokenApartId1, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
+                new Report{ Id = ReportInAlert1BrokenApartId1, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Accepted , ProjectHealthRisk = projectHealthRisks[1]},
                 new Report{ Id = ReportInAlert1BrokenApartId2, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
                 new Report{ Id = ReportInAlert1BrokenApartId3, ReportGroupLabel = _labelFromAlertBrokenApart2, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
                 new Report{ Id = ReportInAlert1BrokenApartId4, ReportGroupLabel = _labelFromAlertBrokenApart2, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
@@ -440,14 +443,18 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             await _nyssContextMock.Received(2).SaveChangesAsync();
         }
 
-
         [Fact]
-        public async Task ReportDismissed_WhenDismissingNonExistingAlert_ShouldThrow()
+        public async Task ReportDismissed_WhenDismissingNonExistingAlert_ShouldDoNothingAndLogWarning()
         {
-            //assert
-            await Should.ThrowAsync<System.Reflection.TargetInvocationException>(() => _alertService.ReportDismissed(999));
-        }
+            //act
+            await _alertService.ReportDismissed(NotExistingReportId);
 
+            //assert
+            _loggerAdapterMock.Received(1).Warn(Arg.Any<string>());
+            await _nyssContextMock.Received(0).SaveChangesAsync();
+            _nyssContextMock.Received(0).SaveChanges();
+            await _nyssContextMock.Received(0).ExecuteSqlInterpolatedAsync(Arg.Any<FormattableString>());
+        }
 
         [Fact]
         public async Task ReportDismissed_WhenDismissingReportInAlertWithCountThreshold1_AlertShouldBeRejected()
@@ -556,6 +563,30 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
                 && list.Any(ar => ar.Alert == otherAlert && ar.Report == reportsInGroupOfAnotherAlert[0])
                 && list.Any(ar => ar.Alert == otherAlert && ar.Report == reportsInGroupOfAnotherAlert[1])
             ));
+        }
+
+        [Fact]
+        public async Task ReportDismissed_WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert_MovedAcceptedReportsShouldNotChangeStatus()
+        {
+            //arrange
+            var reportId = DismissedReportInAlert1BrokenApartId;
+
+            var alertBrokenApart = _nyssContextMock.Alerts.Single(a => a.Id == AlertBrokenApart1Id);
+            var otherAlert = _nyssContextMock.Alerts.Single(a => a.Id == ExistingAlertId);
+
+            var reportsInGroupOfAnotherAlert = _nyssContextMock.AlertReports
+                .Where(ar => ar.Alert == alertBrokenApart)
+                .Where(ar => ar.Report.ReportGroupLabel == _labelForGroup3)
+                .Select(ar => ar.Report)
+                .ToList();
+
+            var acceptedReport = reportsInGroupOfAnotherAlert.Single(r => r.Id == ReportInAlert1BrokenApartId1 && r.Status == ReportStatus.Accepted);
+
+            //act
+            await _alertService.ReportDismissed(reportId);
+
+            //assert
+            acceptedReport.Status.ShouldBe(ReportStatus.Accepted);;
         }
     }
 }
