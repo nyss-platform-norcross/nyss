@@ -1,5 +1,3 @@
-import styles from "./NationalSocietiesOverviewPage.module.scss";
-
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -27,9 +25,9 @@ const NationalSocietiesOverviewPageComponent = (props) => {
   return (
     <Fragment>
       <Form>
-        <Grid container spacing={3} className={styles.overviewData}>
+        <Grid container spacing={3}>
           <Grid item xs={12}>
-            <Typography variant="h6" className={styles.label}>
+            <Typography variant="h6">
               {strings(stringKeys.nationalSociety.form.name)}
             </Typography>
             <Typography variant="body1" gutterBottom>
@@ -38,7 +36,7 @@ const NationalSocietiesOverviewPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="h6" className={styles.label}>
+            <Typography variant="h6">
               {strings(stringKeys.nationalSociety.form.country)}
             </Typography>
             <Typography variant="body1" gutterBottom>
@@ -47,7 +45,7 @@ const NationalSocietiesOverviewPageComponent = (props) => {
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="h6" className={styles.label}>
+            <Typography variant="h6">
               {strings(stringKeys.nationalSociety.form.contentLanguage)}
             </Typography>
             <Typography variant="body1" gutterBottom>
