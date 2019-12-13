@@ -6,6 +6,8 @@ import { get } from '../../../utils/http';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import TextField from "@material-ui/core/TextField";
 import { strings, stringKeys } from "../../../strings";
@@ -85,7 +87,12 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
         className={styles.field}
         label={strings(stringKeys.filters.area.title)}
         InputProps={{
-          readOnly: true
+          readOnly: true,
+          endAdornment: (
+            <InputAdornment >
+              <ArrowDropDown className={styles.arrow} />
+            </InputAdornment>
+          )
         }}
         inputProps={{
           className: styles.areaSelect

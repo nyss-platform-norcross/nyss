@@ -42,10 +42,14 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
     authentication
       .then(token => {
         const fetchHeaders = authenticate ? { ...headers, "Authorization": "Bearer " + token } : headers;
-        let init = { method, headers: new Headers({
-          ...fetchHeaders,
-          "Cache-Control": "no-cache"
-        }) };
+        let init = {
+          method, headers: new Headers({
+            ...fetchHeaders,
+            "Pragma": "no-cache",
+            "Cache-Control": "no-cache",
+            "Expires": "0"
+          })
+        };
         if (data) {
           init.body = JSON.stringify(data);
         }
