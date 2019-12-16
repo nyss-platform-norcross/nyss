@@ -520,7 +520,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisor
         }
 
         [Fact]
-        public async Task Remove_WhenRemovingNonExistantSupervisor_ReturnsError()
+        public async Task Remove_WhenRemovingNonExistentSupervisor_ReturnsError()
         {
             //Act
             var result = await _supervisorService.Remove(999);

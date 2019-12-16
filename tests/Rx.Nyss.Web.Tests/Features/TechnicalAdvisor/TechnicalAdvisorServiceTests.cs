@@ -413,7 +413,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisor
         }
 
         [Fact]
-        public async Task DeleteTechnicalAdvisor_WhenDeletingAPendingHeadManager_NationalSocietyPendngManagerGetsNullified()
+        public async Task DeleteTechnicalAdvisor_WhenDeletingAPendingHeadManager_NationalSocietyPendingManagerGetsNullified()
         {
             //arrange
             ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
@@ -429,7 +429,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisor
         }
 
         [Fact]
-        public async Task DeleteTechnicalAdvisor_WhenDeletingFromNotLastNationalSociety_NationalSocietyPendngManagerGetsNullified()
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromNotLastNationalSociety_NationalSocietyPendingManagerGetsNullified()
         {
             //arrange
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();

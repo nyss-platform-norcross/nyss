@@ -50,7 +50,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
 
 
         [Fact]
-        public async Task GetUsersInNationalSociety_ShouldReturOnlyUsersFromSpecifiedNationalSociety()
+        public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersFromSpecifiedNationalSociety()
         {
             var users = await _userService.GetUsersInNationalSociety(1, new [] {Role.Administrator.ToString()});
 

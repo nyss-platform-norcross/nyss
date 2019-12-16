@@ -235,7 +235,7 @@ namespace RX.Nyss.Web.Tests.Features.Manager
         }
 
         [Fact]
-        public async Task DeleteManager_WhenDeletingAPendingHeadManager_NationalSocietyPendngManagerGetsNullified()
+        public async Task DeleteManager_WhenDeletingAPendingHeadManager_NationalSocietyPendingManagerGetsNullified()
         {
             //arrange
             var manager = _nyssContext.Users.Single(x => x.Id == _managerId);

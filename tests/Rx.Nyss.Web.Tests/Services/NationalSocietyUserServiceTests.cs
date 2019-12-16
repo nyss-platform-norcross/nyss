@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Tests.Services
 
 
         [Fact]
-        public async Task DeleteNationalSocietyUser_WhenSuccesful_NyssContextSaveChangesShouldBeCalledOnce()
+        public async Task DeleteNationalSocietyUser_WhenSuccessful_NyssContextSaveChangesShouldBeCalledOnce()
         {
             var manager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { manager });
@@ -115,7 +115,7 @@ namespace RX.Nyss.Web.Tests.Services
         }
 
         [Fact]
-        public async Task DeleteNationalSocietyUser_WhenSuccesful_IdentityUserDeleteShouldBeCalledOnce()
+        public async Task DeleteNationalSocietyUser_WhenSuccessful_IdentityUserDeleteShouldBeCalledOnce()
         {
             var manager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { manager });

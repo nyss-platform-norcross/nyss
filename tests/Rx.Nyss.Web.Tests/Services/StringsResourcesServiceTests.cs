@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Tests.Services
         [InlineData("login.signIn", "en", "Log in")]
         [InlineData("login.signIn", "fr", "S'identifier")]
         [InlineData("login.signIn", "wrong-lang", "Log in default")]
-        public async Task GetStringsResources_ReurnsProperTranslaions(string key, string languageCode, string value)
+        public async Task GetStringsResources_ReturnsProperTranslations(string key, string languageCode, string value)
         {
             _nyssBlobProvider.GetStringsResources().Returns(BlobValue);
 
