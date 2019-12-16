@@ -86,9 +86,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
 
-            _alerts.First().ProjectHealthRisk.Project.AlertRecipients = new List<AlertRecipient>
+            _alerts.First().ProjectHealthRisk.Project.EmailAlertRecipients = new List<EmailAlertRecipient>
             {
-                new AlertRecipient { EmailAddress = emailAddress }
+                new EmailAlertRecipient { EmailAddress = emailAddress }
             };
 
             await _alertService.EscalateAlert(TestData.AlertId);
@@ -247,9 +247,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Project = new Project
                             {
                                 TimeZone = "Dateline Standard Time",
-                                AlertRecipients = new List<AlertRecipient>
+                                EmailAlertRecipients = new List<EmailAlertRecipient>
                                 {
-                                    new AlertRecipient
+                                    new EmailAlertRecipient
                                     {
                                         EmailAddress = "aaa@aaa.com"
                                     }
