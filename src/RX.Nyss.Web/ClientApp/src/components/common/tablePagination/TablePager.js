@@ -1,7 +1,6 @@
 import styles from "./TablePager.module.scss";
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
-import TableCell from '@material-ui/core/TableCell';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
@@ -43,7 +42,7 @@ export const TablePager = (props) => {
       </IconButton>
 
       <Select className={`${styles.dropDown}`} onChange={handlePageSelect} value={page}>
-        {pagesRange().map(page => (<MenuItem value={page} key={page}>{page}</MenuItem>))}
+        {pagesRange.map(page => (<MenuItem value={page} key={page}>{page}</MenuItem>))}
       </Select>
 
       <IconButton
