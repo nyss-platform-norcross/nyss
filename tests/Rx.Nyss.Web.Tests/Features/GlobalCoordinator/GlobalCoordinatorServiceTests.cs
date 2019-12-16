@@ -50,9 +50,9 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
         }
 
         private void ArrangeUsersDbSetWithOneAdministratorUser() =>
-            ArrangeUsersDbSetWithExistingUsers(new List<Nyss.Data.Models.User> { new AdministratorUser() { Id = 123, Role = Role.Administrator } });
+            ArrangeUsersDbSetWithExistingUsers(new List<User> { new AdministratorUser { Id = 123, Role = Role.Administrator } });
 
-        private void ArrangeUsersDbSetWithExistingUsers(IEnumerable<Nyss.Data.Models.User> existingUsers)
+        private void ArrangeUsersDbSetWithExistingUsers(IEnumerable<User> existingUsers)
         {
             var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
@@ -65,7 +65,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
         }
 
         private void ArrangeUSersDbSetWithOneGlobalCoordinator() =>
-            ArrangeUsersDbSetWithExistingUsers(new List<Nyss.Data.Models.User>
+            ArrangeUsersDbSetWithExistingUsers(new List<User>
             {
                 new GlobalCoordinatorUser
                 {
@@ -92,7 +92,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
             var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<Nyss.Data.Models.User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 
@@ -156,12 +156,12 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
         [Fact]
         public async Task EditGlobalCoordinator_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            var nyssUsers = new List<Nyss.Data.Models.User>();
+            var nyssUsers = new List<User>();
             var usersDbSet = nyssUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);
 
 
-            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() {Id = 123});
+            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto {Id = 123});
 
 
             result.IsSuccess.ShouldBeFalse();
@@ -172,7 +172,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
         {
             ArrangeUsersDbSetWithOneAdministratorUser();
 
-            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() { Id = 123 });
+            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -182,7 +182,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
         {
            ArrangeUsersDbSetWithOneAdministratorUser();
 
-            await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() { Id = 123 });
+            await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -192,7 +192,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
         {
             ArrangeUSersDbSetWithOneGlobalCoordinator();
 
-            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() { Id = 123 });
+            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
             result.IsSuccess.ShouldBeTrue();
         }
@@ -202,7 +202,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
         {
             ArrangeUSersDbSetWithOneGlobalCoordinator();
 
-            await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto() { Id = 123 });
+            await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
             await _nyssContext.Received().SaveChangesAsync();
         }
@@ -214,7 +214,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
 
             var existingUserEmail = _nyssContext.Users.Single(u => u.Id == 123)?.EmailAddress;
 
-            var editRequest = new EditGlobalCoordinatorRequestDto()
+            var editRequest = new EditGlobalCoordinatorRequestDto
             {
                 Id = 123, Name = "New name", Organization = "New organization", PhoneNumber = "432432"
             };
@@ -233,17 +233,17 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinator
         [Fact]
         public async Task GetGlobalCoordinators_OnlyGlobalCoordinatorsAreReturned()
         {
-            var nyssUsers = new List<Nyss.Data.Models.User>()
+            var nyssUsers = new List<User>
             {
-                new GlobalCoordinatorUser() { Id = 1, Role = Role.GlobalCoordinator },
-                new GlobalCoordinatorUser() { Id = 2, Role = Role.GlobalCoordinator },
-                new GlobalCoordinatorUser() { Id = 3, Role = Role.Administrator },
-                new GlobalCoordinatorUser() { Id = 4, Role = Role.Supervisor},
-                new GlobalCoordinatorUser() { Id = 5, Role = Role.TechnicalAdvisor },
-                new GlobalCoordinatorUser() { Id = 6, Role = Role.DataConsumer },
-                new GlobalCoordinatorUser() { Id = 7, Role = Role.Supervisor },
-                new GlobalCoordinatorUser() { Id = 8, Role = Role.Supervisor },
-                new GlobalCoordinatorUser() { Id = 9, Role = Role.Supervisor }
+                new GlobalCoordinatorUser { Id = 1, Role = Role.GlobalCoordinator },
+                new GlobalCoordinatorUser { Id = 2, Role = Role.GlobalCoordinator },
+                new GlobalCoordinatorUser { Id = 3, Role = Role.Administrator },
+                new GlobalCoordinatorUser { Id = 4, Role = Role.Supervisor},
+                new GlobalCoordinatorUser { Id = 5, Role = Role.TechnicalAdvisor },
+                new GlobalCoordinatorUser { Id = 6, Role = Role.DataConsumer },
+                new GlobalCoordinatorUser { Id = 7, Role = Role.Supervisor },
+                new GlobalCoordinatorUser { Id = 8, Role = Role.Supervisor },
+                new GlobalCoordinatorUser { Id = 9, Role = Role.Supervisor }
             };
             ArrangeUsersDbSetWithExistingUsers(nyssUsers);
 

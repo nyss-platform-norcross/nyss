@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyStructure
                 Id = 1,
                 Name = "Region",
                 Districts = new List<District>(),
-                NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                NationalSociety = new NationalSociety
                 {
                     Id = NationalSocietyId
                 }

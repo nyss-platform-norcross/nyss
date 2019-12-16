@@ -12,14 +12,14 @@ using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 
-namespace RX.Nyss.Web.Tests.Features.HealthRisk
+namespace RX.Nyss.Web.Tests.Features.HealthRisks
 {
     public class HealthRiskServiceTests
     {
         private readonly IHealthRiskService _healthRiskService;
         private readonly INyssContext _nyssContextMock;
-        private readonly RX.Nyss.Data.Models.HealthRisk _healthRisk;
-        private const HealthRiskType HealthRiskType = RX.Nyss.Data.Concepts.HealthRiskType.Human;
+        private readonly HealthRisk _healthRisk;
+        private const HealthRiskType HealthRiskType = Nyss.Data.Concepts.HealthRiskType.Human;
         private const string UserName = "admin@domain.com";
         private const string HealthRiskName = "AWD";
         private const int HealthRiskId = 1;
@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisk
             _nyssContextMock = Substitute.For<INyssContext>();
             _healthRiskService = new HealthRiskService(_nyssContextMock);
 
-            var users = new List<Nyss.Data.Models.User>
+            var users = new List<User>
             {
                 new GlobalCoordinatorUser
                 {
@@ -88,11 +88,11 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisk
                     Id = AlertRuleId,
                     CountThreshold = AlertRuleCountThreshold,
                     DaysThreshold = AlertRuleDaysThreshold,
-                    KilometersThreshold = AlertRuleKilometersThreshold,
+                    KilometersThreshold = AlertRuleKilometersThreshold
                 }
             };
 
-            _healthRisk = new RX.Nyss.Data.Models.HealthRisk
+            _healthRisk = new HealthRisk
             {
                 Id = HealthRiskId,
                 HealthRiskType = HealthRiskType,
@@ -101,7 +101,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisk
                 AlertRule = alertRules[0]
             };
 
-            var healthRisks = new List<RX.Nyss.Data.Models.HealthRisk>
+            var healthRisks = new List<HealthRisk>
             {
                 _healthRisk
             };
@@ -145,7 +145,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisk
             await _healthRiskService.CreateHealthRisk(healthRiskRequestDto);
 
             // Assert
-            await _nyssContextMock.Received(1).AddAsync(Arg.Any<RX.Nyss.Data.Models.HealthRisk>());
+            await _nyssContextMock.Received(1).AddAsync(Arg.Any<HealthRisk>());
         }
 
         [Fact]
@@ -221,9 +221,9 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisk
                 new ProjectHealthRisk
                 {
                     HealthRiskId = HealthRiskId,
-                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    Reports = new List<Report>
                     {
-                        new RX.Nyss.Data.Models.Report()
+                        new Report()
                     }
                 }
             };
@@ -267,9 +267,9 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisk
                 new ProjectHealthRisk
                 {
                     HealthRiskId = HealthRiskId,
-                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    Reports = new List<Report>
                     {
-                        new RX.Nyss.Data.Models.Report()
+                        new Report()
                     }
                 }
             };
@@ -313,9 +313,9 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisk
                 new ProjectHealthRisk
                 {
                     HealthRiskId = HealthRiskId,
-                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    Reports = new List<Report>
                     {
-                        new RX.Nyss.Data.Models.Report()
+                        new Report()
                     }
                 }
             };
@@ -466,9 +466,9 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisk
                 new ProjectHealthRisk
                 {
                     HealthRiskId = HealthRiskId,
-                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    Reports = new List<Report>
                     {
-                        new RX.Nyss.Data.Models.Report()
+                        new Report()
 }
                 }
             };

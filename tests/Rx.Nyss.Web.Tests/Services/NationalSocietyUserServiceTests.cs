@@ -35,8 +35,8 @@ namespace RX.Nyss.Web.Tests.Services
 
         private void SetupTestNationalSociety()
         {
-            var nationalSociety = new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "Test national society" };
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety };
+            var nationalSociety = new NationalSociety { Id = 1, Name = "Test national society" };
+            var nationalSocieties = new List<NationalSociety> { nationalSociety };
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
 

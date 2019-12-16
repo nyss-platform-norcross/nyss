@@ -63,7 +63,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             {
                 new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } },
                 new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } },
+                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
@@ -140,7 +140,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } },
                 new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } },
                 new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } },
+                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;

@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
             _user = new AdministratorUser { EmailAddress = UserEmail, Name = UserName };
-            _nyssContext.Users = new List<Nyss.Data.Models.User>{ _user }.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users = new List<User>{ _user }.AsQueryable().BuildMockDbSet();
             _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
         }
 
@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
         [Fact]
         public async Task Login_WhenSuccessful_ReturnsToken()
         {
-            var nyssUsers = new List<Nyss.Data.Models.User>();
+            var nyssUsers = new List<User>();
             var userNationalSocieties = new List<UserNationalSociety>();
             var usersDbSet = nyssUsers.AsQueryable().BuildMockDbSet();
             var usersNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
@@ -95,7 +95,7 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
         {
             const string languageCode = "en";
             const string role = "Administrator";
-            var nationalSocietiesDbSet = new List<RX.Nyss.Data.Models.NationalSociety>().AsQueryable().BuildMockDbSet();
+            var nationalSocietiesDbSet = new List<NationalSociety>().AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _user.ApplicationLanguage = new ApplicationLanguage { LanguageCode = languageCode };
 

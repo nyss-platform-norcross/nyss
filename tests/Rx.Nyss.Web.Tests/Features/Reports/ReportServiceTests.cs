@@ -14,7 +14,7 @@ using RX.Nyss.Web.Features.User;
 using Shouldly;
 using Xunit;
 
-namespace RX.Nyss.Web.Tests.Features.Report
+namespace RX.Nyss.Web.Tests.Features.Reports
 {
     public class ReportServiceTests
     {
@@ -22,8 +22,8 @@ namespace RX.Nyss.Web.Tests.Features.Report
         private readonly IReportService _reportService;
         private readonly INyssContext _nyssContextMock;
         private readonly IConfig _config;
-        private List<RX.Nyss.Data.Models.Report> _reports;
-        private List<RX.Nyss.Data.Models.RawReport> _rawReports;
+        private List<Report> _reports;
+        private List<RawReport> _rawReports;
 
 
         private readonly int _rowsPerPage = 10;
@@ -49,11 +49,11 @@ namespace RX.Nyss.Web.Tests.Features.Report
 
         private void ArrangeData()
         {
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
+            var nationalSocieties = new List<NationalSociety>
             {
-                new RX.Nyss.Data.Models.NationalSociety
+                new NationalSociety
                 {
-                    Id = 1,
+                    Id = 1
                 }
             };
 
@@ -61,7 +61,7 @@ namespace RX.Nyss.Web.Tests.Features.Report
             {
                 new AlertRule
                 {
-                    Id = 1,
+                    Id = 1
                 }
             };
 
@@ -87,9 +87,9 @@ namespace RX.Nyss.Web.Tests.Features.Report
                 }
             };
 
-            var healthRisks = new List<RX.Nyss.Data.Models.HealthRisk>
+            var healthRisks = new List<HealthRisk>
             {
-                new RX.Nyss.Data.Models.HealthRisk
+                new HealthRisk
                 {
                     Id = 1,
                     HealthRiskType = HealthRiskType.Human,
@@ -97,7 +97,7 @@ namespace RX.Nyss.Web.Tests.Features.Report
                     LanguageContents = languageContents,
                     AlertRule = alertRules[0]
                 },
-                new RX.Nyss.Data.Models.HealthRisk
+                new HealthRisk
                 {
                     Id = 2,
                     HealthRiskType = HealthRiskType.Human,
@@ -135,7 +135,7 @@ namespace RX.Nyss.Web.Tests.Features.Report
 
             var districts = new List<District>
             {
-                new District()
+                new District
                 {
                     Id = 1,
                     Name = "District1",
@@ -145,7 +145,7 @@ namespace RX.Nyss.Web.Tests.Features.Report
 
             var villages = new List<Village>
             {
-                new Village()
+                new Village
                 {
                     Id = 1,
                     Name = "Village1",
@@ -153,35 +153,35 @@ namespace RX.Nyss.Web.Tests.Features.Report
                 }
             };
 
-            var projects = new List<RX.Nyss.Data.Models.Project>
+            var projects = new List<Project>
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 1,
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
                     ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 1).ToList(),
-                    TimeZone = "UTC",
+                    TimeZone = "UTC"
                 },
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 2,
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
                     ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 2).ToList(),
-                    TimeZone = "UTC",
+                    TimeZone = "UTC"
                 }
             };
 
-            var dataCollectors = new List<RX.Nyss.Data.Models.DataCollector>
+            var dataCollectors = new List<DataCollector>
             {
-                new RX.Nyss.Data.Models.DataCollector
+                new DataCollector
                 {
                     Id = 1,
                     Project = projects[0],
                     Village = villages[0]
                 },
-                new RX.Nyss.Data.Models.DataCollector
+                new DataCollector
                 {
                     Id = 2,
                     Project = projects[1],
@@ -235,11 +235,11 @@ namespace RX.Nyss.Web.Tests.Features.Report
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
         }
 
-        private static List<RX.Nyss.Data.Models.Report> BuildReports(RX.Nyss.Data.Models.DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk,
+        private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk,
             bool? isTraining = false)
         {
             var reports = ids
-                .Select(i => new RX.Nyss.Data.Models.Report
+                .Select(i => new Report
                 {
                     Id = i,
                     DataCollector =  dataCollector,
@@ -253,7 +253,7 @@ namespace RX.Nyss.Web.Tests.Features.Report
             return reports;
         }
 
-        private static List<RawReport> BuildRawReports(List<RX.Nyss.Data.Models.Report> reports) =>
+        private static List<RawReport> BuildRawReports(List<Report> reports) =>
             reports.Select(r => new RawReport
                 {
                     Id = r.Id,

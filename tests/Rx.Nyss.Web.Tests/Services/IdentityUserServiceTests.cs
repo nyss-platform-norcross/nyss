@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Tests.Services
         public async Task CreateIdentityUser_WhenUserAlreadyExists_ShouldThrowException()
         {
             var userEmail = "emailTest1@domain.com";
-            var existingUserList = new List<IdentityUser> { new IdentityUser() { UserName = userEmail, Email = userEmail } };
+            var existingUserList = new List<IdentityUser> { new IdentityUser { UserName = userEmail, Email = userEmail } };
             var identityUserService = GetIdentityUserRegistrationServiceWithMockedDependencies(existingUserList);
 
             await Assert.ThrowsAsync<ResultException>(() => identityUserService.CreateIdentityUser(userEmail, Role.GlobalCoordinator));

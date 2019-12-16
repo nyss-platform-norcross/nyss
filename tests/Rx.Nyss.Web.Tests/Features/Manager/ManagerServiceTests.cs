@@ -45,11 +45,11 @@ namespace RX.Nyss.Web.Tests.Features.Manager
             _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
 
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { new RX.Nyss.Data.Models.NationalSociety { Id = _nationalSocietyId, Name = "Test national society" } };
+            var nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = _nationalSocietyId, Name = "Test national society" } };
             var applicationLanguages = new List<ApplicationLanguage>();
-            var users = new List<Nyss.Data.Models.User>
+            var users = new List<User>
             {
-                new AdministratorUser() { Id = _administratorId, Role = Role.Administrator },
+                new AdministratorUser { Id = _administratorId, Role = Role.Administrator },
                 new ManagerUser
                 {
                     Id = _managerId,
@@ -106,7 +106,7 @@ namespace RX.Nyss.Web.Tests.Features.Manager
             var result = await _managerService.CreateManager(_nationalSocietyId, registerManagerRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<Nyss.Data.Models.User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 
@@ -168,7 +168,7 @@ namespace RX.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            var result = await _managerService.UpdateManager(999, new EditManagerRequestDto() {});
+            var result = await _managerService.UpdateManager(999, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -176,7 +176,7 @@ namespace RX.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingUserThatIsNotManager_ReturnsErrorResult()
         {
-            var result = await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto() { });
+            var result = await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -185,7 +185,7 @@ namespace RX.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingUserThatIsNotManager_SaveChangesShouldNotBeCalled()
         {
-            await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto() { });
+            await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto());
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -194,7 +194,7 @@ namespace RX.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingExistingManager_ReturnsSuccess()
         {
-            var result = await _managerService.UpdateManager(_managerId, new EditManagerRequestDto() {  });
+            var result = await _managerService.UpdateManager(_managerId, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeTrue();
         }
@@ -204,7 +204,7 @@ namespace RX.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingExistingManager_SaveChangesAsyncIsCalled()
         {
-            await _managerService.UpdateManager(2, new EditManagerRequestDto() {  });
+            await _managerService.UpdateManager(2, new EditManagerRequestDto());
 
             await _nyssContext.Received().SaveChangesAsync();
         }
@@ -214,7 +214,7 @@ namespace RX.Nyss.Web.Tests.Features.Manager
         {
             var existingUserEmail = _nyssContext.Users.Single(u => u.Id == _managerId)?.EmailAddress;
 
-            var editRequest = new EditManagerRequestDto()
+            var editRequest = new EditManagerRequestDto
             {
                 Name = "New name",
                 Organization = "New organization",
