@@ -1,16 +1,13 @@
 ﻿using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
-using Message = Microsoft.Azure.ServiceBus.Message;
 
 namespace RX.Nyss.Web.Features.Alerts
 {
@@ -22,18 +19,21 @@ namespace RX.Nyss.Web.Features.Alerts
 
     public class AlertReportService : IAlertReportService
     {
+        private readonly IConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IAlertService _alertService;
-        private readonly QueueClient _queueClient;
+        private readonly IQueueService _queueService;
 
         public AlertReportService(
             IConfig config,
             INyssContext nyssContext,
-            IAlertService alertService)
+            IAlertService alertService,
+            IQueueService queueService)
         {
+            _config = config;
             _nyssContext = nyssContext;
             _alertService = alertService;
-            _queueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.ReportDismissalQueue);
+            _queueService = queueService;
         }
 
         public async Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId)
@@ -75,17 +75,17 @@ namespace RX.Nyss.Web.Features.Alerts
 
             if (alertReport.Alert.Status != AlertStatus.Pending)
             {
-                return Error<DismissReportResponseDto>(ResultKey.Alert.AcceptReportWrongAlertStatus);
+                return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReportWrongAlertStatus);
             }
 
             if (alertReport.Report.Status != ReportStatus.Pending)
             {
-                return Error<DismissReportResponseDto>(ResultKey.Alert.AcceptReportWrongReportStatus);
+                return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReportWrongReportStatus);
             }
 
             alertReport.Report.Status = ReportStatus.Rejected;
 
-            await SendToQueue(new DismissReportMessage { ReportId = reportId });
+            await DismissAlertReport(reportId);
 
             await _nyssContext.SaveChangesAsync();
 
@@ -97,14 +97,14 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(response);
         }
 
-        private async Task SendToQueue<T>(T data)
+        private Task DismissAlertReport(int reportId)
         {
-            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)))
+            var message = new DismissReportMessage
             {
-                Label = "RX.Nyss.Web",
+                ReportId = reportId
             };
 
-            await _queueClient.SendAsync(message);
+            return _queueService.Send(_config.ServiceBusQueues.ReportDismissalQueue, message);
         }
     }
 }
