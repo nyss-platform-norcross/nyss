@@ -72,7 +72,7 @@
     "serviceBusNamespaceName": "[concat('nrx-cbs-nyss-bus-', parameters('env'))]",
     "reportQueueName": "[concat('nrx-cbs-nyss-bus-report-queue-', parameters('env'))]",
     "sendEmailQueueName": "[concat('nrx-cbs-nyss-bus-send-email-queue-', parameters('env'))]",
-    "reportDismissalQueue": "[concat('nrx-cbs-nyss-bus-reportdismissal-queue-', parameters('env'))]",
+    "reportDismissalQueue": "[concat('nrx-cbs-nyss-bus-report-dismissal-queue-', parameters('env'))]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
     "defaultAuthRuleResourceId": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespaceName'), variables('defaultSASKeyName'))]",
     "sbVersion": "2017-04-01",
