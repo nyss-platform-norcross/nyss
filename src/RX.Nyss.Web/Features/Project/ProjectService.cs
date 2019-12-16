@@ -144,7 +144,7 @@ namespace RX.Nyss.Web.Features.Project
                         .SelectMany(phr => phr.Alerts
                             .Where(a => a.Status == AlertStatus.Escalated)
                         ).Count(),
-                    TotalDataCollectorCount = p.DataCollectors.Count(dc => dc.DataCollectorType == DataCollectorType.Human),
+                    TotalDataCollectorCount = p.DataCollectors.Count(dc => dc.DataCollectorType == DataCollectorType.Human && dc.Name != AnonymizationText),
                     SupervisorCount = p.SupervisorUserProjects.Count
                 })
                 .ToListAsync();
