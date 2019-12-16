@@ -2262,6 +2262,9 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<DateTime>("ReceivedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("ReportGroupLabel")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ReportType")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
@@ -2292,6 +2295,8 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("ProjectHealthRiskId");
 
                     b.HasIndex("ReceivedAt");
+
+                    b.HasIndex("ReportGroupLabel");
 
                     b.HasIndex("VillageId");
 

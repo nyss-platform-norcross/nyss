@@ -8,7 +8,9 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Features.Alerts;
+using RX.Nyss.ReportApi.Services;
 using RX.Nyss.ReportApi.Utils.Logging;
 using Shouldly;
 using Xunit;
@@ -21,6 +23,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private readonly IReportLabelingService _reportLabelingServiceMock;
         private readonly IAlertService _alertService;
         private readonly ILoggerAdapter _loggerAdapterMock;
+        private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
+        private readonly IConfig _config;
 
         private const int NotExistingReportId = 9999;
         private const int AddedReportWithThreshold1Id = 1;
@@ -85,7 +89,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _nyssContextMock = Substitute.For<INyssContext>();
             _reportLabelingServiceMock = Substitute.For<IReportLabelingService>();
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _alertService = new AlertService(_nyssContextMock, _reportLabelingServiceMock, _loggerAdapterMock);
+            _emailToSmsPublisherService = Substitute.For<IEmailToSmsPublisherService>();
+            _config = Substitute.For<IConfig>();
+            _alertService = new AlertService(_nyssContextMock, _reportLabelingServiceMock, _loggerAdapterMock, _emailToSmsPublisherService, _config);
 
             var alertRules = new List<AlertRule>
             {

@@ -15,12 +15,6 @@ namespace RX.Nyss.Data.Migrations
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reports_ReceivedAt",
-                schema: "nyss",
-                table: "Reports",
-                column: "ReceivedAt");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Reports_ReportGroupLabel",
                 schema: "nyss",
                 table: "Reports",
@@ -31,11 +25,6 @@ namespace RX.Nyss.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Reports_ReceivedAt",
-                schema: "nyss",
-                table: "Reports");
-
             migrationBuilder.DropIndex(
                 name: "IX_Reports_ReportGroupLabel",
                 schema: "nyss",
