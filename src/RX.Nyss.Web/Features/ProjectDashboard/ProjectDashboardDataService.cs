@@ -305,13 +305,12 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         private int InactiveDataCollectorCount(IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto filtersDto)
         {
             var activeDataCollectors = reports.Select(r => r.DataCollector.Id).Distinct();
-            var dataCollectorsWithoutReports = _nyssContext.DataCollectors
+
+            return _nyssContext.DataCollectors
                 .Where(dc => !activeDataCollectors.Contains(dc.Id) &&
                     (filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.Training ? dc.IsInTrainingMode : !dc.IsInTrainingMode) &&
                     dc.Name != AnonymizationText)
                 .Count();
-
-            return dataCollectorsWithoutReports;
         }
     }
 }
