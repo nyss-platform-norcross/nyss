@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
@@ -542,7 +541,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             await _alertService.ReportDismissed(reportId);
 
             //assert
-            await _nyssContextMock.Received(3).SaveChangesAsync();
+            await _nyssContextMock.Received(1).SaveChangesAsync();
         }
 
         [Fact]

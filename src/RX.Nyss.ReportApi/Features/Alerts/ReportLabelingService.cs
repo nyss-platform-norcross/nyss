@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using GeoCoordinatePortable;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -18,7 +17,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         /// </Summary>
         Task ResolveLabelsOnReportAdded(Report addedReport, ProjectHealthRisk projectHealthRisk);
 
-        Task<IEnumerable<(int ReportId, Guid Label)>> CalculateNewLabelsInLabelGroup(Guid label, double distanceThreshold);
+        Task<IEnumerable<(int ReportId, Guid Label)>> CalculateNewLabelsInLabelGroup(Guid label, double distanceThreshold, int? reportIdToIgnore);
 
         Task<List<Report>> FindReportsSatisfyingRangeAndTimeRequirements(Report report, ProjectHealthRisk projectHealthRisk);
 
@@ -97,11 +96,12 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return labelsPlaceholderTemplate;
         }
 
-        public async Task<IEnumerable<(int ReportId, Guid Label)>> CalculateNewLabelsInLabelGroup(Guid label, double distanceThreshold)
+        public async Task<IEnumerable<(int ReportId, Guid Label)>> CalculateNewLabelsInLabelGroup(Guid label, double distanceThreshold, int? reportIdToIgnore)
         {
             var reportsWithSelectedLabel = await _nyssContext.Reports
                 .Include(r => r.ReportAlerts)
                 .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
+                .Where(r => !reportIdToIgnore.HasValue || r.Id != reportIdToIgnore.Value)
                 .Where(r => r.ReportGroupLabel == label)
                 .Select(r => new ReportPoint
                 {
@@ -115,44 +115,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var updatedReportPoints = ReassignLabelsByAddingPointsOneByOne(reportsWithSelectedLabel, distanceThreshold);
 
             return updatedReportPoints.Select(p => (p.ReportId, Label: p.Label.Value));
-
-
-            List<ReportPoint> ReassignLabelsByAddingPointsOneByOne(List<ReportPoint> reportsWithNoLabel, double distanceThreshold)
-            {
-                var pointsWithAssignedLabel = new List<ReportPoint>();
-                foreach (var reportPoint in reportsWithNoLabel)
-                {
-                    var pointsInRange = pointsWithAssignedLabel
-                        .Where(p => GetPointsAreInRange(reportPoint, p, distanceThreshold))
-                        .ToList();
-
-                    var labelsInRange = pointsInRange.Select(r => r.Label).Distinct();
-
-                    var labelForNewConnectedArea = labelsInRange.Any()
-                        ? labelsInRange.FirstOrDefault()
-                        : Guid.NewGuid();
-
-                    if (labelsInRange.Count() > 1)
-                    {
-                        pointsWithAssignedLabel.Where(p => labelsInRange.Contains(p.Label))
-                            .ToList()
-                            .ForEach(p => p.Label = labelForNewConnectedArea);
-                    }
-
-                    reportPoint.Label = labelForNewConnectedArea;
-                    pointsWithAssignedLabel.Add(reportPoint);
-                }
-
-                return pointsWithAssignedLabel;
-            }
-
-            bool GetPointsAreInRange(ReportPoint firstPoint, ReportPoint secondPoint, double distanceThreshold)
-            {
-                var firstCoordinate = new GeoCoordinate(firstPoint.Latitude, firstPoint.Longitude);
-                var secondCoordinate = new GeoCoordinate(secondPoint.Latitude, secondPoint.Longitude);
-                var distance = firstCoordinate.GetDistanceTo(secondCoordinate);
-                return distance <= distanceThreshold;
-            }
         }
 
         ///<Summary>
@@ -171,13 +133,33 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             }
         }
 
-
-        private class ReportPoint
+        private List<ReportPoint> ReassignLabelsByAddingPointsOneByOne(List<ReportPoint> reportsWithNoLabel, double distanceThreshold)
         {
-            public Guid? Label { get; set; }
-            public double Latitude { get; set; }
-            public double Longitude { get; set; }
-            public int ReportId { get; set; }
+            var pointsWithAssignedLabel = new List<ReportPoint>();
+            foreach (var reportPoint in reportsWithNoLabel)
+            {
+                var pointsInRange = pointsWithAssignedLabel
+                    .Where(p => reportPoint.GetPointsAreInRange(p, distanceThreshold))
+                    .ToList();
+
+                var labelsInRange = pointsInRange.Select(r => r.Label).Distinct().ToList();
+
+                var labelForNewConnectedArea = labelsInRange.Any()
+                    ? labelsInRange.First()
+                    : Guid.NewGuid();
+
+                if (labelsInRange.Count >= 2)
+                {
+                    pointsWithAssignedLabel.Where(p => labelsInRange.Contains(p.Label))
+                        .ToList()
+                        .ForEach(p => p.Label = labelForNewConnectedArea);
+                }
+
+                reportPoint.Label = labelForNewConnectedArea;
+                pointsWithAssignedLabel.Add(reportPoint);
+            }
+
+            return pointsWithAssignedLabel;
         }
     }
 }

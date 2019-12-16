@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +58,70 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return triggeredAlert;
         }
 
+        public async Task ReportDismissed(int reportId)
+        {
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            var inspectedAlert = await _nyssContext.AlertReports
+                .Where(ar => ar.ReportId == reportId)
+                .Where(ar => ar.Alert.Status == AlertStatus.Pending)
+                .Select(ar => ar.Alert)
+                .SingleOrDefaultAsync();
+
+            if (inspectedAlert == null)
+            {
+                _loggerAdapter.Warn($"The alert for report with id {reportId} does not exist or has status different than pending or dismissed.");
+                return;
+            }
+
+            var report = await _nyssContext.Reports
+                .Include(r => r.ProjectHealthRisk)
+                .ThenInclude(phr => phr.AlertRule)
+                .Where(r => r.Id == reportId)
+                .SingleAsync();
+
+            if (report == null)
+            {
+                _loggerAdapter.Warn($"The report with id {reportId} does not exist.");
+                return;
+            }
+
+            if (report.Status == ReportStatus.Pending)
+            {
+                report.Status = ReportStatus.Rejected;
+            }
+
+            var alertRule = report.ProjectHealthRisk.AlertRule;
+
+
+            if (alertRule.CountThreshold == 1)
+            {
+                inspectedAlert.Status = AlertStatus.Rejected;
+            }
+            else
+            {
+                await RecalculateAlert(report, alertRule);
+                await RejectAlertWhenRequirementsAreNotMet(reportId, alertRule, inspectedAlert);
+            }
+
+            await _nyssContext.SaveChangesAsync();
+            transactionScope.Complete();
+        }
+
+        public async Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting)
+        {
+            var phoneNumbersOfSupervisorsInAlert = await _nyssContext.AlertReports
+                    .Where(ar => ar.Alert.Id == alert.Id)
+                    .Select(ar => ar.Report.DataCollector.Supervisor.PhoneNumber)
+                    .Distinct()
+                    .ToListAsync();
+
+            var message = await CreateNotificationMessageForNewAlert(alert);
+
+            await _emailToSmsPublisherService.SendMessage(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
+        }
+
+
         private async Task<Alert> HandleAlerts(Report report)
         {
             var reportGroupLabel = report.ReportGroupLabel;
@@ -66,30 +129,33 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var existingAlert = await IncludeAllReportsWithLabelInExistingAlert(reportGroupLabel);
 
-            if (existingAlert == null)
+            if (existingAlert != null)
             {
-                var reportsWithLabel = await _nyssContext.Reports
-                    .Where(r => r.ReportGroupLabel == reportGroupLabel)
-                    .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
-                    .ToListAsync();
-
-                if (reportsWithLabel.Count >= projectHealthRisk.AlertRule.CountThreshold)
-                {
-                    var alert = await CreateNewAlert(projectHealthRisk);
-                    await AddReportsToAlert(alert, reportsWithLabel);
-                    return alert;
-                }
+                return null;
             }
 
-            return null;
+            var reportsWithLabel = await _nyssContext.Reports
+                .Where(r => r.ReportGroupLabel == reportGroupLabel)
+                .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
+                .ToListAsync();
+
+            if (reportsWithLabel.Count < projectHealthRisk.AlertRule.CountThreshold)
+            {
+                return null;
+            }
+
+            var alert = await CreateNewAlert(projectHealthRisk);
+            await AddReportsToAlert(alert, reportsWithLabel);
+            return alert;
         }
 
-        private async Task<Alert> IncludeAllReportsWithLabelInExistingAlert(Guid reportGroupLabel)
+        private async Task<Alert> IncludeAllReportsWithLabelInExistingAlert(Guid reportGroupLabel, int? alertIdToIgnore = null)
         {
             var existingActiveAlertForLabel = await _nyssContext.Reports
                 .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
                 .Where(r => r.ReportGroupLabel == reportGroupLabel)
                 .SelectMany(r => r.ReportAlerts)
+                .Where(ar => !alertIdToIgnore.HasValue || ar.AlertId != alertIdToIgnore.Value)
                 .Select(ra => ra.Alert)
                 .OrderByDescending(a => a.Status == AlertStatus.Escalated)
                 .FirstOrDefaultAsync(a => a.Status == AlertStatus.Pending || a.Status == AlertStatus.Escalated);
@@ -120,104 +186,42 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return newAlert;
         }
 
-        private Task AddReportsToAlert(Alert alert, IEnumerable<Report> reports)
+        private Task AddReportsToAlert(Alert alert, List<Report> reports)
         {
-            var alertReports = reports.Select(r => new AlertReport { Report = r, Alert = alert });
             reports.Where(r => r.Status == ReportStatus.New).ToList()
                 .ForEach(r => r.Status = ReportStatus.Pending);
+
+            var alertReports = reports.Select(r => new AlertReport { Report = r, Alert = alert });
             return _nyssContext.AlertReports.AddRangeAsync(alertReports);
         }
 
-        public async Task ReportDismissed(int reportId)
+        private async Task RecalculateAlert(Report report, AlertRule alertRule)
         {
-            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
-            var inspectedAlert = await _nyssContext.AlertReports
-                .Where(ar => ar.ReportId == reportId)
-                .Where(ar => ar.Alert.Status == AlertStatus.Pending || ar.Alert.Status == AlertStatus.Dismissed)
-                .Select(ar => ar.Alert)
-                .SingleOrDefaultAsync();
-
-            if (inspectedAlert == null)
-            {
-                _loggerAdapter.Warn($"The alert for report with id {reportId} does not exist or has status different than pending or dismissed.");
-                return;
-            }
-
-            var report = await _nyssContext.Reports
-                .Include(r => r.ProjectHealthRisk)
-                .ThenInclude(phr => phr.AlertRule)
-                .Where(r => r.Id == reportId)
-                .SingleAsync();
-
-            if (report == null)
-            {
-                _loggerAdapter.Warn($"The report with id {reportId} does not exist.");
-                return;
-            }
-
-            var alertRule = report.ProjectHealthRisk.AlertRule;
-            if (alertRule.CountThreshold == 1)
-            {
-                if (report.Status == ReportStatus.Pending)
-                { 
-                    report.Status = ReportStatus.Rejected;
-                }
-
-                if (inspectedAlert.Status == AlertStatus.Pending)
-                {
-                    inspectedAlert.Status = AlertStatus.Rejected;
-                }
-
-                await _nyssContext.SaveChangesAsync();
-                return;
-            }
-
-            report.Status = ReportStatus.Rejected;
-            await _nyssContext.SaveChangesAsync();
-
-            var pointsWithLabels = await _reportLabelingService.CalculateNewLabelsInLabelGroup(report.ReportGroupLabel, alertRule.KilometersThreshold.Value * 1000 * 2);
+            var pointsWithLabels = await _reportLabelingService.CalculateNewLabelsInLabelGroup(report.ReportGroupLabel, alertRule.KilometersThreshold.Value * 1000 * 2, report.Id);
             await _reportLabelingService.UpdateLabelsInDatabaseDirect(pointsWithLabels);
+        }
 
+        private async Task RejectAlertWhenRequirementsAreNotMet(int reportId, AlertRule alertRule, Alert inspectedAlert)
+        {
             var alertReportsWitUpdatedLabels = await _nyssContext.AlertReports
                 .Where(ar => ar.AlertId == inspectedAlert.Id)
                 .Where(ar => ar.ReportId != reportId)
                 .Select(ar => ar.Report)
                 .ToListAsync();
 
-            var updatedReportsGroupedByLabel = alertReportsWitUpdatedLabels.GroupBy(r => r.ReportGroupLabel);
+            var updatedReportsGroupedByLabel = alertReportsWitUpdatedLabels.GroupBy(r => r.ReportGroupLabel).ToList();
 
             var noGroupWithinAlertSatisfiesCountThreshold = !updatedReportsGroupedByLabel.Any(g => g.Count() >= alertRule.CountThreshold);
             if (noGroupWithinAlertSatisfiesCountThreshold)
             {
-                if (inspectedAlert.Status == AlertStatus.Pending)
-                {
-                    inspectedAlert.Status = AlertStatus.Rejected;
-                }
-                await _nyssContext.SaveChangesAsync();
+                inspectedAlert.Status = AlertStatus.Rejected;
+
                 foreach (var groupNotSatisfyingThreshold in updatedReportsGroupedByLabel)
                 {
                     var reportGroupLabel = groupNotSatisfyingThreshold.Key;
-                    await IncludeAllReportsWithLabelInExistingAlert(reportGroupLabel);
+                    await IncludeAllReportsWithLabelInExistingAlert(reportGroupLabel, inspectedAlert.Id);
                 }
             }
-
-            await _nyssContext.SaveChangesAsync();
-
-            transactionScope.Complete();
-        }
-
-        public async Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting)
-        {
-            var phoneNumbersOfSupervisorsInAlert = await _nyssContext.AlertReports
-                    .Where(ar => alert == alert)
-                    .Select(ar => ar.Report.DataCollector.Supervisor.PhoneNumber)
-                    .Distinct()
-                    .ToListAsync();
-
-            var message = await CreateNotificationMessageForNewAlert(alert);
-
-            await _emailToSmsPublisherService.SendMessage(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
         }
 
         private async Task<string> CreateNotificationMessageForNewAlert(Alert alert)

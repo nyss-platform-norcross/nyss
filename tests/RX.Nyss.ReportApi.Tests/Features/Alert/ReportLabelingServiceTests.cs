@@ -243,7 +243,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var distanceThreshold = AlertRuleKilometersThreshold;
 
             //act
-            var pointsWithNewLabels = (await _reportLabelingService.CalculateNewLabelsInLabelGroup(_labelForGroup5, distanceThreshold * 1000 * 2)).ToList();
+            var pointsWithNewLabels = (await _reportLabelingService.CalculateNewLabelsInLabelGroup(_labelForGroup5, distanceThreshold * 1000 * 2, null)).ToList();
 
             //assert
             pointsWithNewLabels.Count().ShouldBe(3);
@@ -264,7 +264,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var distanceThreshold = AlertRuleKilometersThreshold;
 
             //act
-            var pointsWithNewLabels = (await _reportLabelingService.CalculateNewLabelsInLabelGroup(_labelForGroup6, distanceThreshold * 1000 * 2)).ToList();
+            var pointsWithNewLabels = (await _reportLabelingService.CalculateNewLabelsInLabelGroup(_labelForGroup6, distanceThreshold * 1000 * 2, null)).ToList();
 
             //assert
             var firstPointInGroup = pointsWithNewLabels.Single(x => x.ReportId == ReportInArea6Id1);
