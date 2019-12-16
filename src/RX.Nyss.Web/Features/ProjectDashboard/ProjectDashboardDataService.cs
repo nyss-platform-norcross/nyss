@@ -35,25 +35,27 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto);
+            var allReports = GetFilteredReports(projectId, filtersDto);
+            var activityReportsExcluded = allReports.Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
             return await _nyssContext.Projects
                 .Where(ph => ph.Id == projectId)
                 .Select(p => new ProjectSummaryResponseDto
                 {
-                    ReportCount = (int)reports.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
-                    ActiveDataCollectorCount = reports
+                    ReportCount = (int)activityReportsExcluded.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
+                    ActiveDataCollectorCount = allReports
                         .Where(r => r.DataCollector.Name != Anonymization.Text && r.DataCollector.DeletedAt == null)
                         .Select(r => r.DataCollector.Id)
                         .Distinct().Count(),
-                    InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, reports, filtersDto)
+                    InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, allReports, filtersDto)
                 })
                 .FirstOrDefaultAsync();
         }
 
         public async Task<IList<ReportByDateResponseDto>> GetReportsGroupedByDate(int projectId, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto);
+            var reports = GetFilteredReports(projectId, filtersDto)
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
             return filtersDto.GroupingType switch
             {
@@ -88,7 +90,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto);
+            var reports = GetFilteredReports(projectId, filtersDto)
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
             var groupedByLocation = await reports
                 .GroupBy(report => new { report.Location.X, report.Location.Y })
@@ -108,7 +111,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<IEnumerable<ProjectSummaryReportHealthRiskResponseDto>> GetProjectReportHealthRisks(int projectId, double latitude, double longitude, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto);
+            var reports = GetFilteredReports(projectId, filtersDto)
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
             return await reports
                 .Where(r => r.Location.X == latitude && r.Location.Y == longitude)
@@ -277,7 +281,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             return FilterReportsByRegion(reportsFilteredOnTrainingStatus, filtersDto.Area)
                 .Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate
                     && r.DataCollector.Project.Id == projectId
-                    && r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity
                     && (!filtersDto.HealthRiskId.HasValue || r.ProjectHealthRisk.HealthRiskId == filtersDto.HealthRiskId.Value));
         }
 
