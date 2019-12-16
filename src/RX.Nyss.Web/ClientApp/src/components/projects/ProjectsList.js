@@ -42,10 +42,10 @@ export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, goToDash
                     </Box>
                     <Box className={styles.keyPoint}>
                       <Typography variant="h6">
-                        {project.activeDataCollectorCount}
+                        {project.totalDataCollectorCount}
                       </Typography>
                       <Typography variant="body1" color="textSecondary" gutterBottom>
-                        {strings(stringKeys.project.list.activeDataCollectorCount)}
+                        {strings(stringKeys.project.list.totalDataCollectorCount)}
                       </Typography>
                     </Box>
                     <Box className={styles.keyPoint}>

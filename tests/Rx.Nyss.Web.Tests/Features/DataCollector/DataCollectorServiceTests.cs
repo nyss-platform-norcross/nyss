@@ -46,7 +46,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
             var nationalSocietyStructureService = Substitute.For<INationalSocietyStructureService>();
             var geolocationService = Substitute.For<IGeolocationService>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-            
+
             dateTimeProvider.UtcNow.Returns(new DateTime(2019, 1, 1));
             _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider);
 
@@ -336,17 +336,16 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         {
             //Arrange
             var dataCollector = _nyssContextMock.DataCollectors.Single(x => x.Id == DataCollectorWithReportsId);
-            var anonymizationString = "--Data removed--";
 
             // Act
             var result = await _dataCollectorService.RemoveDataCollector(DataCollectorWithReportsId);
 
             //Assert
             result.IsSuccess.ShouldBeTrue();
-            dataCollector.Name.ShouldBe(anonymizationString);
-            dataCollector.DisplayName.ShouldBe(anonymizationString);
-            dataCollector.PhoneNumber.ShouldBe(anonymizationString);
-            dataCollector.AdditionalPhoneNumber.ShouldBe(anonymizationString);
+            dataCollector.Name.ShouldBe(Anonymization.Text);
+            dataCollector.DisplayName.ShouldBe(Anonymization.Text);
+            dataCollector.PhoneNumber.ShouldBe(Anonymization.Text);
+            dataCollector.AdditionalPhoneNumber.ShouldBe(Anonymization.Text);
         }
 
         [Fact]
@@ -354,8 +353,7 @@ namespace Rx.Nyss.Web.Tests.Features.DataCollector
         {
             //Arrange
             var dataCollector = _nyssContextMock.DataCollectors.Single(x => x.Id == DataCollectorWithReportsId);
-            var anonymizationString = "--Data removed--";
-            FormattableString expectedSqlCommand = $"UPDATE Nyss.RawReports SET Sender = {anonymizationString} WHERE DataCollectorId = {dataCollector.Id}";
+            FormattableString expectedSqlCommand = $"UPDATE Nyss.RawReports SET Sender = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
 
             // Act
             var result = await _dataCollectorService.RemoveDataCollector(DataCollectorWithReportsId);

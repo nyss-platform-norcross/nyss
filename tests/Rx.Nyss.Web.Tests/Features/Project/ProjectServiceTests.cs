@@ -68,7 +68,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Value[0].EndDate.ShouldBeNull();
             result.Value[0].TotalReportCount.ShouldBe(1);
             result.Value[0].EscalatedAlertCount.ShouldBe(0);
-            result.Value[0].ActiveDataCollectorCount.ShouldBe(1);
+            result.Value[0].TotalDataCollectorCount.ShouldBe(1);
             result.Value[0].SupervisorCount.ShouldBe(0);
 
             result.Value[1].Id.ShouldBe(3);
@@ -77,7 +77,7 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             result.Value[1].EndDate.ShouldBeNull();
             result.Value[1].TotalReportCount.ShouldBe(3);
             result.Value[1].EscalatedAlertCount.ShouldBe(2);
-            result.Value[1].ActiveDataCollectorCount.ShouldBe(2);
+            result.Value[1].TotalDataCollectorCount.ShouldBe(2);
             result.Value[1].SupervisorCount.ShouldBe(0);
         }
 

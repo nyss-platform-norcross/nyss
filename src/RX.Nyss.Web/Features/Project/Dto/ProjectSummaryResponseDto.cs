@@ -6,8 +6,6 @@
 
         public int InactiveDataCollectorCount { get; set; }
 
-        public int InTrainingDataCollectorCount { get; set; }
-
         public int ReportCount { get; set; }
     }
 }
