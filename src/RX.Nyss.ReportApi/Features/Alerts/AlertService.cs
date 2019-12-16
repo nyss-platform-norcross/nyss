@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.ReportApi.Features.Reports.Exceptions;
+using RX.Nyss.ReportApi.Configuration;
+using RX.Nyss.ReportApi.Services;
 using RX.Nyss.ReportApi.Utils.Logging;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
@@ -16,7 +18,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
     {
         Task<Alert> ReportAdded(Report report);
         Task ReportDismissed(int reportId);
-        void SendNotificationsForNewAlert(Alert alert);
+        Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
     }
 
     public class AlertService: IAlertService
@@ -24,12 +26,17 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         private readonly INyssContext _nyssContext;
         private readonly IReportLabelingService _reportLabelingService;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
+        private readonly IConfig _config;
 
-        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter)
+
+        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IEmailToSmsPublisherService emailToSmsPublisherService, IConfig config)
         {
             _nyssContext = nyssContext;
             _reportLabelingService = reportLabelingService;
             _loggerAdapter = loggerAdapter;
+            _emailToSmsPublisherService = emailToSmsPublisherService;
+            _config = config;
         }
 
         public async Task<Alert> ReportAdded(Report report)
@@ -127,13 +134,13 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var inspectedAlert = await _nyssContext.AlertReports
                 .Where(ar => ar.ReportId == reportId)
-                .Where(ar => ar.Alert.Status == AlertStatus.Pending)
+                .Where(ar => ar.Alert.Status == AlertStatus.Pending || ar.Alert.Status == AlertStatus.Dismissed)
                 .Select(ar => ar.Alert)
                 .SingleOrDefaultAsync();
 
             if (inspectedAlert == null)
             {
-                _loggerAdapter.Warn($"The alert for report with id {reportId} does not exist or has status different than pending.");
+                _loggerAdapter.Warn($"The alert for report with id {reportId} does not exist or has status different than pending or dismissed.");
                 return;
             }
 
@@ -152,8 +159,16 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var alertRule = report.ProjectHealthRisk.AlertRule;
             if (alertRule.CountThreshold == 1)
             {
-                report.Status = ReportStatus.Rejected;
-                inspectedAlert.Status = AlertStatus.Rejected;
+                if (report.Status == ReportStatus.Pending)
+                { 
+                    report.Status = ReportStatus.Rejected;
+                }
+
+                if (inspectedAlert.Status == AlertStatus.Pending)
+                {
+                    inspectedAlert.Status = AlertStatus.Rejected;
+                }
+
                 await _nyssContext.SaveChangesAsync();
                 return;
             }
@@ -175,7 +190,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var noGroupWithinAlertSatisfiesCountThreshold = !updatedReportsGroupedByLabel.Any(g => g.Count() >= alertRule.CountThreshold);
             if (noGroupWithinAlertSatisfiesCountThreshold)
             {
-                inspectedAlert.Status = AlertStatus.Rejected;
+                if (inspectedAlert.Status == AlertStatus.Pending)
+                {
+                    inspectedAlert.Status = AlertStatus.Rejected;
+                }
                 await _nyssContext.SaveChangesAsync();
                 foreach (var groupNotSatisfyingThreshold in updatedReportsGroupedByLabel)
                 {
@@ -189,7 +207,56 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             transactionScope.Complete();
         }
 
-        public void SendNotificationsForNewAlert(Alert alert)
-        { }
+        public async Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting)
+        {
+            var phoneNumbersOfSupervisorsInAlert = await _nyssContext.AlertReports
+                    .Where(ar => alert == alert)
+                    .Select(ar => ar.Report.DataCollector.Supervisor.PhoneNumber)
+                    .Distinct()
+                    .ToListAsync();
+
+            var message = await CreateNotificationMessageForNewAlert(alert);
+
+            await _emailToSmsPublisherService.SendMessage(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
+        }
+
+        private async Task<string> CreateNotificationMessageForNewAlert(Alert alert)
+        {
+            var alertData = await _nyssContext.Alerts.Where(a => a.Id == alert.Id)
+                .Select(a => new
+                {
+                    ProjectId = a.ProjectHealthRisk.Project.Id,
+                    HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage)
+                        .Select(lc => lc.Name)
+                        .FirstOrDefault(),
+
+                    a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
+
+                    VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
+                        .Select(ar => ar.Report.Village.Name)
+                        .FirstOrDefault()
+
+                })
+                .FirstOrDefaultAsync();
+
+
+            //ToDo: get this from blob storage instead of hardcoded text
+            var smsTemplateEn = "An alert for {{healthRisk/event}} has been triggered by one of your DC. Last report sent from {{village}}. Please check alert list and cross-check alert: {{linkToAlert}}.";
+            var smsTemplateFr = "Une alerte pour {{healthRisk/event}} a été déclenchée par l'un de vos DC. Dernier rapport envoyé par {{village}}. Veuillez vérifier la liste des alertes et recouper l'alerte: {{linkToAlert}}.";
+            var smsTemplate = alertData.LanguageCode.ToLower() == "en"
+                ? smsTemplateEn
+                : smsTemplateFr;
+
+            var baseUrl = new Uri(_config.BaseUrl);
+            var relativeUrl = $"projects/{alertData.ProjectId}/alerts/{alert.Id}/assess";
+            var linkToAlert = new Uri(baseUrl, relativeUrl);
+
+            smsTemplate = smsTemplate.Replace("{{healthRisk/event}}", alertData.HealthRiskName);
+            smsTemplate = smsTemplate.Replace("{{village}}", alertData.VillageOfLastReport);
+            smsTemplate = smsTemplate.Replace("{{linkToAlert}}", linkToAlert.ToString());
+
+            return smsTemplate;
+        }
     }
 }

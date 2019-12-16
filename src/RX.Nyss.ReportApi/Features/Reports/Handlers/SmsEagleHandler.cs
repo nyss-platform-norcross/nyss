@@ -155,7 +155,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                 if (triggeredAlert != null)
                 {
-                    _alertService.SendNotificationsForNewAlert(triggeredAlert);
+                    await _alertService.SendNotificationsForNewAlert(triggeredAlert, gatewaySetting);
                 }
             }
             catch (ReportValidationException e)

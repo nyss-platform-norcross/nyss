@@ -2,6 +2,7 @@
 {
     public interface IConfig
     {
+        string BaseUrl { get; set; }
         NyssReportApiConfig.LoggingOptions Logging { get; set; }
         NyssReportApiConfig.ConnectionStringOptions ConnectionStrings { get; set; }
         NyssReportApiConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
@@ -11,6 +12,8 @@
 
     public class NyssReportApiConfig : IConfig
     {
+        public string BaseUrl { get; set; }
+
         public LoggingOptions Logging { get; set; }
 
         public ConnectionStringOptions ConnectionStrings { get; set; }
