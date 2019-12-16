@@ -417,7 +417,7 @@
             "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
             "duplicateDetectionHistoryTimeWindow": "PT10M",
             "deadLetteringOnMessageExpiration": true,
-            "maxDeliveryCount": 5,
+            "maxDeliveryCount": 1,
             "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
             "enablePartitioning": false,
             "enableExpress": false
@@ -438,7 +438,7 @@
             "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
             "duplicateDetectionHistoryTimeWindow": "PT10M",
             "deadLetteringOnMessageExpiration": true,
-            "maxDeliveryCount": 5,
+            "maxDeliveryCount": 1,
             "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
             "enablePartitioning": false,
             "enableExpress": false
@@ -459,7 +459,7 @@
             "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
             "duplicateDetectionHistoryTimeWindow": "PT10M",
             "deadLetteringOnMessageExpiration": true,
-            "maxDeliveryCount": 5,
+            "maxDeliveryCount": 1,
             "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
             "enablePartitioning": false,
             "enableExpress": false
