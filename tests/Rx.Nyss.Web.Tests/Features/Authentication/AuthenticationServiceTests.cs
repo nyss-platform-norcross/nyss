@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -16,7 +15,7 @@ using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Authentication
+namespace RX.Nyss.Web.Tests.Features.Authentication
 {
     public class AuthenticationServiceTests
     {
@@ -96,7 +95,7 @@ namespace Rx.Nyss.Web.Tests.Features.Authentication
         {
             const string languageCode = "en";
             const string role = "Administrator";
-            var nationalSocietiesDbSet = new List<RX.Nyss.Data.Models.NationalSociety>().AsQueryable().BuildMockDbSet();
+            var nationalSocietiesDbSet = new List<NationalSociety>().AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _user.ApplicationLanguage = new ApplicationLanguage { LanguageCode = languageCode };
 

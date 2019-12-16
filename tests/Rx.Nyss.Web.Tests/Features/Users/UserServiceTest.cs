@@ -11,7 +11,7 @@ using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 
-namespace RX.Nyss.Web.Tests.Features.User
+namespace RX.Nyss.Web.Tests.Features.Users
 {
     public class UserServiceTest
     {
@@ -31,10 +31,10 @@ namespace RX.Nyss.Web.Tests.Features.User
 
         private void ArrangeNationalSocieties()
         {
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
+            var nationalSocieties = new List<NationalSociety>
             {
-                new RX.Nyss.Data.Models.NationalSociety {Id = 1, Name = "National society 1", PendingHeadManager = null, HeadManager = null},
-                new RX.Nyss.Data.Models.NationalSociety {Id = 2, Name = "National society 2", PendingHeadManager = null, HeadManager = null}
+                new NationalSociety {Id = 1, Name = "National society 1", PendingHeadManager = null, HeadManager = null},
+                new NationalSociety {Id = 2, Name = "National society 2", PendingHeadManager = null, HeadManager = null}
             };
 
             SetupNationalSocietiesFrom(nationalSocieties);
@@ -42,7 +42,7 @@ namespace RX.Nyss.Web.Tests.Features.User
         }
 
 
-        private void SetupNationalSocietiesFrom(List<RX.Nyss.Data.Models.NationalSociety> nationalSocieties)
+        private void SetupNationalSocietiesFrom(List<NationalSociety> nationalSocieties)
         {
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
@@ -50,7 +50,7 @@ namespace RX.Nyss.Web.Tests.Features.User
 
 
         [Fact]
-        public async Task GetUsersInNationalSociety_ShouldReturOnlyUsersFromSpecifiedNationalSociety()
+        public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersFromSpecifiedNationalSociety()
         {
             var users = await _userService.GetUsersInNationalSociety(1, new [] {Role.Administrator.ToString()});
 
@@ -92,9 +92,9 @@ namespace RX.Nyss.Web.Tests.Features.User
             users.Value.ShouldAllBe(u => u.Role != Role.Supervisor.ToString());
         }
 
-        private void ArrangeUsers(List<RX.Nyss.Data.Models.NationalSociety> nationalSocieties)
+        private void ArrangeUsers(List<NationalSociety> nationalSocieties)
         {
-            var users = new List<Nyss.Data.Models.User>
+            var users = new List<User>
             {
                 new AdministratorUser {Id = 1, Role = Role.Administrator, EmailAddress = "admin1@domain.com"},
                 new GlobalCoordinatorUser {Id = 2, Role = Role.GlobalCoordinator, EmailAddress = "globalAdministrator2@domain.com"},
@@ -106,7 +106,7 @@ namespace RX.Nyss.Web.Tests.Features.User
                 new DataConsumerUser {Id = 8, Role = Role.DataConsumer, Name = NationalSociety2Tag, EmailAddress = "dataConsumer8@domain.com"},
                 new TechnicalAdvisorUser {Id = 9, Role = Role.TechnicalAdvisor, Name = NationalSociety2Tag, EmailAddress = "technicalAdvisor9@domain.com"},
                 new SupervisorUser {Id = 10, Role = Role.Supervisor, Name = NationalSociety2Tag, EmailAddress = "supervisor10@domain.com"},
-                new TechnicalAdvisorUser {Id = 13, Role = Role.TechnicalAdvisor, Name = NationalSociety1And2Tag, EmailAddress = "technicalAdvisor11@domain.com"},
+                new TechnicalAdvisorUser {Id = 13, Role = Role.TechnicalAdvisor, Name = NationalSociety1And2Tag, EmailAddress = "technicalAdvisor11@domain.com"}
             };
 
             var userNationalSocieties1 = users.Where(u => u.Name == NationalSociety1Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 1, NationalSociety = nationalSocieties[0]});
@@ -128,7 +128,7 @@ namespace RX.Nyss.Web.Tests.Features.User
 
             var supervisorUserProjects = new List<SupervisorUserProject>
                 {
-                    new SupervisorUserProject()
+                    new SupervisorUserProject
                     {
                         SupervisorUserId = 6,
                         SupervisorUser = supervisor,
@@ -146,22 +146,22 @@ namespace RX.Nyss.Web.Tests.Features.User
 
         private void ArrangeProjects()
         {
-            var projectsDbSet = new List<RX.Nyss.Data.Models.Project>
+            var projectsDbSet = new List<Project>
                 {
-                    new RX.Nyss.Data.Models.Project
+                    new Project
                     {
                         Id = 1,
                         NationalSociety = _nyssContext.NationalSocieties.Single(ns => ns.Id == 1),
                         Name = "awd in somalia",
                         State = ProjectState.Open,
-                        TimeZone = "CEST",
+                        TimeZone = "CEST"
                     }
                 }
                 .AsQueryable().BuildMockDbSet();
             _nyssContext.Projects.Returns(projectsDbSet);
         }
 
-        private void ArrangeUsersFrom(IEnumerable<RX.Nyss.Data.Models.User> existingUsers)
+        private void ArrangeUsersFrom(IEnumerable<User> existingUsers)
         {
             var usersDbSet = existingUsers.AsQueryable().BuildMockDbSet();
             _nyssContext.Users.Returns(usersDbSet);

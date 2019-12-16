@@ -12,14 +12,14 @@ namespace RX.Nyss.ReportFuncApp
     public class ReportApiTrigger
     {
         private readonly ILogger<ReportApiTrigger> _logger;
-        private readonly IConfig _config;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly Uri _reportApiBaseUrl;
 
         public ReportApiTrigger(ILogger<ReportApiTrigger> logger, IConfig config, IHttpClientFactory httpClientFactory)
         {
             _logger = logger;
-            _config = config;
             _httpClientFactory = httpClientFactory;
+            _reportApiBaseUrl = new Uri(config.ReportApiBaseUrl, UriKind.Absolute);
         }
 
         [FunctionName("DequeueReport")]
@@ -29,7 +29,7 @@ namespace RX.Nyss.ReportFuncApp
             _logger.Log(LogLevel.Debug, $"Dequeued report: '{report}'");
 
             var client = _httpClientFactory.CreateClient();
-            var postResult = await client.PostAsync(_config.ReportApiUrl, report, new JsonMediaTypeFormatter());
+            var postResult = await client.PostAsync(new Uri(_reportApiBaseUrl, "api/Report"), report, new JsonMediaTypeFormatter());
 
             if (!postResult.IsSuccessStatusCode)
             {

@@ -10,14 +10,13 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Manager;
 using RX.Nyss.Web.Features.Manager.Dto;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.Manager
+namespace RX.Nyss.Web.Tests.Features.Manager
 {
     public class ManagerServiceTests
     {
@@ -46,11 +45,11 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
             _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
 
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { new RX.Nyss.Data.Models.NationalSociety { Id = _nationalSocietyId, Name = "Test national society" } };
+            var nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = _nationalSocietyId, Name = "Test national society" } };
             var applicationLanguages = new List<ApplicationLanguage>();
             var users = new List<User>
             {
-                new AdministratorUser() { Id = _administratorId, Role = Role.Administrator },
+                new AdministratorUser { Id = _administratorId, Role = Role.Administrator },
                 new ManagerUser
                 {
                     Id = _managerId,
@@ -169,7 +168,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            var result = await _managerService.UpdateManager(999, new EditManagerRequestDto() {});
+            var result = await _managerService.UpdateManager(999, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -177,7 +176,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingUserThatIsNotManager_ReturnsErrorResult()
         {
-            var result = await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto() { });
+            var result = await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -186,7 +185,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingUserThatIsNotManager_SaveChangesShouldNotBeCalled()
         {
-            await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto() { });
+            await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto());
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -195,7 +194,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingExistingManager_ReturnsSuccess()
         {
-            var result = await _managerService.UpdateManager(_managerId, new EditManagerRequestDto() {  });
+            var result = await _managerService.UpdateManager(_managerId, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeTrue();
         }
@@ -205,7 +204,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
         [Fact]
         public async Task EditManager_WhenEditingExistingManager_SaveChangesAsyncIsCalled()
         {
-            await _managerService.UpdateManager(2, new EditManagerRequestDto() {  });
+            await _managerService.UpdateManager(2, new EditManagerRequestDto());
 
             await _nyssContext.Received().SaveChangesAsync();
         }
@@ -215,7 +214,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
         {
             var existingUserEmail = _nyssContext.Users.Single(u => u.Id == _managerId)?.EmailAddress;
 
-            var editRequest = new EditManagerRequestDto()
+            var editRequest = new EditManagerRequestDto
             {
                 Name = "New name",
                 Organization = "New organization",
@@ -236,7 +235,7 @@ namespace Rx.Nyss.Web.Tests.Features.Manager
         }
 
         [Fact]
-        public async Task DeleteManager_WhenDeletingAPendingHeadManager_NationalSocietyPendngManagerGetsNullified()
+        public async Task DeleteManager_WhenDeletingAPendingHeadManager_NationalSocietyPendingManagerGetsNullified()
         {
             //arrange
             var manager = _nyssContext.Users.Single(x => x.Id == _managerId);

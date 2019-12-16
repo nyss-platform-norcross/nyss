@@ -14,7 +14,7 @@ using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Services
+namespace RX.Nyss.Web.Tests.Services
 {
     public class IdentityUserRegistrationServiceTests
     {

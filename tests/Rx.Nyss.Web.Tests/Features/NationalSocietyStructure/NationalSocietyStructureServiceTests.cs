@@ -9,7 +9,7 @@ using RX.Nyss.Web.Features.NationalSocietyStructure;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.NationalSocietyStructure
+namespace RX.Nyss.Web.Tests.Features.NationalSocietyStructure
 {
     public class NationalSocietyStructureServiceTests
     {
@@ -25,7 +25,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSocietyStructure
                 Id = 1,
                 Name = "Region",
                 Districts = new List<District>(),
-                NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                NationalSociety = new NationalSociety
                 {
                     Id = NationalSocietyId
                 }

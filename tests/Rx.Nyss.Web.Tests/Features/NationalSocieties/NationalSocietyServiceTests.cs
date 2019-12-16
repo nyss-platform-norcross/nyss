@@ -1,23 +1,22 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MockQueryable.NSubstitute;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSociety;
+using RX.Nyss.Web.Features.NationalSociety.Dto;
+using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
-using NSubstitute.ExceptionExtensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using MockQueryable.NSubstitute;
-using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Features.NationalSociety.Dto;
-using RX.Nyss.Web.Features.User;
 
-namespace Rx.Nyss.Web.Tests.Features.NationalSociety
+namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 {
     public class NationalSocietyServiceTests
     {
@@ -46,22 +45,22 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
 
             var users = new List<User> { new ManagerUser { EmailAddress = "yo" } };
 
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety>
+            var nationalSocieties = new List<NationalSociety>
             {
-                new RX.Nyss.Data.Models.NationalSociety { Name = ExistingNationalSocietyName, PendingHeadManager = users[0] }
+                new NationalSociety { Name = ExistingNationalSocietyName, PendingHeadManager = users[0] }
             };
-            var contentLanguages = new List<RX.Nyss.Data.Models.ContentLanguage>
+            var contentLanguages = new List<ContentLanguage>
             {
-                new RX.Nyss.Data.Models.ContentLanguage { Id = ContentLanguageId }
+                new ContentLanguage { Id = ContentLanguageId }
             };
-            var countries = new List<RX.Nyss.Data.Models.Country>
+            var countries = new List<Country>
             {
-                new RX.Nyss.Data.Models.Country { Id = CountryId }
+                new Country { Id = CountryId }
             };
-            var headManagerConsents = new List<RX.Nyss.Data.Models.HeadManagerConsent> { new HeadManagerConsent
+            var headManagerConsents = new List<HeadManagerConsent> { new HeadManagerConsent
             {
                 Id = ConsentId,
-                NationalSocietyId = NationalSocietyId,
+                NationalSocietyId = NationalSocietyId
             } };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -84,7 +83,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         public async Task CreateNationalSociety_WhenSuccessful_ShouldReturnSuccess()
         {
             // Arrange
-            var nationalSocietyReq = new CreateNationalSocietyRequestDto()
+            var nationalSocietyReq = new CreateNationalSocietyRequestDto
             {
                 Name = NationalSocietyName,
                 ContentLanguageId = ContentLanguageId,
@@ -95,7 +94,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
             var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
 
             // Assert
-            await _nyssContextMock.Received(1).AddAsync(Arg.Any<RX.Nyss.Data.Models.NationalSociety>());
+            await _nyssContextMock.Received(1).AddAsync(Arg.Any<NationalSociety>());
         }
 
         [Theory]
@@ -123,7 +122,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         public async Task CreateNationalSociety_WhenSavingFails_ShouldReturnError()
         {
             // Arrange
-            var nationalSocietyReq = new CreateNationalSocietyRequestDto()
+            var nationalSocietyReq = new CreateNationalSocietyRequestDto
             {
                 Name = NationalSocietyName,
                 CountryId = CountryId,
@@ -144,7 +143,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         public async Task CreateNationalSociety_WhenNameAlreadyExists_ShouldReturnError()
         {
             // Arrange
-            var nationalSocietyReq = new CreateNationalSocietyRequestDto()
+            var nationalSocietyReq = new CreateNationalSocietyRequestDto
             {
                 Name = ExistingNationalSocietyName,
                 CountryId = CountryId,
@@ -163,7 +162,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         public async Task EditNationalSociety_WhenSuccessful_ShouldReturnSuccess()
         {
             // Arrange
-            var nationalSocietyReq = new EditNationalSocietyRequestDto()
+            var nationalSocietyReq = new EditNationalSocietyRequestDto
             {
                 Name = NationalSocietyName,
                 CountryId = CountryId,
@@ -182,7 +181,7 @@ namespace Rx.Nyss.Web.Tests.Features.NationalSociety
         public async Task EditNationalSociety_WhenSavingFails_ShouldReturnError()
         {
             // Arrange
-            var nationalSocietyReq = new EditNationalSocietyRequestDto()
+            var nationalSocietyReq = new EditNationalSocietyRequestDto
             {
                 Name = NationalSocietyName,
                 CountryId = CountryId,

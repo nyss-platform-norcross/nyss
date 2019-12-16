@@ -5,7 +5,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Services;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Services
+namespace RX.Nyss.Web.Tests.Services
 {
     public class EmailToSMSServiceTests
     {
@@ -37,7 +37,7 @@ namespace Rx.Nyss.Web.Tests.Services
             // Act
             await _emailToSMSService.SendMessage(gatewaySetting, recipients, message);
 
-            await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Is<string>(_ => _ == "+47123143513"), Arg.Is<string>(body => body == "Thanks for your message"), Arg.Is<bool>(_ => _ == true));
+            await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Is<string>(_ => _ == "+47123143513"), Arg.Is<string>(body => body == "Thanks for your message"), Arg.Is<bool>(_ => _));
         }
     }
 }

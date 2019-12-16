@@ -6,14 +6,13 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Services
+namespace RX.Nyss.Web.Tests.Services
 {
     public class NationalSocietyUserServiceTests
     {
@@ -36,8 +35,8 @@ namespace Rx.Nyss.Web.Tests.Services
 
         private void SetupTestNationalSociety()
         {
-            var nationalSociety = new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "Test national society" };
-            var nationalSocieties = new List<RX.Nyss.Data.Models.NationalSociety> { nationalSociety };
+            var nationalSociety = new NationalSociety { Id = 1, Name = "Test national society" };
+            var nationalSocieties = new List<NationalSociety> { nationalSociety };
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
 
@@ -59,7 +58,7 @@ namespace Rx.Nyss.Web.Tests.Services
 
 
         [Fact]
-        public async Task DeleteNationalSocietyUser_WhenSuccesful_NyssContextSaveChangesShouldBeCalledOnce()
+        public async Task DeleteNationalSocietyUser_WhenSuccessful_NyssContextSaveChangesShouldBeCalledOnce()
         {
             var manager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { manager });
@@ -116,7 +115,7 @@ namespace Rx.Nyss.Web.Tests.Services
         }
 
         [Fact]
-        public async Task DeleteNationalSocietyUser_WhenSuccesful_IdentityUserDeleteShouldBeCalledOnce()
+        public async Task DeleteNationalSocietyUser_WhenSuccessful_IdentityUserDeleteShouldBeCalledOnce()
         {
             var manager = new ManagerUser { Id = 123, Role = Role.Manager };
             ArrangeUsersFrom(new List<User> { manager });

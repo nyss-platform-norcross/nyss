@@ -1,25 +1,25 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Features.HealthRisk;
-using Xunit;
 using RX.Nyss.Data.Concepts;
-using System.Collections.Generic;
-using Shouldly;
 using RX.Nyss.Data.Models;
-using System.Linq;
-using MockQueryable.NSubstitute;
-using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.HealthRisk.Dto;
+using RX.Nyss.Web.Utils.DataContract;
+using Shouldly;
+using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.HealthRisk
+namespace RX.Nyss.Web.Tests.Features.HealthRisks
 {
     public class HealthRiskServiceTests
     {
         private readonly IHealthRiskService _healthRiskService;
         private readonly INyssContext _nyssContextMock;
-        private readonly RX.Nyss.Data.Models.HealthRisk _healthRisk;
-        private const HealthRiskType HealthRiskType = RX.Nyss.Data.Concepts.HealthRiskType.Human;
+        private readonly HealthRisk _healthRisk;
+        private const HealthRiskType HealthRiskType = Nyss.Data.Concepts.HealthRiskType.Human;
         private const string UserName = "admin@domain.com";
         private const string HealthRiskName = "AWD";
         private const int HealthRiskId = 1;
@@ -88,11 +88,11 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                     Id = AlertRuleId,
                     CountThreshold = AlertRuleCountThreshold,
                     DaysThreshold = AlertRuleDaysThreshold,
-                    KilometersThreshold = AlertRuleKilometersThreshold,
+                    KilometersThreshold = AlertRuleKilometersThreshold
                 }
             };
 
-            _healthRisk = new RX.Nyss.Data.Models.HealthRisk
+            _healthRisk = new HealthRisk
             {
                 Id = HealthRiskId,
                 HealthRiskType = HealthRiskType,
@@ -101,7 +101,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 AlertRule = alertRules[0]
             };
 
-            var healthRisks = new List<RX.Nyss.Data.Models.HealthRisk>
+            var healthRisks = new List<HealthRisk>
             {
                 _healthRisk
             };
@@ -145,7 +145,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             await _healthRiskService.CreateHealthRisk(healthRiskRequestDto);
 
             // Assert
-            await _nyssContextMock.Received(1).AddAsync(Arg.Any<RX.Nyss.Data.Models.HealthRisk>());
+            await _nyssContextMock.Received(1).AddAsync(Arg.Any<HealthRisk>());
         }
 
         [Fact]
@@ -221,9 +221,9 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 new ProjectHealthRisk
                 {
                     HealthRiskId = HealthRiskId,
-                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    Reports = new List<Report>
                     {
-                        new RX.Nyss.Data.Models.Report()
+                        new Report()
                     }
                 }
             };
@@ -267,9 +267,9 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 new ProjectHealthRisk
                 {
                     HealthRiskId = HealthRiskId,
-                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    Reports = new List<Report>
                     {
-                        new RX.Nyss.Data.Models.Report()
+                        new Report()
                     }
                 }
             };
@@ -313,9 +313,9 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 new ProjectHealthRisk
                 {
                     HealthRiskId = HealthRiskId,
-                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    Reports = new List<Report>
                     {
-                        new RX.Nyss.Data.Models.Report()
+                        new Report()
                     }
                 }
             };
@@ -456,7 +456,7 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
             _nyssContextMock.HealthRisks.DidNotReceiveWithAnyArgs().Remove(null);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskNotFound);
-        }
+    }
 
         [Fact]
         public async Task RemoveHealthRisk_WhenHealthRiskContainsReports_ShouldReturnError()
@@ -466,10 +466,10 @@ namespace Rx.Nyss.Web.Tests.Features.HealthRisk
                 new ProjectHealthRisk
                 {
                     HealthRiskId = HealthRiskId,
-                    Reports = new List<RX.Nyss.Data.Models.Report>
+                    Reports = new List<Report>
                     {
-                        new RX.Nyss.Data.Models.Report()
-                    }
+                        new Report()
+}
                 }
             };
 

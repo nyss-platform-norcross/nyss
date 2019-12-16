@@ -2,11 +2,11 @@
 {
     public interface IConfig
     {
-        string ReportApiUrl { get; set; }
+        string ReportApiBaseUrl { get; set; }
     }
 
     public class NyssReportFuncAppConfig : IConfig
     {
-        public string ReportApiUrl { get; set; }
+        public string ReportApiBaseUrl { get; set; }
     }
 }

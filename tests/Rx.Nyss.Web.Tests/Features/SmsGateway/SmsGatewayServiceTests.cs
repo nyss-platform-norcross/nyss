@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
@@ -17,7 +16,7 @@ using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
-namespace Rx.Nyss.Web.Tests.Features.SmsGateway
+namespace RX.Nyss.Web.Tests.Features.SmsGateway
 {
     public class SmsGatewayServiceTests
     {
@@ -116,7 +115,7 @@ namespace Rx.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety { Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety { Id = nationalSocietyId, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -160,7 +159,7 @@ namespace Rx.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety { Id = 1, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -192,7 +191,7 @@ namespace Rx.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety { Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety { Id = nationalSocietyId, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -232,7 +231,7 @@ namespace Rx.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety { Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety { Id = nationalSocietyId, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -278,7 +277,7 @@ namespace Rx.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety { Id = 1, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -318,7 +317,7 @@ namespace Rx.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety { Id = 1, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -358,7 +357,7 @@ namespace Rx.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety { Id = 1, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -399,7 +398,7 @@ namespace Rx.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety { Id = 1, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
