@@ -390,6 +390,7 @@ export const stringKeys = {
         close: "alerts.assess.alert.close",
         escalate: "alerts.assess.alert.escalate",
         escalateConfirmation: "alerts.assess.alert.escalateConfirmation",
+        escalateConfirmationInformDataCollectors: "alerts.assess.alert.escalateConfirmationInformDataCollectors",
         escalateNotificationEmails: "alerts.assess.alert.escalateNotificationEmails",
         dismiss: "alerts.assess.alert.dismiss",
         escalationPossible: "alerts.assess.alert.escalationPossible",

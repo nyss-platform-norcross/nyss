@@ -9,6 +9,7 @@ import Button from "@material-ui/core/Button";
 import DialogContent from "@material-ui/core/DialogContent";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from "@material-ui/core";
+import Typography from '@material-ui/core/Typography';
 
 export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating, escalateAlert, notificationEmails, notificationPhoneNumbers }) => {
   const theme = useTheme();
@@ -23,6 +24,10 @@ export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating,
             <div>{email}</div>
           ))}
         </DisplayField>
+
+        <Typography variant="body1">
+          {strings(stringKeys.alerts.assess.alert.escalateConfirmationInformDataCollectors)}
+        </Typography>
 
         <FormActions>
           <Button onClick={close}>
