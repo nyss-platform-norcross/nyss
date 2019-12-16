@@ -1,0 +1,44 @@
+.container {
+  display: flex;
+  margin: 10px 0;
+}
+
+.key {
+  width: 200px;
+}
+
+.value {
+  font-weight: bold;
+}
+
+.form {
+  display: block !important;
+}
+
+.time {
+  font-weight: bold;
+}
+
+.senderLabel {
+  margin: 0 10px;
+}
+
+.sender {
+  font-weight: bold;
+}
+
+.indicator {
+  margin-right: 10px;
+}
+
+.accepted {
+  color: #09c509;
+}
+
+.rejected {
+  color: #e42d2d;
+}
+
+.reportStatus {
+  font-weight: bold;
+}

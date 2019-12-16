@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Alert.Dto;
+using RX.Nyss.Web.Features.Alerts.Dto;
 
 namespace RX.Nyss.Web.Features.Project.Dto
 {

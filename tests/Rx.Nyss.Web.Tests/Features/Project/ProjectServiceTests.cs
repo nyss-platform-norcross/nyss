@@ -8,9 +8,11 @@ using NSubstitute.ReturnsExtensions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.Alert.Dto;
+using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.NationalSociety;
 using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.Project.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -24,6 +26,8 @@ namespace Rx.Nyss.Web.Tests.Features.Project
         private readonly IProjectService _projectService;
         private readonly INyssContext _nyssContextMock;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly INationalSocietyService _mockNationalSocietyService;
+        private readonly IAuthorizationService _mockAuthorizationService;
 
         public ProjectServiceTests()
         {
@@ -31,7 +35,9 @@ namespace Rx.Nyss.Web.Tests.Features.Project
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
-            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider);
+            _mockNationalSocietyService = Substitute.For<INationalSocietyService>();
+            _mockAuthorizationService = Substitute.For<IAuthorizationService>();
+            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, _mockNationalSocietyService, _mockAuthorizationService);
         }
 
         [Fact]

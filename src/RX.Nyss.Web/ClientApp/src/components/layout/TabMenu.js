@@ -7,7 +7,7 @@ import { push } from "connected-react-router";
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
-const TabMenuComponent = ({ tabMenu, breadcrumb, push, currentUrl }) => {
+const TabMenuComponent = ({ tabMenu, breadcrumb, push, currentUrl, title }) => {
   const onItemClick = (item) => {
     push(item.url);
   };
@@ -23,10 +23,10 @@ const TabMenuComponent = ({ tabMenu, breadcrumb, push, currentUrl }) => {
 
   return (
     <div className={styles.tabMenu}>
-      <div className={styles.header}>{currentBreadcrumbItem.title}</div>
+      <div className={styles.header}>{title || currentBreadcrumbItem.title}</div>
 
       {showTabMenu && (
-        <Tabs value={tabMenu.indexOf(tabMenu.find(t => t.isActive))}>
+        <Tabs value={tabMenu.indexOf(tabMenu.find(t => t.isActive))} className={styles.tabs}>
           {tabMenu.map(item => (
             <Tab key={`tabMenu_${item.url}`} label={item.title} onClick={() => onItemClick(item)} />
           ))}
@@ -44,6 +44,7 @@ TabMenuComponent.propTypes = {
 const mapStateToProps = state => ({
   tabMenu: state.appData.siteMap.tabMenu,
   breadcrumb: state.appData.siteMap.breadcrumb,
+  title: state.appData.siteMap.title,
   currentUrl: state.appData.route.url
 });
 

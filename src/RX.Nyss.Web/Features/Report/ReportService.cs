@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -9,12 +8,13 @@ using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
+using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Report
 {
     public interface IReportService
     {
-        Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber, string identityName, ListFilterRequestDto userIdentityName);
+        Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, string identityName, ListFilterRequestDto userIdentityName);
     }
 
     public class ReportService : IReportService
@@ -30,23 +30,22 @@ namespace RX.Nyss.Web.Features.Report
             _config = config;
         }
 
-        public async Task<PagedResult<List<ReportListResponseDto>>> List(int projectId, int pageNumber, string userIdentityName, ListFilterRequestDto filter)
+        public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, string userIdentityName, ListFilterRequestDto filter)
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(userIdentityName);
             var rowsPerPage = _config.PaginationRowsPerPage;
+
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
                 .Where(r => filter.ReportListType == ReportListTypeDto.Training ?
                       r.IsTraining.HasValue && r.IsTraining.Value :
                       r.IsTraining.HasValue && !r.IsTraining.Value);
 
-            var rowCount = baseQuery.Count();
-
             var result = await baseQuery.Select(r => new ReportListResponseDto
                 {
                     Id = r.Id,
                     DateTime = r.ReceivedAt,
-                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Name,
+                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
                     IsValid = r.Report != null,
                     Region = r.DataCollector.Village.District.Region.Name,
                     District = r.DataCollector.Village.District.Name,
@@ -69,7 +68,7 @@ namespace RX.Nyss.Web.Features.Report
             var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
             result.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
 
-            return PagedResult.Success(result, pageNumber, rowCount, rowsPerPage);
+            return Success(result.AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
         }
     }
 }

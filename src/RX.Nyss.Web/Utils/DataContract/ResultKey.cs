@@ -165,5 +165,23 @@
             public const string NotFound = "There were no matching results when retrieving data from Nominatim API";
         }
 
+        public static class Alert
+        {
+            public const string AcceptReportWrongAlertStatus = "alert.acceptReport.wrongAlertStatus";
+            public const string AcceptReportWrongReportStatus = "alert.acceptReport.wrongReportStatus";
+
+            public const string DismissReportWrongAlertStatus = "alert.dismissReport.wrongAlertStatus";
+            public const string DismissReportWrongReportStatus = "alert.dismissReport.wrongReportStatus";
+
+            public const string EscalateAlertThresholdNotReached = "alert.escalateAlert.thresholdNotReached";
+            public const string EscalateAlertWrongStatus = "alert.escalateAlert.wrongStatus";
+
+            public const string DismissAlertWrongStatus = "alert.dismissAlert.wrongStatus";
+            public const string DismissAlertPossibleEscalation = "alert.dismissAlert.possibleEscalation";
+
+            public const string InconsistentReportData = "alert.inconsistentReportData";
+
+            public const string CloseAlertWrongStatus = "alert.closeAlert.wrongStatus";
+        }
     }
 }

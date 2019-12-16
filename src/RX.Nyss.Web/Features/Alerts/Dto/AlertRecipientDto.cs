@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace RX.Nyss.Web.Features.Alert.Dto
+namespace RX.Nyss.Web.Features.Alerts.Dto
 {
     public class AlertRecipientDto
     {

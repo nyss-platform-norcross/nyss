@@ -58,7 +58,8 @@ function* openModule({ path, params }) {
   const sideMenu = getMenu(path, params, placeholders.leftMenu, path);
   const tabMenu = getMenu(path, params, placeholders.tabMenu, path);
 
-  yield put(actions.openModule.success(path, params, breadcrumb, topMenu, sideMenu, tabMenu))
+
+  yield put(actions.openModule.success(path, params, breadcrumb, topMenu, sideMenu, tabMenu, params.title))
 }
 
 function* reloadPage() {

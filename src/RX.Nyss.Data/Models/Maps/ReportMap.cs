@@ -35,6 +35,10 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasOne(x => x.ProjectHealthRisk).WithMany(x => x.Reports).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Zone).WithMany().OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.CreatedAt);
+            builder.HasIndex(x => x.ReceivedAt);
+            builder.HasIndex(x => x.EpiWeek);
         }
     }
 }

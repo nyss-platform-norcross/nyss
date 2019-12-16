@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.NationalSociety;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.Extensions;
 
@@ -16,11 +17,16 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
         private const string RouteParameterName = "dataConsumerId";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
+        private readonly INationalSocietyService _nationalSocietyService;
 
-        public DataConsumerAccessHandler(IHttpContextAccessor httpContextAccessor, IUserService userService)
+        public DataConsumerAccessHandler(
+            IHttpContextAccessor httpContextAccessor,
+            IUserService userService,
+            INationalSocietyService nationalSocietyService)
         {
             _httpContextAccessor = httpContextAccessor;
             _userService = userService;
+            _nationalSocietyService = nationalSocietyService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
@@ -36,7 +42,7 @@ namespace RX.Nyss.Web.Features.Authentication.Policies
             var roles = context.User.GetRoles();
             var identityName = context.User.Identity.Name;
 
-            if (await _userService.GetUserHasAccessToAnyOfProvidedNationalSocieties(dataConsumerNationalSocieties, identityName, roles))
+            if (await _nationalSocietyService.HasUserAccessNationalSocieties(dataConsumerNationalSocieties, identityName, roles))
             {
                 context.Succeed(requirement);
             }

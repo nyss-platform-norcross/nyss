@@ -13,6 +13,8 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.GatewayType).HasConversion<string>().HasMaxLength(100).IsRequired();
             builder.Property(x => x.EmailAddress).HasMaxLength(100);
             builder.HasOne(x => x.NationalSociety).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.ApiKey).IsUnique();
         }
     }
 }

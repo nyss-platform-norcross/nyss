@@ -48,5 +48,9 @@ export const accessMap = {
   },
   reports: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+  },
+  alerts: {
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    assess: [Administrator, Manager, TechnicalAdvisor, Supervisor],
   }
 };

@@ -2,6 +2,7 @@ import * as actions from "./appConstans";
 import { push } from "connected-react-router";
 
 export const showMessage = (message) => ({ type: actions.SHOW_MESSAGE.INVOKE, message });
+export const showLocalizedMessage = (stringKey, time) => ({ type: actions.SHOW_LOCALIZED_MESSAGE.INVOKE, stringKey, time });
 export const closeMessage = () => ({ type: actions.CLOSE_MESSAGE.INVOKE });
 export const entityUpdated = (entity) => ({ type: actions.ENTITY_UPDATED, entities: [entity] });
 export const switchStrings = (status) => ({ type: actions.SWITCH_STRINGS, status });
@@ -67,8 +68,8 @@ export const openModule = {
   invoke: (path, params) =>
     ({ type: actions.OPEN_MODULE.INVOKE, path, params }),
 
-  success: (path, parameters, breadcrumb, topMenu, sideMenu, tabMenu) =>
-    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, topMenu, sideMenu, tabMenu }),
+  success: (path, parameters, breadcrumb, topMenu, sideMenu, tabMenu, title) =>
+    ({ type: actions.OPEN_MODULE.SUCCESS, path, parameters, breadcrumb, topMenu, sideMenu, tabMenu, title }),
 
   failure: (message) =>
     ({ type: actions.OPEN_MODULE.FAILURE, message })

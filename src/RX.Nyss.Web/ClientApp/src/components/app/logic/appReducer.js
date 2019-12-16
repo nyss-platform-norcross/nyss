@@ -8,7 +8,9 @@ export function appReducer(state = initialState.appData, action) {
       return {
         ...state,
         moduleError: null,
-        message: null
+        message: null,
+        messageStringKey: null,
+        messageTime: null
       };
 
     case actions.SWITCH_STRINGS:
@@ -70,7 +72,8 @@ export function appReducer(state = initialState.appData, action) {
           breadcrumb: [],
           topMenu: [],
           sideMenu: [],
-          tabMenu: []
+          tabMenu: [],
+          title: null
         }
       }
 
@@ -83,7 +86,8 @@ export function appReducer(state = initialState.appData, action) {
           breadcrumb: action.breadcrumb,
           topMenu: action.topMenu,
           sideMenu: action.sideMenu,
-          tabMenu: action.tabMenu
+          tabMenu: action.tabMenu,
+          title: action.title
         }
       }
 
@@ -96,13 +100,24 @@ export function appReducer(state = initialState.appData, action) {
     case actions.SHOW_MESSAGE.INVOKE:
       return {
         ...state,
-        message: action.message
+        message: action.message,
+        messageStringKey: null
+      }
+
+    case actions.SHOW_LOCALIZED_MESSAGE.INVOKE:
+      return {
+        ...state,
+        message: null,
+        messageStringKey: action.stringKey,
+        messageTime: action.time
       }
 
     case actions.CLOSE_MESSAGE.INVOKE:
       return {
         ...state,
-        message: null
+        message: null,
+        messageStringKey: null,
+        messageTime: null
       }
 
     default:
