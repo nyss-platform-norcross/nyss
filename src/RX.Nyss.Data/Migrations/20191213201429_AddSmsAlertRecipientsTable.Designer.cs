@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20191213201429_AddSmsAlertRecipientsTable")]
+    partial class AddSmsAlertRecipientsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,16 +43,11 @@ namespace RX.Nyss.Data.Migrations
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedAt");
-
                     b.HasIndex("ProjectHealthRiskId");
-
-                    b.HasIndex("Status");
 
                     b.ToTable("Alerts");
                 });
@@ -1737,16 +1734,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdditionalPhoneNumber");
-
-                    b.HasIndex("CreatedAt");
-
-                    b.HasIndex("DataCollectorType");
-
-                    b.HasIndex("DeletedAt");
-
-                    b.HasIndex("PhoneNumber");
-
                     b.HasIndex("ProjectId");
 
                     b.HasIndex("SupervisorId");
@@ -1832,9 +1819,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApiKey")
-                        .IsUnique();
-
                     b.HasIndex("NationalSocietyId");
 
                     b.ToTable("GatewaySettings");
@@ -1892,8 +1876,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AlertRuleId");
-
-                    b.HasIndex("HealthRiskType");
 
                     b.ToTable("HealthRisks");
                 });
@@ -2022,15 +2004,11 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("HeadManagerId");
 
-                    b.HasIndex("IsArchived");
-
                     b.HasIndex("Name")
                         .IsUnique()
                         .HasFilter("[Name] IS NOT NULL");
 
                     b.HasIndex("PendingHeadManagerId");
-
-                    b.HasIndex("StartDate");
 
                     b.ToTable("NationalSocieties");
                 });
@@ -2263,9 +2241,6 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<DateTime>("ReceivedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ReportGroupLabel")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("ReportType")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
@@ -2287,17 +2262,9 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedAt");
-
                     b.HasIndex("DataCollectorId");
 
-                    b.HasIndex("EpiWeek");
-
                     b.HasIndex("ProjectHealthRiskId");
-
-                    b.HasIndex("ReceivedAt");
-
-                    b.HasIndex("ReportGroupLabel");
 
                     b.HasIndex("VillageId");
 
@@ -2390,8 +2357,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationLanguageId");
-
-                    b.HasIndex("EmailAddress");
 
                     b.ToTable("Users");
 

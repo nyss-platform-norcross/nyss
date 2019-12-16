@@ -80,10 +80,15 @@ namespace RX.Nyss.Web.Features.Project
                         CaseDefinition = phr.CaseDefinition,
                         ContainsReports = phr.Reports.Any()
                     }),
-                    AlertRecipients = p.AlertRecipients.Select(ar => new AlertRecipientDto
+                    EmailAlertRecipients = p.EmailAlertRecipients.Select(ear => new EmailAlertRecipientDto
                     {
-                        Id = ar.Id,
-                        Email = ar.EmailAddress
+                        Id = ear.Id,
+                        Email = ear.EmailAddress
+                    }),
+                    SmsAlertRecipients = p.SmsAlertRecipients.Select(sar => new SmsAlertRecipientDto
+                    {
+                        Id = sar.Id,
+                        PhoneNumber = sar.PhoneNumber
                     }),
                     ContentLanguageId = p.NationalSociety.ContentLanguage.Id,
                 })
@@ -195,9 +200,13 @@ namespace RX.Nyss.Web.Features.Project
                             KilometersThreshold = phr.AlertRuleKilometersThreshold
                         }
                     }).ToList(),
-                    AlertRecipients = projectRequestDto.AlertRecipients.Select(ar => new AlertRecipient
+                    EmailAlertRecipients = projectRequestDto.EmailAlertRecipients.Select(ar => new EmailAlertRecipient
                     {
                         EmailAddress = ar.Email
+                    }).ToList(),
+                    SmsAlertRecipients = projectRequestDto.SmsAlertRecipients.Select(ar => new SmsAlertRecipient
+                    {
+                        PhoneNumber = ar.PhoneNumber
                     }).ToList()
                 };
 
@@ -220,7 +229,8 @@ namespace RX.Nyss.Web.Features.Project
                 var projectToUpdate = await _nyssContext.Projects
                     .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.AlertRule)
-                    .Include(p => p.AlertRecipients)
+                    .Include(p => p.EmailAlertRecipients)
+                    .Include(p => p.SmsAlertRecipients)
                     .FirstOrDefaultAsync(p => p.Id == projectId);
 
                 if (projectToUpdate == null)
@@ -233,7 +243,8 @@ namespace RX.Nyss.Web.Features.Project
 
                 UpdateHealthRisks(projectToUpdate, projectRequestDto);
 
-                UpdateAlertRecipients(projectToUpdate, projectRequestDto);
+                UpdateEmailAlertRecipients(projectToUpdate, projectRequestDto);
+                UpdateSmsAlertRecipients(projectToUpdate, projectRequestDto);
 
                 await _nyssContext.SaveChangesAsync();
 
@@ -295,27 +306,52 @@ namespace RX.Nyss.Web.Features.Project
             }
         }
 
-        private void UpdateAlertRecipients(Nyss.Data.Models.Project projectToUpdate, ProjectRequestDto projectRequestDto)
+        private void UpdateEmailAlertRecipients(Nyss.Data.Models.Project projectToUpdate, ProjectRequestDto projectRequestDto)
         {
-            var alertRecipientIdsFromDto = projectRequestDto.AlertRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
-            var alertRecipientsToDelete = projectToUpdate.AlertRecipients.Where(ar => !alertRecipientIdsFromDto.Contains(ar.Id));
-            _nyssContext.AlertRecipients.RemoveRange(alertRecipientsToDelete);
+            var alertRecipientIdsFromDto = projectRequestDto.EmailAlertRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
+            var alertRecipientsToDelete = projectToUpdate.EmailAlertRecipients.Where(ar => !alertRecipientIdsFromDto.Contains(ar.Id));
+            _nyssContext.EmailAlertRecipients.RemoveRange(alertRecipientsToDelete);
 
-            var alertRecipientsToAdd = projectRequestDto.AlertRecipients.Where(ar => ar.Id == null);
+            var alertRecipientsToAdd = projectRequestDto.EmailAlertRecipients.Where(ar => ar.Id == null);
             foreach (var alertRecipient in alertRecipientsToAdd)
             {
-                var alertRecipientToAdd = new AlertRecipient { EmailAddress = alertRecipient.Email };
-                projectToUpdate.AlertRecipients.Add(alertRecipientToAdd);
+                var alertRecipientToAdd = new EmailAlertRecipient { EmailAddress = alertRecipient.Email };
+                projectToUpdate.EmailAlertRecipients.Add(alertRecipientToAdd);
             }
 
-            var alertRecipientsToUpdate = projectRequestDto.AlertRecipients.Where(ar => ar.Id.HasValue);
+            var alertRecipientsToUpdate = projectRequestDto.EmailAlertRecipients.Where(ar => ar.Id.HasValue);
             foreach (var alertRecipient in alertRecipientsToUpdate)
             {
-                var alertRecipientToUpdate = projectToUpdate.AlertRecipients.FirstOrDefault(ar => ar.Id == alertRecipient.Id.Value);
+                var alertRecipientToUpdate = projectToUpdate.EmailAlertRecipients.FirstOrDefault(ar => ar.Id == alertRecipient.Id.Value);
 
                 if (alertRecipientToUpdate != null)
                 {
                     alertRecipientToUpdate.EmailAddress = alertRecipient.Email;
+                }
+            }
+        }
+
+        private void UpdateSmsAlertRecipients(Nyss.Data.Models.Project projectToUpdate, ProjectRequestDto projectRequestDto)
+        {
+            var alertRecipientIdsFromDto = projectRequestDto.SmsAlertRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
+            var alertRecipientsToDelete = projectToUpdate.SmsAlertRecipients.Where(ar => !alertRecipientIdsFromDto.Contains(ar.Id));
+            _nyssContext.SmsAlertRecipients.RemoveRange(alertRecipientsToDelete);
+
+            var alertRecipientsToAdd = projectRequestDto.SmsAlertRecipients.Where(ar => ar.Id == null);
+            foreach (var alertRecipient in alertRecipientsToAdd)
+            {
+                var alertRecipientToAdd = new SmsAlertRecipient { PhoneNumber = alertRecipient.PhoneNumber };
+                projectToUpdate.SmsAlertRecipients.Add(alertRecipientToAdd);
+            }
+
+            var alertRecipientsToUpdate = projectRequestDto.SmsAlertRecipients.Where(ar => ar.Id.HasValue);
+            foreach (var alertRecipient in alertRecipientsToUpdate)
+            {
+                var alertRecipientToUpdate = projectToUpdate.SmsAlertRecipients.FirstOrDefault(ar => ar.Id == alertRecipient.Id.Value);
+
+                if (alertRecipientToUpdate != null)
+                {
+                    alertRecipientToUpdate.PhoneNumber = alertRecipient.PhoneNumber;
                 }
             }
         }

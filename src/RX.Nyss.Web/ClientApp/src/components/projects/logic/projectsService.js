@@ -1,4 +1,4 @@
-export const getSaveFormModel = (values, healthRisks, notifications) =>
+export const getSaveFormModel = (values, healthRisks, emailNotifications, smsNotifications) =>
     ({
         name: values.name,
         timeZoneId: values.timeZoneId,
@@ -11,8 +11,12 @@ export const getSaveFormModel = (values, healthRisks, notifications) =>
             alertRuleDaysThreshold: parseInt(values[`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`]),
             alertRuleKilometersThreshold: parseInt(values[`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`])
         })),
-        alertRecipients: notifications.map(notification => ({
-            id: values[`notification_${notification.key}_id`],
-            email: values[`notification_${notification.key}_email`],
+        emailAlertRecipients: emailNotifications.map(emailNotification => ({
+            id: values[`email_notification_${emailNotification.key}_id`],
+            email: values[`email_notification_${emailNotification.key}_email`],
+        })),
+        smsAlertRecipients: smsNotifications.map(smsNotification => ({
+            id: values[`sms_notification_${smsNotification.key}_id`],
+            phoneNumber: values[`sms_notification_${smsNotification.key}_phone_number`],
         }))
     });

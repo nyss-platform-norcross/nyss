@@ -5,18 +5,18 @@ import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-export const ProjectNotificationItem = ({ itemKey, form, notification, onRemove }) => {
+export const ProjectSmsNotificationItem = ({ itemKey, form, smsNotification, onRemove }) => {
   const [ready, setReady] = useState(false);
 
   useMount(() => {
-    form.addField(`notification_${itemKey}_id`, notification.id);
-    form.addField(`notification_${itemKey}_email`, notification.email, [validators.required, validators.email]);
+    form.addField(`sms_notification_${itemKey}_id`, smsNotification.id);
+    form.addField(`sms_notification_${itemKey}_phone_number`, smsNotification.phoneNumber, [validators.required, validators.maxLength(20), validators.phoneNumber]);
 
     setReady(true);
 
     return () => {
-      form.removeField(`notification_${itemKey}_id`);
-      form.removeField(`notification_${itemKey}_email`);
+      form.removeField(`sms_notification_${itemKey}_id`);
+      form.removeField(`sms_notification_${itemKey}_phone_number`);
     };
   });
 
@@ -27,8 +27,8 @@ export const ProjectNotificationItem = ({ itemKey, form, notification, onRemove 
   return (
     <Grid item xs={12}>
       <TextActionInputField
-        name={`notification_${itemKey}_email`}
-        field={form.fields[`notification_${itemKey}_email`]}
+        name={`sms_notification_${itemKey}_phone_number`}
+        field={form.fields[`sms_notification_${itemKey}_phone_number`]}
         icon={<DeleteIcon />}
         onButtonClick={onRemove}
       />

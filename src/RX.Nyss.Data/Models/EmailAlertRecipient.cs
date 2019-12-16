@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.Data.Models
 {
-    public class AlertRecipient
+    public class EmailAlertRecipient
     {
         public int Id { get; set; }
 

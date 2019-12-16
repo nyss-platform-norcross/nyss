@@ -16,7 +16,9 @@ namespace RX.Nyss.Web.Features.Project.Dto
 
         public IEnumerable<ProjectHealthRiskResponseDto> ProjectHealthRisks { get; set; }
 
-        public IEnumerable<AlertRecipientDto> AlertRecipients { get; set; }
+        public IEnumerable<EmailAlertRecipientDto> EmailAlertRecipients { get; set; }
+
+        public IEnumerable<SmsAlertRecipientDto> SmsAlertRecipients { get; set; }
 
         public ProjectFormDataResponseDto FormData { get; set; }
 
