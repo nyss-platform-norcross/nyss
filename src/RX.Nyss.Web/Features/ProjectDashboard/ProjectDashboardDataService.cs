@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 {
                     ReportCount = (int)reports.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
                     ActiveDataCollectorCount = reports
-                        .Where(r => r.DataCollector.Name != Anonymization.Text)
+                        .Where(r => r.DataCollector.Name != Anonymization.Text && r.DataCollector.DeletedAt == null)
                         .Select(r => r.DataCollector.Id)
                         .Distinct().Count(),
                     InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, reports, filtersDto)
