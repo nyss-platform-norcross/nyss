@@ -25,8 +25,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         private readonly INyssContext _nyssContext;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        private const string AnonymizationText = "--Data removed--";
-
         public ProjectDashboardDataService(
             INyssContext nyssContext,
             IDateTimeProvider dateTimeProvider)
@@ -45,10 +43,10 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 {
                     ReportCount = (int)reports.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
                     ActiveDataCollectorCount = reports
-                        .Where(r => r.DataCollector.Name != AnonymizationText)
+                        .Where(r => r.DataCollector.Name != Anonymization.Text)
                         .Select(r => r.DataCollector.Id)
                         .Distinct().Count(),
-                    InactiveDataCollectorCount = InactiveDataCollectorCount(reports, filtersDto)
+                    InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, reports, filtersDto)
                 })
                 .FirstOrDefaultAsync();
         }
@@ -302,14 +300,15 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 reports
             };
 
-        private int InactiveDataCollectorCount(IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto filtersDto)
+        private int InactiveDataCollectorCount(int projectId, IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto filtersDto)
         {
             var activeDataCollectors = reports.Select(r => r.DataCollector.Id).Distinct();
 
             return _nyssContext.DataCollectors
-                .Where(dc => !activeDataCollectors.Contains(dc.Id) &&
+                .Where(dc => dc.Project.Id == projectId &&
+                    !activeDataCollectors.Contains(dc.Id) &&
                     (filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.Training ? dc.IsInTrainingMode : !dc.IsInTrainingMode) &&
-                    dc.Name != AnonymizationText)
+                    dc.Name != Anonymization.Text)
                 .Count();
         }
     }

@@ -598,7 +598,6 @@ namespace Rx.Nyss.Web.Tests.Features.Supervisor
         public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_DetachDataCollectorsFromSupervisorCommandShouldBeCalled()
         {
             //arrange
-            var anonymizationString = "--Data removed--";
             FormattableString expectedSqlCommand = $"UPDATE Nyss.DataCollectors SET SupervisorId = null WHERE SupervisorId = {_supervisorWithDeletedDataCollectorsId}";
 
             // Act

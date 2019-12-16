@@ -209,7 +209,6 @@ export const stringKeys = {
       },
       activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
       inactiveDataCollectorCount: "project.dashboard.inactiveDataCollectorCount",
-      inTrainingDataCollectorCount: "project.dashboard.inTrainingDataCollectorCount",
       startDate: "project.dashboard.startDate",
       dataCollectors: "project.dashboard.dataCollectors",
       healthRisks: "project.dashboard.healthRisks",

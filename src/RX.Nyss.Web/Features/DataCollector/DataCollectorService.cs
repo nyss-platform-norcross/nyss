@@ -42,7 +42,6 @@ namespace RX.Nyss.Web.Features.DataCollector
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
         private readonly IGeolocationService _geolocationService;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private const string AnonymizationText = "--Data removed--";
 
         public DataCollectorService(
             INyssContext nyssContext,
@@ -302,13 +301,13 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         private Task AnonymizeDataCollector(Nyss.Data.Models.DataCollector dataCollector)
         {
-            dataCollector.Name = AnonymizationText;
-            dataCollector.DisplayName = AnonymizationText;
-            dataCollector.PhoneNumber = AnonymizationText;
-            dataCollector.AdditionalPhoneNumber = AnonymizationText;
+            dataCollector.Name = Anonymization.Text;
+            dataCollector.DisplayName = Anonymization.Text;
+            dataCollector.PhoneNumber = Anonymization.Text;
+            dataCollector.AdditionalPhoneNumber = Anonymization.Text;
             dataCollector.DeletedAt = DateTime.UtcNow;
 
-            FormattableString updateRawReportsCommand = $"UPDATE Nyss.RawReports SET Sender = {AnonymizationText} WHERE DataCollectorId = {dataCollector.Id}";
+            FormattableString updateRawReportsCommand = $"UPDATE Nyss.RawReports SET Sender = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
             return _nyssContext.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
         }
 
