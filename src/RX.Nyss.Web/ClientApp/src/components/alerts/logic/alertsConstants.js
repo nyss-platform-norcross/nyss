@@ -13,6 +13,7 @@ export const assessmentStatus = {
   escalated: "Escalated",
   closed: "Closed",
   dismissed: "Dismissed",
+  rejected: "Rejected",
   toEscalate: "ToEscalate",
   toDismiss: "ToDismiss",
   open: "Open"

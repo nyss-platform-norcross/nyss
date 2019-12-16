@@ -7,6 +7,7 @@
         ToDismiss,
         Escalated,
         Dismissed,
-        Closed
+        Closed,
+        Rejected
     }
 }

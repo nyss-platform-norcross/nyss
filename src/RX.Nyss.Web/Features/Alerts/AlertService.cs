@@ -278,6 +278,9 @@ namespace RX.Nyss.Web.Features.Alerts
                 AlertStatus.Closed =>
                     AlertAssessmentStatus.Closed,
 
+                AlertStatus.Rejected =>
+                    AlertAssessmentStatus.Rejected,
+
                 AlertStatus.Pending when acceptedReports >= countThreshold =>
                     AlertAssessmentStatus.ToEscalate,
 
