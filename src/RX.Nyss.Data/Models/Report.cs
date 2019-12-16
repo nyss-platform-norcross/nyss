@@ -41,6 +41,8 @@ namespace RX.Nyss.Data.Models
 
         public DataCollectionPointCase DataCollectionPointCase { get; set; }
 
+        public Guid ReportGroupLabel { get; set; }
+
         public virtual RawReport RawReport { get; set; }
 
         public virtual ProjectHealthRisk ProjectHealthRisk { get; set; }

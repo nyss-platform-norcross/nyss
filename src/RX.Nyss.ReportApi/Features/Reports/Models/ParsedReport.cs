@@ -1,7 +1,7 @@
 ﻿using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 
-namespace RX.Nyss.ReportApi.Models
+namespace RX.Nyss.ReportApi.Features.Reports.Models
 {
     public class ParsedReport
     {

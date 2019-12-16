@@ -29,7 +29,8 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
         Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId);
         Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
-        Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng, string userIdentityName,
+            IEnumerable<string> roles);
         Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
     }
 
@@ -82,8 +83,8 @@ namespace RX.Nyss.Web.Features.DataCollector
                 BirthGroupDecade = dataCollector.BirthGroupDecade,
                 PhoneNumber = dataCollector.PhoneNumber,
                 AdditionalPhoneNumber = dataCollector.AdditionalPhoneNumber,
-                Latitude = dataCollector.Location.X,
-                Longitude = dataCollector.Location.Y,
+                Latitude = dataCollector.Location.Y,
+                Longitude = dataCollector.Location.X,
                 SupervisorId = dataCollector.Supervisor.Id,
                 RegionId = dataCollector.Village.District.Region.Id,
                 DistrictId = dataCollector.Village.District.Id,
@@ -174,6 +175,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         public async Task<Result> CreateDataCollector(int projectId, CreateDataCollectorRequestDto createDto)
         {
             var phoneNumberExists = await _nyssContext.DataCollectors
+                .Where(dc => dc.Project.State == ProjectState.Open)
                 .AnyAsync(dc => dc.PhoneNumber == createDto.PhoneNumber);
 
             if (phoneNumberExists)
@@ -324,7 +326,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         private static Point CreatePoint(double latitude, double longitude)
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
-            return geometryFactory.CreatePoint(new Coordinate(latitude, longitude));
+            return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
 
         public async Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId) =>
@@ -379,7 +381,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .GroupBy(x => new { x.X, x.Y })
                 .Select(location => new MapOverviewLocationResponseDto
                 {
-                    Location = new LocationDto { Latitude = location.Key.X, Longitude = location.Key.Y },
+                    Location = new LocationDto { Latitude = location.Key.Y, Longitude = location.Key.X },
                     CountReportingCorrectly = location.Sum(x => x.ValidReport),
                     CountReportingWithErrors = location.Sum(x => x.InvalidReport),
                     CountNotReporting = location.Sum(x => x.NoReport)
@@ -402,7 +404,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             return Success(result);
         }
 
-        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double x, double y, string userIdentityName,
+        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng, string userIdentityName,
             IEnumerable<string> roles)
         {
             var dataCollectors = roles.Contains(Role.Supervisor.ToString())
@@ -410,7 +412,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 : _nyssContext.DataCollectors;
 
             var result = await dataCollectors
-                .Where(dc => dc.Location.X == x && dc.Location.Y == y)
+                .Where(dc => dc.Location.X == lng && dc.Location.Y == lat)
                 .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
                 {

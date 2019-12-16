@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.ReportApi.Contracts
+﻿namespace RX.Nyss.ReportApi.Features.Reports.Contracts
 {
     public class Report
     {

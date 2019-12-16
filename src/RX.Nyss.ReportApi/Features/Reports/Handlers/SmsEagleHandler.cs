@@ -2,18 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.ReportApi.Exceptions;
-using RX.Nyss.ReportApi.Models;
+using RX.Nyss.ReportApi.Features.Alerts;
+using RX.Nyss.ReportApi.Features.Reports.Exceptions;
+using RX.Nyss.ReportApi.Features.Reports.Models;
 using RX.Nyss.ReportApi.Services;
 using RX.Nyss.ReportApi.Utils;
 using RX.Nyss.ReportApi.Utils.Logging;
 
-namespace RX.Nyss.ReportApi.Handlers
+namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 {
     public interface ISmsEagleHandler
     {
@@ -35,19 +37,21 @@ namespace RX.Nyss.ReportApi.Handlers
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
+        private readonly IAlertService _alertService;
 
         public SmsEagleHandler(
             IReportMessageService reportMessageService,
             INyssContext nyssContext,
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,
-            IEmailToSmsPublisherService emailToSmsPublisherService)
+            IEmailToSmsPublisherService emailToSmsPublisherService, IAlertService alertService)
         {
             _reportMessageService = reportMessageService;
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
             _emailToSmsPublisherService = emailToSmsPublisherService;
+            _alertService = alertService;
         }
 
         public async Task Handle(string queryString)
@@ -61,25 +65,32 @@ namespace RX.Nyss.ReportApi.Handlers
             var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
             var apiKey = parsedQueryString[ApiKeyParameterName];
 
-            var rawReport = new RawReport
-            {
-                Sender = sender,
-                Timestamp = timestamp,
-                ReceivedAt = _dateTimeProvider.UtcNow,
-                Text = text,
-                IncomingMessageId = incomingMessageId,
-                OutgoingMessageId = outgoingMessageId,
-                ModemNumber = modemNumber,
-                ApiKey = apiKey
-            };
-
-            await _nyssContext.AddAsync(rawReport);
-            await _nyssContext.SaveChangesAsync();
-
-            //ToDo: extract try-catch block to a separate service?
             try
             {
-                var gatewaySetting = await ValidateGatewaySetting(apiKey);
+                Alert triggeredAlert = null;
+                ProjectHealthRisk projectHealthRisk = null;
+                GatewaySetting gatewaySetting = null;
+
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    var rawReport = new RawReport
+                    {
+                        Sender = sender,
+                        Timestamp = timestamp,
+                        ReceivedAt = _dateTimeProvider.UtcNow,
+                        Text = text,
+                        IncomingMessageId = incomingMessageId,
+                        OutgoingMessageId = outgoingMessageId,
+                        ModemNumber = modemNumber,
+                        ApiKey = apiKey
+                    };
+
+                await _nyssContext.AddAsync(rawReport);
+                await _nyssContext.SaveChangesAsync();
+
+                //ToDo: extract try-catch block to a separate service?
+            
+                gatewaySetting = await ValidateGatewaySetting(apiKey);
                 rawReport.NationalSociety = gatewaySetting.NationalSociety;
                 await _nyssContext.SaveChangesAsync();
 
@@ -89,7 +100,7 @@ namespace RX.Nyss.ReportApi.Handlers
                 await _nyssContext.SaveChangesAsync();
 
                 var parsedReport = _reportMessageService.ParseReport(text);
-                var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
+                projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
 
                 var receivedAt = ParseTimestamp(timestamp);
                 ValidateReceiptTime(receivedAt);
@@ -100,7 +111,7 @@ namespace RX.Nyss.ReportApi.Handlers
                 {
                     IsTraining = dataCollector.IsInTrainingMode,
                     ReportType = parsedReport.ReportType,
-                    Status = ReportStatus.Pending,
+                    Status = ReportStatus.New,
                     ReceivedAt = receivedAt,
                     CreatedAt = _dateTimeProvider.UtcNow,
                     DataCollector = dataCollector,
@@ -120,19 +131,31 @@ namespace RX.Nyss.ReportApi.Handlers
                     Village = dataCollector.Village,
                     Zone = dataCollector.Zone,
                     ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
-                        ? parsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0 + parsedReport.ReportedCase.CountFemalesBelowFive ?? 0 + parsedReport.ReportedCase.CountMalesAtLeastFive ?? 0 + parsedReport.ReportedCase.CountMalesBelowFive ?? 0
+                        ? parsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0 + parsedReport.ReportedCase.CountFemalesBelowFive ??
+                          0 + parsedReport.ReportedCase.CountMalesAtLeastFive ?? 0 + parsedReport.ReportedCase.CountMalesBelowFive ?? 0
                         : 1
                 };
 
                 rawReport.Report = report;
                 
                 await _nyssContext.Reports.AddAsync(report);
+
+                triggeredAlert = await _alertService.ReportAdded(report);
+
                 await _nyssContext.SaveChangesAsync();
 
-                if (!string.IsNullOrEmpty(gatewaySetting.EmailAddress))
+                transactionScope.Complete();
+                }
+
+                if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
                 {
                     var recipients = new List<string>{ sender };
                     await _emailToSmsPublisherService.SendMessage(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
+                }
+
+                if (triggeredAlert != null)
+                {
+                    await _alertService.SendNotificationsForNewAlert(triggeredAlert, gatewaySetting);
                 }
             }
             catch (ReportValidationException e)

@@ -64,6 +64,6 @@ namespace RX.Nyss.Web.Features.DataCollector
         [HttpGet, Route("mapOverviewDetails")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng) =>
-            await _dataCollectorService.GetMapOverviewDetails(projectId, from, to, lat, lng, User.Identity.Name, User.GetRoles());
+            await _dataCollectorService.GetMapOverviewDetails(projectId, @from, to, lat, lng, User.Identity.Name, User.GetRoles());
     }
 }

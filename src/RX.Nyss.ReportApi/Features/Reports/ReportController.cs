@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using RX.Nyss.ReportApi.Contracts;
-using RX.Nyss.ReportApi.Services;
+using RX.Nyss.ReportApi.Features.Alerts;
+using RX.Nyss.ReportApi.Features.Reports.Contracts;
 
-namespace RX.Nyss.ReportApi.Controllers
+namespace RX.Nyss.ReportApi.Features.Reports
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -19,5 +19,9 @@ namespace RX.Nyss.ReportApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Report report) =>
             await _reportService.ReceiveReport(report) ? (StatusCodeResult) new OkResult() : new BadRequestResult();
+
+        [HttpPost("dismiss")]
+        public async Task<IActionResult> Dismiss(int reportId) =>
+            await _reportService.DismissReport(reportId) ? (StatusCodeResult)new OkResult() : new BadRequestResult();
     }
 }
