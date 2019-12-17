@@ -88,6 +88,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// Closes the alert
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
+        /// <param name="dto">Details related to closing process</param>
         [HttpPost("{alertId:int}/close")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
