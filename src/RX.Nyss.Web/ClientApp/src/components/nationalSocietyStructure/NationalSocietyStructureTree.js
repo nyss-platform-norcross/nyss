@@ -8,7 +8,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { StructureTreeItem } from "./NationalSocietyStructureTreeItem";
 import { strings, stringKeys } from "../../strings";
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
-import { Icon } from "@material-ui/core";
+import Icon from "@material-ui/core/Icon";
 
 const AddPanel = ({ placeholder, onSave }) => {
   return (

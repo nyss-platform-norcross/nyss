@@ -1,4 +1,4 @@
-import { call, put, takeEvery, select, delay } from "redux-saga/effects";
+import { call, put, takeEvery, select } from "redux-saga/effects";
 import * as consts from "./projectDashboardConstants";
 import * as actions from "./projectDashboardActions";
 import * as appActions from "../../app/logic/appActions";

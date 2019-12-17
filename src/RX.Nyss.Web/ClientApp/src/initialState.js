@@ -21,7 +21,8 @@ export const initialState = {
     pending: {}
   },
   auth: {
-    loginResponse: null
+    loginResponse: null,
+    isFetching: false
   },
   nationalSocieties: {
     listFetching: false,
