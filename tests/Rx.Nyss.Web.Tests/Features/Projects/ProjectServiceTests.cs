@@ -8,6 +8,7 @@ using NSubstitute.ReturnsExtensions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.NationalSociety;
 using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.Project.Dto;
@@ -25,8 +26,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
         private readonly IProjectService _projectService;
         private readonly INyssContext _nyssContextMock;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly INationalSocietyService _mockNationalSocietyService;
-        private readonly IAuthorizationService _mockAuthorizationService;
 
         public ProjectServiceTests()
         {
@@ -34,9 +33,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
-            _mockNationalSocietyService = Substitute.For<INationalSocietyService>();
-            _mockAuthorizationService = Substitute.For<IAuthorizationService>();
-            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, _mockNationalSocietyService, _mockAuthorizationService);
+            var mockNationalSocietyService = Substitute.For<INationalSocietyService>();
+            var mockAuthorizationService = Substitute.For<IAuthorizationService>();
+            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, mockNationalSocietyService, mockAuthorizationService);
         }
 
         [Fact]
@@ -88,11 +87,11 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 1,
                     NationalSocietyId = 1,
-                    NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                    NationalSociety = new NationalSociety
                     {
                         ContentLanguage = new ContentLanguage
                         {
@@ -103,14 +102,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     EmailAlertRecipients = new List<EmailAlertRecipient>(),
                     SmsAlertRecipients = new List<SmsAlertRecipient>()
                 },
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = existingProjectId,
                     Name = "Name",
                     TimeZone = "Time Zone",
                     State = ProjectState.Open,
                     NationalSocietyId = 2,
-                    NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                    NationalSociety = new NationalSociety
                     {
                         ContentLanguage = new ContentLanguage
                         {
@@ -123,7 +122,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         {
                             Id = 1,
                             HealthRiskId = 10,
-                            HealthRisk = new RX.Nyss.Data.Models.HealthRisk
+                            HealthRisk = new HealthRisk
                             {
                                 HealthRiskCode = 100,
                                 HealthRiskType = HealthRiskType.Human,
@@ -149,7 +148,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             },
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report()
+                                new Report()
                             }
                         }
                     },
@@ -175,7 +174,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
-            var healthRisks = Array.Empty<RX.Nyss.Data.Models.HealthRisk>();
+            var healthRisks = Array.Empty<HealthRisk>();
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
 
@@ -214,13 +213,13 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             const int nonExistentProjectId = 0;
 
             var project = new[] {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 1,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
                     EmailAlertRecipients = new List<EmailAlertRecipient>(),
                     SmsAlertRecipients = new List<SmsAlertRecipient>(),
-                    NationalSociety = new RX.Nyss.Data.Models.NationalSociety
+                    NationalSociety = new NationalSociety
                     {
                         ContentLanguage = new ContentLanguage { Id = 1 }
                     }
@@ -246,7 +245,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety {Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety {Id = nationalSocietyId, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -256,7 +255,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var healthRisks = new[]
             {
-                new RX.Nyss.Data.Models.HealthRisk {Id = healthRiskId}
+                new HealthRisk {Id = healthRiskId}
             };
 
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
@@ -267,7 +266,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 1,
                     Name = "Name",
@@ -317,7 +316,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             // Assert
             await _nyssContextMock.Projects.Received(1).AddAsync(
-                Arg.Is<RX.Nyss.Data.Models.Project>(p =>
+                Arg.Is<Project>(p =>
                     p.Name == "New Project" &&
                     p.TimeZone == "Time Zone" &&
                     p.StartDate == startDate &&
@@ -342,7 +341,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int nonExistentNationalSocietyId = 0;
 
-            var nationalSocieties = new[] { new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
@@ -353,7 +352,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var result = await _projectService.AddProject(nonExistentNationalSocietyId, projectRequestDto);
 
             // Assert
-            await _nyssContextMock.Projects.DidNotReceive().AddAsync(Arg.Any<RX.Nyss.Data.Models.Project>());
+            await _nyssContextMock.Projects.DidNotReceive().AddAsync(Arg.Any<Project>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Project.NationalSocietyDoesNotExist);
@@ -367,7 +366,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety {Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety {Id = nationalSocietyId, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -377,7 +376,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var healthRisks = new[]
             {
-                new RX.Nyss.Data.Models.HealthRisk {Id = 1}
+                new HealthRisk {Id = 1}
             };
 
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
@@ -400,7 +399,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var result = await _projectService.AddProject(nationalSocietyId, projectRequestDto);
 
             // Assert
-            await _nyssContextMock.Projects.DidNotReceive().AddAsync(Arg.Any<RX.Nyss.Data.Models.Project>());
+            await _nyssContextMock.Projects.DidNotReceive().AddAsync(Arg.Any<Project>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Project.HealthRiskDoesNotExist);
@@ -414,7 +413,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var nationalSocieties = new[]
             {
-                new RX.Nyss.Data.Models.NationalSociety {Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety {Id = nationalSocietyId, Name = "National Society"}
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -422,7 +421,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 1,
                     Name = "Name",
@@ -442,7 +441,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             // Assert
             await _nyssContextMock.Projects.Received(1).AddAsync(
-                Arg.Is<RX.Nyss.Data.Models.Project>(p =>
+                Arg.Is<Project>(p =>
                     p.Name == "New Project" &&
                     p.TimeZone == "Time Zone"));
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
@@ -456,14 +455,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int projectId = 1;
 
-            var nationalSocieties = new[] { new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = projectId,
                     Name = "Name",
@@ -483,7 +482,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<RX.Nyss.Data.Models.Report>()
+                            Reports = new List<Report>()
                         },
                         new ProjectHealthRisk
                         {
@@ -496,7 +495,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<RX.Nyss.Data.Models.Report>()
+                            Reports = new List<Report>()
                         }
                     },
                     EmailAlertRecipients = new List<EmailAlertRecipient>
@@ -634,14 +633,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int nonExistentProjectId = 0;
 
-            var nationalSocieties = new[] { new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 1,
                     Name = "Name",
@@ -672,14 +671,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int projectId = 1;
 
-            var nationalSocieties = new[] { new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = projectId,
                     Name = "Name",
@@ -699,9 +698,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<RX.Nyss.Data.Models.Report>()
+                            Reports = new List<Report>()
                             {
-                                new RX.Nyss.Data.Models.Report()
+                                new Report()
                             }
                         }
                     },
@@ -738,14 +737,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int projectId = 1;
 
-            var nationalSocieties = new[] { new RX.Nyss.Data.Models.NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = projectId,
                     Name = "Name",
@@ -778,7 +777,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = existingProjectId,
                     Name = "Name",
@@ -797,7 +796,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             // Assert
             _nyssContextMock.Projects.Received(1)
-                .Remove(Arg.Is<RX.Nyss.Data.Models.Project>(p => p.Id == existingProjectId));
+                .Remove(Arg.Is<Project>(p => p.Id == existingProjectId));
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyDeleted);
@@ -811,7 +810,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 1,
                     Name = "Name",
@@ -829,7 +828,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var result = await _projectService.DeleteProject(nonExistentProjectId);
 
             // Assert
-            _nyssContextMock.Projects.DidNotReceive().Remove(Arg.Any<RX.Nyss.Data.Models.Project>());
+            _nyssContextMock.Projects.DidNotReceive().Remove(Arg.Any<Project>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Project.ProjectDoesNotExist);
@@ -843,7 +842,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var project = new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = projectId,
                     Name = "Name",
@@ -862,22 +861,22 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             // Assert
             _nyssContextMock.Projects.DidNotReceive()
-                .Remove(Arg.Is<RX.Nyss.Data.Models.Project>(p => p.Id == projectId));
+                .Remove(Arg.Is<Project>(p => p.Id == projectId));
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
 
-        private IEnumerable<RX.Nyss.Data.Models.Project> GenerateExemplaryProjects(int nationalSocietyId)
+        private IEnumerable<Project> GenerateExemplaryProjects(int nationalSocietyId)
         {
             var projectHealthRisk = new ProjectHealthRisk
             {
-                HealthRisk = new RX.Nyss.Data.Models.HealthRisk()
+                HealthRisk = new HealthRisk()
             };
 
             return new[]
             {
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 1,
                     Name = "1",
@@ -887,12 +886,12 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     NationalSocietyId = nationalSocietyId,
                     DataCollectors = new[]
                     {
-                        new RX.Nyss.Data.Models.DataCollector
+                        new DataCollector
                         {
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -902,7 +901,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
                                     }
                                 },
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -922,7 +921,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         {
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -932,7 +931,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
                                     }
                                 },
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -953,11 +952,11 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         }
                     }
                 },
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 2, Name = "2", State = ProjectState.Open, NationalSocietyId = 2
                 },
-                new RX.Nyss.Data.Models.Project
+                new Project
                 {
                     Id = 3,
                     Name = "3",
@@ -967,12 +966,12 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     NationalSocietyId = nationalSocietyId,
                     DataCollectors = new[]
                     {
-                        new RX.Nyss.Data.Models.DataCollector
+                        new DataCollector
                         {
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -982,7 +981,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
                                     }
                                 },
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -994,12 +993,12 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 }
                             }
                         },
-                        new RX.Nyss.Data.Models.DataCollector
+                        new DataCollector
                         {
                             DataCollectorType = DataCollectorType.Human,
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -1009,7 +1008,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
                                     }
                                 },
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -1019,7 +1018,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
                                     }
                                 },
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -1039,7 +1038,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         {
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -1049,7 +1048,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
                                     }
                                 },
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -1076,7 +1075,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         {
                             Reports = new[]
                             {
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -1086,7 +1085,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
                                     }
                                 },
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = false,
                                     ProjectHealthRisk = projectHealthRisk,
@@ -1096,7 +1095,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
                                     }
                                 },
-                                new RX.Nyss.Data.Models.Report
+                                new Report
                                 {
                                     IsTraining = true,
                                     ProjectHealthRisk = projectHealthRisk,
