@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react';
 import PropTypes from "prop-types";
-import Button from '@material-ui/core/Button';
 import { useLayout } from '../../utils/layout';
 import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
@@ -14,8 +13,10 @@ import TextInputField from '../forms/TextInputField';
 import PasswordInputField from '../forms/PasswordInputField';
 import * as authActions from '../../authentication/authActions';
 import { getRedirectUrl } from '../../authentication/auth';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Grid from '@material-ui/core/Grid';
+import { ValidationMessage } from '../forms/ValidationMessage';
+import FormActions from '../forms/formActions/FormActions';
+import SubmitButton from '../forms/submitButton/SubmitButton';
 
 class LoginPageComponent extends PureComponent {
   constructor(props) {
@@ -28,7 +29,7 @@ class LoginPageComponent extends PureComponent {
 
     const validation = {
       userName: [validators.required, validators.email],
-      password: [validators.required, validators.minLength(8)]
+      password: [validators.required]
     };
 
     this.form = createForm(fields, validation);
@@ -54,11 +55,7 @@ class LoginPageComponent extends PureComponent {
             <Typography variant="h1" className={styles.paperHeader}>{strings(stringKeys.login.welcome)}</Typography>
             <Typography variant="h2">{strings(stringKeys.login.title)}</Typography>
 
-            {this.props.loginResponse &&
-              <SnackbarContent
-                message={this.props.loginResponse}
-              />
-            }
+            {this.props.loginResponse && <ValidationMessage message={this.props.loginResponse} />}
 
             <form onSubmit={this.handleSubmit}>
               <Grid container spacing={3}>
@@ -87,11 +84,12 @@ class LoginPageComponent extends PureComponent {
                 </Link>
               </div>
 
-              <div className={styles.actions}>
-                <Button type="submit" variant="outlined" color="primary" style={{ padding: "10px 55px" }}>
+              <FormActions>
+                <div />
+                <SubmitButton wide isFetching={this.props.isFetching}>
                   {strings(stringKeys.login.signIn)}
-                </Button>
-              </div>
+                </SubmitButton>
+              </FormActions>
             </form>
           </div>
         </Paper>
@@ -106,7 +104,8 @@ LoginPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  loginResponse: state.auth.loginResponse
+  loginResponse: state.auth.loginResponse,
+  isFetching: state.auth.isFetching
 });
 
 const mapDispatchToProps = {
