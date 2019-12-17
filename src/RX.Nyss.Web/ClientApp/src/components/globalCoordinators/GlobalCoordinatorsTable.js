@@ -11,6 +11,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { stringKeys, strings } from '../../strings';
+import { accessMap } from '../../authentication/accessMap';
 
 export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
   if (isListFetching) {
@@ -36,8 +37,8 @@ export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEditio
             <TableCell>{row.phoneNumber}</TableCell>
             <TableCell>{row.organization}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.globalCoordinator.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction roles={accessMap.globalCoordinators.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+              <TableRowAction roles={accessMap.globalCoordinators.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.globalCoordinator.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}
