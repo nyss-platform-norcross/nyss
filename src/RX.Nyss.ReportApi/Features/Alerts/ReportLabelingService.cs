@@ -43,7 +43,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             var reportsInRange = await FindReportsSatisfyingRangeAndTimeRequirements(addedReport, projectHealthRisk);
 
-            var reportLabelsExistingInRange = reportsInRange.Select(r => r.ReportGroupLabel).Distinct();
+            var reportLabelsExistingInRange = reportsInRange.Select(r => r.ReportGroupLabel).Where(x => x != default).Distinct().ToList();
 
             var labelForNewConnectedArea = reportLabelsExistingInRange.Any()
                 ? reportLabelsExistingInRange.FirstOrDefault()
