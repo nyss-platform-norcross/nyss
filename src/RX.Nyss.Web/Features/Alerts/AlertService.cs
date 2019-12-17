@@ -293,6 +293,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
         private static string GetSex(ReportCase reportedCase)
         {
+            if (reportedCase == null)
+            {
+                return null;
+            }
+
             if (reportedCase.CountFemalesAtLeastFive > 0 || reportedCase.CountFemalesBelowFive > 0)
             {
                 return SexFemale;
@@ -308,6 +313,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
         private static string GetAge(ReportCase reportedCase)
         {
+            if (reportedCase == null)
+            {
+                return null;
+            }
+
             if (reportedCase.CountFemalesAtLeastFive > 0 || reportedCase.CountMalesAtLeastFive > 0)
             {
                 return AgeAtLeastFive;

@@ -50,14 +50,18 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
           label={strings(stringKeys.alerts.assess.report.village)}
           value={report.village}
         />
-        <ReportFormLabel
-          label={strings(stringKeys.alerts.assess.report.sex)}
-          value={strings(stringKeys.alerts.constants.sex[report.sex])}
-        />
-        <ReportFormLabel
-          label={strings(stringKeys.alerts.assess.report.age)}
-          value={strings(stringKeys.alerts.constants.age[report.age])}
-        />
+        {report.sex && (
+          <ReportFormLabel
+            label={strings(stringKeys.alerts.assess.report.sex)}
+            value={strings(stringKeys.alerts.constants.sex[report.sex])}
+          />
+        )}
+        {report.age && (
+          <ReportFormLabel
+            label={strings(stringKeys.alerts.assess.report.age)}
+            value={strings(stringKeys.alerts.constants.age[report.age])}
+          />
+        )}
       </ExpansionPanelDetails>
 
       <Fragment>
