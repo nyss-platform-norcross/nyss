@@ -163,7 +163,7 @@ const ProjectsCreatePageComponent = (props) => {
           ))}
 
           <Grid item xs={9}>
-            <Typography variant="h3">{strings(stringKeys.project.form.emailNotificationsSetion)}</Typography>
+            <Typography variant="h3">{strings(stringKeys.project.form.emailNotificationsSection)}</Typography>
             <Typography variant="subtitle1">{strings(stringKeys.project.form.emailNotificationDescription)}</Typography>
 
             {emailNotifications.map(emailNotification => (

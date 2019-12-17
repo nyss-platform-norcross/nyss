@@ -144,7 +144,7 @@ export const stringKeys = {
       alertRuleCountThreshold: "project.form.alertRuleCountThreshold",
       alertRuleDaysThreshold: "project.form.alertRuleDaysThreshold",
       alertRuleKilometersThreshold: "project.form.alertRuleKilometersThreshold",
-      emailNotificationsSetion: "project.form.emailNotificationsSetion",
+      emailNotificationsSection: "project.form.emailNotificationsSection",
       emailNotificationDescription: "project.form.emailNotificationDescription",
       smsNotificationsSetion: "project.form.smsNotificationsSetion",
       smsNotificationDescription: "project.form.smsNotificationDescription",
