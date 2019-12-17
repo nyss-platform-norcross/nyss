@@ -68,8 +68,20 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
     return null;
   }
 
+  const handleKeyDown = (e) => {
+    e.stopPropagation();
+
+    if (e.key === "Escape") {
+      close();
+    }
+
+    if (e.key === "Enter") {
+      handleSave();
+    }
+  }
+
   return (
-    <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
+    <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} onKeyDown={handleKeyDown}>
       <DialogTitle id="form-dialog-title">Edit string resource</DialogTitle>
       <DialogContent style={{ width: 500 }}>
         <Grid container spacing={3}>
@@ -80,9 +92,10 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
                 <TextInputField label="Key" name="key" field={form.fields.key} />
               </Grid>
 
-              {languageCodes.map(lang => (
+              {languageCodes.map((lang, index) => (
                 <Grid item xs={12} key={`lang_${lang.languageCode}`}>
                   <TextInputField
+                    autoFocus={index === 0}
                     label={lang.name}
                     name={`value_${lang.languageCode}`}
                     field={form.fields[`value_${lang.languageCode}`]}
