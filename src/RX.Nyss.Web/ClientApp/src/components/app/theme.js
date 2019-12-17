@@ -126,7 +126,11 @@ export const theme = createMuiTheme({
       shrink: {
         //padding: 0,
         color: "#000000 !important",
-        transform: "translate(0, 6px);"
+        transform: "translate(0, 2px);",
+        right: 0,
+        lineHeight: "inherit",
+        overflow: "hidden",
+        textOverflow: "ellipsis"
       }
     },
     MuiLink: {
