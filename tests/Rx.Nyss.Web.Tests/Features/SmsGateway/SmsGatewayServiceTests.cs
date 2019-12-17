@@ -22,15 +22,15 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
     {
         private readonly ISmsGatewayService _smsGatewayService;
         private readonly INyssContext _nyssContextMock;
-        private readonly IBlobService _blobServiceMock;
+        private readonly ISmsGatewayBlobProvider _smsGatewayBlobProviderMock;
 
         public SmsGatewayServiceTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             var config = Substitute.For<IConfig>();
-            _blobServiceMock = Substitute.For<IBlobService>();
-            _smsGatewayService = new SmsGatewayService(_nyssContextMock, loggerAdapterMock, config, _blobServiceMock);
+            _smsGatewayBlobProviderMock = Substitute.For<ISmsGatewayBlobProvider>();
+            _smsGatewayService = new SmsGatewayService(_nyssContextMock, loggerAdapterMock, config, _smsGatewayBlobProviderMock);
         }
 
         [Fact]
@@ -146,7 +146,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                     gs.ApiKey == "new-api-key" &&
                     gs.GatewayType == GatewayType.SmsEagle));
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            await _blobServiceMock.Received(1).UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content);
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SuccessfullyAdded);
         }
@@ -178,7 +179,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             await _nyssContextMock.GatewaySettings.DidNotReceive().AddAsync(Arg.Any<GatewaySetting>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            await _blobServiceMock.DidNotReceive().UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.NationalSocietyDoesNotExist);
         }
@@ -218,7 +220,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             await _nyssContextMock.GatewaySettings.DidNotReceive().AddAsync(Arg.Any<GatewaySetting>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            await _blobServiceMock.DidNotReceive().UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
         }
@@ -252,7 +255,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                 GatewayType = GatewayType.SmsEagle
             };
 
-            _blobServiceMock.UpdateBlob(Arg.Any<string>(), Arg.Any<string>()).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
+            string content = Arg.Any<string>();
+            _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
             var result = await _smsGatewayService.AddSmsGateway(nationalSocietyId, gatewaySettingRequestDto);
@@ -264,7 +268,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                     gs.ApiKey == "new-api-key" &&
                     gs.GatewayType == GatewayType.SmsEagle));
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            await _blobServiceMock.Received(1).UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content1 = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
@@ -304,7 +309,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            await _blobServiceMock.Received(1).UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content);
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SuccessfullyUpdated);
         }
@@ -344,7 +350,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            await _blobServiceMock.DidNotReceive().UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
         }
@@ -385,7 +392,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            await _blobServiceMock.DidNotReceive().UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
         }
@@ -420,14 +428,16 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                 GatewayType = GatewayType.SmsEagle
             };
 
-            _blobServiceMock.UpdateBlob(Arg.Any<string>(), Arg.Any<string>()).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
+            string content = Arg.Any<string>();
+            _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
             var result = await _smsGatewayService.UpdateSmsGateway(smsGatewayId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            await _blobServiceMock.Received(1).UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content1 = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
@@ -453,7 +463,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             _nyssContextMock.GatewaySettings.Received(1).Remove(Arg.Is<GatewaySetting>(gs => gs.Id == existingSmsGatewayId));
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            await _blobServiceMock.Received(1).UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content);
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SuccessfullyDeleted);
         }
@@ -479,7 +490,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             _nyssContextMock.GatewaySettings.DidNotReceive().Remove(Arg.Any<GatewaySetting>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            await _blobServiceMock.DidNotReceive().UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
         }
@@ -499,7 +511,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
             _nyssContextMock.GatewaySettings.FindAsync(smsGatewayId).Returns(gatewaySettings[0]);
 
-            _blobServiceMock.UpdateBlob(Arg.Any<string>(), Arg.Any<string>()).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
+            string content = Arg.Any<string>();
+            _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
             var result = await _smsGatewayService.DeleteSmsGateway(smsGatewayId);
@@ -507,7 +520,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             _nyssContextMock.GatewaySettings.Received(1).Remove(Arg.Is<GatewaySetting>(gs => gs.Id == smsGatewayId));
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            await _blobServiceMock.Received(1).UpdateBlob(Arg.Any<string>(), Arg.Any<string>());
+            string content1 = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
@@ -530,10 +544,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             await _smsGatewayService.UpdateAuthorizedApiKeys();
 
             // Assert
-            await _blobServiceMock.Received(1).UpdateBlob(Arg.Any<string>(), Arg.Is<string>(c =>
+            string content = Arg.Is<string>(c =>
                 c.Contains("first-api-key") &&
                 c.Contains("second-api-key") &&
-                c.Contains("third-api-key")));
+                c.Contains("third-api-key"));
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content);
         }
     }
 }

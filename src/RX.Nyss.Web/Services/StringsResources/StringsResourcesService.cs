@@ -69,7 +69,9 @@ namespace RX.Nyss.Web.Services.StringsResources
                     {
                         entry.Key,
                         Value = GetTranslation(entry.Translations) ?? entry.DefaultValue ?? entry.Key
-                    }).ToDictionary(x => x.Key, x => x.Value);
+                    })
+                    .OrderBy(x => x.Key)
+                    .ToDictionary(x => x.Key, x => x.Value);
 
                 return Success<IDictionary<string, string>>(dictionary);
             }
