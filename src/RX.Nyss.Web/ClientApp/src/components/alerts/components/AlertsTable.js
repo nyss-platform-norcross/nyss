@@ -38,7 +38,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover onClick={() => goToAssessment(projectId, row.id)} className={styles.clickableRow}>
-              <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
+              <TableCell>{dayjs(row.createdAt).format('YYYY-MM-DD HH:mm')}</TableCell>
               <TableCell>{row.healthRisk}</TableCell>
               <TableCell>{row.reportCount}</TableCell>
               <TableCell>{row.lastReportVillage}</TableCell>
