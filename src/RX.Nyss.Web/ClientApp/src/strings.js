@@ -8,6 +8,11 @@ let showKeys = false;
 export const areStringKeysDisplayed = () => showKeys;
 
 export const stringKeys = {
+  error: {
+    responseNotSuccessful: "error.responseNotSuccessful",
+    notAuthenticated: "error.notAuthenticated",
+    unauthorized: "error.unauthorized"
+  },
   login: {
     title: "login.title",
     welcome: "login.welcome",
@@ -222,6 +227,7 @@ export const stringKeys = {
         reportCount: "project.dashboard.map.reportCount",
         title: "project.dashboard.map.title",
         reports: "project.dashboard.map.reports",
+        report: "project.dashboard.map.report",
       }
     },
     settings: "project.settings.title"
@@ -288,6 +294,7 @@ export const stringKeys = {
     },
     messages: {
       creationSuccessful: "nationalSocietyUser.messages.creationSuccessful",
+      roleNotValid: "nationalSocietyUser.messages.roleNotValid"
     }
   },
   dataCollector: {
@@ -497,6 +504,9 @@ export const stringKeys = {
   }
 };
 
+export const extractString = (keyValue, noEditor) =>
+  strings(extractKey(keyValue), noEditor);
+
 export const strings = (key, noEditor) => {
   const value = stringList[key];
 
@@ -522,8 +532,18 @@ export const stringsFormat = (key, data, noEditor) => {
     return key;
   }
 
-  return Object.keys(data || {}).reduce((result, key) => result.replace(`{${key}}`, data[key]), value || "");
+  return Object.keys(data || {}).reduce((result, stringKey) => result.replace(`{${stringKey}}`, data[stringKey]), value || "");
 }
+
+const stringPrefix = "string:";
+
+export const stringKey = (key) =>
+  `${stringPrefix}${key}`;
+
+export const extractKey = (key) =>
+  (key && key.substr(0, stringPrefix.length) === stringPrefix)
+    ? key.substring(stringPrefix.length)
+    : key
 
 export function updateStrings(strings) {
   Object.assign(stringList, strings);

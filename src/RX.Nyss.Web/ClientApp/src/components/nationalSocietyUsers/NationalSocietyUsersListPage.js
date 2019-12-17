@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import AddIcon from '@material-ui/icons/Add';

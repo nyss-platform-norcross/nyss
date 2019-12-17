@@ -16,7 +16,7 @@ import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
-import { Tooltip } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import { accessMap } from '../../authentication/accessMap';
 
 export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, setAsHeadManager, isSettingAsHead, user }) => {

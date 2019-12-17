@@ -4,7 +4,7 @@ import * as actions from "./projectsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
-import { strings, stringKeys } from "../../../strings";
+import { stringKeys } from "../../../strings";
 
 export const projectsSagas = () => [
   takeEvery(consts.OPEN_PROJECTS_LIST.INVOKE, openProjectsList),
@@ -58,7 +58,7 @@ function* createProject({ nationalSocietyId, data }) {
     const response = yield call(http.post, `/api/project/add?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
-    yield put(appActions.showMessage(strings(stringKeys.project.create.success)));
+    yield put(appActions.showMessage(stringKeys.project.create.success));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }

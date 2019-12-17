@@ -3,7 +3,7 @@ import * as consts from "./healthRisksConstants";
 import * as actions from "./healthRisksActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
-import { strings, stringKeys } from "../../../strings";
+import { stringKeys } from "../../../strings";
 
 export const healthRisksSagas = () => [
   takeEvery(consts.GET_HEALTH_RISKS.INVOKE, getHealthRisks),
@@ -52,7 +52,7 @@ function* createHealthRisk({ data }) {
     http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList());
-    yield put(appActions.showMessage(strings(stringKeys.healthRisk.create.success)));
+    yield put(appActions.showMessage(stringKeys.healthRisk.create.success));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -77,7 +77,6 @@ function* removeHealthRisk({ id }) {
     yield put(actions.remove.success(id));
     yield call(getHealthRisks, true);
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.remove.failure(id, error.message));
   }
 };

@@ -4,7 +4,7 @@ import * as authActions from "../authentication/authActions";
 import * as appActions from "../components/app/logic/appActions";
 import * as http from "../utils/http";
 import * as auth from "./auth";
-import { strings, stringKeys } from "../strings";
+import { stringKeys, stringKey } from "../strings";
 
 export const authSagas = () => [
   takeEvery(consts.LOGIN.INVOKE, login),
@@ -20,7 +20,7 @@ function* login({ userName, password, redirectUrl }) {
     const data = yield call(http.post, "/api/authentication/login", { userName, password }, true);
 
     if (!data.isSuccess) {
-      throw new Error(strings(data.message.key));
+      throw new Error(stringKey(data.message.key));
     }
 
     yield put(authActions.login.success());
@@ -62,7 +62,7 @@ function* resetPassword({ email }) {
   try {
     yield call(http.post, "/api/userverification/resetPassword", { email }, true);
     yield put(authActions.resetPassword.success());
-    yield put(appActions.showMessage(strings(stringKeys.user.resetPassword.emailSent)));
+    yield put(appActions.showMessage(stringKeys.user.resetPassword.emailSent));
   } catch (error) {
     yield put(authActions.resetPassword.failure(error.message));
   }

@@ -11,8 +11,8 @@ import styles from './ResetPasswordPage.module.scss';
 import { strings, stringKeys } from '../../strings';
 import { createForm, validators } from '../../utils/forms';
 import * as authActions from '../../authentication/authActions';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Grid from '@material-ui/core/Grid';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 class ResetPasswordPageComponent extends PureComponent {
   constructor(props) {
@@ -48,11 +48,7 @@ class ResetPasswordPageComponent extends PureComponent {
           <div className={styles.loginPaperContent}>
             <Typography variant="h2">{strings(stringKeys.user.resetPassword.enterEmail)}</Typography>
 
-            {this.props.resetPasswordErrorMessage &&
-              <SnackbarContent
-                message={this.props.resetPasswordErrorMessage}
-              />
-            }
+            {this.props.resetPasswordErrorMessage && <ValidationMessage message={this.props.resetPasswordErrorMessage} />}
 
             <form onSubmit={this.handleSubmit}>
               <Grid container spacing={3}>

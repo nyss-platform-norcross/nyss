@@ -8,9 +8,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
@@ -18,6 +16,7 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from '../../strings';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const NationalSocietiesEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -70,13 +69,9 @@ const NationalSocietiesEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      <Form onSubmit={handleSubmit}>
-        {props.loginResponse &&
-          <SnackbarContent
-            message={props.loginResponse}
-          />
-        }
+      {props.error && <ValidationMessage message={props.error} />}
 
+      <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <TextInputField
@@ -134,6 +129,7 @@ NationalSocietiesEditPageComponent.propTypes = {
 const mapStateToProps = state => ({
   contentLanguages: state.appData.contentLanguages,
   countries: state.appData.countries,
+  error: state.nationalSocieties.formError,
   isFetching: state.nationalSocieties.formFetching,
   isSaving: state.nationalSocieties.formSaving,
   data: state.nationalSocieties.formData

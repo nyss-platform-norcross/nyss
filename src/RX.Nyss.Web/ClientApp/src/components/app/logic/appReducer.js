@@ -8,8 +8,7 @@ export function appReducer(state = initialState.appData, action) {
       return {
         ...state,
         moduleError: null,
-        message: null,
-        messageStringKey: null,
+        messageKey: null,
         messageTime: null
       };
 
@@ -102,23 +101,14 @@ export function appReducer(state = initialState.appData, action) {
     case actions.SHOW_MESSAGE.INVOKE:
       return {
         ...state,
-        message: action.message,
-        messageStringKey: null
-      }
-
-    case actions.SHOW_LOCALIZED_MESSAGE.INVOKE:
-      return {
-        ...state,
-        message: null,
-        messageStringKey: action.stringKey,
+        messageKey: action.messageKey,
         messageTime: action.time
       }
 
     case actions.CLOSE_MESSAGE.INVOKE:
       return {
         ...state,
-        message: null,
-        messageStringKey: null,
+        messageKey: null,
         messageTime: null
       }
 

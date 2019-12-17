@@ -17,14 +17,14 @@ export const create = {
   invoke: (data) => ({ type: CREATE_GLOBAL_COORDINATOR.INVOKE, data }),
   request: () => ({ type: CREATE_GLOBAL_COORDINATOR.REQUEST }),
   success: () => ({ type: CREATE_GLOBAL_COORDINATOR.SUCCESS }),
-  failure: (message) => ({ type: CREATE_GLOBAL_COORDINATOR.FAILURE, message })
+  failure: (message) => ({ type: CREATE_GLOBAL_COORDINATOR.FAILURE, message, suppressPopup: true })
 };
 
 export const edit = {
   invoke: (data) => ({ type: EDIT_GLOBAL_COORDINATOR.INVOKE, data }),
   request: () => ({ type: EDIT_GLOBAL_COORDINATOR.REQUEST }),
   success: () => ({ type: EDIT_GLOBAL_COORDINATOR.SUCCESS }),
-  failure: (message) => ({ type: EDIT_GLOBAL_COORDINATOR.FAILURE, message })
+  failure: (message) => ({ type: EDIT_GLOBAL_COORDINATOR.FAILURE, message, suppressPopup: true })
 };
 
 export const openEdition = {

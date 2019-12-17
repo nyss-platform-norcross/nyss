@@ -11,7 +11,10 @@ import styles from './HeadManagerConsentsPage.module.scss';
 import { strings, stringKeys } from '../../strings';
 import * as headManagerConsentsActions from './logic/headManagerConsentsActions';
 import { useMount } from '../../utils/lifecycle';
-import { Checkbox, FormGroup, FormControlLabel, SnackbarContent } from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const HeadManagerConsentsPageComponent = (props) => {
   const [hasConsented, consent] = useState(false);
@@ -37,8 +40,8 @@ const HeadManagerConsentsPageComponent = (props) => {
         <div className={styles.consentPaperContent}>
           <Typography variant="h2">{strings(stringKeys.headManagerConsents.title)}</Typography>
 
-          {props.consentAsHeadManagerErrorMessage && <SnackbarContent message={props.consentAsHeadManagerErrorMessage} />}
-          {validationMessage && <SnackbarContent message={validationMessage} />}
+          {props.consentAsHeadManagerErrorMessage && <ValidationMessage message={props.consentAsHeadManagerErrorMessage} />}
+          {validationMessage && <ValidationMessage message={validationMessage} />}
 
           <Typography variant="body1">
             {strings(stringKeys.headManagerConsents.consentText)}

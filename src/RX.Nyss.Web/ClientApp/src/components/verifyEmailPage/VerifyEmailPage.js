@@ -11,8 +11,8 @@ import { strings, stringKeys } from '../../strings';
 import { createForm, validators } from '../../utils/forms';
 import PasswordInputField from '../forms/PasswordInputField';
 import * as authActions from '../../authentication/authActions';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import queryString from 'query-string';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 class VerifyEmailPageComponent extends PureComponent {
   constructor(props) {
@@ -53,14 +53,10 @@ class VerifyEmailPageComponent extends PureComponent {
             <Typography variant="h1" className={styles.paperHeader}>{strings(stringKeys.user.verifyEmail.welcome)}</Typography>
             <Typography variant="h2">{strings(stringKeys.user.verifyEmail.setPassword)}</Typography>
 
-            {this.props.verifyEmailErrorMessage &&
-              <SnackbarContent
-                message={this.props.verifyEmailErrorMessage}
-              />
-            }
+            {this.props.verifyEmailErrorMessage && <ValidationMessage message={this.props.verifyEmailErrorMessage} />}
 
             <form onSubmit={this.handleSubmit}>
-              
+
               <PasswordInputField
                 label={strings(stringKeys.user.verifyEmail.password)}
                 name="password"

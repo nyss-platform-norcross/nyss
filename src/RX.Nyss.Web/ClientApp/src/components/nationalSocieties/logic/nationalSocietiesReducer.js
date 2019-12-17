@@ -54,7 +54,7 @@ export function nationalSocietiesReducer(state = initialState.nationalSocieties,
       return { ...state, formSaving: false, listData: [] };
 
     case actions.EDIT_NATIONAL_SOCIETY.FAILURE:
-      return { ...state, formSaving: false };
+      return { ...state, formSaving: false, formError: action.message };
 
     case actions.OPEN_NATIONAL_SOCIETY_DASHBOARD.REQUEST:
       return { ...state, dashboard: { ...state.dashboard, isFetching: true } };

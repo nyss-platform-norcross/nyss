@@ -10,12 +10,12 @@ import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { smsGatewayTypes, smsEagle } from "./logic/smsGatewayTypes";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const SmsGatewaysCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -58,11 +58,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error &&
-        <SnackbarContent
-          message={props.error}
-        />
-      }
+      {props.error && <ValidationMessage message={props.error} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

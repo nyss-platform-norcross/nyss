@@ -9,15 +9,14 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from '../../strings';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const NationalSocietiesCreatePageComponent = (props) => {
   const [form] = useState(() => {
@@ -57,11 +56,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error &&
-        <SnackbarContent
-          message={props.error}
-        />
-      }
+      {props.error && <ValidationMessage message={props.error} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

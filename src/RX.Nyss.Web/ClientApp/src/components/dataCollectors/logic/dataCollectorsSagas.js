@@ -4,7 +4,7 @@ import * as actions from "./dataCollectorsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
-import { strings, stringKeys } from "../../../strings";
+import { stringKeys } from "../../../strings";
 import dayjs from "dayjs";
 
 export const dataCollectorsSagas = () => [
@@ -97,7 +97,7 @@ function* createDataCollector({ projectId, data }) {
     const response = yield call(http.post, `/api/dataCollector/create?projectId=${projectId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(projectId));
-    yield put(appActions.showMessage(strings(stringKeys.nationalSocietyUser.messages.creationSuccessful)));
+    yield put(appActions.showMessage(stringKeys.nationalSocietyUser.messages.creationSuccessful));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -168,11 +168,10 @@ function* setTrainingState({ dataCollectorId, inTraining }) {
     const response = yield call(http.post, `/api/dataCollector/${dataCollectorId}/setTrainingState?isIntraining=${inTraining}`);
     http.ensureResponseIsSuccess(response);
     yield put(actions.setTrainingState.success(dataCollectorId, inTraining));
-    yield put(appActions.showMessage(strings(response.message.key)));
+    yield put(appActions.showMessage(response.message.key));
     const projectId = yield select(state => state.dataCollectors.listProjectId);
     yield call(getDataCollectors, projectId);
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.setTrainingState.failure(dataCollectorId));
   }
 };

@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';

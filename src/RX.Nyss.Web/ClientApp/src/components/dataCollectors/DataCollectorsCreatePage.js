@@ -110,11 +110,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error &&
-        <ValidationMessage
-          message={props.error}
-        />
-      }
+      {props.error && <ValidationMessage message={props.error} />}
 
       <Form onSubmit={handleSubmit} fullWidth>
         <Grid container spacing={3} className={formStyles.shrinked}>

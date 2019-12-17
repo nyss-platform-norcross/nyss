@@ -35,7 +35,7 @@ export const create = {
   invoke: (nationalSocietyId, data) => ({ type: CREATE_SMS_GATEWAY.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: CREATE_SMS_GATEWAY.REQUEST }),
   success: () => ({ type: CREATE_SMS_GATEWAY.SUCCESS }),
-  failure: (message) => ({ type: CREATE_SMS_GATEWAY.FAILURE, message })
+  failure: (message) => ({ type: CREATE_SMS_GATEWAY.FAILURE, message, suppressPopup: true })
 };
 
 export const openEdition = {
@@ -49,7 +49,7 @@ export const edit = {
   invoke: (nationalSocietyId, data) => ({ type: EDIT_SMS_GATEWAY.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: EDIT_SMS_GATEWAY.REQUEST }),
   success: () => ({ type: EDIT_SMS_GATEWAY.SUCCESS }),
-  failure: (message) => ({ type: EDIT_SMS_GATEWAY.FAILURE, message })
+  failure: (message) => ({ type: EDIT_SMS_GATEWAY.FAILURE, message, suppressPopup: true })
 };
 
 export const remove = {

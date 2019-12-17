@@ -4,10 +4,14 @@ import { connect } from "react-redux";
 import Snackbar from "@material-ui/core/Snackbar";
 import Icon from "@material-ui/core/Icon";
 import * as appActions from '../app/logic/appActions';
-import { strings, areStringKeysDisplayed } from '../../strings';
+import { areStringKeysDisplayed, extractString } from '../../strings';
 
-const MessagePopupComponent = ({ message, messageStringKey, messageTime, closeMessage }) => {
-  const messageContent = messageStringKey ? strings(messageStringKey) : message;
+const MessagePopupComponent = ({ messageKey, requestErrorMessageKey, messageTime, closeMessage }) => {
+  const messageContent = requestErrorMessageKey
+    ? extractString(requestErrorMessageKey)
+    : messageKey
+      ? extractString(messageKey)
+      : null;
 
   return (
     <Snackbar
@@ -27,8 +31,8 @@ MessagePopupComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  message: state.appData.message,
-  messageStringKey: state.appData.messageStringKey,
+  requestErrorMessageKey: state.requests.errorMessage,
+  messageKey: state.appData.messageKey,
   messageTime: state.appData.messageTime
 });
 
