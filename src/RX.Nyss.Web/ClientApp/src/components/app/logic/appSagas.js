@@ -24,6 +24,7 @@ function* initApplication() {
     yield call(getAppData);
     yield call(getStrings, user ? user.languageCode : "en");
     yield put(actions.initApplication.success());
+
     if (user && user.hasPendingHeadManagerConsents){
       yield put(actions.goToHeadManagerConsents())
     }

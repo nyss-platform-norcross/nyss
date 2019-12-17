@@ -11,7 +11,10 @@ import { TabMenu } from './TabMenu';
 const pageContentId = "pageContent";
 
 export const resetPageContentScroll = () =>
-  document.getElementById(pageContentId).scrollTo(0, 0)
+{
+  const element = document.getElementById(pageContentId);
+  element && element.scrollTo(0, 0)
+}
 
 export const Layout = ({ fillPage, children }) => (
   <BaseLayout>
