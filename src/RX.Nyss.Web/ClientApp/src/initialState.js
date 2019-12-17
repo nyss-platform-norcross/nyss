@@ -45,7 +45,8 @@ export const initialState = {
     isFetching: false,
     districts: [],
     villages: [],
-    zones: []
+    zones: [],
+    expandedItems: []
   },
   smsGateways: {
     listNationalSocietyId: null,
