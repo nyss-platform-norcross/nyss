@@ -46,11 +46,13 @@ namespace RX.Nyss.Web.Configuration
                 _ =>
                     ResultKey.UnexpectedError
             };
-
+        
         private static string GetDbUpdateExceptionErrorKey(SqlException sqlException) =>
             sqlException.Number switch
             {
                 547 => ResultKey.SqlExceptions.ForeignKeyViolation,
+                2627 => ResultKey.SqlExceptions.DuplicatedValue,
+                2601 => ResultKey.SqlExceptions.DuplicatedValue,
                 _ => ResultKey.SqlExceptions.GeneralError
             };
     }

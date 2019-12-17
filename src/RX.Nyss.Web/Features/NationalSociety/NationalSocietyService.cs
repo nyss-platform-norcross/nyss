@@ -47,226 +47,174 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties(string userEmail, IEnumerable<string> userRoles)
         {
-            try
-            {
-                var nationalSocietiesQuery = _nyssContext.NationalSocieties
-                    .Include(x => x.HeadManager)
-                    .Include(x => x.PendingHeadManager)
-                    .Select(n => new NationalSocietyListResponseDto
-                    {
-                        Id = n.Id,
-                        ContentLanguage = n.ContentLanguage.DisplayName,
-                        Name = n.Name,
-                        Country = n.Country.Name,
-                        StartDate = n.StartDate,
-                        HeadManagerName = n.HeadManager.Name,
-                        PendingHeadManagerName = n.PendingHeadManager.Name
-                    });
-
-                if (!_userService.HasAccessToAllNationalSocieties(userRoles))
+            var nationalSocietiesQuery = _nyssContext.NationalSocieties
+                .Include(x => x.HeadManager)
+                .Include(x => x.PendingHeadManager)
+                .Select(n => new NationalSocietyListResponseDto
                 {
-                    var availableNationalSocieties = await _userService.GetUserNationalSocietyIds(userEmail);
-                    nationalSocietiesQuery = nationalSocietiesQuery.Where(ns => availableNationalSocieties.Contains(ns.Id));
-                }
+                    Id = n.Id,
+                    ContentLanguage = n.ContentLanguage.DisplayName,
+                    Name = n.Name,
+                    Country = n.Country.Name,
+                    StartDate = n.StartDate,
+                    HeadManagerName = n.HeadManager.Name,
+                    PendingHeadManagerName = n.PendingHeadManager.Name
+                });
 
-                var list = await nationalSocietiesQuery
-                    .OrderBy(n => n.Name)
-                    .ToListAsync();
-
-                return Success(list);
-            }
-            catch (Exception e)
+            if (!_userService.HasAccessToAllNationalSocieties(userRoles))
             {
-                _loggerAdapter.Debug(e);
-                return HandleException(e).Cast<List<NationalSocietyListResponseDto>>();
+                var availableNationalSocieties = await _userService.GetUserNationalSocietyIds(userEmail);
+                nationalSocietiesQuery = nationalSocietiesQuery.Where(ns => availableNationalSocieties.Contains(ns.Id));
             }
+
+            var list = await nationalSocietiesQuery
+                .OrderBy(n => n.Name)
+                .ToListAsync();
+
+            return Success(list);
         }
 
         public async Task<Result<NationalSocietyResponseDto>> GetNationalSociety(int id)
         {
-            try
-            {
-                var nationalSociety = await _nyssContext.NationalSocieties
-                    .Select(n => new NationalSocietyResponseDto
-                    {
-                        Id = n.Id,
-                        ContentLanguageId = n.ContentLanguage.Id,
-                        ContentLanguageName = n.ContentLanguage.DisplayName,
-                        Name = n.Name,
-                        CountryId = n.Country.Id,
-                        CountryName = n.Country.Name
-                    })
-                    .FirstOrDefaultAsync(n => n.Id == id);
-
-                if (nationalSociety == null)
+            var nationalSociety = await _nyssContext.NationalSocieties
+                .Select(n => new NationalSocietyResponseDto
                 {
-                    return Error<NationalSocietyResponseDto>(ResultKey.NationalSociety.NotFound);
-                }
+                    Id = n.Id,
+                    ContentLanguageId = n.ContentLanguage.Id,
+                    ContentLanguageName = n.ContentLanguage.DisplayName,
+                    Name = n.Name,
+                    CountryId = n.Country.Id,
+                    CountryName = n.Country.Name
+                })
+                .FirstOrDefaultAsync(n => n.Id == id);
 
-                return Success(nationalSociety);
-            }
-            catch (Exception e)
+            if (nationalSociety == null)
             {
-                _loggerAdapter.Debug(e);
-                return HandleException(e).Cast<NationalSocietyResponseDto>();
+                return Error<NationalSocietyResponseDto>(ResultKey.NationalSociety.NotFound);
             }
+
+            return Success(nationalSociety);
         }
 
         public async Task<Result<int>> CreateNationalSociety(CreateNationalSocietyRequestDto dto)
         {
-            try
+            if (_nyssContext.NationalSocieties.Any(ns => ns.Name.ToLower() == dto.Name.ToLower()))
             {
-                if (_nyssContext.NationalSocieties.Any(ns => ns.Name.ToLower() == dto.Name.ToLower()))
-                {
-                    return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
-                }
-
-                var nationalSociety = new Nyss.Data.Models.NationalSociety
-                {
-                    Name = dto.Name,
-                    ContentLanguage = await GetLanguageById(dto.ContentLanguageId),
-                    Country = await GetCountryById(dto.CountryId),
-                    IsArchived = false,
-                    StartDate = DateTime.UtcNow
-                };
-
-                if (nationalSociety.ContentLanguage == null)
-                {
-                    return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotFound);
-                }
-
-                if (nationalSociety.Country == null)
-                {
-                    return Error<int>(ResultKey.NationalSociety.Creation.CountryNotFound);
-                }
-
-                var entity = await _nyssContext.AddAsync(nationalSociety);
-                await _nyssContext.SaveChangesAsync();
-                _loggerAdapter.Info($"A national society {nationalSociety} was created");
-                return Success(entity.Entity.Id, ResultKey.NationalSociety.Creation.Success);
+                return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
             }
-            catch (Exception e)
+
+            var nationalSociety = new Nyss.Data.Models.NationalSociety
             {
-                _loggerAdapter.Debug(e);
-                return HandleException(e).Cast<int>();
+                Name = dto.Name,
+                ContentLanguage = await GetLanguageById(dto.ContentLanguageId),
+                Country = await GetCountryById(dto.CountryId),
+                IsArchived = false,
+                StartDate = DateTime.UtcNow
+            };
+
+            if (nationalSociety.ContentLanguage == null)
+            {
+                return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotFound);
             }
+
+            if (nationalSociety.Country == null)
+            {
+                return Error<int>(ResultKey.NationalSociety.Creation.CountryNotFound);
+            }
+
+            var entity = await _nyssContext.AddAsync(nationalSociety);
+            await _nyssContext.SaveChangesAsync();
+            _loggerAdapter.Info($"A national society {nationalSociety} was created");
+            return Success(entity.Entity.Id, ResultKey.NationalSociety.Creation.Success);
         }
 
         public async Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto dto)
         {
-            try
+            if (_nyssContext.NationalSocieties.Any(ns => ns.Id != nationalSocietyId && ns.Name.ToLower() == dto.Name.ToLower()))
             {
-                if (_nyssContext.NationalSocieties.Any(ns => ns.Id != nationalSocietyId && ns.Name.ToLower() == dto.Name.ToLower()))
-                {
-                    return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
-                }
-
-                var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
-
-                nationalSociety.Name = dto.Name;
-                nationalSociety.ContentLanguage = await GetLanguageById(dto.ContentLanguageId);
-                nationalSociety.Country = await GetCountryById(dto.CountryId);
-
-                await _nyssContext.SaveChangesAsync();
-
-                return SuccessMessage(ResultKey.NationalSociety.Edit.Success);
+                return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
             }
-            catch (Exception e)
-            {
-                return HandleException(e);
-            }
+
+            var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
+
+            nationalSociety.Name = dto.Name;
+            nationalSociety.ContentLanguage = await GetLanguageById(dto.ContentLanguageId);
+            nationalSociety.Country = await GetCountryById(dto.CountryId);
+
+            await _nyssContext.SaveChangesAsync();
+
+            return SuccessMessage(ResultKey.NationalSociety.Edit.Success);
         }
 
         public async Task<Result> RemoveNationalSociety(int id)
         {
-            try
-            {
-                var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(id);
-                _nyssContext.NationalSocieties.Remove(nationalSociety);
-                await _nyssContext.SaveChangesAsync();
-                return SuccessMessage(ResultKey.NationalSociety.Remove.Success);
-            }
-            catch (Exception e)
-            {
-                return HandleException(e);
-            }
+            var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(id);
+            _nyssContext.NationalSocieties.Remove(nationalSociety);
+            await _nyssContext.SaveChangesAsync();
+            return SuccessMessage(ResultKey.NationalSociety.Remove.Success);
         }
 
         public async Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId)
         {
-            try
+            var ns = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
+            var user = await _nyssContext.Users.Include(u => u.UserNationalSocieties).FirstOrDefaultAsync(u => u.Id == userId);
+            
+            if (ns.NationalSocietyUsers.Count == 0 || ns.NationalSocietyUsers.All(x => x.UserId != userId))
             {
-                var ns = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
-                var user = await _nyssContext.Users.Include(u => u.UserNationalSocieties).FirstOrDefaultAsync(u => u.Id == userId);
-                
-                if (ns.NationalSocietyUsers.Count == 0 || ns.NationalSocietyUsers.All(x => x.UserId != userId))
-                {
-                    return Error(ResultKey.NationalSociety.SetHead.NotAMemberOfSociety);
-                }
-
-                if (!(user is ManagerUser || user is TechnicalAdvisorUser))
-                {
-                    return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
-                }
-
-                ns.PendingHeadManager = user;
-                await _nyssContext.SaveChangesAsync();
-
-                return Success();
+                return Error(ResultKey.NationalSociety.SetHead.NotAMemberOfSociety);
             }
-            catch (Exception e)
+
+            if (!(user is ManagerUser || user is TechnicalAdvisorUser))
             {
-                return HandleException(e);
+                return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
             }
+
+            ns.PendingHeadManager = user;
+            await _nyssContext.SaveChangesAsync();
+
+            return Success();
         }
 
         public async Task<Result> SetAsHeadManager(string identityUserName)
         {
-            try
+            var user = await _nyssContext.Users
+                .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
+
+            if (user == null)
             {
-                var user = await _nyssContext.Users
-                    .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
-
-                if (user == null)
-                {
-                    return Error(ResultKey.User.Common.UserNotFound);
-                }
-
-                if (!(user is ManagerUser || user is TechnicalAdvisorUser))
-                {
-                    return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
-                }
-
-                var pendingSocieties = _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager.Id == user.Id);
-                var utcNow = DateTime.UtcNow;
-
-                // Set until date for the previous consent
-                await _nyssContext.HeadManagerConsents
-                    .Where(x => pendingSocieties.Select(y => y.Id).Contains(x.NationalSocietyId) && x.ConsentedUntil == null)
-                    .ForEachAsync(x => x.ConsentedUntil = utcNow);
-
-                foreach (var nationalSociety in pendingSocieties)
-                {
-                    nationalSociety.PendingHeadManager = null;
-                    nationalSociety.HeadManager = user;
-
-                    await _nyssContext.HeadManagerConsents.AddAsync(new HeadManagerConsent
-                    {
-                        ConsentedFrom = utcNow,
-                        NationalSocietyId = nationalSociety.Id,
-                        UserEmailAddress = user.EmailAddress,
-                        UserPhoneNumber = user.PhoneNumber
-                    });
-                }
-
-                await _nyssContext.SaveChangesAsync();
-
-                return Success();
+                return Error(ResultKey.User.Common.UserNotFound);
             }
-            catch (Exception e)
+
+            if (!(user is ManagerUser || user is TechnicalAdvisorUser))
             {
-                return HandleException(e);
+                return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
             }
+
+            var pendingSocieties = _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager.Id == user.Id);
+            var utcNow = DateTime.UtcNow;
+
+            // Set until date for the previous consent
+            await _nyssContext.HeadManagerConsents
+                .Where(x => pendingSocieties.Select(y => y.Id).Contains(x.NationalSocietyId) && x.ConsentedUntil == null)
+                .ForEachAsync(x => x.ConsentedUntil = utcNow);
+
+            foreach (var nationalSociety in pendingSocieties)
+            {
+                nationalSociety.PendingHeadManager = null;
+                nationalSociety.HeadManager = user;
+
+                await _nyssContext.HeadManagerConsents.AddAsync(new HeadManagerConsent
+                {
+                    ConsentedFrom = utcNow,
+                    NationalSocietyId = nationalSociety.Id,
+                    UserEmailAddress = user.EmailAddress,
+                    UserPhoneNumber = user.PhoneNumber
+                });
+            }
+
+            await _nyssContext.SaveChangesAsync();
+
+            return Success();
         }
 
         public async Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents(string identityUserName)
@@ -319,18 +267,5 @@ namespace RX.Nyss.Web.Features.NationalSociety
 
         public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
             roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));
-
-        private Result HandleException(Exception e)
-        {
-            if (e.InnerException is SqlException sqlException)
-            {
-                if (sqlException.Number == 2627 || sqlException.Number == 2601) // national society name already exists
-                {
-                    return Error(ResultKey.NationalSociety.Creation.NameAlreadyExists);
-                }
-            }
-
-            return Error(ResultKey.UnexpectedError);
-        }
     }
 }
