@@ -165,7 +165,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 var reportsInLabelWithNoActiveAlert = await _nyssContext.Reports
                     .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
                     .Where(r => r.ReportGroupLabel == reportGroupLabel)
-                    .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated))
+                    .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated)
+                              || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore) )
                     .ToListAsync();
 
                 await AddReportsToAlert(existingActiveAlertForLabel, reportsInLabelWithNoActiveAlert);
