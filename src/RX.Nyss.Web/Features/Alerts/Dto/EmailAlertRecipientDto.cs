@@ -2,13 +2,13 @@
 
 namespace RX.Nyss.Web.Features.Alerts.Dto
 {
-    public class AlertRecipientDto
+    public class EmailAlertRecipientDto
     {
         public int? Id { get; set; }
 
         public string Email { get; set; }
 
-        public class Validator : AbstractValidator<AlertRecipientDto>
+        public class Validator : AbstractValidator<EmailAlertRecipientDto>
         {
             public Validator()
             {

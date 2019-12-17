@@ -118,7 +118,7 @@ namespace RX.Nyss.Web.Features.Alerts
                         ReportedCase = ar.Report.ReportedCase,
                         Status = ar.Report.Status
                     }),
-                    NotificationEmails = a.ProjectHealthRisk.Project.AlertRecipients.Select(ar => ar.EmailAddress).ToList()
+                    NotificationEmails = a.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList()
                 })
                 .AsNoTracking()
                 .SingleAsync();
@@ -167,7 +167,7 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Single(),
                     Project = alert.ProjectHealthRisk.Project.Name,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationEmails = alert.ProjectHealthRisk.Project.AlertRecipients.Select(ar => ar.EmailAddress).ToList(),
+                    NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
                     AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted)
                 })
@@ -200,7 +200,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     Alert = alert,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationEmails = alert.ProjectHealthRisk.Project.AlertRecipients.Select(ar => ar.EmailAddress).ToList(),
+                    NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
                     MaximumAcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted || r.Report.Status == ReportStatus.Pending)
                 })
@@ -231,7 +231,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     Alert = alert,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationEmails = alert.ProjectHealthRisk.Project.AlertRecipients.Select(ar => ar.EmailAddress).ToList(),
+                    NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
                     MaximumAcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted || r.Report.Status == ReportStatus.Pending)
                 })

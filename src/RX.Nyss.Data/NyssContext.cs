@@ -16,7 +16,9 @@ namespace RX.Nyss.Data
 
         public DbSet<AlertEvent> AlertEvents { get; set; }
 
-        public DbSet<AlertRecipient> AlertRecipients { get; set; }
+        public DbSet<EmailAlertRecipient> EmailAlertRecipients { get; set; }
+
+        public DbSet<SmsAlertRecipient> SmsAlertRecipients { get; set; }
 
         public DbSet<AlertReport> AlertReports { get; set; }
 

@@ -38,8 +38,8 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
                 RuleFor(dc => dc.DisplayName).NotEmpty().MaximumLength(100);
                 RuleFor(dc => dc.Sex).IsInEnum();
                 RuleFor(dc => dc.BirthGroupDecade).GreaterThan(0).Must(x => x % 10 == 0);
-                RuleFor(dc => dc.PhoneNumber).NotEmpty().MaximumLength(50);
-                RuleFor(dc => dc.AdditionalPhoneNumber).MaximumLength(50);
+                RuleFor(dc => dc.PhoneNumber).NotEmpty().MaximumLength(20);
+                RuleFor(dc => dc.AdditionalPhoneNumber).MaximumLength(20);
                 RuleFor(dc => dc.Latitude).InclusiveBetween(-90, 90);
                 RuleFor(dc => dc.Longitude).InclusiveBetween(-180, 180);
                 RuleFor(dc => dc.VillageId).GreaterThan(0);

@@ -35,7 +35,7 @@ export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remo
             <TableCell>{strings(stringKeys.healthRisk.constants.healthRiskType[row.healthRiskType.toLowerCase()])}</TableCell>
             <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
               <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.healthRisk.list.confirmationText)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.healthRisk.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
             </TableCell>
           </TableRow>
         ))}
