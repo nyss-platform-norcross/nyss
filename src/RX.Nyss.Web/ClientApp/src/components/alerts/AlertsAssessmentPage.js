@@ -27,6 +27,8 @@ const getAssessmentStatusInformation = (status) => {
       return stringKeys.alerts.assess.statusDescription.escalated;
     case assessmentStatus.dismissed:
       return stringKeys.alerts.assess.statusDescription.dismissed;
+    case assessmentStatus.rejected:
+      return stringKeys.alerts.assess.statusDescription.rejected;
     default:
       throw new Error("Wrong status")
   }

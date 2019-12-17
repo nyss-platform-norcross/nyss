@@ -386,6 +386,7 @@ export const stringKeys = {
         closed: "alerts.assess.statusDescription.closed",
         escalated: "alerts.assess.statusDescription.escalated",
         dismissed: "alerts.assess.statusDescription.dismissed",
+        rejected: "alerts.assess.statusDescription.rejected"
       },
       alert: {
         close: "alerts.assess.alert.close",
