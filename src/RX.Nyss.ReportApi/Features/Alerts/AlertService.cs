@@ -169,6 +169,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                               || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore) )
                     .ToListAsync();
 
+
+                
                 await AddReportsToAlert(existingActiveAlertForLabel, reportsInLabelWithNoActiveAlert);
             }
 
@@ -247,8 +249,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
 
             //ToDo: get this from blob storage instead of hardcoded text
-            var smsTemplateEn = "An alert for {{healthRisk/event}} has been triggered by one of your DC. Last report sent from {{village}}. Please check alert list and cross-check alert: {{linkToAlert}}.";
-            var smsTemplateFr = "Une alerte pour {{healthRisk/event}} a été déclenchée par l'un de vos DC. Dernier rapport envoyé par {{village}}. Veuillez vérifier la liste des alertes et recouper l'alerte: {{linkToAlert}}.";
+            var smsTemplateEn = "An alert for {{healthRisk/event}} has been triggered by one of your DC. Last report sent from {{village}}. Please check alert list and cross-check alert: {{linkToAlert}}";
+            var smsTemplateFr = "Une alerte pour {{healthRisk/event}} a été déclenchée par l'un de vos DC. Dernier rapport envoyé par {{village}}. Veuillez vérifier la liste des alertes et recouper l'alerte: {{linkToAlert}}";
             var smsTemplate = alertData.LanguageCode.ToLower() == "en"
                 ? smsTemplateEn
                 : smsTemplateFr;
