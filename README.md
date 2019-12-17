@@ -8,10 +8,11 @@ Nyss is a Norwegian word and means to "get the wind of something". The first Nor
 
 ### Prerequisites
 
-* [.NET Core Installer - SDK 3.0.100](https://dotnet.microsoft.com/download/dotnet-core/3.0)
+* [.NET Core Installer - SDK 3.1.100](https://dotnet.microsoft.com/download/dotnet-core/3.1)
 * [Visual Studio 2019](https://visualstudio.microsoft.com/pl/downloads/)
 * [Visual Studio Code](https://code.visualstudio.com/Download)
 * [Microsoft Azure Storage Explorer](https://azure.microsoft.com/pl-pl/features/storage-explorer/)
+* ...or if you are using mac/linux: [Azurite](https://github.com/azure/azurite)
 
 ### Recommended plugins and extensions
 
