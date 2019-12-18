@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,5 +47,19 @@ namespace RX.Nyss.Web.Features.AppData
                 $"{nameof(GetStrings)}.{languageCode}",
                 TimeSpan.FromMinutes(5),
                 () => _stringsResourcesService.GetStringsResources(languageCode));
+
+        [HttpGet("version")]
+        public async Task<ActionResult> GetVersion()
+        {
+            var assemblyName = Assembly.GetExecutingAssembly().GetName();
+            var version = assemblyName.Version;
+
+            return Ok(new
+            {
+                assemblyName.Name,
+                Version = $"{version.Major}.{version.Minor}.{version.Build}",
+                Framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
+            });
+        }
     }
 }
