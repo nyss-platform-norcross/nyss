@@ -1,4 +1,4 @@
-import { call, put, takeEvery, select, delay } from "redux-saga/effects";
+import { call, put, takeEvery, takeLatest, select, delay } from "redux-saga/effects";
 import * as consts from "./appConstans";
 import * as actions from "./appActions";
 import { updateStrings, toggleStringsMode } from "../../../strings";
@@ -7,12 +7,14 @@ import { push } from "connected-react-router";
 import { placeholders } from "../../../siteMapPlaceholders";
 import { getBreadcrumb, getMenu } from "../../../utils/siteMapService";
 import * as cache from "../../../utils/cache";
+import { reloadPage } from "../../../utils/page";
 
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
   takeEvery(consts.OPEN_MODULE.INVOKE, openModule),
   takeEvery(consts.ENTITY_UPDATED, entityUpdated),
   takeEvery(consts.SWITCH_STRINGS, switchStrings),
+  takeLatest("*", checkLogin)
 ];
 
 function* initApplication() {
@@ -29,6 +31,18 @@ function* initApplication() {
     yield put(actions.initApplication.failure(error.message));
   }
 };
+
+function* checkLogin() {
+  const authCookieExpiration = yield select(state => state.appData.authCookieExpiration);
+
+  if (!authCookieExpiration)
+  {
+    return;
+  }
+
+  yield delay((authCookieExpiration + 1) * 60 * 1000);
+  reloadPage();
+}
 
 function* switchStrings() {
   yield put(actions.setAppReady(false));
