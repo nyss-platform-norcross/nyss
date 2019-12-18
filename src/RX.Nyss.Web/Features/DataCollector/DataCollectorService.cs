@@ -412,7 +412,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 : _nyssContext.DataCollectors;
 
             var result = await dataCollectors
-                .Where(dc => dc.Location.X == lng && dc.Location.Y == lat)
+                .Where(dc => dc.Location.X == lng && dc.Location.Y == lat && dc.Name != Anonymization.Text && dc.DeletedAt == null)
                 .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
                 {
