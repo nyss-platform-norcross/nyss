@@ -44,7 +44,8 @@ namespace RX.Nyss.Web.Features.AppData
                             Name = cl.DisplayName
                         })
                         .ToListAsync(),
-                IsDevelopment = !_config.IsProduction ? true : (bool?)null
+                IsDevelopment = !_config.IsProduction ? true : (bool?)null,
+                AuthCookieExpiration = _config.Authentication.CookieExpirationTime
             });
     }
 }

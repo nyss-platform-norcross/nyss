@@ -39,11 +39,8 @@ namespace RX.Nyss.Web.Features.Authentication
         {
             try
             {
-                var user = await _userIdentityService.Login(dto.UserName, dto.Password);
-                var roles = await GetRoles(user);
-                var additionalClaims = await GetAdditionalClaims(user);
-                var accessToken = _userIdentityService.CreateToken(user.UserName, roles, additionalClaims);
-                return Success(new LoginResponseDto { AccessToken = accessToken });
+                await _userIdentityService.Login(dto.UserName, dto.Password);
+                return Success(new LoginResponseDto());
             }
             catch (ResultException exception)
             {
@@ -51,7 +48,18 @@ namespace RX.Nyss.Web.Features.Authentication
             }
         }
 
-        public async Task<Result<StatusResponseDto>> GetStatus(ClaimsPrincipal user)
+        public async Task<Result<StatusResponseDto>> GetStatus(ClaimsPrincipal user) =>
+            user.Identity.IsAuthenticated ?
+                await GetAuthenticatedStatus(user) :
+                GetAnonymousStatus();
+
+        private static Result<StatusResponseDto> GetAnonymousStatus() =>
+            Success(new StatusResponseDto
+            {
+                IsAuthenticated = false,
+            });
+
+        private async Task<Result<StatusResponseDto>> GetAuthenticatedStatus(ClaimsPrincipal user)
         {
             var email = user.FindFirstValue(ClaimTypes.Name);
 
@@ -64,7 +72,6 @@ namespace RX.Nyss.Web.Features.Authentication
                 return Error<StatusResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
-            
             var hasPendingHeadManagerConsents = await _nyssContext.NationalSocieties
                 .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId).AnyAsync();
 
