@@ -43,13 +43,14 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             var reportsInRange = await FindReportsSatisfyingRangeAndTimeRequirements(addedReport, projectHealthRisk);
 
-            var reportLabelsExistingInRange = reportsInRange.Select(r => r.ReportGroupLabel).Where(x => x != default).Distinct().ToList();
+            var reportLabelsExistingInRange = reportsInRange.Select(r => r.ReportGroupLabel)
+                .Distinct().ToList();
 
             var labelForNewConnectedArea = reportLabelsExistingInRange.Any()
                 ? reportLabelsExistingInRange.FirstOrDefault()
                 : Guid.NewGuid();
 
-            if (reportLabelsExistingInRange.Count() > 1)
+            if (reportLabelsExistingInRange.Count() >= 2)
             {
                 var labelsPlaceholderTemplate = CreateSequenceOfParameterPlaceholders(1, reportLabelsExistingInRange.Count());
 
@@ -69,6 +70,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(r => !r.IsTraining)
                 .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
                 .Where(r => r.Id != report.Id)
+                .Where(r => r.ReportGroupLabel != default)
                 .Where(r => r.Location.Distance(report.Location) < searchRadiusInMeters);
 
             if (projectHealthRisk.AlertRule.DaysThreshold.HasValue)
