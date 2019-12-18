@@ -161,13 +161,15 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     Alert = alert,
                     LastReportVillage = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.Village.Name,
+                    LastReportGateway = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.RawReport.ApiKey,
                     HealthRisk = alert.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
                         .Single(),
                     Project = alert.ProjectHealthRisk.Project.Name,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList(),
+                    NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ear => ear.EmailAddress).ToList(),
+                    NotifiactionSmses = alert.ProjectHealthRisk.Project.SmsAlertRecipients.Select(sar => sar.PhoneNumber).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
                     AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted)
                 })
@@ -184,7 +186,7 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-            await SendNotificationSmses(alertData.LanguageCode, new List<string>());
+            await SendNotificationSmses(alertData.Alert.Id, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotifiactionSmses, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
 
             alertData.Alert.Status = AlertStatus.Escalated;
             await _nyssContext.SaveChangesAsync();
@@ -346,10 +348,22 @@ namespace RX.Nyss.Web.Features.Alerts
             }
         }
 
-        private Task SendNotificationSmses(string languageCode, List<string> notificationPhoneNumbers)
+        private async Task SendNotificationSmses(int alertId, string lastReportApiKey, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk, string lastReportVillage)
         {
-            // TODO
-            return Task.CompletedTask;
+            var lastUsedGatewaySettings = await _nyssContext.GatewaySettings.Where(gs => gs.ApiKey == lastReportApiKey).FirstOrDefaultAsync();
+            var gatewayEmail = lastUsedGatewaySettings?.EmailAddress ??
+                (await _nyssContext.GatewaySettings.Where(gs => gs.NationalSocietyId == alertId).FirstAsync()).EmailAddress;
+
+            var text = "An alert of {healthRisk} has been escalated in project {project}. Last report is from {lastReportVillage}. Please follow up with relevant supervisor.";
+            text = text
+                .Replace("{project}", project)
+                .Replace("{healthRisk}", healthRisk)
+                .Replace("{lastReportVillage}", lastReportVillage);
+
+            foreach (var sms in notificationPhoneNumbers)
+            {
+                await _emailPublisherService.SendEmail((gatewayEmail, "Miss Eagle"), sms, text);
+            }
         }
     }
 }

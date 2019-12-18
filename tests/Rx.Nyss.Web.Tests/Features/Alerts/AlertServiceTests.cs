@@ -254,6 +254,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                         EmailAddress = "aaa@aaa.com"
                                     }
                                 },
+                                SmsAlertRecipients = new List<SmsAlertRecipient>
+                                {
+                                    new SmsAlertRecipient
+                                    {
+                                        PhoneNumber = "+12345678"
+                                    }
+                                },
                                 NationalSociety = new NationalSociety
                                 {
                                     ContentLanguage = new ContentLanguage
