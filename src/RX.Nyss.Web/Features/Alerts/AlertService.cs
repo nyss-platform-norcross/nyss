@@ -80,6 +80,7 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Select(lc => lc.Name)
                         .Single()
                 })
+                .OrderByDescending(a => a.CreatedAt)
                 .Page(pageNumber, rowsPerPage)
                 .AsNoTracking()
                 .ToListAsync();
