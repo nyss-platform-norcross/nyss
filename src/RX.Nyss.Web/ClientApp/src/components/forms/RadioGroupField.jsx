@@ -16,7 +16,6 @@ const RadioGroupInput = ({ error, name, value, horizontal, children, controlProp
               value={value}
               className={horizontal ? styles.horizontal : null}
               {...controlProps}
-              {...customProps}
           >
               {children}
           </RadioGroup>
@@ -26,7 +25,6 @@ const RadioGroupInput = ({ error, name, value, horizontal, children, controlProp
 };
 
 RadioGroupInput.propTypes = {
-    label: PropTypes.string,
     controlProps: PropTypes.object,
     value: PropTypes.string,
     horizontal: PropTypes.bool,
