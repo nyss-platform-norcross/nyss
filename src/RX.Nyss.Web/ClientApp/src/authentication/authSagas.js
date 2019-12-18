@@ -23,7 +23,6 @@ function* login({ userName, password, redirectUrl }) {
       throw new Error(strings(data.message.key));
     }
 
-    auth.setAccessToken(data.value.accessToken)
     yield put(authActions.login.success());
 
     if (redirectUrl) {
@@ -40,7 +39,6 @@ function* logout() {
   yield put(authActions.logout.request());
   try {
     yield call(http.post, "/api/authentication/logout");
-    auth.removeAccessToken();
     yield put(authActions.logout.success());
     auth.redirectToLogin();
   } catch (error) {

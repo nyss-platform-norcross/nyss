@@ -1,6 +1,6 @@
-import { getOrRenewToken } from "../authentication/auth";
 import { strings } from "../strings";
 import * as cache from "./cache";
+import { reloadPage } from "./page";
 
 export const post = (path, data, anonymous) => {
   const headers = {
@@ -37,24 +37,18 @@ export const ensureResponseIsSuccess = (response, message) => {
 
 const callApi = (path, method, data, headers = {}, authenticate = false) => {
   return new Promise((resolve, reject) => {
-    let authentication = authenticate ? getOrRenewToken() : new Promise(r => r());
-
-    authentication
-      .then(token => {
-        const fetchHeaders = authenticate ? { ...headers, "Authorization": "Bearer " + token } : headers;
-        let init = {
-          method, headers: new Headers({
-            ...fetchHeaders,
-            "Pragma": "no-cache",
-            "Cache-Control": "no-cache",
-            "Expires": "0"
-          })
-        };
-        if (data) {
-          init.body = JSON.stringify(data);
-        }
-        return fetch(path, init);
+    let init = {
+      method, headers: new Headers({
+        ...headers,
+        "Pragma": "no-cache",
+        "Cache-Control": "no-cache",
+        "Expires": "0"
       })
+    };
+    if (data) {
+      init.body = JSON.stringify(data);
+    }
+    fetch(path, init)
       .then(response => {
         if (response.ok) {
           if (response.status === 204) {
@@ -63,7 +57,7 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
             resolve(response.json());
           }
         } else if (response.status === 401) {
-          // logout
+          reloadPage();
           reject(new Error("UNAUTHORIZED"));
         } else {
           return response.json()

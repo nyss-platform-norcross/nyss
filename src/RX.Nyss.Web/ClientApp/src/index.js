@@ -7,12 +7,10 @@ import { createBrowserHistory } from 'history'
 import { Provider } from "react-redux";
 import { configureStore } from './store/configureStore';
 import { initialState } from './initialState';
-import * as appActions from './components/app/logic/appActions';
+import { runApplication } from './components/app/logic/appService';
 
 const history = createBrowserHistory();
 const store = configureStore(history, initialState);
-
-store.dispatch(appActions.initApplication.invoke());
 
 const render = () => {
   return ReactDOM.render(
@@ -23,7 +21,8 @@ const render = () => {
   );
 };
 
-render();
+runApplication(store.dispatch)
+  .finally(render);
 
 if (module.hot) {
   module.hot.accept("./components/app/App", () => render());

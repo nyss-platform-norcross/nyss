@@ -49,7 +49,6 @@ import { AlertsAssessmentPage } from '../alerts/AlertsAssessmentPage';
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
     <MuiPickersUtilsProvider utils={DayJsUtils}>
-
       <ConnectedRouter history={history}>
         <Switch>
           <Route path='/login' component={LoginPage} />

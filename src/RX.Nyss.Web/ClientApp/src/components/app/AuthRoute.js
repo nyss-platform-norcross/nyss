@@ -6,37 +6,30 @@ import { ReactReduxContext } from 'react-redux'
 
 export const AuthRoute = ({ component: Component, roles, computedMatch, ...rest }) => (
   <Route exact {...rest} render={props => {
-    var tokenData = auth.getAccessTokenData();
-
-    if (!tokenData) {
-      auth.setRedirectUrl(window.location.pathname);
-      return <Redirect to={auth.loginUrl} />;
-    }
-
-    const redirectUrl = auth.getRedirectUrl();
-
-    if (redirectUrl) {
-      auth.removeRedirectUrl();
-      return <Redirect to={redirectUrl} />;
-    }
-
-    if (roles && roles.length && !roles.some(r => r === tokenData.role)) {
-      return <BaseLayout authError={"Not authorized"}></BaseLayout>;
-    }
-
     return <ReactReduxContext.Consumer>
       {({ store }) => {
+        const user = store.getState().appData.user;
+
+        if (!user) {
+          auth.setRedirectUrl(window.location.pathname);
+          return <Redirect to={auth.loginUrl} />;
+        }
+
+        const redirectUrl = auth.getRedirectUrl();
+
+        if (redirectUrl) {
+          auth.removeRedirectUrl();
+          return <Redirect to={redirectUrl} />;
+        }
+
+        if (roles && roles.length && !roles.some(neededRole => user.roles.some(userRole => userRole === neededRole))) {
+          return <BaseLayout authError={"Not authorized"}></BaseLayout>;
+        }
+
         store.dispatch({ type: "ROUTE_CHANGED", url: computedMatch.url, path: computedMatch.path, params: computedMatch.params })
         return <Component {...props} />;
       }}
     </ReactReduxContext.Consumer>;
   }
-  } />
-);
-
-export const UnauthorizedRoute = ({ component: Component, ...rest }) => (
-  <Route {...rest} render={props => auth.isAccessTokenSet()
-    ? <Redirect to={auth.rootUrl} />
-    : <Component {...props} />
   } />
 );
