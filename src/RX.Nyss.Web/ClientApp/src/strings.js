@@ -300,12 +300,15 @@ export const stringKeys = {
   dataCollector: {
     title: "dataCollectors.title",
     addNew: "dataCollectors.addNew",
+    dataCollectorType: "dataCollectors.form.dataCollectorType",
+    dataCollectorTypeHuman: "dataCollectors.form.dataCollectorType.human",
+    dataCollectorTypeCollectionPoint: "dataCollectors.form.dataCollectorType.collectionPoint",
     form: {
       creationTitle: "dataCollectors.form.creationTitle",
       editionTitle: "dataCollectors.form.editionTitle",
       dataCollectorType: "dataCollectors.form.dataCollectorType",
       dataCollectorTypeHuman: "dataCollectors.form.dataCollectorType.human",
-      dataCollectorTypePoint: "dataCollectors.form.dataCollectorType.point",
+      dataCollectorTypeCollectionPoint: "dataCollectors.form.dataCollectorType.collectionPoint",
       name: "dataCollectors.form.name",
       displayName: "dataCollectors.form.displayName",
       sex: "dataCollectors.form.sex",
@@ -323,7 +326,7 @@ export const stringKeys = {
       zone: "dataCollectors.form.zone"
     },
     list: {
-      dataCollectorType: "dataCollectors.form.dataCollectorType",
+      dataCollectorType: "dataCollectors.list.dataCollectorType",
       name: "dataCollectors.list.name",
       displayName: "dataCollectors.list.displayName",
       phoneNumber: "dataCollectors.list.phoneNumber",

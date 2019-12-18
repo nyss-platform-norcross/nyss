@@ -158,6 +158,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .Select(dc => new DataCollectorResponseDto
                 {
                     Id = dc.Id,
+                    DataCollectorType = dc.DataCollectorType,
                     Name = dc.Name,
                     DisplayName = dc.DisplayName,
                     PhoneNumber = dc.PhoneNumber,
@@ -343,7 +344,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 : _nyssContext.DataCollectors;
 
             var dataCollectorsWithNoReports = dataCollectors
-                .Where(dc => dc.CreatedAt < endDate && (dc.DeletedAt > from || dc.DeletedAt == null))
+                .Where(dc => dc.CreatedAt < endDate && dc.Name != Anonymization.Text && dc.DeletedAt == null)
                 .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value
                                                                            && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
                 .Where(dc => dc.Project.Id == projectId)
@@ -364,7 +365,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             var dataCollectorsWithReports = rawReports
                 .Where(r => r.IsTraining.HasValue && !r.IsTraining.Value)
                 .Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate)
-                .Where(r => r.DataCollector.CreatedAt < endDate && (r.DataCollector.DeletedAt > from || r.DataCollector.DeletedAt == null))
+                .Where(r => r.DataCollector.CreatedAt < endDate && r.DataCollector.Name != Anonymization.Text && r.DataCollector.DeletedAt == null)
                 .Where(dc => dc.DataCollector.Project.Id == projectId)
                 .Select(r => new
                 {
@@ -374,7 +375,6 @@ namespace RX.Nyss.Web.Features.DataCollector
                     ValidReport = r.Report != null ? 1 : 0,
                     NoReport = 0
                 });
-
 
             var locations = await dataCollectorsWithReports
                 .Union(dataCollectorsWithNoReports)
@@ -423,7 +423,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .Select(dc => new MapOverviewDataCollectorResponseDto
                 {
                     Id = dc.DataCollector.Id,
-                    DisplayName = dc.DataCollector.DisplayName,
+                    DisplayName = dc.DataCollector.DataCollectorType == DataCollectorType.Human ? dc.DataCollector.DisplayName : dc.DataCollector.Name,
                     Status = dc.ReportsInTimeRange.Any()
                         ? dc.ReportsInTimeRange.All(r => r.Report != null)
                             ? MapOverviewDataCollectorStatus.ReportingCorrectly
