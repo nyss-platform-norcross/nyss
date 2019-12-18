@@ -135,7 +135,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var reportsWithLabel = await _nyssContext.Reports
                 .Where(r => r.ReportGroupLabel == reportGroupLabel)
-                .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
+                .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
+                .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed && r.Status != ReportStatus.Closed)
                 .ToListAsync();
 
             if (reportsWithLabel.Count < projectHealthRisk.AlertRule.CountThreshold)
@@ -151,7 +152,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         private async Task<Alert> IncludeAllReportsWithLabelInExistingAlert(Guid reportGroupLabel, int? alertIdToIgnore = null)
         {
             var existingActiveAlertForLabel = await _nyssContext.Reports
-                .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
+                .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed && r.Status != ReportStatus.Closed)
                 .Where(r => r.ReportGroupLabel == reportGroupLabel)
                 .SelectMany(r => r.ReportAlerts)
                 .Where(ar => !alertIdToIgnore.HasValue || ar.AlertId != alertIdToIgnore.Value)
@@ -162,9 +163,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             if (existingActiveAlertForLabel != null)
             {
                 var reportsInLabelWithNoActiveAlert = await _nyssContext.Reports
-                    .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed)
+                    .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed && r.Status != ReportStatus.Closed)
                     .Where(r => r.ReportGroupLabel == reportGroupLabel)
-                    .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated)
+                    .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated || ra.Alert.Status == AlertStatus.Closed)
                               || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore) )
                     .ToListAsync();
                 

@@ -24,6 +24,7 @@ const getReportIcon = (status) => {
     case "Pending": return <Icon className={styles.indicator}>hourglass_empty</Icon>;
     case "Accepted": return <Icon className={`${styles.indicator} ${styles.accepted}`}>check</Icon>;
     case "Rejected": return <Icon className={`${styles.indicator} ${styles.rejected}`}>clear</Icon>;
+    case "Closed": return <Icon className={`${styles.indicator}`}>block</Icon>;
     default: return <Icon className={styles.indicator}>warning</Icon>;
   }
 }

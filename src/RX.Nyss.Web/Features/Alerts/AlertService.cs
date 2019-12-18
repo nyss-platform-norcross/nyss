@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -244,6 +245,8 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result> CloseAlert(int alertId, string comments)
         {
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
             var alertData = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
                 .Select(alert => new
@@ -264,7 +267,13 @@ namespace RX.Nyss.Web.Features.Alerts
             alertData.Alert.Status = AlertStatus.Closed;
             alertData.Alert.Comments = comments;
 
+            FormattableString updateReportsCommand = $@"UPDATE Nyss.Reports SET Status = {ReportStatus.Closed.ToString()} WHERE Status = {ReportStatus.Pending.ToString()}
+                                AND Id IN (SELECT ReportId FROM Nyss.AlertReports WHERE AlertId = {alertData.Alert.Id}) ";
+            await _nyssContext.ExecuteSqlInterpolatedAsync(updateReportsCommand);
+
             await _nyssContext.SaveChangesAsync();
+
+            transactionScope.Complete();
 
             return Success();
         }
