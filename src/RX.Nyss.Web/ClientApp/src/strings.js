@@ -388,7 +388,8 @@ export const stringKeys = {
       trainingReportsListType: "reports.list.trainingReportsListType",
       training: "reports.list.training",
       nonTraining: "reports.list.nonTraining",
-      dcpReportListType: "reports.list.dcpReportListType"
+      dcpReportListType: "reports.list.dcpReportListType",
+      exportToExcel: "reports.list.exportToExcel"
     },
     title: "reports.title"
   },

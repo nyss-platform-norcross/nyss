@@ -4,10 +4,13 @@ import * as actions from "./reportsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import {downloadFileWithToken} from "../../../utils/downloadFile";
+
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
-  takeEvery(consts.GET_REPORTS.INVOKE, getReports)
+  takeEvery(consts.GET_REPORTS.INVOKE, getReports),
+  takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExportData),
 ];
 
 function* openReportsList({ projectId }) {
@@ -42,6 +45,26 @@ function* getReports({ projectId, pageNumber, reportListFilter }) {
     yield put(actions.getList.failure(error.message));
   }
 };
+
+function* getExportData({ projectId, reportListFilter }) {
+  yield put(actions.exportToExcel.request());
+  try {
+    const filter = reportListFilter || {
+      reportListType: "main"
+    };
+
+    yield downloadFileWithToken({
+      url: `/api/report/exportToExcel?projectId=${projectId}`,
+      fileName: `bla.csv`,
+      data: reportListFilter
+    });
+    
+    yield put(actions.exportToExcel.success());
+  } catch (error) {
+    yield put(actions.exportToExcel.failure(error.message));
+  }
+};
+
 
 function* openReportsModule(projectId) {
   const project = yield call(http.getCached, {

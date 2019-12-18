@@ -11,6 +11,10 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Report;
 using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
+using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
+using RX.Nyss.Web.Services.StringsResources;
+using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
@@ -22,8 +26,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IReportService _reportService;
         private readonly INyssContext _nyssContextMock;
         private readonly IConfig _config;
-        private List<Report> _reports;
-        private List<RawReport> _rawReports;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IExcelExportService _excelExportService;
+        private readonly IStringsResourcesService _stringsResourcesService;
+        private List<RX.Nyss.Data.Models.Report> _reports;
+        private List<RX.Nyss.Data.Models.RawReport> _rawReports;
 
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
@@ -41,7 +48,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _userService = Substitute.For<IUserService>();
             _userService.GetUserApplicationLanguageCode(Arg.Any<string>()).Returns(Task.FromResult("en"));
 
-            _reportService = new ReportService(_nyssContextMock, _userService, _config);
+            _authorizationService = Substitute.For<IAuthorizationService>();
+            _authorizationService.GetCurrentUser().Returns(new CurrentUser() { });
+
+            _excelExportService = Substitute.For<IExcelExportService>();
+            _stringsResourcesService = Substitute.For<IStringsResourcesService>();
+
+            _reportService = new ReportService(_nyssContextMock, _userService, _config, _authorizationService, _excelExportService, _stringsResourcesService);
 
             ArrangeData();
         }
@@ -299,7 +312,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _config.PaginationRowsPerPage.Returns(9999);
 
             //act
-            var result = await _reportService.List(1, 1, "", new ReportListFilterRequestDto());
+            var result = await _reportService.List(1, 1, new ListFilterRequestDto());
 
             //assert
             result.Value.Data.ShouldAllBe(x => _reportIdsFromProject1.Contains(x.Id));
@@ -312,7 +325,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _config.PaginationRowsPerPage.Returns(13);
 
             //act
-            var result = await _reportService.List(1, 1, "", new ReportListFilterRequestDto());
+            var result = await _reportService.List(1, 1, new ListFilterRequestDto());
 
             //assert
             result.Value.Data.Count().ShouldBe(13);
@@ -322,7 +335,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenSelectedLastPageThatHasLessRows_ShouldReturnLessRows()
         {
             //act
-            var result = await _reportService.List(1, 2, "", new ReportListFilterRequestDto());
+            var result = await _reportService.List(1, 2, new ListFilterRequestDto());
 
             //assert
             result.Value.Data.Count().ShouldBe(3);
