@@ -24,11 +24,9 @@ function* openAlertsList({ projectId }) {
   yield put(actions.openList.request());
   try {
     yield openAlertsModule(projectId);
-
-    if (listStale) {
-      yield call(getAlerts, { projectId });
-    }
-
+    
+    yield call(getAlerts, { projectId });
+    
     yield put(actions.openList.success(projectId));
 
   } catch (error) {
