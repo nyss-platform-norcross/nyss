@@ -17,7 +17,7 @@ namespace RX.Nyss.Web.Features.Authentication
 {
     public interface IAuthenticationService
     {
-        Task<Result<LoginResponseDto>> Login(LoginRequestDto dto);
+        Task<Result> Login(LoginRequestDto dto);
         Task<Result> Logout();
         Task<Result<StatusResponseDto>> GetStatus(ClaimsPrincipal user);
     }
@@ -35,16 +35,16 @@ namespace RX.Nyss.Web.Features.Authentication
             _nyssContext = nyssContext;
         }
 
-        public async Task<Result<LoginResponseDto>> Login(LoginRequestDto dto)
+        public async Task<Result> Login(LoginRequestDto dto)
         {
             try
             {
                 await _userIdentityService.Login(dto.UserName, dto.Password);
-                return Success(new LoginResponseDto());
+                return Success();
             }
             catch (ResultException exception)
             {
-                return exception.GetResult<LoginResponseDto>();
+                return exception.GetResult();
             }
         }
 
