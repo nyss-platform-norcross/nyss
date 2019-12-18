@@ -5,6 +5,8 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
 {
     public class CreateDataCollectorRequestDto
     {
+        public DataCollectorType DataCollectorType { get; set; }
+
         public string Name { get; set; }
 
         public string DisplayName { get; set; }
@@ -31,6 +33,7 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
         {
             public Validator()
             {
+                RuleFor(dc => dc.DataCollectorType).IsInEnum();
                 RuleFor(dc => dc.Name).NotEmpty().MaximumLength(100);
                 RuleFor(dc => dc.DisplayName).NotEmpty().MaximumLength(100);
                 RuleFor(dc => dc.Sex).IsInEnum();

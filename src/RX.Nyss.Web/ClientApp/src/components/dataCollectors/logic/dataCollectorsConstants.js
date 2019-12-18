@@ -14,6 +14,10 @@ export const SET_DATA_COLLECTORS_TRAINING_STATE = action("SET_DATA_COLLECTORS_TR
 
 export const sexValues = [ "Male", "Female", "Other" ];
 
+export const humanDataCollector = "Human";
+export const dataCollectionPoint = "Point";
+export const dataCollectorTypes = [ humanDataCollector, dataCollectionPoint ];
+
 export const performanceStatus = {
   reportingCorrectly: "ReportingCorrectly",
   notReporting: "NotReporting",

@@ -11,21 +11,24 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectField from '../forms/SelectField';
+import RadioGroupField from '../forms/RadioGroupField';
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import { sexValues } from './logic/dataCollectorsConstants';
+import { sexValues, dataCollectorTypes, humanDataCollector } from './logic/dataCollectorsConstants';
 import { GeoStructureSelect } from './GeoStructureSelect';
 import { getBirthDecades } from './logic/dataCollectorsService';
 import { DataCollectorMap } from './DataCollectorMap';
 import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
+import { Radio, FormControlLabel } from "@material-ui/core";
 
 const DataCollectorsCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
+  const [type, setType] = useState(humanDataCollector);
 
   useMount(() => {
     props.openCreation(props.projectId);
@@ -38,6 +41,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     }
 
     const fields = {
+      dataCollectorType: humanDataCollector,
       name: "",
       displayName: "",
       sex: "",
@@ -54,6 +58,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     };
 
     const validation = {
+      dataCollectorType: [validators.required],
       name: [validators.required, validators.maxLength(100)],
       displayName: [validators.required, validators.maxLength(100)],
       sex: [validators.required],
@@ -66,7 +71,9 @@ const DataCollectorsCreatePageComponent = (props) => {
       regionId: [validators.required]
     };
 
-    setForm(createForm(fields, validation));
+    const newForm = createForm(fields, validation);
+    setForm(newForm);
+    newForm.fields.dataCollectorType.subscribe(({newValue}) => setType(newValue));
   }, [props.regions, props.defaultSupervisorId, props.defaultLocation])
 
   const onLocationChange = (e) => {
@@ -84,6 +91,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     const values = form.getValues();
 
     props.create(props.projectId, {
+      dataCollectorType: values.dataCollectorType,
       name: values.name,
       displayName: values.displayName,
       sex: values.sex,
@@ -115,6 +123,17 @@ const DataCollectorsCreatePageComponent = (props) => {
       <Form onSubmit={handleSubmit} fullWidth>
         <Grid container spacing={3} className={formStyles.shrinked}>
           <Grid item xs={12}>
+            <RadioGroupField
+              name={strings(stringKeys.dataCollector.form.dataCollectorType)}
+              field={form.fields.dataCollectorType}
+              horizontal >
+              {dataCollectorTypes.map(type => (
+                <FormControlLabel key={type} control={<Radio />} label={strings(stringKeys.dataCollector.form.dataCollectorType + type)} value={type} />
+              ))}
+            </RadioGroupField>
+          </Grid>
+
+          <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.name)}
               name="name"
@@ -122,15 +141,16 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          {type === humanDataCollector && (<Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.displayName)}
               name="displayName"
               field={form.fields.displayName}
             />
-          </Grid>
+          </Grid>)}
 
-          <Grid item xs={12}>
+          {type === humanDataCollector && (
+            <Grid item xs={12}>
             <SelectField
               label={strings(stringKeys.dataCollector.form.sex)}
               field={form.fields.sex}
@@ -143,8 +163,9 @@ const DataCollectorsCreatePageComponent = (props) => {
               ))}
             </SelectField>
           </Grid>
+          )}
 
-          <Grid item xs={12}>
+          {type === humanDataCollector && (<Grid item xs={12}>
             <SelectField
               label={strings(stringKeys.dataCollector.form.birthYearGroup)}
               field={form.fields.birthGroupDecade}
@@ -156,7 +177,7 @@ const DataCollectorsCreatePageComponent = (props) => {
                 </MenuItem>
               ))}
             </SelectField>
-          </Grid>
+          </Grid>)}
 
           <Grid item xs={12}>
             <TextInputField
@@ -166,13 +187,13 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          {type === humanDataCollector && (<Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
             />
-          </Grid>
+          </Grid>)}
         </Grid>
         <Grid container spacing={3}>
           <Grid item xs={12}>

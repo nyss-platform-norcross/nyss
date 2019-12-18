@@ -209,7 +209,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 AdditionalPhoneNumber = createDto.AdditionalPhoneNumber,
                 BirthGroupDecade = createDto.BirthGroupDecade,
                 Sex = createDto.Sex,
-                DataCollectorType = DataCollectorType.Human,
+                DataCollectorType = createDto.DataCollectorType,
                 Location = CreatePoint(createDto.Latitude, createDto.Longitude),
                 Village = village,
                 Supervisor = supervisor,
