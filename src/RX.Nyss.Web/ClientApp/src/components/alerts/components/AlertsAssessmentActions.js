@@ -61,9 +61,9 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
         )}
 
         {alertAssessmentStatus === assessmentStatus.toDismiss && (
-          <SubmitButton isFetching={props.isDismissing} onClick={() => props.dismissAlert(alertId)}>
+          <Button isFetching={props.isDismissing} onClick={() => props.dismissAlert(alertId)}>
             {strings(stringKeys.alerts.assess.alert.dismiss)}
-          </SubmitButton>
+          </Button>
         )}
 
         {alertAssessmentStatus === assessmentStatus.escalated && (
