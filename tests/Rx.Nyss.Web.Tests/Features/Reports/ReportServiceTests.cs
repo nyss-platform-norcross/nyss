@@ -29,8 +29,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IAuthorizationService _authorizationService;
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
-        private List<RX.Nyss.Data.Models.Report> _reports;
-        private List<RX.Nyss.Data.Models.RawReport> _rawReports;
+        private List<Report> _reports;
+        private List<RawReport> _rawReports;
 
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
