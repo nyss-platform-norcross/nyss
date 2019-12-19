@@ -48,7 +48,13 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Where(phr => phr == report.ProjectHealthRisk)
                 .Include(phr => phr.AlertRule)
+                .Include(phr => phr.HealthRisk)
                 .SingleAsync();
+
+            if (projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Activity)
+            {
+                return null;
+            }
 
             await _reportLabelingService.ResolveLabelsOnReportAdded(report, projectHealthRisk);
             await _nyssContext.SaveChangesAsync();

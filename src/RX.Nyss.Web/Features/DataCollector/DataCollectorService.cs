@@ -313,8 +313,8 @@ namespace RX.Nyss.Web.Features.DataCollector
             FormattableString updateRawReportsCommand = $"UPDATE Nyss.RawReports SET Sender = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
             await _nyssContext.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
 
-            updateRawReportsCommand = $"UPDATE Nyss.Reports SET PhoneNumber = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
-            await _nyssContext.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
+            FormattableString updateReportsCommand = $"UPDATE Nyss.Reports SET PhoneNumber = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
+            await _nyssContext.ExecuteSqlInterpolatedAsync(updateReportsCommand);
         }
 
         private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>

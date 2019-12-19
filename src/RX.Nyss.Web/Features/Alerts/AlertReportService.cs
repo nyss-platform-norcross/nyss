@@ -48,12 +48,7 @@ namespace RX.Nyss.Web.Features.Alerts
             {
                 return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportWrongAlertStatus);
             }
-
-            //if (alertReport.Alert.Status == AlertStatus.Rejected)
-            //{
-            //    return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportAlertNoLongerValid);
-            //}
-
+            
             if (alertReport.Report.Status != ReportStatus.Pending)
             {
                 return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportWrongReportStatus);
@@ -82,11 +77,6 @@ namespace RX.Nyss.Web.Features.Alerts
             {
                 return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReportWrongAlertStatus);
             }
-
-            //if (alertReport.Alert.Status == AlertStatus.Rejected)
-            //{
-            //    return Error<DismissReportResponseDto>(ResultKey.Alert.AcceptReportAlertNoLongerValid);
-            //}
 
             if (alertReport.Report.Status != ReportStatus.Pending)
             {
