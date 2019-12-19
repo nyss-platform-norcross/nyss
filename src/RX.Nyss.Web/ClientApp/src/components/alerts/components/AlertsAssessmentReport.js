@@ -11,6 +11,7 @@ import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
 import Icon from "@material-ui/core/Icon";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
+import Button from "@material-ui/core/Button";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>
@@ -70,9 +71,9 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
         <ExpansionPanelActions>
           {showActions && (
             <Fragment>
-              <SubmitButton onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing}>
+              <Button onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing}>
                 {strings(stringKeys.alerts.assess.report.dismiss)}
-              </SubmitButton>
+              </Button>
 
               <SubmitButton onClick={() => acceptReport(alertId, report.id)} isFetching={report.isAccepting}>
                 {strings(stringKeys.alerts.assess.report.accept)}
