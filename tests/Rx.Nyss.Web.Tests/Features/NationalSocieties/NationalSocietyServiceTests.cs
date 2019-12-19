@@ -119,27 +119,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         }
 
         [Fact]
-        public async Task CreateNationalSociety_WhenSavingFails_ShouldReturnError()
-        {
-            // Arrange
-            var nationalSocietyReq = new CreateNationalSocietyRequestDto
-            {
-                Name = NationalSocietyName,
-                CountryId = CountryId,
-                ContentLanguageId = ContentLanguageId
-            };
-
-            _nyssContextMock.SaveChangesAsync().Throws(new Exception());
-
-            // Actual
-            var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
-        }
-
-        [Fact]
         public async Task CreateNationalSociety_WhenNameAlreadyExists_ShouldReturnError()
         {
             // Arrange
@@ -178,27 +157,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         }
 
         [Fact]
-        public async Task EditNationalSociety_WhenSavingFails_ShouldReturnError()
-        {
-            // Arrange
-            var nationalSocietyReq = new EditNationalSocietyRequestDto
-            {
-                Name = NationalSocietyName,
-                CountryId = CountryId,
-                ContentLanguageId = ContentLanguageId
-            };
-
-            _nyssContextMock.SaveChangesAsync().Throws(new Exception());
-
-            // Actual
-            var result = await _nationalSocietyService.EditNationalSociety(NationalSocietyId, nationalSocietyReq);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
-        }
-
-        [Fact]
         public async Task RemoveNationalSociety_WhenSuccessful_ShouldReturnSuccess()
         {
             // Actual
@@ -207,20 +165,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             // Assert
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.Remove.Success);
-        }
-
-        [Fact]
-        public async Task RemoveNationalSociety_WhenRemovingFails_ShouldReturnError()
-        {
-            // Arrange
-            _nyssContextMock.SaveChangesAsync().Throws(new Exception());
-
-            // Actual
-            var result = await _nationalSocietyService.RemoveNationalSociety(NationalSocietyId);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
         }
 
         [Fact]

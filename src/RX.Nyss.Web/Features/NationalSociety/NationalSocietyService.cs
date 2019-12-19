@@ -19,7 +19,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
     {
         Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties(string userEmail, IEnumerable<string> userRoles);
         Task<Result<NationalSocietyResponseDto>> GetNationalSociety(int id);
-        Task<Result<int>> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
+        Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
         Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
@@ -96,7 +96,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
             return Success(nationalSociety);
         }
 
-        public async Task<Result<int>> CreateNationalSociety(CreateNationalSocietyRequestDto dto)
+        public async Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto dto)
         {
             if (_nyssContext.NationalSocieties.Any(ns => ns.Name.ToLower() == dto.Name.ToLower()))
             {
@@ -122,10 +122,10 @@ namespace RX.Nyss.Web.Features.NationalSociety
                 return Error<int>(ResultKey.NationalSociety.Creation.CountryNotFound);
             }
 
-            var entity = await _nyssContext.AddAsync(nationalSociety);
+            await _nyssContext.AddAsync(nationalSociety);
             await _nyssContext.SaveChangesAsync();
             _loggerAdapter.Info($"A national society {nationalSociety} was created");
-            return Success(entity.Entity.Id, ResultKey.NationalSociety.Creation.Success);
+            return SuccessMessage(ResultKey.NationalSociety.Creation.Success);
         }
 
         public async Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto dto)

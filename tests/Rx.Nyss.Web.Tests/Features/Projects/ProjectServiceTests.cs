@@ -473,6 +473,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     {
                         new ProjectHealthRisk
                         {
+                            Project = new Project(),
                             Id = 1,
                             CaseDefinition = "Case Definition 1",
                             FeedbackMessage = "Feedback Message 2",
@@ -487,6 +488,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         new ProjectHealthRisk
                         {
                             Id = 2,
+                            Project = new Project(),
                             CaseDefinition = "Case Definition 2",
                             FeedbackMessage = "Feedback Message 2",
                             AlertRule = new AlertRule
@@ -530,6 +532,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
+
+            var projectHealthRisksMockDbSet = project.SelectMany(p => p.ProjectHealthRisks).AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
 
             var projectRequestDto = new ProjectRequestDto
             {
@@ -690,6 +695,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         new ProjectHealthRisk
                         {
                             Id = 1,
+                            Project = new Project { Id = projectId },
                             CaseDefinition = "Case Definition",
                             FeedbackMessage = "Feedback Message",
                             AlertRule = new AlertRule
@@ -712,6 +718,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
+
+            var projectHealthRisksMockDbSet = project.SelectMany(p => p.ProjectHealthRisks).AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
 
             var projectRequestDto = new ProjectRequestDto
             {
