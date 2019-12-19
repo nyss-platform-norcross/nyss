@@ -170,13 +170,17 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             nationalSocietyStructureService.GetZones(Arg.Any<int>()).Returns(Success(new List<ZoneResponseDto>()));
         }
 
-        [Fact]
-        public async Task CreateDataCollector_WhenSuccess_ShouldReturnSuccess()
+        [Theory]
+        [InlineData(DataCollectorType.Human, "Human")]
+        [InlineData(DataCollectorType.CollectionPoint, null)]
+        public async Task CreateDataCollector_WhenSuccess_ShouldReturnSuccess(DataCollectorType type, string displayName)
         {
             // Arrange
             var dataCollector = new CreateDataCollectorRequestDto
             {
+                DataCollectorType = type,
                 PhoneNumber = "+4712344567",
+                DisplayName = displayName,
                 SupervisorId = SupervisorId,
                 VillageId = _nyssContextMock.Villages.ToList()[0].Id,
                 Latitude = 15,
@@ -228,13 +232,17 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             Should.ThrowAsync<Exception>(() => _dataCollectorService.EditDataCollector(dataCollector));
         }
 
-        [Fact]
-        public async Task EditDataCollector_WhenSuccessful_ShouldReturnSuccess()
+        [Theory]
+        [InlineData(DataCollectorType.Human, "Human")]
+        [InlineData(DataCollectorType.CollectionPoint, null)]
+        public async Task EditDataCollector_WhenSuccessful_ShouldReturnSuccess(DataCollectorType type, string displayName)
         {
             // Arrange
             var dataCollector = new EditDataCollectorRequestDto
             {
+                DataCollectorType = type,
                 Id = DataCollectorWithoutReportsId,
+                DisplayName = displayName,
                 PhoneNumber = DataCollectorPhoneNumber1,
                 SupervisorId = SupervisorId,
                 VillageId = _nyssContextMock.Villages.ToList()[0].Id,
