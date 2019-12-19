@@ -7,9 +7,7 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
@@ -20,6 +18,7 @@ import { stringKeys, strings } from '../../strings';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import MenuItem from "@material-ui/core/MenuItem";
 import { sexValues } from './logic/nationalSocietyUsersConstants';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const NationalSocietyUsersEditPageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
@@ -84,11 +83,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error &&
-        <SnackbarContent
-          message={props.error}
-        />
-      }
+      {props.error && <ValidationMessage message={props.error} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

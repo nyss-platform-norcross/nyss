@@ -24,6 +24,11 @@ html {
 .leaflet-container {
   height: 400px;
   width: 100%;
+  font-family: Poppins;
+}
+
+.leaflet-popup-close-button {
+  display: none;
 }
 
 .highcharts-container {

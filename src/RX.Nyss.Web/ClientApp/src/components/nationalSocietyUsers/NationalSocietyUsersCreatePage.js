@@ -7,11 +7,9 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -20,6 +18,7 @@ import { userRoles, globalCoordinatorUserRoles, sexValues } from './logic/nation
 import * as roles from '../../authentication/roles';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const NationalSocietyUsersCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
@@ -75,19 +74,15 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null
     });
-  };  
-    
+  };
+
   const availableUserRoles = props.callingUserRoles.some(r => r === roles.GlobalCoordinator)
     ? globalCoordinatorUserRoles
     : userRoles;
 
   return (
     <Fragment>
-      {props.error &&
-        <SnackbarContent
-          message={props.error}
-        />
-      }
+      {props.error && <ValidationMessage message={props.error} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

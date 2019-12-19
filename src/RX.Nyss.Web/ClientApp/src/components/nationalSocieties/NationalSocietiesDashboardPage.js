@@ -4,9 +4,7 @@ import { connect } from "react-redux";
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Typography from '@material-ui/core/Typography';
 import { Loading } from '../common/loading/Loading';
-import { stringKeys, strings } from '../../strings';
 
 const NationalSocietiesDashboardPageComponent = ({ openDashbaord, isFetching, match, name }) => {
   useEffect(() => {

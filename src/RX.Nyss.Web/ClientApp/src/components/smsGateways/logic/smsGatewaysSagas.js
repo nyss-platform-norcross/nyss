@@ -4,7 +4,7 @@ import * as actions from "./smsGatewaysActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
-import { strings, stringKeys } from "../../../strings";
+import { stringKeys } from "../../../strings";
 
 export const smsGatewaysSagas = () => [
   takeEvery(consts.OPEN_SMS_GATEWAYS_LIST.INVOKE, openSmsGatewaysList),
@@ -57,7 +57,7 @@ function* createSmsGateway({ nationalSocietyId, data }) {
     const response = yield call(http.post, `/api/smsGateway/add?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
-    yield put(appActions.showMessage(strings(stringKeys.smsGateway.create.success)));
+    yield put(appActions.showMessage(stringKeys.smsGateway.create.success));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }

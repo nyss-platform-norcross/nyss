@@ -4,9 +4,9 @@ import PropTypes from "prop-types";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-export const SubmitButton = ({ onClick, isFetching, children }) => {
+export const SubmitButton = ({ onClick, isFetching, children, wide }) => {
   return (
-    <Button color="primary" variant="outlined" onClick={onClick} disabled={isFetching} type="submit">
+    <Button color="primary" variant="outlined" onClick={onClick} disabled={isFetching} type="submit" className={wide ? styles.wide : null}>
       {isFetching && <CircularProgress size={16} className={styles.progressIcon} />}
       {children}
     </Button>

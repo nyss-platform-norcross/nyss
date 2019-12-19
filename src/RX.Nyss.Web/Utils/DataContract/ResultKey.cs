@@ -143,6 +143,7 @@
         {
             public const string GeneralError = "error.sql.general";
             public const string ForeignKeyViolation = "error.sql.foreignKeyViolation";
+            public const string DuplicatedValue = "error.sql.duplicatedValue";
         }
 
         public static class DataCollector

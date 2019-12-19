@@ -6,7 +6,6 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { strings, stringKeys } from "../../../strings";
 import dayjs from "dayjs";
-import { push } from "connected-react-router";
 
 export const alertsSagas = () => [
   takeEvery(consts.OPEN_ALERTS_LIST.INVOKE, openAlertsList),
@@ -72,7 +71,7 @@ function* acceptReport({ alertId, reportId }) {
     yield put(actions.acceptReport.success(reportId, newAssessmentStatus));
 
     if (previousAssessmentStatus !== newAssessmentStatus && newAssessmentStatus === consts.assessmentStatus.toEscalate) {
-      yield put(appActions.showLocalizedMessage(stringKeys.alerts.assess.alert.escalationPossible, 20000));
+      yield put(appActions.showMessage(stringKeys.alerts.assess.alert.escalationPossible, 20000));
     }
   } catch (error) {
     yield put(actions.acceptReport.failure(reportId, error.message));
@@ -89,7 +88,7 @@ function* dismissReport({ alertId, reportId }) {
     yield put(actions.dismissReport.success(reportId, newAssessmentStatus));
 
     if (previousAssessmentStatus !== newAssessmentStatus && newAssessmentStatus === consts.assessmentStatus.toDismiss) {
-      yield put(appActions.showLocalizedMessage(stringKeys.alerts.assess.alert.dismissalPossible, 20000));
+      yield put(appActions.showMessage(stringKeys.alerts.assess.alert.dismissalPossible, 20000));
     }
   } catch (error) {
     yield put(actions.dismissReport.failure(reportId, error.message));
@@ -104,9 +103,9 @@ function* escalateAlert({ alertId }) {
     yield call(http.get, `/api/alert/${alertId}/escalate`);
     yield put(actions.escalateAlert.success());
     yield put(actions.goToList(projectId))
-    yield put(appActions.showLocalizedMessage(stringKeys.alerts.assess.alert.escalatedSuccessfully));
+    yield put(appActions.showMessage(stringKeys.alerts.assess.alert.escalatedSuccessfully));
   } catch (error) {
-    yield put(appActions.showLocalizedMessage(error.message));
+    yield put(appActions.showMessage(error.message));
     yield put(actions.escalateAlert.failure(error.message));
   }
 };
@@ -119,9 +118,9 @@ function* dismissAlert({ alertId }) {
     yield call(http.get, `/api/alert/${alertId}/dismiss`);
     yield put(actions.dismissAlert.success());
     yield put(actions.goToList(projectId))
-    yield put(appActions.showLocalizedMessage(stringKeys.alerts.assess.alert.dismissedSuccessfully));
+    yield put(appActions.showMessage(stringKeys.alerts.assess.alert.dismissedSuccessfully));
   } catch (error) {
-    yield put(appActions.showLocalizedMessage(error.message));
+    yield put(appActions.showMessage(error.message));
     yield put(actions.dismissAlert.failure(error.message));
   }
 };
@@ -134,9 +133,9 @@ function* closeAlert({ alertId, comments }) {
     yield call(http.post, `/api/alert/${alertId}/close`, { comments });
     yield put(actions.closeAlert.success());
     yield put(actions.goToList(projectId))
-    yield put(appActions.showLocalizedMessage(stringKeys.alerts.assess.alert.closedSuccessfully));
+    yield put(appActions.showMessage(stringKeys.alerts.assess.alert.closedSuccessfully));
   } catch (error) {
-    yield put(appActions.showLocalizedMessage(error.message));
+    yield put(appActions.showMessage(error.message));
     yield put(actions.closeAlert.failure(error.message));
   }
 };

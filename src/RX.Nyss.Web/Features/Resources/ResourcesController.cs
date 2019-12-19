@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Resources.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils;
@@ -22,7 +21,7 @@ namespace RX.Nyss.Web.Features.Resources
             _inMemoryCache = inMemoryCache;
         }
 
-        [Route("saveString"), HttpPost, NeedsRole(Role.Administrator)]
+        [Route("saveString"), HttpPost]
         public async Task<Result> SaveString([FromBody]SaveStringRequestDto dto)
         {
             var result = await _resourcesService.SaveString(dto);
@@ -38,7 +37,7 @@ namespace RX.Nyss.Web.Features.Resources
             return result;
         }
 
-        [Route("getString/{key}"), HttpGet, NeedsRole(Role.Administrator)]
+        [Route("getString/{key}"), HttpGet]
         public async Task<Result<GetStringResponseDto>> GetString(string key) =>
             await _resourcesService.GetString(key);
     }

@@ -11,5 +11,5 @@ export const consentAsHeadManager = {
   invoke: () => ({ type: CONSENT_AS_HEAD_MANAGER.INVOKE }),
   request: () => ({ type: CONSENT_AS_HEAD_MANAGER.REQUEST }),
   success: () => ({ type: CONSENT_AS_HEAD_MANAGER.SUCCESS }),
-  failure: (message) => ({ type: CONSENT_AS_HEAD_MANAGER.FAILURE, message })
+  failure: (message) => ({ type: CONSENT_AS_HEAD_MANAGER.FAILURE, message, suppressPopup: true })
 };

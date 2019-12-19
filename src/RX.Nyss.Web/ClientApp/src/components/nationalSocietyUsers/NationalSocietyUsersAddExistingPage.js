@@ -9,13 +9,13 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import Box from '@material-ui/core/Box';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 import * as roles from '../../authentication/roles';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const NationalSocietyUsersAddExistingPageComponent = (props) => {
   const [form] = useState(() => {
@@ -47,11 +47,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error &&
-        <SnackbarContent
-          message={props.error}
-        />
-      }
+      {props.error && <ValidationMessage message={props.error} />}
 
        <Form onSubmit={handleSubmit}>
         <Box mb={3}>

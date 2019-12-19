@@ -5,7 +5,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import * as roles from "../../../authentication/roles";
-import { strings, stringKeys } from "../../../strings";
+import { stringKeys, stringKey } from "../../../strings";
 
 export const nationalSocietyUsersSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_USERS_LIST.INVOKE, openNationalSocietyUsersList),
@@ -78,7 +78,7 @@ function* createNationalSocietyUser({ nationalSocietyId, data }) {
     const response = yield call(http.post, getSpecificRoleUserAdditionUrl(nationalSocietyId, data.role), data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
-    yield put(appActions.showMessage(strings(stringKeys.nationalSocietyUser.messages.creationSuccessful)));
+    yield put(appActions.showMessage(stringKeys.nationalSocietyUser.messages.creationSuccessful));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -90,7 +90,7 @@ function* addExistingNationalSocietyUser({ nationalSocietyId, data }) {
     const response = yield call(http.post, `/api/user/addExisting?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
-    yield put(appActions.showMessage(strings(stringKeys.nationalSocietyUser.create.success)));
+    yield put(appActions.showMessage(stringKeys.nationalSocietyUser.create.success));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -113,7 +113,6 @@ function* removeNationalSocietyUser({ nationalSocietyUserId, role, nationalSocie
     yield call(http.post, getSpecificRoleUserRemovalUrl(nationalSocietyUserId, role, nationalSocietyId));
     yield put(actions.remove.success(nationalSocietyUserId));
   } catch (error) {
-    yield put(appActions.showMessage(strings(error.message)));
     yield put(actions.remove.failure(nationalSocietyUserId, error.message));
   }
 };
@@ -133,10 +132,9 @@ function* setAsHeadManagerInNationalSociety({ nationalSocietyId, nationalSociety
   try {
     yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/setHeadManager`, {userId: nationalSocietyUserId});
     yield put(actions.setAsHeadManager.success(nationalSocietyUserId));
-    yield put(appActions.showMessage(strings(stringKeys.headManagerConsents.setSuccessfully)));
+    yield put(appActions.showMessage(stringKeys.headManagerConsents.setSuccessfully));
     yield call(getNationalSocietyUsers, nationalSocietyId);
   } catch (error) {
-    yield put(appActions.showMessage(strings(error.message)));
     yield put(actions.setAsHeadManager.failure(nationalSocietyUserId));
   }
 };
@@ -152,7 +150,7 @@ function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
     case roles.Supervisor:
       return `/api/supervisor/create?nationalSocietyId=${nationalSocietyId}`;
     default:
-      throw new Error("Role is not valid");
+      throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
 };
 
@@ -167,7 +165,7 @@ function getSpecificRoleUserEditionUrl(userId, role) {
     case roles.Supervisor:
       return `/api/supervisor/${userId}/edit`;
     default:
-      throw new Error("Role is not valid");
+      throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
 };
 
@@ -182,7 +180,7 @@ function getSpecificRoleUserRetrievalUrl(userId, role) {
     case roles.Supervisor:
       return `/api/supervisor/${userId}/get`;
     default:
-      throw new Error("Role is not valid");
+      throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
 };
 
@@ -197,7 +195,7 @@ function getSpecificRoleUserRemovalUrl(userId, role, nationalSocietyId) {
     case roles.Supervisor:
       return `/api/supervisor/${userId}/remove`;
     default:
-      throw new Error("Role is not valid");
+      throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
 };
 

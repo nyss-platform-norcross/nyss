@@ -40,7 +40,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
             {
                 case ReportSource.SmsEagle: await _smsEagleHandler.Handle(report.Content);
                     break;
-                default: _loggerAdapter.Error($"Could not find a proper handler to handle a report '{report}'.");                       
+                default: _loggerAdapter.Error($"Could not find a proper handler to handle a report '{report}'.");
                     break;
             }
 
@@ -54,11 +54,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 await _alertService.ReportDismissed(reportId);
                 return true;
             }
-            catch (Exception e)
+            catch
             {
                 return false;
             }
-           
+
         }
     }
 }

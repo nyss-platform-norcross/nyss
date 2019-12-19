@@ -61,7 +61,8 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
                         <div>
                           {details && details.map(h => (
                             <div className={styles.reportHealthRiskDetails} key={`reportHealthRisk_${h.name}`}>
-                              {h.name}: {h.value} {strings(stringKeys.project.dashboard.map.reports)}
+                              <div>{h.name}:</div>
+                              <div>{h.value} {strings(h.value === 1 ? stringKeys.project.dashboard.map.report : stringKeys.project.dashboard.map.reports)}</div>
                             </div>
                           ))}
                         </div>

@@ -9,7 +9,6 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
@@ -23,6 +22,7 @@ import { getSaveFormModel } from './logic/projectsService';
 import { Loading } from '../common/loading/Loading';
 import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -119,11 +119,7 @@ const ProjectsEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error &&
-        <SnackbarContent
-          message={props.error}
-        />
-      }
+      {props.error && <ValidationMessage message={props.error} />}
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={3}>

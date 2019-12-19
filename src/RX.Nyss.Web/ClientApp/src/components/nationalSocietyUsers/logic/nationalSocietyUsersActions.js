@@ -44,14 +44,14 @@ export const create = {
   invoke: (nationalSocietyId, data) => ({ type: CREATE_NATIONAL_SOCIETY_USER.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: CREATE_NATIONAL_SOCIETY_USER.REQUEST }),
   success: () => ({ type: CREATE_NATIONAL_SOCIETY_USER.SUCCESS }),
-  failure: (message) => ({ type: CREATE_NATIONAL_SOCIETY_USER.FAILURE, message })
+  failure: (message) => ({ type: CREATE_NATIONAL_SOCIETY_USER.FAILURE, message, suppressPopup: true })
 };
 
 export const addExisting = {
   invoke: (nationalSocietyId, data) => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.REQUEST }),
   success: () => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.SUCCESS }),
-  failure: (message) => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.FAILURE, message })
+  failure: (message) => ({ type: ADD_EXISTING_NATIONAL_SOCIETY_USER.FAILURE, message, suppressPopup: true })
 };
 
 export const openEdition = {
@@ -65,7 +65,7 @@ export const edit = {
   invoke: (nationalSocietyId, data) => ({ type: EDIT_NATIONAL_SOCIETY_USER.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: EDIT_NATIONAL_SOCIETY_USER.REQUEST }),
   success: () => ({ type: EDIT_NATIONAL_SOCIETY_USER.SUCCESS }),
-  failure: (message) => ({ type: EDIT_NATIONAL_SOCIETY_USER.FAILURE, message })
+  failure: (message) => ({ type: EDIT_NATIONAL_SOCIETY_USER.FAILURE, message, suppressPopup: true })
 };
 
 export const remove = {

@@ -1,4 +1,4 @@
-import { strings } from "../strings";
+import { stringKeys, stringKey } from "../strings";
 import * as cache from "./cache";
 import { reloadPage } from "./page";
 
@@ -29,9 +29,9 @@ export const getCached = ({ path, dependencies }) =>
     dependencies: dependencies
   });
 
-export const ensureResponseIsSuccess = (response, message) => {
+export const ensureResponseIsSuccess = (response) => {
   if (!response.isSuccess) {
-    throw new Error(message || getResponseErrorMessage(response.message) || "Response was not successful");
+    throw new Error(stringKey((response.message && response.message.key) || stringKeys.error.responseNotSuccessful));
   }
 };
 
@@ -58,17 +58,14 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
           }
         } else if (response.status === 401) {
           reloadPage();
-          reject(new Error("UNAUTHORIZED"));
+          reject(new Error(stringKey(stringKeys.error.notAuthenticated)));
+        } else if (response.status === 403) {
+          reject(new Error(stringKey(stringKeys.error.unauthorized)));
         } else {
           return response.json()
-            .then(data => reject(new Error(strings(data.message.key))))
+            .then(data => reject(new Error(stringKey(data.message.key))))
             .catch(e => reject(e));
         }
       });
   });
 }
-
-const getResponseErrorMessage = (message) =>
-  (message && message.key)
-    ? strings(message.key, true)
-    : "";

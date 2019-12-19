@@ -1,18 +1,14 @@
-import React, { Fragment } from "react";
+import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from "prop-types";
 
-export const HasAccessComponent = ({ user, roles, children }) => {
+export const useAccessRestriction = (Component) => ({ roles, ...props }) =>
+  roles
+    ? <HasAccess roles={roles}><Component {...props} /></HasAccess>
+    : <Component {...props} />;
 
-  const hasAccess = () =>
-    user.roles.some(role => roles.indexOf(role) > -1);
-
-  return hasAccess() ? (
-    <Fragment>
-      {children}
-    </Fragment>
-  ) : null;
-};
+export const HasAccessComponent = ({ user, roles, children }) =>
+  user.roles.some(role => roles.indexOf(role) > -1) && children;
 
 const mapStateToProps = state => ({
   user: state.appData.user

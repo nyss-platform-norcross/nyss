@@ -59,7 +59,6 @@ function* createRegion({ nationalSocietyId, name }) {
     const response = yield call(http.post, `/api/nationalSocietyStructure/region/create?nationalSocietyId=${nationalSocietyId}`, { name });
     yield put(actions.createRegion.success(response.value));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.createRegion.failure(error.message));
   }
 };
@@ -70,7 +69,6 @@ function* editRegion({ id, name }) {
     yield call(http.post, `/api/nationalSocietyStructure/region/${id}/edit`, { name });
     yield put(actions.editRegion.success(id, name));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.editRegion.failure(error.message));
   }
 };
@@ -81,7 +79,6 @@ function* removeRegion({ id }) {
     yield call(http.post, `/api/nationalSocietyStructure/region/${id}/remove`);
     yield put(actions.removeRegion.success(id));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.removeRegion.failure(error.message));
   }
 };
@@ -92,7 +89,6 @@ function* createDistrict({ regionId, name }) {
     const response = yield call(http.post, `/api/nationalSocietyStructure/region/${regionId}/district/create`, { name });
     yield put(actions.createDistrict.success(regionId, response.value));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.createDistrict.failure(error.message));
   }
 };
@@ -103,7 +99,6 @@ function* editDistrict({ id, name }) {
     yield call(http.post, `/api/nationalSocietyStructure/district/${id}/edit`, { name });
     yield put(actions.editDistrict.success(id, name));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.editDistrict.failure(error.message));
   }
 };
@@ -114,7 +109,6 @@ function* removeDistrict({ id }) {
     yield call(http.post, `/api/nationalSocietyStructure/district/${id}/remove`);
     yield put(actions.removeDistrict.success(id));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.removeDistrict.failure(error.message));
   }
 };
@@ -125,7 +119,6 @@ function* createVillage({ districtId, name }) {
     const response = yield call(http.post, `/api/nationalSocietyStructure/district/${districtId}/village/create`, { name });
     yield put(actions.createVillage.success(response.value));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.createVillage.failure(error.message));
   }
 };
@@ -136,7 +129,6 @@ function* editVillage({ id, name }) {
     yield call(http.post, `/api/nationalSocietyStructure/village/${id}/edit`, { name });
     yield put(actions.editVillage.success(id, name));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.editVillage.failure(error.message));
   }
 };
@@ -147,7 +139,6 @@ function* removeVillage({ id }) {
     yield call(http.post, `/api/nationalSocietyStructure/village/${id}/remove`);
     yield put(actions.removeVillage.success(id));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.removeVillage.failure(error.message));
   }
 };
@@ -158,7 +149,6 @@ function* createZone({ villageId, name }) {
     const response = yield call(http.post, `/api/nationalSocietyStructure/zone/create?villageId=${villageId}`, { name });
     yield put(actions.createZone.success(response.value));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.createZone.failure(error.message));
   }
 };
@@ -169,7 +159,6 @@ function* editZone({ id, name }) {
     yield call(http.post, `/api/nationalSocietyStructure/zone/${id}/edit`, { name });
     yield put(actions.editZone.success(id, name));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.editZone.failure(error.message));
   }
 };
@@ -180,7 +169,6 @@ function* removeZone({ id }) {
     yield call(http.post, `/api/nationalSocietyStructure/zone/${id}/remove`);
     yield put(actions.removeZone.success(id));
   } catch (error) {
-    yield put(appActions.showMessage(error.message));
     yield put(actions.removeZone.failure(error.message));
   }
 };

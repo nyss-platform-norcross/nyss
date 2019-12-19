@@ -11,7 +11,7 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs"
 import styles from "./ProjectsList.module.scss";
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 
 export const ProjectsList = ({ isListFetching, isRemoving, goToEdition, goToDashboard, remove, list, nationalSocietyId }) => {
   if (isListFetching) {

@@ -7,7 +7,11 @@ import Layout from '../layout/Layout';
 import ReportsTable from './ReportsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import { MenuItem, Select, Grid, FormControl, InputLabel } from '@material-ui/core';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {

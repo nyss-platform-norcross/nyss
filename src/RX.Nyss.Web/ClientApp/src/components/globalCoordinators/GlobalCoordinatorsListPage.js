@@ -5,13 +5,13 @@ import * as globalCoordinatorsActions from './logic/globalCoordinatorsActions';
 import * as appActions from '../app/logic/appActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import GlobalCoordinatorsTable from './GlobalCoordinatorsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { accessMap } from '../../authentication/accessMap';
 
 const GlobalCoordinatorsListPageComponent = (props) => {
   useMount(() => {
@@ -22,9 +22,9 @@ const GlobalCoordinatorsListPageComponent = (props) => {
   return (
     <Fragment>
       <TableActions>
-        <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
+        <TableActionsButton onClick={props.goToCreation} roles={accessMap.globalCoordinators.add} icon={<AddIcon />}>
           {strings(stringKeys.globalCoordinator.addNew)}
-       </Button>
+        </TableActionsButton>
       </TableActions>
 
       <GlobalCoordinatorsTable

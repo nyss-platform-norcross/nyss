@@ -11,8 +11,8 @@ import { strings, stringKeys } from '../../strings';
 import { createForm, validators } from '../../utils/forms';
 import PasswordInputField from '../forms/PasswordInputField';
 import * as authActions from '../../authentication/authActions';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
 import queryString from 'query-string';
+import { ValidationMessage } from '../forms/ValidationMessage';
 
 class ResetPasswordCallbackPageComponent extends PureComponent {
   constructor(props) {
@@ -52,14 +52,10 @@ class ResetPasswordCallbackPageComponent extends PureComponent {
           <div className={styles.loginPaperContent}>
             <Typography variant="h2">{strings(stringKeys.user.resetPassword.enterNewPassword)}</Typography>
 
-            {this.props.resetPasswordCallbackErrorMessage &&
-              <SnackbarContent
-                message={this.props.resetPasswordCallbackErrorMessage}
-              />
-            }
+            {this.props.resetPasswordCallbackErrorMessage && <ValidationMessage message={this.props.resetPasswordCallbackErrorMessage} />}
 
             <form onSubmit={this.handleSubmit}>
-              
+
               <PasswordInputField
                 label={strings(stringKeys.user.verifyEmail.password)}
                 name="password"

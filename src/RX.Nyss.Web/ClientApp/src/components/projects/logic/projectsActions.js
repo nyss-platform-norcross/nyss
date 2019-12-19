@@ -36,7 +36,7 @@ export const create = {
   invoke: (nationalSocietyId, data) => ({ type: CREATE_PROJECT.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: CREATE_PROJECT.REQUEST }),
   success: () => ({ type: CREATE_PROJECT.SUCCESS }),
-  failure: (message) => ({ type: CREATE_PROJECT.FAILURE, message })
+  failure: (message) => ({ type: CREATE_PROJECT.FAILURE, message, suppressPopup: true })
 };
 
 export const openEdition = {
@@ -50,7 +50,7 @@ export const edit = {
   invoke: (nationalSocietyId, projectId, data) => ({ type: EDIT_PROJECT.INVOKE, nationalSocietyId, projectId, data }),
   request: () => ({ type: EDIT_PROJECT.REQUEST }),
   success: () => ({ type: EDIT_PROJECT.SUCCESS }),
-  failure: (message) => ({ type: EDIT_PROJECT.FAILURE, message })
+  failure: (message) => ({ type: EDIT_PROJECT.FAILURE, message, suppressPopup: true })
 };
 
 export const remove = {

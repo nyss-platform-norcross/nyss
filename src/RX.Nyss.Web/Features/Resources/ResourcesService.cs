@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Resources.Dto;
 using RX.Nyss.Web.Services.StringsResources;
 using RX.Nyss.Web.Utils.DataContract;
@@ -20,17 +21,25 @@ namespace RX.Nyss.Web.Features.Resources
     {
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly INyssContext _nyssContext;
+        private readonly IConfig _config;
 
         public ResourcesService(
             IStringsResourcesService stringsResourcesService,
-            INyssContext nyssContext)
+            INyssContext nyssContext,
+            IConfig config)
         {
             _stringsResourcesService = stringsResourcesService;
             _nyssContext = nyssContext;
+            _config = config;
         }
 
         public async Task<Result<GetStringResponseDto>> GetString(string key)
         {
+            if (_config.IsProduction)
+            {
+                return Error<GetStringResponseDto>(ResultKey.UnexpectedError);
+            }
+
             var stringsBlob = await _stringsResourcesService.GetStringsBlob();
             var entry = stringsBlob.Strings.FirstOrDefault(x => x.Key == key);
 
@@ -59,6 +68,11 @@ namespace RX.Nyss.Web.Features.Resources
 
         public async Task<Result<string>> SaveString(SaveStringRequestDto dto)
         {
+            if (_config.IsProduction)
+            {
+                return Error<string>(ResultKey.UnexpectedError);
+            }
+
             var stringsBlob =  await _stringsResourcesService.GetStringsBlob();
             var strings = stringsBlob.Strings.ToList();
             var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
