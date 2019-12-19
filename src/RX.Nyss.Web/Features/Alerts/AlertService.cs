@@ -121,7 +121,8 @@ namespace RX.Nyss.Web.Features.Alerts
                         ReportedCase = ar.Report.ReportedCase,
                         Status = ar.Report.Status
                     }),
-                    NotificationEmails = a.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList()
+                    NotificationEmails = a.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList(),
+                    NotificationPhoneNumbers = a.ProjectHealthRisk.Project.SmsAlertRecipients.Select(sar => sar.PhoneNumber).ToList()
                 })
                 .AsNoTracking()
                 .SingleAsync();
@@ -138,7 +139,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(alert.CreatedAt, projectTimeZone),
                 CaseDefinition = alert.CaseDefinition,
                 NotificationEmails = alert.NotificationEmails,
-                NotificationPhoneNumbers = new string[0], // TODO
+                NotificationPhoneNumbers = alert.NotificationPhoneNumbers,
                 AssessmentStatus = GetAlertAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 Reports = alert.Reports.Select(ar => new AlertAssessmentResponseDto.ReportDto
                 {
@@ -172,7 +173,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     Project = alert.ProjectHealthRisk.Project.Name,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
                     NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ear => ear.EmailAddress).ToList(),
-                    NotifiactionSmses = alert.ProjectHealthRisk.Project.SmsAlertRecipients.Select(sar => sar.PhoneNumber).ToList(),
+                    NotificationPhoneNumbers = alert.ProjectHealthRisk.Project.SmsAlertRecipients.Select(sar => sar.PhoneNumber).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
                     AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted),
                     NationalSocietyId = alert.ProjectHealthRisk.Project.NationalSociety.Id
@@ -190,7 +191,7 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-            await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotifiactionSmses, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+            await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
 
             alertData.Alert.Status = AlertStatus.Escalated;
             await _nyssContext.SaveChangesAsync();
