@@ -230,9 +230,31 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
         private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
         {
-            if (dataCollector.DataCollectorType != parsedReport.DataCollectorType)
+            switch (dataCollector.DataCollectorType)
             {
-                throw new ReportValidationException($"A detected Data Collector type ('{parsedReport.DataCollectorType}') is different than the real Data Collector type {dataCollector.DataCollectorType}.");
+                case DataCollectorType.Human:
+                    if (parsedReport.ReportType != ReportType.Single &&
+                        parsedReport.ReportType != ReportType.Aggregate &&
+                        parsedReport.ReportType != ReportType.NonHuman &&
+                        parsedReport.ReportType != ReportType.Activity)
+                    {
+                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
+                                                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.NonHuman}', '{ReportType.Activity}'.");
+                    }
+
+                    break;
+                case DataCollectorType.CollectionPoint:
+                    if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
+                        parsedReport.ReportType != ReportType.NonHuman &&
+                        parsedReport.ReportType != ReportType.Activity)
+                    {
+                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
+                                                            $"'{ReportType.DataCollectionPoint}', '{ReportType.NonHuman}', '{ReportType.Activity}'.");
+                    }
+                    
+                    break;
+                default:
+                    throw new ReportValidationException($"A data collector of type '{dataCollector.DataCollectorType}' is not supported.");
             }
 
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
@@ -258,23 +280,71 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                                     $"females at least five: {parsedReport.ReportedCase.CountFemalesAtLeastFive}).");
             }
 
+            if (parsedReport.ReportType == ReportType.DataCollectionPoint &&
+                parsedReport.ReportedCase.CountMalesBelowFive == 0 &&
+                parsedReport.ReportedCase.CountMalesAtLeastFive == 0 &&
+                parsedReport.ReportedCase.CountFemalesBelowFive == 0 &&
+                parsedReport.ReportedCase.CountFemalesAtLeastFive == 0 &&
+                parsedReport.DataCollectionPointCase.ReferredCount == 0 &&
+                parsedReport.DataCollectionPointCase.DeathCount == 0 &&
+                parsedReport.DataCollectionPointCase.FromOtherVillagesCount == 0)
+            {
+                throw new ReportValidationException("At least one number in data collection point report must be greater than 0 " +
+                                                    $"(males below five: {parsedReport.ReportedCase.CountMalesBelowFive}, " +
+                                                    $"males at least five: {parsedReport.ReportedCase.CountMalesAtLeastFive}, " +
+                                                    $"females below five: {parsedReport.ReportedCase.CountFemalesBelowFive}, " +
+                                                    $"females at least five: {parsedReport.ReportedCase.CountFemalesAtLeastFive}, " +
+                                                    $"referred to a health facility: {parsedReport.DataCollectionPointCase.ReferredCount}, " +
+                                                    $"died in the ORP: {parsedReport.DataCollectionPointCase.DeathCount}, " +
+                                                    $"came from other villages: {parsedReport.DataCollectionPointCase.FromOtherVillagesCount})");
+            }
+
             switch (parsedReport.ReportType)
             {
-                case ReportType.Single when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human:
-                    throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.");
-                case ReportType.Aggregate when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human:
-                    throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.");
-                case ReportType.NonHuman when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
-                                              projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent:
-                    throw new ReportValidationException(
-                        $"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.");
-                case ReportType.Activity when projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity:
-                    throw new ReportValidationException($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.");
+                case ReportType.Single:
+                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
+                    {
+                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                    }
+
+                    break;
+                case ReportType.Aggregate:
+                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
+                    {
+                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                    }
+
+                    break;
+                case ReportType.NonHuman:
+                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent)
+                    {
+                        throw new ReportValidationException(
+                            $"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.");
+                    }
+
+                    break;
+                case ReportType.Activity:
+                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                    {
+                        throw new ReportValidationException($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.");
+                    }
+
+                    break;
                 case ReportType.DataCollectionPoint:
-                    //ToDo: implement DataCollectionPoint logic
+                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                    {
+                        throw new ReportValidationException(
+                            $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}', '{HealthRiskType.NonHuman}', " +
+                            $"'{HealthRiskType.UnusualEvent}', '{HealthRiskType.Activity}' event only.");
+                    }
+
                     break;
                 default:
-                    break;
+                    throw new ReportValidationException($"A report of type '{parsedReport.ReportType}' is not supported.");
             }
 
             return projectHealthRisk;

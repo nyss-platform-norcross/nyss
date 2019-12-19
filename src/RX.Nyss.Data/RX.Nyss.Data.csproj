@@ -5,13 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Migrations\20191129104638_AddDataCollectorRelationToRawReports.cs" />
-    <Compile Remove="Migrations\20191129104638_AddDataCollectorRelationToRawReports.Designer.cs" />
-    <Compile Remove="Migrations\20191206100200_AddTheIsTrainingFlagToRawReports.cs" />
-    <Compile Remove="Migrations\20191206100200_AddTheIsTrainingFlagToRawReports.Designer.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design	" Version="3.1.0" />
