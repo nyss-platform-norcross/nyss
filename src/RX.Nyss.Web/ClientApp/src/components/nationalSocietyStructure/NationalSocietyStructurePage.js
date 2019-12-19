@@ -32,6 +32,9 @@ const NationalSocietyStructurePageComponent = (props) => {
         isFetching={isFetching}
         nationalSocietyId={nationalSocietyId}
 
+        expandedItems={props.expandedItems}
+        updateExpandedItems={props.updateExpandedItems}
+
         createRegion={props.createRegion}
         editRegion={props.editRegion}
         removeRegion={props.removeRegion}
@@ -58,11 +61,14 @@ const mapStateToProps = (state, ownProps) => ({
   regions: state.nationalSocietyStructure.regions,
   districts: state.nationalSocietyStructure.districts,
   villages: state.nationalSocietyStructure.villages,
-  zones: state.nationalSocietyStructure.zones
+  zones: state.nationalSocietyStructure.zones,
+  expandedItems: state.nationalSocietyStructure.expandedItems
 });
 
 const mapDispatchToProps = {
   openStructure: nationalSocietyStructureActions.openStructure.invoke,
+
+  updateExpandedItems: nationalSocietyStructureActions.updateExpandedItems,
 
   createRegion: nationalSocietyStructureActions.createRegion.invoke,
   editRegion: nationalSocietyStructureActions.editRegion.invoke,

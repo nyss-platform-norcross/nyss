@@ -108,6 +108,8 @@ export const NationalSocietyStructureTree = (props) => {
       defaultCollapseIcon={<ExpandMoreIcon />}
       defaultExpandIcon={<ChevronRightIcon />}
       className={styles.tree}
+      expanded={props.expandedItems}
+      onNodeToggle={(e, items) => props.updateExpandedItems(items)}
     >
       {renderRegions(regions)}
     </TreeView>
