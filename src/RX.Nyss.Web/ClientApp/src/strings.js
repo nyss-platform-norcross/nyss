@@ -342,7 +342,12 @@ export const stringKeys = {
       }
     },
     mapOverview: {
-      title: "dataCollectors.mapOverview.title"
+      title: "dataCollectors.mapOverview.title",
+      legend: {
+        "ReportingCorrectly": "dataCollectors.mapOverview.legend.reportingCorrectly",
+        "NotReporting": "dataCollectors.mapOverview.legend.notReporting",
+        "ReportingWithErrors": "dataCollectors.mapOverview.legend.reportingWithErrors"
+      }
     }
   },
   reports: {

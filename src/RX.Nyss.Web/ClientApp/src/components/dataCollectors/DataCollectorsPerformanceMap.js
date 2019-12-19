@@ -1,26 +1,65 @@
 import styles from "./DataCollectorsPerformanceMap.module.scss"
 
 import React, { useState, useEffect } from 'react';
-import { Map, TileLayer, Popup } from 'react-leaflet';
+import { Map, TileLayer, Popup, Marker } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { Loading } from "../common/loading/Loading";
 import Icon from "@material-ui/core/Icon";
-import CircleMapMarker from "../common/map/CircleMapMarker";
-import { ClusterIcon } from "../common/map/ClusterIcon";
 import { calculateBounds } from "../../utils/map";
+import { SignIcon } from "../common/map/MarkerIcon";
+import { getMarkerIconFromStatus } from "./logic/dataCollectorsService";
+import { performanceStatus } from "./logic/dataCollectorsConstants";
 
 const createClusterIcon = (cluster) => {
   const data = cluster.getAllChildMarkers().map(m => m.options.dataCollectorInfo);
-  const isInvalid = data.some(d => d.countNotReporting || d.countReportingWithErrors);
-  return ClusterIcon({ cluster, isValid: !isInvalid });
+
+  const aggregatedData = {
+    countReportingCorrectly: data.some(d => d.countReportingCorrectly),
+    countReportingWithErrors: data.some(d => d.countReportingWithErrors),
+    countNotReporting: data.some(d => d.countNotReporting)
+  }
+
+  const status = getAggregatedStatus(aggregatedData);
+
+  return new SignIcon({
+    icon: getMarkerIconFromStatus(status),
+    className: styles[`marker_${status}`],
+    size: 40,
+    multiple: true
+  });
+}
+
+const createIcon = (info) => {
+  const status = getAggregatedStatus(info);
+
+  return new SignIcon({
+    icon: getMarkerIconFromStatus(status),
+    className: styles[`marker_${status}`],
+    size: 40
+  });
+}
+
+const getAggregatedStatus = (info) => {
+  if (info.countReportingWithErrors) {
+    return performanceStatus.reportingWithErrors;
+  }
+
+  if (info.countNotReporting) {
+    return performanceStatus.notReporting;
+  }
+
+  return performanceStatus.reportingCorrectly;
 }
 
 export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLocations, projectId, details, getMapDetails, detailsFetching }) => {
   const [bounds, setBounds] = useState(null);
+  const [center, setCenter] = useState(null);
 
   useEffect(() => {
-    setBounds(dataCollectorLocations.length > 1 ? calculateBounds(dataCollectorLocations) : null)
-  }, [dataCollectorLocations])
+    const hasLocations = dataCollectorLocations.length > 1;
+    setBounds(hasLocations ? calculateBounds(dataCollectorLocations) : null)
+    setCenter(hasLocations ? null : { lat: centerLocation.latitude, lng: centerLocation.longitude })
+  }, [dataCollectorLocations, centerLocation])
 
   if (!centerLocation) {
     return null;
@@ -29,18 +68,9 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
   const handleMarkerClick = e =>
     getMapDetails(projectId, e.latlng.lat, e.latlng.lng);
 
-  const getIconFromStatus = (status) => {
-    switch (status) {
-      case "ReportingCorrectly": return "check";
-      case "ReportingWithErrors": return "cancel";
-      case "NotReporting": return "hourglass_empty";
-      default: return "contact_support";
-    }
-  }
-
   return (
     <Map
-      center={{ lat: centerLocation.latitude, lng: centerLocation.longitude }}
+      center={center}
       length={4}
       bounds={bounds}
       zoom={5}
@@ -53,16 +83,13 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
         showCoverageOnHover={false}
         iconCreateFunction={createClusterIcon}>
         {dataCollectorLocations.map(dc => (
-          <CircleMapMarker
+          <Marker
             className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
             key={`marker_${dc.location.latitude}_${dc.location.longitude}`}
             position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
+            icon={createIcon(dc)}
             onclick={handleMarkerClick}
-            dataCollectorInfo={{
-              countReportingCorrectly: dc.countReportingCorrectly,
-              countReportingWithErrors: dc.countReportingWithErrors,
-              countNotReporting: dc.countNotReporting
-            }}
+            dataCollectorInfo={dc}
           >
             <Popup>
               <div className={styles.popup}>
@@ -71,7 +98,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
                     <div>
                       {details && details.map(d => (
                         <div key={`dataCollector_${d.id}`} className={styles.dataCollectorDetails}>
-                          <Icon>{getIconFromStatus(d.status)}</Icon>
+                          <Icon>{getMarkerIconFromStatus(d.status)}</Icon>
                           {d.displayName}
                         </div>
                       ))}
@@ -81,7 +108,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
                 }
               </div>
             </Popup>
-          </CircleMapMarker>
+          </Marker>
         ))}
       </MarkerClusterGroup>
     </Map>

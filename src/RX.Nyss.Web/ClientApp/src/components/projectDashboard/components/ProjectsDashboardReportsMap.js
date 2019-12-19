@@ -5,12 +5,28 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
-import CircleMapMarker from '../../common/map/CircleMapMarker';
-import { Map, TileLayer, Popup } from 'react-leaflet'
+import { Map, TileLayer, Popup, Marker } from 'react-leaflet'
 import { calculateBounds, calculateCenter } from '../../../utils/map';
-import { ClusterIcon } from '../../common/map/ClusterIcon';
 import { Loading } from '../../common/loading/Loading';
 import { strings, stringKeys } from "../../../strings";
+import { TextIcon } from "../../common/map/MarkerIcon";
+
+const createClusterIcon = (cluster) => {
+  const count = cluster.getAllChildMarkers().reduce((sum, item) => item.options.reportsCount + sum, 0);
+
+  return new TextIcon({
+    size: 40,
+    text: count,
+    multiple: true
+  });
+}
+
+const createIcon = (count) => {
+  return new TextIcon({
+    size: 40,
+    text: count
+  });
+}
 
 export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, projectId, getReportHealthRisks }) => {
   const [bounds, setBounds] = useState(null);
@@ -22,7 +38,7 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
     }
 
     setBounds(data.length > 1 ? calculateBounds(data) : null)
-    setCenter(calculateCenter(data.map(l => ({ lat: l.location.latitude, lng: l.location.longitude }))));
+    setCenter(data.length > 1 ? null : calculateCenter(data.map(l => ({ lat: l.location.latitude, lng: l.location.longitude }))));
   }, [data])
 
   const handleMarkerClick = e =>
@@ -47,11 +63,13 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
 
           <MarkerClusterGroup
             showCoverageOnHover={false}
-            iconCreateFunction={cluster => ClusterIcon({ cluster })}>
+            iconCreateFunction={createClusterIcon}>
             {data && data.map(point =>
-              <CircleMapMarker
+              <Marker
                 key={`marker_${point.location.latitude}_${point.location.longitude}`}
                 position={{ lat: point.location.latitude, lng: point.location.longitude }}
+                icon={createIcon(point.reportsCount)}
+                reportsCount={point.reportsCount}
                 onclick={handleMarkerClick}
               >
                 <Popup>
@@ -71,7 +89,7 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
                     }
                   </div>
                 </Popup>
-              </CircleMapMarker>
+              </Marker>
             )}
           </MarkerClusterGroup>
         </Map>

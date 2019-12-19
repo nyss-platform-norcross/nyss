@@ -41,9 +41,6 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
     case actions.OPEN_DATA_COLLECTOR_CREATION.FAILURE:
       return { ...state, formFetching: false, formError: action.message };
 
-    case actions.GET_DATA_COLLECTORS_MAP_OVERVIEW.REQUEST:
-      return { ...state, mapOverviewCenterLocation: null, mapOverviewDataCollectorLocations: [] };
-
     case actions.GET_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS:
       return { ...state, mapOverviewFilters: action.filters, mapOverviewCenterLocation: action.centerLocation , mapOverviewDataCollectorLocations: action.dataCollectorLocations };
 
