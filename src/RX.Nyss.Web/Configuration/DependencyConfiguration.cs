@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -87,35 +88,18 @@ namespace RX.Nyss.Web.Configuration
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
             });
-
-            serviceCollection.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.SaveToken = true;
-                    options.RequireHttpsMetadata = false;
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidAudience = authenticationOptions.Audience,
-                        ValidIssuer = authenticationOptions.Issuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationOptions.Secret))
-                    };
-                });
             
             RegisterAuthorizationPolicies(serviceCollection);
 
             serviceCollection.ConfigureApplicationCookie(options =>
             {
+                options.Cookie.Name = authenticationOptions.CookieName;
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(authenticationOptions.CookieExpirationTime);
+                options.SlidingExpiration = true;
+
                 options.Events.OnRedirectToLogin = context =>
                 {
-                    if (IsAjaxRequest(context.Request) ||
-                        IsApiRequest(context.Request))
+                    if (IsAjaxRequest(context.Request) || IsApiRequest(context.Request))
                     {
                         context.Response.Clear();
                         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -180,7 +164,6 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.AlertAccess.ToString(),
                     policy => policy.Requirements.Add(new AlertAccessRequirement()));
-
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
@@ -236,28 +219,6 @@ namespace RX.Nyss.Web.Configuration
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
-
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please insert JWT with Bearer into field",
-                    Name = "Authorization", 
-                    Type = SecuritySchemeType.ApiKey
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
-                    {
-                        new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            }
-                        }, 
-                        new string[] { }
-                    }
-                });
             });
 
         private static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssConfig config)

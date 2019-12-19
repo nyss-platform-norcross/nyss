@@ -1,5 +1,4 @@
 import { siteMap } from "../siteMap";
-import { getAccessTokenData } from "../authentication/auth";
 
 const findClosestMenu = (breadcrumb, placeholder, pathForMenu) => {
   for (let i = breadcrumb.length - 1; i >= 0; i--) {
@@ -9,13 +8,12 @@ const findClosestMenu = (breadcrumb, placeholder, pathForMenu) => {
   }
 };
 
-export const getMenu = (pathForMenu, parameters, placeholder, currentPath) => {
-  const breadcrumb = getBreadcrumb(currentPath, parameters);
+export const getMenu = (pathForMenu, parameters, placeholder, currentPath, authUser) => {
+  const breadcrumb = getBreadcrumb(currentPath, parameters, authUser);
   const closestMenuPath = findClosestMenu(breadcrumb, placeholder, pathForMenu);
-  const authUser = getAccessTokenData();
 
   const filteredSiteMap = siteMap
-    .filter(item => item.parentPath === closestMenuPath && item.placeholder && item.placeholder === placeholder && item.access.some(role => role === authUser.role));
+    .filter(item => item.parentPath === closestMenuPath && item.placeholder && item.placeholder === placeholder && item.access.some(role => authUser.roles.some(r => r === role)));
 
   filteredSiteMap
     .sort((a, b) => a.placeholderIndex - b.placeholderIndex);
@@ -28,9 +26,7 @@ export const getMenu = (pathForMenu, parameters, placeholder, currentPath) => {
     }))
 };
 
-export const getBreadcrumb = (path, siteMapParameters) => {
-  const authUser = getAccessTokenData();
-
+export const getBreadcrumb = (path, siteMapParameters, authUser) => {
   if (!authUser || !path) {
     return [];
   }
@@ -39,7 +35,7 @@ export const getBreadcrumb = (path, siteMapParameters) => {
   let hierarchy = [];
 
   while (true) {
-    const hasAccess = !currentItem.access || !currentItem.access.length || currentItem.access.some(role => role === authUser.role);
+    const hasAccess = !currentItem.access || !currentItem.access.length || currentItem.access.some(role => authUser.roles.some(r => r === role));
 
     if (hasAccess) {
       hierarchy.splice(0, 0, {

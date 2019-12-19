@@ -1,35 +1,48 @@
-import { call, put, takeEvery, select, delay } from "redux-saga/effects";
+import { call, put, takeEvery, takeLatest, select, delay } from "redux-saga/effects";
 import * as consts from "./appConstans";
 import * as actions from "./appActions";
 import { updateStrings, toggleStringsMode } from "../../../strings";
 import * as http from "../../../utils/http";
-import {  removeAccessToken, isAccessTokenSet } from "../../../authentication/auth";
 import { push } from "connected-react-router";
 import { placeholders } from "../../../siteMapPlaceholders";
 import { getBreadcrumb, getMenu } from "../../../utils/siteMapService";
 import * as cache from "../../../utils/cache";
+import { reloadPage } from "../../../utils/page";
 
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
   takeEvery(consts.OPEN_MODULE.INVOKE, openModule),
   takeEvery(consts.ENTITY_UPDATED, entityUpdated),
   takeEvery(consts.SWITCH_STRINGS, switchStrings),
+  takeLatest("*", checkLogin)
 ];
 
 function* initApplication() {
   yield put(actions.initApplication.request());
   try {
-    const user = yield call(getAndVerifyUser);
+    const user = yield select(state => state.appData.user);
     yield call(getAppData);
     yield call(getStrings, user ? user.languageCode : "en");
     yield put(actions.initApplication.success());
-    if (user.hasPendingHeadManagerConsents){
+    if (user && user.hasPendingHeadManagerConsents){
       yield put(actions.goToHeadManagerConsents())
     }
   } catch (error) {
     yield put(actions.initApplication.failure(error.message));
   }
 };
+
+function* checkLogin() {
+  const authCookieExpiration = yield select(state => state.appData.authCookieExpiration);
+
+  if (!authCookieExpiration)
+  {
+    return;
+  }
+
+  yield delay((authCookieExpiration + 1) * 60 * 1000);
+  reloadPage();
+}
 
 function* switchStrings() {
   yield put(actions.setAppReady(false));
@@ -53,64 +66,22 @@ function* switchStrings() {
 function* openModule({ path, params }) {
   path = path || (yield select(state => state.appData.route && state.appData.route.path));
 
-  const breadcrumb = getBreadcrumb(path, params);
-  const topMenu = getMenu("/", params, placeholders.topMenu, path);
-  const sideMenu = getMenu(path, params, placeholders.leftMenu, path);
-  const tabMenu = getMenu(path, params, placeholders.tabMenu, path);
+  const user = yield select(state => state.appData.user);
 
+  const breadcrumb = getBreadcrumb(path, params, user);
+  const topMenu = getMenu("/", params, placeholders.topMenu, path, user);
+  const sideMenu = getMenu(path, params, placeholders.leftMenu, path, user);
+  const tabMenu = getMenu(path, params, placeholders.tabMenu, path, user);
 
   yield put(actions.openModule.success(path, params, breadcrumb, topMenu, sideMenu, tabMenu, params.title))
 }
-
-function* reloadPage() {
-  const pathname = yield select(state => state.router.location.pathname);
-  yield put(push(pathname));
-}
-
-function* getAndVerifyUser() {
-  if (!isAccessTokenSet()) {
-    return null;
-  }
-
-  const user = yield call(getUserStatus);
-
-  if (!user) {
-    removeAccessToken();
-    yield reloadPage();
-    return null;
-  }
-
-  return user;
-};
-
-function* getUserStatus() {
-  yield put(actions.getUser.request());
-  try {
-    const status = yield call(http.get, "/api/authentication/status");
-
-    const user = status.value.isAuthenticated
-      ? {
-        name: status.value.userData.name,
-        email: status.value.userData.email,
-        roles: status.value.userData.roles,
-        languageCode: status.value.userData.languageCode,
-        homePage: status.value.userData.homePage,
-        hasPendingHeadManagerConsents: status.value.userData.hasPendingHeadManagerConsents
-      }
-      : null;
-
-    yield put(actions.getUser.success(status.value.isAuthenticated, user));
-    return user;
-  } catch (error) {
-    yield put(actions.getUser.failure(error.message));
-  }
-};
 
 function* getAppData() {
   yield put(actions.getAppData.request());
   try {
     const appData = yield call(http.get, "/api/appData/getAppData", true);
-    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries, appData.value.isDevelopment));
+    yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries, appData.value.isDevelopment, appData.value.authCookieExpiration));
+    return appData.value;
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }

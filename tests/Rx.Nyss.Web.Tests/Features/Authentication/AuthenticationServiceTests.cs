@@ -64,12 +64,9 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
 
             var user = new IdentityUser { UserName = UserName };
             var roles = new List<string> { "Admin" };
-            var additionalClaims = new List<Claim>();
-            const string expectedToken = "token1";
 
             _userIdentityService.Login(UserName, Password).Returns(user);
             _userIdentityService.GetRoles(user).Returns(roles);
-            _userIdentityService.CreateToken(UserName, roles, Arg.Any<IEnumerable<Claim>>()).Returns(expectedToken);
 
             var result = await _authenticationService.Login(new LoginRequestDto
             {
@@ -78,7 +75,6 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
             });
 
             result.IsSuccess.ShouldBeTrue();
-            result.Value.AccessToken.ShouldBe(expectedToken);
         }
 
         [Fact]

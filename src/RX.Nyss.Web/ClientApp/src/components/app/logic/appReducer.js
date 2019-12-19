@@ -49,6 +49,7 @@ export function appReducer(state = initialState.appData, action) {
             name: action.user.name,
             email: action.user.email,
             roles: action.user.roles,
+            languageCode: action.user.languageCode,
             homePage: action.user.homePage,
             hasPendingHeadManagerConsents: action.user.hasPendingHeadManagerConsents
           }
@@ -59,6 +60,7 @@ export function appReducer(state = initialState.appData, action) {
       return {
         ...state,
         contentLanguages: action.contentLanguages,
+        authCookieExpiration: action.authCookieExpiration,
         countries: action.countries,
         isDevelopment: action.isDevelopment
       }
