@@ -20,7 +20,12 @@ namespace RX.Nyss.Web.Services
             var columnData = data.Select(x =>
             {
                 var type = typeof(T);
-                var rowValues = type.GetProperties().Select(p => $"\"{p.GetValue(x)?.ToString()}\"").ToList();
+                var rowValues = type.GetProperties().Select(p =>
+                {
+                    var formattingPrefix = p.PropertyType == typeof(string) ? "=" : string.Empty;
+                    return $"{formattingPrefix}\"{p.GetValue(x)}\"";
+                })
+                .ToList();
                 return rowValues;
             })
             .ToList();
@@ -28,11 +33,9 @@ namespace RX.Nyss.Web.Services
             var builder = new StringBuilder();
             builder.AppendLine(string.Join(";", columnLabels));
             columnData.ForEach(row =>
-            {
-                builder.AppendLine(string.Join(";", row));
-            });
+                builder.AppendLine(string.Join(";", row)));
 
-            return Encoding.UTF8.GetBytes(builder.ToString());
+            return Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(builder.ToString())).ToArray();
         }
     }
 }
