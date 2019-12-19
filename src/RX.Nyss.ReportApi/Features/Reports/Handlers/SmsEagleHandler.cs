@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -84,67 +85,50 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         ModemNumber = modemNumber,
                         ApiKey = apiKey
                     };
+                    await _nyssContext.AddAsync(rawReport);
 
-                await _nyssContext.AddAsync(rawReport);
-                await _nyssContext.SaveChangesAsync();
-
-                //ToDo: extract try-catch block to a separate service?
-            
-                gatewaySetting = await ValidateGatewaySetting(apiKey);
-                rawReport.NationalSociety = gatewaySetting.NationalSociety;
-                await _nyssContext.SaveChangesAsync();
-
-                var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSociety);
-                rawReport.DataCollector = dataCollector;
-                rawReport.IsTraining = dataCollector.IsInTrainingMode;
-                await _nyssContext.SaveChangesAsync();
-
-                var parsedReport = _reportMessageService.ParseReport(text);
-                projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
-
-                var receivedAt = ParseTimestamp(timestamp);
-                ValidateReceiptTime(receivedAt);
-                rawReport.ReceivedAt = receivedAt;
-                await _nyssContext.SaveChangesAsync();
-
-                var report = new Report
-                {
-                    IsTraining = dataCollector.IsInTrainingMode,
-                    ReportType = parsedReport.ReportType,
-                    Status = ReportStatus.New,
-                    ReceivedAt = receivedAt,
-                    CreatedAt = _dateTimeProvider.UtcNow,
-                    DataCollector = dataCollector,
-                    EpiWeek = _dateTimeProvider.GetEpiWeek(receivedAt),
-                    PhoneNumber = sender,
-                    Location = dataCollector.Location,
-                    ReportedCase = parsedReport.ReportedCase,
-                    KeptCase = new ReportCase
+                    var reportData = await ParseAndValidateReport(rawReport, parsedQueryString);
+                    if (reportData != null)
                     {
-                        CountMalesBelowFive = null,
-                        CountMalesAtLeastFive = null,
-                        CountFemalesBelowFive = null,
-                        CountFemalesAtLeastFive = null
-                    },
-                    DataCollectionPointCase = parsedReport.DataCollectionPointCase,
-                    ProjectHealthRisk = projectHealthRisk,
-                    Village = dataCollector.Village,
-                    Zone = dataCollector.Zone,
-                    ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
-                        ? parsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0 + parsedReport.ReportedCase.CountFemalesBelowFive ??
-                          0 + parsedReport.ReportedCase.CountMalesAtLeastFive ?? 0 + parsedReport.ReportedCase.CountMalesBelowFive ?? 0
-                        : 1
-                };
+                        gatewaySetting = reportData.GatewaySetting;
+                        projectHealthRisk = reportData.ProjectHealthRisk;
 
-                rawReport.Report = report;
-                
-                await _nyssContext.Reports.AddAsync(report);
+                        var report = new Report
+                        {
+                            IsTraining = reportData.DataCollector.IsInTrainingMode,
+                            ReportType = reportData.ParsedReport.ReportType,
+                            Status = ReportStatus.New,
+                            ReceivedAt = reportData.ReceivedAt,
+                            CreatedAt = _dateTimeProvider.UtcNow,
+                            DataCollector = reportData.DataCollector,
+                            EpiWeek = _dateTimeProvider.GetEpiWeek(reportData.ReceivedAt),
+                            PhoneNumber = sender,
+                            Location = reportData.DataCollector.Location,
+                            ReportedCase = reportData.ParsedReport.ReportedCase,
+                            KeptCase = new ReportCase
+                            {
+                                CountMalesBelowFive = null,
+                                CountMalesAtLeastFive = null,
+                                CountFemalesBelowFive = null,
+                                CountFemalesAtLeastFive = null
+                            },
+                            DataCollectionPointCase = reportData.ParsedReport.DataCollectionPointCase,
+                            ProjectHealthRisk = projectHealthRisk,
+                            Village = reportData.DataCollector.Village,
+                            Zone = reportData.DataCollector.Zone,
+                            ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
+                                ? reportData.ParsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0 + reportData.ParsedReport.ReportedCase.CountFemalesBelowFive ??
+                                  0 + reportData.ParsedReport.ReportedCase.CountMalesAtLeastFive ?? 0 + reportData.ParsedReport.ReportedCase.CountMalesBelowFive ?? 0
+                                : 1
+                        };
 
-                triggeredAlert = await _alertService.ReportAdded(report);
+                        rawReport.Report = report;
+                        await _nyssContext.Reports.AddAsync(report);
+                        triggeredAlert = await _alertService.ReportAdded(report);
+                    }
 
-                await _nyssContext.SaveChangesAsync();
-
-                transactionScope.Complete();
+                    await _nyssContext.SaveChangesAsync();
+                    transactionScope.Complete();
                 }
 
                 if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
@@ -161,6 +145,45 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             catch (ReportValidationException e)
             {
                 _loggerAdapter.Warn(e.Message);
+            }
+        }
+
+        private async Task<ReportData> ParseAndValidateReport(RawReport rawReport, NameValueCollection parsedQueryString)
+        {
+            try
+            {
+                var apiKey = parsedQueryString[ApiKeyParameterName];
+                var sender = parsedQueryString[SenderParameterName];
+                var timestamp = parsedQueryString[TimestampParameterName];
+                var text = parsedQueryString[TextParameterName];
+
+                var gatewaySetting = await ValidateGatewaySetting(apiKey);
+                rawReport.NationalSociety = gatewaySetting.NationalSociety;
+
+                var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSociety);
+                rawReport.DataCollector = dataCollector;
+                rawReport.IsTraining = dataCollector.IsInTrainingMode;
+
+                var parsedReport = _reportMessageService.ParseReport(text);
+                var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
+
+                var receivedAt = ParseTimestamp(timestamp);
+                ValidateReceivalTime(receivedAt);
+                rawReport.ReceivedAt = receivedAt;
+
+                return new ReportData
+                {
+                    DataCollector = dataCollector,
+                    ProjectHealthRisk = projectHealthRisk,
+                    ReceivedAt = receivedAt,
+                    GatewaySetting = gatewaySetting,
+                    ParsedReport = parsedReport
+                };
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Warn(e.Message);
+                return null;
             }
         }
 
@@ -281,13 +304,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private void ValidateReceiptTime(DateTime receivedAt)
+        private void ValidateReceivalTime(DateTime receivedAt)
         {
             const int maxAllowedPrecedenceInMinutes = 3;
 
             if (receivedAt > _dateTimeProvider.UtcNow.AddMinutes(maxAllowedPrecedenceInMinutes))
             {
-                throw new ReportValidationException("The receipt time cannot be in the future.");
+                throw new ReportValidationException("The receival time cannot be in the future.");
             }
         }
     }
