@@ -15,6 +15,7 @@ namespace RX.Nyss.Web.Services.StringsResources
         Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode);
         Task<StringsBlob> GetStringsBlob();
         Task SaveStringsBlob(StringsBlob blob);
+        Task<Result<IDictionary<string, string>>> GetSmsContentResources(string languageCode);
     }
 
     public class StringsResourcesService : IStringsResourcesService
@@ -32,9 +33,6 @@ namespace RX.Nyss.Web.Services.StringsResources
 
         public async Task<Result<IDictionary<string, string>>> GetStringsResources(string languageCode)
         {
-            string GetTranslation(IDictionary<string, string> translations) =>
-                translations.ContainsKey(languageCode) ? translations[languageCode] : default;
-
             try
             {
                 var stringBlob = await GetStringsBlob();
@@ -43,7 +41,7 @@ namespace RX.Nyss.Web.Services.StringsResources
                     .Select(entry => new
                     {
                         entry.Key,
-                        Value = GetTranslation(entry.Translations) ?? entry.DefaultValue ?? entry.Key
+                        Value = entry.GetTranslation(languageCode)
                     }).ToDictionary(x => x.Key, x => x.Value);
 
                 return Success<IDictionary<string, string>>(dictionary);
@@ -57,9 +55,6 @@ namespace RX.Nyss.Web.Services.StringsResources
 
         public async Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode)
         {
-            string GetTranslation(IDictionary<string, string> translations) =>
-                translations.ContainsKey(languageCode) ? translations[languageCode] : default;
-
             try
             {
                 var emailContentsBlob = await GetEmailContentBlob();
@@ -68,7 +63,7 @@ namespace RX.Nyss.Web.Services.StringsResources
                     .Select(entry => new
                     {
                         entry.Key,
-                        Value = GetTranslation(entry.Translations) ?? entry.DefaultValue ?? entry.Key
+                        Value = entry.GetTranslation(languageCode)
                     })
                     .OrderBy(x => x.Key)
                     .ToDictionary(x => x.Key, x => x.Value);
@@ -78,6 +73,30 @@ namespace RX.Nyss.Web.Services.StringsResources
             catch (Exception exception)
             {
                 _logger.LogError(exception, "There was a problem during fetching the email contents resources");
+                return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
+            }
+        }
+
+        public async Task<Result<IDictionary<string, string>>> GetSmsContentResources(string languageCode)
+        {
+            try
+            {
+                var smsContentBlob = await GetSmsContentBlob();
+
+                var dictionary = smsContentBlob.Strings
+                    .Select(entry => new
+                    {
+                        entry.Key,
+                        Value = entry.GetTranslation(languageCode)
+                    })
+                    .OrderBy(x => x.Key)
+                    .ToDictionary(x => x.Key, x => x.Value);
+
+                return Success<IDictionary<string, string>>(dictionary);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "There was a problem during fetching the Sms contents resources");
                 return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
             }
         }
@@ -102,9 +121,19 @@ namespace RX.Nyss.Web.Services.StringsResources
             await _nyssBlobProvider.SaveStringsResources(blobValue);
         }
 
-        public async Task<StringsBlob> GetEmailContentBlob()
+        private async Task<StringsBlob> GetEmailContentBlob()
         {
             var blobValue = await _nyssBlobProvider.GetEmailContentResources();
+
+            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+        }
+
+        private async Task<StringsBlob> GetSmsContentBlob()
+        {
+            var blobValue = await _nyssBlobProvider.GetSmsContentResources();
 
             return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions
             {

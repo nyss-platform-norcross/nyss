@@ -35,17 +35,20 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly INyssContext _nyssContext;
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
+        private readonly ISmsTextGeneratorService _smsTextGeneratorService;
         private readonly IConfig _config;
 
         public AlertService(
             INyssContext nyssContext,
             IEmailPublisherService emailPublisherService,
             IEmailTextGeneratorService emailTextGeneratorService,
-            IConfig config)
+            IConfig config,
+            ISmsTextGeneratorService smsTextGeneratorService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
             _emailTextGeneratorService = emailTextGeneratorService;
+            _smsTextGeneratorService = smsTextGeneratorService;
             _config = config;
         }
 
@@ -171,7 +174,8 @@ namespace RX.Nyss.Web.Features.Alerts
                     NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ear => ear.EmailAddress).ToList(),
                     NotifiactionSmses = alert.ProjectHealthRisk.Project.SmsAlertRecipients.Select(sar => sar.PhoneNumber).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
-                    AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted)
+                    AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted),
+                    NationalSocietyId = alert.ProjectHealthRisk.Project.NationalSociety.Id
                 })
                 .SingleAsync();
 
@@ -186,7 +190,7 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-            await SendNotificationSmses(alertData.Alert.Id, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotifiactionSmses, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+            await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotifiactionSmses, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
 
             alertData.Alert.Status = AlertStatus.Escalated;
             await _nyssContext.SaveChangesAsync();
@@ -348,13 +352,14 @@ namespace RX.Nyss.Web.Features.Alerts
             }
         }
 
-        private async Task SendNotificationSmses(int alertId, string lastReportApiKey, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk, string lastReportVillage)
+        private async Task SendNotificationSmses(int nationalSocietyId, string lastReportApiKey, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk, string lastReportVillage)
         {
             var lastUsedGatewaySettings = await _nyssContext.GatewaySettings.Where(gs => gs.ApiKey == lastReportApiKey).FirstOrDefaultAsync();
             var gatewayEmail = lastUsedGatewaySettings?.EmailAddress ??
-                (await _nyssContext.GatewaySettings.Where(gs => gs.NationalSocietyId == alertId).FirstAsync()).EmailAddress;
+                (await _nyssContext.GatewaySettings.Where(gs => gs.NationalSocietyId == nationalSocietyId).FirstAsync()).EmailAddress;
+            
+            var text = await _smsTextGeneratorService.GenerateEscalatedAlertSms(languageCode);
 
-            var text = "An alert of {healthRisk} has been escalated in project {project}. Last report is from {lastReportVillage}. Please follow up with relevant supervisor.";
             text = text
                 .Replace("{project}", project)
                 .Replace("{healthRisk}", healthRisk)
@@ -362,7 +367,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             foreach (var sms in notificationPhoneNumbers)
             {
-                await _emailPublisherService.SendEmail((gatewayEmail, "Miss Eagle"), sms, text);
+                await _emailPublisherService.SendEmail((gatewayEmail, gatewayEmail), sms, text, true);
             }
         }
     }

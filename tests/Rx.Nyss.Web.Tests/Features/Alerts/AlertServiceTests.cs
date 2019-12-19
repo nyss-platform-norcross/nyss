@@ -20,22 +20,29 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly INyssContext _nyssContext;
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
+        private readonly ISmsTextGeneratorService _smsTextGeneratorService;
         private readonly IConfig _config;
         private readonly AlertService _alertService;
         private readonly List<Alert> _alerts;
+        private readonly List<GatewaySetting> _gatewaySettings;
 
         public AlertServiceTests()
         {
             _nyssContext = Substitute.For<INyssContext>();
             _emailPublisherService = Substitute.For<IEmailPublisherService>();
             _emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
+            _smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
             _config = Substitute.For<IConfig>();
 
-            _alertService = new AlertService(_nyssContext, _emailPublisherService, _emailTextGeneratorService, _config);
+            _alertService = new AlertService(_nyssContext, _emailPublisherService, _emailTextGeneratorService, _config, _smsTextGeneratorService);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
             _nyssContext.Alerts.Returns(alertsDbSet);
+
+            _gatewaySettings = TestData.GetGatewaySettings();
+            var gatewaySettingsDbSet = _gatewaySettings.AsQueryable().BuildMockDbSet();
+            _nyssContext.GatewaySettings.Returns(gatewaySettingsDbSet);
 
             _emailTextGeneratorService.GenerateEscalatedAlertEmail(TestData.ContentLanguageCode)
                 .Returns((TestData.EscalationEmailSubject, TestData.EscalationEmailBody));
@@ -61,9 +68,19 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } }
+                new AlertReport { Report = new Report {
+                    Status = ReportStatus.Accepted,
+                    Village = new Village(),
+                    RawReport = new RawReport { ApiKey = TestData.ApiKey } } },
+                new AlertReport {
+                    Report = new Report {
+                    Status = ReportStatus.Accepted,
+                    Village = new Village(),
+                    RawReport = new RawReport { ApiKey = TestData.ApiKey } } },
+                new AlertReport { Report = new Report {
+                    Status = ReportStatus.Rejected,
+                    Village = new Village(),
+                    RawReport = new RawReport { ApiKey = TestData.ApiKey } } }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
@@ -75,26 +92,72 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         }
 
         [Fact]
-        public async Task EscalateAlert_WhenAlertMeetsTheCriteria_ShouldSendEmailMessages()
+        public async Task EscalateAlert_WhenAlertMeetsTheCriteria_ShouldSendEmailAndSmsMessages()
         {
             var emailAddress = "test@test.com";
+            var phonenumber = "+1234578";
+            var smsText = "hey";
+
+            _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } }
+                new AlertReport { Report = new Report {
+                    Status = ReportStatus.Accepted,
+                    Village = new Village(),
+                    RawReport = new RawReport {
+                        ApiKey = TestData.ApiKey
+                    } } }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-
             _alerts.First().ProjectHealthRisk.Project.EmailAlertRecipients = new List<EmailAlertRecipient>
             {
                 new EmailAlertRecipient { EmailAddress = emailAddress }
             };
+            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient>
+            {
+                new SmsAlertRecipient{ PhoneNumber= phonenumber }
+            };
+
 
             await _alertService.EscalateAlert(TestData.AlertId);
 
+            await _emailPublisherService.ReceivedWithAnyArgs(2).SendEmail((null, null), null, null);
+
             await _emailPublisherService.Received(1)
                 .SendEmail((emailAddress, emailAddress), TestData.EscalationEmailSubject, TestData.EscalationEmailBody);
+
+            await _emailPublisherService.Received(1)
+                .SendEmail((TestData.GatewayEmail, TestData.GatewayEmail), phonenumber, smsText, true);
+        }
+        [Fact]
+        public async Task EscalateAlert_WhenLastReportGatewayNotExists_ShouldSendSmsThroughFirstInSociety()
+        {
+            var phonenumber = "+1234578";
+            var smsText = "hey";
+            _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
+
+            _alerts.First().AlertReports = new List<AlertReport>
+            {
+                new AlertReport { Report = new Report {
+                    Status = ReportStatus.Accepted,
+                    Village = new Village(),
+                    RawReport = new RawReport {
+                        ApiKey = "Some_missing_key"
+                    } } }
+            };
+
+            _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
+            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient>
+            {
+                new SmsAlertRecipient{ PhoneNumber= phonenumber }
+            };
+            
+            await _alertService.EscalateAlert(TestData.AlertId);
+
+            await _emailPublisherService.Received(1)
+                .SendEmail((TestData.GatewayEmail, TestData.GatewayEmail), phonenumber, smsText, true);
         }
 
         [Fact]
@@ -102,7 +165,15 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } }
+                new AlertReport {
+                    Report = new Report {
+                        Status = ReportStatus.Accepted,
+                        Village = new Village(),
+                        RawReport = new RawReport {
+                            ApiKey = TestData.ApiKey
+                        }
+                    }
+                }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
@@ -205,9 +276,12 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             public const int AlertId = 1;
             public const int ReportId = 23;
             public const int ContentLanguageId = 4;
+            public const int NationalSocietyId = 5;
             public const string ContentLanguageCode = "en";
             public const string EscalationEmailSubject = "subject";
             public const string EscalationEmailBody = "body";
+            public const string ApiKey = "123";
+            public const string GatewayEmail = "gw1@example.com";
 
             public static List<Alert> GetAlerts() =>
                 new List<Alert>
@@ -223,7 +297,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 {
                                     Id = ReportId,
                                     Status = ReportStatus.Accepted,
-                                    Village = new Village()
+                                    Village = new Village(),
+                                    RawReport = new RawReport
+                                    {
+                                        ApiKey = ApiKey
+                                    }
                                 }
                             }
                         },
@@ -263,6 +341,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 },
                                 NationalSociety = new NationalSociety
                                 {
+                                    Id = NationalSocietyId,
                                     ContentLanguage = new ContentLanguage
                                     {
                                         Id = ContentLanguageId,
@@ -271,6 +350,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 }
                             }
                         }
+                    }
+                };
+
+            public static List<GatewaySetting> GetGatewaySettings() =>
+                new List<GatewaySetting>
+                {
+                    new GatewaySetting
+                    {
+                        ApiKey = ApiKey,
+                        GatewayType = GatewayType.SmsEagle,
+                        EmailAddress = GatewayEmail,
+                        NationalSocietyId = NationalSocietyId
                     }
                 };
         }
