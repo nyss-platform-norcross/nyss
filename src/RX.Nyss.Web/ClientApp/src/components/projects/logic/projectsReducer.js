@@ -57,7 +57,7 @@ export function projectsReducer(state = initialState.projects, action) {
       return { ...state, formSaving: false, listStale: true };
 
     case actions.EDIT_PROJECT.FAILURE:
-      return { ...state, formSaving: false };
+      return { ...state, formSaving: false, formError: action.message };
 
     case actions.REMOVE_PROJECT.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };

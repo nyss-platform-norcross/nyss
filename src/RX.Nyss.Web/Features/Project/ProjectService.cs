@@ -241,7 +241,7 @@ namespace RX.Nyss.Web.Features.Project
                 projectToUpdate.Name = projectRequestDto.Name;
                 projectToUpdate.TimeZone = projectRequestDto.TimeZoneId;
 
-                UpdateHealthRisks(projectToUpdate, projectRequestDto);
+                await UpdateHealthRisks(projectToUpdate, projectRequestDto);
 
                 UpdateEmailAlertRecipients(projectToUpdate, projectRequestDto);
                 UpdateSmsAlertRecipients(projectToUpdate, projectRequestDto);
@@ -257,17 +257,25 @@ namespace RX.Nyss.Web.Features.Project
             }
         }
 
-        private void UpdateHealthRisks(Nyss.Data.Models.Project projectToUpdate, ProjectRequestDto projectRequestDto)
+        private async Task UpdateHealthRisks(Nyss.Data.Models.Project projectToUpdate, ProjectRequestDto projectRequestDto)
         {
             var projectHealthRiskIdsFromDto = projectRequestDto.HealthRisks.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
-            var projectHealthRisksToDelete = projectToUpdate.ProjectHealthRisks.Where(ar => !projectHealthRiskIdsFromDto.Contains(ar.Id)).ToList();
 
-            if (projectHealthRisksToDelete.Any(phr => phr.Reports.Count > 0))
+            var projectHealthRisksToDelete = await _nyssContext.ProjectHealthRisks
+                .Where(phr => phr.Project.Id == projectToUpdate.Id && !projectHealthRiskIdsFromDto.Contains(phr.Id))
+                .Select(phr => new
+                {
+                    ProjectHealthRisk = phr,
+                    ReportCount = phr.Reports.Count
+                })
+                .ToListAsync();
+
+            if (projectHealthRisksToDelete.Any(phr => phr.ReportCount > 0))
             {
                 throw new ResultException(ResultKey.Project.HealthRiskContainsReports);
             }
 
-            _nyssContext.ProjectHealthRisks.RemoveRange(projectHealthRisksToDelete);
+            _nyssContext.ProjectHealthRisks.RemoveRange(projectHealthRisksToDelete.Select(phr => phr.ProjectHealthRisk));
 
             var projectHealthRisksToAdd = projectRequestDto.HealthRisks.Where(ar => ar.Id == null);
             foreach (var projectHealthRisk in projectHealthRisksToAdd)
