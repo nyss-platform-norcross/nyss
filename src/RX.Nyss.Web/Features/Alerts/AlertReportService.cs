@@ -44,10 +44,15 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (alertReport.Alert.Status != AlertStatus.Pending)
+            if (alertReport.Alert.Status == AlertStatus.Closed)
             {
                 return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportWrongAlertStatus);
             }
+
+            //if (alertReport.Alert.Status == AlertStatus.Rejected)
+            //{
+            //    return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportAlertNoLongerValid);
+            //}
 
             if (alertReport.Report.Status != ReportStatus.Pending)
             {
@@ -73,10 +78,15 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (alertReport.Alert.Status != AlertStatus.Pending)
+            if (alertReport.Alert.Status == AlertStatus.Closed)
             {
                 return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReportWrongAlertStatus);
             }
+
+            //if (alertReport.Alert.Status == AlertStatus.Rejected)
+            //{
+            //    return Error<DismissReportResponseDto>(ResultKey.Alert.AcceptReportAlertNoLongerValid);
+            //}
 
             if (alertReport.Report.Status != ReportStatus.Pending)
             {

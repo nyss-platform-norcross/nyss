@@ -72,6 +72,7 @@ function* acceptReport({ alertId, reportId }) {
       yield put(appActions.showMessage(stringKeys.alerts.assess.alert.escalationPossible, 20000));
     }
   } catch (error) {
+    yield put(appActions.showLocalizedMessage(stringKeys.alerts.assess.alert.dismissalPossible, 20000));
     yield put(actions.acceptReport.failure(reportId, error.message));
   }
 };

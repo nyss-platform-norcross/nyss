@@ -84,6 +84,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .OrderByDescending(a => a.CreatedAt)
                 .Page(pageNumber, rowsPerPage)
                 .AsNoTracking()
+                .AsNoTracking()
                 .ToListAsync();
 
             var dtos = alerts
@@ -226,12 +227,12 @@ namespace RX.Nyss.Web.Features.Alerts
                 })
                 .SingleAsync();
 
-            if (alertData.Alert.Status != AlertStatus.Pending)
+            if (alertData.Alert.Status != AlertStatus.Pending && alertData.Alert.Status != AlertStatus.Rejected)
             {
                 return Error(ResultKey.Alert.DismissAlertWrongStatus);
             }
 
-            if (alertData.MaximumAcceptedReportCount >= alertData.CountThreshold)
+            if (alertData.MaximumAcceptedReportCount >= alertData.CountThreshold && alertData.Alert.Status != AlertStatus.Rejected)
             {
                 return Error(ResultKey.Alert.DismissAlertPossibleEscalation);
             }

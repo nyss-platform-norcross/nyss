@@ -170,6 +170,7 @@
         {
             public const string AcceptReportWrongAlertStatus = "alert.acceptReport.wrongAlertStatus";
             public const string AcceptReportWrongReportStatus = "alert.acceptReport.wrongReportStatus";
+            public const string AcceptReportAlertNoLongerValid = "alert.acceptReport.alertNoLongerValid";
 
             public const string DismissReportWrongAlertStatus = "alert.dismissReport.wrongAlertStatus";
             public const string DismissReportWrongReportStatus = "alert.dismissReport.wrongReportStatus";

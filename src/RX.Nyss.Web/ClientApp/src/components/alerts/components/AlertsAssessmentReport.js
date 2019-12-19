@@ -30,7 +30,7 @@ const getReportIcon = (status) => {
 }
 
 export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, assessmentStatus }) => {
-  const showActions = assessmentStatus === "Open" && report.status === "Pending";
+  const showActions = assessmentStatus !== "Closed" && report.status === "Pending";
 
   return (
     <ExpansionPanel>

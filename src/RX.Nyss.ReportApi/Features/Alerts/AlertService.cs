@@ -64,7 +64,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var inspectedAlert = await _nyssContext.AlertReports
                 .Where(ar => ar.ReportId == reportId)
-                .Where(ar => ar.Alert.Status == AlertStatus.Pending)
+                .Where(ar => ar.Alert.Status == AlertStatus.Pending || ar.Alert.Status == AlertStatus.Dismissed)
                 .Select(ar => ar.Alert)
                 .SingleOrDefaultAsync();
 
@@ -215,7 +215,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var noGroupWithinAlertSatisfiesCountThreshold = !updatedReportsGroupedByLabel.Any(g => g.Count() >= alertRule.CountThreshold);
             if (noGroupWithinAlertSatisfiesCountThreshold)
             {
-                inspectedAlert.Status = AlertStatus.Rejected;
+                if (inspectedAlert.Status != AlertStatus.Dismissed)
+                {
+                    inspectedAlert.Status = AlertStatus.Rejected;
+                }
 
                 foreach (var groupNotSatisfyingThreshold in updatedReportsGroupedByLabel)
                 {
