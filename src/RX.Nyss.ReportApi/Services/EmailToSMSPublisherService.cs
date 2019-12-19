@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
@@ -9,33 +10,30 @@ namespace RX.Nyss.ReportApi.Services
 {
     public interface IEmailToSmsPublisherService
     {
-        Task SendMessage(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
+        Task SendMessages(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
     }
 
     public class EmailToSmsPublisherService : IEmailToSmsPublisherService
     {
-        private readonly IConfig _config;
         private readonly IQueueClient _queueClient;
 
         public EmailToSmsPublisherService(IConfig config)
         {
-            _config = config;
-            _queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, _config.ServiceBusQueues.SendEmailQueue);
+            _queueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
         }
 
-        public async Task SendMessage(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body)
-        {
-            var recipients = string.Join(",", recipientPhoneNumbers);
-
-            var sendEmail = new SendEmailMessage {To = new Contact{Email = smsEagleEmailAddress, Name = smsEagleName}, Body = body, Subject = recipients, SendAsTextOnly = true};
-
-            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail)))
+        public async Task SendMessages(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body) =>
+            await Task.WhenAll(recipientPhoneNumbers.Select(recipientPhoneNumber =>
             {
-                Label = "RX.Nyss.ReportApi",
-            };
+                var sendEmail = new SendEmailMessage
+                {
+                    To = new Contact { Email = smsEagleEmailAddress, Name = smsEagleName }, Body = body, Subject = recipientPhoneNumber, SendAsTextOnly = true
+                };
 
-            await _queueClient.SendAsync(message);
-        }
+                var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail))) { Label = "RX.Nyss.ReportApi", };
+
+                return _queueClient.SendAsync(message);
+            }));
     }
 
     public class SendEmailMessage
