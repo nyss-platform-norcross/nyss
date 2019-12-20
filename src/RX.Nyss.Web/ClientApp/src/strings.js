@@ -304,8 +304,6 @@ export const stringKeys = {
       creationTitle: "dataCollectors.form.creationTitle",
       editionTitle: "dataCollectors.form.editionTitle",
       dataCollectorType: "dataCollectors.form.dataCollectorType",
-      dataCollectorTypeHuman: "dataCollectors.form.dataCollectorType.human",
-      dataCollectorTypeCollectionPoint: "dataCollectors.form.dataCollectorType.collectionPoint",
       name: "dataCollectors.form.name",
       displayName: "dataCollectors.form.displayName",
       sex: "dataCollectors.form.sex",
@@ -324,8 +322,6 @@ export const stringKeys = {
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",
-      dataCollectorTypeHuman: "dataCollectors.form.dataCollectorType.human",
-      dataCollectorTypeCollectionPoint: "dataCollectors.form.dataCollectorType.collectionPoint",
       name: "dataCollectors.list.name",
       displayName: "dataCollectors.list.displayName",
       phoneNumber: "dataCollectors.list.phoneNumber",
@@ -345,6 +341,10 @@ export const stringKeys = {
         male: "dataCollectors.sex.male",
         female: "dataCollectors.sex.female",
         other: "dataCollectors.sex.other",
+      },
+      dataCollectorType: {
+        "Human": "dataCollectors.dataCollectorType.human",
+        "CollectionPoint": "dataCollectors.dataCollectorType.collectionPoint"
       }
     },
     mapOverview: {

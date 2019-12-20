@@ -36,7 +36,7 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
       <TableBody>
         {list.map(row => (
           <TableRow key={row.id} hover onClick={() => goToEdition(projectId, row.id)} className={styles.clickableRow}>
-            <TableCell>{strings(stringKeys.dataCollector.list.dataCollectorType + row.dataCollectorType)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollector.constants.dataCollectorType[row.dataCollectorType])}</TableCell>
             <TableCell>{row.name}</TableCell>
             <TableCell>{row.displayName}</TableCell>
             <TableCell>{row.phoneNumber}</TableCell>

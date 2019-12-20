@@ -16,7 +16,7 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import { sexValues, humanDataCollector } from './logic/dataCollectorsConstants';
+import { sexValues, dataCollectorType } from './logic/dataCollectorsConstants';
 import { GeoStructureSelect } from './GeoStructureSelect';
 import SelectField from '../forms/SelectField';
 import { getBirthDecades } from './logic/dataCollectorsService';
@@ -40,10 +40,10 @@ const DataCollectorsEditPageComponent = (props) => {
     const fields = {
       id: props.data.id,
       name: props.data.name,
-      displayName: props.data.dataCollectorType === humanDataCollector ? props.data.displayName : null,
-      sex: props.data.dataCollectorType === humanDataCollector ? props.data.sex : null,
+      displayName: props.data.dataCollectorType === dataCollectorType.human ? props.data.displayName : null,
+      sex: props.data.dataCollectorType === dataCollectorType.human ? props.data.sex : null,
       supervisorId: props.data.supervisorId.toString(),
-      birthGroupDecade: props.data.dataCollectorType === humanDataCollector ? props.data.birthGroupDecade.toString(): null,
+      birthGroupDecade: props.data.dataCollectorType === dataCollectorType.human ? props.data.birthGroupDecade.toString(): null,
       phoneNumber: props.data.phoneNumber,
       additionalPhoneNumber: props.data.additionalPhoneNumber,
       latitude: props.data.latitude,
@@ -56,10 +56,10 @@ const DataCollectorsEditPageComponent = (props) => {
 
     const validation = {
       name: [validators.required, validators.maxLength(100)],
-      displayName: [validators.requiredWhen(x => props.data.dataCollectorType === humanDataCollector), validators.maxLength(100)],
-      sex: [validators.requiredWhen(x => props.data.dataCollectorType === humanDataCollector)],
+      displayName: [validators.requiredWhen(x => props.data.dataCollectorType === dataCollectorType.human), validators.maxLength(100)],
+      sex: [validators.requiredWhen(x => props.data.dataCollectorType === dataCollectorType.human)],
       supervisorId: [validators.required],
-      birthGroupDecade: [validators.requiredWhen(x => props.data.dataCollectorType === humanDataCollector)],
+      birthGroupDecade: [validators.requiredWhen(x => props.data.dataCollectorType === dataCollectorType.human)],
       phoneNumber: [validators.required, validators.phoneNumber, validators.maxLength(20)],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
       villageId: [validators.required],
@@ -129,7 +129,7 @@ const DataCollectorsEditPageComponent = (props) => {
             />
           </Grid>
 
-          {props.data.dataCollectorType === humanDataCollector && (<Grid item xs={12}>
+          {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.displayName)}
               name="displayName"
@@ -137,7 +137,7 @@ const DataCollectorsEditPageComponent = (props) => {
             />
           </Grid>)}
 
-          {props.data.dataCollectorType === humanDataCollector && (<Grid item xs={12}>
+          {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
             <SelectField
               label={strings(stringKeys.dataCollector.form.sex)}
               field={form.fields.sex}
@@ -151,7 +151,7 @@ const DataCollectorsEditPageComponent = (props) => {
             </SelectField>
           </Grid>)}
 
-          {props.data.dataCollectorType === humanDataCollector && (<Grid item xs={12}>
+          {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
             <SelectField
               label={strings(stringKeys.dataCollector.form.birthYearGroup)}
               field={form.fields.birthGroupDecade}
@@ -173,7 +173,7 @@ const DataCollectorsEditPageComponent = (props) => {
             />
           </Grid>
 
-          {props.data.dataCollectorType === humanDataCollector && (<Grid item xs={12}>
+          {props.data.dataCollectorType === dataCollectorType.human && (<Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"

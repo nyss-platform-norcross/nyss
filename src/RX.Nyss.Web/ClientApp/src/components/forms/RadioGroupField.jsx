@@ -6,12 +6,12 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import { createFieldComponent } from "./FieldBase";
 import { FormLabel } from '@material-ui/core';
 
-const RadioGroupInput = ({ error, name, value, horizontal, children, controlProps, customProps }) => {
+const RadioGroupInput = ({ error, name, label, value, horizontal, children, controlProps, customProps }) => {
     return (
         <div>
-          <FormLabel component="legend">{name}</FormLabel>
+          <FormLabel component="legend" className={styles.label}>{label}</FormLabel>
           <RadioGroup
-              aria-label={name}
+              aria-label={label}
               name={name}
               value={value}
               className={horizontal ? styles.horizontal : null}
@@ -25,6 +25,7 @@ const RadioGroupInput = ({ error, name, value, horizontal, children, controlProp
 };
 
 RadioGroupInput.propTypes = {
+    label: PropTypes.string,
     controlProps: PropTypes.object,
     value: PropTypes.string,
     horizontal: PropTypes.bool,

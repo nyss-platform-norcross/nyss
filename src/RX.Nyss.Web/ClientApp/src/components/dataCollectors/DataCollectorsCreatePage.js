@@ -17,7 +17,7 @@ import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import { sexValues, dataCollectorTypes, humanDataCollector } from './logic/dataCollectorsConstants';
+import { sexValues, dataCollectorType } from './logic/dataCollectorsConstants';
 import { GeoStructureSelect } from './GeoStructureSelect';
 import { getBirthDecades } from './logic/dataCollectorsService';
 import { DataCollectorMap } from './DataCollectorMap';
@@ -28,7 +28,7 @@ import { Radio, FormControlLabel } from "@material-ui/core";
 const DataCollectorsCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
-  const [type, setType] = useState(humanDataCollector);
+  const [type, setType] = useState(dataCollectorType.human);
 
   useMount(() => {
     props.openCreation(props.projectId);
@@ -41,7 +41,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     }
 
     const fields = {
-      dataCollectorType: humanDataCollector,
+      dataCollectorType: dataCollectorType.human,
       name: "",
       displayName: "",
       sex: "",
@@ -60,10 +60,10 @@ const DataCollectorsCreatePageComponent = (props) => {
     const validation = {
       dataCollectorType: [validators.required],
       name: [validators.required, validators.maxLength(100)],
-      displayName: [validators.requiredWhen(x => x.dataCollectorType === humanDataCollector), validators.maxLength(100)],
-      sex: [validators.requiredWhen(x => x.dataCollectorType === humanDataCollector)],
+      displayName: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human), validators.maxLength(100)],
+      sex: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human)],
       supervisorId: [validators.required],
-      birthGroupDecade: [validators.requiredWhen(x => x.dataCollectorType === humanDataCollector)],
+      birthGroupDecade: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human)],
       phoneNumber: [validators.required, validators.phoneNumber, validators.maxLength(20)],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
       villageId: [validators.required],
@@ -124,11 +124,12 @@ const DataCollectorsCreatePageComponent = (props) => {
         <Grid container spacing={3} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <RadioGroupField
-              name={strings(stringKeys.dataCollector.form.dataCollectorType)}
+              name="dataCollectorType"
+              label={strings(stringKeys.dataCollector.form.dataCollectorType)}
               field={form.fields.dataCollectorType}
               horizontal >
-              {dataCollectorTypes.map(type => (
-                <FormControlLabel key={type} control={<Radio />} label={strings(stringKeys.dataCollector.form.dataCollectorType + type)} value={type} />
+              {Object.keys(dataCollectorType).map(type => (
+                <FormControlLabel key={type} control={<Radio />} label={strings(stringKeys.dataCollector.constants.dataCollectorType[dataCollectorType[type]])} value={dataCollectorType[type]} />
               ))}
             </RadioGroupField>
           </Grid>
@@ -141,7 +142,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>
 
-          {type === humanDataCollector && (<Grid item xs={12}>
+          {type === dataCollectorType.human && (<Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.displayName)}
               name="displayName"
@@ -149,7 +150,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>)}
 
-          {type === humanDataCollector && (
+          {type === dataCollectorType.human && (
             <Grid item xs={12}>
             <SelectField
               label={strings(stringKeys.dataCollector.form.sex)}
@@ -165,7 +166,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>
           )}
 
-          {type === humanDataCollector && (<Grid item xs={12}>
+          {type === dataCollectorType.human && (<Grid item xs={12}>
             <SelectField
               label={strings(stringKeys.dataCollector.form.birthYearGroup)}
               field={form.fields.birthGroupDecade}
@@ -187,7 +188,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>
 
-          {type === humanDataCollector && (<Grid item xs={12}>
+          {type === dataCollectorType.human && (<Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
