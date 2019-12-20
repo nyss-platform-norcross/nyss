@@ -329,7 +329,7 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         private static Point CreatePoint(double latitude, double longitude)
         {
-            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
             return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
 

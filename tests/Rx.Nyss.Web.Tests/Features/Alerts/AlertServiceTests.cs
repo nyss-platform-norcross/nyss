@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.EscalateAlert(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlertWrongStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlert.WrongStatus);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.EscalateAlert(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlertThresholdNotReached);
+            result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlert.ThresholdNotReached);
         }
 
         [Fact]
@@ -192,7 +192,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.DismissAlert(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlertWrongStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlert.WrongStatus);
         }
 
         [Fact]
@@ -214,7 +214,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.DismissAlert(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlertPossibleEscalation);
+            result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlert.PossibleEscalation);
         }
 
         [Fact]
@@ -248,7 +248,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.CloseAlert(TestData.AlertId, "");
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlertWrongStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlert.WrongStatus);
         }
 
         [Fact]

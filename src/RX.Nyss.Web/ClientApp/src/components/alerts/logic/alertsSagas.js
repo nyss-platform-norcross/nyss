@@ -18,9 +18,7 @@ export const alertsSagas = () => [
   takeEvery(consts.CLOSE_ALERT.INVOKE, closeAlert),
 ];
 
-function* openAlertsList({ projectId }) {
-  const listStale = yield select(state => state.alerts.listStale);
-
+function* openAlertsList({ projectId }) { 
   yield put(actions.openList.request());
   try {
     yield openAlertsModule(projectId);
@@ -72,7 +70,7 @@ function* acceptReport({ alertId, reportId }) {
       yield put(appActions.showMessage(stringKeys.alerts.assess.alert.escalationPossible, 20000));
     }
   } catch (error) {
-    yield put(appActions.showLocalizedMessage(stringKeys.alerts.assess.alert.dismissalPossible, 20000));
+    yield put(appActions.showMessage(stringKeys.alerts.assess.alert.dismissalPossible, 20000));
     yield put(actions.acceptReport.failure(reportId, error.message));
   }
 };

@@ -84,7 +84,6 @@ namespace RX.Nyss.Web.Features.Alerts
                 .OrderByDescending(a => a.CreatedAt)
                 .Page(pageNumber, rowsPerPage)
                 .AsNoTracking()
-                .AsNoTracking()
                 .ToListAsync();
 
             var dtos = alerts
@@ -189,12 +188,12 @@ namespace RX.Nyss.Web.Features.Alerts
 
             if (alertData.Alert.Status != AlertStatus.Pending)
             {
-                return Error(ResultKey.Alert.EscalateAlertWrongStatus);
+                return Error(ResultKey.Alert.EscalateAlert.WrongStatus);
             }
 
             if (alertData.AcceptedReportCount < alertData.CountThreshold)
             {
-                return Error(ResultKey.Alert.EscalateAlertThresholdNotReached);
+                return Error(ResultKey.Alert.EscalateAlert.ThresholdNotReached);
             }
 
             alertData.Alert.Status = AlertStatus.Escalated;
@@ -210,7 +209,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 return Success(exception.Result.Message.Key);
             }
 
-            return Success(ResultKey.Alert.EscalateAlertSuccess);
+            return Success(ResultKey.Alert.EscalateAlert.Success);
         }
 
         public async Task<Result> DismissAlert(int alertId)
@@ -229,12 +228,12 @@ namespace RX.Nyss.Web.Features.Alerts
 
             if (alertData.Alert.Status != AlertStatus.Pending && alertData.Alert.Status != AlertStatus.Rejected)
             {
-                return Error(ResultKey.Alert.DismissAlertWrongStatus);
+                return Error(ResultKey.Alert.DismissAlert.WrongStatus);
             }
 
             if (alertData.MaximumAcceptedReportCount >= alertData.CountThreshold && alertData.Alert.Status != AlertStatus.Rejected)
             {
-                return Error(ResultKey.Alert.DismissAlertPossibleEscalation);
+                return Error(ResultKey.Alert.DismissAlert.PossibleEscalation);
             }
 
             alertData.Alert.Status = AlertStatus.Dismissed;
@@ -262,7 +261,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             if (alertData.Alert.Status != AlertStatus.Escalated)
             {
-                return Error(ResultKey.Alert.CloseAlertWrongStatus);
+                return Error(ResultKey.Alert.CloseAlert.WrongStatus);
             }
 
             alertData.Alert.Status = AlertStatus.Closed;
@@ -379,7 +378,7 @@ namespace RX.Nyss.Web.Features.Alerts
             catch (Exception e)
             {
                 _loggerAdapter.Error(e, $"Failed to send escalation notification emails for project {project} with health risk {healthRisk}");
-                throw new ResultException(ResultKey.Alert.EscalateAlertEmailNotificationFailed);
+                throw new ResultException(ResultKey.Alert.EscalateAlert.EmailNotificationFailed);
             }
         }
 
@@ -406,7 +405,7 @@ namespace RX.Nyss.Web.Features.Alerts
             catch (Exception e)
             {
                 _loggerAdapter.Error(e, $"Failed to send escalation notification SMSes for project {project} with health risk {healthRisk}");
-                throw new ResultException(ResultKey.Alert.EscalateAlertSmsNotificationFailed);
+                throw new ResultException(ResultKey.Alert.EscalateAlert.SmsNotificationFailed);
             }
         }
     }

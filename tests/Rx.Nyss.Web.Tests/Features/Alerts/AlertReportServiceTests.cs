@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.AcceptReportWrongAlertStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.AcceptReport.WrongAlertStatus);
         }
 
         [Theory]
@@ -80,7 +80,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.AcceptReportWrongReportStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.AcceptReport.WrongReportStatus);
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.DismissReportWrongAlertStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.DismissReport.WrongAlertStatus);
         }
 
         [Theory]
@@ -133,7 +133,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.DismissReportWrongReportStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.DismissReport.WrongReportStatus);
         }
 
         [Fact]

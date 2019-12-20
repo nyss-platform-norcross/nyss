@@ -68,7 +68,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var reportsQuery = _nyssContext.Reports
                 .Where(r => r.ProjectHealthRisk == projectHealthRisk)
                 .Where(r => !r.IsTraining)
-                .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed && r.Status != ReportStatus.Closed)
+                .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
                 .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
                 .Where(r => r.Id != report.Id)
                 .Where(r => r.ReportGroupLabel != default)
@@ -104,7 +104,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var reportsWithSelectedLabel = await _nyssContext.Reports
                 .Include(r => r.ReportAlerts)
                 .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
-                .Where(r => r.Status != ReportStatus.Rejected && r.Status != ReportStatus.Removed && r.Status != ReportStatus.Closed)
+                .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
                 .Where(r => !reportIdToIgnore.HasValue || r.Id != reportIdToIgnore.Value)
                 .Where(r => r.ReportGroupLabel == label)
                 .Select(r => new ReportPoint
