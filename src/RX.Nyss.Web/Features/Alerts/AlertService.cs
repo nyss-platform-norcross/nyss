@@ -190,11 +190,11 @@ namespace RX.Nyss.Web.Features.Alerts
                 return Error(ResultKey.Alert.EscalateAlertThresholdNotReached);
             }
 
-            await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-            await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-
             alertData.Alert.Status = AlertStatus.Escalated;
             await _nyssContext.SaveChangesAsync();
+
+            await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+            await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
 
             return Success();
         }
