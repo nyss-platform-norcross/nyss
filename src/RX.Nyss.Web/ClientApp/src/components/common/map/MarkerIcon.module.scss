@@ -1,0 +1,24 @@
+.marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-sizing: border-box;
+  background-color: #136bb7;
+  box-shadow: #949494 3px 0px 0px -1px;
+  transition: transform ease-out 0.5s;
+}
+
+.multiple {
+  box-shadow:
+  #949494 4px 0px 0px -1px,
+  #ffffff 6px 0px 0px -1px,
+  #949494 9px 0px 0px -2px,
+  #ffffff 10px 0px 0px -1px,
+  #949494 14px 0px 0px -3px;
+}
+
+.text {
+  color: #fff;
+}

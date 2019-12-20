@@ -1,17 +1,3 @@
-.marker {
-  fill-opacity: 0.6;
-
-  &.markerValid {
-    stroke: green;
-    fill: green;
-  }
-
-  &.markerInvalid {
-    stroke: red;
-    fill: red;
-  }
-}
-
 .popup {
   max-height: 300px;
   overflow-y: auto;
@@ -29,5 +15,20 @@
 }
 
 .map {
-  flex: 1;
+  height: 500px;
+}
+
+.marker_ReportingWithErrors {
+  background-color: #d23232 !important;
+  color: white;
+}
+
+.marker_ReportingCorrectly {
+  background-color: #15ab15 !important;
+  color: white;
+}
+
+.marker_NotReporting {
+  background-color: #f1b713 !important;
+  color: #525252;
 }

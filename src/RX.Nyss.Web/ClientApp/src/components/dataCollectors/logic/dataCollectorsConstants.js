@@ -13,3 +13,9 @@ export const GET_DATA_COLLECTORS_MAP_DETAILS = action("GET_DATA_COLLECTORS_MAP_D
 export const SET_DATA_COLLECTORS_TRAINING_STATE = action("SET_DATA_COLLECTORS_TRAINING_STATE");
 
 export const sexValues = [ "Male", "Female", "Other" ];
+
+export const performanceStatus = {
+  reportingCorrectly: "ReportingCorrectly",
+  notReporting: "NotReporting",
+  reportingWithErrors: "ReportingWithErrors",
+};

@@ -7,6 +7,7 @@ import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
 import { DataCollectorsPerformanceMap } from './DataCollectorsPerformanceMap';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
+import { DataCollectorsPerformanceMapLegend } from './DataCollectorsPerformanceMapLegend';
 
 const DataCollectorsMapOverviewPageComponent = (props) => {
   useMount(() => {
@@ -17,7 +18,7 @@ const DataCollectorsMapOverviewPageComponent = (props) => {
     props.getDataCollectorsMapOverview(props.projectId, value)
   };
 
-  if (!props.filters || !props.dataCollectorLocations) {
+  if (!props.filters) {
     return null;
   }
 
@@ -35,6 +36,7 @@ const DataCollectorsMapOverviewPageComponent = (props) => {
         details={props.details}
         detailsFetching={props.detailsFetching}
       />
+      <DataCollectorsPerformanceMapLegend />
     </Fragment>
   );
 }
