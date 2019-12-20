@@ -59,6 +59,8 @@ const ProjectsEditPageComponent = (props) => {
     setSelectedHealthRisks(props.data.projectHealthRisks);
     setEmailNotifications(props.data.emailAlertRecipients.map(ear => ({ id: ear.id, email: ear.email, key: ear.id })));
     setSmsNotifications(props.data.smsAlertRecipients.map(sar => ({ id: sar.id, phoneNumber: sar.phoneNumber, key: sar.id })));
+
+    return () => setForm(null);
   }, [props.data]);
 
   const handleSubmit = (e) => {
