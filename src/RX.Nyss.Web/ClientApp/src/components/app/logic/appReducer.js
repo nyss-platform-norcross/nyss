@@ -9,7 +9,11 @@ export function appReducer(state = initialState.appData, action) {
         ...state,
         moduleError: null,
         messageKey: null,
-        messageTime: null
+        messageTime: null,
+        mobile: {
+          ...state.mobile,
+          sideMenuOpen: false
+        }
       };
 
     case actions.SWITCH_STRINGS:
@@ -90,6 +94,15 @@ export function appReducer(state = initialState.appData, action) {
           sideMenu: action.sideMenu,
           tabMenu: action.tabMenu,
           title: action.title
+        }
+      }
+
+    case actions.TOGGLE_SIDE_MENU:
+      return {
+        ...state,
+        mobile: {
+          ...state.mobile,
+          sideMenuOpen: action.value
         }
       }
 

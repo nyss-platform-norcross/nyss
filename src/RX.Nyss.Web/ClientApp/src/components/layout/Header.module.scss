@@ -7,5 +7,15 @@
 
     .placeholder {
         flex: 1;
+        display: flex;
+        align-items: center;
     }
+}
+
+.toggleMenu {
+  font-size: 18px;
+  cursor: pointer;
+  @media screen and (min-width: 600px) {
+    display: none;
+  }
 }

@@ -4,4 +4,8 @@
   left: 0;
   margin-left: 10px;
   margin-bottom: 10px;
+
+  @media screen and (max-width: 600px) {
+    display: none;
+  }
 }
