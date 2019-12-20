@@ -10,6 +10,7 @@ export const projectsSagas = () => [
   takeEvery(consts.OPEN_PROJECTS_LIST.INVOKE, openProjectsList),
   takeEvery(consts.OPEN_PROJECT_CREATION.INVOKE, openProjectCreation),
   takeEvery(consts.OPEN_PROJECT_EDITION.INVOKE, openProjectEdition),
+  takeEvery(consts.OPEN_PROJECT_OVERVIEW.INVOKE, openProjectOverview),
   takeEvery(consts.CREATE_PROJECT.INVOKE, createProject),
   takeEvery(consts.EDIT_PROJECT.INVOKE, editProject),
   takeEvery(consts.REMOVE_PROJECT.INVOKE, removeProject)
@@ -51,6 +52,19 @@ function* openProjectEdition({ nationalSocietyId, projectId }) {
     yield put(actions.openEdition.failure(error.message));
   }
 };
+
+function* openProjectOverview({ projectId }) {
+  yield put(actions.openEdition.request());
+  try {
+    const response = yield call(http.get, `/api/project/${projectId}/get`);
+    yield call(openProjectDashboardModule, projectId);
+    yield put(actions.openEdition.success(response.value, response.value.formData.healthRisks, response.value.formData.timeZones));
+  } catch (error) {
+    yield put(actions.openEdition.failure(error.message));
+  }
+};
+
+
 
 function* createProject({ nationalSocietyId, data }) {
   yield put(actions.create.request());
