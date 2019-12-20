@@ -11,6 +11,7 @@ using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
+using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Alerts
@@ -37,18 +38,21 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
         private readonly IConfig _config;
+        private readonly ILoggerAdapter _loggerAdapter;
 
         public AlertService(
             INyssContext nyssContext,
             IEmailPublisherService emailPublisherService,
             IEmailTextGeneratorService emailTextGeneratorService,
             IConfig config,
-            ISmsTextGeneratorService smsTextGeneratorService)
+            ISmsTextGeneratorService smsTextGeneratorService,
+            ILoggerAdapter loggerAdapter)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
             _emailTextGeneratorService = emailTextGeneratorService;
             _smsTextGeneratorService = smsTextGeneratorService;
+            _loggerAdapter = loggerAdapter;
             _config = config;
         }
 
@@ -193,10 +197,17 @@ namespace RX.Nyss.Web.Features.Alerts
             alertData.Alert.Status = AlertStatus.Escalated;
             await _nyssContext.SaveChangesAsync();
 
-            await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-            await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+            try
+            {
+                await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+                await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+            }
+            catch (ResultException exception)
+            {
+                return Success(exception.Result.Message.Key);
+            }
 
-            return Success();
+            return Success(ResultKey.Alert.EscalateAlertSuccess);
         }
 
         public async Task<Result> DismissAlert(int alertId)
@@ -340,35 +351,51 @@ namespace RX.Nyss.Web.Features.Alerts
 
         private async Task SendNotificationEmails(string languageCode, List<string> notificationEmails, string project, string healthRisk, string lastReportVillage)
         {
-            var (subject, body) = await _emailTextGeneratorService.GenerateEscalatedAlertEmail(languageCode);
-
-            body = body
-                .Replace("{project}", project)
-                .Replace("{healthRisk}", healthRisk)
-                .Replace("{lastReportVillage}", lastReportVillage);
-
-            foreach (var email in notificationEmails)
+            try
             {
-                await _emailPublisherService.SendEmail((email, email), subject, body);
+                var (subject, body) = await _emailTextGeneratorService.GenerateEscalatedAlertEmail(languageCode);
+
+                body = body
+                    .Replace("{project}", project)
+                    .Replace("{healthRisk}", healthRisk)
+                    .Replace("{lastReportVillage}", lastReportVillage);
+
+                foreach (var email in notificationEmails)
+                {
+                    await _emailPublisherService.SendEmail((email, email), subject, body);
+                }
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Error(e, $"Failed to send escalation notification emails for project {project} with health risk {healthRisk}");
+                throw new ResultException(ResultKey.Alert.EscalateAlertEmailNotificationFailed);
             }
         }
 
         private async Task SendNotificationSmses(int nationalSocietyId, string lastReportApiKey, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk, string lastReportVillage)
         {
-            var lastUsedGatewaySettings = await _nyssContext.GatewaySettings.Where(gs => gs.ApiKey == lastReportApiKey).FirstOrDefaultAsync();
-            var gatewayEmail = lastUsedGatewaySettings?.EmailAddress ??
-                (await _nyssContext.GatewaySettings.Where(gs => gs.NationalSocietyId == nationalSocietyId).FirstAsync()).EmailAddress;
-            
-            var text = await _smsTextGeneratorService.GenerateEscalatedAlertSms(languageCode);
-
-            text = text
-                .Replace("{project}", project)
-                .Replace("{healthRisk}", healthRisk)
-                .Replace("{lastReportVillage}", lastReportVillage);
-
-            foreach (var sms in notificationPhoneNumbers)
+            try
             {
-                await _emailPublisherService.SendEmail((gatewayEmail, gatewayEmail), sms, text, true);
+                var lastUsedGatewaySettings = await _nyssContext.GatewaySettings.Where(gs => gs.ApiKey == lastReportApiKey).FirstOrDefaultAsync();
+                var gatewayEmail = lastUsedGatewaySettings?.EmailAddress ??
+                    (await _nyssContext.GatewaySettings.Where(gs => gs.NationalSocietyId == nationalSocietyId).FirstAsync()).EmailAddress;
+
+                var text = await _smsTextGeneratorService.GenerateEscalatedAlertSms(languageCode);
+
+                text = text
+                    .Replace("{project}", project)
+                    .Replace("{healthRisk}", healthRisk)
+                    .Replace("{lastReportVillage}", lastReportVillage);
+
+                foreach (var sms in notificationPhoneNumbers)
+                {
+                    await _emailPublisherService.SendEmail((gatewayEmail, gatewayEmail), sms, text, true);
+                }
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Error(e, $"Failed to send escalation notification SMSes for project {project} with health risk {healthRisk}");
+                throw new ResultException(ResultKey.Alert.EscalateAlertSmsNotificationFailed);
             }
         }
     }

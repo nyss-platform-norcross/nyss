@@ -100,10 +100,10 @@ function* escalateAlert({ alertId }) {
 
   yield put(actions.escalateAlert.request());
   try {
-    yield call(http.get, `/api/alert/${alertId}/escalate`);
+    const response = yield call(http.get, `/api/alert/${alertId}/escalate`);
     yield put(actions.escalateAlert.success());
     yield put(actions.goToList(projectId))
-    yield put(appActions.showMessage(stringKeys.alerts.assess.alert.escalatedSuccessfully));
+    yield put(appActions.showMessage(response.value));
   } catch (error) {
     yield put(appActions.showMessage(error.message));
     yield put(actions.escalateAlert.failure(error.message));
