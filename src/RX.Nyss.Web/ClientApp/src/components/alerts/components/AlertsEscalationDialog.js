@@ -21,9 +21,16 @@ export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating,
       <DialogContent>
         <DisplayField label={strings(stringKeys.alerts.assess.alert.escalateNotificationEmails)}>
           {notificationEmails.map(email => (
-            <div>{email}</div>
+            <div key={`email_${email}`}>{email}</div>
           ))}
         </DisplayField>
+        {notificationPhoneNumbers.length > 0 &&
+          <DisplayField label={strings(stringKeys.alerts.assess.alert.escalateNotificationSmses)}>
+            {notificationPhoneNumbers.map(phoneNumber => (
+              <div key={`phone_${phoneNumber}`}>{phoneNumber}</div>
+            ))}
+          </DisplayField>
+        }
 
         <Typography variant="body1">
           {strings(stringKeys.alerts.assess.alert.escalateConfirmationInformDataCollectors)}

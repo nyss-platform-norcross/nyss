@@ -15,8 +15,8 @@ namespace RX.Nyss.FuncApp.Services
     public class EmailService : IEmailService
     {
         private readonly IConfig _config;
-        private readonly ILogger<EmailService> _logger;
         private readonly IMailjetEmailClient _emailClient;
+        private readonly ILogger<EmailService> _logger;
 
         public EmailService(ILogger<EmailService> logger, IConfig config, IMailjetEmailClient emailClient)
         {
@@ -27,33 +27,25 @@ namespace RX.Nyss.FuncApp.Services
 
         public async Task SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers)
         {
-            var sandboxMode = false;
-            if (!_config.MailjetConfig.SendToAll)
-            {
-                sandboxMode = !IsWhitelisted(whitelistedEmailAddresses, message.To.Email);
-            }
-
-            _logger.LogDebug($"Sending email to '{message.To.Email.Substring(0, Math.Min(message.To.Email.Length, 4))}...' SandboxMode: {sandboxMode}");
             if (message.SendAsTextOnly)
             {
-                if (!_config.MailjetConfig.SendFeedbackSmsToAll)
+                var sandboxMode = !(_config.MailjetConfig.SendFeedbackSmsToAll || IsWhiteListedPhoneNumber(message.Subject, whitelistedPhoneNumbers));
+                await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
+            }
+            else
+            {
+                var sandboxMode = false;
+                if (!_config.MailjetConfig.SendToAll)
                 {
-                    message.Subject = RemoveNotWhitelistedPhoneNumbers(message.Subject, whitelistedPhoneNumbers);
-                    if (string.IsNullOrEmpty(message.Subject))
-                    {
-                        _logger.LogWarning($"Phone number(s): {message.Subject} not whitelisted. Skip sending email.");
-                        return;
-                    }
+                    sandboxMode = !IsWhitelistedEmailAddress(whitelistedEmailAddresses, message.To.Email);
                 }
 
-                await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
-                return;
+                _logger.LogDebug($"Sending email to '{message.To.Email.Substring(0, Math.Min(message.To.Email.Length, 4))}...' SandboxMode: {sandboxMode}");
+                await _emailClient.SendEmail(message, sandboxMode);
             }
-
-            await _emailClient.SendEmail(message, sandboxMode);
         }
 
-        private bool IsWhitelisted(string whitelistedEmailAddresses, string email)
+        private bool IsWhitelistedEmailAddress(string whitelistedEmailAddresses, string email)
         {
             if (string.IsNullOrWhiteSpace(whitelistedEmailAddresses))
             {
@@ -74,11 +66,29 @@ namespace RX.Nyss.FuncApp.Services
             return isWhitelisted;
         }
 
-        private string RemoveNotWhitelistedPhoneNumbers(string phoneNumbers, string whitelistedPhoneNumbers)
+        private bool IsWhiteListedPhoneNumber(string phoneNumber, string whitelistedPhoneNumbers)
         {
-            var numbers = phoneNumbers.Split(",");
-            var whitelisted = whitelistedPhoneNumbers.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            return string.Join(",", numbers.Where(number => whitelisted.Contains(number)).ToList());
+            if (string.IsNullOrWhiteSpace(whitelistedPhoneNumbers))
+            {
+                _logger.Log(LogLevel.Critical, "The sms whitelist is empty.");
+                return false;
+            }
+
+            var whitelist = whitelistedPhoneNumbers
+                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim());
+
+            var isWhitelisted = whitelist.Contains(phoneNumber);
+            if (isWhitelisted)
+            {
+                _logger.Log(LogLevel.Information, $"{phoneNumber} found on the sms whitelist");
+            }
+            else
+            {
+                _logger.LogWarning($"Phone number: {phoneNumber} not whitelisted. Skip sending email.");
+            }
+
+            return isWhitelisted;
         }
     }
 }

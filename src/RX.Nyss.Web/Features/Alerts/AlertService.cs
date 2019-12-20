@@ -11,6 +11,7 @@ using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
+using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Alerts
@@ -35,17 +36,23 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly INyssContext _nyssContext;
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
+        private readonly ISmsTextGeneratorService _smsTextGeneratorService;
         private readonly IConfig _config;
+        private readonly ILoggerAdapter _loggerAdapter;
 
         public AlertService(
             INyssContext nyssContext,
             IEmailPublisherService emailPublisherService,
             IEmailTextGeneratorService emailTextGeneratorService,
-            IConfig config)
+            IConfig config,
+            ISmsTextGeneratorService smsTextGeneratorService,
+            ILoggerAdapter loggerAdapter)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
             _emailTextGeneratorService = emailTextGeneratorService;
+            _smsTextGeneratorService = smsTextGeneratorService;
+            _loggerAdapter = loggerAdapter;
             _config = config;
         }
 
@@ -118,7 +125,8 @@ namespace RX.Nyss.Web.Features.Alerts
                         ReportedCase = ar.Report.ReportedCase,
                         Status = ar.Report.Status
                     }),
-                    NotificationEmails = a.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList()
+                    NotificationEmails = a.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList(),
+                    NotificationPhoneNumbers = a.ProjectHealthRisk.Project.SmsAlertRecipients.Select(sar => sar.PhoneNumber).ToList()
                 })
                 .AsNoTracking()
                 .SingleAsync();
@@ -135,7 +143,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(alert.CreatedAt, projectTimeZone),
                 CaseDefinition = alert.CaseDefinition,
                 NotificationEmails = alert.NotificationEmails,
-                NotificationPhoneNumbers = new string[0], // TODO
+                NotificationPhoneNumbers = alert.NotificationPhoneNumbers,
                 AssessmentStatus = GetAlertAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 Reports = alert.Reports.Select(ar => new AlertAssessmentResponseDto.ReportDto
                 {
@@ -161,15 +169,18 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     Alert = alert,
                     LastReportVillage = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.Village.Name,
+                    LastReportGateway = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.RawReport.ApiKey,
                     HealthRisk = alert.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
                         .Single(),
                     Project = alert.ProjectHealthRisk.Project.Name,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList(),
+                    NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ear => ear.EmailAddress).ToList(),
+                    NotificationPhoneNumbers = alert.ProjectHealthRisk.Project.SmsAlertRecipients.Select(sar => sar.PhoneNumber).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
-                    AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted)
+                    AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted),
+                    NationalSocietyId = alert.ProjectHealthRisk.Project.NationalSociety.Id
                 })
                 .SingleAsync();
 
@@ -183,13 +194,20 @@ namespace RX.Nyss.Web.Features.Alerts
                 return Error(ResultKey.Alert.EscalateAlertThresholdNotReached);
             }
 
-            await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-            await SendNotificationSmses(alertData.LanguageCode, new List<string>());
-
             alertData.Alert.Status = AlertStatus.Escalated;
             await _nyssContext.SaveChangesAsync();
 
-            return Success();
+            try
+            {
+                await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+                await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+            }
+            catch (ResultException exception)
+            {
+                return Success(exception.Result.Message.Key);
+            }
+
+            return Success(ResultKey.Alert.EscalateAlertSuccess);
         }
 
         public async Task<Result> DismissAlert(int alertId)
@@ -333,23 +351,52 @@ namespace RX.Nyss.Web.Features.Alerts
 
         private async Task SendNotificationEmails(string languageCode, List<string> notificationEmails, string project, string healthRisk, string lastReportVillage)
         {
-            var (subject, body) = await _emailTextGeneratorService.GenerateEscalatedAlertEmail(languageCode);
-
-            body = body
-                .Replace("{project}", project)
-                .Replace("{healthRisk}", healthRisk)
-                .Replace("{lastReportVillage}", lastReportVillage);
-
-            foreach (var email in notificationEmails)
+            try
             {
-                await _emailPublisherService.SendEmail((email, email), subject, body);
+                var (subject, body) = await _emailTextGeneratorService.GenerateEscalatedAlertEmail(languageCode);
+
+                body = body
+                    .Replace("{project}", project)
+                    .Replace("{healthRisk}", healthRisk)
+                    .Replace("{lastReportVillage}", lastReportVillage);
+
+                foreach (var email in notificationEmails)
+                {
+                    await _emailPublisherService.SendEmail((email, email), subject, body);
+                }
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Error(e, $"Failed to send escalation notification emails for project {project} with health risk {healthRisk}");
+                throw new ResultException(ResultKey.Alert.EscalateAlertEmailNotificationFailed);
             }
         }
 
-        private Task SendNotificationSmses(string languageCode, List<string> notificationPhoneNumbers)
+        private async Task SendNotificationSmses(int nationalSocietyId, string lastReportApiKey, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk, string lastReportVillage)
         {
-            // TODO
-            return Task.CompletedTask;
+            try
+            {
+                var lastUsedGatewaySettings = await _nyssContext.GatewaySettings.Where(gs => gs.ApiKey == lastReportApiKey).FirstOrDefaultAsync();
+                var gatewayEmail = lastUsedGatewaySettings?.EmailAddress ??
+                    (await _nyssContext.GatewaySettings.Where(gs => gs.NationalSocietyId == nationalSocietyId).FirstAsync()).EmailAddress;
+
+                var text = await _smsTextGeneratorService.GenerateEscalatedAlertSms(languageCode);
+
+                text = text
+                    .Replace("{project}", project)
+                    .Replace("{healthRisk}", healthRisk)
+                    .Replace("{lastReportVillage}", lastReportVillage);
+
+                foreach (var sms in notificationPhoneNumbers)
+                {
+                    await _emailPublisherService.SendEmail((gatewayEmail, gatewayEmail), sms, text, true);
+                }
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Error(e, $"Failed to send escalation notification SMSes for project {project} with health risk {healthRisk}");
+                throw new ResultException(ResultKey.Alert.EscalateAlertSmsNotificationFailed);
+            }
         }
     }
 }

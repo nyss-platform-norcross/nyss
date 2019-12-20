@@ -15,6 +15,7 @@
         string StringsResourcesBlobObjectName { get; set; }
         string EmailContentResourcesBlobObjectName { get; set; }
         int PaginationRowsPerPage { get; set; }
+        string SmsContentResourcesBlobObjectName { get; set; }
     }
 
     public class NyssConfig : IConfig
@@ -38,6 +39,8 @@
         public string EmailContentResourcesBlobObjectName { get; set; }
 
         public int PaginationRowsPerPage { get; set; }
+
+        public string SmsContentResourcesBlobObjectName { get; set; }
 
         public class LoggingOptions
         {

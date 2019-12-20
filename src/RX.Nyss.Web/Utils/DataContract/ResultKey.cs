@@ -176,12 +176,15 @@
 
             public const string EscalateAlertThresholdNotReached = "alert.escalateAlert.thresholdNotReached";
             public const string EscalateAlertWrongStatus = "alert.escalateAlert.wrongStatus";
+            public const string EscalateAlertEmailNotificationFailed = "alert.escalateAlert.emailNotifcationFailed";
+            public const string EscalateAlertSmsNotificationFailed = "alert.escalateAlert.smsNotifcationFailed";
+            public const string EscalateAlertSuccess = "alert.escalateAlert.success";
 
             public const string DismissAlertWrongStatus = "alert.dismissAlert.wrongStatus";
             public const string DismissAlertPossibleEscalation = "alert.dismissAlert.possibleEscalation";
 
             public const string InconsistentReportData = "alert.inconsistentReportData";
-
+            
             public const string CloseAlertWrongStatus = "alert.closeAlert.wrongStatus";
         }
     }

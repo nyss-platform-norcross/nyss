@@ -29,14 +29,14 @@ namespace RX.Nyss.Web.Features.SmsGateway
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IConfig _config;
-        private readonly IBlobService _blobService;
+        private readonly ISmsGatewayBlobProvider _smsGatewayBlobProvider;
 
-        public SmsGatewayService(INyssContext nyssContext, ILoggerAdapter loggerAdapter, IConfig config, IBlobService blobService)
+        public SmsGatewayService(INyssContext nyssContext, ILoggerAdapter loggerAdapter, IConfig config, ISmsGatewayBlobProvider smsGatewayBlobProvider)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _config = config;
-            _blobService = blobService;
+            _smsGatewayBlobProvider = smsGatewayBlobProvider;
         }
 
         public async Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int smsGatewayId)
@@ -192,9 +192,7 @@ namespace RX.Nyss.Web.Features.SmsGateway
                 .ToListAsync();
 
             var blobContentToUpload = string.Join(Environment.NewLine, authorizedApiKeys);
-            var authorizedApiKeysBlobObjectName = _config.AuthorizedApiKeysBlobObjectName;
-
-            await _blobService.UpdateBlob(authorizedApiKeysBlobObjectName, blobContentToUpload);
+            await _smsGatewayBlobProvider.UpdateApiKeys(blobContentToUpload);
         }
     }
 }
