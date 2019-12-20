@@ -60,6 +60,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private const int AlertRuleId2 = 2;
         private const int AlertRuleCountThreshold1 = 1;
         private const int AlertRuleCountThreshold3 = 3;
+        private const int HealthRisk1Id = 1;
+        private const int HealthRisk2Id = 2;
+
 
         private readonly Guid _labelNotInAnyGroup1 = Guid.Parse("93DCD52C-4AD2-45F6-AED4-54CAB1DD3E19");
         private readonly Guid _labelNotInAnyGroup2 = Guid.Parse("19378b71-c7cd-43b3-b856-117dc30ee291");
@@ -98,10 +101,17 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
                 new AlertRule{ Id = AlertRuleId2, CountThreshold = AlertRuleCountThreshold3, KilometersThreshold = AlertRuleKilometersThreshold}
             };
 
+            var healthRisks = new List<HealthRisk>
+            {
+                new HealthRisk { Id = HealthRisk1Id, AlertRule = alertRules[0] },
+                new HealthRisk { Id = HealthRisk2Id, AlertRule = alertRules[0] },
+            };
+
+
             var projectHealthRisks = new List<ProjectHealthRisk>
             {
-                new ProjectHealthRisk { Id = ProjectHealthRiskWithThreshold1Id, AlertRule = alertRules[0] },
-                new ProjectHealthRisk { Id = ProjectHealthRiskId2, AlertRule = alertRules[1] }
+                new ProjectHealthRisk { Id = ProjectHealthRiskWithThreshold1Id, AlertRule = alertRules[0] , HealthRiskId = HealthRisk1Id, HealthRisk = healthRisks[0]},
+                new ProjectHealthRisk { Id = ProjectHealthRiskId2, AlertRule = alertRules[1] , HealthRiskId = HealthRisk2Id, HealthRisk = healthRisks[1] }
             };
 
             var reports = new List<Report>
@@ -196,11 +206,14 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
 
             var alertRulesDbSet = alertRules.AsQueryable().BuildMockDbSet();
+            var healthRisksDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             var projectHealthRisksDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
             var alertReportsDbSet = alertReports.AsQueryable().BuildMockDbSet();
             var alertsDbSet = alerts.AsQueryable().BuildMockDbSet();
             var reportsDbSet = reports.AsQueryable().BuildMockDbSet();
 
+            _nyssContextMock.AlertRules.Returns(alertRulesDbSet);
+            _nyssContextMock.HealthRisks.Returns(healthRisksDbSet);
             _nyssContextMock.AlertRules.Returns(alertRulesDbSet);
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksDbSet);
             _nyssContextMock.AlertReports.Returns(alertReportsDbSet);
@@ -212,8 +225,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         [InlineData(ReportType.Activity)]
         [InlineData(ReportType.Aggregate)]
         [InlineData(ReportType.DataCollectionPoint)]
-        [InlineData(ReportType.NonHuman)]
-        public async Task ReportAdded_WhenReportTypeIsNotSingle_ShouldReturnNull(ReportType reportType)
+        public async Task ReportAdded_WhenReportTypeIsNotSingleOrNonHuman_ShouldReturnNull(ReportType reportType)
         {
             //arrange
             var report = new Report { ReportType = reportType };

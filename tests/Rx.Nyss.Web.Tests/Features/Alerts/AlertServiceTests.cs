@@ -184,14 +184,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             result.IsSuccess.ShouldBeTrue();
         }
 
-        [Theory]
-        [InlineData(AlertStatus.Closed)]
-        [InlineData(AlertStatus.Dismissed)]
-        [InlineData(AlertStatus.Escalated)]
-        [InlineData(AlertStatus.Rejected)]
-        public async Task DismissAlert_WhenAlertIsNotPending_ShouldReturnError(AlertStatus status)
+        [Fact]
+        public async Task DismissAlert_WhenAlertIsClosed_ShouldReturnError()
         {
-            _alerts.First().Status = status;
+            _alerts.First().Status = AlertStatus.Closed;
 
             var result = await _alertService.DismissAlert(TestData.AlertId);
 
