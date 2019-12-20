@@ -121,7 +121,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             await _emailToSmsPublisherService.SendMessages(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
         }
 
-
         private async Task<Alert> HandleAlerts(Report report)
         {
             var reportGroupLabel = report.ReportGroupLabel;
@@ -168,8 +167,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated)
                               || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore) )
                     .ToListAsync();
-
-
                 
                 await AddReportsToAlert(existingActiveAlertForLabel, reportsInLabelWithNoActiveAlert);
             }
@@ -243,7 +240,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
                         .Select(ar => ar.Report.Village.Name)
                         .FirstOrDefault()
-
                 })
                 .FirstOrDefaultAsync();
 

@@ -54,11 +54,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 await _alertService.ReportDismissed(reportId);
                 return true;
             }
-            catch
+            catch (Exception e)
             {
+                _loggerAdapter.Error(e, $"Could not dismiss a report with id: '{reportId}'.");
                 return false;
             }
-
         }
     }
 }

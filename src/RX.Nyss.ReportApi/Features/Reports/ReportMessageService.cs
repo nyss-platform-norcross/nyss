@@ -28,6 +28,9 @@ namespace RX.Nyss.ReportApi.Features.Reports
         private const string EventReportPattern = @"^(?<eventCode>[1-9][0-9]*)$";
         private static readonly Regex EventReportRegex = new Regex(EventReportPattern, RegexOptions.Compiled);
 
+        private const string DcpReportPattern = @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<malesBelowFive>[0-9]+)\k<separator>(?<malesAtLeastFive>[0-9]+)\k<separator>(?<femalesBelowFive>[0-9]+)\k<separator>(?<femalesAtLeastFive>[0-9]+)\k<separator>(?<referredToHealthFacility>[0-9]+)\k<separator>(?<diedInOrp>[0-9]+)\k<separator>(?<cameFromOtherVillage>[0-9]+)$";
+        private static readonly Regex DcpReportRegex = new Regex(DcpReportPattern, RegexOptions.Compiled);
+
         private readonly INyssContext _nyssContext;
 
         public ReportMessageService(INyssContext nyssContext)
@@ -37,6 +40,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
         public ParsedReport ParseReport(string reportMessage)
         {
+            if (string.IsNullOrWhiteSpace(reportMessage))
+            {
+                throw new ReportValidationException("A report cannot be empty.");
+            }
+
             if (SingleReportRegex.IsMatch(reportMessage))
             {
                 return ParseSingleReport(reportMessage);
@@ -50,6 +58,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
             if (EventReportRegex.IsMatch(reportMessage))
             {
                 return ParseEventReport(reportMessage);
+            }
+
+            if (DcpReportRegex.IsMatch(reportMessage))
+            {
+                return ParseDcpReport(reportMessage);
             }
 
             throw new ReportValidationException("A report format was not recognized.");
@@ -70,7 +83,6 @@ namespace RX.Nyss.ReportApi.Features.Reports
             {
                 HealthRiskCode = healthRiskCode,
                 ReportType = ReportType.Single,
-                DataCollectorType = DataCollectorType.Human,
                 ReportedCase =
                 {
                     CountMalesBelowFive = sex == Male && ageGroup == BelowFive ? 1 : 0,
@@ -102,7 +114,6 @@ namespace RX.Nyss.ReportApi.Features.Reports
             {
                 HealthRiskCode = healthRiskCode,
                 ReportType = ReportType.Aggregate,
-                DataCollectorType = DataCollectorType.Human,
                 ReportedCase =
                 {
                     CountMalesBelowFive = malesBelowFive,
@@ -115,7 +126,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
             return parsedReport;
         }
 
-        private ParsedReport ParseEventReport(string reportMessage)
+        internal ParsedReport ParseEventReport(string reportMessage)
         {
             var eventReportMatch = EventReportRegex.Match(reportMessage);
             var eventCodeMatch = eventReportMatch.Groups["eventCode"].Value;
@@ -130,8 +141,50 @@ namespace RX.Nyss.ReportApi.Features.Reports
             var parsedReport = new ParsedReport
             {
                 HealthRiskCode = eventCode,
-                ReportType = activityCodes.Contains(eventCode) ? ReportType.Activity : ReportType.NonHuman,
-                DataCollectorType = DataCollectorType.Human
+                ReportType = activityCodes.Contains(eventCode) ? ReportType.Activity : ReportType.NonHuman
+            };
+
+            return parsedReport;
+        }
+
+        internal static ParsedReport ParseDcpReport(string reportMessage)
+        {
+            var dcpReportMatch = DcpReportRegex.Match(reportMessage);
+            var healthRiskCodeMatch = dcpReportMatch.Groups["healthRiskCode"].Value;
+            var malesBelowFiveMatch = dcpReportMatch.Groups["malesBelowFive"].Value;
+            var malesAtLeastFiveMatch = dcpReportMatch.Groups["malesAtLeastFive"].Value;
+            var femalesBelowFiveMatch = dcpReportMatch.Groups["femalesBelowFive"].Value;
+            var femalesAtLeastFiveMatch = dcpReportMatch.Groups["femalesAtLeastFive"].Value;
+            var referredToHealthFacilityMatch = dcpReportMatch.Groups["referredToHealthFacility"].Value;
+            var diedInOrpMatch = dcpReportMatch.Groups["diedInOrp"].Value;
+            var cameFromOtherVillageMatch = dcpReportMatch.Groups["cameFromOtherVillage"].Value;
+
+            var healthRiskCode = int.Parse(healthRiskCodeMatch);
+            var malesBelowFive = int.Parse(malesBelowFiveMatch);
+            var malesAtLeastFive = int.Parse(malesAtLeastFiveMatch);
+            var femalesBelowFive = int.Parse(femalesBelowFiveMatch);
+            var femalesAtLeastFive = int.Parse(femalesAtLeastFiveMatch);
+            var referredToHealthFacility = int.Parse(referredToHealthFacilityMatch);
+            var diedInOrp = int.Parse(diedInOrpMatch);
+            var cameFromOtherVillage = int.Parse(cameFromOtherVillageMatch);
+
+            var parsedReport = new ParsedReport
+            {
+                HealthRiskCode = healthRiskCode,
+                ReportType = ReportType.DataCollectionPoint,
+                ReportedCase =
+                {
+                    CountMalesBelowFive = malesBelowFive,
+                    CountMalesAtLeastFive = malesAtLeastFive,
+                    CountFemalesBelowFive = femalesBelowFive,
+                    CountFemalesAtLeastFive = femalesAtLeastFive
+                },
+                DataCollectionPointCase =
+                {
+                    ReferredCount = referredToHealthFacility,
+                    DeathCount = diedInOrp,
+                    FromOtherVillagesCount = cameFromOtherVillage
+                }
             };
 
             return parsedReport;

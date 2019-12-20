@@ -10,6 +10,7 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
@@ -19,32 +20,30 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
     {
         private readonly INyssContext _nyssContext;
         private readonly IEmailPublisherService _emailPublisherService;
-        private readonly IEmailTextGeneratorService _emailTextGeneratorService;
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
-        private readonly IConfig _config;
         private readonly AlertService _alertService;
         private readonly List<Alert> _alerts;
-        private readonly List<GatewaySetting> _gatewaySettings;
 
         public AlertServiceTests()
         {
             _nyssContext = Substitute.For<INyssContext>();
             _emailPublisherService = Substitute.For<IEmailPublisherService>();
-            _emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
+            var emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
             _smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
-            _config = Substitute.For<IConfig>();
+            var config = Substitute.For<IConfig>();
+            var loggerAdapter = Substitute.For<ILoggerAdapter>();
 
-            _alertService = new AlertService(_nyssContext, _emailPublisherService, _emailTextGeneratorService, _config, _smsTextGeneratorService);
+            _alertService = new AlertService(_nyssContext, _emailPublisherService, emailTextGeneratorService, config, _smsTextGeneratorService, loggerAdapter);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
             _nyssContext.Alerts.Returns(alertsDbSet);
 
-            _gatewaySettings = TestData.GetGatewaySettings();
-            var gatewaySettingsDbSet = _gatewaySettings.AsQueryable().BuildMockDbSet();
+            var gatewaySettings = TestData.GetGatewaySettings();
+            var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContext.GatewaySettings.Returns(gatewaySettingsDbSet);
 
-            _emailTextGeneratorService.GenerateEscalatedAlertEmail(TestData.ContentLanguageCode)
+            emailTextGeneratorService.GenerateEscalatedAlertEmail(TestData.ContentLanguageCode)
                 .Returns((TestData.EscalationEmailSubject, TestData.EscalationEmailBody));
         }
 

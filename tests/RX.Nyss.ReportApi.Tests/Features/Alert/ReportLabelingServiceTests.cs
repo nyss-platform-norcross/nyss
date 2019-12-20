@@ -53,8 +53,6 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private const int ReportInArea6Id2 = 23;
         private const int ReportInArea6Id3 = 24;
         private const int ReportInArea6ButRemoteId = 25;
-        
-        
 
         private readonly Guid _labelNotInAnyGroup1 = Guid.Parse("93DCD52C-4AD2-45F6-AED4-54CAB1DD3E19");
         private readonly Guid _labelForGroup1 = Guid.Parse("CBCA820B-CA76-4E67-9C08-2845B61CAA5B");

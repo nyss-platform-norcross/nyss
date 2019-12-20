@@ -11,8 +11,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Models
 
         public ReportCase ReportedCase { get; set; } = new ReportCase();
 
-        public DataCollectorType DataCollectorType { get; set; }
-
         public DataCollectionPointCase DataCollectionPointCase { get; set; } = new DataCollectionPointCase();
     }
 }
