@@ -208,11 +208,17 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
         private async Task<DataCollector> ValidateDataCollector(string phoneNumber, NationalSociety gatewayNationalSociety)
         {
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+            {
+                throw new ReportValidationException("A phone number cannot be empty.");
+            }
+
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
                 .Include(dc => dc.Village)
                 .Include(dc => dc.Zone)
-                .SingleOrDefaultAsync(dc => dc.PhoneNumber == phoneNumber || dc.AdditionalPhoneNumber == phoneNumber);
+                .SingleOrDefaultAsync(dc => dc.PhoneNumber == phoneNumber ||
+                                            (dc.AdditionalPhoneNumber != null && dc.AdditionalPhoneNumber == phoneNumber));
 
             if (dataCollector == null)
             {

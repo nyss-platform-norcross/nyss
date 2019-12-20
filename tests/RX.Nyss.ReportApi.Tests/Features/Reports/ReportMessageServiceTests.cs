@@ -6,6 +6,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Features.Reports;
+using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using Shouldly;
 using Xunit;
 
@@ -23,6 +24,16 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             var healthRisks = new List<HealthRisk> { new HealthRisk { Id = 1, HealthRiskCode = 99, HealthRiskType = HealthRiskType.Activity } };
             var healthRisksDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             nyssContextMock.HealthRisks.Returns(healthRisksDbSet);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void ParseReport_WhenEmptyReportSent_ShouldThrowException(string reportMessage)
+        {
+            // Assert
+            Should.Throw<ReportValidationException>(() => _reportMessageService.ParseReport(reportMessage));
         }
 
         [Fact]

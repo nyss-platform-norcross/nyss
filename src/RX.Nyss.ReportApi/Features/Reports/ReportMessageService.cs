@@ -40,6 +40,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
         public ParsedReport ParseReport(string reportMessage)
         {
+            if (string.IsNullOrWhiteSpace(reportMessage))
+            {
+                throw new ReportValidationException("A report cannot be empty.");
+            }
+
             if (SingleReportRegex.IsMatch(reportMessage))
             {
                 return ParseSingleReport(reportMessage);
