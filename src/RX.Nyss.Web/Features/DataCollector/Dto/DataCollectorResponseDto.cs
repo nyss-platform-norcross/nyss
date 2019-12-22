@@ -6,11 +6,13 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
     {
         public int Id { get; set; }
 
+        public DataCollectorType DataCollectorType { get; set; }
+
         public string Name { get; set; }
 
         public string DisplayName { get; set; }
 
-        public Sex Sex { get; set; }
+        public Sex? Sex { get; set; }
 
         public string PhoneNumber { get; set; }
 

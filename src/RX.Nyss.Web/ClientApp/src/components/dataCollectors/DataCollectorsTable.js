@@ -23,18 +23,20 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
     <Table>
       <TableHead>
         <TableRow>
+          <TableCell>{strings(stringKeys.dataCollector.list.dataCollectorType)}</TableCell>
           <TableCell>{strings(stringKeys.dataCollector.list.name)}</TableCell>
-          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.displayName)}</TableCell>
-          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.phoneNumber)}</TableCell>
-          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.sex)}</TableCell>
-          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.location)}</TableCell>
-          <TableCell style={{ width: "14%" }}>{strings(stringKeys.dataCollector.list.trainingStatus)}</TableCell>
-          <TableCell style={{ width: "14%" }} />
+          <TableCell>{strings(stringKeys.dataCollector.list.displayName)}</TableCell>
+          <TableCell>{strings(stringKeys.dataCollector.list.phoneNumber)}</TableCell>
+          <TableCell>{strings(stringKeys.dataCollector.list.sex)}</TableCell>
+          <TableCell>{strings(stringKeys.dataCollector.list.location)}</TableCell>
+          <TableCell>{strings(stringKeys.dataCollector.list.trainingStatus)}</TableCell>
+          <TableCell />
         </TableRow>
       </TableHead>
       <TableBody>
         {list.map(row => (
           <TableRow key={row.id} hover onClick={() => goToEdition(projectId, row.id)} className={styles.clickableRow}>
+            <TableCell>{strings(stringKeys.dataCollector.constants.dataCollectorType[row.dataCollectorType])}</TableCell>
             <TableCell>{row.name}</TableCell>
             <TableCell>{row.displayName}</TableCell>
             <TableCell>{row.phoneNumber}</TableCell>

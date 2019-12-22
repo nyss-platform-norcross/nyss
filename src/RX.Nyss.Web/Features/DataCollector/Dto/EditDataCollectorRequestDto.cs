@@ -7,13 +7,15 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
     {
         public int Id { get; set; }
 
+        public DataCollectorType DataCollectorType { get; set; }
+
         public string Name { get; set; }
 
         public string DisplayName { get; set; }
 
-        public Sex Sex { get; set; }
+        public Sex? Sex { get; set; }
 
-        public int BirthGroupDecade { get; set; }
+        public int? BirthGroupDecade { get; set; }
 
         public string PhoneNumber { get; set; }
 
@@ -34,10 +36,8 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
             public Validator()
             {
                 RuleFor(dc => dc.Id).GreaterThan(0);
+                RuleFor(dc => dc.DataCollectorType).IsInEnum();
                 RuleFor(dc => dc.Name).NotEmpty().MaximumLength(100);
-                RuleFor(dc => dc.DisplayName).NotEmpty().MaximumLength(100);
-                RuleFor(dc => dc.Sex).IsInEnum();
-                RuleFor(dc => dc.BirthGroupDecade).GreaterThan(0).Must(x => x % 10 == 0);
                 RuleFor(dc => dc.PhoneNumber).NotEmpty().MaximumLength(20);
                 RuleFor(dc => dc.AdditionalPhoneNumber).MaximumLength(20);
                 RuleFor(dc => dc.Latitude).InclusiveBetween(-90, 90);
@@ -45,6 +45,13 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
                 RuleFor(dc => dc.VillageId).GreaterThan(0);
                 RuleFor(dc => dc.ZoneId);
                 RuleFor(dc => dc.SupervisorId).GreaterThan(0);
+
+                When(dc => dc.DataCollectorType == DataCollectorType.Human, () =>
+                {
+                    RuleFor(dc => dc.DisplayName).NotEmpty().MaximumLength(100);
+                    RuleFor(dc => dc.Sex).IsInEnum();
+                    RuleFor(dc => dc.BirthGroupDecade).GreaterThan(0).Must(x => x % 10 == 0);
+                });
             }
         }
     }

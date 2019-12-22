@@ -220,6 +220,13 @@ export const theme = createMuiTheme({
       root: {
         backgroundColor: "#f3f3f3"
       }
+    },
+    MuiRadio: {
+      colorSecondary: {
+        '&$checked': {
+          color: '#C02C2C'
+        }
+      }
     }
   },
 });

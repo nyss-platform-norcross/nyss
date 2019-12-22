@@ -19,9 +19,9 @@ namespace RX.Nyss.Data.Models
 
         public string AdditionalPhoneNumber { get; set; }
 
-        public Sex Sex { get; set; }
+        public Sex? Sex { get; set; }
 
-        public int BirthGroupDecade { get; set; }
+        public int? BirthGroupDecade { get; set; }
 
         public Point Location { get; set; }
 

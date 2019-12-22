@@ -303,6 +303,7 @@ export const stringKeys = {
     form: {
       creationTitle: "dataCollectors.form.creationTitle",
       editionTitle: "dataCollectors.form.editionTitle",
+      dataCollectorType: "dataCollectors.form.dataCollectorType",
       name: "dataCollectors.form.name",
       displayName: "dataCollectors.form.displayName",
       sex: "dataCollectors.form.sex",
@@ -320,6 +321,7 @@ export const stringKeys = {
       zone: "dataCollectors.form.zone"
     },
     list: {
+      dataCollectorType: "dataCollectors.list.dataCollectorType",
       name: "dataCollectors.list.name",
       displayName: "dataCollectors.list.displayName",
       phoneNumber: "dataCollectors.list.phoneNumber",
@@ -339,6 +341,10 @@ export const stringKeys = {
         male: "dataCollectors.sex.male",
         female: "dataCollectors.sex.female",
         other: "dataCollectors.sex.other",
+      },
+      dataCollectorType: {
+        "Human": "dataCollectors.dataCollectorType.human",
+        "CollectionPoint": "dataCollectors.dataCollectorType.collectionPoint"
       }
     },
     mapOverview: {
