@@ -210,7 +210,7 @@ const ProjectsEditPageComponent = (props) => {
         </Grid>
 
         <FormActions>
-          <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
+          <Button onClick={() => props.goToOverview(props.nationalSocietyId, props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.project.form.update)}</SubmitButton>
         </FormActions>
       </Form>
@@ -235,7 +235,7 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = {
   openEdition: projectsActions.openEdition.invoke,
   edit: projectsActions.edit.invoke,
-  goToList: projectsActions.goToList
+  goToOverview: projectsActions.goToOverview
 };
 
 export const ProjectsEditPage = useLayout(

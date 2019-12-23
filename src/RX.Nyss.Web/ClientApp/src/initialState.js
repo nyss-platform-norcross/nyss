@@ -69,6 +69,7 @@ export const initialState = {
     formTimeZones: [],
     formSaving: false,
     formData: null,
+    overviewData: null,
     dashboard: {
       name: null,
       projectSummary: null,

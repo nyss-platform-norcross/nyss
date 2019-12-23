@@ -45,7 +45,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DayJsUtils from '@date-io/dayjs';
 import { AlertsListPage } from '../alerts/AlertsListPage';
 import { AlertsAssessmentPage } from '../alerts/AlertsAssessmentPage';
-import { ProjectsOverviewPage } from '../projects/projectsOverviewPage';
+import { ProjectsOverviewPage } from '../projects/ProjectsOverviewPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>

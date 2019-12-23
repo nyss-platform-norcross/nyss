@@ -39,4 +39,10 @@ export const projectsSiteMap = [
     placeholder: placeholders.leftMenu,
     placeholderIndex: projectLeftMenuOrder.settings
   },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/overview",
+    path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/edit",
+    title: () => strings(stringKeys.project.settings),
+    access: accessMap.projects.edit,
+  },
 ];

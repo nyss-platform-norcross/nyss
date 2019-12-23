@@ -54,13 +54,13 @@ function* openProjectEdition({ nationalSocietyId, projectId }) {
 };
 
 function* openProjectOverview({ projectId }) {
-  yield put(actions.openEdition.request());
+  yield put(actions.openOverview.request());
   try {
     const response = yield call(http.get, `/api/project/${projectId}/get`);
     yield call(openProjectDashboardModule, projectId);
-    yield put(actions.openEdition.success(response.value, response.value.formData.healthRisks, response.value.formData.timeZones));
+    yield put(actions.openOverview.success(response.value, response.value.formData.healthRisks, response.value.formData.timeZones));
   } catch (error) {
-    yield put(actions.openEdition.failure(error.message));
+    yield put(actions.openOverview.failure(error.message));
   }
 };
 
@@ -84,7 +84,7 @@ function* editProject({ nationalSocietyId, projectId, data }) {
     const response = yield call(http.post, `/api/project/${projectId}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(appActions.entityUpdated(entityTypes.project(projectId)));
-    yield put(actions.goToDashboard(nationalSocietyId, projectId));
+    yield put(actions.goToOverview(nationalSocietyId, projectId));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }

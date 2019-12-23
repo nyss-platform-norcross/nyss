@@ -1,41 +1,106 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import styles from "./ProjectsOverviewPage.module.scss";
+
+import React, { Fragment } from 'react';
 import { connect } from "react-redux";
+import { stringKeys, strings } from '../../strings';
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
-import * as projectsActions from './logic/projectsActions';
-import Layout from '../layout/Layout';
-import Form from '../forms/form/Form';
-import FormActions from '../forms/formActions/FormActions';
-import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
-import TextInputField from '../forms/TextInputField';
-import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
-import { strings, stringKeys } from '../../strings';
-import Grid from '@material-ui/core/Grid';
-import AddIcon from '@material-ui/icons/Add';
-import { MultiSelect } from '../forms/MultiSelect';
-import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
-import { ProjectEmailNotificationItem } from './ProjectEmailNotificationItem';
-import { ProjectSmsNotificationItem } from './ProjectSmsNotificationItem';
-import { getSaveFormModel } from './logic/projectsService';
 import { Loading } from '../common/loading/Loading';
-import SelectField from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
-import { ValidationMessage } from '../forms/ValidationMessage';
+import FormActions from '../forms/formActions/FormActions';
+import Layout from '../layout/Layout';
+import * as projectsActions from './logic/projectsActions';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { ProjectsOverviewHealthRiskItem } from "./ProjectsOverviewHealthRiskItem";
+import { accessMap } from '../../authentication/accessMap';
+import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 
 const ProjectsOverviewPageComponent = (props) => {
   useMount(() => {
     props.openOverview(props.nationalSocietyId, props.projectId);
   });
 
-  if (props.isFetching) {
+  if (props.isFetching || !props.data) {
     return <Loading />;
   }
 
+  const selectedTimeZone =  props.data.formData.timeZones.filter( (timeZone) => timeZone.id === props.data.timeZoneId)[0];
+  
   return (
     <Fragment>
-        
+
+        <Grid container spacing={4} fixed='true' style={{ maxWidth: 800 }}>
+          <Grid item xs={12}>
+            <Typography variant="h6">
+              {strings(stringKeys.project.form.name)}
+            </Typography>
+            <Typography variant="body1" gutterBottom>
+              {props.data.name}
+            </Typography>
+
+            <Typography variant="h6">
+              {strings(stringKeys.project.form.timeZone)}
+            </Typography>
+            <Typography variant="body1" gutterBottom>           
+              {selectedTimeZone.displayName }
+            </Typography>
+
+            <Typography variant="h6">
+              {strings(stringKeys.project.form.healthRisks)}
+            </Typography>
+            <Typography variant="body1" gutterBottom>           
+              {props.data.projectHealthRisks.map( hr =>
+               <span className = {styles.healthRiskItem} key={`projectsHealthRiskItemIcon_${hr.healthRiskId}`}>
+                {hr.healthRiskName}
+               </span>
+              )}
+            </Typography>           
+          </Grid>
+
+            <Grid item xs={12}>
+                        
+            <Typography variant="h3">{strings(stringKeys.project.form.overviewHealthRisksSection)}</Typography>            
+              <Grid container spacing={3}>
+                {props.data.projectHealthRisks.map( hr =>
+                  <ProjectsOverviewHealthRiskItem 
+                    key={`projectsHealthRiskItem_${hr.healthRiskId}`}         
+                    projectHealthRisk={hr}
+                    />
+                  )}
+
+              </Grid>
+            </Grid>
+                      
+            <Grid item xs={9}>
+            <Typography variant="h3">{strings(stringKeys.project.form.overviewEmailNotificationsSection)}</Typography>
+            <Typography variant="subtitle1" gutterBottom>{strings(stringKeys.project.form.emailNotificationDescription)}</Typography>
+
+            {props.data.emailAlertRecipients.map(emailRecipient => (
+              <Typography variant="body1" key={`projectEmailNotificationItem_${emailRecipient.id}`}>           
+              {emailRecipient.email }
+            </Typography>
+            ))}
+                         
+          </Grid>
+
+          <Grid item xs={9}>
+            <Typography variant="h3">{strings(stringKeys.project.form.overviewSmsNotificationsSection)}</Typography>
+            <Typography variant="subtitle1" gutterBottom >{strings(stringKeys.project.form.smsNotificationDescription)}</Typography>
+
+             {props.data.smsAlertRecipients.map(smsRecipient => (
+              <Typography variant="body1" key={`projectSmsNotificationItem_${smsRecipient.id}`}>           
+              {smsRecipient.phoneNumber }
+            </Typography>
+            ))} 
+
+          </Grid>         
+        </Grid>
+
+        <FormActions>
+          <TableActionsButton variant="outlined" color="primary" onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)} roles={accessMap.projects.edit}>
+            {strings(stringKeys.project.edit)}
+          </TableActionsButton>
+        </FormActions>
     </Fragment>
   );
 }
@@ -44,18 +109,17 @@ ProjectsOverviewPageComponent.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-  healthRisks: state.projects.formHealthRisks,
-  timeZones: state.projects.formTimeZones,
+  healthRisks: state.projects.overviewHealthRisks,
+  timeZones: state.projects.overviewTimeZones,
   projectId: ownProps.match.params.projectId,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
-  isFetching: state.projects.formFetching,
-  isSaving: state.projects.formSaving,
-  data: state.projects.formData,
-  error: state.projects.formError
+  isFetching: state.projects.formFetching,  
+  data: state.projects.overviewData,  
 });
 
 const mapDispatchToProps = {
   openOverview: projectsActions.openOverview.invoke,
+  openEdition: projectsActions.goToEdition,
   goToList: projectsActions.goToList
 };
 
