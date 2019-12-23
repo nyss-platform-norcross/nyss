@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Authentication.Policies;
@@ -20,7 +19,7 @@ namespace RX.Nyss.Web.Features.Report
         }
 
         /// <summary>
-        /// Gets a list of reports in a project
+        /// Gets a list of reports in a project.
         /// </summary>
         [HttpPost("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]

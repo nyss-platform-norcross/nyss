@@ -393,6 +393,34 @@ export const stringKeys = {
     },
     title: "reports.title"
   },
+  nationalSocietyReports: {
+    list: {
+      title: "nationalSocietyReports.list.title",
+      date: "nationalSocietyReports.list.date",
+      time: "nationalSocietyReports.list.time",
+      healthRisk: "nationalSocietyReports.list.healthRisk",
+      status: "nationalSocietyReports.list.status",
+      project: "nationalSocietyReports.list.project",
+      region: "nationalSocietyReports.list.region",
+      district: "nationalSocietyReports.list.district",
+      village: "nationalSocietyReports.list.village",
+      location: "nationalSocietyReports.list.location",
+      zone: "nationalSocietyReports.list.zone",
+      dataCollectorDisplayName: "nationalSocietyReports.list.dataCollectorDisplayName",
+      dataCollectorPhoneNumber: "nationalSocietyReports.list.dataCollectorPhoneNumber",
+      malesBelowFive: "nationalSocietyReports.list.malesBelowFive",
+      malesAtLeastFive: "nationalSocietyReports.list.malesAtLeastFive",
+      femalesBelowFive: "nationalSocietyReports.list.femalesBelowFive",
+      femalesAtLeastFive: "nationalSocietyReports.list.femalesAtLeastFive",
+      success: "nationalSocietyReports.list.success",
+      error: "nationalSocietyReports.list.error",
+      selectReportListType: "nationalSocietyReports.list.selectReportListType",
+      mainReportsListType: "nationalSocietyReports.list.mainReportsListType",
+      trainingReportsListType: "nationalSocietyReports.list.trainingReportsListType"
+
+    },
+    title: "nationalSocietyReports.title"
+  },
   alerts: {
     list: {
       title: "alerts.list.title",

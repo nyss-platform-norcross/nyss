@@ -45,6 +45,7 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DayJsUtils from '@date-io/dayjs';
 import { AlertsListPage } from '../alerts/AlertsListPage';
 import { AlertsAssessmentPage } from '../alerts/AlertsAssessmentPage';
+import { NationalSocietyReportsListPage } from '../nationalSocietyReports/NationalSocietyReportsListPage';
 import { ProjectsOverviewPage } from '../projects/ProjectsOverviewPage';
 
 export const App = ({ history }) => (
@@ -68,6 +69,8 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/structure' component={NationalSocietyStructurePage} roles={accessMap.nationalSocieties.edit} />
           <Redirect exact from='/nationalsocieties/:nationalSocietyId' to='/nationalsocieties/:nationalSocietyId/dashboard' />
           <Redirect exact from='/nationalsocieties/:nationalSocietyId/settings' to='/nationalsocieties/:nationalSocietyId/overview' />
+
+          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/reports' component={NationalSocietyReportsListPage} roles={accessMap.nationalSocietyReports.list} />
 
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways' component={SmsGatewaysListPage} roles={accessMap.smsGateways.list} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />

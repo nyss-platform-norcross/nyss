@@ -1,6 +1,7 @@
 import { placeholders } from "../../../siteMapPlaceholders";
 import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
+import { nationalSocietyLeftMenuOrder } from "../../nationalSocieties/logic/nationalSocietiesSiteMap";
 
 export const projectLeftMenuOrder = {
   dashboard: 0,
@@ -17,7 +18,7 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.title),
     placeholder: placeholders.leftMenu,
     access: accessMap.projects.list,
-    placeholderIndex: 1
+    placeholderIndex: nationalSocietyLeftMenuOrder.projects
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects",

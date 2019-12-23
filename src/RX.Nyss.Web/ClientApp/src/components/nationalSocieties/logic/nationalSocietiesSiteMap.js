@@ -2,6 +2,14 @@ import { placeholders } from "../../../siteMapPlaceholders";
 import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
 
+export const nationalSocietyLeftMenuOrder = {
+  dashboard: 0,
+  projects: 10,
+  userlist: 20,
+  nationalSocietyReports: 30,
+  settings: 40
+};
+
 export const nationalSocietiesSiteMap = [
   {
     path: "/nationalsocieties",
@@ -27,7 +35,7 @@ export const nationalSocietiesSiteMap = [
     title: () => strings(stringKeys.nationalSociety.dashboard.title),
     access: accessMap.nationalSocieties.get,
     placeholder: placeholders.leftMenu,
-    placeholderIndex: 1,
+    placeholderIndex: nationalSocietyLeftMenuOrder.dashboard,
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/overview",
@@ -40,7 +48,7 @@ export const nationalSocietiesSiteMap = [
     path: "/nationalsocieties/:nationalSocietyId/settings",
     title: () => strings(stringKeys.nationalSociety.settings.title),
     placeholder: placeholders.leftMenu,
-    placeholderIndex: 4,
+    placeholderIndex: nationalSocietyLeftMenuOrder.settings,
     access: accessMap.nationalSocieties.edit
   },
   {
