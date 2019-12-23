@@ -4,7 +4,7 @@ import * as actions from "./reportsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
-import {downloadFileWithToken} from "../../../utils/downloadFile";
+import {downloadFile} from "../../../utils/downloadFile";
 
 
 export const reportsSagas = () => [
@@ -53,10 +53,10 @@ function* getExportData({ projectId, reportListFilter }) {
       reportListType: "main"
     };
 
-    yield downloadFileWithToken({
+    yield downloadFile({
       url: `/api/report/exportToExcel?projectId=${projectId}`,
-      fileName: `bla.csv`,
-      data: reportListFilter
+      fileName: `reports.csv`,
+      data: filter
     });
     
     yield put(actions.exportToExcel.success());

@@ -1,6 +1,4 @@
-import { getOrRenewToken } from "../authentication/auth";
-
-const downloadFile = ({ url, fileName, token , data}) =>
+export const downloadFile = ({ url, fileName, token , data}) =>
     new Promise((resolve, reject) => {
         try {
             const xhr = new XMLHttpRequest();
@@ -24,19 +22,9 @@ const downloadFile = ({ url, fileName, token , data}) =>
                     }
                 }
             };
-            if (token) {
-                xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-            }
             xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');            
             xhr.send(JSON.stringify(data));
         } catch (e) {
             reject(e);
         }
-    });
-
-export const downloadFileWithToken = ({ url, fileName, data }) =>
-  getOrRenewToken()
-    .then(tokenData => downloadFile({ url, fileName, token: tokenData, data }))
-    .catch(e => {
-      throw e;
     });
