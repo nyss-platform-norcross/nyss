@@ -19,5 +19,8 @@ namespace RX.Nyss.Web.Features.Report.Dto
         public int? CountFemalesBelowFive { get; set; }
         public int? CountMalesAtLeastFive { get; set; }
         public int? CountFemalesAtLeastFive { get; set; }
+        public int? ReferredCount { get; set; }
+        public int? DeathCount { get; set; }
+        public int? FromOtherVillagesCount { get; set; }
     }
 }

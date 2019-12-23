@@ -305,7 +305,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenListTypeFilterIsTraining_ShouldReturnOnlyTraining()
         {
             //act
-            var result = await _reportService.List(1, 1, "", new ListFilterRequestDto{ ReportListType = ReportListTypeDto.Training });
+            var result = await _reportService.List(1, 1, "", new ListFilterRequestDto{ ReportListType = ReportListTypeDto.Main, IsTraining = true });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(100, _rowsPerPage));

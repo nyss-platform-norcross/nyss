@@ -374,11 +374,16 @@ export const stringKeys = {
       malesAtLeastFive: "reports.list.malesAtLeastFive",
       femalesBelowFive: "reports.list.femalesBelowFive",
       femalesAtLeastFive: "reports.list.femalesAtLeastFive",
+      referredCount: "reports.list.referredCount",
+      deathCount: "reports.list.deathCount",
+      fromOtherVillagesCount: "reports.list.fromOtherVillagesCount",
       success: "reports.list.success",
       error: "reports.list.error",
       selectReportListType: "reports.list.selectReportListType",
       mainReportsListType: "reports.list.mainReportsListType",
       trainingReportsListType: "reports.list.trainingReportsListType",
+      training: "reports.list.training",
+      nonTraining: "reports.list.nonTraining",
       dcpReportListType: "reports.list.dcpReportListType"
 
     },

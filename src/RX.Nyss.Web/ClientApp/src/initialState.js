@@ -143,7 +143,8 @@ export const initialState = {
     listProjectId: null,
     paginatedListData: null,
     reportListFilter: {
-      reportListType: "main"
+      reportListType: "main",
+      isTraining: false
     }
   },
   alerts: {

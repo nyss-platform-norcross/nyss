@@ -1,5 +1,5 @@
 import styles from '../common/table/Table.module.scss';
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,7 +11,7 @@ import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 
-export const ReportsTable = ({ isListFetching, list, projectId, getList, page, rowsPerPage, totalRows }) => {
+export const ReportsTable = ({ isListFetching, list, projectId, getList, page, rowsPerPage, totalRows, reportListType }) => {
 
   const onChangePage = (event, page) => {
     getList(projectId, page);
@@ -38,6 +38,13 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
             <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
             <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
             <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
+            {reportListType === "fromDcp" &&
+              <Fragment>
+                <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
+                <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
+                <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
+              </Fragment>
+            }
           </TableRow>
         </TableHead>
         <TableBody>
@@ -45,7 +52,7 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
             <TableRow key={row.id} hover>
               <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD')}</TableCell>
               <TableCell>{dayjs(row.dateTime).format('HH:mm')}</TableCell>
-              <TableCell>{row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error) }</TableCell>
+              <TableCell>{row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error)}</TableCell>
               <TableCell>{row.dataCollectorDisplayName}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{row.region}, {row.district}, {row.village}{row.zone ? ',' : null} {row.zone}</TableCell>
@@ -54,6 +61,13 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
               <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
+              {reportListType === "fromDcp" &&
+                <Fragment>
+                  <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
+                  <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>
+                  <TableCell>{dashIfEmpty(row.fromOtherVillagesCount)}</TableCell>
+                </Fragment>
+              }
             </TableRow>
           ))}
         </TableBody>

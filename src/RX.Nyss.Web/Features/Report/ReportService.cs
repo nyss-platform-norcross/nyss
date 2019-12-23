@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Features.Report
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.ReportListType == ReportListTypeDto.Training ?
+                .Where(r => filter.IsTraining ?
                       r.IsTraining.HasValue && r.IsTraining.Value :
                       r.IsTraining.HasValue && !r.IsTraining.Value)
                 .Where(r => filter.ReportListType == ReportListTypeDto.FromDcp ?
@@ -62,7 +62,10 @@ namespace RX.Nyss.Web.Features.Report
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
-                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive
+                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
+                    ReferredCount = r.Report.DataCollectionPointCase == null ? null : r.Report.DataCollectionPointCase.ReferredCount,
+                    DeathCount = r.Report.DataCollectionPointCase == null ? null : r.Report.DataCollectionPointCase.DeathCount,
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase == null ? null : r.Report.DataCollectionPointCase.FromOtherVillagesCount
                 })
                 .OrderByDescending(r => r.DateTime)
                 .Page(pageNumber, rowsPerPage)
