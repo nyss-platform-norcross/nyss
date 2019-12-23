@@ -18,10 +18,3 @@ export const getList = {
   success: (data, page, rowsPerPage, totalRows, filter) => ({ type: GET_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filter }),
   failure: (message) => ({ type: GET_REPORTS.FAILURE, message })
 };
-
-export const exportToExcel = {
-  invoke: (projectId, reportListFilter) => ({ type: EXPORT_TO_EXCEL.INVOKE, projectId, reportListFilter }),
-  request: () => ({ type: EXPORT_TO_EXCEL.REQUEST }),
-  success: () => ({ type: EXPORT_TO_EXCEL.SUCCESS }),
-  failure: (message) => ({ type: EXPORT_TO_EXCEL.FAILURE, message })
-};

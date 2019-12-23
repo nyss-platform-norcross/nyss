@@ -20,8 +20,8 @@ namespace RX.Nyss.Web.Features.Report
 {
     public interface IReportService
     {
-        Task<byte[]> Export(int projectId, ListFilterRequestDto filter);
-        Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, string identityName, ReportListFilterRequestDto filter);
+        Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber,  ListFilterRequestDto filter);
+        Task<byte[]> Export(int projectId, ReportListType reportListType);
     }
 
     public class ReportService : IReportService
@@ -46,7 +46,7 @@ namespace RX.Nyss.Web.Features.Report
 
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ListFilterRequestDto filter)
         {
-            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, filter);
+            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, filter.ReportListType);
 
             var rowsPerPage = _config.PaginationRowsPerPage;
             var reports = await reportsQuery
@@ -65,7 +65,7 @@ namespace RX.Nyss.Web.Features.Report
             reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
         }
 
-        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<ReportListResponseDto> result)> GetReportQueries(int projectId, ListFilterRequestDto filter)
+        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<ReportListResponseDto> result)> GetReportQueries(int projectId, ReportListType reportListType)
         {
             var currentUser = _authorizationService.GetCurrentUser();
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.Name);
@@ -107,9 +107,9 @@ namespace RX.Nyss.Web.Features.Report
             return (baseQuery, result);
         }
 
-        public async Task<byte[]> Export(int projectId, ListFilterRequestDto filter)
+        public async Task<byte[]> Export(int projectId, ReportListType reportListType)
         {
-            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, filter);
+            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, reportListType);
 
             var reports = await reportsQuery.ToListAsync();
             await UpdateTimeZoneInReports(projectId, reports);

@@ -1,3 +1,5 @@
+import styles from "./ReportsListPage.module.scss";
+
 import React, { useState } from 'react';
 import styles from "./ReportsListPage.module.scss";
 import PropTypes from "prop-types";
@@ -58,8 +60,10 @@ const ReportsListPageComponent = (props) => {
       <Grid item xs={12}>
 
       <TableActions>          
-          <Button onClick={() => props.exportToExcel(props.projectId, props.reportListFilter)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-            {strings(stringKeys.reports.list.exportToExcel)}
+          <Button variant="outlined" color="primary" className={styles.anchorButton}>
+            <a href={`/api/report/exportToExcel?projectId=${props.projectId}&reportListType=${props.reportListFilter.reportListType}`}>
+              {strings(stringKeys.reports.list.exportToExcel)}
+            </a>
           </Button>
       </TableActions>
 
@@ -127,8 +131,7 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openReportsList: reportsActions.openList.invoke,
-  getList: reportsActions.getList.invoke,
-  exportToExcel: reportsActions.exportToExcel.invoke,
+  getList: reportsActions.getList.invoke
 };
 
 export const ReportsListPage = useLayout(

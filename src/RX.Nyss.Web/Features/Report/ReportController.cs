@@ -29,12 +29,12 @@ namespace RX.Nyss.Web.Features.Report
         /// <summary>
         /// Gets a list of reports in a project
         /// </summary>
-        [HttpPost("exportToExcel")]
+        [HttpGet("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> Export(int projectId, [FromBody] ListFilterRequestDto filterRequest)
+        public async Task<IActionResult> Export(int projectId, ReportListType reportListType)
         {
-            var excelSheetBytes = await _reportService.Export(projectId, filterRequest);
-            return File(excelSheetBytes, "text/csv");
+            var excelSheetBytes = await _reportService.Export(projectId, reportListType);
+            return File(excelSheetBytes, "text/csv", "reports.csv");
         }
     }
 }
