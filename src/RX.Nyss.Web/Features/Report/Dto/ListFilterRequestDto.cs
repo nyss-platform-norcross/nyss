@@ -7,6 +7,7 @@
     public enum ReportListTypeDto
     {
         Main,
-        Training
+        Training,
+        FromDcp
     }
 }

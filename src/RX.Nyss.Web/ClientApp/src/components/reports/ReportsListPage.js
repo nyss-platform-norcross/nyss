@@ -53,6 +53,9 @@ const ReportsListPageComponent = (props) => {
                 <MenuItem value="training">
                   {strings(stringKeys.reports.list.trainingReportsListType)}
                 </MenuItem>
+                <MenuItem value="fromDcp">
+                  {strings(stringKeys.reports.list.dcpReportListType)}
+                </MenuItem>
               </Select>
             </FormControl>
 

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
@@ -39,7 +40,10 @@ namespace RX.Nyss.Web.Features.Report
                 .Where(r => r.DataCollector.Project.Id == projectId)
                 .Where(r => filter.ReportListType == ReportListTypeDto.Training ?
                       r.IsTraining.HasValue && r.IsTraining.Value :
-                      r.IsTraining.HasValue && !r.IsTraining.Value);
+                      r.IsTraining.HasValue && !r.IsTraining.Value)
+                .Where(r => filter.ReportListType == ReportListTypeDto.FromDcp ?
+                    r.Report.ReportType == ReportType.DataCollectionPoint :
+                    r.Report.ReportType != ReportType.DataCollectionPoint);
 
             var result = await baseQuery.Select(r => new ReportListResponseDto
                 {

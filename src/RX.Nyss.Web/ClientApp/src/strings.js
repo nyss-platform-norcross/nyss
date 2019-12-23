@@ -378,7 +378,8 @@ export const stringKeys = {
       error: "reports.list.error",
       selectReportListType: "reports.list.selectReportListType",
       mainReportsListType: "reports.list.mainReportsListType",
-      trainingReportsListType: "reports.list.trainingReportsListType"
+      trainingReportsListType: "reports.list.trainingReportsListType",
+      dcpReportListType: "reports.list.dcpReportListType"
 
     },
     title: "reports.title"
