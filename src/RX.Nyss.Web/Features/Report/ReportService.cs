@@ -49,7 +49,9 @@ namespace RX.Nyss.Web.Features.Report
                 {
                     Id = r.Id,
                     DateTime = r.ReceivedAt,
-                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
+                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
+                        .Select(lc => lc.Name).Single(),
                     IsValid = r.Report != null,
                     Region = r.DataCollector.Village.District.Region.Name,
                     District = r.DataCollector.Village.District.Name,
@@ -57,7 +59,7 @@ namespace RX.Nyss.Web.Features.Report
                     Zone = r.DataCollector.Zone != null
                         ? r.DataCollector.Zone.Name
                         : null,
-                    DataCollectorDisplayName = r.DataCollector.DisplayName,
+                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.DataCollector.PhoneNumber,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
