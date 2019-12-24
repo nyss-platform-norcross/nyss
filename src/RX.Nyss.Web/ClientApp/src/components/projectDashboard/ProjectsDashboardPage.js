@@ -14,6 +14,7 @@ import { ProjectsDashboardReportsMap } from './components/ProjectsDashboardRepor
 import { ProjectsDashboardReportChart } from './components/ProjectsDashboardReportChart';
 import { ProjectsDashboardReportSexAgeChart } from './components/ProjectsDashboardReportSexAgeChart';
 import { ProjectsDashboardReportSexAgeTable } from './components/ProjectsDashboardReportSexAgeTable';
+import { ProjectsDashboardDataCollectionPointChart } from "./components/ProjectsDashboardDataCollectionPointChart";
 
 const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projectId, isFetching, ...props }) => {
   useMount(() => {
@@ -63,6 +64,12 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
             <Grid item sm={6} xs={12}>
               <ProjectsDashboardReportSexAgeTable data={props.reportsGroupedByFeatures} />
             </Grid>
+
+            { props.filters.reportsType === "dataCollectionPoint" &&
+              <Grid item xs={12}>
+                <ProjectsDashboardDataCollectionPointChart data={props.dataCollectionPointsReportData} />
+              </Grid>
+            }
           </Fragment>
         )}
     </Grid>
@@ -85,6 +92,7 @@ const mapStateToProps = state => ({
   reportsGroupedByLocation: state.projectDashboard.reportsGroupedByLocation,
   reportsGroupedByLocationDetails: state.projectDashboard.reportsGroupedByLocationDetails,
   reportsGroupedByLocationDetailsFetching: state.projectDashboard.reportsGroupedByLocationDetailsFetching,
+  dataCollectionPointsReportData: state.projectDashboard.dataCollectionPointsReportData,
   isFetching: state.projectDashboard.isFetching
 });
 

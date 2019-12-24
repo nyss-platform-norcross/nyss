@@ -198,8 +198,8 @@ export const stringKeys = {
         dataCollectorReportsType: "project.dashboard.filters.dataCollectorReportsType",
         dataCollectionPointReportsType: "project.dashboard.filters.dataCollectionPointReportsType",
         trainingReportsListType: "project.dashboard.filters.trainingReportsListType",
-        nonTraining: "project.dashboard.filters.nonTraining",
-        training: "project.dashboard.filters.training"
+        notInTraining: "project.dashboard.filters.notInTraining",
+        inTraining: "project.dashboard.filters.inTraining"
       },
       allReportsChart: {
         title: "project.dashboard.allReportsChart.title",
@@ -221,6 +221,13 @@ export const stringKeys = {
         malesAbove5: "project.dashboard.reportsPerFeatureAndDate.malesAbove5",
         numberOfReports: "project.dashboard.reportsPerFeatureAndDate.numberOfReports",
         title: "project.dashboard.reportsPerFeatureAndDate.title"
+      },
+      dataCollectionPointReportsByDate:{
+        referredToHospitalCount: "project.dashboard.dataCollectionPointReportsByDate.referredToHospitalCount",
+        deathCount: "project.dashboard.dataCollectionPointReportsByDate.deathCount",
+        fromOtherVillagesCount: "project.dashboard.dataCollectionPointReportsByDate.fromOtherVillagesCount",
+        numberOfReports: "project.dashboard.dataCollectionPointReportsByDate.numberOfReports",
+        title: "project.dashboard.dataCollectionPointReportsByDate.title"
       },
       activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
       inactiveDataCollectorCount: "project.dashboard.inactiveDataCollectorCount",

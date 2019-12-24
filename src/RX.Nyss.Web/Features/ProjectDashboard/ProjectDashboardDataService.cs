@@ -18,6 +18,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(int projectId, FiltersRequestDto filtersDto);
         Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto);
         Task<IEnumerable<ProjectSummaryReportHealthRiskResponseDto>> GetProjectReportHealthRisks(int projectId, double latitude, double longitude, FiltersRequestDto filtersDto);
+        Task<IList<DataCollectionPointsReportsByDateDto>> GetDataCollectionPointReports(int projectId, FiltersRequestDto filtersDto);
     }
 
     public class ProjectDashboardDataService : IProjectDashboardDataService
@@ -55,7 +56,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         public async Task<IList<ReportByDateResponseDto>> GetReportsGroupedByDate(int projectId, FiltersRequestDto filtersDto)
         {
             var reports = GetFilteredReports(projectId, filtersDto)
-                .FilterByDataCollectorType(filtersDto.ReportsType)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
             return filtersDto.GroupingType switch
@@ -74,7 +74,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         public async Task<IList<ReportByFeaturesAndDateResponseDto>> GetReportsGroupedByFeaturesAndDate(int projectId, FiltersRequestDto filtersDto)
         {
             var reports = GetFilteredReports(projectId, filtersDto)
-                .FilterByDataCollectorType(filtersDto.ReportsType)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human);
 
             return filtersDto.GroupingType switch
@@ -90,10 +89,103 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             };
         }
 
+        public async Task<IList<DataCollectionPointsReportsByDateDto>> GetDataCollectionPointReports(int projectId, FiltersRequestDto filtersDto)
+        {
+            if (filtersDto.ReportsType != FiltersRequestDto.ReportsTypeDto.DataCollectionPoint)
+            {
+                return new List<DataCollectionPointsReportsByDateDto>();
+            }
+
+
+            var reports = GetFilteredReports(projectId, filtersDto)
+                .Where(r => r.ReportType == ReportType.DataCollectionPoint);
+
+            return filtersDto.GroupingType switch
+            {
+                FiltersRequestDto.GroupingTypeDto.Day =>
+                await GroupReportsByDataCollectionPointFeaturesAndDay(reports, filtersDto.StartDate.Date, filtersDto.EndDate.Date),
+
+                FiltersRequestDto.GroupingTypeDto.Week =>
+                await GroupReportsByDataCollectionPointFeaturesAndWeek(reports, filtersDto.StartDate.Date, filtersDto.EndDate.Date),
+
+                _ =>
+                throw new InvalidOperationException()
+            };
+        }
+
+        private static async Task<IList<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate,
+            DateTime endDate)
+        {
+            var groupedReports = await reports
+                .Select(r => new { r.ReceivedAt, r.DataCollectionPointCase.ReferredCount, r.DataCollectionPointCase.DeathCount, r.DataCollectionPointCase.FromOtherVillagesCount })
+                .GroupBy(r => r.ReceivedAt.Date)
+                .Select(grouping => new
+                {
+                    Period = grouping.Key,
+                    ReferredCount = (int)grouping.Sum(g => g.ReferredCount),
+                    DeathCount = (int)grouping.Sum(g => g.DeathCount),
+                    FromOtherVillagesCount = (int)grouping.Sum(g => g.FromOtherVillagesCount),
+                })
+                .ToListAsync();
+
+            var missingDays = Enumerable
+                .Range(0, endDate.Subtract(startDate).Days + 1)
+                .Select(i => startDate.AddDays(i))
+                .Where(day => !groupedReports.Any(r => r.Period == day))
+                .Select(day => new { Period = day, ReferredCount = 0, DeathCount = 0, FromOtherVillagesCount = 0 });
+
+            return groupedReports
+                .Union(missingDays)
+                .OrderBy(r => r.Period)
+                .Select(x => new DataCollectionPointsReportsByDateDto()
+                {
+                    Period = x.Period.ToString("dd/MM"),
+                    ReferredCount = x.ReferredCount,
+                    DeathCount = x.DeathCount,
+                    FromOtherVillagesCount = x.FromOtherVillagesCount
+                })
+                .ToList();
+        }
+
+        private async Task<IList<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate,
+            DateTime endDate)
+        {
+            var groupedReports = await reports
+                .Select(r => new { r.ReceivedAt.Year, r.EpiWeek, r.DataCollectionPointCase.ReferredCount, r.DataCollectionPointCase.DeathCount, r.DataCollectionPointCase.FromOtherVillagesCount })
+                .GroupBy(r => new { r.Year, r.EpiWeek })
+                .Select(grouping => new
+                {
+                    EpiPeriod = grouping.Key,
+                    ReferredCount = (int)grouping.Sum(g => g.ReferredCount),
+                    DeathCount = (int)grouping.Sum(g => g.DeathCount),
+                    FromOtherVillagesCount = (int)grouping.Sum(g => g.FromOtherVillagesCount),
+                })
+                .ToListAsync();
+
+            var missingWeeks = Enumerable
+                .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
+                .Select(w => startDate.AddDays(w * 7))
+                .Where(day => !groupedReports.Any(r => r.EpiPeriod.Year == day.Year && r.EpiPeriod.EpiWeek == _dateTimeProvider.GetEpiWeek(day)))
+                .Select(day => new { EpiPeriod = new { day.Year, EpiWeek = _dateTimeProvider.GetEpiWeek(day) }, ReferredCount = 0, DeathCount = 0, FromOtherVillagesCount = 0 });
+
+            return groupedReports
+                .Union(missingWeeks)
+                .OrderBy(r => r.EpiPeriod.Year)
+                .ThenBy(r => r.EpiPeriod.EpiWeek)
+                .Select(x => new DataCollectionPointsReportsByDateDto()
+                {
+                    Period = x.EpiPeriod.EpiWeek.ToString(),
+                    ReferredCount = x.ReferredCount,
+                    DeathCount = x.DeathCount,
+                    FromOtherVillagesCount = x.FromOtherVillagesCount
+                })
+                .ToList();
+        }
+
+
         public async Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto)
         {
             var reports = GetFilteredReports(projectId, filtersDto)
-                .FilterByDataCollectorType(filtersDto.ReportsType)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
             var groupedByLocation = await reports
@@ -309,8 +401,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private int InactiveDataCollectorCount(int projectId, IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto filtersDto)
         {
-            var activeDataCollectors = reports.FilterByDataCollectorType(filtersDto.ReportsType)
-                .Select(r => r.DataCollector.Id).Distinct();
+            var activeDataCollectors = reports.Select(r => r.DataCollector.Id).Distinct();
 
             return _nyssContext.DataCollectors
                 .FilterByDataCollectorType(filtersDto.ReportsType)

@@ -88,7 +88,8 @@ export const initialState = {
     },
     filters: null,
     reportsGroupedByLocationDetails: null,
-    reportsGroupedByLocationDetailsFetching: false
+    reportsGroupedByLocationDetailsFetching: false,
+    dataCollectionPointsReportData: false
   },
   globalCoordinators: {
     listFetching: false,

@@ -145,8 +145,8 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
               onChange={handleIsTrainingChange}
               className={styles.trainingStateRadioGroup}
             >
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.project.dashboard.filters.nonTraining)} value={false} />
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.project.dashboard.filters.training)} value={true} />
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.project.dashboard.filters.notInTraining)} value={false} />
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.project.dashboard.filters.inTraining)} value={true} />
             </RadioGroup >
           </Grid>
 
