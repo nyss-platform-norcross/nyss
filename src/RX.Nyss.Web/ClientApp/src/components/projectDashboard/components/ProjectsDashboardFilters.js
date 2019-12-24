@@ -9,6 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
+import { InputLabel, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, onChange }) => {
   const [value, setValue] = useState(filters);
@@ -44,6 +45,10 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
 
   const handleReportsTypeChange = event =>
     onChange(updateValue({ reportsType: event.target.value }))
+
+  const handleIsTrainingChange = event =>
+    onChange(updateValue({ isTraining: event.target.value === "true" }))
+
 
   if (!value) {
     return null;
@@ -117,18 +122,34 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
               select
               label={strings(stringKeys.project.dashboard.filters.reportsType)}
               onChange={handleReportsTypeChange}
-              value={value.reportsType || "main"}
+              value={value.reportsType || "all"}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             >
-              <MenuItem value="main">
-                {strings(stringKeys.project.dashboard.filters.mainReportsType)}
+              <MenuItem value="all">
+                {strings(stringKeys.project.dashboard.filters.allReportsType)}
               </MenuItem>
-              <MenuItem value="training">
-                {strings(stringKeys.project.dashboard.filters.trainingReportsType)}
+              <MenuItem value="dataCollector">
+                {strings(stringKeys.project.dashboard.filters.dataCollectorReportsType)}
+              </MenuItem>
+              <MenuItem value="dataCollectionPoint">
+                {strings(stringKeys.project.dashboard.filters.dataCollectionPointReportsType)}
               </MenuItem>
             </TextField>
           </Grid>
+
+          <Grid item>
+            <InputLabel className={styles.trainingStateLabel}>{strings(stringKeys.project.dashboard.filters.trainingReportsListType)}</InputLabel>
+            <RadioGroup
+              value={value.isTraining}
+              onChange={handleIsTrainingChange}
+              className={styles.trainingStateRadioGroup}
+            >
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.project.dashboard.filters.nonTraining)} value={false} />
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.project.dashboard.filters.training)} value={true} />
+            </RadioGroup >
+          </Grid>
+
         </Grid>
       </CardContent>
     </Card>

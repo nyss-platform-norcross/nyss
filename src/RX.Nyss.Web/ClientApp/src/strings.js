@@ -194,8 +194,12 @@ export const stringKeys = {
         healthRisk: "project.dashboard.filters.healthRisk",
         healthRiskAll: "project.dashboard.filters.healthRiskAll",
         reportsType: "project.dashboard.filters.reportsType",
-        mainReportsType: "project.dashboard.filters.mainReportsType",
-        trainingReportsType: "project.dashboard.filters.trainingReportsType",
+        allReportsType: "project.dashboard.filters.allReportsType",
+        dataCollectorReportsType: "project.dashboard.filters.dataCollectorReportsType",
+        dataCollectionPointReportsType: "project.dashboard.filters.dataCollectionPointReportsType",
+        trainingReportsListType: "project.dashboard.filters.trainingReportsListType",
+        nonTraining: "project.dashboard.filters.nonTraining",
+        training: "project.dashboard.filters.training"
       },
       allReportsChart: {
         title: "project.dashboard.allReportsChart.title",
