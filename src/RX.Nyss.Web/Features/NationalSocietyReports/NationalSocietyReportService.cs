@@ -39,6 +39,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
+                .Where(r => r.IsTraining == null || r.IsTraining == true)
                 .Where(r => r.DataCollector == null || supervisorProjectIds == null || supervisorProjectIds.Contains(r.DataCollector.Project.Id));
 
             var result = await baseQuery.Select(r => new NationalSocietyReportListResponseDto
@@ -56,7 +57,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                         ? r.DataCollector.Zone.Name
                         : null,
                     DataCollectorDisplayName = r.DataCollector.DisplayName,
-                    PhoneNumber = r.DataCollector.PhoneNumber,
+                    PhoneNumber = r.Sender,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,

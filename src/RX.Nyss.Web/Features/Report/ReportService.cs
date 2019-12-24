@@ -61,7 +61,7 @@ namespace RX.Nyss.Web.Features.Report
                         ? r.DataCollector.Zone.Name
                         : null,
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
-                    PhoneNumber = r.DataCollector.PhoneNumber,
+                    PhoneNumber = r.Sender,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,

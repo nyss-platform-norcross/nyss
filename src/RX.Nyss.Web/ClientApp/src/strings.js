@@ -397,7 +397,6 @@ export const stringKeys = {
     list: {
       title: "nationalSocietyReports.list.title",
       date: "nationalSocietyReports.list.date",
-      time: "nationalSocietyReports.list.time",
       healthRisk: "nationalSocietyReports.list.healthRisk",
       status: "nationalSocietyReports.list.status",
       project: "nationalSocietyReports.list.project",
