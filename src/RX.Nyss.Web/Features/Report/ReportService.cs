@@ -42,8 +42,8 @@ namespace RX.Nyss.Web.Features.Report
                       r.IsTraining.HasValue && r.IsTraining.Value :
                       r.IsTraining.HasValue && !r.IsTraining.Value)
                 .Where(r => filter.ReportListType == ReportListTypeDto.FromDcp ?
-                    r.Report.ReportType == ReportType.DataCollectionPoint :
-                    r.Report.ReportType != ReportType.DataCollectionPoint);
+                            r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
+                            r.DataCollector.DataCollectorType == DataCollectorType.Human);
 
             var result = await baseQuery.Select(r => new ReportListResponseDto
                 {
@@ -51,7 +51,8 @@ namespace RX.Nyss.Web.Features.Report
                     DateTime = r.ReceivedAt,
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
-                        .Select(lc => lc.Name).Single(),
+                        .Select(lc => lc.Name)
+                        .Single(),
                     IsValid = r.Report != null,
                     Region = r.DataCollector.Village.District.Region.Name,
                     District = r.DataCollector.Village.District.Name,
