@@ -302,7 +302,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             return SuccessMessage(ResultKey.DataCollector.RemoveSuccess);
         }
 
-        private Task AnonymizeDataCollector(Nyss.Data.Models.DataCollector dataCollector)
+        private async Task AnonymizeDataCollector(Nyss.Data.Models.DataCollector dataCollector)
         {
             dataCollector.Name = Anonymization.Text;
             dataCollector.DisplayName = Anonymization.Text;
@@ -311,7 +311,10 @@ namespace RX.Nyss.Web.Features.DataCollector
             dataCollector.DeletedAt = DateTime.UtcNow;
 
             FormattableString updateRawReportsCommand = $"UPDATE Nyss.RawReports SET Sender = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
-            return _nyssContext.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
+            await _nyssContext.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
+
+            FormattableString updateReportsCommand = $"UPDATE Nyss.Reports SET PhoneNumber = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
+            await _nyssContext.ExecuteSqlInterpolatedAsync(updateReportsCommand);
         }
 
         private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>
@@ -326,7 +329,7 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         private static Point CreatePoint(double latitude, double longitude)
         {
-            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
             return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
 

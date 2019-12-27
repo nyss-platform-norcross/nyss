@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
@@ -44,14 +46,14 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (alertReport.Alert.Status != AlertStatus.Pending)
+            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
             {
-                return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportWrongAlertStatus);
+                return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReport.WrongAlertStatus);
             }
-
+            
             if (alertReport.Report.Status != ReportStatus.Pending)
             {
-                return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReportWrongReportStatus);
+                return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReport.WrongReportStatus);
             }
 
             alertReport.Report.Status = ReportStatus.Accepted;
@@ -65,6 +67,9 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(response);
         }
 
+        private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
+            StatusConstants.AlertStatusesAllowingCrossChecks.Contains(alertReport.Alert.Status);
+
         public async Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId)
         {
             var alertReport = await _nyssContext.AlertReports
@@ -73,14 +78,14 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (alertReport.Alert.Status != AlertStatus.Pending)
+            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
             {
-                return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReportWrongAlertStatus);
+                return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReport.WrongAlertStatus);
             }
 
             if (alertReport.Report.Status != ReportStatus.Pending)
             {
-                return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReportWrongReportStatus);
+                return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReport.WrongReportStatus);
             }
 
             alertReport.Report.Status = ReportStatus.Rejected;

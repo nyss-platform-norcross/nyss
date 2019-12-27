@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.Web.Tests", "tests\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2F1385A2-1016-46FA-A306-3AF8FFE25A48}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.Common", "src\RX.Nyss.Common\RX.Nyss.Common.csproj", "{14878B88-92CE-4DA1-BDC9-4D18A975DB3A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -70,6 +72,10 @@ Global
 		{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4749EB19-ED6F-4AC4-9B9B-E382B5853B97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14878B88-92CE-4DA1-BDC9-4D18A975DB3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14878B88-92CE-4DA1-BDC9-4D18A975DB3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14878B88-92CE-4DA1-BDC9-4D18A975DB3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14878B88-92CE-4DA1-BDC9-4D18A975DB3A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.EscalateAlert(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlertWrongStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlert.WrongStatus);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.EscalateAlert(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlertThresholdNotReached);
+            result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlert.ThresholdNotReached);
         }
 
         [Fact]
@@ -184,19 +184,15 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             result.IsSuccess.ShouldBeTrue();
         }
 
-        [Theory]
-        [InlineData(AlertStatus.Closed)]
-        [InlineData(AlertStatus.Dismissed)]
-        [InlineData(AlertStatus.Escalated)]
-        [InlineData(AlertStatus.Rejected)]
-        public async Task DismissAlert_WhenAlertIsNotPending_ShouldReturnError(AlertStatus status)
+        [Fact]
+        public async Task DismissAlert_WhenAlertIsClosed_ShouldReturnError()
         {
-            _alerts.First().Status = status;
+            _alerts.First().Status = AlertStatus.Closed;
 
             var result = await _alertService.DismissAlert(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlertWrongStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlert.WrongStatus);
         }
 
         [Fact]
@@ -218,7 +214,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.DismissAlert(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlertPossibleEscalation);
+            result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlert.PossibleEscalation);
         }
 
         [Fact]
@@ -252,7 +248,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.CloseAlert(TestData.AlertId, "");
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlertWrongStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlert.WrongStatus);
         }
 
         [Fact]

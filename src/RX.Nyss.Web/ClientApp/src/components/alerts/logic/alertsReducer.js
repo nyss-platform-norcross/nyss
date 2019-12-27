@@ -12,16 +12,16 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state, formData: null }
 
     case actions.OPEN_ALERTS_LIST.INVOKE:
-      return { ...state, listStale: state.listStale || action.projectId !== state.listProjectId };
+      return { ...state  };
 
     case actions.OPEN_ALERTS_LIST.SUCCESS:
       return { ...state, listProjectId: action.projectId };
 
     case actions.GET_ALERTS.REQUEST:
-      return { ...state, listData: state.listStale ? null : state.listData, listFetching: true };
+      return { ...state, listData: state.listData, listFetching: true };
 
     case actions.GET_ALERTS.SUCCESS:
-      return { ...state, listFetching: false, listStale: false, listData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
+      return { ...state, listFetching: false, listData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
 
     case actions.GET_ALERTS.FAILURE:
       return { ...state, listFetching: false, listData: null };
@@ -95,7 +95,7 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state, formEscalating: true };
 
     case actions.ESCALATE_ALERT.SUCCESS:
-      return { ...state, formEscalating: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.escalated }, listStale: true };
+      return { ...state, formEscalating: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.escalated } };
 
     case actions.ESCALATE_ALERT.FAILURE:
       return { ...state, formEscalating: false };
@@ -104,7 +104,7 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state, formDismissing: true };
 
     case actions.DISMISS_ALERT.SUCCESS:
-      return { ...state, formDismissing: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.dismissed }, listStale: true };
+      return { ...state, formDismissing: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.dismissed }};
 
     case actions.DISMISS_ALERT.FAILURE:
       return { ...state, formDismissing: false };
@@ -113,7 +113,7 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state, formClosing: true };
 
     case actions.CLOSE_ALERT.SUCCESS:
-      return { ...state, formClosing: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.closed }, listStale: true };
+      return { ...state, formClosing: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.closed }};
 
     case actions.CLOSE_ALERT.FAILURE:
       return { ...state, formClosing: false };

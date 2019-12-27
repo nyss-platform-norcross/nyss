@@ -44,19 +44,28 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             });
         }
 
+        [Fact]
+        public async Task AcceptReport_WhenAlertIsClosed_ShouldReturnError()
+        {
+            _alertReports.First().Alert.Status = AlertStatus.Closed;
+
+            var result = await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
+
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Alert.AcceptReport.WrongAlertStatus);
+        }
+
         [Theory]
-        [InlineData(AlertStatus.Closed)]
         [InlineData(AlertStatus.Dismissed)]
         [InlineData(AlertStatus.Escalated)]
         [InlineData(AlertStatus.Rejected)]
-        public async Task AcceptReport_WhenAlertIsNotPending_ShouldReturnError(AlertStatus status)
+        public async Task AcceptReport_WhenAlertIsInRightStatus_ShouldReturnSuccess(AlertStatus status)
         {
             _alertReports.First().Alert.Status = status;
 
             var result = await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
 
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.AcceptReportWrongAlertStatus);
+            result.IsSuccess.ShouldBeTrue();
         }
 
         [Theory]
@@ -71,7 +80,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.AcceptReportWrongReportStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.AcceptReport.WrongReportStatus);
         }
 
         [Fact]
@@ -101,19 +110,15 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             result.Value.AssessmentStatus.ShouldBe(alertAssessmentStatus);
         }
 
-        [Theory]
-        [InlineData(AlertStatus.Closed)]
-        [InlineData(AlertStatus.Dismissed)]
-        [InlineData(AlertStatus.Escalated)]
-        [InlineData(AlertStatus.Rejected)]
-        public async Task DismissReport_WhenAlertIsNotPending_ShouldReturnError(AlertStatus status)
+        [Fact]
+        public async Task DismissReport_WhenAlertIsClosed_ShouldReturnError()
         {
-            _alertReports.First().Alert.Status = status;
+            _alertReports.First().Alert.Status = AlertStatus.Closed;
 
             var result = await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.DismissReportWrongAlertStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.DismissReport.WrongAlertStatus);
         }
 
         [Theory]
@@ -128,7 +133,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
 
             result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.DismissReportWrongReportStatus);
+            result.Message.Key.ShouldBe(ResultKey.Alert.DismissReport.WrongReportStatus);
         }
 
         [Fact]
@@ -184,7 +189,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         AlertId = AlertId,
                         ReportId = ReportId,
                         Alert = new Alert { Id = AlertId },
-                        Report = new Report { Id = ReportId }
+                        Report = new Report { Id = ReportId, Status = ReportStatus.Pending }
                     }
                 };
         }

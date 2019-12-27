@@ -168,24 +168,41 @@
 
         public static class Alert
         {
-            public const string AcceptReportWrongAlertStatus = "alert.acceptReport.wrongAlertStatus";
-            public const string AcceptReportWrongReportStatus = "alert.acceptReport.wrongReportStatus";
+            public static class AcceptReport
+            {
+                public const string WrongAlertStatus = "alert.acceptReport.wrongAlertStatus";
+                public const string WrongReportStatus = "alert.acceptReport.wrongReportStatus";
+                public const string AlertNoLongerValid = "alert.acceptReport.alertNoLongerValid";
+            }
 
-            public const string DismissReportWrongAlertStatus = "alert.dismissReport.wrongAlertStatus";
-            public const string DismissReportWrongReportStatus = "alert.dismissReport.wrongReportStatus";
+            public static class DismissReport
+            {
+                public const string WrongAlertStatus = "alert.dismissReport.wrongAlertStatus";
+                public const string WrongReportStatus = "alert.dismissReport.wrongReportStatus";
+            }
 
-            public const string EscalateAlertThresholdNotReached = "alert.escalateAlert.thresholdNotReached";
-            public const string EscalateAlertWrongStatus = "alert.escalateAlert.wrongStatus";
-            public const string EscalateAlertEmailNotificationFailed = "alert.escalateAlert.emailNotifcationFailed";
-            public const string EscalateAlertSmsNotificationFailed = "alert.escalateAlert.smsNotifcationFailed";
-            public const string EscalateAlertSuccess = "alert.escalateAlert.success";
+            public static class EscalateAlert
+            {
+                public const string ThresholdNotReached = "alert.escalateAlert.thresholdNotReached";
+                public const string WrongStatus = "alert.escalateAlert.wrongStatus";
+                public const string EmailNotificationFailed = "alert.escalateAlert.emailNotifcationFailed";
+                public const string SmsNotificationFailed = "alert.escalateAlert.smsNotifcationFailed";
+                public const string Success = "alert.escalateAlert.success";
+            }
 
-            public const string DismissAlertWrongStatus = "alert.dismissAlert.wrongStatus";
-            public const string DismissAlertPossibleEscalation = "alert.dismissAlert.possibleEscalation";
+            public static class DismissAlert
+            {
+                public const string WrongStatus = "alert.dismissAlert.wrongStatus";
+                public const string PossibleEscalation = "alert.dismissAlert.possibleEscalation";
+            }
+
+            public static class CloseAlert
+            {
+                public const string WrongStatus = "alert.closeAlert.wrongStatus";
+            }
 
             public const string InconsistentReportData = "alert.inconsistentReportData";
-            
-            public const string CloseAlertWrongStatus = "alert.closeAlert.wrongStatus";
+
         }
     }
 }
