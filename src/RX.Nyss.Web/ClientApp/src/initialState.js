@@ -150,7 +150,6 @@ export const initialState = {
   alerts: {
     listFetching: false,
     listRemoving: {},
-    listStale: true,
     listProjectId: null,
     listData: null
   }
