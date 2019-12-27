@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -67,10 +68,7 @@ namespace RX.Nyss.Web.Features.Alerts
         }
 
         private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
-            alertReport.Alert.Status == AlertStatus.Pending ||
-            alertReport.Alert.Status == AlertStatus.Rejected ||
-            alertReport.Alert.Status == AlertStatus.Dismissed ||
-            alertReport.Alert.Status == AlertStatus.Escalated;
+            StatusConstants.AlertStatusesAllowingCrossChecks.Contains(alertReport.Alert.Status);
 
         public async Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId)
         {
