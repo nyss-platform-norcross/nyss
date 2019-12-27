@@ -24,7 +24,7 @@ export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
                         </Typography>
                     </Grid>
 
-                    <Grid item xs={4}>
+                    <Grid item xs={8}>
                         <Typography variant="h6" >
                             {strings(stringKeys.project.form.feedbackMessage)}
                         </Typography>
@@ -64,7 +64,6 @@ export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
                             {projectHealthRisk.alertRuleKilometersThreshold}
                         </Typography>
                     </Grid>
-
                 </Grid>
             </Grid>
 

@@ -42,7 +42,7 @@ export const projectsSiteMap = [
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/overview",
     path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/edit",
-    title: () => strings(stringKeys.project.settings),
+    title: () => strings(stringKeys.project.edit),
     access: accessMap.projects.edit,
   },
 ];

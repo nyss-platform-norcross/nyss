@@ -1,5 +1,3 @@
-import styles from "./ProjectsOverviewPage.module.scss";
-
 import React, { Fragment } from 'react';
 import { connect } from "react-redux";
 import { stringKeys, strings } from '../../strings';
@@ -14,6 +12,7 @@ import Typography from '@material-ui/core/Typography';
 import { ProjectsOverviewHealthRiskItem } from "./ProjectsOverviewHealthRiskItem";
 import { accessMap } from '../../authentication/accessMap';
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import Chip from "@material-ui/core/Chip";
 
 const ProjectsOverviewPageComponent = (props) => {
   useMount(() => {
@@ -48,13 +47,10 @@ const ProjectsOverviewPageComponent = (props) => {
             <Typography variant="h6">
               {strings(stringKeys.project.form.healthRisks)}
             </Typography>
-            <Typography variant="body1" gutterBottom>           
-              {props.data.projectHealthRisks.map( hr =>
-               <span className = {styles.healthRiskItem} key={`projectsHealthRiskItemIcon_${hr.healthRiskId}`}>
-                {hr.healthRiskName}
-               </span>
-              )}
-            </Typography>           
+           
+            {props.data.projectHealthRisks.map( hr =>
+              <Chip  key={`projectsHealthRiskItemIcon_${hr.healthRiskId}`} label={hr.healthRiskName} />
+            )}
           </Grid>
 
             <Grid item xs={12}>
@@ -67,7 +63,6 @@ const ProjectsOverviewPageComponent = (props) => {
                     projectHealthRisk={hr}
                     />
                   )}
-
               </Grid>
             </Grid>
                       

@@ -64,8 +64,6 @@ function* openProjectOverview({ projectId }) {
   }
 };
 
-
-
 function* createProject({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
