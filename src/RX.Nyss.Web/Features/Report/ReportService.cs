@@ -21,7 +21,7 @@ namespace RX.Nyss.Web.Features.Report
     public interface IReportService
     {
         Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber,  ListFilterRequestDto filter);
-        Task<byte[]> Export(int projectId, ReportListType reportListType);
+        Task<byte[]> Export(int projectId, ReportListType reportListType, bool isTraining);
     }
 
     public class ReportService : IReportService
@@ -46,7 +46,7 @@ namespace RX.Nyss.Web.Features.Report
 
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ListFilterRequestDto filter)
         {
-            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, filter.ReportListType);
+            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, filter.ReportListType, filter.IsTraining);
 
             var rowsPerPage = _config.PaginationRowsPerPage;
             var reports = await reportsQuery
@@ -65,17 +65,17 @@ namespace RX.Nyss.Web.Features.Report
             reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
         }
 
-        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<ReportListResponseDto> result)> GetReportQueries(int projectId, ReportListType reportListType)
+        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<ReportListResponseDto> result)> GetReportQueries(int projectId, ReportListType reportListType, bool isTraining)
         {
             var currentUser = _authorizationService.GetCurrentUser();
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.Name);
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.IsTraining ?
+                .Where(r => isTraining ?
                       r.IsTraining.HasValue && r.IsTraining.Value :
                       r.IsTraining.HasValue && !r.IsTraining.Value)
-                .Where(r => filter.ReportListType == ReportListType.FromDcp ?
+                .Where(r => reportListType == ReportListType.FromDcp ?
                             r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
                             r.DataCollector.DataCollectorType == DataCollectorType.Human);
 
@@ -118,9 +118,9 @@ namespace RX.Nyss.Web.Features.Report
             return (baseQuery, result);
         }
 
-        public async Task<byte[]> Export(int projectId, ReportListType reportListType)
+        public async Task<byte[]> Export(int projectId, ReportListType reportListType, bool isTraining)
         {
-            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, reportListType);
+            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, reportListType, isTraining);
 
             var reports = await reportsQuery.ToListAsync();
             await UpdateTimeZoneInReports(projectId, reports);

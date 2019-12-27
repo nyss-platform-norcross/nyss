@@ -31,11 +31,12 @@ namespace RX.Nyss.Web.Features.Report
         /// </summary>
         /// <param name="projectId">The ID of the project to export the reports from</param>
         /// <param name="reportListType">The type of the reports to export</param>
+        /// <param name="isTrainig">A switch that specifies whether the main list or the report list should be exported</param>
         [HttpGet("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> Export(int projectId, ReportListType reportListType)
+        public async Task<IActionResult> Export(int projectId, ReportListType reportListType, bool isTrainig)
         {
-            var excelSheetBytes = await _reportService.Export(projectId, reportListType);
+            var excelSheetBytes = await _reportService.Export(projectId, reportListType, isTrainig);
             return File(excelSheetBytes, "text/csv", "reports.csv");
         }
     }

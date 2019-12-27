@@ -2,7 +2,7 @@
 {
     public class ListFilterRequestDto
     {
-        public ReportListTypeDto ReportListType { get; set; } = ReportListTypeDto.Main;
+        public ReportListType ReportListType { get; set; } = ReportListType.Main;
 
         public bool IsTraining { get; set; }
     }
