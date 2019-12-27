@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import {
-  OPEN_REPORTS_LIST, GET_REPORTS, EXPORT_TO_EXCEL
+  OPEN_REPORTS_LIST, GET_REPORTS
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);

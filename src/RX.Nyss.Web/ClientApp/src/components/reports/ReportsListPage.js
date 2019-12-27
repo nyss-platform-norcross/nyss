@@ -1,5 +1,3 @@
-import styles from "./ReportsListPage.module.scss";
-
 import React, { useState } from 'react';
 import styles from "./ReportsListPage.module.scss";
 import PropTypes from "prop-types";
@@ -17,8 +15,8 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
 import { MenuItem, Select, Grid, FormControl, InputLabel, Button } from '@material-ui/core';
+import { MenuItem, Select, Grid, FormControl, InputLabel, Button, Link } from '@material-ui/core';
 import TableActions from '../common/tableActions/TableActions';
-import AddIcon from '@material-ui/icons/Add';
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {
@@ -59,14 +57,13 @@ const ReportsListPageComponent = (props) => {
       
       <Grid item xs={12}>
 
-      <TableActions>          
-          <Button variant="outlined" color="primary" className={styles.anchorButton}>
-            <a href={`/api/report/exportToExcel?projectId=${props.projectId}&reportListType=${props.reportListFilter.reportListType}`}>
+      <TableActions>              
+          <Button variant="outlined" color="primary">
+            <Link href={`/api/report/exportToExcel?projectId=${props.projectId}&reportListType=${props.reportListFilter.reportListType}`} color="inherit">
               {strings(stringKeys.reports.list.exportToExcel)}
-            </a>
+            </Link>  
           </Button>
       </TableActions>
-
 
         <Grid container spacing={3}>
           <Grid item>

@@ -6,6 +6,7 @@
 
         public bool IsTraining { get; set; }
     }
+
     public enum ReportListType
     {
         Main,

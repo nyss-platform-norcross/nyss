@@ -88,14 +88,25 @@ namespace RX.Nyss.Web.Features.Report
                         .Select(lc => lc.Name)
                         .Single(),
                     IsValid = r.Report != null,
-                    Region = r.Report.Village.District.Region.Name,
-                    District = r.Report.Village.District.Name,
-                    Village = r.Report.Village.Name,
-                    Zone = r.Report.Zone.Name,
+                    Region = r.Report != null
+                        ? r.Report.Village.District.Region.Name
+                        : r.DataCollector.Village.District.Region.Name,
+                    District = r.Report != null
+                        ? r.Report.Village.District.Name
+                        : r.DataCollector.Village.District.Name,
+                    Village = r.Report != null
+                        ? r.Report.Village.Name
+                        : r.DataCollector.Village.Name,
+                    Zone = r.Report != null
+                        ? r.Report.Zone != null
+                            ? r.Report.Zone.Name
+                            : null
+                        : r.DataCollector.Zone != null
+                            ? r.DataCollector.Zone.Name
+                            : null,
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
-                    CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
                     CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
@@ -130,7 +141,6 @@ namespace RX.Nyss.Web.Features.Report
 
             var columnLabels = new List<string>()
             {
-                GetStringResource(stringResources,"reports.list.date"),
                 GetStringResource(stringResources,"reports.list.time"),
                 GetStringResource(stringResources,"reports.list.status"),
                 GetStringResource(stringResources,"reports.list.dataCollectorDisplayName"),
@@ -148,8 +158,7 @@ namespace RX.Nyss.Web.Features.Report
 
             var reportData = reports.Select(r => new
             {
-                Date = r.DateTime.ToString("yyyy-MM-dd"),
-                Time = r.DateTime.ToString("hh:mm"),
+                DateTime = r.DateTime.ToString("yyyy-MM-dd hh:mm"),
                 Status = r.IsValid
                     ? GetStringResource(stringResources, "reports.list.success")
                     : GetStringResource(stringResources, "reports.list.error"),
@@ -161,8 +170,8 @@ namespace RX.Nyss.Web.Features.Report
                 r.Zone,
                 r.HealthRiskName,
                 r.CountMalesBelowFive,
-                r.CountFemalesBelowFive,
                 r.CountMalesAtLeastFive,
+                r.CountFemalesBelowFive,
                 r.CountFemalesAtLeastFive
             });
 

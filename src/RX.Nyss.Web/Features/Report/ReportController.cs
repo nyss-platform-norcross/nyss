@@ -27,8 +27,10 @@ namespace RX.Nyss.Web.Features.Report
             await _reportService.List(projectId, pageNumber, User.Identity.Name, filterRequest);
 
         /// <summary>
-        /// Gets a list of reports in a project
+        /// Export the list of reports in a project to a csv file
         /// </summary>
+        /// <param name="projectId">The ID of the project to export the reports from</param>
+        /// <param name="reportListType">The type of the reports to export</param>
         [HttpGet("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> Export(int projectId, ReportListType reportListType)

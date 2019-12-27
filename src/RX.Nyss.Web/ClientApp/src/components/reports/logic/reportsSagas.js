@@ -8,7 +8,7 @@ import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesCons
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
-  takeEvery(consts.GET_REPORTS.INVOKE, getReports),
+  takeEvery(consts.GET_REPORTS.INVOKE, getReports)
 ];
 
 function* openReportsList({ projectId }) {
