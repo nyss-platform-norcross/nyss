@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from "./ReportsListPage.module.scss";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as reportsActions from './logic/reportsActions';
@@ -12,6 +13,7 @@ import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
+import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {
@@ -26,7 +28,7 @@ const ReportsListPageComponent = (props) => {
 
   const handleReportListTypeChange = event => {
     const newFilter = {
-      ...reportListFilter,
+      ...props.reportListFilter,
       ...{
         reportListType: event.target.value
       }
@@ -36,12 +38,23 @@ const ReportsListPageComponent = (props) => {
     props.getList(props.projectId, props.page, newFilter);
   }
 
+  const handleIsTrainingChange = event => {
+    const newFilter = {
+      ...props.reportListFilter,
+      ...{
+        isTraining: event.target.value === "true"
+      }
+    }
+    setReportListFilter(newFilter);
+    props.getList(props.projectId, props.page, newFilter);
+  }
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Grid container spacing={3}>
-          <Grid item xs={6}>
-            <FormControl style={{ minWidth: '200px' }}>
+          <Grid item>
+            <FormControl style={{ minWidth: '250px' }}>
               <InputLabel>{strings(stringKeys.reports.list.selectReportListType)}</InputLabel>
               <Select
                 onChange={handleReportListTypeChange}
@@ -50,12 +63,22 @@ const ReportsListPageComponent = (props) => {
                 <MenuItem value="main">
                   {strings(stringKeys.reports.list.mainReportsListType)}
                 </MenuItem>
-                <MenuItem value="training">
-                  {strings(stringKeys.reports.list.trainingReportsListType)}
+                <MenuItem value="fromDcp">
+                  {strings(stringKeys.reports.list.dcpReportListType)}
                 </MenuItem>
               </Select>
             </FormControl>
-
+          </Grid>
+          <Grid item>
+            <InputLabel className={styles.trainingStateLabel}>{strings(stringKeys.reports.list.trainingReportsListType)}</InputLabel>
+            <RadioGroup
+              value={props.reportListFilter.isTraining}
+              onChange={handleIsTrainingChange}
+              className={styles.trainingStateRadioGroup}
+            >
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.reports.list.nonTraining)} value={false} />
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.reports.list.training)} value={true} />
+            </RadioGroup >
           </Grid>
         </Grid>
       </Grid>
@@ -69,6 +92,7 @@ const ReportsListPageComponent = (props) => {
           page={props.data.page}
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
+          reportListType={props.reportListFilter.reportListType}
         />
       </Grid>
     </Grid>

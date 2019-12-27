@@ -25,11 +25,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private List<Report> _reports;
         private List<RawReport> _rawReports;
 
-
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
         private readonly List<int> _reportIdsFromProject2 = Enumerable.Range(14, 11).ToList();
         private readonly List<int> _trainingReportIds = Enumerable.Range(15, 100).ToList();
+        private readonly List<int> _dcpReportIds = Enumerable.Range(115, 20).ToList();
 
         public ReportServiceTests()
         {
@@ -186,6 +186,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Id = 2,
                     Project = projects[1],
                     Village = villages[0]
+                },
+                new DataCollector
+                {
+                    Id = 3,
+                    Project = projects[1],
+                    Village = villages[0],
+                    DataCollectorType = DataCollectorType.CollectionPoint
                 }
             };
 
@@ -198,8 +205,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var trainingReports = BuildReports(dataCollectors[0], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], isTraining: true);
             var trainingRawReports = BuildRawReports(trainingReports);
 
-            _reports = reports1.Concat(reports2).Concat(trainingReports).ToList();
-            _rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).ToList();
+            var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0]);
+            var dcpRawReports = BuildRawReports(dcpReports);
+
+            _reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
+            _rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).ToList();
 
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
@@ -247,7 +257,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     ProjectHealthRisk =  projectHealthRisk,
                     ReportedCase = new ReportCase(),
                     CreatedAt = new DateTime(2020,1,1),
-                    IsTraining = isTraining ?? false
+                    IsTraining = isTraining ?? false,
+                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? ReportType.DataCollectionPoint : ReportType.Single
                 })
                 .ToList();
             return reports;
@@ -305,11 +316,22 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenListTypeFilterIsTraining_ShouldReturnOnlyTraining()
         {
             //act
-            var result = await _reportService.List(1, 1, "", new ListFilterRequestDto{ ReportListType = ReportListTypeDto.Training });
+            var result = await _reportService.List(1, 1, "", new ListFilterRequestDto{ ReportListType = ReportListTypeDto.Main, IsTraining = true });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(100, _rowsPerPage));
             result.Value.TotalRows.ShouldBe(100);
+        }
+
+        [Fact]
+        public async Task List_WhenReportTypeFilterIsScp_ShouldReturnOnlyDcpReports()
+        {
+            //act
+            var result = await _reportService.List(2, 1, "", new ListFilterRequestDto{ ReportListType = ReportListTypeDto.FromDcp });
+
+            //assert
+            result.Value.Data.Count.ShouldBe(Math.Min(20, _rowsPerPage));
+            result.Value.TotalRows.ShouldBe(20);
         }
     }
 }

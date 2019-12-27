@@ -31,7 +31,8 @@ function* getReports({ projectId, pageNumber, reportListFilter }) {
   yield put(actions.getList.request());
   try {
     const filter = reportListFilter || {
-      reportListType: "main"
+      reportListType: "main",
+      isTraining: false
     };
 
     const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`, filter);

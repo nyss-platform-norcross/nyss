@@ -3,10 +3,12 @@
     public class ListFilterRequestDto
     {
         public ReportListTypeDto ReportListType { get; set; } = ReportListTypeDto.Main;
+
+        public bool IsTraining { get; set; }
     }
     public enum ReportListTypeDto
     {
         Main,
-        Training
+        FromDcp
     }
 }

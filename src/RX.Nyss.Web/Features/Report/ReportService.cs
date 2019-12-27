@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
@@ -37,15 +38,21 @@ namespace RX.Nyss.Web.Features.Report
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.ReportListType == ReportListTypeDto.Training ?
+                .Where(r => filter.IsTraining ?
                       r.IsTraining.HasValue && r.IsTraining.Value :
-                      r.IsTraining.HasValue && !r.IsTraining.Value);
+                      r.IsTraining.HasValue && !r.IsTraining.Value)
+                .Where(r => filter.ReportListType == ReportListTypeDto.FromDcp ?
+                            r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
+                            r.DataCollector.DataCollectorType == DataCollectorType.Human);
 
             var result = await baseQuery.Select(r => new ReportListResponseDto
                 {
                     Id = r.Id,
                     DateTime = r.ReceivedAt,
-                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
+                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
+                        .Select(lc => lc.Name)
+                        .Single(),
                     IsValid = r.Report != null,
                     Region = r.DataCollector.Village.District.Region.Name,
                     District = r.DataCollector.Village.District.Name,
@@ -53,12 +60,15 @@ namespace RX.Nyss.Web.Features.Report
                     Zone = r.DataCollector.Zone != null
                         ? r.DataCollector.Zone.Name
                         : null,
-                    DataCollectorDisplayName = r.DataCollector.DisplayName,
+                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.DataCollector.PhoneNumber,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
-                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive
+                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
+                    ReferredCount = r.Report.DataCollectionPointCase == null ? null : r.Report.DataCollectionPointCase.ReferredCount,
+                    DeathCount = r.Report.DataCollectionPointCase == null ? null : r.Report.DataCollectionPointCase.DeathCount,
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase == null ? null : r.Report.DataCollectionPointCase.FromOtherVillagesCount
                 })
                 .OrderByDescending(r => r.DateTime)
                 .Page(pageNumber, rowsPerPage)
