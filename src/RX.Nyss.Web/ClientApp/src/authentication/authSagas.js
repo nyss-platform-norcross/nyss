@@ -1,10 +1,12 @@
-import { call, put, takeEvery } from "redux-saga/effects";
+import { call, put, takeEvery, takeLatest, select } from "redux-saga/effects";
 import * as consts from "../authentication/authConstants";
+import * as appConsts from "../components/app/logic/appConstans";
 import * as authActions from "../authentication/authActions";
 import * as appActions from "../components/app/logic/appActions";
 import * as http from "../utils/http";
 import * as auth from "./auth";
 import { stringKeys, stringKey } from "../strings";
+import { reloadPage } from "../utils/page";
 import * as localStorage from "../utils/localStorage";
 
 export const authSagas = () => [
@@ -12,7 +14,8 @@ export const authSagas = () => [
   takeEvery(consts.LOGOUT.INVOKE, logout),
   takeEvery(consts.VERIFY_EMAIL.INVOKE, verifyEmail),
   takeEvery(consts.RESET_PASSWORD.INVOKE, resetPassword),
-  takeEvery(consts.RESET_PASSWORD_CALLBACK.INVOKE, resetPasswordCallback)
+  takeEvery(consts.RESET_PASSWORD_CALLBACK.INVOKE, resetPasswordCallback),
+  takeLatest(appConsts.PAGE_FOCUSED, pageFocused),
 ];
 
 function* login({ userName, password, redirectUrl }) {
@@ -80,3 +83,13 @@ function* resetPasswordCallback({ password, email, token }) {
     yield put(authActions.resetPasswordCallback.failure(error.message));
   }
 };
+
+function* pageFocused() {
+  const user = yield select(state => state.appData.user);
+  const userId = user ? user.id.toString() : null;
+  const storageUserId = localStorage.get(consts.localStorageUserIdKey) || null;
+
+  if (storageUserId !== userId) {
+    reloadPage();
+  }
+}

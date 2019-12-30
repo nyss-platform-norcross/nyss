@@ -7,12 +7,13 @@ export const entityUpdated = (entity) => ({ type: actions.ENTITY_UPDATED, entiti
 export const switchStrings = (status) => ({ type: actions.SWITCH_STRINGS, status });
 export const setAppReady = (status) => ({ type: actions.SET_APP_READY, status });
 export const goToHeadManagerConsents = () => push(`/headManagerConsents`);
+export const pageFocused = () => ({ type: actions.PAGE_FOCUSED });
 
 export const initApplication = {
   invoke: () =>
     ({ type: actions.INIT_APPLICATION.INVOKE }),
-  request: () =>
 
+  request: () =>
     ({ type: actions.INIT_APPLICATION.REQUEST }),
 
   success: () =>
