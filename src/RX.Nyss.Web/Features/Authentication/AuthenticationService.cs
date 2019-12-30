@@ -82,6 +82,7 @@ namespace RX.Nyss.Web.Features.Authentication
                 UserData = user.Identity.IsAuthenticated
                     ? new StatusResponseDto.UserDataDto
                     {
+                        Id = userEntity.Id,
                         Name = userEntity.Name,
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
