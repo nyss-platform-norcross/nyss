@@ -1,29 +1,45 @@
 import styles from './Breadcrumb.module.scss';
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import Hidden from '@material-ui/core/Hidden';
 
 const BreadcrumbComponent = ({ breadcrumb, push }) => {
   const breadcrumbVisibleItems = breadcrumb.filter(b => !b.hidden);
 
-  return (
+  const renderBreadcrumb = (items) => (
     <Breadcrumbs
       className={styles.container}
       separator={<NavigateNextIcon fontSize="small" color="primary" />}>
-      {breadcrumbVisibleItems.map((item, index) => (
+      {items.map((item, index) => (
         <div key={`breadcrumbItem${item.url}`} className={`${styles.item} ${item.isActive ? styles.selected : ""}`}>
           <div
-            onClick={() => index !== breadcrumbVisibleItems.length - 1 ? push(item.url) : null}
+            onClick={() => index !== items.length - 1 ? push(item.url) : null}
             className={styles.title}>
             {item.title}
           </div>
         </div>
       ))}
     </Breadcrumbs>
+  );
+
+  if (!breadcrumbVisibleItems.length) {
+    return null;
+  }
+
+  return (
+    <Fragment>
+      <Hidden xsDown>
+        {renderBreadcrumb(breadcrumbVisibleItems)}
+      </Hidden>
+      <Hidden smUp>
+        {renderBreadcrumb(breadcrumbVisibleItems.slice(Math.max(breadcrumbVisibleItems.length - 2, 0)))}
+      </Hidden>
+    </Fragment>
   );
 };
 

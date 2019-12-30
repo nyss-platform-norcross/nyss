@@ -60,7 +60,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
             <Grid item xs={12}>
               <ProjectsDashboardReportSexAgeChart data={props.reportsGroupedByFeaturesAndDate} />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item sm={6} xs={12}>
               <ProjectsDashboardReportSexAgeTable data={props.reportsGroupedByFeatures} />
             </Grid>
           </Fragment>

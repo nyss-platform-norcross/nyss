@@ -125,7 +125,7 @@ const ProjectsEditPageComponent = (props) => {
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={3}>
-          <Grid item xs={9}>
+          <Grid item xs={12} sm={9}>
             <TextInputField
               label={strings(stringKeys.project.form.name)}
               name="name"
@@ -172,7 +172,7 @@ const ProjectsEditPageComponent = (props) => {
             />
           ))}
 
-          <Grid item xs={9}>
+          <Grid item xs={12} sm={9}>
             <Typography variant="h3">{strings(stringKeys.project.form.emailNotificationsSection)}</Typography>
             <Typography variant="subtitle1">{strings(stringKeys.project.form.emailNotificationDescription)}</Typography>
 
@@ -186,11 +186,11 @@ const ProjectsEditPageComponent = (props) => {
               />
             ))}
           </Grid>
-          <Grid item xs={9}>
+          <Grid item xs={12} sm={9}>
             <Button startIcon={<AddIcon />} onClick={onEmailNotificationAdd}>{strings(stringKeys.project.form.addEmail)}</Button>
           </Grid>
 
-          <Grid item xs={9}>
+          <Grid item xs={12} sm={9}>
             <Typography variant="h3">{strings(stringKeys.project.form.smsNotificationsSetion)}</Typography>
             <Typography variant="subtitle1">{strings(stringKeys.project.form.smsNotificationDescription)}</Typography>
 
@@ -204,7 +204,7 @@ const ProjectsEditPageComponent = (props) => {
               />
             ))}
           </Grid>
-          <Grid item xs={9}>
+          <Grid item xs={12} sm={9}>
             <Button startIcon={<AddIcon />} onClick={onSmsNotificationAdd}>{strings(stringKeys.project.form.addSms)}</Button>
           </Grid>
         </Grid>

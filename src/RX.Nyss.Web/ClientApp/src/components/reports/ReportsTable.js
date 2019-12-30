@@ -10,6 +10,7 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
+import { TableContainer } from '../common/table/TableContainer';
 
 export const ReportsTable = ({ isListFetching, list, projectId, getList, page, rowsPerPage, totalRows, reportListType }) => {
 
@@ -22,7 +23,7 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
   };
 
   return (
-    <div className={styles.tableContainer}>
+    <TableContainer>
       {isListFetching && <Loading absolute />}
       <Table stickyHeader>
         <TableHead>
@@ -71,7 +72,7 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
         </TableBody>
       </Table>
       <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />
-    </div>
+    </TableContainer>
   );
 }
 
