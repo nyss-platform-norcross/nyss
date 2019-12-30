@@ -5,6 +5,7 @@ import * as appActions from "../components/app/logic/appActions";
 import * as http from "../utils/http";
 import * as auth from "./auth";
 import { stringKeys, stringKey } from "../strings";
+import * as localStorage from "../utils/localStorage";
 
 export const authSagas = () => [
   takeEvery(consts.LOGIN.INVOKE, login),
@@ -39,6 +40,7 @@ function* logout() {
   yield put(authActions.logout.request());
   try {
     yield call(http.post, "/api/authentication/logout");
+    localStorage.remove(consts.localStorageUserIdKey);
     yield put(authActions.logout.success());
     auth.redirectToLogin();
   } catch (error) {

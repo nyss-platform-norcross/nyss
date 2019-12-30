@@ -1,13 +1,14 @@
 import { call, put, takeEvery, takeLatest, select, delay } from "redux-saga/effects";
 import * as consts from "./appConstans";
+import * as authConsts from "../../../authentication/authConstants";
 import * as actions from "./appActions";
 import { updateStrings, toggleStringsMode } from "../../../strings";
 import * as http from "../../../utils/http";
-import { push } from "connected-react-router";
 import { placeholders } from "../../../siteMapPlaceholders";
 import { getBreadcrumb, getMenu } from "../../../utils/siteMapService";
 import * as cache from "../../../utils/cache";
 import { reloadPage } from "../../../utils/page";
+import * as localStorage from "../../../utils/localStorage";
 
 export const appSagas = () => [
   takeEvery(consts.INIT_APPLICATION.INVOKE, initApplication),
@@ -28,10 +29,18 @@ function* initApplication() {
     if (user && user.hasPendingHeadManagerConsents){
       yield put(actions.goToHeadManagerConsents())
     }
+
+    if (user) {
+      storeUser(user);
+    }
   } catch (error) {
     yield put(actions.initApplication.failure(error.message));
   }
 };
+
+function storeUser(user) {
+  localStorage.set(authConsts.localStorageUserIdKey, user.id);
+}
 
 function* checkLogin() {
   const authCookieExpiration = yield select(state => state.appData.authCookieExpiration);
