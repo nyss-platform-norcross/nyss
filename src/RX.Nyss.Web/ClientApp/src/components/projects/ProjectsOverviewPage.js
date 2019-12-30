@@ -1,3 +1,4 @@
+import styles from "./ProjectsOverviewPage.module.scss";
 import React, { Fragment } from 'react';
 import { connect } from "react-redux";
 import { stringKeys, strings } from '../../strings';
@@ -23,79 +24,78 @@ const ProjectsOverviewPageComponent = (props) => {
     return <Loading />;
   }
 
-  const selectedTimeZone =  props.data.formData.timeZones.filter( (timeZone) => timeZone.id === props.data.timeZoneId)[0];
-  
+  const selectedTimeZone = props.data.formData.timeZones.filter((timeZone) => timeZone.id === props.data.timeZoneId)[0];
+
   return (
     <Fragment>
 
-        <Grid container spacing={4} fixed='true' style={{ maxWidth: 800 }}>
-          <Grid item xs={12}>
-            <Typography variant="h6">
-              {strings(stringKeys.project.form.name)}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {props.data.name}
-            </Typography>
+      <Grid container spacing={4} fixed='true' style={{ maxWidth: 800 }}>
+        <Grid item xs={12}>
+          <Typography variant="h6">
+            {strings(stringKeys.project.form.name)}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            {props.data.name}
+          </Typography>
 
-            <Typography variant="h6">
-              {strings(stringKeys.project.form.timeZone)}
-            </Typography>
-            <Typography variant="body1" gutterBottom>           
-              {selectedTimeZone.displayName }
-            </Typography>
+          <Typography variant="h6">
+            {strings(stringKeys.project.form.timeZone)}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            {selectedTimeZone.displayName}
+          </Typography>
 
-            <Typography variant="h6">
-              {strings(stringKeys.project.form.healthRisks)}
-            </Typography>
-           
-            {props.data.projectHealthRisks.map( hr =>
-              <Chip  key={`projectsHealthRiskItemIcon_${hr.healthRiskId}`} label={hr.healthRiskName} />
-            )}
-          </Grid>
+          <Typography variant="h6">
+            {strings(stringKeys.project.form.healthRisks)}
+          </Typography>
 
-            <Grid item xs={12}>
-                        
-            <Typography variant="h3">{strings(stringKeys.project.form.overviewHealthRisksSection)}</Typography>            
-              <Grid container spacing={3}>
-                {props.data.projectHealthRisks.map( hr =>
-                  <ProjectsOverviewHealthRiskItem 
-                    key={`projectsHealthRiskItem_${hr.healthRiskId}`}         
-                    projectHealthRisk={hr}
-                    />
-                  )}
-              </Grid>
-            </Grid>
-                      
-            <Grid item xs={9}>
-            <Typography variant="h3">{strings(stringKeys.project.form.overviewEmailNotificationsSection)}</Typography>
-            <Typography variant="subtitle1" gutterBottom>{strings(stringKeys.project.form.emailNotificationDescription)}</Typography>
-
-            {props.data.emailAlertRecipients.map(emailRecipient => (
-              <Typography variant="body1" key={`projectEmailNotificationItem_${emailRecipient.id}`}>           
-              {emailRecipient.email }
-            </Typography>
-            ))}
-                         
-          </Grid>
-
-          <Grid item xs={9}>
-            <Typography variant="h3">{strings(stringKeys.project.form.overviewSmsNotificationsSection)}</Typography>
-            <Typography variant="subtitle1" gutterBottom >{strings(stringKeys.project.form.smsNotificationDescription)}</Typography>
-
-             {props.data.smsAlertRecipients.map(smsRecipient => (
-              <Typography variant="body1" key={`projectSmsNotificationItem_${smsRecipient.id}`}>           
-              {smsRecipient.phoneNumber }
-            </Typography>
-            ))} 
-
-          </Grid>         
+          {props.data.projectHealthRisks.map(hr =>
+            <Chip key={`projectsHealthRiskItemIcon_${hr.healthRiskId}`} label={hr.healthRiskName} className={styles.chip} />
+          )}
         </Grid>
 
-        <FormActions>
-          <TableActionsButton variant="outlined" color="primary" onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)} roles={accessMap.projects.edit}>
-            {strings(stringKeys.project.edit)}
-          </TableActionsButton>
-        </FormActions>
+        <Grid item xs={12}>
+          <Typography variant="h3">{strings(stringKeys.project.form.overviewHealthRisksSection)}</Typography>
+          <Grid container spacing={3}>
+            {props.data.projectHealthRisks.map(hr =>
+              <ProjectsOverviewHealthRiskItem
+                key={`projectsHealthRiskItem_${hr.healthRiskId}`}
+                projectHealthRisk={hr}
+              />
+            )}
+          </Grid>
+        </Grid>
+
+        <Grid item xs={9}>
+          <Typography variant="h3">{strings(stringKeys.project.form.overviewEmailNotificationsSection)}</Typography>
+          <Typography variant="subtitle1" gutterBottom>{strings(stringKeys.project.form.emailNotificationDescription)}</Typography>
+
+          {props.data.emailAlertRecipients.map(emailRecipient => (
+            <Typography variant="body1" key={`projectEmailNotificationItem_${emailRecipient.id}`}>
+              {emailRecipient.email}
+            </Typography>
+          ))}
+
+        </Grid>
+
+        <Grid item xs={9}>
+          <Typography variant="h3">{strings(stringKeys.project.form.overviewSmsNotificationsSection)}</Typography>
+          <Typography variant="subtitle1" gutterBottom >{strings(stringKeys.project.form.smsNotificationDescription)}</Typography>
+
+          {props.data.smsAlertRecipients.map(smsRecipient => (
+            <Typography variant="body1" key={`projectSmsNotificationItem_${smsRecipient.id}`}>
+              {smsRecipient.phoneNumber}
+            </Typography>
+          ))}
+
+        </Grid>
+      </Grid>
+
+      <FormActions>
+        <TableActionsButton variant="outlined" color="primary" onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)} roles={accessMap.projects.edit}>
+          {strings(stringKeys.project.edit)}
+        </TableActionsButton>
+      </FormActions>
     </Fragment>
   );
 }
@@ -108,8 +108,8 @@ const mapStateToProps = (state, ownProps) => ({
   timeZones: state.projects.overviewTimeZones,
   projectId: ownProps.match.params.projectId,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
-  isFetching: state.projects.formFetching,  
-  data: state.projects.overviewData,  
+  isFetching: state.projects.formFetching,
+  data: state.projects.overviewData,
 });
 
 const mapDispatchToProps = {

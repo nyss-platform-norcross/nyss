@@ -1,5 +1,4 @@
 import styles from "./ProjectsOverviewHealthRiskItem.module.scss";
-
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
