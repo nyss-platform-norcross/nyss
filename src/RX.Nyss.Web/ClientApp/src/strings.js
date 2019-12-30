@@ -389,7 +389,6 @@ export const stringKeys = {
       training: "reports.list.training",
       nonTraining: "reports.list.nonTraining",
       dcpReportListType: "reports.list.dcpReportListType"
-
     },
     title: "reports.title"
   },
@@ -411,12 +410,15 @@ export const stringKeys = {
       malesAtLeastFive: "nationalSocietyReports.list.malesAtLeastFive",
       femalesBelowFive: "nationalSocietyReports.list.femalesBelowFive",
       femalesAtLeastFive: "nationalSocietyReports.list.femalesAtLeastFive",
+      referredCount: "nationalSocietyReports.list.referredCount",
+      deathCount: "nationalSocietyReports.list.deathCount",
+      fromOtherVillagesCount: "nationalSocietyReports.list.fromOtherVillagesCount",
       success: "nationalSocietyReports.list.success",
       error: "nationalSocietyReports.list.error",
       selectReportListType: "nationalSocietyReports.list.selectReportListType",
       mainReportsListType: "nationalSocietyReports.list.mainReportsListType",
-      trainingReportsListType: "nationalSocietyReports.list.trainingReportsListType"
-
+      dcpReportListType: "nationalSocietyReports.list.dcpReportListType",
+      unknownSenderReportListType: "nationalSocietyReports.list.unknownSenderReportListType"
     },
     title: "nationalSocietyReports.title"
   },

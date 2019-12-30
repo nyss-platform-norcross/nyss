@@ -1,5 +1,4 @@
 import styles from "./ProjectsDashboardPage.module.scss";
-
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";

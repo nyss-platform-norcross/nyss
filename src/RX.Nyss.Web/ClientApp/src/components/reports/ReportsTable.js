@@ -17,32 +17,31 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
     getList(projectId, page);
   };
 
-  const dashIfEmpty = (text) => {
-    return text || "-";
+  const dashIfEmpty = (text, ...args) => {
+    return [text || "-", ...args].filter(x => !!x).join(", ");
   };
 
   return (
     <div className={styles.tableContainer}>
       {isListFetching && <Loading absolute />}
-      <Table>
+      <Table stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell style={{ width: "6%", "minWidth": "100px" }}>{strings(stringKeys.reports.list.date)}</TableCell>
-            <TableCell style={{ width: "5%" }}>{strings(stringKeys.reports.list.time)}</TableCell>
-            <TableCell style={{ width: "7%" }}>{strings(stringKeys.reports.list.status)}</TableCell>
-            <TableCell style={{ width: "6%", "minWidth": "200px" }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-            <TableCell style={{ width: "12%" }}>{strings(stringKeys.reports.list.dataCollectorPhoneNumber)}</TableCell>
-            <TableCell style={{ width: "18%", "minWidth": "250px" }}>{strings(stringKeys.reports.list.location)}</TableCell>
-            <TableCell style={{ width: "10%" }}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
-            <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
-            <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
-            <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
-            <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
+            <TableCell style={{ width: "9%", minWidth: "115px" }}>{strings(stringKeys.nationalSocietyReports.list.date)}</TableCell>
+            <TableCell style={{ width: "6%" }}>{strings(stringKeys.nationalSocietyReports.list.status)}</TableCell>
+            <TableCell style={{ width: "11%" }}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorDisplayName)}</TableCell>
+            <TableCell style={{ width: "8%" }}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorPhoneNumber)}</TableCell>
+            <TableCell style={{ width: "18%" }}>{strings(stringKeys.nationalSocietyReports.list.location)}</TableCell>
+            <TableCell style={{ width: "11%" }}>{strings(stringKeys.nationalSocietyReports.list.healthRisk)}</TableCell>
+            <TableCell style={{ width: "6%" }}>{strings(stringKeys.nationalSocietyReports.list.malesBelowFive)}</TableCell>
+            <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.malesAtLeastFive)}</TableCell>
+            <TableCell style={{ width: "6%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesBelowFive)}</TableCell>
+            <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
             {reportListType === "fromDcp" &&
               <Fragment>
-                <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
-                <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
-                <TableCell style={{ width: "9%", "minWidth": "50px" }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
               </Fragment>
             }
           </TableRow>
@@ -50,12 +49,11 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover>
-              <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD')}</TableCell>
-              <TableCell>{dayjs(row.dateTime).format('HH:mm')}</TableCell>
+              <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
               <TableCell>{row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error)}</TableCell>
               <TableCell>{row.dataCollectorDisplayName}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
-              <TableCell>{row.region}, {row.district}, {row.village}{row.zone ? ',' : null} {row.zone}</TableCell>
+              <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
               <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
               <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>

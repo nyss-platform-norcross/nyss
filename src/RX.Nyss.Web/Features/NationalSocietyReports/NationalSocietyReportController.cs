@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         /// </summary>
         [HttpPost("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber) =>
-            await _nationalSocietyReportService.List(nationalSocietyId, pageNumber, User.Identity.Name);
+        public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, [FromBody] NationalSocietyReportListFilterRequestDto filterRequest) =>
+            await _nationalSocietyReportService.List(nationalSocietyId, pageNumber, User.Identity.Name, filterRequest);
     }
 }

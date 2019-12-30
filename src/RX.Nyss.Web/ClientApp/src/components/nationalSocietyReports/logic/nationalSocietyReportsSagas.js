@@ -27,12 +27,16 @@ function* openNationalSocietyReportsList({ nationalSocietyId }) {
   }
 };
 
-function* getNationalSocietyReports({ nationalSocietyId, pageNumber }) {
+function* getNationalSocietyReports({ nationalSocietyId, pageNumber, reportListFilter }) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`);
+    const filter = reportListFilter || {
+      reportListType: "main"
+    };
+
+    const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, filter);
     http.ensureResponseIsSuccess(response);
-    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows));
+    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filter));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }

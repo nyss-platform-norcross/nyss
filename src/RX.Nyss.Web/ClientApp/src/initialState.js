@@ -153,7 +153,10 @@ export const initialState = {
     listRemoving: {},
     listStale: true,
     listNationalSocietyId: null,
-    paginatedListData: null
+    paginatedListData: null,
+    reportListFilter: {
+      reportListType: "main"
+    }
   },
   alerts: {
     listFetching: false,

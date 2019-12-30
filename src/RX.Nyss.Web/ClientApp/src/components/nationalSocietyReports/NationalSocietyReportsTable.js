@@ -1,5 +1,5 @@
 import styles from '../common/table/Table.module.scss';
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,7 +12,7 @@ import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 
-export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSocietyId, getList, page, rowsPerPage, totalRows }) => {
+export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSocietyId, getList, page, rowsPerPage, totalRows, reportListType }) => {
 
   const onChangePage = (event, page) => {
     getList(nationalSocietyId, page);
@@ -39,6 +39,13 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSoci
             <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.malesAtLeastFive)}</TableCell>
             <TableCell style={{ width: "6%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesBelowFive)}</TableCell>
             <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
+            {reportListType === "fromDcp" &&
+              <Fragment>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.referredCount)}</TableCell>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.deathCount)}</TableCell>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.fromOtherVillagesCount)}</TableCell>
+              </Fragment>
+            }
           </TableRow>
         </TableHead>
         <TableBody>
@@ -59,6 +66,13 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSoci
               <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
+              {reportListType === "fromDcp" &&
+                <Fragment>
+                  <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
+                  <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>
+                  <TableCell>{dashIfEmpty(row.fromOtherVillagesCount)}</TableCell>
+                </Fragment>
+              }
             </TableRow>
           ))}
         </TableBody>
