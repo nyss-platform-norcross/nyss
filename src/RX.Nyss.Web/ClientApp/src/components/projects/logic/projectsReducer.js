@@ -41,6 +41,18 @@ export function projectsReducer(state = initialState.projects, action) {
     case actions.OPEN_PROJECT_EDITION.FAILURE:
       return { ...state, formFetching: false };
 
+    case actions.OPEN_PROJECT_OVERVIEW.INVOKE:
+      return { ...state, formFetching: true, overviewData: null, overviewHealthRisks: [], overviewTimeZones: [] };
+      
+    case actions.OPEN_PROJECT_OVERVIEW.REQUEST:
+        return { ...state, formFetching: true, overviewData: null, overviewHealthRisks: [], overviewTimeZones: [] };
+  
+    case actions.OPEN_PROJECT_OVERVIEW.SUCCESS:
+        return { ...state, formFetching: false, overviewData: action.data, overviewHealthRisks: action.healthRisks, overviewTimeZones: action.timeZones };
+  
+    case actions.OPEN_PROJECT_OVERVIEW.FAILURE:
+        return { ...state, formFetching: false };
+
     case actions.CREATE_PROJECT.REQUEST:
       return { ...state, formSaving: true };
 

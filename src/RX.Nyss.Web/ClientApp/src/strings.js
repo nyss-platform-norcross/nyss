@@ -136,6 +136,7 @@ export const stringKeys = {
   project: {
     title: "project.title",
     addNew: "project.addNew",
+    edit: "project.edit",
     form: {
       creationTitle: "project.form.creationTitle",
       editionTitle: "project.form.editionTitle",
@@ -143,6 +144,7 @@ export const stringKeys = {
       timeZone: "project.form.timeZone",
       healthRisks: "project.form.healthRisks",
       healthRisksSetion: "project.form.healthRisksSetion",
+      overviewHealthRisksSection: "project.form.overviewHealthRisksSection",
       caseDefinition: "project.form.caseDefinition",
       feedbackMessage: "project.form.feedbackMessage",
       alertsSetion: "project.form.alertsSetion",
@@ -150,8 +152,10 @@ export const stringKeys = {
       alertRuleDaysThreshold: "project.form.alertRuleDaysThreshold",
       alertRuleKilometersThreshold: "project.form.alertRuleKilometersThreshold",
       emailNotificationsSection: "project.form.emailNotificationsSection",
+      overviewEmailNotificationsSection: "project.form.overviewEmailNotificationsSection",
       emailNotificationDescription: "project.form.emailNotificationDescription",
       smsNotificationsSetion: "project.form.smsNotificationsSetion",
+      overviewSmsNotificationsSection: "project.form.overviewSmsNotificationsSection",
       smsNotificationDescription: "project.form.smsNotificationDescription",
       addEmail: "project.form.addEmail",
       addSms: "project.form.addSms",

@@ -3,13 +3,15 @@ import {
   OPEN_PROJECTS_LIST, GET_PROJECTS,
   OPEN_PROJECT_CREATION, CREATE_PROJECT,
   OPEN_PROJECT_EDITION, EDIT_PROJECT,
-  REMOVE_PROJECT
+  REMOVE_PROJECT,
+  OPEN_PROJECT_OVERVIEW
 } from "./projectsConstants";
 
 export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/projects`);
 export const goToCreation = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/projects/add`);
 export const goToEdition = (nationalSocietyId, projectId) => push(`/nationalsocieties/${nationalSocietyId}/projects/${projectId}/edit`);
 export const goToDashboard = (nationalSocietyId, projectId) => push(`/nationalsocieties/${nationalSocietyId}/projects/${projectId}/dashboard`);
+export const goToOverview = (nationalSocietyId, projectId) => push(`/nationalsocieties/${nationalSocietyId}/projects/${projectId}/overview`);
 
 export const openList = {
   invoke: (nationalSocietyId) => ({ type: OPEN_PROJECTS_LIST.INVOKE, nationalSocietyId }),
@@ -44,6 +46,13 @@ export const openEdition = {
   request: () => ({ type: OPEN_PROJECT_EDITION.REQUEST }),
   success: (data, healthRisks, timeZones) => ({ type: OPEN_PROJECT_EDITION.SUCCESS, data, healthRisks, timeZones }),
   failure: (message) => ({ type: OPEN_PROJECT_EDITION.FAILURE, message })
+};
+
+export const openOverview = {
+  invoke: (nationalSocietyId, projectId) => ({ type: OPEN_PROJECT_OVERVIEW.INVOKE, nationalSocietyId, projectId }),
+  request: () => ({ type: OPEN_PROJECT_OVERVIEW.REQUEST }),
+  success: (data, healthRisks, timeZones) => ({ type: OPEN_PROJECT_OVERVIEW.SUCCESS, data, healthRisks, timeZones }),
+  failure: (message) => ({ type: OPEN_PROJECT_OVERVIEW.FAILURE, message })
 };
 
 export const edit = {
