@@ -22,7 +22,6 @@ namespace RX.Nyss.Web.Features.User
         Task<Result> AddExisting(int nationalSocietyId, string userEmail);
         Task<bool> HasUserAccessToNationalSociety(int nationalSocietyId, string identityName);
         Task<string> GetUserApplicationLanguageCode(string userIdentityName);
-        Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
     }
 
     public class UserService : IUserService
@@ -146,27 +145,4 @@ namespace RX.Nyss.Web.Features.User
                 .Where(u => u.EmailAddress == userIdentityName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
-
-        public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName)
-        {
-            var user = await _dataContext.Users
-                .OfType<SupervisorUser>()
-                .SingleOrDefaultAsync(u => u.EmailAddress == supervisorIdentityName);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var projectIds = await _dataContext.Users
-                .OfType<SupervisorUser>()
-                .Where(u => u.EmailAddress == supervisorIdentityName)
-                .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
-                .ToListAsync();
-
-            return projectIds;
-        }
-    }
 }
-
-

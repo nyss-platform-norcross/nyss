@@ -6,7 +6,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSocietyReports.Dto;
-using RX.Nyss.Web.Features.Report.Dto;
+using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
@@ -24,18 +24,20 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private readonly IConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
+        private readonly IProjectService _projectService;
 
-        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IConfig config)
+        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, IConfig config)
         {
             _nyssContext = nyssContext;
             _userService = userService;
+            _projectService = projectService;
             _config = config;
         }
 
         public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, string userIdentityName, NationalSocietyReportListFilterRequestDto filter)
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(userIdentityName);
-            var supervisorProjectIds = await _userService.GetSupervisorProjectIds(userIdentityName);
+            var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(userIdentityName);
             var rowsPerPage = _config.PaginationRowsPerPage;
 
             var baseQuery = _nyssContext.RawReports
