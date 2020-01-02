@@ -37,7 +37,7 @@ const BreadcrumbComponent = ({ breadcrumb, push }) => {
         {renderBreadcrumb(breadcrumbVisibleItems)}
       </Hidden>
       <Hidden smUp>
-        {renderBreadcrumb(breadcrumbVisibleItems.slice(Math.max(breadcrumbVisibleItems.length - 2, 0)))}
+        {renderBreadcrumb(breadcrumbVisibleItems.slice(breadcrumbVisibleItems.length - 3, breadcrumbVisibleItems.length - 1))}
       </Hidden>
     </Fragment>
   );
