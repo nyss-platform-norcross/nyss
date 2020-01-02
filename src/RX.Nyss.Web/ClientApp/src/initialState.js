@@ -148,6 +148,16 @@ export const initialState = {
       isTraining: false
     }
   },
+  nationalSocietyReports: {
+    listFetching: false,
+    listRemoving: {},
+    listStale: true,
+    listNationalSocietyId: null,
+    paginatedListData: null,
+    reportListFilter: {
+      reportListType: "main"
+    }
+  },
   alerts: {
     listFetching: false,
     listRemoving: {},

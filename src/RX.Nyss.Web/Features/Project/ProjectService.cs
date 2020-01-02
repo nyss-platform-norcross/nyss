@@ -31,6 +31,7 @@ namespace RX.Nyss.Web.Features.Project
         Task<IEnumerable<ProjectHealthRiskName>> GetProjectHealthRiskNames(int projectId);
         Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId);
         Task<bool> HasCurrentUserAccessToProject(int projectId);
+        Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
     }
 
     public class ProjectService : IProjectService
@@ -460,6 +461,26 @@ namespace RX.Nyss.Web.Features.Project
 
         public async Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId) =>
             await _nyssContext.SupervisorUserProjects.AnyAsync(sup => sup.SupervisorUser.EmailAddress == supervisorIdentityName && sup.ProjectId == projectId);
+
+        public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName)
+        {
+            var user = await _nyssContext.Users
+                .OfType<SupervisorUser>()
+                .SingleOrDefaultAsync(u => u.EmailAddress == supervisorIdentityName);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            var projectIds = await _nyssContext.Users
+                .OfType<SupervisorUser>()
+                .Where(u => u.EmailAddress == supervisorIdentityName)
+                .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
+                .ToListAsync();
+
+            return projectIds;
+        }
 
         private async Task<ProjectFormDataResponseDto> GetFormDataDto(int contentLanguageId)
         {

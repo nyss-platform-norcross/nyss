@@ -1,6 +1,7 @@
 import { placeholders } from "../../../siteMapPlaceholders";
 import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
+import { projectLeftMenuOrder } from "../../projects/logic/projectsSiteMap";
 
 export const projectDashboardSiteMap = [
   {
@@ -9,6 +10,6 @@ export const projectDashboardSiteMap = [
     title: () => strings(stringKeys.project.dashboard.title),
     access: accessMap.projects.get,
     placeholder: placeholders.leftMenu,
-    placeholderIndex: 1
+    placeholderIndex: projectLeftMenuOrder.dashboard
   }
 ];

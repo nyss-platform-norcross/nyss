@@ -1,25 +1,25 @@
-import * as actions from "./reportsConstants";
+import * as actions from "./nationalSocietyReportsConstants";
 import { initialState } from "../../../initialState";
 import { LOCATION_CHANGE } from "connected-react-router";
 
-export function reportsReducer(state = initialState.reports, action) {
+export function nationalSocietyReportsReducer(state = initialState.nationalSocietyReports, action) {
   switch (action.type) {
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null }
 
-    case actions.OPEN_REPORTS_LIST.INVOKE:
-      return { ...state, listStale: action.projectId !== state.listProjectId };
+    case actions.OPEN_NATIONAL_SOCIETY_REPORTS_LIST.INVOKE:
+      return { ...state, listStale: action.nationalSocietyId !== state.listNationalSocietyId };
 
-    case actions.OPEN_REPORTS_LIST.SUCCESS:
-      return { ...state, listProjectId: action.projectId };
+    case actions.OPEN_NATIONAL_SOCIETY_REPORTS_LIST.SUCCESS:
+      return { ...state, listNationalSocietyId: action.nationalSocietyId };
 
-    case actions.GET_REPORTS.REQUEST:
+    case actions.GET_NATIONAL_SOCIETY_REPORTS.REQUEST:
       return { ...state, paginatedListData: state.listStale ? null : state.paginatedListData, listFetching: true };
 
-    case actions.GET_REPORTS.SUCCESS:
+    case actions.GET_NATIONAL_SOCIETY_REPORTS.SUCCESS:
       return { ...state, filter: action.filter, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
 
-    case actions.GET_REPORTS.FAILURE:
+    case actions.GET_NATIONAL_SOCIETY_REPORTS.FAILURE:
       return { ...state, listFetching: false, paginatedListData: null };
 
     default:

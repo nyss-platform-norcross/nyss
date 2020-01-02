@@ -11,6 +11,7 @@ import { nationalSocietyUsersSagas } from "../components/nationalSocietyUsers/lo
 import { dataCollectorsSagas } from "../components/dataCollectors/logic/dataCollectorsSagas";
 import { headManagerConsentsSagas } from "../components/headManagerConsents/logic/headManagerConsentsSagas";
 import { reportsSagas } from "../components/reports/logic/reportsSagas";
+import { nationalSocietyReportsSagas } from "../components/nationalSocietyReports/logic/nationalSocietyReportsSagas";
 import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
 import { projectDashboardSagas } from "../components/projectDashboard/logic/projectDashboardSagas";
 import { alertsSagas } from "../components/alerts/logic/alertsSagas";
@@ -30,6 +31,7 @@ function* rootSaga() {
     ...dataCollectorsSagas(),
     ...headManagerConsentsSagas(),
     ...reportsSagas(),
+    ...nationalSocietyReportsSagas(),
     ...alertsSagas()
   ]);
 }

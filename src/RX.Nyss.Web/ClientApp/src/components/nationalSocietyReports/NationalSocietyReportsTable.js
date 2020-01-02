@@ -6,15 +6,16 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Tooltip from '@material-ui/core/Tooltip';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 
-export const ReportsTable = ({ isListFetching, list, projectId, getList, page, rowsPerPage, totalRows, reportListType }) => {
+export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSocietyId, getList, page, rowsPerPage, totalRows, reportListType }) => {
 
   const onChangePage = (event, page) => {
-    getList(projectId, page);
+    getList(nationalSocietyId, page);
   };
 
   const dashIfEmpty = (text, ...args) => {
@@ -29,6 +30,7 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
           <TableRow>
             <TableCell style={{ width: "9%", minWidth: "115px" }}>{strings(stringKeys.nationalSocietyReports.list.date)}</TableCell>
             <TableCell style={{ width: "6%" }}>{strings(stringKeys.nationalSocietyReports.list.status)}</TableCell>
+            <TableCell style={{ width: "11%" }}>{strings(stringKeys.nationalSocietyReports.list.project)}</TableCell>
             <TableCell style={{ width: "11%" }}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorDisplayName)}</TableCell>
             <TableCell style={{ width: "8%" }}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorPhoneNumber)}</TableCell>
             <TableCell style={{ width: "18%" }}>{strings(stringKeys.nationalSocietyReports.list.location)}</TableCell>
@@ -39,9 +41,9 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
             <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
             {reportListType === "fromDcp" &&
               <Fragment>
-                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
-                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
-                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.referredCount)}</TableCell>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.deathCount)}</TableCell>
+                <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.fromOtherVillagesCount)}</TableCell>
               </Fragment>
             }
           </TableRow>
@@ -49,9 +51,14 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover>
-              <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
-              <TableCell>{row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error)}</TableCell>
-              <TableCell>{row.dataCollectorDisplayName}</TableCell>
+              <TableCell>
+                <Tooltip title={row.projectTimeZone || "UTC"}>
+                  <span>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell>{row.isValid ? strings(stringKeys.nationalSocietyReports.list.success) : strings(stringKeys.nationalSocietyReports.list.error)}</TableCell>
+              <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
+              <TableCell>{dashIfEmpty(row.dataCollectorDisplayName)}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
               <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
@@ -75,9 +82,9 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
   );
 }
 
-ReportsTable.propTypes = {
+NationalSocietyReportsTable.propTypes = {
   isFetching: PropTypes.bool,
   list: PropTypes.array
 };
 
-export default ReportsTable;
+export default NationalSocietyReportsTable;

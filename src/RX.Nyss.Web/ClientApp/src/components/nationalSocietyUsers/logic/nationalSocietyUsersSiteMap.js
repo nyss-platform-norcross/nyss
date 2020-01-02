@@ -1,6 +1,7 @@
 import { placeholders } from "../../../siteMapPlaceholders";
 import { accessMap } from "../../../authentication/accessMap";
 import { strings, stringKeys } from "../../../strings";
+import { nationalSocietyLeftMenuOrder } from "../../nationalSocieties/logic/nationalSocietiesSiteMap";
 
 export const nationalSocietyUsersSiteMap = [
   {
@@ -8,7 +9,7 @@ export const nationalSocietyUsersSiteMap = [
     path: "/nationalsocieties/:nationalSocietyId/users",
     title: () => strings(stringKeys.nationalSocietyUser.title),
     placeholder: placeholders.leftMenu,
-    placeholderIndex: 2,
+    placeholderIndex: nationalSocietyLeftMenuOrder.userlist,
     access: accessMap.nationalSocietyUsers.list
   },
   {

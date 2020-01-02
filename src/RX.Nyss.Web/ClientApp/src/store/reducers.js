@@ -12,6 +12,7 @@ import { nationalSocietyUsersReducer } from "../components/nationalSocietyUsers/
 import { dataCollectorsReducer } from "../components/dataCollectors/logic/dataCollectorsReducer";
 import { headManagerConsentsReducer } from "../components/headManagerConsents/logic/headManagerConsentsReducer";
 import { reportsReducer } from "../components/reports/logic/reportsReducer";
+import { nationalSocietyReportsReducer } from "../components/nationalSocietyReports/logic/nationalSocietyReportsReducer";
 import { nationalSocietyStructureReducer } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureReducer";
 import { projectDashboardReducer } from "../components/projectDashboard/logic/projectDashboardReducer";
 import { alertsReducer } from "../components/alerts/logic/alertsReducer";
@@ -32,5 +33,6 @@ export const createRootReducer = (history) => combineReducers({
   dataCollectors: dataCollectorsReducer,
   headManagerConsents: headManagerConsentsReducer,
   reports: reportsReducer,
+  nationalSocietyReports: nationalSocietyReportsReducer,
   alerts: alertsReducer
 });
