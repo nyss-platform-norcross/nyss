@@ -202,7 +202,8 @@
         "[concat('microsoft.insights/components/', variables('webAppName'))]",
         "[concat('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName'))]",
-        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]",
+        "[resourceId('Microsoft.Web/sites/slots', variables('webAppName'), 'staging')]"
       ],
       "tags": "[parameters('tagValues')]",
       "properties": {
@@ -258,6 +259,18 @@
         "hostingEnvironment": "[parameters('hostingEnvironment')]",
         "clientAffinityEnabled": true,
         "httpsOnly": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/slots",
+      "name": "[concat(variables('webAppName'), '/staging')]",
+      "apiVersion": "2018-11-01",
+      "location": "[variables('location')]",
+      "tags": "[parameters('tagValues')]",
+      "properties": {
+        "siteConfig": {
+          "autoSwapSlotName": "production"
+        }
       }
     },
     {
