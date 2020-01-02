@@ -11,6 +11,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
+import { TableContainer } from '../common/table/TableContainer';
 
 export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
   if (isListFetching) {
@@ -18,29 +19,31 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
   }
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>{strings(stringKeys.smsGateway.list.name)}</TableCell>
-          <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.smsGateway.list.apiKey)}</TableCell>
-          <TableCell style={{ width: "16%", minWidth: 75 }}>{strings(stringKeys.smsGateway.list.gatewayType)}</TableCell>
-          <TableCell style={{ width: "16%" }} />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {list.map(row => (
-          <TableRow key={row.id} hover onClick={() => goToEdition(nationalSocietyId, row.id)} className={styles.clickableRow}>
-            <TableCell>{row.name}</TableCell>
-            <TableCell>{row.apiKey}</TableCell>
-            <TableCell>{strings(`smsGateway.type.${row.gatewayType.toLowerCase()}`)}</TableCell>
-            <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.smsGateway.list.confirmationText)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
-            </TableCell>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>{strings(stringKeys.smsGateway.list.name)}</TableCell>
+            <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.smsGateway.list.apiKey)}</TableCell>
+            <TableCell style={{ width: "16%", minWidth: 75 }}>{strings(stringKeys.smsGateway.list.gatewayType)}</TableCell>
+            <TableCell style={{ width: "16%" }} />
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {list.map(row => (
+            <TableRow key={row.id} hover onClick={() => goToEdition(nationalSocietyId, row.id)} className={styles.clickableRow}>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.apiKey}</TableCell>
+              <TableCell>{strings(`smsGateway.type.${row.gatewayType.toLowerCase()}`)}</TableCell>
+              <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
+                <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                <TableRowAction onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.smsGateway.list.confirmationText)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
