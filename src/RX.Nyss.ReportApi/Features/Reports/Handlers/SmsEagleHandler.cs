@@ -85,46 +85,46 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         ModemNumber = modemNumber,
                         ApiKey = apiKey
                     };
-                await _nyssContext.AddAsync(rawReport);
+                    await _nyssContext.AddAsync(rawReport);
 
                     var reportData = await ParseAndValidateReport(rawReport, parsedQueryString);
                     if (reportData != null)
                     {
                         gatewaySetting = reportData.GatewaySetting;
                         projectHealthRisk = reportData.ProjectHealthRisk;
-            
-                var report = new Report
-                {
+
+                        var report = new Report
+                        {
                             IsTraining = reportData.DataCollector.IsInTrainingMode,
                             ReportType = reportData.ParsedReport.ReportType,
-                    Status = ReportStatus.New,
+                            Status = ReportStatus.New,
                             ReceivedAt = reportData.ReceivedAt,
-                    CreatedAt = _dateTimeProvider.UtcNow,
+                            CreatedAt = _dateTimeProvider.UtcNow,
                             DataCollector = reportData.DataCollector,
                             EpiWeek = _dateTimeProvider.GetEpiWeek(reportData.ReceivedAt),
-                    PhoneNumber = sender,
+                            PhoneNumber = sender,
                             Location = reportData.DataCollector.Location,
                             ReportedCase = reportData.ParsedReport.ReportedCase,
-                    KeptCase = new ReportCase
-                    {
-                        CountMalesBelowFive = null,
-                        CountMalesAtLeastFive = null,
-                        CountFemalesBelowFive = null,
-                        CountFemalesAtLeastFive = null
-                    },
+                            KeptCase = new ReportCase
+                            {
+                                CountMalesBelowFive = null,
+                                CountMalesAtLeastFive = null,
+                                CountFemalesBelowFive = null,
+                                CountFemalesAtLeastFive = null
+                            },
                             DataCollectionPointCase = reportData.ParsedReport.DataCollectionPointCase,
-                    ProjectHealthRisk = projectHealthRisk,
+                            ProjectHealthRisk = projectHealthRisk,
                             Village = reportData.DataCollector.Village,
                             Zone = reportData.DataCollector.Zone,
-                    ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
-                                ? reportData.ParsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0 + reportData.ParsedReport.ReportedCase.CountFemalesBelowFive ??
-                                  0 + reportData.ParsedReport.ReportedCase.CountMalesAtLeastFive ?? 0 + reportData.ParsedReport.ReportedCase.CountMalesBelowFive ?? 0
-                        : 1
-                };
+                            ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
+                                        ? reportData.ParsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0 + reportData.ParsedReport.ReportedCase.CountFemalesBelowFive ??
+                                        0 + reportData.ParsedReport.ReportedCase.CountMalesAtLeastFive ?? 0 + reportData.ParsedReport.ReportedCase.CountMalesBelowFive ?? 0
+                                : 1
+                        };
 
-                rawReport.Report = report;
-                await _nyssContext.Reports.AddAsync(report);
-                triggeredAlert = await _alertService.ReportAdded(report);
+                        rawReport.Report = report;
+                        await _nyssContext.Reports.AddAsync(report);
+                        triggeredAlert = await _alertService.ReportAdded(report);
                     }
 
                 await _nyssContext.SaveChangesAsync();
@@ -257,7 +257,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
                                                             $"'{ReportType.DataCollectionPoint}', '{ReportType.NonHuman}', '{ReportType.Activity}'.");
                     }
-                    
+
                     break;
                 default:
                     throw new ReportValidationException($"A data collector of type '{dataCollector.DataCollectorType}' is not supported.");
@@ -364,7 +364,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 const string timestampFormat = "yyyyMMddHHmmss";
 
                 var parsedSuccessfully = DateTime.TryParseExact(timestamp, timestampFormat, formatProvider, DateTimeStyles.None, out var parsedTimestamp);
-                
+
                 if (!parsedSuccessfully)
                 {
                     throw new ReportValidationException($"Cannot parse timestamp '{timestamp}' to datetime.");
