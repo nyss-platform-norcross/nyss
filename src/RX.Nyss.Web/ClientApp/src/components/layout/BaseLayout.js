@@ -1,6 +1,6 @@
 import styles from './Layout.module.scss';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Loading } from '../common/loading/Loading';
@@ -8,8 +8,21 @@ import Typography from '@material-ui/core/Typography';
 import Button from "@material-ui/core/Button";
 import { push } from 'connected-react-router';
 import { StringsSwitcher } from './StringsSwitcher';
+import { pageFocused } from '../app/logic/appActions';
 
-const BaseLayoutComponent = ({ appReady, children, moduleError, push }) => {
+const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
+  useEffect(() => {
+    window.addEventListener("focus", handleWindowFocus);
+    window.addEventListener("storage", handleWindowStorageChange); // IE fix
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus)
+      window.removeEventListener("storage", handleWindowStorageChange)
+    };
+  });
+
+  const handleWindowFocus = () => pageFocused();
+  const handleWindowStorageChange = () => { };
+
   if (!appReady) {
     return (
       <div className={styles.loader}>
@@ -46,7 +59,8 @@ const mapStateToProps = (state, ownProps) => ({
 });
 
 const mapDispatchToProps = {
-  push: push
+  push: push,
+  pageFocused: pageFocused
 };
 
 BaseLayoutComponent.propTypes = {

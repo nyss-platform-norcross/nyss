@@ -45,6 +45,7 @@ export function appReducer(state = initialState.appData, action) {
         ...state,
         user: action.user
           ? {
+            id: action.user.id,
             name: action.user.name,
             email: action.user.email,
             roles: action.user.roles,
