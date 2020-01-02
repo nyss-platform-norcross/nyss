@@ -153,6 +153,16 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 }
             };
 
+            var zones = new List<Zone>
+            {
+                new Zone
+                {
+                    Id = 1,
+                    Name = "Zone1",
+                    Village = villages[0]
+                }
+            };
+
             var projects = new List<Project>
             {
                 new Project
@@ -179,13 +189,15 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 {
                     Id = 1,
                     Project = projects[0],
-                    Village = villages[0]
+                    Village = villages[0],
+                    DataCollectorType = DataCollectorType.Human
                 },
                 new DataCollector
                 {
                     Id = 2,
                     Project = projects[1],
-                    Village = villages[0]
+                    Village = villages[0],
+                    DataCollectorType = DataCollectorType.Human
                 },
                 new DataCollector
                 {
@@ -196,16 +208,16 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 }
             };
 
-            var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
+            var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0]);
             var rawReports1 = BuildRawReports(reports1);
 
-            var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0]);
+            var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0]);
             var rawReports2 = BuildRawReports(reports2);
 
-            var trainingReports = BuildReports(dataCollectors[0], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], isTraining: true);
+            var trainingReports = BuildReports(dataCollectors[0], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0], isTraining: true);
             var trainingRawReports = BuildRawReports(trainingReports);
 
-            var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0]);
+            var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0]);
             var dcpRawReports = BuildRawReports(dcpReports);
 
             _reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
@@ -245,7 +257,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
         }
 
-        private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk,
+        private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk, Village village, Zone zone,
             bool? isTraining = false)
         {
             var reports = ids
@@ -256,9 +268,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Status = ReportStatus.Pending,
                     ProjectHealthRisk =  projectHealthRisk,
                     ReportedCase = new ReportCase(),
+                    DataCollectionPointCase = new DataCollectionPointCase(),
                     CreatedAt = new DateTime(2020,1,1),
                     IsTraining = isTraining ?? false,
-                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? ReportType.DataCollectionPoint : ReportType.Single
+                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? ReportType.DataCollectionPoint : ReportType.Single,
+                    Village = village,
+                    Zone = zone
                 })
                 .ToList();
             return reports;
@@ -270,6 +285,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Id = r.Id,
                     Report = r,
                     ReportId = r.Id,
+                    Sender = r.PhoneNumber,
                     DataCollector = r.DataCollector,
                     ReceivedAt = r.ReceivedAt,
                     IsTraining = r.IsTraining

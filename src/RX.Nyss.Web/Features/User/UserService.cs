@@ -70,11 +70,7 @@ namespace RX.Nyss.Web.Features.User
         {
             var user = await _dataContext.Users
                 .Where(u => u.Id == nationalSocietyUserId)
-                .Select(u => new NationalSocietyUsersBasicDataResponseDto
-                {
-                    Email = u.EmailAddress,
-                    Role = u.Role
-                })
+                .Select(u => new NationalSocietyUsersBasicDataResponseDto { Email = u.EmailAddress, Role = u.Role })
                 .SingleOrDefaultAsync();
 
             return Success(user);
@@ -109,7 +105,7 @@ namespace RX.Nyss.Web.Features.User
         {
             var userData = await _dataContext.Users
                 .Where(u => u.EmailAddress == userEmail)
-                .Select(u => new { u.Id , u.Role })
+                .Select(u => new { u.Id, u.Role })
                 .SingleOrDefaultAsync();
 
             if (userData == null)
@@ -130,11 +126,7 @@ namespace RX.Nyss.Web.Features.User
                 return Error(ResultKey.User.Registration.UserIsAlreadyInThisNationalSociety);
             }
 
-            var userNationalSociety = new UserNationalSociety
-            {
-                NationalSocietyId = nationalSocietyId,
-                UserId = userData.Id
-            };
+            var userNationalSociety = new UserNationalSociety { NationalSocietyId = nationalSocietyId, UserId = userData.Id };
             await _dataContext.UserNationalSocieties.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
             return Success();
@@ -145,4 +137,5 @@ namespace RX.Nyss.Web.Features.User
                 .Where(u => u.EmailAddress == userIdentityName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
+    }
 }
