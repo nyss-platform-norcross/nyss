@@ -59,6 +59,11 @@ export const theme = createMuiTheme({
       },
       text: {
         textDecoration: "underline"
+      },
+      startIcon: {
+        "@media (max-width: 600px)": {
+          display: "none"
+        }
       }
     },
     MuiMenu: {

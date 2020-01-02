@@ -35,7 +35,7 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
             <TableRow key={project.id} hover onClick={() => goToDashboard(nationalSocietyId, project.id)} className={styles.clickableRow}>
               <TableCell>{project.name}</TableCell>
               <TableCell>{dayjs(project.startDate).format("YYYY-MM-DD")}</TableCell>
-              <TableCell>{dayjs(project.endDate).format("YYYY-MM-DD")}</TableCell>
+              <TableCell>{project.endDate ? dayjs(project.endDate).format("YYYY-MM-DD") : strings(stringKeys.project.list.ongoing)}</TableCell>
               <TableCell>{project.totalReportCount}</TableCell>
               <TableCell>{project.totalDataCollectorCount}</TableCell>
               <TableCell>{project.escalatedAlertCount}</TableCell>

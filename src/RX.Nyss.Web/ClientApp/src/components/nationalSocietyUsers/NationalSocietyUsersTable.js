@@ -19,6 +19,7 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import Tooltip from '@material-ui/core/Tooltip';
 import { accessMap } from '../../authentication/accessMap';
 import { TableContainer } from '../common/table/TableContainer';
+import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
 export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, setAsHeadManager, isSettingAsHead, user }) => {
   if (isListFetching) {
@@ -56,17 +57,19 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
                 (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.headManagerConsents.pendingHeadManager)}><MoreHorizIcon fontSize="small" /></Tooltip>)
               }
               </TableCell>
-              <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-                {
-                  hasHeadManagerAccess &&
-                  !row.isHeadManager &&
-                  (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() || Roles.Manager.toLowerCase() === row.role.toLowerCase()) &&
-                  <TableRowMenu id={row.id} items={[
-                    { title: strings(stringKeys.headManagerConsents.setAsHeadManager), action: () => setAsHeadManager(nationalSocietyId, row.id) }
-                  ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
-                }
-                <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableCell>
+                <TableRowActions>
+                  {
+                    hasHeadManagerAccess &&
+                    !row.isHeadManager &&
+                    (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() || Roles.Manager.toLowerCase() === row.role.toLowerCase()) &&
+                    <TableRowMenu id={row.id} items={[
+                      { title: strings(stringKeys.headManagerConsents.setAsHeadManager), action: () => setAsHeadManager(nationalSocietyId, row.id) }
+                    ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
+                  }
+                  <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                </TableRowActions>
               </TableCell>
 
             </TableRow>

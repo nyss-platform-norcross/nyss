@@ -12,6 +12,7 @@ import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
+import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
 export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
   if (isListFetching) {
@@ -35,9 +36,11 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.apiKey}</TableCell>
               <TableCell>{strings(`smsGateway.type.${row.gatewayType.toLowerCase()}`)}</TableCell>
-              <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-                <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                <TableRowAction onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.smsGateway.list.confirmationText)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+              <TableCell>
+                <TableRowActions>
+                  <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.smsGateway.list.confirmationText)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                </TableRowActions>
               </TableCell>
             </TableRow>
           ))}

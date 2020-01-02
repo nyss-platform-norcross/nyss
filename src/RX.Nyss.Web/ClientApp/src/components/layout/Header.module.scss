@@ -2,7 +2,8 @@
     display: flex;
     align-items: center;
     height: 80px;
-    padding-left: 40px;
+    padding-left: 35px;
+    padding-right: 35px;
     border-bottom: 1px solid #E0E0E0;
 
     .placeholder {
@@ -10,6 +11,11 @@
         display: flex;
         align-items: center;
     }
+
+  @media screen and (max-width: 600px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 
 .toggleMenu {
