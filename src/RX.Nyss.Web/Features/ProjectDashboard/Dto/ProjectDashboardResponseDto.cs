@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using RX.Nyss.Web.Features.ProjectDashboard.Dto;
+using RX.Nyss.Web.Features.Project.Dto;
 
-namespace RX.Nyss.Web.Features.Project.Dto
+namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
     public class ProjectDashboardResponseDto
     {
