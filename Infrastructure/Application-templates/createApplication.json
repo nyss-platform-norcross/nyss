@@ -70,11 +70,13 @@
     "consumptionPlanName": "[concat('nrx-cbs-nyss-consumption-sp-', parameters('env'))]",
     "consumptionPlanId": "[resourceId('Microsoft.Web/serverfarms', variables('consumptionPlanName'))]",
     "serviceBusNamespaceName": "[concat('nrx-cbs-nyss-bus-', parameters('env'))]",
+    "serviceBusNamespaceNameStaging": "[concat('nrx-cbs-nyss-bus-stg-', parameters('env'))]",
     "reportQueueName": "[concat('nrx-cbs-nyss-bus-report-queue-', parameters('env'))]",
     "sendEmailQueueName": "[concat('nrx-cbs-nyss-bus-send-email-queue-', parameters('env'))]",
     "reportDismissalQueue": "[concat('nrx-cbs-nyss-bus-report-dismissal-queue-', parameters('env'))]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
     "defaultAuthRuleResourceId": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespaceName'), variables('defaultSASKeyName'))]",
+    "defaultAuthRuleSbStaging": "[resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusNamespaceNameStaging'), variables('defaultSASKeyName'))]",
     "sbVersion": "2017-04-01",
     "funcStorageAccountName": "[concat('nrxcbsnyssfuncappst', parameters('env'))]",
     "generalStorageAccountName": "[concat('nrxcbsnyssst', parameters('env'))]",
@@ -140,58 +142,87 @@
       },
       "properties": {
         "enabled": true,
-        "name": "[variables('funcAppName')]",
         "serverFarmId": "[variables('consumptionPlanId')]",
         "httpsOnly": true,
         "siteConfig": {
-          "appSettings": [
-            {
-              "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
-            },
-            {
-              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
-            },
-            {
-              "name": "WEBSITE_CONTENTSHARE",
-              "value": "[concat(toLower(variables('funcAppName')),uniqueString(variables('funcAppName')))]"
-            },
-            {
-              "name": "FUNCTIONS_EXTENSION_VERSION",
-              "value": "~3"
-            },
-            {
-              "name": "FUNCTIONS_WORKER_RUNTIME",
-              "value": "dotnet"
-            },
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('microsoft.insights/components/', variables('funcAppName')), '2015-05-01').InstrumentationKey]"
-            },
-            {
-              "name": "WEBSITE_TIME_ZONE",
-              "value": "W. Europe Standard Time"
-            },
-            {
-              "name": "SERVICEBUS_CONNECTIONSTRING",
-              "value": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]"
-            },
-            {
-              "name": "SERVICEBUS_REPORTQUEUE",
-              "value": "[variables('reportQueueName')]"
-            },
-            {
-              "name": "SERVICEBUS_SENDEMAILQUEUE",
-              "value": "[variables('sendEmailQueueName')]"
-            }
-          ],
           "cors": {
             "allowedOrigins": [
             ]
           }
         }
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2018-11-01",
+          "name": "appsettings",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('funcAppName'))]"
+          ],
+          "properties": {
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "WEBSITE_CONTENTSHARE": "[concat(toLower(variables('funcAppName')),uniqueString(variables('funcAppName')))]",
+            "FUNCTIONS_EXTENSION_VERSION": "~3",
+            "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('funcAppName')), '2015-05-01').InstrumentationKey]",
+            "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
+            "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
+            "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
+            "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]"
+          }
+        },
+        {
+          "apiVersion": "2018-11-01",
+          "type": "config",
+          "name": "slotConfigNames",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('funcAppName'))]"
+          ],
+          "properties": {
+            "appSettingNames": [
+              "SERVICEBUS_CONNECTIONSTRING"
+            ]
+          }
+        },
+        {
+          "type": "slots",
+          "name": "Staging",
+          "apiVersion": "2018-11-01",
+          "location": "[variables('location')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('funcAppName'))]"
+          ],
+          "tags": "[parameters('tagValues')]",
+          "properties": {
+          },
+          "resources": [
+            {
+              "apiVersion": "2018-11-01",
+              "name": "appsettings",
+              "type": "config",
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/Sites/Slots', variables('funcAppName'), 'staging')]"
+              ],
+              "properties": {
+                "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+                "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+                "WEBSITE_CONTENTSHARE": "[concat(toLower(variables('funcAppName')),uniqueString(variables('funcAppName')))]",
+                "FUNCTIONS_EXTENSION_VERSION": "~3",
+                "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('funcAppName')), '2015-05-01').InstrumentationKey]",
+                "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
+                "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
+                "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
+                "autoSwapSlotName": "production",
+                "WEBSITE_SWAP_WARMUP_PING_PATH": "/api/ping",
+                "WEBSITE_SWAP_WARMUP_PING_STATUSES": "200",
+                "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleSbStaging'), variables('sbVersion')).primaryConnectionString]"
+              }
+            }
+          ]
+        }
+      ]
     },
     {
       "type": "Microsoft.Web/sites",
@@ -269,7 +300,8 @@
       "tags": "[parameters('tagValues')]",
       "properties": {
         "siteConfig": {
-          "autoSwapSlotName": "production"
+          "autoSwapSlotName": "production",
+          "WEBSITE_SWAP_WARMUP_PING_STATUSES": "200"
         }
       }
     },
@@ -463,6 +495,83 @@
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+          ],
+          "properties": {
+            "lockDuration": "PT1M",
+            "maxSizeInMegabytes": 1024,
+            "requiresDuplicateDetection": false,
+            "requiresSession": false,
+            "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+            "duplicateDetectionHistoryTimeWindow": "PT10M",
+            "deadLetteringOnMessageExpiration": true,
+            "maxDeliveryCount": 1,
+            "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+            "enablePartitioning": false,
+            "enableExpress": false
+          }
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces",
+      "apiVersion": "2017-04-01",
+      "name": "[variables('serviceBusNamespaceNameStaging')]",
+      "location": "[variables('location')]",
+      "tags": "[parameters('tagValues')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "properties": {
+      },
+      "resources": [
+        {
+          "apiVersion": "2017-04-01",
+          "name": "[variables('reportQueueName')]",
+          "type": "queues",
+          "dependsOn": [
+            "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceNameStaging'))]"
+          ],
+          "properties": {
+            "lockDuration": "PT1M",
+            "maxSizeInMegabytes": 1024,
+            "requiresDuplicateDetection": false,
+            "requiresSession": false,
+            "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+            "duplicateDetectionHistoryTimeWindow": "PT10M",
+            "deadLetteringOnMessageExpiration": true,
+            "maxDeliveryCount": 1,
+            "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+            "enablePartitioning": false,
+            "enableExpress": false
+          }
+        },
+        {
+          "apiVersion": "2017-04-01",
+          "name": "[variables('sendEmailQueueName')]",
+          "type": "queues",
+          "dependsOn": [
+            "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceNameStaging'))]"
+          ],
+          "properties": {
+            "lockDuration": "PT1M",
+            "maxSizeInMegabytes": 1024,
+            "requiresDuplicateDetection": false,
+            "requiresSession": false,
+            "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+            "duplicateDetectionHistoryTimeWindow": "PT10M",
+            "deadLetteringOnMessageExpiration": true,
+            "maxDeliveryCount": 1,
+            "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+            "enablePartitioning": false,
+            "enableExpress": false
+          }
+        },
+        {
+          "apiVersion": "2017-04-01",
+          "name": "[variables('reportDismissalQueue')]",
+          "type": "queues",
+          "dependsOn": [
+            "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceNameStaging'))]"
           ],
           "properties": {
             "lockDuration": "PT1M",
