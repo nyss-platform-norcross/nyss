@@ -16,6 +16,7 @@
         string EmailContentResourcesBlobObjectName { get; set; }
         int PaginationRowsPerPage { get; set; }
         string SmsContentResourcesBlobObjectName { get; set; }
+        NyssConfig.ExportOptions Export { get; set; }
     }
 
     public class NyssConfig : IConfig
@@ -42,6 +43,8 @@
 
         public string SmsContentResourcesBlobObjectName { get; set; }
 
+        public ExportOptions Export { get; set; }
+
         public class LoggingOptions
         {
             public string LogsLocation { get; set; }
@@ -67,6 +70,11 @@
         {
             public string SendEmailQueue { get; set; }
             public string ReportDismissalQueue { get; set; }
+        }
+
+        public class ExportOptions
+        {
+            public string CsvFieldSeparator { get; set; }
         }
     }
 }

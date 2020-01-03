@@ -8,12 +8,15 @@ import Layout from '../layout/Layout';
 import ReportsTable from './ReportsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
+import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
-import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
+import TableActions from '../common/tableActions/TableActions';
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {
@@ -51,7 +54,15 @@ const ReportsListPageComponent = (props) => {
 
   return (
     <Grid container spacing={3}>
+      
       <Grid item xs={12}>
+
+      <TableActions>          
+          <Button onClick={() => props.exportToExcel(props.projectId, props.reportListFilter)} variant="outlined" color="primary">
+            {strings(stringKeys.reports.list.exportToExcel)}
+          </Button>
+      </TableActions>
+
         <Grid container spacing={3}>
           <Grid item>
             <FormControl style={{ minWidth: '250px' }}>
@@ -115,7 +126,8 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openReportsList: reportsActions.openList.invoke,
-  getList: reportsActions.getList.invoke
+  getList: reportsActions.getList.invoke,
+  exportToExcel: reportsActions.exportToExcel.invoke,
 };
 
 export const ReportsListPage = useLayout(

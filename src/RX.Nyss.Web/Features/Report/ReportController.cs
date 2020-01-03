@@ -24,6 +24,19 @@ namespace RX.Nyss.Web.Features.Report
         [HttpPost("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, [FromBody] ReportListFilterRequestDto filterRequest) =>
-            await _reportService.List(projectId, pageNumber, User.Identity.Name, filterRequest);
+            await _reportService.List(projectId, pageNumber, filterRequest);
+
+        /// <summary>
+        /// Export the list of reports in a project to a csv file
+        /// </summary>
+        /// <param name="projectId">The ID of the project to export the reports from</param>
+        /// <param name="filterRequest">The filters object</param>
+        [HttpPost("exportToExcel")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<IActionResult> Export(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
+        {
+            var excelSheetBytes = await _reportService.Export(projectId, filterRequest);
+            return File(excelSheetBytes, "text/csv");
+        }
     }
 }

@@ -1,6 +1,7 @@
 import { push } from "connected-react-router";
 import {
-  OPEN_REPORTS_LIST, GET_REPORTS
+  OPEN_REPORTS_LIST, GET_REPORTS,
+  EXPORT_TO_EXCEL
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
@@ -17,4 +18,11 @@ export const getList = {
   request: () => ({ type: GET_REPORTS.REQUEST }),
   success: (data, page, rowsPerPage, totalRows, filter) => ({ type: GET_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filter }),
   failure: (message) => ({ type: GET_REPORTS.FAILURE, message })
+};
+
+export const exportToExcel = {
+  invoke: (projectId, reportListFilter) => ({ type: EXPORT_TO_EXCEL.INVOKE, projectId, reportListFilter }),
+  request: () => ({ type: EXPORT_TO_EXCEL.REQUEST }),
+  success: () => ({ type: EXPORT_TO_EXCEL.SUCCESS }),
+  failure: (message) => ({ type: EXPORT_TO_EXCEL.FAILURE, message })
 };
