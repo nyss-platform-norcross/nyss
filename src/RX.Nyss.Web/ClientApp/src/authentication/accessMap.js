@@ -16,6 +16,8 @@ export const accessMap = {
   },
   projects: {
     get: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
+    showOverview: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    showDashboard: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
     list: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
     add: [Administrator, Manager, TechnicalAdvisor],
     edit: [Administrator, Manager, TechnicalAdvisor],
