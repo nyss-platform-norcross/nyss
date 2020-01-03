@@ -58,7 +58,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     Country = n.Country.Name,
                     StartDate = n.StartDate,
                     HeadManagerName = n.HeadManager.Name,
-                    PendingHeadManagerName = n.PendingHeadManager.Name
+                    PendingHeadManagerName = n.PendingHeadManager.Name,
+                    TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.Where(u => u.User.Role == Role.TechnicalAdvisor).Select(u => u.User.Name).ToList())
                 });
 
             if (!_userService.HasAccessToAllNationalSocieties(userRoles))
