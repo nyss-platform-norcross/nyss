@@ -11,6 +11,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { stringKeys, strings } from '../../strings';
+import { TableContainer } from '../common/table/TableContainer';
+import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
 export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
   if (isListFetching) {
@@ -18,29 +20,33 @@ export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remo
   }
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell style={{ width: "10%", minWidth: 100 }}>{strings(stringKeys.healthRisk.list.healthRiskCode)}</TableCell>
-          <TableCell>{strings(stringKeys.healthRisk.list.name)}</TableCell>
-          <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.healthRisk.list.healthRiskType)}</TableCell>
-          <TableCell style={{ width: "25%" }} />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {list.map(row => (
-          <TableRow key={row.id} hover onClick={() => goToEdition(row.id)} className={styles.clickableRow}>
-            <TableCell>{row.healthRiskCode}</TableCell>
-            <TableCell>{row.name}</TableCell>
-            <TableCell>{strings(stringKeys.healthRisk.constants.healthRiskType[row.healthRiskType.toLowerCase()])}</TableCell>
-            <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.healthRisk.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
-            </TableCell>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell style={{ width: "10%", minWidth: 100 }}>{strings(stringKeys.healthRisk.list.healthRiskCode)}</TableCell>
+            <TableCell>{strings(stringKeys.healthRisk.list.name)}</TableCell>
+            <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.healthRisk.list.healthRiskType)}</TableCell>
+            <TableCell style={{ width: "25%" }} />
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {list.map(row => (
+            <TableRow key={row.id} hover onClick={() => goToEdition(row.id)} className={styles.clickableRow}>
+              <TableCell>{row.healthRiskCode}</TableCell>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{strings(stringKeys.healthRisk.constants.healthRiskType[row.healthRiskType.toLowerCase()])}</TableCell>
+              <TableCell>
+                <TableRowActions>
+                  <TableRowAction onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.healthRisk.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                </TableRowActions>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

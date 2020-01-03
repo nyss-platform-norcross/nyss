@@ -1,6 +1,10 @@
 .container {
   display: flex;
   margin: 10px 0;
+
+  @media screen and (max-width: 600px) {
+      flex-direction: column;
+  }
 }
 
 .key {
@@ -17,10 +21,29 @@
 
 .time {
   font-weight: bold;
+  align-self: center;
+
+  @media screen and (max-width: 600px) {
+    width: 100px;
+  }
+}
+
+.senderContainer {
+  display: flex;
+
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+    margin-left: 10px;
+  }
 }
 
 .senderLabel {
   margin: 0 10px;
+  white-space: nowrap;
+
+  @media screen and (max-width: 600px) {
+    margin: 0;
+  }
 }
 
 .sender {
@@ -29,6 +52,7 @@
 
 .indicator {
   margin-right: 10px;
+  align-self: center;
 }
 
 .accepted {

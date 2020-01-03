@@ -45,3 +45,10 @@
     background: rgba(0, 0, 0, 0.08);
   }
 }
+
+
+.drawer {
+  @media screen and (min-width: 600px) {
+    width: 260px;
+  }
+}

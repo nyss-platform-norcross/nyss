@@ -40,7 +40,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
         <Typography variant="h3">{healthRisk.healthRiskCode} - {healthRisk.healthRiskName}</Typography>
 
         <Grid container spacing={3}>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <TextInputField
               label={strings(stringKeys.project.form.caseDefinition)}
               name={`healthRisk_${healthRisk.healthRiskId}_caseDefinition`}
@@ -48,7 +48,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
               multiline
             />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <TextInputField
               label={strings(stringKeys.project.form.feedbackMessage)}
               name={`healthRisk_${healthRisk.healthRiskId}_feedbackMessage`}
@@ -62,21 +62,21 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
       <Grid item xs={12}>
         <Typography variant="h3">{strings(stringKeys.project.form.alertsSetion)}</Typography>
         <Grid container spacing={3}>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={4}>
             <TextInputField
               label={strings(stringKeys.project.form.alertRuleCountThreshold)}
               name={`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`}
               field={form.fields[`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`]}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={4}>
             <TextInputField
               label={strings(stringKeys.project.form.alertRuleDaysThreshold)}
               name={`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`}
               field={form.fields[`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`]}
             />
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} sm={4}>
             <TextInputField
               label={strings(stringKeys.project.form.alertRuleKilometersThreshold)}
               name={`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`}

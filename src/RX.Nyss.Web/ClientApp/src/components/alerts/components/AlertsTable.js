@@ -11,6 +11,7 @@ import { strings, stringKeys } from '../../../strings';
 import dayjs from "dayjs";
 import TablePager from '../../common/tablePagination/TablePager';
 import { TableNoData } from '../../common/table/TableNoData';
+import { TableContainer } from '../../common/table/TableContainer';
 
 export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, getList, page, rowsPerPage, totalRows }) => {
 
@@ -23,7 +24,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
   }
 
   return (
-    <div className={styles.tableContainer}>
+    <TableContainer>
       {isListFetching && <Loading absolute />}
       <Table>
         <TableHead>
@@ -48,7 +49,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
         </TableBody>
       </Table>
       <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />
-    </div>
+    </TableContainer>
   );
 }
 

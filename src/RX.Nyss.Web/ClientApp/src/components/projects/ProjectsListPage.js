@@ -7,9 +7,9 @@ import Layout from '../layout/Layout';
 import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
-import ProjectsList from './ProjectsList';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
+import ProjectsTable from './ProjectsTable';
 
 const ProjectsListPageComponent = (props) => {
   useMount(() => {
@@ -24,13 +24,10 @@ const ProjectsListPageComponent = (props) => {
         </Button>
       </TableActions>
 
-      <ProjectsList
+      <ProjectsTable
         list={props.list}
-        goToEdition={props.goToEdition}
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
-        isRemoving={props.isRemoving}
-        remove={props.remove}
         nationalSocietyId={props.nationalSocietyId}
       />
     </Fragment>

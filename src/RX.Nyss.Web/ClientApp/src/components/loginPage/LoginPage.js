@@ -53,14 +53,13 @@ class LoginPageComponent extends PureComponent {
         <Paper className={styles.loginPaper}>
           <div className={styles.loginPaperContent}>
             <Typography variant="h1" className={styles.paperHeader}>{strings(stringKeys.login.welcome)}</Typography>
-            <Typography variant="h2">{strings(stringKeys.login.title)}</Typography>
+            <Typography variant="h2" className={styles.loginHeader}>{strings(stringKeys.login.title)}</Typography>
 
             {this.props.loginResponse && <ValidationMessage message={this.props.loginResponse} />}
 
             <form onSubmit={this.handleSubmit}>
               <Grid container spacing={3}>
                 <Grid item xs={12}>
-
                   <TextInputField
                     label={strings(stringKeys.login.email)}
                     name="userName"

@@ -22,7 +22,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary }) => {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={3} className={styles.numberBox}>
+      <Grid item sm={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.numbers.totalReportCountTitle)} />
           <CardContent>
@@ -31,7 +31,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary }) => {
         </Card>
       </Grid>
 
-      <Grid item xs={3} className={styles.numberBox}>
+      <Grid item sm={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.dataCollectors)} />
           <CardContent>

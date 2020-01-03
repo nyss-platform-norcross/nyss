@@ -12,6 +12,8 @@ import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { stringKeys, strings } from '../../strings';
 import { accessMap } from '../../authentication/accessMap';
+import { TableContainer } from '../common/table/TableContainer';
+import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
 export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list }) => {
   if (isListFetching) {
@@ -19,31 +21,35 @@ export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEditio
   }
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>{strings(stringKeys.globalCoordinator.list.name)}</TableCell>
-          <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.globalCoordinator.list.email)}</TableCell>
-          <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.globalCoordinator.list.phoneNumber)}</TableCell>
-          <TableCell style={{ width: "16%" }}>{strings(stringKeys.globalCoordinator.list.organization)}</TableCell>
-          <TableCell style={{ width: "16%" }} />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {list.map(row => (
-          <TableRow key={row.id} hover onClick={() => goToEdition(row.id)} className={styles.clickableRow}>
-            <TableCell>{row.name}</TableCell>
-            <TableCell>{row.email}</TableCell>
-            <TableCell>{row.phoneNumber}</TableCell>
-            <TableCell>{row.organization}</TableCell>
-            <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction roles={accessMap.globalCoordinators.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction roles={accessMap.globalCoordinators.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.globalCoordinator.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
-            </TableCell>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>{strings(stringKeys.globalCoordinator.list.name)}</TableCell>
+            <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.globalCoordinator.list.email)}</TableCell>
+            <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.globalCoordinator.list.phoneNumber)}</TableCell>
+            <TableCell style={{ width: "16%" }}>{strings(stringKeys.globalCoordinator.list.organization)}</TableCell>
+            <TableCell style={{ width: "16%" }} />
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {list.map(row => (
+            <TableRow key={row.id} hover onClick={() => goToEdition(row.id)} className={styles.clickableRow}>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.email}</TableCell>
+              <TableCell>{row.phoneNumber}</TableCell>
+              <TableCell>{row.organization}</TableCell>
+              <TableCell>
+                <TableRowActions>
+                  <TableRowAction roles={accessMap.globalCoordinators.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction roles={accessMap.globalCoordinators.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.globalCoordinator.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                </TableRowActions>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 

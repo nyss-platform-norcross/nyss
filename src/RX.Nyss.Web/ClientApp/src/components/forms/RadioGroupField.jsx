@@ -4,12 +4,12 @@ import PropTypes from "prop-types";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import { createFieldComponent } from "./FieldBase";
-import { FormLabel } from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
 
 const RadioGroupInput = ({ error, name, label, value, horizontal, children, controlProps, customProps }) => {
     return (
         <div>
-          <FormLabel component="legend" className={styles.label}>{label}</FormLabel>
+          <InputLabel component="legend" className={styles.label} shrink>{label}</InputLabel>
           <RadioGroup
               aria-label={label}
               name={name}

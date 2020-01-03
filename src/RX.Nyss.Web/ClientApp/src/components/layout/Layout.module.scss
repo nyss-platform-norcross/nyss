@@ -4,7 +4,7 @@
     flex-direction: row;
 
     .sideMenu {
-        flex: 0;
+        flex: 0 1 auto;
         display: flex;
     }
 
@@ -18,8 +18,16 @@
         flex: 1;
         overflow-y: auto;
 
+          @media screen and (max-width: 600px) {
+            width: calc(100vw);
+          }
+
         .pageContent {
           padding: 20px 35px;
+
+          @media screen and (max-width: 600px) {
+              padding: 20px 20px;
+          }
         }
     }
 }

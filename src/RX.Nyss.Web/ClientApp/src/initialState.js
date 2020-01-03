@@ -11,6 +11,9 @@ export const initialState = {
       tabMenu: [],
       sideMenu: []
     },
+    mobile: {
+      sideMenuOpen: false
+    },
     message: null,
     moduleError: null,
     showStringsKeys: false,

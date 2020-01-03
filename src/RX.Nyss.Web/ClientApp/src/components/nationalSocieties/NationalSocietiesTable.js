@@ -13,6 +13,8 @@ import { TableRowAction } from '../common/tableRowAction/TableRowAction';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { accessMap } from '../../authentication/accessMap';
+import { TableContainer } from '../common/table/TableContainer';
+import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
 export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition, goToDashboard, remove, list }) => {
   if (isListFetching) {
@@ -20,33 +22,37 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
   }
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>{strings(stringKeys.nationalSociety.list.name)}</TableCell>
-          <TableCell style={{ width: "16%", minWidth: 100 }}>{strings(stringKeys.nationalSociety.list.country)}</TableCell>
-          <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.nationalSociety.list.startDate)}</TableCell>
-          <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.headManager)}</TableCell>
-          <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.technicalAdvisor)}</TableCell>
-          <TableCell style={{ width: "16%", minWidth: 75 }} />
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {list.map(row => (
-          <TableRow key={row.id} hover onClick={() => goToDashboard(row.id)} className={styles.clickableRow}>
-            <TableCell>{row.name}</TableCell>
-            <TableCell>{row.country}</TableCell>
-            <TableCell>{dayjs(row.startDate).format("YYYY-MM-DD")}</TableCell>
-            <TableCell>{row.headManagerName}</TableCell>
-            <TableCell>{row.technicalAdvisor}</TableCell>
-            <TableCell style={{ textAlign: "right", paddingTop: 0, paddingBottom: 0 }}>
-              <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-              <TableRowAction roles={accessMap.nationalSocieties.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
-            </TableCell>
+    <TableContainer>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>{strings(stringKeys.nationalSociety.list.name)}</TableCell>
+            <TableCell style={{ width: "16%", minWidth: 100 }}>{strings(stringKeys.nationalSociety.list.country)}</TableCell>
+            <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.nationalSociety.list.startDate)}</TableCell>
+            <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.headManager)}</TableCell>
+            <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.technicalAdvisor)}</TableCell>
+            <TableCell style={{ width: "16%", minWidth: 75 }} />
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHead>
+        <TableBody>
+          {list.map(row => (
+            <TableRow key={row.id} hover onClick={() => goToDashboard(row.id)} className={styles.clickableRow}>
+              <TableCell>{row.name}</TableCell>
+              <TableCell>{row.country}</TableCell>
+              <TableCell>{dayjs(row.startDate).format("YYYY-MM-DD")}</TableCell>
+              <TableCell>{row.headManagerName}</TableCell>
+              <TableCell>{row.technicalAdvisor}</TableCell>
+              <TableCell>
+                <TableRowActions>
+                  <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                  <TableRowAction roles={accessMap.nationalSocieties.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                </TableRowActions>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
