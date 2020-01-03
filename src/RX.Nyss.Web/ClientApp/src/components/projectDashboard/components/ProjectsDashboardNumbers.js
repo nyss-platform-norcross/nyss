@@ -40,6 +40,19 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary }) => {
           </CardContent>
         </Card>
       </Grid>
+
+      {projectSummary.dataCollectionPointSummary &&
+       <Grid item xs={3} className={styles.numberBox}>
+        <Card className={styles.card}>
+          <CardHeader title={strings(stringKeys.project.dashboard.dataCollectionPoints)} />
+          <CardContent>
+            {renderNumber(strings(stringKeys.project.dashboard.referredToHospitalCount), projectSummary.dataCollectionPointSummary.referredToHospitalCount)}
+            {renderNumber(strings(stringKeys.project.dashboard.fromOtherVillagesCount), projectSummary.dataCollectionPointSummary.fromOtherVillagesCount)}
+            {renderNumber(strings(stringKeys.project.dashboard.deathCount), projectSummary.dataCollectionPointSummary.deathCount)}
+          </CardContent>
+        </Card>
+      </Grid>
+      }
     </Grid>
   );
 }

@@ -40,6 +40,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var healthRiskReports = allReports
                 .FilterReportsByHealthRisk(filtersDto.HealthRiskId)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
+            var dataCollectionPointReports = healthRiskReports.Where(r => r.DataCollectionPointCase != null);
 
             return _nyssContext.Projects
                 .Where(ph => ph.Id == projectId)
@@ -50,7 +51,15 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                         .Where(r => r.DataCollector.Name != Anonymization.Text && r.DataCollector.DeletedAt == null)
                         .Select(r => r.DataCollector.Id)
                         .Distinct().Count(),
-                    InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, allReports, filtersDto)
+                    InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, allReports, filtersDto),
+                    DataCollectionPointSummary = (filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.DataCollectionPoint)
+                        ? new DataCollectionPointsSummaryResponse
+                        {
+                            FromOtherVillagesCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.FromOtherVillagesCount ?? 0),
+                            ReferredToHospitalCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.ReferredCount ?? 0),
+                            DeathCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.DeathCount ?? 0),
+                        }
+                        : null
                 })
                 .FirstOrDefaultAsync();
         }
@@ -97,7 +106,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             {
                 return new List<DataCollectionPointsReportsByDateDto>();
             }
-
 
             var reports = GetFilteredReports(projectId, filtersDto)
                 .Where(r => r.ReportType == ReportType.DataCollectionPoint);

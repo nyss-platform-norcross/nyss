@@ -53,16 +53,16 @@ export const ProjectsDashboardDataCollectionPointChart = ({ data }) => {
       name: strings(stringKeys.project.dashboard.dataCollectionPointReportsByDate.referredToHospitalCount, true),
       data: data.map(d => d.referredCount),
       color: "#078e5e"
+    },    
+    {
+      name: strings(stringKeys.project.dashboard.dataCollectionPointReportsByDate.fromOtherVillagesCount, true),
+      data: data.map(d => d.fromOtherVillagesCount),
+      color: "#00a0dc"
     },
     {
       name: strings(stringKeys.project.dashboard.dataCollectionPointReportsByDate.deathCount, true),
       data: data.map(d => d.deathCount),
       color: "#47c79a"
-    },
-    {
-      name: strings(stringKeys.project.dashboard.dataCollectionPointReportsByDate.fromOtherVillagesCount, true),
-      data: data.map(d => d.fromOtherVillagesCount),
-      color: "#00a0dc"
     }
   ];
 
