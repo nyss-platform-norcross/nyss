@@ -24,7 +24,9 @@ function* openProjectDashboard({ projectId }) {
         area: null,
         startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
         endDate: endDate.format('YYYY-MM-DD'),
-        groupingType: "Day"
+        groupingType: "Day",
+        isTraining: false,
+        reportsType: "all"
       };
 
     yield call(getProjectDashboardData, { projectId, filters: filters })
@@ -45,7 +47,8 @@ function* getProjectDashboardData({ projectId, filters }) {
       response.value.reportsGroupedByDate,
       response.value.reportsGroupedByFeaturesAndDate,
       response.value.reportsGroupedByFeatures,
-      response.value.reportsGroupedByLocation
+      response.value.reportsGroupedByLocation,
+      response.value.dataCollectionPointReportsGroupedByDate
     ));
   } catch (error) {
     yield put(actions.getDashboardData.failure(error.message));

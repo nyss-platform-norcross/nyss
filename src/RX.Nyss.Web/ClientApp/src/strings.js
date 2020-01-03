@@ -194,8 +194,12 @@ export const stringKeys = {
         healthRisk: "project.dashboard.filters.healthRisk",
         healthRiskAll: "project.dashboard.filters.healthRiskAll",
         reportsType: "project.dashboard.filters.reportsType",
-        mainReportsType: "project.dashboard.filters.mainReportsType",
-        trainingReportsType: "project.dashboard.filters.trainingReportsType",
+        allReportsType: "project.dashboard.filters.allReportsType",
+        dataCollectorReportsType: "project.dashboard.filters.dataCollectorReportsType",
+        dataCollectionPointReportsType: "project.dashboard.filters.dataCollectionPointReportsType",
+        trainingReportsListType: "project.dashboard.filters.trainingReportsListType",
+        notInTraining: "project.dashboard.filters.notInTraining",
+        inTraining: "project.dashboard.filters.inTraining"
       },
       allReportsChart: {
         title: "project.dashboard.allReportsChart.title",
@@ -218,10 +222,21 @@ export const stringKeys = {
         numberOfReports: "project.dashboard.reportsPerFeatureAndDate.numberOfReports",
         title: "project.dashboard.reportsPerFeatureAndDate.title"
       },
+      dataCollectionPointReportsByDate:{
+        referredToHospitalCount: "project.dashboard.dataCollectionPointReportsByDate.referredToHospitalCount",
+        deathCount: "project.dashboard.dataCollectionPointReportsByDate.deathCount",
+        fromOtherVillagesCount: "project.dashboard.dataCollectionPointReportsByDate.fromOtherVillagesCount",
+        numberOfReports: "project.dashboard.dataCollectionPointReportsByDate.numberOfReports",
+        title: "project.dashboard.dataCollectionPointReportsByDate.title"
+      },
       activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
       inactiveDataCollectorCount: "project.dashboard.inactiveDataCollectorCount",
+      referredToHospitalCount:"project.dashboard.referredToHospitalCount",
+      fromOtherVillagesCount:"project.dashboard.fromOtherVillagesCount",
+      deathCount:"project.dashboard.deathCount",
       startDate: "project.dashboard.startDate",
       dataCollectors: "project.dashboard.dataCollectors",
+      dataCollectionPoints: "project.dashboard.dataCollectionPoints",
       healthRisks: "project.dashboard.healthRisks",
       supervisors: "project.dashboard.supervisors",
       supervisorEmailAddress: "project.dashboard.supervisorEmailAddress",

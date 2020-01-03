@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using RX.Nyss.Web.Features.ProjectDashboard.Dto;
+using RX.Nyss.Web.Features.Project.Dto;
 
-namespace RX.Nyss.Web.Features.Project.Dto
+namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
     public class ProjectDashboardResponseDto
     {
@@ -14,5 +14,7 @@ namespace RX.Nyss.Web.Features.Project.Dto
         public ReportByFeaturesAndDateResponseDto ReportsGroupedByFeatures { get; set; }
 
         public IEnumerable<ProjectSummaryMapResponseDto> ReportsGroupedByLocation { get; set; }
+
+        public IEnumerable<DataCollectionPointsReportsByDateDto> DataCollectionPointReportsGroupedByDate { get; set; }
     }
 }
