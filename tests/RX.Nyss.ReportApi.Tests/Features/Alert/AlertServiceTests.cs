@@ -84,7 +84,10 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
         private const int AlertBrokenApart1Id = 3;
         private const int AlertBrokenApart2Id = 4;
-        
+
+        private readonly DataCollector _humanDataCollector;
+        private readonly DataCollector _dataCollectionPoint;
+
 
         public AlertServiceTests()
         {
@@ -94,6 +97,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _emailToSmsPublisherService = Substitute.For<IEmailToSmsPublisherService>();
             _config = Substitute.For<IConfig>();
             _alertService = new AlertService(_nyssContextMock, _reportLabelingServiceMock, _loggerAdapterMock, _emailToSmsPublisherService, _config);
+
+            _humanDataCollector = new DataCollector { DataCollectorType = DataCollectorType.Human };
+            _dataCollectionPoint = new DataCollector { DataCollectorType = DataCollectorType.CollectionPoint };
 
             var alertRules = new List<AlertRule>
             {
@@ -116,38 +122,38 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
             var reports = new List<Report>
             {
-                new Report{ Id = AddedReportWithThreshold1Id, ReportGroupLabel = _labelNotInAnyGroup1, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[0]},
-                new Report{ Id = AddedReportWithThreshold2Id, ReportGroupLabel = _labelNotInAnyGroup2, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ExistingReportWithNoAlertId1, ReportGroupLabel = _labelForGroup1, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ExistingReportWithNoAlertId2, ReportGroupLabel = _labelForGroup2, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ExistingReportWithNoAlertId3, ReportGroupLabel = _labelForGroup2, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ExistingReportWithAlertId1, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ExistingReportWithAlertId2, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ExistingReportWithAlertId3, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ExistingReportWithAlertWithCountThreshold1Id, ReportGroupLabel = _labelForSingleReportGroup, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[0]},
+                new Report{ Id = AddedReportWithThreshold1Id, ReportGroupLabel = _labelNotInAnyGroup1, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[0], DataCollector = _humanDataCollector},
+                new Report{ Id = AddedReportWithThreshold2Id, ReportGroupLabel = _labelNotInAnyGroup2, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ExistingReportWithNoAlertId1, ReportGroupLabel = _labelForGroup1, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ExistingReportWithNoAlertId2, ReportGroupLabel = _labelForGroup2, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ExistingReportWithNoAlertId3, ReportGroupLabel = _labelForGroup2, Status = ReportStatus.New , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ExistingReportWithAlertId1, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ExistingReportWithAlertId2, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ExistingReportWithAlertId3, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ExistingReportWithAlertWithCountThreshold1Id, ReportGroupLabel = _labelForSingleReportGroup, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[0], DataCollector = _humanDataCollector},
             };
 
             var reportsInAlertBrokenApart1 = new List<Report>
             {
-                new Report{ Id = ReportInAlert1BrokenApartId1, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Accepted , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert1BrokenApartId2, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert1BrokenApartId3, ReportGroupLabel = _labelFromAlertBrokenApart2, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert1BrokenApartId4, ReportGroupLabel = _labelFromAlertBrokenApart2, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert1BrokenApartId5, ReportGroupLabel = _labelFromAlertBrokenApart3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert1BrokenApartId6, ReportGroupLabel = _labelFromAlertBrokenApart3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = DismissedReportInAlert1BrokenApartId, ReportGroupLabel = _labelFromAlertBrokenApart3, Status = ReportStatus.Rejected , ProjectHealthRisk = projectHealthRisks[1]},
+                new Report{ Id = ReportInAlert1BrokenApartId1, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Accepted , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert1BrokenApartId2, ReportGroupLabel = _labelForGroup3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert1BrokenApartId3, ReportGroupLabel = _labelFromAlertBrokenApart2, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert1BrokenApartId4, ReportGroupLabel = _labelFromAlertBrokenApart2, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert1BrokenApartId5, ReportGroupLabel = _labelFromAlertBrokenApart3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert1BrokenApartId6, ReportGroupLabel = _labelFromAlertBrokenApart3, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = DismissedReportInAlert1BrokenApartId, ReportGroupLabel = _labelFromAlertBrokenApart3, Status = ReportStatus.Rejected , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
             };
 
             var reportsInAlertBrokenApart2 = new List<Report>
             {
-                new Report{ Id = ReportInAlert2BrokenApartId1, ReportGroupLabel = _labelFromAlertBrokenApart4, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert2BrokenApartId2, ReportGroupLabel = _labelFromAlertBrokenApart4, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert2BrokenApartId3, ReportGroupLabel = _labelFromAlertBrokenApart4, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert2BrokenApartId4, ReportGroupLabel = _labelFromAlertBrokenApart5, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert2BrokenApartId5, ReportGroupLabel = _labelFromAlertBrokenApart5, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert2BrokenApartId6, ReportGroupLabel = _labelFromAlertBrokenApart6, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = ReportInAlert2BrokenApartId7, ReportGroupLabel = _labelFromAlertBrokenApart6, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1]},
-                new Report{ Id = DismissedReportInAlert2BrokenApartId, ReportGroupLabel = _labelFromAlertBrokenApart6, Status = ReportStatus.Rejected , ProjectHealthRisk = projectHealthRisks[1]},
+                new Report{ Id = ReportInAlert2BrokenApartId1, ReportGroupLabel = _labelFromAlertBrokenApart4, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert2BrokenApartId2, ReportGroupLabel = _labelFromAlertBrokenApart4, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert2BrokenApartId3, ReportGroupLabel = _labelFromAlertBrokenApart4, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert2BrokenApartId4, ReportGroupLabel = _labelFromAlertBrokenApart5, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert2BrokenApartId5, ReportGroupLabel = _labelFromAlertBrokenApart5, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert2BrokenApartId6, ReportGroupLabel = _labelFromAlertBrokenApart6, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = ReportInAlert2BrokenApartId7, ReportGroupLabel = _labelFromAlertBrokenApart6, Status = ReportStatus.Pending , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
+                new Report{ Id = DismissedReportInAlert2BrokenApartId, ReportGroupLabel = _labelFromAlertBrokenApart6, Status = ReportStatus.Rejected , ProjectHealthRisk = projectHealthRisks[1], DataCollector = _humanDataCollector},
             };
 
             reports.AddRange(reportsInAlertBrokenApart1);
@@ -228,7 +234,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenReportTypeIsNotSingleOrNonHuman_ShouldReturnNull(ReportType reportType)
         {
             //arrange
-            var report = new Report { ReportType = reportType };
+            var report = new Report { ReportType = reportType, DataCollector = _humanDataCollector };
 
             //act
             var result = await _alertService.ReportAdded(report);
@@ -237,11 +243,26 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             result.ShouldBeNull();
         }
 
+        [Theory]
+        [InlineData(ReportType.Single)]
+        [InlineData(ReportType.NonHuman)]
+        public async Task ReportAdded_WhenReportTypeIsNonHumanAndFromDataCollectionPoint_ShouldReturnNull(ReportType reportType)
+        {
+            // arrange
+            var report = new Report { ReportType = reportType, DataCollector = _dataCollectionPoint };
+
+            // act
+            var result = await _alertService.ReportAdded(report);
+
+            // assert
+            result.ShouldBeNull();
+        }
+
         [Fact]
         public async Task ReportAdded_WhenSingleReportDoesNotHaveAProjectHealthRisk_ShouldThrow()
         {
             //arrange
-            var report = new Report { ReportType = ReportType.Single };
+            var report = new Report { ReportType = ReportType.Single, DataCollector = _humanDataCollector };
 
             //assert
             await Should.ThrowAsync<System.Reflection.TargetInvocationException>(() => _alertService.ReportAdded(report));
@@ -506,7 +527,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             //arrange
             var reportId = ExistingReportWithAlertWithCountThreshold1Id;
-            
+
             //act
             await _alertService.ReportDismissed(reportId);
 
@@ -570,7 +591,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
                 .Where(ar => ar.Report.ReportGroupLabel == _labelForGroup3)
                 .Select(ar => ar.Report)
                 .ToList();
-            
+
             //act
             await _alertService.ReportDismissed(reportId);
 
