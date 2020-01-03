@@ -243,11 +243,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             result.ShouldBeNull();
         }
 
-        [Fact]
-        public async Task ReportAdded_WhenReportTypeIsNonHumanAndFromDataCollectionPoint_ShouldReturnNull()
+        [Theory]
+        [InlineData(ReportType.Single)]
+        [InlineData(ReportType.NonHuman)]
+        public async Task ReportAdded_WhenReportTypeIsNonHumanAndFromDataCollectionPoint_ShouldReturnNull(ReportType reportType)
         {
             // arrange
-            var report = new Report { ReportType = ReportType.NonHuman, DataCollector = _dataCollectionPoint };
+            var report = new Report { ReportType = reportType, DataCollector = _dataCollectionPoint };
 
             // act
             var result = await _alertService.ReportAdded(report);
