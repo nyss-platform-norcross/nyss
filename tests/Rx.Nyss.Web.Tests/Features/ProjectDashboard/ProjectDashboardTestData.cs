@@ -230,7 +230,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 r.IsTraining = r.DataCollector.IsInTrainingMode;
                 r.Zone = r.DataCollector.Zone;
                 r.Village = r.DataCollector.Village;
-                r.CreatedAt = BaseDate.AddDays(r.Id);
+                r.CreatedAt = BaseDate.AddDays(r.Id - 1);
                 r.ReceivedAt = r.CreatedAt;
                 r.EpiWeek = _dateTimeProvider.GetEpiWeek(r.CreatedAt);
                 r.ProjectHealthRisk = ProjectHealthRisks[ (((r.Id-1) % 3) == 0) ? 0 : 1];

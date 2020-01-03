@@ -421,7 +421,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     public static class DataCollectorQueryableExtensions
     {
         public static IQueryable<Nyss.Data.Models.Report> FilterReportsByDate(this IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate) =>
-            reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt<endDate);
+            reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 
         public static IQueryable<Nyss.Data.Models.Report> FilterReportsByProject(this IQueryable<Nyss.Data.Models.Report> reports, int projectId) =>
             reports.Where(r => r.DataCollector.Project.Id == projectId);

@@ -86,8 +86,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(1, true, 3, 3, 1)]
-        [InlineData(1, false, 8, 8, 4)]
+        [InlineData(1, true, 3, 4, 0)]
+        [InlineData(1, false, 8, 12, 0)]
         [InlineData(2, true, 5, 4, 0)]
         [InlineData(2, false, 16, 12, 0)]
         public async Task GetSummaryData_FilterReportsOnHealthRisks_ShouldReturnCorrectNumbers(int healthRiskId, bool isTraining, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
@@ -114,10 +114,10 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(1, false, 12, 6, 6)]
-        [InlineData(2, false, 12, 6, 6)]
-        [InlineData(1, true, 4, 2, 2)]
-        [InlineData(2, true, 4, 2, 2)]
+        [InlineData(1, false, 12, 6, 0)]
+        [InlineData(2, false, 12, 6, 0)]
+        [InlineData(1, true, 4, 2, 0)]
+        [InlineData(2, true, 4, 2, 0)]
         public async Task GetSummaryData_FilterReportsOnRegion_ShouldReturnCorrectNumbers(int regionId, bool isTraining, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
         {
             //arrange
@@ -126,7 +126,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 StartDate = new DateTime(2000, 01, 01),
                 EndDate = new DateTime(2100, 01, 01),
                 HealthRiskId = null,
-                Area = new FiltersRequestDto.AreaDto { Id = 1, Type = FiltersRequestDto.AreaTypeDto.Region },
+                Area = new FiltersRequestDto.AreaDto { Id = regionId, Type = FiltersRequestDto.AreaTypeDto.Region },
                 IsTraining = isTraining,
                 GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
                 ReportsType = FiltersRequestDto.ReportsTypeDto.All
@@ -139,6 +139,259 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+        }
+
+        [Theory]
+        [InlineData(1, false, 4, 2, 0)]
+        [InlineData(2, false, 8, 4, 0)]
+        [InlineData(3, false, 4, 2, 0)]
+        [InlineData(4, false, 8, 4, 0)]
+        [InlineData(1, true, 4, 2, 0)]
+        [InlineData(2, true, 0, 0, 0)]
+        [InlineData(3, true, 4, 2, 0)]
+        [InlineData(4, true, 0, 0, 0)]
+        public async Task GetSummaryData_FilterReportsOnDistrict_ShouldReturnCorrectNumbers(int districtId, bool isTraining, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = new DateTime(2000, 01, 01),
+                EndDate = new DateTime(2100, 01, 01),
+                HealthRiskId = null,
+                Area = new FiltersRequestDto.AreaDto { Id = districtId, Type = FiltersRequestDto.AreaTypeDto.District },
+                IsTraining = isTraining,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.All
+            };
+
+            //act
+            var summaryData = await _projectDashboardDataService.GetSummaryData(_testData.ProjectId, filters);
+
+            //assert
+            summaryData.ReportCount.ShouldBe(expectedReportsCount);
+            summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
+            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+        }
+
+
+        [Theory]
+        [InlineData(1, 4, 2, 0)]
+        [InlineData(2, 0, 0, 0)]
+        [InlineData(3, 0, 0, 0)]
+        [InlineData(4, 0, 0, 0)]
+        [InlineData(5, 0, 0, 0)]
+        [InlineData(6, 4, 2, 0)]
+        [InlineData(7, 0, 0, 0)]
+        [InlineData(8, 0, 0, 0)]
+        public async Task GetSummaryData_FilterMainReportsOnVillage_ShouldReturnCorrectNumbers(int villageId, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = new DateTime(2000, 01, 01),
+                EndDate = new DateTime(2100, 01, 01),
+                HealthRiskId = null,
+                Area = new FiltersRequestDto.AreaDto { Id = villageId, Type = FiltersRequestDto.AreaTypeDto.Village },
+                IsTraining = true,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.All
+            };
+
+            //act
+            var summaryData = await _projectDashboardDataService.GetSummaryData(_testData.ProjectId, filters);
+
+            //assert
+            summaryData.ReportCount.ShouldBe(expectedReportsCount);
+            summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
+            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+        }
+
+
+        [Theory]
+        [InlineData(1, 2, 1, 0)]
+        [InlineData(2, 2, 1, 0)]
+        [InlineData(3, 0, 0, 0)]
+        [InlineData(4, 0, 0, 0)]
+        [InlineData(5, 0, 0, 0)]
+        [InlineData(6, 0, 0, 0)]
+        [InlineData(7, 0, 0, 0)]
+        [InlineData(8, 0, 0, 0)]
+        [InlineData(9, 0, 0, 0)]
+        [InlineData(10, 0, 0, 0)]
+        [InlineData(11, 2, 1, 0)]
+        [InlineData(12, 2, 1, 0)]
+        [InlineData(13, 0, 0, 0)]
+        [InlineData(14, 0, 0, 0)]
+        [InlineData(15, 0, 0, 0)]
+        [InlineData(16, 0, 0, 0)]
+        public async Task GetSummaryData_FilterTrainingReportsOnZone_ShouldReturnCorrectNumbers(int zoneId, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = new DateTime(2000, 01, 01),
+                EndDate = new DateTime(2100, 01, 01),
+                HealthRiskId = null,
+                Area = new FiltersRequestDto.AreaDto { Id = zoneId, Type = FiltersRequestDto.AreaTypeDto.Zone },
+                IsTraining = true,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.All
+            };
+
+            //act
+            var summaryData = await _projectDashboardDataService.GetSummaryData(_testData.ProjectId, filters);
+
+            //assert
+            summaryData.ReportCount.ShouldBe(expectedReportsCount);
+            summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
+            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+        }
+
+
+        [Theory]
+        [InlineData(1, 0, 0, 0)]
+        [InlineData(2, 0, 0, 0)]
+        [InlineData(3, 2, 1, 0)]
+        [InlineData(4, 2, 1, 0)]
+        [InlineData(5, 2, 1, 0)]
+        [InlineData(6, 2, 1, 0)]
+        [InlineData(7, 2, 1, 0)]
+        [InlineData(8, 2, 1, 0)]
+        [InlineData(9, 2, 1, 0)]
+        [InlineData(10, 2, 1, 0)]
+        [InlineData(11, 0, 0, 0)]
+        [InlineData(12, 0, 0, 0)]
+        [InlineData(13, 2, 1, 0)]
+        [InlineData(14, 2, 1, 0)]
+        [InlineData(15, 2, 1, 0)]
+        [InlineData(16, 2, 1, 0)]
+        public async Task GetSummaryData_FilterMainReportsOnZone_ShouldReturnCorrectNumbers(int zoneId, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = new DateTime(2000, 01, 01),
+                EndDate = new DateTime(2100, 01, 01),
+                HealthRiskId = null,
+                Area = new FiltersRequestDto.AreaDto { Id = zoneId, Type = FiltersRequestDto.AreaTypeDto.Zone },
+                IsTraining = false,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.All
+            };
+
+            //act
+            var summaryData = await _projectDashboardDataService.GetSummaryData(_testData.ProjectId, filters);
+
+            //assert
+            summaryData.ReportCount.ShouldBe(expectedReportsCount);
+            summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
+            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+        }
+
+
+        [Theory]
+        [InlineData("2019-01-01","2019-01-05", 1, 1, 11)]
+        [InlineData("2019-01-01","2019-01-10", 6, 3, 9)]
+        [InlineData("2019-01-07","2019-12-31", 22, 11, 1)]
+        public async Task GetSummaryData_FilterMainReportsByDate_ShouldReturnCorrectNumbers(string startDate, string endDate, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = DateTime.Parse(startDate),
+                EndDate = DateTime.Parse(endDate),
+                HealthRiskId = null,
+                Area = null,
+                IsTraining = false,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.All
+            };
+
+            //act
+            var summaryData = await _projectDashboardDataService.GetSummaryData(_testData.ProjectId, filters);
+
+            //assert
+            summaryData.ReportCount.ShouldBe(expectedReportsCount);
+            summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
+            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+        }
+
+        [Theory]
+        [InlineData("2019-01-01", "2019-01-05", 4, 2, 2)]
+        [InlineData("2019-01-01", "2019-01-21", 5, 3, 1)]
+        [InlineData("2019-01-21", "2019-01-21", 1, 1, 3)]
+        public async Task GetSummaryData_FilterTrainingReportsByDate_ShouldReturnCorrectNumbers(string startDate, string endDate, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = DateTime.Parse(startDate),
+                EndDate = DateTime.Parse(endDate),
+                HealthRiskId = null,
+                Area = null,
+                IsTraining = true,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.All
+            };
+
+            //act
+            var summaryData = await _projectDashboardDataService.GetSummaryData(_testData.ProjectId, filters);
+
+            //assert
+            summaryData.ReportCount.ShouldBe(expectedReportsCount);
+            summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
+            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+        }
+
+        [Theory]
+        [InlineData(FiltersRequestDto.ReportsTypeDto.All)]
+        [InlineData(FiltersRequestDto.ReportsTypeDto.DataCollector)]
+        public async Task GetDataCollectionPointReports_WhenReportTypeIsNotDataCollectionPoint_ShouldReturnEmptyList(FiltersRequestDto.ReportsTypeDto reportsTypeFilter)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = new DateTime(2000, 01, 01),
+                EndDate = new DateTime(2100, 01, 01),
+                HealthRiskId = null,
+                Area = null,
+                IsTraining = false,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = reportsTypeFilter
+            };
+
+            //act
+            var result = await _projectDashboardDataService.GetDataCollectionPointReports(_testData.ProjectId, filters);
+
+            //assert
+            result.Count.ShouldBe(0);
+        }
+
+        [Theory]
+        [InlineData("2019-01-01", "2019-01-05", 0)]
+        [InlineData("2019-01-25", "2019-01-25", 1)]
+        [InlineData("2019-01-25", "2019-01-28", 4)]
+        [InlineData("2019-01-25", "2019-12-31", 8)]
+        public async Task GetDataCollectionPointReports_WhenFilteringDataCollectionPointsByDate_ShouldReturnCorrectNumberOfDataCollectionPointReports(string startDate, string endDate, int expectedCount)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = DateTime.Parse(startDate),
+                EndDate = DateTime.Parse(endDate),
+                HealthRiskId = null,
+                Area = null,
+                IsTraining = false,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.DataCollectionPoint
+            };
+
+            //act
+            var result = await _projectDashboardDataService.GetDataCollectionPointReports(_testData.ProjectId, filters);
+
+            //assert
+            result.Count(r => r.FromOtherVillagesCount!= 0 || r.DeathCount != 0 || r.ReferredCount != 0)
+                .ShouldBe(expectedCount);
         }
     }
 }
