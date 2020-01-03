@@ -57,11 +57,9 @@ const ReportsListPageComponent = (props) => {
       
       <Grid item xs={12}>
 
-      <TableActions>              
-          <Button variant="outlined" color="primary">
-            <Link href={`/api/report/exportToExcel?projectId=${props.projectId}&reportListType=${props.reportListFilter.reportListType}`} color="inherit">
-              {strings(stringKeys.reports.list.exportToExcel)}
-            </Link>  
+      <TableActions>          
+          <Button onClick={() => props.exportToExcel(props.projectId, props.reportListFilter)} variant="outlined" color="primary">
+            {strings(stringKeys.reports.list.exportToExcel)}
           </Button>
       </TableActions>
 
@@ -128,7 +126,8 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   openReportsList: reportsActions.openList.invoke,
-  getList: reportsActions.getList.invoke
+  getList: reportsActions.getList.invoke,
+  exportToExcel: reportsActions.exportToExcel.invoke,
 };
 
 export const ReportsListPage = useLayout(
