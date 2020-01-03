@@ -1,5 +1,4 @@
 import styles from "./ProjectsDashboardFilters.module.scss";
-
 import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import TextField from "@material-ui/core/TextField";
@@ -9,7 +8,10 @@ import CardContent from '@material-ui/core/CardContent';
 import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
-import { InputLabel, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
+import InputLabel from "@material-ui/core/InputLabel";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Radio from "@material-ui/core/Radio";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, onChange }) => {
   const [value, setValue] = useState(filters);

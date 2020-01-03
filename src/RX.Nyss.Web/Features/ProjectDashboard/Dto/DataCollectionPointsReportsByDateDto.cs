@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.Project.Dto
+﻿namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
     public class DataCollectionPointsReportsByDateDto
     {
