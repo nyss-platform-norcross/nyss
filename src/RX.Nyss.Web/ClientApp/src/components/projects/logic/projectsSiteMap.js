@@ -36,7 +36,7 @@ export const projectsSiteMap = [
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
     path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/overview",
     title: () => strings(stringKeys.project.settings),
-    access: accessMap.projects.get,
+    access: accessMap.projects.showOverview,
     placeholder: placeholders.leftMenu,
     placeholderIndex: projectLeftMenuOrder.settings
   },
