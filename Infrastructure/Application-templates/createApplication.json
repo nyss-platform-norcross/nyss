@@ -187,7 +187,7 @@
         },
         {
           "type": "slots",
-          "name": "Staging",
+          "name": "staging",
           "apiVersion": "2018-11-01",
           "location": "[variables('location')]",
           "dependsOn": [
@@ -226,58 +226,19 @@
     },
     {
       "type": "Microsoft.Web/sites",
-      "apiVersion": "2018-02-01",
+      "apiVersion": "2018-11-01",
       "name": "[variables('webAppName')]",
       "location": "[variables('location')]",
       "dependsOn": [
         "[concat('microsoft.insights/components/', variables('webAppName'))]",
         "[concat('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName'))]",
-        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]",
-        "[resourceId('Microsoft.Web/sites/slots', variables('webAppName'), 'staging')]"
+        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
       ],
       "tags": "[parameters('tagValues')]",
       "properties": {
         "name": "[variables('webAppName')]",
         "siteConfig": {
-          "appSettings": [
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('microsoft.insights/components/', variables('webAppName')), '2015-05-01').InstrumentationKey]"
-            },
-            {
-              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-              "value": "~2"
-            },
-            {
-              "name": "XDT_MicrosoftApplicationInsights_Mode",
-              "value": "default"
-            },
-            {
-              "name": "DiagnosticServices_EXTENSION_VERSION",
-              "value": "disabled"
-            },
-            {
-              "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
-              "value": "disabled"
-            },
-            {
-              "name": "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
-              "value": "disabled"
-            },
-            {
-              "name": "InstrumentationEngine_EXTENSION_VERSION",
-              "value": "disabled"
-            },
-            {
-              "name": "SnapshotDebugger_EXTENSION_VERSION",
-              "value": "disabled"
-            },
-            {
-              "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
-              "value": "disabled"
-            }
-          ],
           "metadata": [
             {
               "name": "CURRENT_STACK",
@@ -290,20 +251,44 @@
         "hostingEnvironment": "[parameters('hostingEnvironment')]",
         "clientAffinityEnabled": true,
         "httpsOnly": true
-      }
-    },
-    {
-      "type": "Microsoft.Web/sites/slots",
-      "name": "[concat(variables('webAppName'), '/staging')]",
-      "apiVersion": "2018-11-01",
-      "location": "[variables('location')]",
-      "tags": "[parameters('tagValues')]",
-      "properties": {
-        "siteConfig": {
-          "autoSwapSlotName": "production",
-          "WEBSITE_SWAP_WARMUP_PING_STATUSES": "200"
+      },
+      "resources": [
+        {
+          "apiVersion": "2018-11-01",
+          "name": "appsettings",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
+          ],
+          "properties": {
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('webAppName')), '2015-05-01').InstrumentationKey]",
+            "ApplicationInsightsAgent_EXTENSION_VERSION": "~2",
+            "XDT_MicrosoftApplicationInsights_Mode": "default",
+            "DiagnosticServices_EXTENSION_VERSION": "disabled",
+            "APPINSIGHTS_PROFILERFEATURE_VERSION": "disabled",
+            "APPINSIGHTS_SNAPSHOTFEATURE_VERSION": "disabled",
+            "InstrumentationEngine_EXTENSION_VERSION": "disabled",
+            "SnapshotDebugger_EXTENSION_VERSION": "disabled",
+            "XDT_MicrosoftApplicationInsights_BaseExtensions": "disabled"
+          }
+        },
+        {
+          "type": "slots",
+          "name": "staging",
+          "apiVersion": "2018-11-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
+          ],
+          "location": "[variables('location')]",
+          "tags": "[parameters('tagValues')]",
+          "properties": {
+            "siteConfig": {
+              "autoSwapSlotName": "production",
+              "WEBSITE_SWAP_WARMUP_PING_STATUSES": "200"
+            }
+          }
         }
-      }
+      ]
     },
     {
       "name": "[variables('reportApiWebAppName')]",
@@ -332,20 +317,24 @@
               "description": "Isolate traffic to only coming from subnet"
             }
           ],
-          "alwaysOn": "[parameters('alwaysOn')]",
-          "appSettings": [
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('microsoft.insights/components/', variables('reportApiWebAppName')), '2015-05-01').InstrumentationKey]"
-            },
-            {
-              "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-              "value": "~2"
-            }
-          ]
+          "alwaysOn": "[parameters('alwaysOn')]"
         },
         "httpsOnly": true
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2018-11-01",
+          "name": "appsettings",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', variables('reportApiWebAppName'))]"
+          ],
+          "properties": {
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('reportApiWebAppName')), '2015-05-01').InstrumentationKey]",
+            "ApplicationInsightsAgent_EXTENSION_VERSION": "~2"
+          }
+        }
+      ]
     },
     {
       "type": "Microsoft.Web/sites",
@@ -366,63 +355,35 @@
         "httpsOnly": true,
         "redundancyMode": "None",
         "siteConfig": {
-          "appSettings": [
-            {
-              "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
-            },
-            {
-              "name": "AzureWebJobsDashboard",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
-            },
-            {
-              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-              "value": "[reference(concat('microsoft.insights/components/', variables('reportFuncAppName')), '2015-05-01').InstrumentationKey]"
-            },
-            {
-              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
-            },
-            {
-              "name": "WEBSITE_CONTENTSHARE",
-              "value": "[concat(toLower(variables('reportFuncAppName')),uniqueString(variables('reportFuncAppName')))]"
-            },
-            {
-              "name": "WEBSITE_TIME_ZONE",
-              "value": "W. Europe Standard Time"
-            },
-            {
-              "name": "FUNCTIONS_EXTENSION_VERSION",
-              "value": "~3"
-            },
-            {
-              "name": "FUNCTIONS_WORKER_RUNTIME",
-              "value": "dotnet"
-            },
-            {
-              "name": "SERVICEBUS_CONNECTIONSTRING",
-              "value": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]"
-            },
-            {
-              "name": "SERVICEBUS_REPORTQUEUE",
-              "value": "[variables('reportQueueName')]"
-            },
-            {
-              "name": "SERVICEBUS_SENDEMAILQUEUE",
-              "value": "[variables('sendEmailQueueName')]"
-            },
-            {
-              "name": "SERVICEBUS_REPORTDISMISSALQUEUE",
-              "value": "[variables('reportDismissalQueue')]"
-            }
-          ],
           "alwaysOn": "[parameters('alwaysOn')]"
         }
       },
       "resources": [
         {
           "type": "config",
-          "apiVersion": "2018-02-01",
+          "apiVersion": "2018-11-01",
+          "name": "appsettings",
+          "dependsOn": [
+            "[concat('Microsoft.Web/sites/', variables('reportFuncAppName'))]"
+          ],
+          "properties": {
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('reportFuncAppName')), '2015-05-01').InstrumentationKey]",
+            "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "WEBSITE_CONTENTSHARE": "[concat(toLower(variables('reportFuncAppName')),uniqueString(variables('reportFuncAppName')))]",
+            "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
+            "FUNCTIONS_EXTENSION_VERSION": "~3",
+            "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+            "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]",
+            "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
+            "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
+            "SERVICEBUS_REPORTDISMISSALQUEUE": "[variables('reportDismissalQueue')]"
+          }
+        },
+        {
+          "type": "networkConfig",
+          "apiVersion": "2018-11-01",
           "name": "virtualNetwork",
           "location": "[variables('location')]",
           "dependsOn": [
