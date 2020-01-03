@@ -100,16 +100,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var alertRule = report.ProjectHealthRisk.AlertRule;
 
-
-            if (alertRule.CountThreshold == 1)
-            {
-                inspectedAlert.Status = AlertStatus.Rejected;
-            }
-            else
-            {
-                await RecalculateAlert(report, alertRule);
-                await RejectAlertWhenRequirementsAreNotMet(reportId, alertRule, inspectedAlert);
-            }
+            await RecalculateAlert(report, alertRule);
+            await RejectAlertWhenRequirementsAreNotMet(reportId, alertRule, inspectedAlert);
 
             await _nyssContext.SaveChangesAsync();
             transactionScope.Complete();
@@ -175,7 +167,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated || ra.Alert.Status == AlertStatus.Closed)
                               || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore) )
                     .ToListAsync();
-                
+
                 await AddReportsToAlert(existingActiveAlertForLabel, reportsInLabelWithNoActiveAlert);
             }
 
