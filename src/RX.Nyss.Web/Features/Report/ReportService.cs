@@ -108,6 +108,7 @@ namespace RX.Nyss.Web.Features.Report
                     PhoneNumber = r.Sender,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
+                    CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
                     CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
