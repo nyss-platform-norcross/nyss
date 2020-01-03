@@ -127,8 +127,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         triggeredAlert = await _alertService.ReportAdded(report);
                     }
 
-                await _nyssContext.SaveChangesAsync();
-                transactionScope.Complete();
+                    await _nyssContext.SaveChangesAsync();
+                    transactionScope.Complete();
                 }
 
                 if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
@@ -271,38 +271,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             if (projectHealthRisk == null)
             {
                 throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.");
-            }
-
-            if (parsedReport.ReportType == ReportType.Aggregate &&
-                parsedReport.ReportedCase.CountMalesBelowFive == 0 &&
-                parsedReport.ReportedCase.CountMalesAtLeastFive == 0 &&
-                parsedReport.ReportedCase.CountFemalesBelowFive == 0 &&
-                parsedReport.ReportedCase.CountFemalesAtLeastFive == 0)
-            {
-                throw new ReportValidationException("At least one number in aggregated report must be greater than 0 " +
-                                    $"(males below five: {parsedReport.ReportedCase.CountMalesBelowFive}, " +
-                                    $"males at least five: {parsedReport.ReportedCase.CountMalesAtLeastFive}, " +
-                                    $"females below five: {parsedReport.ReportedCase.CountFemalesBelowFive}, " +
-                                    $"females at least five: {parsedReport.ReportedCase.CountFemalesAtLeastFive}).");
-            }
-
-            if (parsedReport.ReportType == ReportType.DataCollectionPoint &&
-                parsedReport.ReportedCase.CountMalesBelowFive == 0 &&
-                parsedReport.ReportedCase.CountMalesAtLeastFive == 0 &&
-                parsedReport.ReportedCase.CountFemalesBelowFive == 0 &&
-                parsedReport.ReportedCase.CountFemalesAtLeastFive == 0 &&
-                parsedReport.DataCollectionPointCase.ReferredCount == 0 &&
-                parsedReport.DataCollectionPointCase.DeathCount == 0 &&
-                parsedReport.DataCollectionPointCase.FromOtherVillagesCount == 0)
-            {
-                throw new ReportValidationException("At least one number in data collection point report must be greater than 0 " +
-                                                    $"(males below five: {parsedReport.ReportedCase.CountMalesBelowFive}, " +
-                                                    $"males at least five: {parsedReport.ReportedCase.CountMalesAtLeastFive}, " +
-                                                    $"females below five: {parsedReport.ReportedCase.CountFemalesBelowFive}, " +
-                                                    $"females at least five: {parsedReport.ReportedCase.CountFemalesAtLeastFive}, " +
-                                                    $"referred to a health facility: {parsedReport.DataCollectionPointCase.ReferredCount}, " +
-                                                    $"died in the ORP: {parsedReport.DataCollectionPointCase.DeathCount}, " +
-                                                    $"came from other villages: {parsedReport.DataCollectionPointCase.FromOtherVillagesCount})");
             }
 
             switch (parsedReport.ReportType)
