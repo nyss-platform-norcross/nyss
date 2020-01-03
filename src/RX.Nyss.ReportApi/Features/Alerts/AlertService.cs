@@ -41,7 +41,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         public async Task<Alert> ReportAdded(Report report)
         {
-            if (report.ReportType != ReportType.Single && report.ReportType != ReportType.NonHuman)
+            if (report.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint || (report.ReportType != ReportType.Single && report.ReportType != ReportType.NonHuman))
             {
                 return null;
             }
