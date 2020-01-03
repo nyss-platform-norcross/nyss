@@ -312,7 +312,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _config.PaginationRowsPerPage.Returns(9999);
 
             //act
-            var result = await _reportService.List(1, 1, new ListFilterRequestDto());
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto());
 
             //assert
             result.Value.Data.ShouldAllBe(x => _reportIdsFromProject1.Contains(x.Id));
@@ -325,7 +325,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _config.PaginationRowsPerPage.Returns(13);
 
             //act
-            var result = await _reportService.List(1, 1, new ListFilterRequestDto());
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto());
 
             //assert
             result.Value.Data.Count().ShouldBe(13);
@@ -335,7 +335,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenSelectedLastPageThatHasLessRows_ShouldReturnLessRows()
         {
             //act
-            var result = await _reportService.List(1, 2, new ListFilterRequestDto());
+            var result = await _reportService.List(1, 2, new ReportListFilterRequestDto());
 
             //assert
             result.Value.Data.Count().ShouldBe(3);
@@ -345,7 +345,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenListTypeFilterIsTraining_ShouldReturnOnlyTraining()
         {
             //act
-            var result = await _reportService.List(1, 1, new ListFilterRequestDto{ ReportListType = ReportListType.Main, IsTraining = true });
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto { ReportListType = ReportListType.Main, IsTraining = true });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(100, _rowsPerPage));
@@ -356,7 +356,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenReportTypeFilterIsScp_ShouldReturnOnlyDcpReports()
         {
             //act
-            var result = await _reportService.List(2, 1, new ListFilterRequestDto{ ReportListType = ReportListType.FromDcp });
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportListType = ReportListType.FromDcp });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(20, _rowsPerPage));

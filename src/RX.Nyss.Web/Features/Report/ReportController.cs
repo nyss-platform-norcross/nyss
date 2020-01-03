@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.Report
         [HttpPost("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, [FromBody] ReportListFilterRequestDto filterRequest) =>
-            await _reportService.List(projectId, pageNumber, User.Identity.Name, filterRequest);
+            await _reportService.List(projectId, pageNumber, filterRequest);
 
         /// <summary>
         /// Export the list of reports in a project to a csv file

@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.Report
 {
     public interface IReportService
     {
-        Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber,  ListFilterRequestDto filter);
+        Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter);
         Task<byte[]> Export(int projectId, ReportListType reportListType, bool isTraining);
     }
 
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.Report
             _stringsResourcesService = stringsResourcesService;
         }
 
-        public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ListFilterRequestDto filter)
+        public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter)
         {
             var (baseQuery, reportsQuery) = await GetReportQueries(projectId, filter.ReportListType, filter.IsTraining);
 
