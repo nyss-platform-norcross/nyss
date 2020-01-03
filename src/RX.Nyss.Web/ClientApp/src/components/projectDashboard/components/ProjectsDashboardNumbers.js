@@ -8,7 +8,7 @@ import CardHeader from '@material-ui/core/CardHeader';
 import { Loading } from '../../common/loading/Loading';
 import { stringKeys, strings } from '../../../strings';
 
-export const ProjectsDashboardNumbers = ({ isFetching, projectSummary }) => {
+export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsType }) => {
   if (isFetching || !projectSummary) {
     return <Loading />;
   }
@@ -41,7 +41,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary }) => {
         </Card>
       </Grid>
 
-      {projectSummary.dataCollectionPointSummary &&
+      {reportsType === "dataCollectionPoint" &&
        <Grid item xs={3} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.dataCollectionPoints)} />

@@ -254,6 +254,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                         _ => r.ReportedCase
                     });
 
+            var test = Reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint).ToList();
             Reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint).ToList()
                 .ForEach(r =>
                 {
@@ -268,9 +269,9 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     };
                     r.DataCollectionPointCase = (r.Id % 3) switch
                     {
-                        0 => new DataCollectionPointCase { DeathCount = 1, FromOtherVillagesCount = 0, ReferredCount = 0 },
-                        1 => new DataCollectionPointCase { FromOtherVillagesCount = 1, ReferredCount = 0, DeathCount = 0 },
-                        2 => new DataCollectionPointCase { ReferredCount = 1, FromOtherVillagesCount = 0, DeathCount = 0 },
+                        0 => new DataCollectionPointCase { FromOtherVillagesCount = 1, ReferredCount = 0, DeathCount = 0 },
+                        1 => new DataCollectionPointCase { ReferredCount = 1, FromOtherVillagesCount = 0, DeathCount = 0 },
+                        2 => new DataCollectionPointCase { DeathCount = 1, FromOtherVillagesCount = 0, ReferredCount = 0 },
                         _ => r.DataCollectionPointCase
                     };
                 });

@@ -52,14 +52,12 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                         .Select(r => r.DataCollector.Id)
                         .Distinct().Count(),
                     InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, allReports, filtersDto),
-                    DataCollectionPointSummary = (filtersDto.ReportsType == FiltersRequestDto.ReportsTypeDto.DataCollectionPoint)
-                        ? new DataCollectionPointsSummaryResponse
+                    DataCollectionPointSummary = new DataCollectionPointsSummaryResponse
                         {
                             FromOtherVillagesCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.FromOtherVillagesCount ?? 0),
                             ReferredToHospitalCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.ReferredCount ?? 0),
                             DeathCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.DeathCount ?? 0),
                         }
-                        : null
                 })
                 .FirstOrDefaultAsync();
         }

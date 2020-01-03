@@ -44,7 +44,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
         : (
           <Fragment>
             <Grid item xs={12}>
-              <ProjectsDashboardNumbers projectSummary={props.projectSummary} />
+              <ProjectsDashboardNumbers projectSummary={props.projectSummary} reportsType={props.filters.reportsType}/>
             </Grid>
             <Grid item xs={12}>
               <ProjectsDashboardReportsMap

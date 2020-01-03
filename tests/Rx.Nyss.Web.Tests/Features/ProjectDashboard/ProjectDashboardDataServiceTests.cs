@@ -30,9 +30,16 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(true, 8, 4, 0)]
-        [InlineData(false, 24, 12, 0)]
-        public async Task GetSummaryData_FilterReportsOnlyOnTraining_ShouldShowAllReportsAccordingToTrainingStatus(bool isTraining, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        [InlineData(true, 8, 4, 0, 2, 1 ,1)]
+        [InlineData(false, 24, 12, 0, 2, 3, 3)]
+        public async Task GetSummaryData_FilterReportsOnlyOnTraining_ShouldShowAllReportsAccordingToTrainingStatus(
+            bool isTraining,
+            int expectedReportsCount,
+            int expectedActiveCollectorsCount,
+            int expectedInactiveCollectorsCount,
+            int expectedFromOtherVillagesCount,
+            int expectedReferredToHospitalCount,
+            int expectedDeathCount)
         {
             //arrange
             var filters = new FiltersRequestDto
@@ -53,14 +60,25 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+            summaryData.DataCollectionPointSummary.FromOtherVillagesCount.ShouldBe(expectedFromOtherVillagesCount);
+            summaryData.DataCollectionPointSummary.ReferredToHospitalCount.ShouldBe(expectedReferredToHospitalCount);
+            summaryData.DataCollectionPointSummary.DeathCount.ShouldBe(expectedDeathCount);
         }
 
         [Theory]
-        [InlineData(DataCollectorType.Human, false, 16, 8, 0)]
-        [InlineData(DataCollectorType.CollectionPoint, false, 8, 4, 0)]
-        [InlineData(DataCollectorType.Human, true, 4, 2, 0)]
-        [InlineData(DataCollectorType.CollectionPoint, true, 4, 2, 0)]
-        public async Task GetSummaryData_FilterReportsOnDataCollectorTypeAndTrainingStatus_ShouldShowAllReportsAccordingToDataCollectorType(DataCollectorType dataCollectorType, bool isTraining, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        [InlineData(DataCollectorType.Human, false, 16, 8, 0, 0, 0, 0)]
+        [InlineData(DataCollectorType.CollectionPoint, false, 8, 4, 0, 2, 3, 3)]
+        [InlineData(DataCollectorType.Human, true, 4, 2, 0, 0, 0, 0)]
+        [InlineData(DataCollectorType.CollectionPoint, true, 4, 2, 0, 2, 1, 1)]
+        public async Task GetSummaryData_FilterReportsOnDataCollectorTypeAndTrainingStatus_ShouldShowAllReportsAccordingToDataCollectorType(
+            DataCollectorType dataCollectorType,
+            bool isTraining,
+            int expectedReportsCount,
+            int expectedActiveCollectorsCount,
+            int expectedInactiveCollectorsCount,
+            int expectedFromOtherVillagesCount,
+            int expectedReferredToHospitalCount,
+            int expectedDeathCount)
         {
             //arrange
             var filters = new FiltersRequestDto
@@ -83,14 +101,25 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+            summaryData.DataCollectionPointSummary.FromOtherVillagesCount.ShouldBe(expectedFromOtherVillagesCount);
+            summaryData.DataCollectionPointSummary.ReferredToHospitalCount.ShouldBe(expectedReferredToHospitalCount);
+            summaryData.DataCollectionPointSummary.DeathCount.ShouldBe(expectedDeathCount);
         }
 
         [Theory]
-        [InlineData(1, true, 3, 4, 0)]
-        [InlineData(1, false, 8, 12, 0)]
-        [InlineData(2, true, 5, 4, 0)]
-        [InlineData(2, false, 16, 12, 0)]
-        public async Task GetSummaryData_FilterReportsOnHealthRisks_ShouldReturnCorrectNumbers(int healthRiskId, bool isTraining, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        [InlineData(1, true, 3, 4, 0, 0, 1, 0)]
+        [InlineData(1, false, 8, 12, 0, 0, 3, 0)]
+        [InlineData(2, true, 5, 4, 0, 2, 0, 1)]
+        [InlineData(2, false, 16, 12, 0, 2, 0, 3)]
+        public async Task GetSummaryData_FilterReportsOnHealthRisks_ShouldReturnCorrectNumbers(
+            int healthRiskId,
+            bool isTraining,
+            int expectedReportsCount,
+            int expectedActiveCollectorsCount,
+            int expectedInactiveCollectorsCount,
+            int expectedFromOtherVillagesCount,
+            int expectedReferredToHospitalCount,
+            int expectedDeathCount)
         {
             //arrange
             var filters = new FiltersRequestDto
@@ -111,14 +140,25 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+            summaryData.DataCollectionPointSummary.FromOtherVillagesCount.ShouldBe(expectedFromOtherVillagesCount);
+            summaryData.DataCollectionPointSummary.ReferredToHospitalCount.ShouldBe(expectedReferredToHospitalCount);
+            summaryData.DataCollectionPointSummary.DeathCount.ShouldBe(expectedDeathCount);
         }
 
         [Theory]
-        [InlineData(1, false, 12, 6, 0)]
-        [InlineData(2, false, 12, 6, 0)]
-        [InlineData(1, true, 4, 2, 0)]
-        [InlineData(2, true, 4, 2, 0)]
-        public async Task GetSummaryData_FilterReportsOnRegion_ShouldReturnCorrectNumbers(int regionId, bool isTraining, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
+        [InlineData(1, false, 12, 6, 0, 0, 0, 0)]
+        [InlineData(2, false, 12, 6, 0, 2, 3, 3)]
+        [InlineData(1, true, 4, 2, 0, 0, 0, 0)]
+        [InlineData(2, true, 4, 2, 0, 2, 1, 1)]
+        public async Task GetSummaryData_FilterReportsOnRegion_ShouldReturnCorrectNumbers(
+            int regionId,
+            bool isTraining,
+            int expectedReportsCount,
+            int expectedActiveCollectorsCount,
+            int expectedInactiveCollectorsCount,
+            int expectedFromOtherVillagesCount,
+            int expectedReferredToHospitalCount,
+            int expectedDeathCount)
         {
             //arrange
             var filters = new FiltersRequestDto
@@ -139,6 +179,9 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
+            summaryData.DataCollectionPointSummary.FromOtherVillagesCount.ShouldBe(expectedFromOtherVillagesCount);
+            summaryData.DataCollectionPointSummary.ReferredToHospitalCount.ShouldBe(expectedReferredToHospitalCount);
+            summaryData.DataCollectionPointSummary.DeathCount.ShouldBe(expectedDeathCount);
         }
 
         [Theory]
@@ -392,6 +435,89 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             result.Count(r => r.FromOtherVillagesCount!= 0 || r.DeathCount != 0 || r.ReferredCount != 0)
                 .ShouldBe(expectedCount);
+        }
+
+        [Theory]
+        [InlineData(3, 0, 0, 0)]
+        [InlineData(4, 0, 1, 1)]
+        [InlineData(5, 2, 2, 2)]
+        [InlineData(6, 0, 0, 0)]
+        public async Task GetDataCollectionPointReports_WhenGroupingByWeekAndFilteringForAllDates_ShouldReturnCorrectNumbers(int epiWeek,
+            int fromOtherVillagesCount,
+            int referredToHospitalCount,
+            int deathCount )
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = new DateTime(2019, 01, 01),
+                EndDate = new DateTime(2019, 02, 15),
+                HealthRiskId = null,
+                Area = null,
+                IsTraining = false,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Week,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.DataCollectionPoint
+            };
+
+            //act
+            var result = await _projectDashboardDataService.GetDataCollectionPointReports(_testData.ProjectId, filters);
+
+            //assert
+            result.Where(x => x.Period == epiWeek.ToString())
+                .Select(x => x.FromOtherVillagesCount).Single().ShouldBe(fromOtherVillagesCount);
+
+            result.Where(x => x.Period == epiWeek.ToString())
+                .Select(x => x.ReferredCount).Single().ShouldBe(referredToHospitalCount);
+
+            result.Where(x => x.Period == epiWeek.ToString())
+                .Select(x => x.DeathCount).Single().ShouldBe(deathCount);
+
+        }
+
+        [Theory]
+        [InlineData("21/01", true, 1, 0, 0)]
+        [InlineData("22/01", true, 0, 1, 0)]
+        [InlineData("23/01", true, 0, 0, 1)]
+        [InlineData("24/01", true, 1, 0, 0)]
+        [InlineData("25/01", false, 0, 1, 0)]
+        [InlineData("26/01", false, 0, 0, 1)]
+        [InlineData("27/01", false, 1, 0, 0)]
+        [InlineData("28/01", false, 0, 1, 0)]
+        [InlineData("29/01", false, 0, 0, 1)]
+        [InlineData("30/01", false, 1, 0, 0)]
+        [InlineData("31/01", false, 0, 1, 0)]
+        [InlineData("01/02", false, 0, 0, 1)]
+        public async Task GetDataCollectionPointReports_WhenGroupingByDayAndFilteringForAllDates_ShouldReturnCorrectNumbers(string day,
+            bool isTraining,
+            int fromOtherVillagesCount,
+            int referredToHospitalCount,
+            int deathCount)
+        {
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = new DateTime(2019, 01, 01),
+                EndDate = new DateTime(2019, 02, 15),
+                HealthRiskId = null,
+                Area = null,
+                IsTraining = isTraining,
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.DataCollectionPoint
+            };
+
+            //act
+            var result = await _projectDashboardDataService.GetDataCollectionPointReports(_testData.ProjectId, filters);
+
+            //assert
+            result.Where(x => x.Period == day)
+                .Select(x => x.FromOtherVillagesCount).Single().ShouldBe(fromOtherVillagesCount);
+
+            result.Where(x => x.Period == day)
+                .Select(x => x.ReferredCount).Single().ShouldBe(referredToHospitalCount);
+
+            result.Where(x => x.Period == day)
+                .Select(x => x.DeathCount).Single().ShouldBe(deathCount);
+
         }
     }
 }
