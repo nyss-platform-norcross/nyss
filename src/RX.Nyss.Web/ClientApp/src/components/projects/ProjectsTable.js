@@ -24,10 +24,10 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
             <TableCell style={{ minWidth: 160 }}>{strings(stringKeys.project.list.name)}</TableCell>
             <TableCell style={{ width: "10%", minWidth: 80 }}>{strings(stringKeys.project.list.startDate)}</TableCell>
             <TableCell style={{ width: "10%", minWidth: 80 }}>{strings(stringKeys.project.list.endDate)}</TableCell>
-            <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.totalReportCount)}</TableCell>
-            <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.totalDataCollectorCount)}</TableCell>
-            <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.escalatedAlertCount)}</TableCell>
             <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.supervisorCount)}</TableCell>
+            <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.totalDataCollectorCount)}</TableCell>
+            <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.totalReportCount)}</TableCell>
+            <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.escalatedAlertCount)}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -36,10 +36,10 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
               <TableCell>{project.name}</TableCell>
               <TableCell>{dayjs(project.startDate).format("YYYY-MM-DD")}</TableCell>
               <TableCell>{project.endDate ? dayjs(project.endDate).format("YYYY-MM-DD") : strings(stringKeys.project.list.ongoing)}</TableCell>
-              <TableCell>{project.totalReportCount}</TableCell>
-              <TableCell>{project.totalDataCollectorCount}</TableCell>
-              <TableCell>{project.escalatedAlertCount}</TableCell>
               <TableCell>{project.supervisorCount}</TableCell>
+              <TableCell>{project.totalDataCollectorCount}</TableCell>
+              <TableCell>{project.totalReportCount}</TableCell>
+              <TableCell>{project.escalatedAlertCount}</TableCell>
             </TableRow>
           ))}
         </TableBody>
