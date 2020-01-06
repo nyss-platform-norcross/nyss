@@ -72,6 +72,9 @@ namespace RX.Nyss.Web.Configuration
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            // ToDo: The expiration should be this long only for verification, but shorter for password reset.
+            serviceCollection.Configure<DataProtectionTokenProviderOptions>(o => o.TokenLifespan = TimeSpan.FromDays(10));
+
             serviceCollection.Configure<IdentityOptions>(options =>
             {
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
