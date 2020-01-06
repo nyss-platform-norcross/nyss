@@ -238,7 +238,6 @@
       ],
       "tags": "[parameters('tagValues')]",
       "properties": {
-        "name": "[variables('webAppName')]",
         "siteConfig": {
           "metadata": [
             {
@@ -277,15 +276,16 @@
           "type": "slots",
           "name": "staging",
           "apiVersion": "2018-11-01",
+          "kind": "app",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
           ],
           "location": "[variables('location')]",
           "tags": "[parameters('tagValues')]",
           "properties": {
+            "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
             "siteConfig": {
-              "autoSwapSlotName": "production",
-              "WEBSITE_SWAP_WARMUP_PING_STATUSES": "200"
+              "alwaysOn": "[parameters('alwaysOn')]"
             }
           }
         }
