@@ -126,7 +126,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
             await _nyssContext.AddAsync(nationalSociety);
             await _nyssContext.SaveChangesAsync();
             _loggerAdapter.Info($"A national society {nationalSociety} was created");
-            return SuccessMessage(ResultKey.NationalSociety.Creation.Success);
+            return Success(nationalSociety.Id);
         }
 
         public async Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto dto)

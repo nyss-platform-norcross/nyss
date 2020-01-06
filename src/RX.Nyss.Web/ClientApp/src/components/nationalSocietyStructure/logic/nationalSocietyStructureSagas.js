@@ -42,7 +42,9 @@ function* openNationalSocietyStructure({ nationalSocietyId }) {
         districts.push({ id: district.id, name: district.name, regionId: region.id })
         for (let village of district.villages) {
           villages.push({ id: village.id, name: village.name, districtId: district.id })
-          zones = village.zones.map(zone => ({ id: zone.id, name: zone.name, villageId: village.id }))
+          for (let zone of village.zones) {
+            zones.push({ id: zone.id, name: zone.name, villageId: village.id })
+          }
         }
       }
     }
