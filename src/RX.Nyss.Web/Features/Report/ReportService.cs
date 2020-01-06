@@ -169,8 +169,10 @@ namespace RX.Nyss.Web.Features.Report
                         : r.DataCollector.Zone != null
                             ? r.DataCollector.Zone.Name
                             : null,
+                    DataCollector = r.DataCollector,
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
+                    Message = r.Text,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
@@ -207,7 +209,7 @@ namespace RX.Nyss.Web.Features.Report
 
             var columnLabels = new List<string>()
             {
-                GetStringResource(stringResources,"reports.list.time"),
+                GetStringResource(stringResources,"reports.export.date"),
                 GetStringResource(stringResources,"reports.export.time"),
                 GetStringResource(stringResources,"reports.list.status"),
                 GetStringResource(stringResources,"reports.list.dataCollectorDisplayName"),
@@ -255,8 +257,9 @@ namespace RX.Nyss.Web.Features.Report
                 TotalFemale = r.CountFemalesAtLeastFive + r.CountFemalesBelowFive,
                 TotalMale = r.CountMalesAtLeastFive + r.CountMalesBelowFive,
                 Total = r.CountMalesBelowFive + r.CountMalesAtLeastFive + r.CountFemalesBelowFive + r.CountFemalesAtLeastFive,
-                Location = r.DataCollector != null ? $"{r.DataCollector.Location.X}/{r.DataCollector.Location.Y}" : "",
-                EpiYear = r.DateTime.Year,
+                Location = r.DataCollector != null ? $"{r.DataCollector.Location.Y}/{r.DataCollector.Location.Coordinate.X}" : "",
+                r.Message,
+                EpiYear = _dateTimeProvider.IsFirstWeekOfNextYear(r.DateTime) ? r.DateTime.Year + 1 : r.DateTime.Year,
                 EpiWeek = _dateTimeProvider.GetEpiWeek(r.DateTime)
             });
 
