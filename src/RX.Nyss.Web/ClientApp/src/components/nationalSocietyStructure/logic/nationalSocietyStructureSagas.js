@@ -81,7 +81,7 @@ function* removeRegion({ id }) {
     yield call(http.post, `/api/nationalSocietyStructure/region/${id}/remove`);
     yield put(actions.removeRegion.success(id));
   } catch (error) {
-    yield put(actions.removeRegion.failure(error.message));
+    yield put(actions.removeRegion.failure(id, error.message));
   }
 };
 
@@ -111,7 +111,7 @@ function* removeDistrict({ id }) {
     yield call(http.post, `/api/nationalSocietyStructure/district/${id}/remove`);
     yield put(actions.removeDistrict.success(id));
   } catch (error) {
-    yield put(actions.removeDistrict.failure(error.message));
+    yield put(actions.removeDistrict.failure(id, error.message));
   }
 };
 
@@ -141,7 +141,7 @@ function* removeVillage({ id }) {
     yield call(http.post, `/api/nationalSocietyStructure/village/${id}/remove`);
     yield put(actions.removeVillage.success(id));
   } catch (error) {
-    yield put(actions.removeVillage.failure(error.message));
+    yield put(actions.removeVillage.failure(id, error.message));
   }
 };
 
@@ -171,7 +171,7 @@ function* removeZone({ id }) {
     yield call(http.post, `/api/nationalSocietyStructure/zone/${id}/remove`);
     yield put(actions.removeZone.success(id));
   } catch (error) {
-    yield put(actions.removeZone.failure(error.message));
+    yield put(actions.removeZone.failure(id, error.message));
   }
 };
 
