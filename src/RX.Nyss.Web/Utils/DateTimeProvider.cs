@@ -8,6 +8,8 @@ namespace RX.Nyss.Web.Utils
         DateTime UtcNow { get; }
 
         int GetEpiWeek(DateTime date);
+
+        bool IsFirstWeekOfNextYear(DateTime date);
     }
 
     public class DateTimeProvider : IDateTimeProvider
@@ -33,6 +35,13 @@ namespace RX.Nyss.Web.Utils
             var adjustedDate = GetAdjustedDate();
 
             return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(adjustedDate, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday);
+        }
+
+        public bool IsFirstWeekOfNextYear(DateTime date)
+        {
+            var epiWeek = GetEpiWeek(date);
+
+            return epiWeek == 1 && date.Month == 12;
         }
     }
 }

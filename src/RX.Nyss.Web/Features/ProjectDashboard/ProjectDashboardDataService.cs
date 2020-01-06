@@ -290,7 +290,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var missingWeeks = Enumerable
                 .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
                 .Select(w => startDate.AddDays(w * 7))
-                .Where(day => !groupedReports.Any(r => r.EpiPeriod.Year == day.Year && r.EpiPeriod.EpiWeek == _dateTimeProvider.GetEpiWeek(day)))
+                .Where(day => !groupedReports.Any(r => r.EpiPeriod.Year == day.Year && r.EpiPeriod.EpiWeek == _dateTimeProvider.GetEpiWeek(day)) && !_dateTimeProvider.IsFirstWeekOfNextYear(day))
                 .Select(day => new { EpiPeriod = new { day.Year, EpiWeek = _dateTimeProvider.GetEpiWeek(day) }, CountFemalesAtLeastFive = 0, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0 });
 
             return groupedReports
@@ -361,7 +361,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var missingWeeks = Enumerable
                 .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
                 .Select(w => startDate.AddDays(w * 7))
-                .Where(day => !groupedReports.Any(r => r.EpiPeriod.Year == day.Year && r.EpiPeriod.EpiWeek == _dateTimeProvider.GetEpiWeek(day)))
+                .Where(day => !groupedReports.Any(r => r.EpiPeriod.Year == day.Year && r.EpiPeriod.EpiWeek == _dateTimeProvider.GetEpiWeek(day)) && !_dateTimeProvider.IsFirstWeekOfNextYear(day))
                 .Select(day => new { EpiPeriod = new { day.Year, EpiWeek = _dateTimeProvider.GetEpiWeek(day) }, Count = 0 });
 
             return groupedReports
