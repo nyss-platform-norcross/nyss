@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Alerts.Dto;
-using RX.Nyss.Web.Features.Authentication.Policies;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 
