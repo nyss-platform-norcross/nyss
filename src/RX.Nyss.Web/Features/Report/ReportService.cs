@@ -58,24 +58,17 @@ namespace RX.Nyss.Web.Features.Report
 
             await UpdateTimeZoneInReports(projectId, reports);
 
-            return Success(reports.AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
+            return Success(reports.Cast<ReportListResponseDto>().AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
         }
 
-        private async Task UpdateTimeZoneInReports(int projectId, List<ReportListResponseDto> reports)
+        private async Task UpdateTimeZoneInReports(int projectId, List<IReportListResponseDto> reports)
         {
             var project = await _nyssContext.Projects.FindAsync(projectId);
             var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
             reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
         }
 
-        private async Task UpdateTimeZoneInExportReports(int projectId, List<ExportReportListResponseDto> reports)
-        {
-            var project = await _nyssContext.Projects.FindAsync(projectId);
-            var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
-            reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
-        }
-
-        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<ReportListResponseDto> result)> GetReportQueries(int projectId, ReportListFilterRequestDto filter)
+        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<IReportListResponseDto> result)> GetReportQueries(int projectId, ReportListFilterRequestDto filter)
         {
             var currentUser = _authorizationService.GetCurrentUser();
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.Name);
@@ -129,14 +122,13 @@ namespace RX.Nyss.Web.Features.Report
             return (baseQuery, result);
         }
 
-        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<ExportReportListResponseDto> result)> GetExportQueries(int projectId, ReportListFilterRequestDto filter)
+        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<IReportListResponseDto> result)> GetExportQueries(int projectId, ReportListFilterRequestDto filter)
         {
             var currentUser = _authorizationService.GetCurrentUser();
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.Name);
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
-                .Include(r => r.DataCollector)
                 .Where(r => filter.IsTraining ?
                       r.IsTraining.HasValue && r.IsTraining.Value :
                       r.IsTraining.HasValue && !r.IsTraining.Value)
@@ -169,7 +161,7 @@ namespace RX.Nyss.Web.Features.Report
                         : r.DataCollector.Zone != null
                             ? r.DataCollector.Zone.Name
                             : null,
-                    DataCollector = r.DataCollector,
+                    Location = r.Report != null ? r.Report.Location : null,
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
                     Message = r.Text,
@@ -191,13 +183,13 @@ namespace RX.Nyss.Web.Features.Report
             var (baseQuery, reportsQuery) = await GetExportQueries(projectId, filter);
 
             var reports = await reportsQuery.ToListAsync();
-            await UpdateTimeZoneInExportReports(projectId, reports);
+            await UpdateTimeZoneInReports(projectId, reports);
 
             var excelSheet = await GetExcelData(reports);
             return excelSheet;
         }
 
-        public async Task<byte[]> GetExcelData(List<ExportReportListResponseDto> reports)
+        public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports)
         {
             var user = _authorizationService.GetCurrentUser();
             var userApplicationLanguage = _nyssContext.Users
@@ -225,8 +217,8 @@ namespace RX.Nyss.Web.Features.Report
                 GetStringResource(stringResources,"reports.list.femalesAtLeastFive"),
                 GetStringResource(stringResources,"reports.export.totalBelowFive"),
                 GetStringResource(stringResources,"reports.export.totalAtLeastFive"),
-                GetStringResource(stringResources,"reports.export.totalFemale"),
                 GetStringResource(stringResources,"reports.export.totalMale"),
+                GetStringResource(stringResources,"reports.export.totalFemale"),
                 GetStringResource(stringResources,"reports.export.total"),
                 GetStringResource(stringResources,"reports.export.location"),
                 GetStringResource(stringResources,"reports.export.message"),
@@ -234,33 +226,36 @@ namespace RX.Nyss.Web.Features.Report
                 GetStringResource(stringResources,"reports.export.epiWeek")
             };
 
-            var reportData = reports.Select(r => new
-            {
-                Date = r.DateTime.ToString("yyyy-MM-dd"),
-                Time = r.DateTime.ToString("hh:mm"),
-                Status = r.IsValid
-                    ? GetStringResource(stringResources, "reports.list.success")
-                    : GetStringResource(stringResources, "reports.list.error"),
-                r.DataCollectorDisplayName,
-                r.PhoneNumber,
-                r.Region,
-                r.District,
-                r.Village,
-                r.Zone,
-                r.HealthRiskName,
-                r.CountMalesBelowFive,
-                r.CountMalesAtLeastFive,
-                r.CountFemalesBelowFive,
-                r.CountFemalesAtLeastFive,
-                TotalBelowFive = r.CountFemalesBelowFive + r.CountMalesBelowFive,
-                TotalAtLeastFive = r.CountMalesAtLeastFive + r.CountFemalesAtLeastFive,
-                TotalFemale = r.CountFemalesAtLeastFive + r.CountFemalesBelowFive,
-                TotalMale = r.CountMalesAtLeastFive + r.CountMalesBelowFive,
-                Total = r.CountMalesBelowFive + r.CountMalesAtLeastFive + r.CountFemalesBelowFive + r.CountFemalesAtLeastFive,
-                Location = r.DataCollector != null ? $"{r.DataCollector.Location.Y}/{r.DataCollector.Location.Coordinate.X}" : "",
-                r.Message,
-                EpiYear = _dateTimeProvider.IsFirstWeekOfNextYear(r.DateTime) ? r.DateTime.Year + 1 : r.DateTime.Year,
-                EpiWeek = _dateTimeProvider.GetEpiWeek(r.DateTime)
+            var reportData = reports.Select(r => {
+                var report = (ExportReportListResponseDto)r;
+                return new
+                {
+                    Date = report.DateTime.ToString("yyyy-MM-dd"),
+                    Time = report.DateTime.ToString("hh:mm"),
+                    Status = report.IsValid
+                        ? GetStringResource(stringResources, "reports.list.success")
+                        : GetStringResource(stringResources, "reports.list.error"),
+                    report.DataCollectorDisplayName,
+                    report.PhoneNumber,
+                    report.Region,
+                    report.District,
+                    report.Village,
+                    report.Zone,
+                    report.HealthRiskName,
+                    report.CountMalesBelowFive,
+                    report.CountMalesAtLeastFive,
+                    report.CountFemalesBelowFive,
+                    report.CountFemalesAtLeastFive,
+                    TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
+                    TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
+                    TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
+                    TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
+                    Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
+                    Location = report.Location != null ? $"{report.Location.Y}/{report.Location.Coordinate.X}" : "",
+                    report.Message,
+                    EpiYear = _dateTimeProvider.IsFirstWeekOfNextYear(report.DateTime) ? report.DateTime.Year + 1 : report.DateTime.Year,
+                    EpiWeek = _dateTimeProvider.GetEpiWeek(report.DateTime)
+                };
             });
 
             return _excelExportService.ToCsv(reportData, columnLabels);

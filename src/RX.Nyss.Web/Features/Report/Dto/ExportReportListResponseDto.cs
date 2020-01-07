@@ -1,11 +1,12 @@
 using System;
+using NetTopologySuite.Geometries;
 
 namespace RX.Nyss.Web.Features.Report.Dto
 {
-    public class ExportReportListResponseDto
+    public class ExportReportListResponseDto : IReportListResponseDto
     {
         public int Id { get; set; }
-        public RX.Nyss.Data.Models.DataCollector DataCollector { get; set; }
+        public Point Location { get; set; }
         public DateTime DateTime { get; set; }
         public string HealthRiskName { get; set; }
         public bool IsValid { get; set; }

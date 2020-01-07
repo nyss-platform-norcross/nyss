@@ -2,7 +2,12 @@
 
 namespace RX.Nyss.Web.Features.Report.Dto
 {
-    public class ReportListResponseDto
+    public interface IReportListResponseDto
+    {
+        DateTime DateTime { get; set; }
+    }
+
+    public class ReportListResponseDto : IReportListResponseDto
     {
         public int Id { get; set; }
         public DateTime DateTime { get; set; }
