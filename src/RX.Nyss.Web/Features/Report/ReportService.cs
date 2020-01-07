@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Features.Report
             reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
         }
 
-        private async Task UpdateTimeZoneInExportReports(int projectId, List<ExportListResponseDto> reports)
+        private async Task UpdateTimeZoneInExportReports(int projectId, List<ExportReportListResponseDto> reports)
         {
             var project = await _nyssContext.Projects.FindAsync(projectId);
             var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
@@ -129,7 +129,7 @@ namespace RX.Nyss.Web.Features.Report
             return (baseQuery, result);
         }
 
-        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<ExportListResponseDto> result)> GetExportQueries(int projectId, ReportListFilterRequestDto filter)
+        private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<ExportReportListResponseDto> result)> GetExportQueries(int projectId, ReportListFilterRequestDto filter)
         {
             var currentUser = _authorizationService.GetCurrentUser();
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.Name);
@@ -144,7 +144,7 @@ namespace RX.Nyss.Web.Features.Report
                             r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
                             r.DataCollector.DataCollectorType == DataCollectorType.Human);
 
-            var result = baseQuery.Select(r => new ExportListResponseDto
+            var result = baseQuery.Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,
                     DateTime = r.ReceivedAt,
@@ -197,7 +197,7 @@ namespace RX.Nyss.Web.Features.Report
             return excelSheet;
         }
 
-        public async Task<byte[]> GetExcelData(List<ExportListResponseDto> reports)
+        public async Task<byte[]> GetExcelData(List<ExportReportListResponseDto> reports)
         {
             var user = _authorizationService.GetCurrentUser();
             var userApplicationLanguage = _nyssContext.Users
