@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Authentication.Policies;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.NationalSociety
 {
@@ -36,7 +35,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         [HttpGet("list")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.TechnicalAdvisor, Role.DataConsumer)]
         public async Task<Result<List<NationalSocietyListResponseDto>>> List() =>
-            await _nationalSocietyService.GetNationalSocieties(User.Identity.Name, User.GetRoles());
+            await _nationalSocietyService.GetNationalSocieties();
 
         /// <summary>
         /// Creates a new National Society.

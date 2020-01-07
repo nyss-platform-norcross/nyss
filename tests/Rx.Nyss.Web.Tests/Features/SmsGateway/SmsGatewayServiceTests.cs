@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             var config = Substitute.For<IConfig>();
             _smsGatewayBlobProviderMock = Substitute.For<ISmsGatewayBlobProvider>();
-            _smsGatewayService = new SmsGatewayService(_nyssContextMock, loggerAdapterMock, config, _smsGatewayBlobProviderMock);
+            _smsGatewayService = new SmsGatewayService(_nyssContextMock, loggerAdapterMock, _smsGatewayBlobProviderMock);
         }
 
         [Fact]

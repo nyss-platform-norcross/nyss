@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersFromSpecifiedNationalSociety()
         {
-            var users = await _userService.GetUsersInNationalSociety(1, new [] {Role.Administrator.ToString()});
+            var users = await _userService.GetUsers(1, new [] {Role.Administrator.ToString()});
 
             users.Value.Count.ShouldBe(5);
             users.Value.ShouldAllBe(u => u.Name == NationalSociety1Tag || u.Name == NationalSociety1And2Tag);
@@ -61,7 +61,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
         {
-            var users = await _userService.GetUsersInNationalSociety(1, new[] { Role.Administrator.ToString() });
+            var users = await _userService.GetUsers(1, new[] { Role.Administrator.ToString() });
 
             var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
             users.Value.Count.ShouldBe(5);
@@ -76,7 +76,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [InlineData(Role.TechnicalAdvisor)]
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsOtherThanGlobalCoordinator_ShouldReturnAllUsers(Role callingRole)
         {
-            var users = await _userService.GetUsersInNationalSociety(1, new[] { callingRole.ToString() });
+            var users = await _userService.GetUsers(1, new[] { callingRole.ToString() });
 
             var allowedRoles = new List<Role> { Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor }.Select(x => x.ToString());
             users.Value.Count.ShouldBe(5);
@@ -86,7 +86,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsGlobalCoordinator_ShouldNotReturnSupervisors()
         {
-            var users = await _userService.GetUsersInNationalSociety(1, new[] { Role.GlobalCoordinator.ToString() });
+            var users = await _userService.GetUsers(1, new[] { Role.GlobalCoordinator.ToString() });
 
             users.Value.Count.ShouldBe(4);
             users.Value.ShouldAllBe(u => u.Role != Role.Supervisor.ToString());

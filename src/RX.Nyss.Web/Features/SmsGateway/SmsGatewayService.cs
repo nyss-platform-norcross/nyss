@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.SmsGateway.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.DataContract;
@@ -28,14 +27,15 @@ namespace RX.Nyss.Web.Features.SmsGateway
     {
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IConfig _config;
         private readonly ISmsGatewayBlobProvider _smsGatewayBlobProvider;
 
-        public SmsGatewayService(INyssContext nyssContext, ILoggerAdapter loggerAdapter, IConfig config, ISmsGatewayBlobProvider smsGatewayBlobProvider)
+        public SmsGatewayService(
+            INyssContext nyssContext,
+            ILoggerAdapter loggerAdapter,
+            ISmsGatewayBlobProvider smsGatewayBlobProvider)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
-            _config = config;
             _smsGatewayBlobProvider = smsGatewayBlobProvider;
         }
 

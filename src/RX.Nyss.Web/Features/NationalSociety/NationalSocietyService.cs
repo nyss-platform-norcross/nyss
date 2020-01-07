@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.NationalSociety.Access;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -17,7 +15,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
 {
     public interface INationalSocietyService
     {
-        Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties(string userEmail, IEnumerable<string> userRoles);
+        Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties();
         Task<Result<NationalSocietyResponseDto>> GetNationalSociety(int id);
         Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
         Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
@@ -25,29 +23,29 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
         Task<Result> SetAsHeadManager(string identityUserName);
         Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents(string identityUserName);
-        Task<bool> HasUserAccessNationalSocieties(IEnumerable<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles);
     }
 
     public class NationalSocietyService : INationalSocietyService
     {
         private readonly INyssContext _nyssContext;
+        private readonly INationalSocietyAccessService _nationalSocietyAccessService;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IUserService _userService;
-        private readonly IEnumerable<string> _rolesWithAccessToAllNationalSocieties;
 
-        public NationalSocietyService(INyssContext context, ILoggerAdapter loggerAdapter, IUserService userService)
+        public NationalSocietyService(
+            INyssContext context,
+            INationalSocietyAccessService nationalSocietyAccessService,
+            ILoggerAdapter loggerAdapter)
         {
             _nyssContext = context;
+            _nationalSocietyAccessService = nationalSocietyAccessService;
             _loggerAdapter = loggerAdapter;
-            _userService = userService;
-
-            _rolesWithAccessToAllNationalSocieties = new [] { Role.Administrator, Role.GlobalCoordinator }
-                .Select(role => role.ToString()).ToList();
         }
 
-        public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties(string userEmail, IEnumerable<string> userRoles)
+        public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties()
         {
-            var nationalSocietiesQuery = _nyssContext.NationalSocieties
+            var nationalSocietiesQuery = await GetNationalSocietiesQuery();
+
+            var list = await nationalSocietiesQuery
                 .Include(x => x.HeadManager)
                 .Include(x => x.PendingHeadManager)
                 .Select(n => new NationalSocietyListResponseDto
@@ -60,15 +58,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
                     HeadManagerName = n.HeadManager.Name,
                     PendingHeadManagerName = n.PendingHeadManager.Name,
                     TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.Where(u => u.User.Role == Role.TechnicalAdvisor).Select(u => u.User.Name).ToList())
-                });
-
-            if (!_userService.HasAccessToAllNationalSocieties(userRoles))
-            {
-                var availableNationalSocieties = await _userService.GetUserNationalSocietyIds(userEmail);
-                nationalSocietiesQuery = nationalSocietiesQuery.Where(ns => availableNationalSocieties.Contains(ns.Id));
-            }
-
-            var list = await nationalSocietiesQuery
+                })
                 .OrderBy(n => n.Name)
                 .ToListAsync();
 
@@ -248,25 +238,15 @@ namespace RX.Nyss.Web.Features.NationalSociety
         public async Task<Country> GetCountryById(int id) =>
             await _nyssContext.Countries.FindAsync(id);
 
-        public async Task<bool> HasUserAccessNationalSocieties(IEnumerable<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles)
+        private async Task<IQueryable<Nyss.Data.Models.NationalSociety>> GetNationalSocietiesQuery()
         {
-            if (HasAccessToAllNationalSocieties(roles))
+            if (_nationalSocietyAccessService.HasCurrentUserAccessToAllNationalSocieties())
             {
-                return true;
+                return _nyssContext.NationalSocieties;
             }
 
-            var userNationalSocieties = await GetUserNationalSocietyIds(identityName);
-            return providedNationalSocietyIds.Intersect(userNationalSocieties).Any();
+            var availableNationalSocieties = await _nationalSocietyAccessService.GetCurrentUserNationalSocietyIds();
+            return _nyssContext.NationalSocieties.Where(ns => availableNationalSocieties.Contains(ns.Id));
         }
-
-        public async Task<List<int>> GetUserNationalSocietyIds(string identityName) =>
-            await _nyssContext.Users
-                .Where(u => u.EmailAddress == identityName)
-                .SelectMany(u => u.UserNationalSocieties)
-                .Select(uns => uns.NationalSocietyId)
-                .ToListAsync();
-
-        public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
-            roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));
     }
 }

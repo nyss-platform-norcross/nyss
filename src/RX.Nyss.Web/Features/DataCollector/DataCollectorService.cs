@@ -27,7 +27,6 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId);
         Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId, string userIdentityName, IEnumerable<string> roles);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
-        Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId);
         Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng, string userIdentityName,
             IEnumerable<string> roles);
@@ -332,10 +331,6 @@ namespace RX.Nyss.Web.Features.DataCollector
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
             return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
-
-        public async Task<bool> GetDataCollectorIsSubordinateOfSupervisor(string supervisorIdentityName, int dataCollectorId) =>
-            await _nyssContext.DataCollectors.AnyAsync(dc => dc.Id == dataCollectorId && dc.Supervisor.EmailAddress == supervisorIdentityName);
-
 
         public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName,
             IEnumerable<string> roles)

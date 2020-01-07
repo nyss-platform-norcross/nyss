@@ -33,9 +33,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
-            var mockNationalSocietyService = Substitute.For<INationalSocietyService>();
-            var mockAuthorizationService = Substitute.For<IAuthorizationService>();
-            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, mockNationalSocietyService, mockAuthorizationService);
+            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider);
         }
 
         [Fact]

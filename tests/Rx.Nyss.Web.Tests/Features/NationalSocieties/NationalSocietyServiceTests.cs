@@ -1,16 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSociety;
+using RX.Nyss.Web.Features.NationalSociety.Access;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
@@ -23,9 +20,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         private readonly INationalSocietyService _nationalSocietyService;
 
         private readonly INyssContext _nyssContextMock;
-        private readonly ILoggerAdapter _loggerAdapterMock;
-        private readonly IConfig _configMock;
-        private readonly IUserService _userServiceMock;
         private const string NationalSocietyName = "Norway";
         private const string ExistingNationalSocietyName = "Poland";
         private const int NationalSocietyId = 1;
@@ -36,10 +30,8 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         public NationalSocietyServiceTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
-            _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _configMock = Substitute.For<IConfig>();
-            _userServiceMock = Substitute.For<IUserService>();
-            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, _loggerAdapterMock, _userServiceMock);
+            var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
+            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, Substitute.For<INationalSocietyAccessService>(), loggerAdapterMock);
 
             // Arrange
 
@@ -91,7 +83,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             };
 
             // Actual
-            var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
+            await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
 
             // Assert
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<NationalSociety>());
