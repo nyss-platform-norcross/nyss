@@ -12,7 +12,7 @@ import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 
-export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSocietyId, getList, page, rowsPerPage, totalRows, reportListType, filters }) => {
+export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSocietyId, getList, page, rowsPerPage, totalRows, reportsType }) => {
 
   const onChangePage = (event, page) => {
     getList(nationalSocietyId, page, filters);
@@ -39,7 +39,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSoci
             <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.malesAtLeastFive)}</TableCell>
             <TableCell style={{ width: "6%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesBelowFive)}</TableCell>
             <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
-            {reportListType === "fromDcp" &&
+            {reportsType === "fromDcp" &&
               <Fragment>
                 <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.referredCount)}</TableCell>
                 <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.deathCount)}</TableCell>
@@ -70,7 +70,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSoci
               <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
-              {reportListType === "fromDcp" &&
+              {reportsType === "fromDcp" &&
                 <Fragment>
                   <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
                   <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>

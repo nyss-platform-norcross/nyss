@@ -1,3 +1,4 @@
+import styles from "./NationalSocietyReportsListPage.module.scss";
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -5,61 +6,32 @@ import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsAc
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import NationalSocietyReportsTable from './NationalSocietyReportsTable';
+import { NationalSocietyReportsFilters } from './NationalSocietyReportsFilters';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 
 const NationalSocietyReportsListPageComponent = (props) => {
   useMount(() => {
     props.openNationalSocietyReportsList(props.nationalSocietyId);
   });
 
-  const [reportListFilter, setReportListFilter] = useState(props.reportListFilter);
-
-  if (!props.data || !props.reportListFilter) {
+  if (!props.data || !props.filters) {
     return null;
   }
 
-  const handleReportListTypeChange = event => {
-    const newFilter = {
-      ...props.reportListFilter,
-      ...{
-        reportListType: event.target.value
-      }
-    }
-
-    setReportListFilter(newFilter);
-    props.getList(props.nationalSocietyId, props.page, newFilter);
-  }
+  const handleFiltersChange = (filters) =>
+    props.getList(props.nationalSocietyId, props.page, filters);
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Grid container spacing={3}>
-          <Grid item>
-            <FormControl style={{ minWidth: '250px' }}>
-              <InputLabel>{strings(stringKeys.nationalSocietyReports.list.selectReportListType)}</InputLabel>
-              <Select
-                onChange={handleReportListTypeChange}
-                value={props.reportListFilter.reportListType}
-              >
-                <MenuItem value="unknownSender">
-                  {strings(stringKeys.nationalSocietyReports.list.unknownSenderReportListType)}
-                </MenuItem>
-                <MenuItem value="main">
-                  {strings(stringKeys.nationalSocietyReports.list.mainReportsListType)}
-                </MenuItem>
-                <MenuItem value="fromDcp">
-                  {strings(stringKeys.nationalSocietyReports.list.dcpReportListType)}
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
+      <Grid item xs={12} className={styles.filtersGrid}>
+        <NationalSocietyReportsFilters
+          healthRisks={props.healthRisks}
+          nationalSocietyId={props.nationalSocietyId}
+          onChange={handleFiltersChange}
+          filters={props.filters}
+        />
       </Grid>
 
       <Grid item xs={12}>
@@ -71,8 +43,7 @@ const NationalSocietyReportsListPageComponent = (props) => {
           page={props.data.page}
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
-          reportListType={props.reportListFilter.reportListType}
-          filters={props.reportListFilter}
+          reportsType={props.filters.reportsType}
         />
       </Grid>
     </Grid>
@@ -90,7 +61,8 @@ const mapStateToProps = (state, ownProps) => ({
   data: state.nationalSocietyReports.paginatedListData,
   isListFetching: state.nationalSocietyReports.listFetching,
   isRemoving: state.nationalSocietyReports.listRemoving,
-  reportListFilter: state.nationalSocietyReports.filter
+  filters: state.nationalSocietyReports.filters,
+  healthRisks: state.nationalSocietyReports.filtersData.healthRisks
 });
 
 const mapDispatchToProps = {

@@ -1,5 +1,5 @@
 ﻿using System;
-using RX.Nyss.Web.Features.Report.Dto;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
@@ -19,25 +19,10 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 
         public bool IsTraining { get; set; }
 
-        public class AreaDto
-        {
-            public AreaTypeDto Type { get; set; }
-
-            public int Id { get; set; }
-        }
-
         public enum GroupingTypeDto
         {
             Day,
             Week
-        }
-
-        public enum AreaTypeDto
-        {
-            Region,
-            District,
-            Village,
-            Zone
         }
 
         public enum ReportsTypeDto

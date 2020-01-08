@@ -6,6 +6,7 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Utils;
@@ -169,7 +170,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 StartDate = new DateTime(2000, 01, 01),
                 EndDate = new DateTime(2100, 01, 01),
                 HealthRiskId = null,
-                Area = new FiltersRequestDto.AreaDto { Id = regionId, Type = FiltersRequestDto.AreaTypeDto.Region },
+                Area = new AreaDto { Id = regionId, Type = AreaDto.AreaTypeDto.Region },
                 IsTraining = isTraining,
                 GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
                 ReportsType = FiltersRequestDto.ReportsTypeDto.All
@@ -204,7 +205,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 StartDate = new DateTime(2000, 01, 01),
                 EndDate = new DateTime(2100, 01, 01),
                 HealthRiskId = null,
-                Area = new FiltersRequestDto.AreaDto { Id = districtId, Type = FiltersRequestDto.AreaTypeDto.District },
+                Area = new AreaDto { Id = districtId, Type = AreaDto.AreaTypeDto.District },
                 IsTraining = isTraining,
                 GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
                 ReportsType = FiltersRequestDto.ReportsTypeDto.All
@@ -237,7 +238,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 StartDate = new DateTime(2000, 01, 01),
                 EndDate = new DateTime(2100, 01, 01),
                 HealthRiskId = null,
-                Area = new FiltersRequestDto.AreaDto { Id = villageId, Type = FiltersRequestDto.AreaTypeDto.Village },
+                Area = new AreaDto { Id = villageId, Type = AreaDto.AreaTypeDto.Village },
                 IsTraining = true,
                 GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
                 ReportsType = FiltersRequestDto.ReportsTypeDto.All
@@ -278,7 +279,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 StartDate = new DateTime(2000, 01, 01),
                 EndDate = new DateTime(2100, 01, 01),
                 HealthRiskId = null,
-                Area = new FiltersRequestDto.AreaDto { Id = zoneId, Type = FiltersRequestDto.AreaTypeDto.Zone },
+                Area = new AreaDto { Id = zoneId, Type = AreaDto.AreaTypeDto.Zone },
                 IsTraining = true,
                 GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
                 ReportsType = FiltersRequestDto.ReportsTypeDto.All
@@ -319,7 +320,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 StartDate = new DateTime(2000, 01, 01),
                 EndDate = new DateTime(2100, 01, 01),
                 HealthRiskId = null,
-                Area = new FiltersRequestDto.AreaDto { Id = zoneId, Type = FiltersRequestDto.AreaTypeDto.Zone },
+                Area = new AreaDto { Id = zoneId, Type = AreaDto.AreaTypeDto.Zone },
                 IsTraining = false,
                 GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
                 ReportsType = FiltersRequestDto.ReportsTypeDto.All

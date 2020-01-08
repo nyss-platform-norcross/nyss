@@ -163,9 +163,10 @@ export const initialState = {
     listStale: true,
     listNationalSocietyId: null,
     paginatedListData: null,
-    reportListFilter: {
-      reportListType: "main"
-    }
+    filtersData: {
+      healthRisks: []
+    },
+    filters: null,
   },
   alerts: {
     listFetching: false,

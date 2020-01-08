@@ -4,7 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.NationalSociety;
 using RX.Nyss.Web.Features.NationalSocietyReports.Dto;
 using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.User;
@@ -17,7 +20,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 {
     public interface INationalSocietyReportService
     {
-        Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, NationalSocietyReportListFilterRequestDto filter);
+        Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, string identityName, NationalSocietyReportListFilterRequestDto filter);
+        Task<Result<NationalSocietyReportListFilterResponseDto>> GetNationalSocietyReportFilters(int nationalSocietyId);
     }
 
     public class NationalSocietyReportService : INationalSocietyReportService
@@ -26,14 +30,15 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
         private readonly IProjectService _projectService;
+        private readonly INationalSocietyService _nationalSocietyService;
         private readonly IAuthorizationService _authorizationService;
 
-
-        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, IConfig config, IAuthorizationService authorizationService)
+        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INationalSocietyService nationalSocietyService, IConfig config, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _userService = userService;
             _projectService = projectService;
+            _nationalSocietyService = nationalSocietyService;
             _config = config;
             _authorizationService = authorizationService;
         }
@@ -48,15 +53,19 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
                 .Where(r =>
-                    filter.ReportListType == NationalSocietyReportListType.FromDcp ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
-                    filter.ReportListType == NationalSocietyReportListType.Main ? r.DataCollector.DataCollectorType == DataCollectorType.Human :
-                    r.DataCollector == null);
+                    filter.ReportsType == NationalSocietyReportListType.FromDcp ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
+                    filter.ReportsType == NationalSocietyReportListType.Main ? r.DataCollector.DataCollectorType == DataCollectorType.Human :
+                    r.DataCollector == null)
+                .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
+                .Where(r => filter.Status ? r.Report != null : r.Report == null);
 
             if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
             {
                 baseQuery = baseQuery
                     .Where(r => r.DataCollector == null || supervisorProjectIds == null || supervisorProjectIds.Contains(r.DataCollector.Project.Id));
             }
+
+            baseQuery = FilterReportsByArea(baseQuery, filter.Area);
 
             var result = await baseQuery.Select(r => new NationalSocietyReportListResponseDto
                 {
@@ -92,5 +101,38 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             
             return Success(result.AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
         }
+
+        public async Task<Result<NationalSocietyReportListFilterResponseDto>> GetNationalSocietyReportFilters(int nationalSocietyId)
+        {
+            var nationalSocietyHealthRiskNames = await _nationalSocietyService.GetNationalSocietyHealthRiskNames(nationalSocietyId);
+
+            var dto = new NationalSocietyReportListFilterResponseDto
+            {
+                HealthRisks = nationalSocietyHealthRiskNames
+                    .Select(p => new NationalSocietyReportListFilterResponseDto.HealthRiskDto { Id = p.Id, Name = p.Name })
+            };
+
+            return Success(dto);
+        }
+
+        //ToDo: use common logic with the project dashboard
+        private static IQueryable<RawReport> FilterReportsByArea(IQueryable<RawReport> rawReports, AreaDto area) =>
+            area?.Type switch
+            {
+                AreaDto.AreaTypeDto.Region =>
+                rawReports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.Id : r.DataCollector.Village.District.Region.Id == area.Id),
+
+                AreaDto.AreaTypeDto.District =>
+                rawReports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.Id : r.DataCollector.Village.District.Id == area.Id),
+
+                AreaDto.AreaTypeDto.Village =>
+                rawReports.Where(r => r.Report != null ? r.Report.Village.Id == area.Id : r.DataCollector.Village.Id == area.Id),
+
+                AreaDto.AreaTypeDto.Zone =>
+                rawReports.Where(r => r.Report != null ? r.Report.Zone.Id == area.Id : r.DataCollector.Zone.Id == area.Id),
+
+                _ =>
+                rawReports
+            };
     }
 }

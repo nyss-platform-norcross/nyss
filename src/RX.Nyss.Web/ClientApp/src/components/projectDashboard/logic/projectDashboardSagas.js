@@ -31,7 +31,7 @@ function* openProjectDashboard({ projectId }) {
         reportsType: "all"
       };
 
-    yield call(getProjectDashboardData, { projectId, filters: filters })
+    yield call(getProjectDashboardData, { projectId, filters })
 
     yield put(actions.openDashbaord.success(projectId, filtersData.value));
   } catch (error) {

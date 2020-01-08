@@ -16,27 +16,31 @@ function* openNationalSocietyReportsList({ nationalSocietyId }) {
   yield put(actions.openList.request());
   try {
     yield openNationalSocietyReportsModule(nationalSocietyId);
+    const filtersData = yield call(http.get, `/api/nationalSocietyReport/filters?nationalSocietyId=${nationalSocietyId}`);
+    const filters = (yield select(state => state.nationalSocietyReports.filters)) ||
+    {
+      healthRiskId: null,
+      area: null,
+      reportsType: "main",
+      status: true
+    };
 
     if (listStale) {
-      yield call(getNationalSocietyReports, { nationalSocietyId });
+      yield call(getNationalSocietyReports, { nationalSocietyId, filters });
     }
 
-    yield put(actions.openList.success(nationalSocietyId));
+    yield put(actions.openList.success(nationalSocietyId, filtersData.value));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
   }
 };
 
-function* getNationalSocietyReports({ nationalSocietyId, pageNumber, reportListFilter }) {
+function* getNationalSocietyReports({ nationalSocietyId, pageNumber, filters }) {
   yield put(actions.getList.request());
   try {
-    const filter = reportListFilter || {
-      reportListType: "main"
-    };
-
-    const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, filter);
+    const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, filters);
     http.ensureResponseIsSuccess(response);
-    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filter));
+    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }

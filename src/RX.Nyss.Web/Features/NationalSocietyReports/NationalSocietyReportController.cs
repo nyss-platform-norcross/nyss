@@ -25,5 +25,14 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, [FromBody] NationalSocietyReportListFilterRequestDto filterRequest) =>
             await _nationalSocietyReportService.List(nationalSocietyId, pageNumber, filterRequest);
+
+        /// <summary>
+        /// Gets filters data for the national society report list.
+        /// </summary>
+        /// <param name="nationalSocietyId">An identifier of a national society</param>
+        [HttpGet("filters")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result<NationalSocietyReportListFilterResponseDto>> GetFilters(int nationalSocietyId) =>
+            await _nationalSocietyReportService.GetNationalSocietyReportFilters(nationalSocietyId);
     }
 }

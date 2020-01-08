@@ -461,10 +461,15 @@ export const stringKeys = {
       success: "nationalSocietyReports.list.success",
       error: "nationalSocietyReports.list.error",
       markedAsError: "nationalSocietyReports.list.markedAsError",
-      selectReportListType: "nationalSocietyReports.list.selectReportListType",
-      mainReportsListType: "nationalSocietyReports.list.mainReportsListType",
-      dcpReportListType: "nationalSocietyReports.list.dcpReportListType",
-      unknownSenderReportListType: "nationalSocietyReports.list.unknownSenderReportListType"
+      filters: {
+        healthRisk: "nationalSocietyReports.list.filters.healthRisk",
+        healthRiskAll: "nationalSocietyReports.list.filters.healthRiskAll",
+        selectReportListType: "nationalSocietyReports.list.filters.selectReportListType",
+        mainReportsListType: "nationalSocietyReports.list.filters.mainReportsListType",
+        dcpReportListType: "nationalSocietyReports.list.filters.dcpReportListType",
+        unknownSenderReportListType: "nationalSocietyReports.list.filters.unknownSenderReportListType",
+        status: "nationalSocietyReports.list.filters.status"
+      },
     },
     title: "nationalSocietyReports.title"
   },

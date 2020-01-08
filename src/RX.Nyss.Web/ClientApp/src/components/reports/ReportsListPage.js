@@ -17,6 +17,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import TableActions from '../common/tableActions/TableActions';
+import { AreaFilter } from "../common/filters/AreaFilter";
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {
@@ -54,14 +55,21 @@ const ReportsListPageComponent = (props) => {
 
   return (
     <Grid container spacing={3}>
-      
+      {/* <Grid item xs={12} className={styles.filtersGrid}>
+        <ProjectsDashboardFilters
+          healthRisks={props.healthRisks}
+          nationalSocietyId={props.nationalSocietyId}
+          onChange={handleFiltersChange}
+          filters={props.filters}
+        />
+      </Grid> */}
       <Grid item xs={12}>
 
-      <TableActions>          
+        <TableActions>
           <Button onClick={() => props.exportToExcel(props.projectId, props.reportListFilter)} variant="outlined" color="primary">
             {strings(stringKeys.reports.list.exportToExcel)}
           </Button>
-      </TableActions>
+        </TableActions>
 
         <Grid container spacing={3}>
           <Grid item>
@@ -80,6 +88,31 @@ const ReportsListPageComponent = (props) => {
               </Select>
             </FormControl>
           </Grid>
+          {/* <Grid item>
+            <AreaFilter
+              nationalSocietyId={nationalSocietyId}
+              selectedItem={selectedArea}
+              onChange={handleAreaChange}
+            />
+          </Grid>
+          <Grid item>
+            <TextField
+              select
+              label={strings(stringKeys.project.dashboard.filters.healthRisk)}
+              onChange={handleHealthRiskChange}
+              value={value.healthRiskId || 0}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+              <MenuItem value={0}>{strings(stringKeys.project.dashboard.filters.healthRiskAll)}</MenuItem>
+
+              {healthRisks.map(healthRisk => (
+                <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
+                  {healthRisk.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid> */}
           <Grid item>
             <InputLabel className={styles.trainingStateLabel}>{strings(stringKeys.reports.list.trainingReportsListType)}</InputLabel>
             <RadioGroup
@@ -89,7 +122,18 @@ const ReportsListPageComponent = (props) => {
             >
               <FormControlLabel control={<Radio />} label={strings(stringKeys.reports.list.nonTraining)} value={false} />
               <FormControlLabel control={<Radio />} label={strings(stringKeys.reports.list.training)} value={true} />
-            </RadioGroup >
+            </RadioGroup>
+          </Grid>
+          <Grid item>
+            <InputLabel className={styles.trainingStateLabel}>{strings(stringKeys.reports.list.status)}</InputLabel>
+            <RadioGroup
+              value={props.reportListFilter.isTraining}
+              onChange={handleIsTrainingChange}
+              className={styles.trainingStateRadioGroup}
+            >
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.reports.list.success)} value={false} />
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.reports.list.error)} value={true} />
+            </RadioGroup>
           </Grid>
         </Grid>
       </Grid>
