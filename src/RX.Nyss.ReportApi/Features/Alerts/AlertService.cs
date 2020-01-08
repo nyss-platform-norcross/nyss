@@ -139,6 +139,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
                 .Where(r=> !r.IsTraining)
+                .Where(r => !r.MarkedAsError)
                 .ToListAsync();
 
             if (projectHealthRisk.AlertRule.CountThreshold == 0 || reportsWithLabel.Count < projectHealthRisk.AlertRule.CountThreshold)
@@ -155,6 +156,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             var existingActiveAlertForLabel = await _nyssContext.Reports
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
+                .Where(r => !r.MarkedAsError)
                 .Where(r => !r.IsTraining)
                 .Where(r => r.ReportGroupLabel == reportGroupLabel)
                 .SelectMany(r => r.ReportAlerts)
@@ -167,6 +169,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             {
                 var reportsInLabelWithNoActiveAlert = await _nyssContext.Reports
                     .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
+                    .Where(r => !r.MarkedAsError)
                     .Where(r => !r.IsTraining)
                     .Where(r => r.ReportGroupLabel == reportGroupLabel)
                     .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated || ra.Alert.Status == AlertStatus.Closed)

@@ -1,4 +1,3 @@
-import styles from '../common/table/Table.module.scss';
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
@@ -11,8 +10,12 @@ import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 import { TableContainer } from '../common/table/TableContainer';
+import { TableRowActions } from '../common/tableRowAction/TableRowActions';
+import { accessMap } from '../../authentication/accessMap';
+import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
-export const ReportsTable = ({ isListFetching, list, projectId, getList, page, rowsPerPage, totalRows, reportListType }) => {
+export const ReportsTable = ({ isListFetching, list, projectId, getList, page, rowsPerPage, totalRows, reportListType, markAsError, unmarkAsError, isMarkingAsError, user, filters }) => {
 
   const onChangePage = (event, page) => {
     getList(projectId, page);
@@ -21,6 +24,22 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
   const dashIfEmpty = (text, ...args) => {
     return [text || "-", ...args].filter(x => !!x).join(", ");
   };
+
+  const getMarkAsErrorMenuItem = (row) => {
+    if(row.isMarkedAsError){
+      return {
+        title: strings(stringKeys.reports.list.unmarkAsError),
+        action: () => unmarkAsError(row.reportId, projectId, page, filters)
+      };
+    } else{
+      return  {
+        title: strings(stringKeys.reports.list.markAsError),
+        action: () => markAsError(row.reportId, projectId, page, filters)
+      };
+    }
+  };
+
+  const hasMarkAsErrorAccess = user.roles.filter((r) => { return accessMap.reports.markAsError.indexOf(r) !== -1; }).length > 0;
 
   return (
     <TableContainer>
@@ -45,13 +64,18 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
                 <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
               </Fragment>
             }
+            <TableCell style={{ width: "3%" }} />
           </TableRow>
         </TableHead>
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover>
               <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
-              <TableCell>{row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error)}</TableCell>
+              <TableCell>
+                {row.isMarkedAsError
+                  ? strings(stringKeys.reports.list.markedAsError)
+                  : row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error)}
+              </TableCell>
               <TableCell>{row.dataCollectorDisplayName}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
@@ -67,6 +91,20 @@ export const ReportsTable = ({ isListFetching, list, projectId, getList, page, r
                   <TableCell>{dashIfEmpty(row.fromOtherVillagesCount)}</TableCell>
                 </Fragment>
               }
+              <TableCell>
+                <TableRowActions>
+                  {hasMarkAsErrorAccess && row.isValid && !row.isInAlert && (
+                    <TableRowMenu
+                      id={row.id}
+                      icon={<MoreVertIcon />}
+                      isFetching={isMarkingAsError[row.id]}
+                      items={[
+                        getMarkAsErrorMenuItem(row)
+                      ]}
+                    />
+                  )}                  
+                </TableRowActions>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

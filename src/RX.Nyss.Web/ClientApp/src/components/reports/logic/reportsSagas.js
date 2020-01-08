@@ -5,12 +5,15 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import {downloadFile} from "../../../utils/downloadFile";
+import { stringKeys } from "../../../strings";
 
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
   takeEvery(consts.GET_REPORTS.INVOKE, getReports),
-  takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExportData)
+  takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExportData),
+  takeEvery(consts.MARK_AS_ERROR.INVOKE, markAsError),
+  takeEvery(consts.UNMARK_AS_ERROR.INVOKE, unmarkAsError)
 ];
 
 function* openReportsList({ projectId }) {
@@ -65,7 +68,6 @@ function* getExportData({ projectId, reportListFilter }) {
   }
 };
 
-
 function* openReportsModule(projectId) {
   const project = yield call(http.getCached, {
     path: `/api/project/${projectId}/basicData`,
@@ -80,3 +82,29 @@ function* openReportsModule(projectId) {
     projectName: project.value.name
   }));
 }
+
+function* markAsError({ reportId, projectId, pageNumber, reportListFilter }) {
+  yield put(actions.markAsError.request());
+  try {    
+    yield call(http.post, `/api/report/${reportId}/markAsError`);
+    yield put(actions.markAsError.success());
+    yield put(appActions.showMessage(stringKeys.reports.list.successfulyMarkedAsError));
+        
+    yield call(getReports, {projectId, pageNumber, reportListFilter});
+  } catch (error) {
+    yield put(actions.markAsError.failure());
+  }
+};
+
+function* unmarkAsError({ reportId, projectId, pageNumber, reportListFilter }) {
+  yield put(actions.unmarkAsError.request());
+  try {    
+    yield call(http.post, `/api/report/${reportId}/unmarkAsError`);
+    yield put(actions.unmarkAsError.success());
+    yield put(appActions.showMessage(stringKeys.reports.list.successfulyUnmarkedAsError));  
+    
+    yield call(getReports, {projectId, pageNumber, reportListFilter});
+  } catch (error) {
+    yield put(actions.unmarkAsError.failure());
+  }
+};

@@ -405,7 +405,12 @@ export const stringKeys = {
       training: "reports.list.training",
       nonTraining: "reports.list.nonTraining",
       dcpReportListType: "reports.list.dcpReportListType",
-      exportToExcel: "reports.list.exportToExcel"
+      exportToExcel: "reports.list.exportToExcel",
+      successfulyMarkedAsError: "reports.list.successfulyMarkedAsError",
+      successfulyUnmarkedAsError: "reports.list.successfulyUnmarkedAsError",
+      markAsError: "reports.list.markAsError",
+      unmarkAsError: "reports.list.unmarkAsError",
+      markedAsError: "reports.list.markedAsError",
     },
     title: "reports.title"
   },

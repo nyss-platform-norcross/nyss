@@ -17,6 +17,8 @@ using Microsoft.Extensions.DependencyModel;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
+using RX.Nyss.Web.Features.Authentication.Policies;
+using RX.Nyss.Web.Features.Report.Access;
 using RX.Nyss.Web.Features.Alerts.Access;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.DataCollector.Access;
@@ -188,6 +190,10 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.AlertAccess.ToString(),
                     policy => policy.Requirements.Add(new AlertAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new AlertAccessRequirement()));
+
+                options.AddPolicy(Policy.ReportAccess.ToString(),
+                    policy => policy.Requirements.Add(new ReportAccessRequirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
@@ -204,6 +210,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, VillageAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ZoneAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, AlertAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, ReportAccessHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

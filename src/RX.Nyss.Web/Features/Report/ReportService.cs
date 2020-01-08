@@ -23,6 +23,8 @@ namespace RX.Nyss.Web.Features.Report
     {
         Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter);
         Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter);
+        Task<Result> MarkAsError(int reportId);
+        Task<Result> UnmarkAsError(int reportId);
     }
 
     public class ReportService : IReportService
@@ -109,6 +111,9 @@ namespace RX.Nyss.Web.Features.Report
                             : null,
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
+                    IsMarkedAsError = r.Report.MarkedAsError,
+                    IsInAlert = r.Report.ReportAlerts.Any(),
+                    ReportId = r.ReportId,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
@@ -263,5 +268,27 @@ namespace RX.Nyss.Web.Features.Report
 
         private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
             stringResources.Keys.Contains(key) ? stringResources[key] : key;
+
+        public async Task<Result> UnmarkAsError(int reportId)
+        {
+            await SetMarkedAsError(reportId, false);
+            return Success();
+        }
+
+        public async Task<Result> MarkAsError(int reportId)
+        {
+            await SetMarkedAsError(reportId, true);
+            return Success();
+        }
+
+        private async Task SetMarkedAsError(int reportId, bool markedAsError)
+        {
+            var report = await _nyssContext.Reports
+                .Where(r => !r.ReportAlerts.Any())
+                .FirstOrDefaultAsync(r => r.Id == reportId);
+
+            report.MarkedAsError = markedAsError;
+            await _nyssContext.SaveChangesAsync();
+        }
     }
 }

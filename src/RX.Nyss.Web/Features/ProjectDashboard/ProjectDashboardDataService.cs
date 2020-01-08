@@ -393,6 +393,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var startDate = filtersDto.StartDate.Date;
             var endDate = filtersDto.EndDate.Date.AddDays(1);
             var reports = _nyssContext.Reports
+                .Where(r => !r.MarkedAsError)
                 .Where(r => filtersDto.IsTraining ?
                     r.IsTraining :
                     !r.IsTraining);

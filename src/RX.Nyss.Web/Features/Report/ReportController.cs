@@ -38,5 +38,23 @@ namespace RX.Nyss.Web.Features.Report
             var excelSheetBytes = await _reportService.Export(projectId, filterRequest);
             return File(excelSheetBytes, "text/csv");
         }
+
+        /// <summary>
+        /// Mark the selected report as error
+        /// </summary>
+        /// <param name="reportId">The ID of the report to be marked as error</param>
+        [HttpPost("{reportId}/markAsError")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
+        public async Task<Result> MarkAsError(int reportId) =>
+            await _reportService.MarkAsError(reportId);
+
+        /// <summary>
+        /// Un-mark the selected report as error
+        /// </summary>
+        /// <param name="reportId">The ID of the report to be remove the error flag from</param>
+        [HttpPost("{reportId}/unmarkAsError")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
+        public async Task<Result> UnmarkAsError(int reportId) =>
+            await _reportService.UnmarkAsError(reportId);
     }
 }
