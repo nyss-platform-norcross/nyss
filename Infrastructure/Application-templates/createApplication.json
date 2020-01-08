@@ -197,7 +197,7 @@
           ],
           "tags": "[parameters('tagValues')]",
           "properties": {
-            "siteConfig":{
+            "siteConfig": {
               "autoSwapSlotName": "production",
               "appSettings": [
                 {
@@ -294,14 +294,14 @@
           "properties": {
             "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
             "siteConfig": {
-              "alwaysOn": "[parameters('alwaysOn')]",
               "autoSwapSlotName": "production",
-              "appSettings": [
+              "metadata": [
                 {
-                  "name": "WEBSITE_SWAP_WARMUP_PING_STATUSES",
-                  "value": "200"
+                  "name": "CURRENT_STACK",
+                  "value": "[parameters('currentStack')]"
                 }
-              ]
+              ],
+              "alwaysOn": "[parameters('alwaysOn')]"
             }
           }
         }
