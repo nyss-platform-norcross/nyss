@@ -17,7 +17,18 @@ using Microsoft.Extensions.DependencyModel;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
-using RX.Nyss.Web.Features.Authentication.Policies;
+using RX.Nyss.Web.Features.Alerts.Access;
+using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.DataCollector.Access;
+using RX.Nyss.Web.Features.DataConsumer.Access;
+using RX.Nyss.Web.Features.Manager.Access;
+using RX.Nyss.Web.Features.NationalSociety.Access;
+using RX.Nyss.Web.Features.NationalSocietyStructure.Access;
+using RX.Nyss.Web.Features.Project.Access;
+using RX.Nyss.Web.Features.SmsGateway.Access;
+using RX.Nyss.Web.Features.Supervisor.Access;
+using RX.Nyss.Web.Features.TechnicalAdvisor.Access;
+using RX.Nyss.Web.Features.User.Access;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Serilog;
@@ -123,7 +134,8 @@ namespace RX.Nyss.Web.Configuration
                 };
             });
 
-            bool IsApiRequest(HttpRequest request) => request.Path.StartsWithSegments("/api");
+            bool IsApiRequest(HttpRequest request) =>
+                request.Path.StartsWithSegments("/api");
 
             bool IsAjaxRequest(HttpRequest request) =>
                 string.Equals(request.Query["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal) ||
@@ -136,46 +148,46 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddAuthorization(options =>
             {
                 options.AddPolicy(Policy.NationalSocietyAccess.ToString(),
-                    policy => policy.Requirements.Add(new NationalSocietyAccessRequirement()));
+                    policy => policy.Requirements.Add(new NationalSocietyAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.ManagerAccess.ToString(),
-                    policy => policy.Requirements.Add(new ManagerAccessRequirement()));
+                    policy => policy.Requirements.Add(new ManagerAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.DataConsumerAccess.ToString(),
-                    policy => policy.Requirements.Add(new DataConsumerAccessRequirement()));
+                    policy => policy.Requirements.Add(new DataConsumerAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.TechnicalAdvisorAccess.ToString(),
-                    policy => policy.Requirements.Add(new TechnicalAdvisorAccessRequirement()));
+                    policy => policy.Requirements.Add(new TechnicalAdvisorAccessHandler.Requirement()));
                     
                 options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
-                    policy => policy.Requirements.Add(new SmsGatewayAccessRequirement()));
+                    policy => policy.Requirements.Add(new SmsGatewayAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.SupervisorAccess.ToString(),
-                    policy => policy.Requirements.Add(new SupervisorAccessRequirement()));
+                    policy => policy.Requirements.Add(new SupervisorAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.DataCollectorAccess.ToString(),
-                    policy => policy.Requirements.Add(new DataCollectorAccessRequirement()));
+                    policy => policy.Requirements.Add(new DataCollectorAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.ProjectAccess.ToString(),
-                    policy => policy.Requirements.Add(new ProjectAccessRequirement()));
+                    policy => policy.Requirements.Add(new ProjectAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.HeadManagerAccess.ToString(),
-                    policy => policy.Requirements.Add(new HeadManagerAccessHandlerRequirement()));
+                    policy => policy.Requirements.Add(new HeadManagerAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.RegionAccess.ToString(),
-                    policy => policy.Requirements.Add(new RegionAccessRequirement()));
+                    policy => policy.Requirements.Add(new RegionAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.DistrictAccess.ToString(),
-                    policy => policy.Requirements.Add(new DistrictAccessRequirement()));
+                    policy => policy.Requirements.Add(new DistrictAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.VillageAccess.ToString(),
-                    policy => policy.Requirements.Add(new VillageAccessRequirement()));
+                    policy => policy.Requirements.Add(new VillageAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.ZoneAccess.ToString(),
-                    policy => policy.Requirements.Add(new ZoneAccessRequirement()));
+                    policy => policy.Requirements.Add(new ZoneAccessHandler.Requirement()));
 
                 options.AddPolicy(Policy.AlertAccess.ToString(),
-                    policy => policy.Requirements.Add(new AlertAccessRequirement()));
+                    policy => policy.Requirements.Add(new AlertAccessHandler.Requirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();

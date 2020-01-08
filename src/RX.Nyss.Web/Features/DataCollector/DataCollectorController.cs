@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Authentication.Policies;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -29,7 +29,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         [HttpGet, Route("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId) =>
-            await _dataCollectorService.ListDataCollectors(projectId, User.Identity.Name, User.GetRoles());
+            await _dataCollectorService.ListDataCollectors(projectId);
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
@@ -54,16 +54,16 @@ namespace RX.Nyss.Web.Features.DataCollector
         [HttpGet, Route("formData")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
         public async Task<Result<DataCollectorFormDataResponse>> GetDataCollectorFormData(int projectId) =>
-            await _dataCollectorService.GetFormData(projectId, User.Identity.Name);
+            await _dataCollectorService.GetFormData(projectId);
 
         [HttpGet, Route("mapOverview")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to) =>
-            await _dataCollectorService.GetMapOverview(projectId, from, to, User.Identity.Name, User.GetRoles());
+            await _dataCollectorService.GetMapOverview(projectId, from, to);
 
         [HttpGet, Route("mapOverviewDetails")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng) =>
-            await _dataCollectorService.GetMapOverviewDetails(projectId, @from, to, lat, lng, User.Identity.Name, User.GetRoles());
+            await _dataCollectorService.GetMapOverviewDetails(projectId, @from, to, lat, lng);
     }
 }

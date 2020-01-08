@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.HealthRisk.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
@@ -12,7 +13,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
 {
     public interface IHealthRiskService
     {
-        Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks(string userName);
+        Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks();
         Task<Result<HealthRiskResponseDto>> GetHealthRisk(int id);
         Task<Result> CreateHealthRisk(HealthRiskRequestDto healthRiskRequestDto);
         Task<Result> EditHealthRisk(int id, HealthRiskRequestDto healthRiskRequestDto);
@@ -22,14 +23,18 @@ namespace RX.Nyss.Web.Features.HealthRisk
     public class HealthRiskService : IHealthRiskService
     {
         private readonly INyssContext _nyssContext;
+        private readonly IAuthorizationService _authorizationService;
 
-        public HealthRiskService(INyssContext nyssContext)
+        public HealthRiskService(INyssContext nyssContext, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
+            _authorizationService = authorizationService;
         }
 
-        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks(string userName)
+        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks()
         {
+            var userName = _authorizationService.GetCurrentUserName();
+
             var languageCode = await _nyssContext.Users
                 .Where(u => u.EmailAddress == userName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)

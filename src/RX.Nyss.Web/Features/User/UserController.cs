@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Authentication.Policies;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.User.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Features.User
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> List(int nationalSocietyId) =>
-            await _userService.GetUsersInNationalSociety(nationalSocietyId, User.GetRoles());
+            await _userService.GetUsers(nationalSocietyId);
 
         /// <summary>
         /// Gets basic data about the user

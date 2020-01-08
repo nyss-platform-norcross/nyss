@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.Authentication.Policies
+﻿namespace RX.Nyss.Web.Features.Common
 {
     public enum Policy
     {

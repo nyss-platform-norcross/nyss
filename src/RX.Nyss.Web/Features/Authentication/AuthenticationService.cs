@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -163,15 +161,5 @@ namespace RX.Nyss.Web.Features.Authentication
 
         private StatusResponseDto.HomePageDto GetRootHomePage() =>
             new StatusResponseDto.HomePageDto { Page = HomePageType.Root };
-
-        private async Task<IEnumerable<string>> GetRoles(IdentityUser user) => await _userIdentityService.GetRoles(user);
-
-        private async Task<IEnumerable<Claim>> GetAdditionalClaims(IdentityUser identityUser) => await GetNationalSocietyClaims(identityUser);
-
-        private async Task<List<Claim>> GetNationalSocietyClaims(IdentityUser identityUser) =>
-            await _nyssContext.UserNationalSocieties
-                .Where(uns => uns.User.IdentityUserId == identityUser.Id)
-                .Select(uns => new Claim(ClaimType.ResourceAccess, $"{ResourceType.NationalSociety}:{uns.NationalSocietyId}"))
-                .ToListAsync();
     }
 }

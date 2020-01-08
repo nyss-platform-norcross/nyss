@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Authentication.Policies;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Features.Project
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId) =>
-            _projectService.ListProjects(nationalSocietyId, User.Identity.Name, User.GetRoles());
+            _projectService.ListProjects(nationalSocietyId);
 
         /// <summary>
         /// Adds a new project for a specified national society.

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using RX.Nyss.Web.Features.Authentication.Policies;
+using RX.Nyss.Web.Features.Common;
 
 namespace RX.Nyss.Web.Utils
 {

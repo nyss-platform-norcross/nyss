@@ -7,7 +7,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alerts.Dto;
-using RX.Nyss.Web.Features.NationalSociety;
 using RX.Nyss.Web.Features.Project.Domain;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Services.Authorization;
@@ -21,7 +20,7 @@ namespace RX.Nyss.Web.Features.Project
     public interface IProjectService
     {
         Task<Result<ProjectResponseDto>> GetProject(int projectId);
-        Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId);
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> DeleteProject(int projectId);
@@ -29,8 +28,6 @@ namespace RX.Nyss.Web.Features.Project
         Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
         Task<IEnumerable<ProjectHealthRiskName>> GetProjectHealthRiskNames(int projectId);
-        Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId);
-        Task<bool> HasCurrentUserAccessToProject(int projectId);
         Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
     }
 
@@ -39,20 +36,16 @@ namespace RX.Nyss.Web.Features.Project
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly INationalSocietyService _nationalSocietyService;
         private readonly IAuthorizationService _authorizationService;
 
         public ProjectService(
             INyssContext nyssContext,
             ILoggerAdapter loggerAdapter,
-            IDateTimeProvider dateTimeProvider,
-            INationalSocietyService nationalSocietyService,
-            IAuthorizationService authorizationService)
+            IDateTimeProvider dateTimeProvider, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
-            _nationalSocietyService = nationalSocietyService;
             _authorizationService = authorizationService;
         }
 
@@ -120,11 +113,11 @@ namespace RX.Nyss.Web.Features.Project
                 })
                 .ToListAsync();
 
-        public async Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles)
+        public async Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId)
         {
-            var minReportDate = _dateTimeProvider.UtcNow.Date.Subtract(TimeSpan.FromDays(28));
+            var userIdentityName = _authorizationService.GetCurrentUserName();
 
-            var projectsQuery = roles.Contains(Role.Supervisor.ToString())
+            var projectsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
                 ? _nyssContext.SupervisorUserProjects
                     .Where(x => x.SupervisorUser.EmailAddress == userIdentityName)
                     .Select(x => x.Project)
@@ -445,43 +438,13 @@ namespace RX.Nyss.Web.Features.Project
             }
         }
 
-        public async Task<bool> HasCurrentUserAccessToProject(int projectId)
-        {
-            var currentUser = _authorizationService.GetCurrentUser();
-
-            var nationalSocietyId = await _nyssContext.Projects
-                .Where(p => p.Id == projectId)
-                .Select(p => p.NationalSocietyId)
-                .SingleAsync();
-
-            return currentUser.Roles.Contains(Role.Supervisor.ToString())
-                ? await HasSupervisorAccessToProject(currentUser.Name, projectId)
-                : await _nationalSocietyService.HasUserAccessNationalSocieties(new [] { nationalSocietyId }, currentUser.Name, currentUser.Roles);
-        }
-
-        public async Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId) =>
-            await _nyssContext.SupervisorUserProjects.AnyAsync(sup => sup.SupervisorUser.EmailAddress == supervisorIdentityName && sup.ProjectId == projectId);
-
-        public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName)
-        {
-            var user = await _nyssContext.Users
-                .OfType<SupervisorUser>()
-                .SingleOrDefaultAsync(u => u.EmailAddress == supervisorIdentityName);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var projectIds = await _nyssContext.Users
+        public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName) =>
+            await _nyssContext.Users
                 .OfType<SupervisorUser>()
                 .Where(u => u.EmailAddress == supervisorIdentityName)
                 .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
                 .ToListAsync();
-
-            return projectIds;
-        }
-
+        
         private async Task<ProjectFormDataResponseDto> GetFormDataDto(int contentLanguageId)
         {
             var projectHealthRisks = await _nyssContext.HealthRisks
