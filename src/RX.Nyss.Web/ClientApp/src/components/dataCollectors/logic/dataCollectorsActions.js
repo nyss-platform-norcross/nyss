@@ -6,7 +6,9 @@ import {
   REMOVE_DATA_COLLECTOR, OPEN_DATA_COLLECTORS_MAP_OVERVIEW,
   GET_DATA_COLLECTORS_MAP_OVERVIEW,
   GET_DATA_COLLECTORS_MAP_DETAILS,
-  SET_DATA_COLLECTORS_TRAINING_STATE
+  SET_DATA_COLLECTORS_TRAINING_STATE,
+  OPEN_DATA_COLLECTORS_PERFORMANCE_LIST,
+  GET_DATA_COLLECTORS_PERFORMANCE
 } from "./dataCollectorsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors/list`);
@@ -90,3 +92,17 @@ export const setTrainingState = {
   success: (dataCollectorId, inTraining) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.SUCCESS, dataCollectorId, inTraining }),
   failure: (dataCollectorId) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE, dataCollectorId })
 };
+
+export const openDataCollectorsPerformanceList = {
+  invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, projectId }),
+  request: () => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.REQUEST }),
+  success: (projectId) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS, projectId }),
+  failure: (message) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.FAILURE, message })
+}
+
+export const getDataCollectorsPerformanceList = {
+  invoke: (projectId) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.INVOKE, projectId }),
+  request: () => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.REQUEST }),
+  success: (list) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS, list }),
+  failure: (message) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.FAILURE, message })
+}

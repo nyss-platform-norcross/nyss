@@ -92,6 +92,18 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE:
       return { ...state, settingTrainingState: removeProperty(state.settingTrainingState, action.dataCollectorId) };
 
+    case actions.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS:
+      return { ...state, listProjectId: action.projectId };
+
+    case actions.GET_DATA_COLLECTORS_PERFORMANCE.REQUEST:
+      return { ...state, performanceListFetching: true, performanceListData: [] };
+
+    case actions.GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS:
+      return { ...state, performanceListFetching: false, performanceListData: action.list, performanceListStale: false };
+
+    case actions.GET_DATA_COLLECTORS_PERFORMANCE.FAILURE:
+      return { ...state, performanceListFetching: false, performanceListData: [] };
+
     default:
       return state;
   }

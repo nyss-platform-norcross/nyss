@@ -44,6 +44,7 @@ export const accessMap = {
   },
   dataCollectors: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    performanceList: [Administrator, Manager, TechnicalAdvisor],
     add: [Administrator, Manager, TechnicalAdvisor, Supervisor],
     edit: [Administrator, Manager, TechnicalAdvisor, Supervisor],
     delete: [Administrator, Manager, TechnicalAdvisor, Supervisor]

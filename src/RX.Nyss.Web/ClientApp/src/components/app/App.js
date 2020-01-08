@@ -47,6 +47,7 @@ import { AlertsListPage } from '../alerts/AlertsListPage';
 import { AlertsAssessmentPage } from '../alerts/AlertsAssessmentPage';
 import { NationalSocietyReportsListPage } from '../nationalSocietyReports/NationalSocietyReportsListPage';
 import { ProjectsOverviewPage } from '../projects/ProjectsOverviewPage';
+import { DataCollectorsPerformancePage } from '../dataCollectors/DataCollectorsPerformancePage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -100,6 +101,7 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/healthrisks/:healthRiskId/edit' component={HealthRisksEditPage} roles={accessMap.healthRisks.edit} />
 
           <AuthRoute exact path='/projects/:projectId/datacollectors/list' component={DataCollectorsListPage} roles={accessMap.dataCollectors.list} />
+          <AuthRoute exact path='/projects/:projectId/datacollectors/performance' component={DataCollectorsPerformancePage} roles={accessMap.dataCollectors.performanceList} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/add' component={DataCollectorsCreatePage} roles={accessMap.dataCollectors.add} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
 

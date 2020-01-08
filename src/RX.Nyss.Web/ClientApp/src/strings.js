@@ -361,6 +361,19 @@ export const stringKeys = {
       setToInTraining: "dataCollectors.list.setToInTraining",
       takeOutOfTraining: "dataCollectors.list.takeOutOfTraining"
     },
+    performanceList: {
+      title: "dataCollectors.performanceList.title",
+      name: "dataCollectors.performanceList.name",
+      daysSinceLastReport: "dataCollectors.performanceList.daysSinceLastReport",
+      statusLastWeek: "dataCollectors.performanceList.statusLastWeek",
+      statusTwoWeeksAgo: "dataCollectors.performanceList.statusTwoWeeksAgo",
+      statusThreeWeeksAgo: "dataCollectors.performanceList.statusThreeWeeksAgo",
+      statusFourWeeksAgo: "dataCollectors.performanceList.statusFourWeeksAgo",
+      statusFiveWeeksAgo: "dataCollectors.performanceList.statusFiveWeeksAgo",
+      statusSixWeeksAgo: "dataCollectors.performanceList.statusSixWeeksAgo",
+      statusSevenWeeksAgo: "dataCollectors.performanceList.statusSevenWeeksAgo",
+      statusEightWeeksAgo: "dataCollectors.performanceList.statusEightWeeksAgo",
+    },
     constants: {
       sex: {
         male: "dataCollectors.sex.male",

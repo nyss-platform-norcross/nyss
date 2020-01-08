@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -33,7 +32,7 @@ namespace RX.Nyss.Web.Features.DataCollector
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result> CreateDataCollector(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) => 
+        public async Task<Result> CreateDataCollector(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) =>
             await _dataCollectorService.CreateDataCollector(projectId, createDataCollectorDto);
 
         [HttpPost, Route("{dataCollectorId:int}/edit")]
@@ -64,6 +63,11 @@ namespace RX.Nyss.Web.Features.DataCollector
         [HttpGet, Route("mapOverviewDetails")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng) =>
-            await _dataCollectorService.GetMapOverviewDetails(projectId, @from, to, lat, lng);
+            await _dataCollectorService.GetMapOverviewDetails(projectId, @from, to, lat, lng, User.Identity.Name, User.GetRoles());
+
+        [HttpGet, Route("performance")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId) =>
+            await _dataCollectorService.GetDataCollectorPerformance(projectId, User.Identity.Name, User.GetRoles());
     }
 }

@@ -42,4 +42,13 @@ export const dataCollectorsSiteMap = [
     placeholderIndex: 2,
     middleStepOnly: true
   },
+  {
+    parentPath: "/projects/:projectId/datacollectors",
+    path: "/projects/:projectId/datacollectors/performance",
+    title: () => strings(stringKeys.dataCollector.performanceList.title),
+    placeholder: placeholders.tabMenu,
+    access: accessMap.dataCollectors.performanceList,
+    placeholderIndex: 3,
+    middleStepOnly: true
+  }
 ];

@@ -17,7 +17,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.EDIT_DATA_COLLECTOR.INVOKE, editDataCollector),
   takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector),
   takeEvery(consts.GET_DATA_COLLECTORS_MAP_DETAILS.INVOKE, getMapDetails),
-  takeEvery(consts.SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, setTrainingState)
+  takeEvery(consts.SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, setTrainingState),
+  takeEvery(consts.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, openDataCollectorsPerformanceList)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -175,3 +176,32 @@ function* setTrainingState({ dataCollectorId, inTraining }) {
     yield put(actions.setTrainingState.failure(dataCollectorId));
   }
 };
+
+function* openDataCollectorsPerformanceList({ projectId }) {
+  const listStale = yield select(state => state.dataCollectors.performanceListStale);
+  const listProjectId = yield select(state => state.dataCollectors.listProjectId);
+
+  yield put(actions.openDataCollectorsPerformanceList.request());
+  try {
+    yield openDataCollectorsModule(projectId);
+
+    if (listStale || listProjectId !== projectId) {
+      yield call(getDataCollectorsPerformance, projectId);
+    }
+
+    yield put(actions.openDataCollectorsPerformanceList.success(projectId));
+  } catch (error) {
+    yield put(actions.openDataCollectorsPerformanceList.failure(error.message));
+  }
+};
+
+function* getDataCollectorsPerformance(projectId) {
+  yield put(actions.getDataCollectorsPerformanceList.request());
+  try {
+    const response = yield call(http.get, `/api/dataCollector/performance?projectId=${projectId}`);
+    yield put(actions.getDataCollectorsPerformanceList.success(response.value));
+  } catch (error) {
+    yield put(actions.getDataCollectorsPerformanceList.failure(error.message));
+  }
+};
+
