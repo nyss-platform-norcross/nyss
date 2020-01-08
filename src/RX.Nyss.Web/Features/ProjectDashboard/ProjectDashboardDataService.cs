@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -147,7 +148,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .OrderBy(r => r.Period)
                 .Select(x => new DataCollectionPointsReportsByDateDto()
                 {
-                    Period = x.Period.ToString("dd/MM"),
+                    Period = x.Period.ToString("dd/MM", CultureInfo.InvariantCulture),
                     ReferredCount = x.ReferredCount,
                     DeathCount = x.DeathCount,
                     FromOtherVillagesCount = x.FromOtherVillagesCount
@@ -263,7 +264,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .OrderBy(r => r.Period)
                 .Select(x => new ReportByFeaturesAndDateResponseDto
                 {
-                    Period = x.Period.ToString("dd/MM"),
+                    Period = x.Period.ToString("dd/MM", CultureInfo.InvariantCulture),
                     CountFemalesAtLeastFive = x.CountFemalesAtLeastFive,
                     CountFemalesBelowFive = x.CountFemalesBelowFive,
                     CountMalesAtLeastFive = x.CountMalesAtLeastFive,
@@ -345,7 +346,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .OrderBy(r => r.Period)
                 .Select(x => new ReportByDateResponseDto
                 {
-                    Period = x.Period.ToString("dd/MM"),
+                    Period = x.Period.ToString("dd/MM", CultureInfo.InvariantCulture),
                     Count = x.Count
                 })
                 .ToList();
