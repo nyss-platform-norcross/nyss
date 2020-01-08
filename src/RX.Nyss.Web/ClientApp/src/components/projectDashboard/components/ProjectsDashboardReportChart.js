@@ -6,7 +6,7 @@ import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import { strings, stringKeys } from '../../../strings';
 
-const getOptions = (valuesLabel, series) => ({
+const getOptions = (valuesLabel, series, categories) => ({
   chart: {
     type: 'column',
     backgroundColor: "transparent",
@@ -19,6 +19,7 @@ const getOptions = (valuesLabel, series) => ({
   },
   xAxis: {
     type: 'category',
+    categories: categories
   },
   yAxis: {
     title: {
@@ -53,12 +54,14 @@ export const ProjectsDashboardReportChart = ({ data }) => {
   const series = [
     {
       name: strings(stringKeys.project.dashboard.allReportsChart.periods, true),
-      data: data.map(d => ({ name: d.period, y: d.count })),
+      data: data.map(d => d.count),
       color: "#72d5fb"
     }
   ];
 
-  const chartData = getOptions(strings(stringKeys.project.dashboard.allReportsChart.numberOfReports, true), series)
+  const categories = data.map(d => d.period);
+
+  const chartData = getOptions(strings(stringKeys.project.dashboard.allReportsChart.numberOfReports, true), series, categories)
 
   return (
     <Card>
