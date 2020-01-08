@@ -274,9 +274,15 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
         {
-            var groupedReports = await reports
-                .Select(r => new { r.ReceivedAt.Year, r.EpiWeek, r.ReportedCase.CountFemalesAtLeastFive, r.ReportedCase.CountFemalesBelowFive, r.ReportedCase.CountMalesAtLeastFive, r.ReportedCase.CountMalesBelowFive })
-                .GroupBy(r => new { r.Year, r.EpiWeek })
+            var mappedReports = await reports
+                .Select(r => new { r.ReceivedAt, r.EpiWeek, r.ReportedCase.CountFemalesAtLeastFive, r.ReportedCase.CountFemalesBelowFive, r.ReportedCase.CountMalesAtLeastFive, r.ReportedCase.CountMalesBelowFive })
+                .ToListAsync();
+
+            var groupedReports = mappedReports.GroupBy(r => new
+                {
+                    Year = _dateTimeProvider.IsFirstWeekOfNextYear(r.ReceivedAt) ? r.ReceivedAt.Year + 1 : r.ReceivedAt.Year,
+                    r.EpiWeek
+                })
                 .Select(grouping => new
                 {
                     EpiPeriod = grouping.Key,
@@ -285,7 +291,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     CountMalesAtLeastFive = (int)grouping.Sum(g => g.CountMalesAtLeastFive),
                     CountMalesBelowFive = (int)grouping.Sum(g => g.CountMalesBelowFive)
                 })
-                .ToListAsync();
+                .ToList();
 
             var missingWeeks = Enumerable
                 .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
@@ -347,16 +353,21 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private async Task<IList<ReportByDateResponseDto>> GroupReportsByWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
         {
-            var groupedReports = await reports
+            var mappedReports = await reports
                 .Select(r => new
                 {
-                    r.ReceivedAt.Year,
+                    r.ReceivedAt,
                     r.EpiWeek,
                     Total = r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1,
+                }).ToListAsync();
+
+            var groupedReports = mappedReports.GroupBy(r => new
+                {
+                    Year = _dateTimeProvider.IsFirstWeekOfNextYear(r.ReceivedAt) ? r.ReceivedAt.Year + 1 : r.ReceivedAt.Year,
+                    r.EpiWeek
                 })
-                .GroupBy(r => new { r.Year, r.EpiWeek })
                 .Select(grouping => new { EpiPeriod = grouping.Key, Count = (int)grouping.Sum(r => r.Total) })
-                .ToListAsync();
+                .ToList();
 
             var missingWeeks = Enumerable
                 .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
