@@ -41,9 +41,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         public async Task<Alert> ReportAdded(Report report)
         {
-            if (report.DataCollector.DataCollectorType != DataCollectorType.Human ||
-                (report.ReportType != ReportType.Single &&
-                report.ReportType != ReportType.NonHuman))
+            if (report.DataCollector.DataCollectorType != DataCollectorType.Human
+                || (report.ReportType != ReportType.Single && report.ReportType != ReportType.NonHuman)
+                || report.IsTraining)
             {
                 return null;
             }
@@ -138,9 +138,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(r => r.ReportGroupLabel == reportGroupLabel)
                 .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
+                .Where(r=> !r.IsTraining)
                 .ToListAsync();
 
-            if (reportsWithLabel.Count < projectHealthRisk.AlertRule.CountThreshold)
+            if (projectHealthRisk.AlertRule.CountThreshold == 0 || reportsWithLabel.Count < projectHealthRisk.AlertRule.CountThreshold)
             {
                 return null;
             }
@@ -154,6 +155,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             var existingActiveAlertForLabel = await _nyssContext.Reports
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
+                .Where(r => !r.IsTraining)
                 .Where(r => r.ReportGroupLabel == reportGroupLabel)
                 .SelectMany(r => r.ReportAlerts)
                 .Where(ar => !alertIdToIgnore.HasValue || ar.AlertId != alertIdToIgnore.Value)
@@ -165,6 +167,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             {
                 var reportsInLabelWithNoActiveAlert = await _nyssContext.Reports
                     .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
+                    .Where(r => !r.IsTraining)
                     .Where(r => r.ReportGroupLabel == reportGroupLabel)
                     .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated || ra.Alert.Status == AlertStatus.Closed)
                               || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore) )
