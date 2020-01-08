@@ -51,17 +51,15 @@ const getOptions = (valuesLabel, series, categories) => ({
 export const ProjectsDashboardReportChart = ({ data }) => {
   const resizeChart = element => { element && element.chart.reflow() };
 
-  const categories =[];
   const series = [
     {
       name: strings(stringKeys.project.dashboard.allReportsChart.periods, true),
-      data: data.map(d => {
-        categories.push(d.period);
-        return ({ name: d.period, y: d.count })
-      }),
+      data: data.map(d => d.count),
       color: "#72d5fb"
     }
   ];
+
+  const categories = data.map(d => d.period);
 
   const chartData = getOptions(strings(stringKeys.project.dashboard.allReportsChart.numberOfReports, true), series, categories)
 
