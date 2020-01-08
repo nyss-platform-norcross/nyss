@@ -7,6 +7,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.User;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
@@ -17,6 +18,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
     {
         private readonly IUserService _userService;
         private readonly INyssContext _nyssContext;
+        private readonly IAuthorizationService _authorizationService;
 
         const string NationalSociety1Tag = "NationalSociety1";
         const string NationalSociety2Tag = "NationalSociety2";
@@ -25,7 +27,8 @@ namespace RX.Nyss.Web.Tests.Features.Users
         public UserServiceTest()
         {
             _nyssContext = Substitute.For<INyssContext>();
-            _userService = new UserService(_nyssContext);
+            _authorizationService = Substitute.For<IAuthorizationService>();
+            _userService = new UserService(_nyssContext, _authorizationService);
             ArrangeNationalSocieties();
         }
 
@@ -52,7 +55,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersFromSpecifiedNationalSociety()
         {
-            var users = await _userService.GetUsers(1, new [] {Role.Administrator.ToString()});
+            var users = await _userService.GetUsers(1);
 
             users.Value.Count.ShouldBe(5);
             users.Value.ShouldAllBe(u => u.Name == NationalSociety1Tag || u.Name == NationalSociety1And2Tag);
@@ -61,7 +64,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
         {
-            var users = await _userService.GetUsers(1, new[] { Role.Administrator.ToString() });
+            var users = await _userService.GetUsers(1);
 
             var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
             users.Value.Count.ShouldBe(5);
@@ -76,7 +79,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [InlineData(Role.TechnicalAdvisor)]
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsOtherThanGlobalCoordinator_ShouldReturnAllUsers(Role callingRole)
         {
-            var users = await _userService.GetUsers(1, new[] { callingRole.ToString() });
+            var users = await _userService.GetUsers(1);
 
             var allowedRoles = new List<Role> { Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor }.Select(x => x.ToString());
             users.Value.Count.ShouldBe(5);
@@ -86,8 +89,13 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsGlobalCoordinator_ShouldNotReturnSupervisors()
         {
-            var users = await _userService.GetUsers(1, new[] { Role.GlobalCoordinator.ToString() });
+            //arrange
+            _authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator).Returns(true);
 
+            //act
+            var users = await _userService.GetUsers(1);
+
+            //assert
             users.Value.Count.ShouldBe(4);
             users.Value.ShouldAllBe(u => u.Role != Role.Supervisor.ToString());
         }

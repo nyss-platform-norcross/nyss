@@ -32,8 +32,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock = Substitute.For<INyssContext>();
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
-
-            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider);
+            var authorizationService = Substitute.For<IAuthorizationService>();
+            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, authorizationService);
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _dateTimeProvider.UtcNow.Returns(currentDate);
 
             // Act
-            var result = await _projectService.ListProjects(nationalSocietyId, "", new List<string>());
+            var result = await _projectService.ListProjects(nationalSocietyId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();

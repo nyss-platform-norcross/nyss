@@ -8,6 +8,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.NationalSociety;
 using RX.Nyss.Web.Features.NationalSociety.Access;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
@@ -31,7 +32,10 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         {
             _nyssContextMock = Substitute.For<INyssContext>();
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, Substitute.For<INationalSocietyAccessService>(), loggerAdapterMock);
+            var authorizationService = Substitute.For<IAuthorizationService>();
+            authorizationService.GetCurrentUserName().Returns("yo");
+
+            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, Substitute.For<INationalSocietyAccessService>(), loggerAdapterMock, authorizationService);
 
             // Arrange
 
@@ -163,7 +167,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         public async Task SetAsHead_WhenOk_ShouldBeOk()
         {
             // Actual
-            var result = await _nationalSocietyService.SetAsHeadManager("yo");
+            var result = await _nationalSocietyService.SetAsHeadManager();
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -180,7 +184,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             _nyssContextMock.Users.Returns(mockDbSet);
 
             // Actual
-            var result = await _nationalSocietyService.SetAsHeadManager("yo");
+            var result = await _nationalSocietyService.SetAsHeadManager();
 
             // Assert
             result.IsSuccess.ShouldBeFalse();

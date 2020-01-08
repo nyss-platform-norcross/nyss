@@ -6,15 +6,15 @@ namespace RX.Nyss.Web.Features.Alerts.Access
 {
     public class AlertAccessHandler : ResourceAccessHandler<AlertAccessHandler>
     {
-        private readonly IAlertAccessService _projectAccessService;
+        private readonly IAlertAccessService _alertAccessService;
 
-        public AlertAccessHandler(IHttpContextAccessor httpContextAccessor, IAlertAccessService projectAccessService)
+        public AlertAccessHandler(IHttpContextAccessor httpContextAccessor, IAlertAccessService alertAccessService)
             : base("alertId", httpContextAccessor)
         {
-            _projectAccessService = projectAccessService;
+            _alertAccessService = alertAccessService;
         }
 
         protected override Task<bool> HasAccess(int alertId) =>
-            _projectAccessService.HasCurrentUserAccessToAlert(alertId);
+            _alertAccessService.HasCurrentUserAccessToAlert(alertId);
     }
 }

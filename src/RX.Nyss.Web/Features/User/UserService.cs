@@ -6,6 +6,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.User.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
@@ -13,7 +14,7 @@ namespace RX.Nyss.Web.Features.User
 {
     public interface IUserService
     {
-        Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsers(int nationalSocietyId, IEnumerable<string> callingUserRoles);
+        Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsers(int nationalSocietyId);
         Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
         Task<Result> AddExisting(int nationalSocietyId, string userEmail);
         Task<string> GetUserApplicationLanguageCode(string userIdentityName);
@@ -22,15 +23,17 @@ namespace RX.Nyss.Web.Features.User
     public class UserService : IUserService
     {
         private readonly INyssContext _dataContext;
+        private readonly IAuthorizationService _authorizationService;
 
-        public UserService(INyssContext dataContext)
+        public UserService(INyssContext dataContext, IAuthorizationService authorizationService)
         {
             _dataContext = dataContext;
+            _authorizationService = authorizationService;
         }
 
-        public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsers(int nationalSocietyId, IEnumerable<string> callingUserRoles)
+        public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsers(int nationalSocietyId)
         {
-            var usersQuery = callingUserRoles.Contains(Role.GlobalCoordinator.ToString())
+            var usersQuery = _authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator)
                 ? _dataContext.UserNationalSocieties.Where(u => u.User.Role != Role.Supervisor)
                 : _dataContext.UserNationalSocieties;
 

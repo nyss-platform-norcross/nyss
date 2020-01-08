@@ -7,15 +7,15 @@ namespace RX.Nyss.Web.Features.SmsGateway.Access
 {
     public class SmsGatewayAccessHandler : ResourceAccessHandler<SmsGatewayAccessHandler>
     {
-        private readonly ISmsGatewayAccessService _projectAccessService;
+        private readonly ISmsGatewayAccessService _smsGatewayAccessService;
 
-        public SmsGatewayAccessHandler(IHttpContextAccessor httpContextAccessor, ISmsGatewayAccessService projectAccessService)
+        public SmsGatewayAccessHandler(IHttpContextAccessor httpContextAccessor, ISmsGatewayAccessService smsGatewayAccessService)
             : base("smsGatewayId", httpContextAccessor)
         {
-            _projectAccessService = projectAccessService;
+            _smsGatewayAccessService = smsGatewayAccessService;
         }
 
         protected override Task<bool> HasAccess(int smsGatewayId) =>
-            _projectAccessService.HasCurrentUserAccessToSmsGateway(smsGatewayId);
+            _smsGatewayAccessService.HasCurrentUserAccessToSmsGateway(smsGatewayId);
     }
 }

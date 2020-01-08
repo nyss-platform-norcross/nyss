@@ -12,6 +12,7 @@ using RX.Nyss.Web.Features.DataCollector;
 using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -45,9 +46,10 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var nationalSocietyStructureService = Substitute.For<INationalSocietyStructureService>();
             var geolocationService = Substitute.For<IGeolocationService>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
+            var authorizationService = Substitute.For<IAuthorizationService>();
 
             dateTimeProvider.UtcNow.Returns(new DateTime(2019, 1, 1));
-            _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider);
+            _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider, authorizationService);
 
             // Arrange
             var nationalSocieties = new List<NationalSociety>
@@ -318,7 +320,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public async Task ListDataCollector_WhenSuccessful_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.ListDataCollectors(ProjectId, "", new List<string>());
+            var result = await _dataCollectorService.ListDataCollectors(ProjectId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();

@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.NationalSociety.Access
 
             _rolesWithAccessToAllNationalSocieties = new[] { Role.Administrator, Role.GlobalCoordinator };
             // ToDo: Global Coordinator does not have permissions to SMS Gateways, Geographical structure, Projects, etc. but Head Manager does. Investigate and fix later
-            _rolesWithAccessAsHeadManager = new[] { Role.GlobalCoordinator, Role.Administrator, Role.TechnicalAdvisor };
+            _rolesWithAccessAsHeadManager = new[] { Role.GlobalCoordinator, Role.Administrator };
         }
 
         public bool HasCurrentUserAccessToAllNationalSocieties() =>

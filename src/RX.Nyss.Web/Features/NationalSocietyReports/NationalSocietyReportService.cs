@@ -8,6 +8,7 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.NationalSocietyReports.Dto;
 using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.User;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -16,7 +17,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 {
     public interface INationalSocietyReportService
     {
-        Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, string identityName, NationalSocietyReportListFilterRequestDto filter);
+        Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, NationalSocietyReportListFilterRequestDto filter);
     }
 
     public class NationalSocietyReportService : INationalSocietyReportService
@@ -25,19 +26,22 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
         private readonly IProjectService _projectService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, IConfig config)
+
+        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, IConfig config, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _userService = userService;
             _projectService = projectService;
             _config = config;
+            _authorizationService = authorizationService;
         }
 
-        public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, string userIdentityName, NationalSocietyReportListFilterRequestDto filter)
+        public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, NationalSocietyReportListFilterRequestDto filter)
         {
-            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(userIdentityName);
-            var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(userIdentityName);
+            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
+            var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(_authorizationService.GetCurrentUserName());
             var rowsPerPage = _config.PaginationRowsPerPage;
 
             var baseQuery = _nyssContext.RawReports

@@ -12,6 +12,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -25,11 +26,10 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto);
         Task<Result> RemoveDataCollector(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId);
-        Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId, string userIdentityName, IEnumerable<string> roles);
-        Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName);
-        Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName, IEnumerable<string> roles);
-        Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng, string userIdentityName,
-            IEnumerable<string> roles);
+        Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId);
+        Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
+        Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to);
+        Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng);
         Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
     }
 
@@ -42,17 +42,19 @@ namespace RX.Nyss.Web.Features.DataCollector
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
         private readonly IGeolocationService _geolocationService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAuthorizationService _authorizationService;
 
         public DataCollectorService(
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService,
             IGeolocationService geolocationService,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _nationalSocietyStructureService = nationalSocietyStructureService;
             _geolocationService = geolocationService;
             _dateTimeProvider = dateTimeProvider;
+            _authorizationService = authorizationService;
         }
 
         public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId)
@@ -104,8 +106,9 @@ namespace RX.Nyss.Web.Features.DataCollector
             return Success(dto);
         }
 
-        public async Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId, string identityName)
+        public async Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId)
         {
+            var identityName = _authorizationService.GetCurrentUserName();
             var projectData = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
                 .Select(dc => new
@@ -144,9 +147,10 @@ namespace RX.Nyss.Web.Features.DataCollector
             });
         }
 
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId, string userIdentityName, IEnumerable<string> roles)
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId)
         {
-            var dataCollectorsQuery = roles.Contains(Role.Supervisor.ToString())
+            var userIdentityName = _authorizationService.GetCurrentUserName();
+            var dataCollectorsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
                 ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
                 : _nyssContext.DataCollectors;
 
@@ -332,12 +336,12 @@ namespace RX.Nyss.Web.Features.DataCollector
             return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
 
-        public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to, string userIdentityName,
-            IEnumerable<string> roles)
+        public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to)
         {
+            var userIdentityName = _authorizationService.GetCurrentUserName();
             var endDate = to.Date.AddDays(1);
 
-            var dataCollectors = roles.Contains(Role.Supervisor.ToString())
+            var dataCollectors = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
                 ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
                 : _nyssContext.DataCollectors;
 
@@ -356,7 +360,7 @@ namespace RX.Nyss.Web.Features.DataCollector
                 });
 
 
-            var rawReports = roles.Contains(Role.Supervisor.ToString())
+            var rawReports = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
                 ? _nyssContext.RawReports.Where(dc => dc.DataCollector.Supervisor.EmailAddress == userIdentityName)
                 : _nyssContext.RawReports;
 
@@ -402,10 +406,11 @@ namespace RX.Nyss.Web.Features.DataCollector
             return Success(result);
         }
 
-        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng, string userIdentityName,
-            IEnumerable<string> roles)
+        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng)
         {
-            var dataCollectors = roles.Contains(Role.Supervisor.ToString())
+            var userIdentityName = _authorizationService.GetCurrentUserName();
+
+            var dataCollectors = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
                 ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
                 : _nyssContext.DataCollectors;
 

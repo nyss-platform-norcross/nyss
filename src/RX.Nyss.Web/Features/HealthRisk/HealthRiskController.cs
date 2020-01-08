@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
         [HttpGet, Route("list")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks() => 
-            await _healthRiskService.ListHealthRisks(User.Identity.Name);
+            await _healthRiskService.ListHealthRisks();
 
         /// <summary>
         /// Gets a health risk with all values for editing.

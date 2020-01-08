@@ -9,6 +9,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Project.Domain;
 using RX.Nyss.Web.Features.Project.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
@@ -19,7 +20,7 @@ namespace RX.Nyss.Web.Features.Project
     public interface IProjectService
     {
         Task<Result<ProjectResponseDto>> GetProject(int projectId);
-        Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId);
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> DeleteProject(int projectId);
@@ -35,15 +36,17 @@ namespace RX.Nyss.Web.Features.Project
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAuthorizationService _authorizationService;
 
         public ProjectService(
             INyssContext nyssContext,
             ILoggerAdapter loggerAdapter,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
+            _authorizationService = authorizationService;
         }
 
         public async Task<Result<ProjectResponseDto>> GetProject(int projectId)
@@ -110,9 +113,11 @@ namespace RX.Nyss.Web.Features.Project
                 })
                 .ToListAsync();
 
-        public async Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId, string userIdentityName, IEnumerable<string> roles)
+        public async Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId)
         {
-            var projectsQuery = roles.Contains(Role.Supervisor.ToString())
+            var userIdentityName = _authorizationService.GetCurrentUserName();
+
+            var projectsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
                 ? _nyssContext.SupervisorUserProjects
                     .Where(x => x.SupervisorUser.EmailAddress == userIdentityName)
                     .Select(x => x.Project)

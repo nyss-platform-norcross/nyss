@@ -8,6 +8,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.HealthRisk.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
@@ -36,8 +37,9 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
         public HealthRiskServiceTests()
         {
             // Arrange
+            var authorizationService = Substitute.For<IAuthorizationService>();
             _nyssContextMock = Substitute.For<INyssContext>();
-            _healthRiskService = new HealthRiskService(_nyssContextMock);
+            _healthRiskService = new HealthRiskService(_nyssContextMock, authorizationService);
 
             var users = new List<User>
             {
@@ -191,7 +193,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
         public async Task GetHealthRisks_WhenSuccess_ShouldReturnAllHealthRisks()
         {
             // Act
-            var result = await _healthRiskService.ListHealthRisks(UserName);
+            var result = await _healthRiskService.ListHealthRisks();
 
             // Assert
             result.IsSuccess.ShouldBeTrue();

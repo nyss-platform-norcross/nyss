@@ -8,6 +8,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.NationalSociety.Access;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
@@ -22,8 +23,8 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
-        Task<Result> SetAsHeadManager(string identityUserName);
-        Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents(string identityUserName);
+        Task<Result> SetAsHeadManager();
+        Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents();
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -31,15 +32,17 @@ namespace RX.Nyss.Web.Features.NationalSociety
         private readonly INyssContext _nyssContext;
         private readonly INationalSocietyAccessService _nationalSocietyAccessService;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IAuthorizationService _authorizationService;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
-            ILoggerAdapter loggerAdapter)
+            ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
             _loggerAdapter = loggerAdapter;
+            _authorizationService = authorizationService;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties()
@@ -167,8 +170,10 @@ namespace RX.Nyss.Web.Features.NationalSociety
             return Success();
         }
 
-        public async Task<Result> SetAsHeadManager(string identityUserName)
+        public async Task<Result> SetAsHeadManager()
         {
+            var identityUserName = _authorizationService.GetCurrentUserName();
+
             var user = await _nyssContext.Users
                 .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
 
@@ -209,8 +214,10 @@ namespace RX.Nyss.Web.Features.NationalSociety
             return Success();
         }
 
-        public async Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents(string identityUserName)
+        public async Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents()
         {
+            var identityUserName = _authorizationService.GetCurrentUserName();
+
             var userEntity = await _nyssContext.Users
                 .Include(x => x.ApplicationLanguage)
                 .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);

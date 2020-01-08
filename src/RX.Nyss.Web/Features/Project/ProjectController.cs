@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Features.Project
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId) =>
-            _projectService.ListProjects(nationalSocietyId, User.Identity.Name, User.GetRoles());
+            _projectService.ListProjects(nationalSocietyId);
 
         /// <summary>
         /// Adds a new project for a specified national society.
