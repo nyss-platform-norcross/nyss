@@ -16,6 +16,13 @@ export function projectDashboardReducer(state = initialState.projectDashboard, a
     case actions.OPEN_PROJECT_DASHBOARD.SUCCESS:
       return { ...state, projectId: action.projectId, filtersData: action.filtersData, isFetching: false };
 
+    case actions.GENERATE_PDF.REQUEST:
+      return { ...state, isGeneratingPdf: true };
+
+    case actions.GENERATE_PDF.SUCCESS:
+    case actions.GENERATE_PDF.FAILURE:
+      return { ...state, isGeneratingPdf: false };
+
     case actions.OPEN_PROJECT_DASHBOARD.FAILURE:
       return { ...state, isFetching: false };
 

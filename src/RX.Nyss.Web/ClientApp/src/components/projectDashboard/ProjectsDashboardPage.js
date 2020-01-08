@@ -1,5 +1,5 @@
 import styles from "./ProjectsDashboardPage.module.scss";
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as projectDashboardActions from './logic/projectDashboardActions';
@@ -15,11 +15,15 @@ import { ProjectsDashboardReportChart } from './components/ProjectsDashboardRepo
 import { ProjectsDashboardReportSexAgeChart } from './components/ProjectsDashboardReportSexAgeChart';
 import { ProjectsDashboardReportSexAgeTable } from './components/ProjectsDashboardReportSexAgeTable';
 import { ProjectsDashboardDataCollectionPointChart } from "./components/ProjectsDashboardDataCollectionPointChart";
+import { strings, stringKeys } from "../../strings";
+import SubmitButton from "../forms/submitButton/SubmitButton";
 
-const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projectId, isFetching, ...props }) => {
+const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, ...props }) => {
   useMount(() => {
     openDashbaord(projectId);
   });
+
+  const dashboardElement = useRef(null);
 
   const handleFiltersChange = (filters) =>
     getDashboardData(projectId, filters);
@@ -28,8 +32,12 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
     return <Loading />;
   }
 
+  const handleGeneratePdf = async () => {
+    generatePdf(dashboardElement.current);
+  }
+
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} ref={dashboardElement}>
       <Grid item xs={12} className={styles.filtersGrid}>
         <ProjectsDashboardFilters
           healthRisks={props.healthRisks}
@@ -44,7 +52,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
         : (
           <Fragment>
             <Grid item xs={12}>
-              <ProjectsDashboardNumbers projectSummary={props.projectSummary} reportsType={props.filters.reportsType}/>
+              <ProjectsDashboardNumbers projectSummary={props.projectSummary} reportsType={props.filters.reportsType} />
             </Grid>
             <Grid item xs={12}>
               <ProjectsDashboardReportsMap
@@ -65,13 +73,22 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, projec
               <ProjectsDashboardReportSexAgeTable data={props.reportsGroupedByFeatures} />
             </Grid>
 
-            { props.filters.reportsType === "dataCollectionPoint" &&
+            {props.filters.reportsType === "dataCollectionPoint" &&
               <Grid item xs={12}>
                 <ProjectsDashboardDataCollectionPointChart data={props.dataCollectionPointsReportData} />
               </Grid>
             }
           </Fragment>
         )}
+
+      <Grid item xs={12}>
+        <SubmitButton
+          isFetching={isGeneratingPdf}
+          onClick={handleGeneratePdf}
+        >
+          {strings(stringKeys.project.dashboard.generatePdf)}
+        </SubmitButton>
+      </Grid>
     </Grid>
   );
 }
@@ -93,13 +110,15 @@ const mapStateToProps = state => ({
   reportsGroupedByLocationDetails: state.projectDashboard.reportsGroupedByLocationDetails,
   reportsGroupedByLocationDetailsFetching: state.projectDashboard.reportsGroupedByLocationDetailsFetching,
   dataCollectionPointsReportData: state.projectDashboard.dataCollectionPointsReportData,
+  isGeneratingPdf: state.projectDashboard.isGeneratingPdf,
   isFetching: state.projectDashboard.isFetching
 });
 
 const mapDispatchToProps = {
   openDashbaord: projectDashboardActions.openDashbaord.invoke,
   getReportHealthRisks: projectDashboardActions.getReportHealthRisks.invoke,
-  getDashboardData: projectDashboardActions.getDashboardData.invoke
+  getDashboardData: projectDashboardActions.getDashboardData.invoke,
+  generatePdf: projectDashboardActions.generatePdf.invoke
 };
 
 export const ProjectDashboardPage = useLayout(

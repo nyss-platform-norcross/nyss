@@ -5,11 +5,13 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import dayjs from "dayjs";
+import { generatePdfDocument } from "./projectDashboardService";
 
 export const projectDashboardSagas = () => [
   takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard),
   takeEvery(consts.GET_PROJECT_DASHBOARD_DATA.INVOKE, getProjectDashboardData),
-  takeEvery(consts.GET_PROJECT_DASHBOARD_REPORT_HEALTH_RISKS.INVOKE, getProjectDashboardReportHealthRisks)
+  takeEvery(consts.GET_PROJECT_DASHBOARD_REPORT_HEALTH_RISKS.INVOKE, getProjectDashboardReportHealthRisks),
+  takeEvery(consts.GENERATE_PDF.INVOKE, generatePdf)
 ];
 
 function* openProjectDashboard({ projectId }) {
@@ -63,6 +65,16 @@ function* getProjectDashboardReportHealthRisks({ projectId, latitude, longitude 
     yield put(actions.getReportHealthRisks.success(response.value));
   } catch (error) {
     yield put(actions.getReportHealthRisks.failure(error.message));
+  }
+};
+
+function* generatePdf({ containerElement }) {
+  yield put(actions.generatePdf.request());
+  try {
+    yield call(generatePdfDocument, containerElement);
+    yield put(actions.generatePdf.success());
+  } catch (error) {
+    yield put(actions.generatePdf.failure(error.message));
   }
 };
 
