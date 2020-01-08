@@ -21,7 +21,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
   );
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} data-printable={true}>
       <Grid item sm={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.numbers.totalReportCountTitle)} />

@@ -45,7 +45,7 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
     getReportHealthRisks(projectId, e.latlng.lat, e.latlng.lng);
 
   return (
-    <Card>
+    <Card data-printable={true}>
       <CardHeader title={strings(stringKeys.project.dashboard.map.title)} />
       <CardContent>
         <Map

@@ -12,7 +12,7 @@ import { strings, stringKeys } from '../../../strings';
 
 export const ProjectsDashboardReportSexAgeTable = ({ data }) => {
   return (
-    <Card>
+    <Card data-printable={true}>
       <CardHeader title={strings(stringKeys.project.dashboard.reportsPerFeature.title)} />
       <CardContent>
         <Table className={styles.table}>

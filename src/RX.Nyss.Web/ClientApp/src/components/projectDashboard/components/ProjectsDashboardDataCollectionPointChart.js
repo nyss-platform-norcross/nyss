@@ -53,7 +53,7 @@ export const ProjectsDashboardDataCollectionPointChart = ({ data }) => {
       name: strings(stringKeys.project.dashboard.dataCollectionPointReportsByDate.referredToHospitalCount, true),
       data: data.map(d => d.referredCount),
       color: "#078e5e"
-    },    
+    },
     {
       name: strings(stringKeys.project.dashboard.dataCollectionPointReportsByDate.fromOtherVillagesCount, true),
       data: data.map(d => d.fromOtherVillagesCount),
@@ -69,7 +69,7 @@ export const ProjectsDashboardDataCollectionPointChart = ({ data }) => {
   const chartData = getOptions(strings(stringKeys.project.dashboard.dataCollectionPointReportsByDate.numberOfReports, true), series, categories);
 
   return (
-    <Card>
+    <Card data-printable={true}>
       <CardHeader title={strings(stringKeys.project.dashboard.dataCollectionPointReportsByDate.title)} />
       <CardContent>
         <HighchartsReact

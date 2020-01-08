@@ -74,7 +74,7 @@ export const ProjectsDashboardReportSexAgeChart = ({ data }) => {
   const chartData = getOptions(strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.numberOfReports, true), series, categories);
 
   return (
-    <Card>
+    <Card data-printable={true}>
       <CardHeader title={strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.title)} />
       <CardContent>
         <HighchartsReact

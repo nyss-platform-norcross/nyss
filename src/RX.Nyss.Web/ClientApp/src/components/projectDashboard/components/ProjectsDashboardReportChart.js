@@ -64,7 +64,7 @@ export const ProjectsDashboardReportChart = ({ data }) => {
   const chartData = getOptions(strings(stringKeys.project.dashboard.allReportsChart.numberOfReports, true), series, categories)
 
   return (
-    <Card>
+    <Card data-printable={true}>
       <CardHeader title={strings(stringKeys.project.dashboard.allReportsChart.title)} />
       <CardContent>
         <HighchartsReact

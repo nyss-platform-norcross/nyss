@@ -32,7 +32,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
     return <Loading />;
   }
 
-  const handleGeneratePdf = async () => {
+  const handleGeneratePdf = () => {
     generatePdf(dashboardElement.current);
   }
 
