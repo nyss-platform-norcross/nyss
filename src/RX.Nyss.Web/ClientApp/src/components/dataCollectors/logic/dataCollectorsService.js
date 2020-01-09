@@ -5,7 +5,7 @@ export const getBirthDecades = () => {
   return Array.from({ length: 10 }, (_, i) => String(yearMax - (10 * i)));
 }
 
-export const getMarkerIconFromStatus = (status) => {
+export const getIconFromStatus = (status) => {
   switch (status) {
     case performanceStatus.reportingCorrectly: return "check";
     case performanceStatus.reportingWithErrors: return "close";

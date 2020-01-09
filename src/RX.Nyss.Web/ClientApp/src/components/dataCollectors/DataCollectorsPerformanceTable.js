@@ -1,4 +1,3 @@
-import styles from './DataCollectorsPerformanceTable.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
@@ -9,7 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
-import { getMarkerIconFromStatus } from './logic/dataCollectorsService';
+import { getIconFromStatus } from './logic/dataCollectorsService';
 import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
 
 export const DataCollectorsPerformanceTable = ({ isListFetching, list, projectId }) => {
@@ -39,15 +38,31 @@ export const DataCollectorsPerformanceTable = ({ isListFetching, list, projectId
           {list.map((row, index) => (
             <TableRow key={index} hover>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
-              <TableCell><DataCollectorStatusIcon status={row.statusLastWeek} icon={getMarkerIconFromStatus(row.statusLastWeek)} /></TableCell>
-              <TableCell><DataCollectorStatusIcon status={row.statusTwoWeeksAgo} icon={getMarkerIconFromStatus(row.statusTwoWeeksAgo)} /></TableCell>
-              <TableCell><DataCollectorStatusIcon status={row.statusThreeWeeksAgo} icon={getMarkerIconFromStatus(row.statusThreeWeeksAgo)} /></TableCell>
-              <TableCell><DataCollectorStatusIcon status={row.statusFourWeeksAgo} icon={getMarkerIconFromStatus(row.statusFourWeeksAgo)} /></TableCell>
-              <TableCell><DataCollectorStatusIcon status={row.statusFiveWeeksAgo} icon={getMarkerIconFromStatus(row.statusFiveWeeksAgo)} /></TableCell>
-              <TableCell><DataCollectorStatusIcon status={row.statusSixWeeksAgo} icon={getMarkerIconFromStatus(row.statusSixWeeksAgo)} /></TableCell>
-              <TableCell><DataCollectorStatusIcon status={row.statusSevenWeeksAgo} icon={getMarkerIconFromStatus(row.statusSevenWeeksAgo)} /></TableCell>
-              <TableCell><DataCollectorStatusIcon status={row.statusEightWeeksAgo} icon={getMarkerIconFromStatus(row.statusEightWeeksAgo)} /></TableCell>
+              <TableCell style={{textAlign: "center"}}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
+              <TableCell style={{textAlign: "center"}}>
+                <DataCollectorStatusIcon status={row.statusLastWeek} icon={getIconFromStatus(row.statusLastWeek)} />
+              </TableCell>
+              <TableCell style={{textAlign: "center"}}>
+                <DataCollectorStatusIcon status={row.statusTwoWeeksAgo} icon={getIconFromStatus(row.statusTwoWeeksAgo)} />
+              </TableCell>
+              <TableCell style={{textAlign: "center"}}>
+                <DataCollectorStatusIcon status={row.statusThreeWeeksAgo} icon={getIconFromStatus(row.statusThreeWeeksAgo)} />
+              </TableCell>
+              <TableCell style={{textAlign: "center"}}>
+                <DataCollectorStatusIcon status={row.statusFourWeeksAgo} icon={getIconFromStatus(row.statusFourWeeksAgo)} />
+              </TableCell>
+              <TableCell style={{textAlign: "center"}}>
+                <DataCollectorStatusIcon status={row.statusFiveWeeksAgo} icon={getIconFromStatus(row.statusFiveWeeksAgo)} />
+              </TableCell>
+              <TableCell style={{textAlign: "center"}}>
+                <DataCollectorStatusIcon status={row.statusSixWeeksAgo} icon={getIconFromStatus(row.statusSixWeeksAgo)} />
+              </TableCell>
+              <TableCell style={{textAlign: "center"}}>
+                <DataCollectorStatusIcon status={row.statusSevenWeeksAgo} icon={getIconFromStatus(row.statusSevenWeeksAgo)} />
+              </TableCell>
+              <TableCell style={{textAlign: "center"}}>
+                <DataCollectorStatusIcon status={row.statusEightWeeksAgo} icon={getIconFromStatus(row.statusEightWeeksAgo)} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

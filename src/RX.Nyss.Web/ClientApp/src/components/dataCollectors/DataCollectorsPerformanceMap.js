@@ -7,7 +7,7 @@ import { Loading } from "../common/loading/Loading";
 import Icon from "@material-ui/core/Icon";
 import { calculateBounds } from "../../utils/map";
 import { SignIcon } from "../common/map/MarkerIcon";
-import { getMarkerIconFromStatus } from "./logic/dataCollectorsService";
+import { getIconFromStatus } from "./logic/dataCollectorsService";
 import { performanceStatus } from "./logic/dataCollectorsConstants";
 
 const createClusterIcon = (cluster) => {
@@ -22,7 +22,7 @@ const createClusterIcon = (cluster) => {
   const status = getAggregatedStatus(aggregatedData);
 
   return new SignIcon({
-    icon: getMarkerIconFromStatus(status),
+    icon: getIconFromStatus(status),
     className: styles[`marker_${status}`],
     size: 40,
     multiple: true
@@ -33,7 +33,7 @@ const createIcon = (info) => {
   const status = getAggregatedStatus(info);
 
   return new SignIcon({
-    icon: getMarkerIconFromStatus(status),
+    icon: getIconFromStatus(status),
     className: styles[`marker_${status}`],
     size: 40
   });
@@ -98,7 +98,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
                     <div>
                       {details && details.map(d => (
                         <div key={`dataCollector_${d.id}`} className={styles.dataCollectorDetails}>
-                          <Icon>{getMarkerIconFromStatus(d.status)}</Icon>
+                          <Icon>{getIconFromStatus(d.status)}</Icon>
                           {d.displayName}
                         </div>
                       ))}
