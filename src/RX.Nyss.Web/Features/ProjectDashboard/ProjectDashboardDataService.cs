@@ -201,7 +201,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .GroupBy(report => new { report.Location.X, report.Location.Y })
                 .Select(grouping => new ProjectSummaryMapResponseDto
                 {
-                    ReportsCount = grouping.Count(),
+                    ReportsCount = grouping.Sum(g => g.ReportedCaseCount),
                     Location = new ProjectSummaryMapResponseDto.MapReportLocation
                     {
                         Latitude = grouping.Key.Y,
@@ -226,7 +226,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     HealthRiskName = r.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == r.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name).FirstOrDefault(),
-                    Total = (int)(r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
+                    Total = r.ReportedCaseCount,
                 })
                 .Where(r => r.Total > 0)
                 .GroupBy(r => r.HealthRiskId)
