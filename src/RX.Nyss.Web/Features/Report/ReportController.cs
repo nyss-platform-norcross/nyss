@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.Report
         /// </summary>
         /// <param name="reportId">The ID of the report to be marked as error</param>
         [HttpPost("{reportId}/markAsError")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ReportAccess)]
         public async Task<Result> MarkAsError(int reportId) =>
             await _reportService.MarkAsError(reportId);
 
@@ -53,7 +53,7 @@ namespace RX.Nyss.Web.Features.Report
         /// </summary>
         /// <param name="reportId">The ID of the report to be remove the error flag from</param>
         [HttpPost("{reportId}/unmarkAsError")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ReportAccess)]
         public async Task<Result> UnmarkAsError(int reportId) =>
             await _reportService.UnmarkAsError(reportId);
     }

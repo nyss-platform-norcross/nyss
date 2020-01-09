@@ -17,8 +17,6 @@ using Microsoft.Extensions.DependencyModel;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
-using RX.Nyss.Web.Features.Authentication.Policies;
-using RX.Nyss.Web.Features.Report.Access;
 using RX.Nyss.Web.Features.Alerts.Access;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.DataCollector.Access;
@@ -27,6 +25,7 @@ using RX.Nyss.Web.Features.Manager.Access;
 using RX.Nyss.Web.Features.NationalSociety.Access;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Access;
 using RX.Nyss.Web.Features.Project.Access;
+using RX.Nyss.Web.Features.Report.Access;
 using RX.Nyss.Web.Features.SmsGateway.Access;
 using RX.Nyss.Web.Features.Supervisor.Access;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Access;
@@ -190,10 +189,9 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.AlertAccess.ToString(),
                     policy => policy.Requirements.Add(new AlertAccessHandler.Requirement()));
-                    policy => policy.Requirements.Add(new AlertAccessRequirement()));
 
                 options.AddPolicy(Policy.ReportAccess.ToString(),
-                    policy => policy.Requirements.Add(new ReportAccessRequirement()));
+                    policy => policy.Requirements.Add(new ReportAccessHandler.Requirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
