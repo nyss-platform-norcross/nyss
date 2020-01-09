@@ -78,7 +78,7 @@
                 public const string Success = "nationalSociety.creation.success";
                 public const string CountryNotFound = "nationalSociety.creation.countryNotFound";
                 public const string LanguageNotFound = "nationalSociety.creation.languageNotFound";
-                public const string NameAlreadyExists = "nationalSociety.creation.nameAlreadyExists ";
+                public const string NameAlreadyExists = "nationalSociety.creation.nameAlreadyExists";
             }
 
             public static class Edit

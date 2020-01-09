@@ -54,7 +54,7 @@ export const ProjectsDashboardReportChart = ({ data }) => {
   const series = [
     {
       name: strings(stringKeys.project.dashboard.allReportsChart.periods, true),
-      data: data.map(d => d.count),
+      data: data.map(d => ({ name: d.period, y: d.count })),
       color: "#72d5fb"
     }
   ];

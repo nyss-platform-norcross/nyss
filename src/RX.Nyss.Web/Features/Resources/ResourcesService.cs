@@ -90,10 +90,10 @@ namespace RX.Nyss.Web.Features.Resources
                     entry.Translations.Add(languageCode, dtoTranslation.Value);
                 }
             }
-
+            
             await _stringsResourcesService.SaveStringsBlob(new StringsBlob
             {
-                Strings = strings
+                Strings = strings.OrderBy(x => x.Key)
             });
 
             return Success("Success");
