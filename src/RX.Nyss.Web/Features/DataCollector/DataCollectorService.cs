@@ -486,7 +486,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             .Select(dc => new DataCollectorPerformanceResponseDto
             {
                 Name = dc.DataCollector.DataCollectorType == DataCollectorType.Human ? dc.DataCollector.DisplayName : dc.DataCollector.Name,
-                DaysSinceLastReport = dc.ReportsGroupedByWeek.Any() ? (int)(to  - dc.ReportsGroupedByWeek.SelectMany(g => g).FirstOrDefault().ReceivedAt).TotalDays : -1,
+                DaysSinceLastReport = dc.ReportsGroupedByWeek.Any() ? (int)(to  - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).FirstOrDefault().ReceivedAt).TotalDays : -1,
                 StatusLastWeek = GetDataCollectorStatus(0, dc.ReportsGroupedByWeek),
                 StatusTwoWeeksAgo = GetDataCollectorStatus(1, dc.ReportsGroupedByWeek),
                 StatusThreeWeeksAgo = GetDataCollectorStatus(2, dc.ReportsGroupedByWeek),
