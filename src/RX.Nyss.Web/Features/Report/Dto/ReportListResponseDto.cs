@@ -26,5 +26,8 @@ namespace RX.Nyss.Web.Features.Report.Dto
         public int? ReferredCount { get; set; }
         public int? DeathCount { get; set; }
         public int? FromOtherVillagesCount { get; set; }
+        public bool? IsMarkedAsError { get; set; }
+        public bool IsInAlert { get; set; }
+        public int? ReportId { get; set; }
     }
 }

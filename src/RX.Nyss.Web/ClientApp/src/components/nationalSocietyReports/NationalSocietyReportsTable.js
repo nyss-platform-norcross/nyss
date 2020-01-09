@@ -56,7 +56,11 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSoci
                   <span>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell>{row.isValid ? strings(stringKeys.nationalSocietyReports.list.success) : strings(stringKeys.nationalSocietyReports.list.error)}</TableCell>
+              <TableCell>
+                    {row.isMarkedAsError
+                    ? strings(stringKeys.nationalSocietyReports.list.markedAsError)
+                    : row.isValid ? strings(stringKeys.nationalSocietyReports.list.success) : strings(stringKeys.nationalSocietyReports.list.error)}
+              </TableCell>
               <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
               <TableCell>{dashIfEmpty(row.dataCollectorDisplayName)}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>

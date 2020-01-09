@@ -70,6 +70,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(r => r.ProjectHealthRisk == projectHealthRisk)
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
                 .Where(r => !r.IsTraining)
+                .Where(r=> !r.MarkedAsError)
                 .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
                 .Where(r => r.Id != report.Id)
                 .Where(r => r.ReportGroupLabel != default)
@@ -107,6 +108,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
                 .Where(r => !r.IsTraining)
+                .Where(r => !r.MarkedAsError)
                 .Where(r => !reportIdToIgnore.HasValue || r.Id != reportIdToIgnore.Value)
                 .Where(r => r.ReportGroupLabel == label)
                 .Select(r => new ReportPoint

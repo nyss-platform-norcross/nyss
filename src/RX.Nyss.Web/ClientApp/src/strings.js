@@ -405,7 +405,12 @@ export const stringKeys = {
       training: "reports.list.training",
       nonTraining: "reports.list.nonTraining",
       dcpReportListType: "reports.list.dcpReportListType",
-      exportToExcel: "reports.list.exportToExcel"
+      exportToExcel: "reports.list.exportToExcel",
+      successfulyMarkedAsError: "reports.list.successfulyMarkedAsError",
+      markAsError: "reports.list.markAsError",
+      markAsErrorConfirmation: "reports.list.markAsErrorConfirmation",
+      markAsErrorConfirmationText: "reports.list.markAsErrorConfirmationText",
+      markedAsError: "reports.list.markedAsError",
     },
     title: "reports.title"
   },
@@ -432,6 +437,7 @@ export const stringKeys = {
       fromOtherVillagesCount: "nationalSocietyReports.list.fromOtherVillagesCount",
       success: "nationalSocietyReports.list.success",
       error: "nationalSocietyReports.list.error",
+      markedAsError: "nationalSocietyReports.list.markedAsError",
       selectReportListType: "nationalSocietyReports.list.selectReportListType",
       mainReportsListType: "nationalSocietyReports.list.mainReportsListType",
       dcpReportListType: "nationalSocietyReports.list.dcpReportListType",
@@ -523,6 +529,7 @@ export const stringKeys = {
   },
   form: {
     cancel: "form.cancel",
+    confirm: "form.confirm",
     inlineSave: "form.inlineSave"
   },
   user: {

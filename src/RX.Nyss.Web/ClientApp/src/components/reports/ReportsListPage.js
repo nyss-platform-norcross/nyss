@@ -104,6 +104,10 @@ const ReportsListPageComponent = (props) => {
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
           reportListType={props.reportListFilter.reportListType}
+          markAsError = {props.markAsError}
+          isMarkingAsError ={props.isMarkingAsError}
+          user = {props.user}
+          filters = {props.reportListFilter}
         />
       </Grid>
     </Grid>
@@ -121,13 +125,16 @@ const mapStateToProps = (state, ownProps) => ({
   data: state.reports.paginatedListData,
   isListFetching: state.reports.listFetching,
   isRemoving: state.reports.listRemoving,
-  reportListFilter: state.reports.filter
+  reportListFilter: state.reports.filter,
+  user: state.appData.user,
+  isMarkingAsError: state.reports.markingAsError
 });
 
 const mapDispatchToProps = {
   openReportsList: reportsActions.openList.invoke,
   getList: reportsActions.getList.invoke,
   exportToExcel: reportsActions.exportToExcel.invoke,
+  markAsError: reportsActions.markAsError.invoke
 };
 
 export const ReportsListPage = useLayout(

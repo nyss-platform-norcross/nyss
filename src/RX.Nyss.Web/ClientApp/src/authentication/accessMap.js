@@ -50,6 +50,7 @@ export const accessMap = {
   },
   reports: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    markAsError: [Administrator, Manager, TechnicalAdvisor, Supervisor]
   },
   nationalSocietyReports: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
