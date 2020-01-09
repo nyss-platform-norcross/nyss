@@ -10,10 +10,7 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { getMarkerIconFromStatus } from './logic/dataCollectorsService';
-
-const createIcon = (status) => {
-  return (<span class="material-icons">{getMarkerIconFromStatus(status)}</span>)
-}
+import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
 
 export const DataCollectorsPerformanceTable = ({ isListFetching, list, projectId }) => {
   if (isListFetching) {
@@ -43,14 +40,14 @@ export const DataCollectorsPerformanceTable = ({ isListFetching, list, projectId
             <TableRow key={index} hover>
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
-              <TableCell>{createIcon(row.statusLastWeek)}</TableCell>
-              <TableCell>{createIcon(row.statusTwoWeeksAgo)}</TableCell>
-              <TableCell>{createIcon(row.statusThreeWeeksAgo)}</TableCell>
-              <TableCell>{createIcon(row.statusFourWeeksAgo)}</TableCell>
-              <TableCell>{createIcon(row.statusFiveWeeksAgo)}</TableCell>
-              <TableCell>{createIcon(row.statusSixWeeksAgo)}</TableCell>
-              <TableCell>{createIcon(row.statusSevenWeeksAgo)}</TableCell>
-              <TableCell>{createIcon(row.statusEightWeeksAgo)}</TableCell>
+              <TableCell><DataCollectorStatusIcon status={row.statusLastWeek} icon={getMarkerIconFromStatus(row.statusLastWeek)} /></TableCell>
+              <TableCell><DataCollectorStatusIcon status={row.statusTwoWeeksAgo} icon={getMarkerIconFromStatus(row.statusTwoWeeksAgo)} /></TableCell>
+              <TableCell><DataCollectorStatusIcon status={row.statusThreeWeeksAgo} icon={getMarkerIconFromStatus(row.statusThreeWeeksAgo)} /></TableCell>
+              <TableCell><DataCollectorStatusIcon status={row.statusFourWeeksAgo} icon={getMarkerIconFromStatus(row.statusFourWeeksAgo)} /></TableCell>
+              <TableCell><DataCollectorStatusIcon status={row.statusFiveWeeksAgo} icon={getMarkerIconFromStatus(row.statusFiveWeeksAgo)} /></TableCell>
+              <TableCell><DataCollectorStatusIcon status={row.statusSixWeeksAgo} icon={getMarkerIconFromStatus(row.statusSixWeeksAgo)} /></TableCell>
+              <TableCell><DataCollectorStatusIcon status={row.statusSevenWeeksAgo} icon={getMarkerIconFromStatus(row.statusSevenWeeksAgo)} /></TableCell>
+              <TableCell><DataCollectorStatusIcon status={row.statusEightWeeksAgo} icon={getMarkerIconFromStatus(row.statusEightWeeksAgo)} /></TableCell>
             </TableRow>
           ))}
         </TableBody>

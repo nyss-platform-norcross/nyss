@@ -10,6 +10,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
+import {DataCollectorsPerformanceTableLegend} from './DataCollectorsPerformanceTableLegend';
 
 const DataCollectorsPerformancePageComponent = (props) => {
   useMount(() => {
@@ -30,6 +31,8 @@ const DataCollectorsPerformancePageComponent = (props) => {
         isListFetching={props.isListFetching}
         projectId={props.projectId}
       />
+
+      <DataCollectorsPerformanceTableLegend />
     </Fragment>
   );
 }

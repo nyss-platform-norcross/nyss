@@ -373,6 +373,11 @@ export const stringKeys = {
       statusSixWeeksAgo: "dataCollectors.performanceList.statusSixWeeksAgo",
       statusSevenWeeksAgo: "dataCollectors.performanceList.statusSevenWeeksAgo",
       statusEightWeeksAgo: "dataCollectors.performanceList.statusEightWeeksAgo",
+      legend: {
+        "ReportingCorrectly": "dataCollectors.performanceList.legend.reportingCorrectly",
+        "NotReporting": "dataCollectors.performanceList.legend.notReporting",
+        "ReportingWithErrors": "dataCollectors.performanceList.legend.reportingWithErrors"
+      }
     },
     constants: {
       sex: {
