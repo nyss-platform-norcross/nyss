@@ -48,6 +48,7 @@ function* getProjectDashboardData({ projectId, filters }) {
       response.value.summary,
       response.value.reportsGroupedByDate,
       response.value.reportsGroupedByFeaturesAndDate,
+      response.value.reportsGroupedByVillageAndDate,
       response.value.reportsGroupedByFeatures,
       response.value.reportsGroupedByLocation,
       response.value.dataCollectionPointReportsGroupedByDate

@@ -222,6 +222,11 @@ export const stringKeys = {
         numberOfReports: "project.dashboard.reportsPerFeatureAndDate.numberOfReports",
         title: "project.dashboard.reportsPerFeatureAndDate.title"
       },
+      reportsPerVillageAndDate: {
+        title: "project.dashboard.reportsPerVillageAndDate.title",
+        rest: "project.dashboard.reportsPerVillageAndDate.rest",
+        numberOfReports: "project.dashboard.reportsPerVillageAndDate.numberOfReports"
+      },
       dataCollectionPointReportsByDate:{
         referredToHospitalCount: "project.dashboard.dataCollectionPointReportsByDate.referredToHospitalCount",
         deathCount: "project.dashboard.dataCollectionPointReportsByDate.deathCount",
