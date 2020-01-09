@@ -245,6 +245,16 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
             Reports.Where( r => r.DataCollector.DataCollectorType == DataCollectorType.Human).ToList()
                 .ForEach(r =>
+                {
+                    r.ReportedCaseCount = (r.Id % 4) switch
+                    {
+                        0 => 1,
+                        1 => 1,
+                        2 => 1,
+                        3 => 1,
+                        _ => r.ReportedCase.CountMalesBelowFive ?? 0 + r.ReportedCase.CountFemalesAtLeastFive ?? 0 + r.ReportedCase.CountFemalesBelowFive ?? 0 + r.ReportedCase.CountMalesAtLeastFive ?? 0
+                    };
+
                     r.ReportedCase = (r.Id % 4) switch
                     {
                         0 => new ReportCase { CountMalesBelowFive = 1, CountMalesAtLeastFive = 0, CountFemalesBelowFive = 0, CountFemalesAtLeastFive = 0 },
@@ -252,7 +262,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                         2 => new ReportCase { CountFemalesBelowFive = 1, CountMalesBelowFive = 0, CountMalesAtLeastFive = 0, CountFemalesAtLeastFive = 0 },
                         3 => new ReportCase { CountFemalesAtLeastFive = 1, CountMalesBelowFive = 0, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0 },
                         _ => r.ReportedCase
-                    });
+                    };
+                });
 
             var test = Reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint).ToList();
             Reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint).ToList()

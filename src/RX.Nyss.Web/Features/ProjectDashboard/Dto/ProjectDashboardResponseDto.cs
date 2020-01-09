@@ -16,5 +16,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
         public IEnumerable<ProjectSummaryMapResponseDto> ReportsGroupedByLocation { get; set; }
 
         public IEnumerable<DataCollectionPointsReportsByDateDto> DataCollectionPointReportsGroupedByDate { get; set; }
+
+        public ReportByVillageAndDateResponseDto ReportsGroupedByVillageAndDate { get; set; }
     }
 }

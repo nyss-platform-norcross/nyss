@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.ProjectDashboard;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Utils;
@@ -19,6 +20,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly INyssContext _nyssContext;
         private readonly ProjectDashboardTestData _testData;
+        private IConfig _config;
 
         public ProjectDashboardDataServiceTests()
         {
@@ -26,7 +28,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             _testData = new ProjectDashboardTestData(_dateTimeProvider);
 
             _nyssContext = _testData.GetNyssContextMock();
-            _projectDashboardDataService = new ProjectDashboardDataService(_nyssContext,_dateTimeProvider);
+            _config = Substitute.For<IConfig>();
+            _projectDashboardDataService = new ProjectDashboardDataService(_nyssContext,_dateTimeProvider, _config);
         }
 
         [Theory]
@@ -518,6 +521,33 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             result.Where(x => x.Period == day)
                 .Select(x => x.DeathCount).Single().ShouldBe(deathCount);
 
+        }
+
+        [Fact]
+        public async Task GetReportsGroupedByFeaturesAndDate_ShouldTakeOnlyMostActiveVillages()
+        {
+            var numberOfGroupedVillagesInProjectDashboard = 3;
+
+            _config.View.Returns(new NyssConfig.ViewOptions
+            {
+                NumberOfGroupedVillagesInProjectDashboard = numberOfGroupedVillagesInProjectDashboard
+            });
+
+            //arrange
+            var filters = new FiltersRequestDto
+            {
+                StartDate = new DateTime(2019, 01, 01),
+                EndDate = new DateTime(2019, 02, 15),
+                GroupingType = FiltersRequestDto.GroupingTypeDto.Day,
+                ReportsType = FiltersRequestDto.ReportsTypeDto.All
+            };
+
+            //act
+            var reportData = await _projectDashboardDataService.GetReportsGroupedByVillageAndDate(_testData.ProjectId, filters);
+
+            //assert
+            reportData.Villages.Count().ShouldBe(numberOfGroupedVillagesInProjectDashboard + 1);
+            reportData.Villages.ElementAt(numberOfGroupedVillagesInProjectDashboard).Name.ShouldBe("(rest)");
         }
     }
 }

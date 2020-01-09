@@ -50,12 +50,14 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var reportsByFeatures = GetReportsGroupedByFeatures(reportsByFeaturesAndDate);
             var reportsGroupedByLocation = await _projectDashboardDataService.GetProjectSummaryMap(projectId, filtersDto);
             var dataCollectionPointReportsByDate = await _projectDashboardDataService.GetDataCollectionPointReports(projectId, filtersDto);
+            var reportsByVillageAndDate = await _projectDashboardDataService.GetReportsGroupedByVillageAndDate(projectId, filtersDto);
 
             var dashboardDataDto = new ProjectDashboardResponseDto
             {
                 Summary = projectSummary,
                 ReportsGroupedByDate = reportsByDate,
                 ReportsGroupedByFeaturesAndDate = reportsByFeaturesAndDate,
+                ReportsGroupedByVillageAndDate = reportsByVillageAndDate,
                 ReportsGroupedByLocation = reportsGroupedByLocation,
                 ReportsGroupedByFeatures = reportsByFeatures,
                 DataCollectionPointReportsGroupedByDate = dataCollectionPointReportsByDate
