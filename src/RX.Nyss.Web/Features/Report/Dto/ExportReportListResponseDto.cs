@@ -1,15 +1,12 @@
-﻿using System;
+using System;
+using NetTopologySuite.Geometries;
 
 namespace RX.Nyss.Web.Features.Report.Dto
 {
-    public interface IReportListResponseDto
-    {
-        DateTime DateTime { get; set; }
-    }
-
-    public class ReportListResponseDto : IReportListResponseDto
+    public class ExportReportListResponseDto : IReportListResponseDto
     {
         public int Id { get; set; }
+        public Point Location { get; set; }
         public DateTime DateTime { get; set; }
         public string HealthRiskName { get; set; }
         public bool IsValid { get; set; }
@@ -19,6 +16,7 @@ namespace RX.Nyss.Web.Features.Report.Dto
         public string Zone { get; set; }
         public string DataCollectorDisplayName { get; set; }
         public string PhoneNumber { get; set; }
+        public string Message { get; set; }
         public int? CountMalesBelowFive { get; set; }
         public int? CountFemalesBelowFive { get; set; }
         public int? CountMalesAtLeastFive { get; set; }
