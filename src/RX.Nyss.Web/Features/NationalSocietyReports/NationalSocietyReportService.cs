@@ -47,11 +47,16 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
-                .Where(r => r.DataCollector == null || supervisorProjectIds == null || supervisorProjectIds.Contains(r.DataCollector.Project.Id))
                 .Where(r =>
                     filter.ReportListType == NationalSocietyReportListType.FromDcp ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
                     filter.ReportListType == NationalSocietyReportListType.Main ? r.DataCollector.DataCollectorType == DataCollectorType.Human :
                     r.DataCollector == null);
+
+            if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
+            {
+                baseQuery = baseQuery
+                    .Where(r => r.DataCollector == null || supervisorProjectIds == null || supervisorProjectIds.Contains(r.DataCollector.Project.Id));
+            }
 
             var result = await baseQuery.Select(r => new NationalSocietyReportListResponseDto
                 {
