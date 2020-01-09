@@ -64,6 +64,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     DateTime = r.ReceivedAt,
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
                     IsValid = r.Report != null,
+                    IsMarkedAsError = r.Report.MarkedAsError,
                     ProjectName = r.Report != null ? r.Report.ProjectHealthRisk.Project.Name : r.DataCollector.Project.Name,
                     ProjectTimeZone = r.Report != null ?  r.Report.ProjectHealthRisk.Project.TimeZone : r.DataCollector.Project.TimeZone,
                     Region = r.Report != null ? r.Report.Village.District.Region.Name : r.DataCollector.Village.District.Region.Name,

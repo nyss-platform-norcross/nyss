@@ -437,6 +437,7 @@ export const stringKeys = {
       fromOtherVillagesCount: "nationalSocietyReports.list.fromOtherVillagesCount",
       success: "nationalSocietyReports.list.success",
       error: "nationalSocietyReports.list.error",
+      markedAsError: "nationalSocietyReports.list.markedAsError",
       selectReportListType: "nationalSocietyReports.list.selectReportListType",
       mainReportsListType: "nationalSocietyReports.list.mainReportsListType",
       dcpReportListType: "nationalSocietyReports.list.dcpReportListType",
