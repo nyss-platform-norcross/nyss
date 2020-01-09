@@ -14,7 +14,7 @@ using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.StringsResources;
-using RX.Nyss.Web.Utils.Logging;
+using RX.Nyss.Web.Utils;
 using Shouldly;
 using Xunit;
 
@@ -29,6 +29,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IAuthorizationService _authorizationService;
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
+        private readonly IDateTimeProvider _dateTimeProvider;
         private List<Report> _reports;
         private List<RawReport> _rawReports;
 
@@ -49,12 +50,16 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _userService.GetUserApplicationLanguageCode(Arg.Any<string>()).Returns(Task.FromResult("en"));
 
             _authorizationService = Substitute.For<IAuthorizationService>();
-            _authorizationService.GetCurrentUser().Returns(new CurrentUser() { });
+            _authorizationService.GetCurrentUser().Returns(new CurrentUser());
 
             _excelExportService = Substitute.For<IExcelExportService>();
             _stringsResourcesService = Substitute.For<IStringsResourcesService>();
 
-            _reportService = new ReportService(_nyssContextMock, _userService, _config, _authorizationService, _excelExportService, _stringsResourcesService);
+            _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+            _dateTimeProvider.GetEpiWeek(default).ReturnsForAnyArgs(1);
+            _dateTimeProvider.IsFirstWeekOfNextYear(default).ReturnsForAnyArgs(false);
+
+            _reportService = new ReportService(_nyssContextMock, _userService, _config, _authorizationService, _excelExportService, _stringsResourcesService, _dateTimeProvider);
 
             ArrangeData();
         }
