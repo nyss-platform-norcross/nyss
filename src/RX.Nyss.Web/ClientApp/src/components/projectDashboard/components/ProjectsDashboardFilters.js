@@ -57,7 +57,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
   }
 
   return (
-    <Card className={styles.filters}>
+    <Card className={styles.filters} data-printable={true}>
       <CardContent>
         <Grid container spacing={3}>
           <Grid item>

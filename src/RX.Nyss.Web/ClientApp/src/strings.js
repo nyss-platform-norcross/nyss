@@ -247,7 +247,8 @@ export const stringKeys = {
         title: "project.dashboard.map.title",
         reports: "project.dashboard.map.reports",
         report: "project.dashboard.map.report",
-      }
+      },
+      generatePdf: "project.dashboard.generatePdf"
     },
     settings: "project.settings.title"
   },

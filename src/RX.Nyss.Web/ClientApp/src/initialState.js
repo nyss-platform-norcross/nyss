@@ -83,6 +83,7 @@ export const initialState = {
     name: null,
     projectSummary: null,
     isFetching: true,
+    isGeneratingPdf: false,
     filtersData: {
       healthRisks: []
     },
