@@ -69,6 +69,6 @@ namespace RX.Nyss.Web.Features.DataCollector
         [HttpGet, Route("performance")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId) =>
-            await _dataCollectorService.GetDataCollectorPerformance(projectId, User.Identity.Name, User.GetRoles());
+            await _dataCollectorService.GetDataCollectorPerformance(projectId);
     }
 }

@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng);
-        Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId, string userIdentityName, IEnumerable<string> roles);
+        Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId);
         Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
     }
 
@@ -458,9 +458,11 @@ namespace RX.Nyss.Web.Features.DataCollector
                 ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
-        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId, string userIdentityName, IEnumerable<string> roles)
+        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId)
         {
-            var dataCollectors = roles.Contains(Role.Supervisor.ToString())
+            var userIdentityName = _authorizationService.GetCurrentUserName();
+
+            var dataCollectors = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
                 ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
                 : _nyssContext.DataCollectors;
 
