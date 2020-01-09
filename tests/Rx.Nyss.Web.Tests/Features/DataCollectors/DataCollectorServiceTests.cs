@@ -8,6 +8,7 @@ using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollector;
 using RX.Nyss.Web.Features.DataCollector.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
@@ -48,7 +49,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
             var authorizationService = Substitute.For<IAuthorizationService>();
 
-            dateTimeProvider.UtcNow.Returns(new DateTime(2019, 1, 1));
+            dateTimeProvider.UtcNow.Returns(DateTime.UtcNow);
             _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider, authorizationService);
 
             // Arrange
@@ -372,5 +373,66 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             await _nyssContextMock.Received().ExecuteSqlInterpolatedAsync(Arg.Is<FormattableString>(arg => arg.ToString() == expectedSqlCommand.ToString()));
         }
 
+        [Theory]
+        [MemberData(nameof(GetPerformanceTestData))]
+        public async Task GetDataCollectorPerformance_WhenDataCollectorsHaveReported_ShouldReturnCorrectStatus(string phoneNumber, List<RawReport> reports)
+        {
+            // Arrange
+            var rawReportsMockDbSet = reports.AsQueryable().BuildMockDbSet();
+            var dataCollectors = new List<DataCollector> { new DataCollector { PhoneNumber = phoneNumber, Project = new Project { Id = ProjectId }, RawReports = reports }};
+            var dataCollectorsMockDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
+
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+            _nyssContextMock.DataCollectors.Returns(dataCollectorsMockDbSet);
+
+            var dateTimeNow = DateTime.UtcNow;
+
+            // Act
+            var result = await _dataCollectorService.GetDataCollectorPerformance(ProjectId, "", new List<string>());
+
+            // Assert
+            result.Value[0].StatusLastWeek.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 0)));
+            result.Value[0].StatusTwoWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 1)));
+            result.Value[0].StatusThreeWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 2)));
+            result.Value[0].StatusFourWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 3)));
+            result.Value[0].StatusFiveWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 4)));
+            result.Value[0].StatusSixWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 5)));
+            result.Value[0].StatusSevenWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 6)));
+            result.Value[0].StatusEightWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 7)));
+        }
+
+        public DataCollectorStatus DataCollectorStatusFromReports(IEnumerable<RawReport> reports)
+        {
+            return reports.Any() ?
+                reports.All(r => r.Report != null) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
+                : DataCollectorStatus.NotReporting;
+        }
+
+        public static IEnumerable<object[]> GetPerformanceTestData()
+        {
+            yield return new object[]
+            {
+                DataCollectorPhoneNumber1,
+                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow, IsTraining = false, Report = new Report() }}
+            };
+
+            yield return new object[]
+            {
+                DataCollectorPhoneNumber1,
+                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-8), IsTraining = false, Report = new Report()}, new RawReport { ReceivedAt = DateTime.UtcNow, IsTraining = false, }}
+            };
+
+            yield return new object[]
+            {
+                DataCollectorPhoneNumber1,
+                new List<RawReport>()
+            };
+
+            yield return new object[]
+            {
+                DataCollectorPhoneNumber1,
+                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-8), IsTraining = false, Report = new Report()}, new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-35), IsTraining = false, }}
+            };
+        }
     }
 }
