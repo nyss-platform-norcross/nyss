@@ -388,7 +388,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var dateTimeNow = DateTime.UtcNow;
 
             // Act
-            var result = await _dataCollectorService.GetDataCollectorPerformance(ProjectId, "", new List<string>());
+            var result = await _dataCollectorService.GetDataCollectorPerformance(ProjectId);
 
             // Assert
             result.Value[0].StatusLastWeek.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 0)));
