@@ -38,7 +38,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly List<int> _reportIdsFromProject2 = Enumerable.Range(14, 11).ToList();
         private readonly List<int> _trainingReportIds = Enumerable.Range(15, 100).ToList();
         private readonly List<int> _dcpReportIds = Enumerable.Range(115, 20).ToList();
-        private IDateTimeProvider _dateTimeProvider;
 
         public ReportServiceTests()
         {
