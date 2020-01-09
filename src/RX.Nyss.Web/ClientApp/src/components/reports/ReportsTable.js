@@ -18,7 +18,7 @@ import { ConfirmationDialog } from '../common/ConfirmationDialog';
 
 export const ReportsTable = (props) => {  
   const { projectId, list, page, rowsPerPage, totalRows, reportListType, user, filters} = props;
-  const { getList, markAsError, unmarkAsError } = props;
+  const { getList, markAsError } = props;
   const { isListFetching, isMarkingAsError, } = props;
 
   const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });  
@@ -31,23 +31,10 @@ export const ReportsTable = (props) => {
     return [text || "-", ...args].filter(x => !!x).join(", ");
   };
 
-  const markAsErrorConfirmed = () => {
-    if(markErrorConfirmationDialog.isMarkedAsError){
-      unmarkAsError(markErrorConfirmationDialog.reportId, projectId, page, filters);
-    } else {
-      markAsError(markErrorConfirmationDialog.reportId, projectId, page, filters);
-    }
+  const markAsErrorConfirmed = () => {    
+    markAsError(markErrorConfirmationDialog.reportId, projectId, page, filters);    
     setMarkErrorConfirmationDialog({isOpen: false })
   }
-
-  const getMarkAsErrorMenuItem = (row) => {    
-      return {
-        title: row.isMarkedAsError 
-          ? strings(stringKeys.reports.list.unmarkAsError) 
-          : strings(stringKeys.reports.list.markAsError),
-        action: () => setMarkErrorConfirmationDialog({isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
-      };    
-  };
 
   const hasMarkAsErrorAccess = user.roles.filter((r) => { return accessMap.reports.markAsError.indexOf(r) !== -1; }).length > 0;
 
@@ -104,13 +91,16 @@ export const ReportsTable = (props) => {
                 }
                 <TableCell>
                   <TableRowActions>
-                    {hasMarkAsErrorAccess && row.isValid && !row.isInAlert && (
+                    {hasMarkAsErrorAccess && row.isValid && !row.isInAlert && !row.isMarkedAsError && (
                       <TableRowMenu
                         id={row.id}
                         icon={<MoreVertIcon />}
                         isFetching={isMarkingAsError[row.id]}
                         items={[
-                          getMarkAsErrorMenuItem(row)
+                          {
+                            title: strings(stringKeys.reports.list.markAsError),
+                            action: () => setMarkErrorConfirmationDialog({isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
+                          }
                         ]}
                       />
                     )}                  
@@ -127,17 +117,9 @@ export const ReportsTable = (props) => {
         <ConfirmationDialog
           isOpened={markErrorConfirmationDialog.isOpen}
           isFetching = {isMarkingAsError}
-
-          titlteText = { markErrorConfirmationDialog.isMarkedAsError 
-            ? strings(stringKeys.reports.list.unmarkAsErrorConfirmation)
-            : strings(stringKeys.reports.list.markAsErrorConfirmation) }
-
-          contentText = {markErrorConfirmationDialog.isMarkedAsError 
-            ? strings(stringKeys.reports.list.unmarkAsErrorConfirmationText)
-            : strings(stringKeys.reports.list.markAsErrorConfirmationText) }
-
-          submit={() => markAsErrorConfirmed() }                   
-          
+          titlteText = { strings(stringKeys.reports.list.markAsErrorConfirmation)}
+          contentText = {strings(stringKeys.reports.list.markAsErrorConfirmationText)}
+          submit={() => markAsErrorConfirmed() }                             
           close={() => setMarkErrorConfirmationDialog({isOpen: false })}
         />           
       )}
