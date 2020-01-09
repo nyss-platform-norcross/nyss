@@ -73,7 +73,7 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
         <ExpansionPanelActions>
           {showActions && (
             <Fragment>
-              <SubmitButton onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing}>
+              <SubmitButton onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing} regular>
                 {strings(stringKeys.alerts.assess.report.dismiss)}
               </SubmitButton>
 
