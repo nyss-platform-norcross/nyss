@@ -148,7 +148,7 @@ export const initialState = {
     listStale: true,
     listProjectId: null,
     paginatedListData: null,
-    markingAsError: {},
+    markingAsError: false,
     reportListFilter: {
       reportListType: "main",
       isTraining: false

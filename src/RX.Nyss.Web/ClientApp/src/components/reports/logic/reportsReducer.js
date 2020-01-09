@@ -24,22 +24,22 @@ export function reportsReducer(state = initialState.reports, action) {
       return { ...state, listFetching: false, paginatedListData: null };
       
     case actions.MARK_AS_ERROR.REQUEST:
-    return { ...state, markingAsError: setProperty(state.markingAsError, action.id, true) };
+    return { ...state, markingAsError: true };
 
     case actions.MARK_AS_ERROR.SUCCESS:
-      return { ...state, markingAsError: setProperty(state.markingAsError, action.id, undefined) };
+      return { ...state, markingAsError: false };
 
     case actions.MARK_AS_ERROR.FAILURE:
-      return { ...state, markingAsError: setProperty(state.markingAsError, action.id, undefined), message: action.message };
+      return { ...state, markingAsError: false, message: action.message };
             
     case actions.UNMARK_AS_ERROR.REQUEST:
-      return { ...state, markingAsError: setProperty(state.markingAsError, action.id, true) };
+      return { ...state, markingAsError: true };
   
       case actions.UNMARK_AS_ERROR.SUCCESS:
-        return { ...state, markingAsError: setProperty(state.markingAsError, action.id, undefined) };
+        return { ...state, markingAsError: false };
   
       case actions.UNMARK_AS_ERROR.FAILURE:
-        return { ...state, markingAsError: setProperty(state.markingAsError, action.id, undefined), message: action.message };
+        return { ...state, markingAsError: false, message: action.message };
         
     default:
       return state;

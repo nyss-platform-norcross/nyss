@@ -410,6 +410,10 @@ export const stringKeys = {
       successfulyUnmarkedAsError: "reports.list.successfulyUnmarkedAsError",
       markAsError: "reports.list.markAsError",
       unmarkAsError: "reports.list.unmarkAsError",
+      markAsErrorConfirmation: "reports.list.markAsErrorConfirmation",
+      unmarkAsErrorConfirmation: "reports.list.unmarkAsErrorConfirmation",
+      markAsErrorConfirmationText: "reports.list.markAsErrorConfirmationText",
+      unmarkAsErrorConfirmationText: "reports.list.unmarkAsErrorConfirmationText",
       markedAsError: "reports.list.markedAsError",
     },
     title: "reports.title"
@@ -528,6 +532,7 @@ export const stringKeys = {
   },
   form: {
     cancel: "form.cancel",
+    confirm: "form.confirm",
     inlineSave: "form.inlineSave"
   },
   user: {
