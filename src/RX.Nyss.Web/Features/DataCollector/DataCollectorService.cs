@@ -266,6 +266,7 @@ namespace RX.Nyss.Web.Features.DataCollector
             dataCollector.DisplayName = editDto.DisplayName;
             dataCollector.PhoneNumber = editDto.PhoneNumber;
             dataCollector.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
+            dataCollector.BirthGroupDecade = editDto.BirthGroupDecade;
             dataCollector.Location = CreatePoint(editDto.Latitude, editDto.Longitude);
             dataCollector.Sex = editDto.Sex;
             dataCollector.Village = village;
