@@ -72,6 +72,7 @@ const NationalSocietyReportsListPageComponent = (props) => {
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
           reportListType={props.reportListFilter.reportListType}
+          filters={props.reportListFilter}
         />
       </Grid>
     </Grid>

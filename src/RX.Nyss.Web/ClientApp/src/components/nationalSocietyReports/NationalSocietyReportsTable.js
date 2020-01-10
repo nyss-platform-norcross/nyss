@@ -12,10 +12,10 @@ import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 
-export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSocietyId, getList, page, rowsPerPage, totalRows, reportListType }) => {
+export const NationalSocietyReportsTable = ({ isListFetching, list, nationalSocietyId, getList, page, rowsPerPage, totalRows, reportListType, filters }) => {
 
   const onChangePage = (event, page) => {
-    getList(nationalSocietyId, page);
+    getList(nationalSocietyId, page, filters);
   };
 
   const dashIfEmpty = (text, ...args) => {
