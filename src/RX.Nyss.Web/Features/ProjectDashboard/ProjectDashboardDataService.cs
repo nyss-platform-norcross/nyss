@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Where(ph => ph.Id == projectId)
                 .Select(p => new ProjectSummaryResponseDto
                 {
-                    ReportCount = (int)healthRiskReports.Sum(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1),
+                    ReportCount = healthRiskReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = allReports
                         .Where(r => r.DataCollector.Name != Anonymization.Text && r.DataCollector.DeletedAt == null)
                         .Select(r => r.DataCollector.Id)
