@@ -29,8 +29,11 @@ namespace RX.Nyss.FuncApp.Services
         {
             if (message.SendAsTextOnly)
             {
-                var sandboxMode = !(_config.MailjetConfig.SendFeedbackSmsToAll || IsWhiteListedPhoneNumber(message.Subject, whitelistedPhoneNumbers));
-                await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
+                if (_config.MailjetConfig.EnableFeedbackSms)
+                {
+                    var sandboxMode = !(_config.MailjetConfig.SendFeedbackSmsToAll || IsWhiteListedPhoneNumber(message.Subject, whitelistedPhoneNumbers));
+                    await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
+                }
             }
             else
             {
