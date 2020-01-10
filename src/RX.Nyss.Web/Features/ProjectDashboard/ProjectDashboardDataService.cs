@@ -473,13 +473,13 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Select(r => new
                 {
                     r.ReceivedAt,
-                    Total = r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1,
+                    Total = r.ReportedCaseCount,
                 })
                 .GroupBy(r => r.ReceivedAt.Date)
                 .Select(grouping => new
                 {
                     Period = grouping.Key,
-                    Count = (int)grouping.Sum(r => r.Total)
+                    Count = grouping.Sum(r => r.Total)
                 })
                 .ToListAsync();
 
@@ -511,7 +511,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 {
                     r.ReceivedAt,
                     r.EpiWeek,
-                    Total = r.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human ? r.ReportedCase.CountFemalesAtLeastFive + r.ReportedCase.CountFemalesBelowFive + r.ReportedCase.CountMalesAtLeastFive + r.ReportedCase.CountMalesBelowFive : 1,
+                    Total = r.ReportedCaseCount,
                 }).ToListAsync();
 
             var groupedReports = mappedReports.GroupBy(r => new
@@ -519,7 +519,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     Year = _dateTimeProvider.IsFirstWeekOfNextYear(r.ReceivedAt) ? r.ReceivedAt.Year + 1 : r.ReceivedAt.Year,
                     r.EpiWeek
                 })
-                .Select(grouping => new { EpiPeriod = grouping.Key, Count = (int)grouping.Sum(r => r.Total) })
+                .Select(grouping => new { EpiPeriod = grouping.Key, Count = grouping.Sum(r => r.Total) })
                 .ToList();
 
             var missingWeeks = Enumerable

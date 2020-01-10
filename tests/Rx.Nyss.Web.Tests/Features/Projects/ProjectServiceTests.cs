@@ -9,7 +9,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alerts.Dto;
-using RX.Nyss.Web.Features.NationalSociety;
 using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Services.Authorization;
@@ -906,7 +905,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 },
                                 new Report
                                 {
@@ -916,7 +916,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 }
                             }
                         }
@@ -936,7 +937,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 },
                                 new Report
                                 {
@@ -946,7 +948,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 }
                             },
                             Alerts = new[]
@@ -986,7 +989,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 },
                                 new Report
                                 {
@@ -996,7 +1000,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 }
                             }
                         },
@@ -1013,7 +1018,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 },
                                 new Report
                                 {
@@ -1023,7 +1029,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 },
                                 new Report
                                 {
@@ -1033,7 +1040,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 }
                             }
                         }
@@ -1053,7 +1061,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 },
                                 new Report
                                 {
@@ -1063,7 +1072,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 }
                             },
                             Alerts = new[]
@@ -1090,7 +1100,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 },
                                 new Report
                                 {
@@ -1100,7 +1111,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 },
                                 new Report
                                 {
@@ -1110,7 +1122,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReportedCase = new ReportCase
                                     {
                                         CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
-                                    }
+                                    },
+                                    ReportedCaseCount = 1
                                 }
                             },
                             Alerts = new[]
