@@ -16,30 +16,30 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ConfirmationDialog } from '../common/ConfirmationDialog';
 
-export const ReportsTable = (props) => {  
+export const ReportsTable = (props) => {
   const { projectId, list, page, rowsPerPage, totalRows, reportListType, user, filters} = props;
   const { getList, markAsError } = props;
   const { isListFetching, isMarkingAsError, } = props;
 
-  const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });  
+  const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });
 
   const onChangePage = (event, page) => {
-    getList(projectId, page);
+    getList(projectId, page, filters);
   };
 
   const dashIfEmpty = (text, ...args) => {
     return [text || "-", ...args].filter(x => !!x).join(", ");
   };
 
-  const markAsErrorConfirmed = () => {    
-    markAsError(markErrorConfirmationDialog.reportId, projectId, page, filters);    
+  const markAsErrorConfirmed = () => {
+    markAsError(markErrorConfirmationDialog.reportId, projectId, page, filters);
     setMarkErrorConfirmationDialog({isOpen: false })
   }
 
   const hasMarkAsErrorAccess = user.roles.filter((r) => { return accessMap.reports.markAsError.indexOf(r) !== -1; }).length > 0;
 
   return (
-    <Fragment>   
+    <Fragment>
       <TableContainer>
         {isListFetching && <Loading absolute />}
         <Table stickyHeader>
@@ -103,7 +103,7 @@ export const ReportsTable = (props) => {
                           }
                         ]}
                       />
-                    )}                  
+                    )}
                   </TableRowActions>
                 </TableCell>
               </TableRow>
@@ -119,9 +119,9 @@ export const ReportsTable = (props) => {
           isFetching = {isMarkingAsError}
           titlteText = { strings(stringKeys.reports.list.markAsErrorConfirmation)}
           contentText = {strings(stringKeys.reports.list.markAsErrorConfirmationText)}
-          submit={() => markAsErrorConfirmed() }                             
+          submit={() => markAsErrorConfirmed() }
           close={() => setMarkErrorConfirmationDialog({isOpen: false })}
-        />           
+        />
       )}
     </Fragment>
   );
