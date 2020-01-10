@@ -37,6 +37,7 @@ export function projectDashboardReducer(state = initialState.projectDashboard, a
         projectSummary: action.summary,
         reportsGroupedByDate: action.reportsGroupedByDate,
         reportsGroupedByFeaturesAndDate: action.reportsGroupedByFeaturesAndDate,
+        reportsGroupedByVillageAndDate: action.reportsGroupedByVillageAndDate,
         reportsGroupedByFeatures: action.reportsGroupedByFeatures,
         reportsGroupedByLocation: action.reportsGroupedByLocation,
         dataCollectionPointsReportData: action.dataCollectionPointReports,

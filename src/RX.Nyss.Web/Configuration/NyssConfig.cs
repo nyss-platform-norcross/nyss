@@ -5,10 +5,6 @@
         string BaseUrl { get; set; }
         string Environment { get; set; }
         bool IsProduction { get; }
-        NyssConfig.LoggingOptions Logging { get; set; }
-        NyssConfig.ConnectionStringOptions ConnectionStrings { get; set; }
-        NyssConfig.AuthenticationOptions Authentication { get; set; }
-        NyssConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
         string SmsGatewayBlobContainerName { get; set; }
         string GeneralBlobContainerName { get; set; }
         string AuthorizedApiKeysBlobObjectName { get; set; }
@@ -16,18 +12,22 @@
         string EmailContentResourcesBlobObjectName { get; set; }
         int PaginationRowsPerPage { get; set; }
         string SmsContentResourcesBlobObjectName { get; set; }
+
+        NyssConfig.LoggingOptions Logging { get; set; }
+        NyssConfig.ConnectionStringOptions ConnectionStrings { get; set; }
+        NyssConfig.AuthenticationOptions Authentication { get; set; }
+        NyssConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
         NyssConfig.ExportOptions Export { get; set; }
+        NyssConfig.ViewOptions View { get; set; }
     }
 
     public class NyssConfig : IConfig
     {
         public string BaseUrl { get; set; }
+
         public string Environment { get; set; }
+
         public bool IsProduction => Environment == NyssEnvironments.Prod;
-        public LoggingOptions Logging { get; set; }
-        public ConnectionStringOptions ConnectionStrings { get; set; }
-        public AuthenticationOptions Authentication { get; set; }
-        public ServiceBusQueuesOptions ServiceBusQueues { get; set; }
 
         public string SmsGatewayBlobContainerName { get; set; }
 
@@ -43,7 +43,17 @@
 
         public string SmsContentResourcesBlobObjectName { get; set; }
 
+        public LoggingOptions Logging { get; set; }
+
+        public ConnectionStringOptions ConnectionStrings { get; set; }
+
+        public AuthenticationOptions Authentication { get; set; }
+
+        public ServiceBusQueuesOptions ServiceBusQueues { get; set; }
+
         public ExportOptions Export { get; set; }
+
+        public ViewOptions View { get; set; }
 
         public class LoggingOptions
         {
@@ -75,6 +85,11 @@
         public class ExportOptions
         {
             public string CsvFieldSeparator { get; set; }
+        }
+
+        public class ViewOptions
+        {
+            public int NumberOfGroupedVillagesInProjectDashboard { get; set; }
         }
     }
 }

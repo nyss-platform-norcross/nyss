@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Utils;
@@ -20,19 +21,23 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto);
         Task<IEnumerable<ProjectSummaryReportHealthRiskResponseDto>> GetProjectReportHealthRisks(int projectId, double latitude, double longitude, FiltersRequestDto filtersDto);
         Task<IList<DataCollectionPointsReportsByDateDto>> GetDataCollectionPointReports(int projectId, FiltersRequestDto filtersDto);
+        Task<ReportByVillageAndDateResponseDto> GetReportsGroupedByVillageAndDate(int projectId, FiltersRequestDto filtersDto);
     }
 
     public class ProjectDashboardDataService : IProjectDashboardDataService
     {
         private readonly INyssContext _nyssContext;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IConfig _config;
 
         public ProjectDashboardDataService(
             INyssContext nyssContext,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IConfig config)
         {
             _nyssContext = nyssContext;
             _dateTimeProvider = dateTimeProvider;
+            _config = config;
         }
 
         public Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto)
@@ -96,6 +101,23 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
                 _ =>
                     throw new InvalidOperationException()
+            };
+        }
+
+        public async Task<ReportByVillageAndDateResponseDto> GetReportsGroupedByVillageAndDate(int projectId, FiltersRequestDto filtersDto)
+        {
+            var reports = GetFilteredReports(projectId, filtersDto);
+
+            return filtersDto.GroupingType switch
+            {
+                FiltersRequestDto.GroupingTypeDto.Day =>
+                await GroupReportsByVillageAndDay(reports, filtersDto.StartDate.Date, filtersDto.EndDate.Date),
+
+                FiltersRequestDto.GroupingTypeDto.Week =>
+                await GroupReportsByVillageAndWeek(reports, filtersDto.StartDate.Date, filtersDto.EndDate.Date),
+
+                _ =>
+                throw new InvalidOperationException()
             };
         }
 
@@ -313,6 +335,136 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     CountMalesBelowFive = x.CountMalesBelowFive
                 })
                 .ToList();
+        }
+
+        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        {
+            var groupedReports = await reports
+                .GroupBy(r => new { r.ReceivedAt.Date, VillageId = r.Village.Id, VillageName = r.Village.Name })
+                .Select(grouping => new
+                {
+                    Period = grouping.Key.Date,
+                    Count = grouping.Sum(g => g.ReportedCaseCount),
+                    grouping.Key.VillageId,
+                    grouping.Key.VillageName
+                })
+                .Where(g => g.Count > 0)
+                .ToListAsync();
+
+            var reportsGroupedByVillages = groupedReports
+                .GroupBy(r => new { r.VillageId, r.VillageName })
+                .OrderByDescending(g => g.Sum(w => w.Count))
+                .Select(g => new
+                {
+                    Village = g.Key,
+                    Data = g.ToList()
+                })
+                .ToList();
+
+            var maxVillageCount = _config.View.NumberOfGroupedVillagesInProjectDashboard;
+
+            var truncatedVillagesList = reportsGroupedByVillages
+                .Take(maxVillageCount)
+                .Union(reportsGroupedByVillages
+                    .Skip(maxVillageCount)
+                    .SelectMany(_ => _.Data)
+                    .GroupBy(_ => true)
+                    .Select(g => new
+                    {
+                        Village = new { VillageId = 0, VillageName = "(rest)" },
+                        Data = g.ToList()
+                    })
+                )
+                .Select(x => new ReportByVillageAndDateResponseDto.VillageDto
+                {
+                    Name = x.Village.VillageName,
+                    Periods = x.Data.GroupBy(v => v.Period).OrderBy(v => v.Key)
+                        .Select(g => new ReportByVillageAndDateResponseDto.PeriodDto
+                        {
+                            Period = g.Key.ToString("dd/MM", CultureInfo.InvariantCulture),
+                            Count = g.Sum(w => w.Count)
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            var allPeriods = Enumerable
+                .Range(0, endDate.Subtract(startDate).Days + 1)
+                .Select(i => startDate.AddDays(i).ToString("dd/MM", CultureInfo.InvariantCulture))
+                .ToList();
+
+            return new ReportByVillageAndDateResponseDto
+            {
+                Villages = truncatedVillagesList,
+                AllPeriods = allPeriods
+            };
+        }
+
+        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        {
+            var groupedReports = await reports
+                .GroupBy(r => new { r.EpiWeek, ReceivedAt = r.ReceivedAt.Date, VillageId = r.Village.Id, VillageName = r.Village.Name })
+                .Select(grouping => new
+                {
+                    Period = new
+                    {
+                        grouping.Key.EpiWeek,
+                        grouping.Key.ReceivedAt.Year
+                    },
+                    Count = grouping.Sum(g => g.ReportedCaseCount),
+                    grouping.Key.VillageId,
+                    grouping.Key.VillageName
+                })
+                .Where(g => g.Count > 0)
+                .ToListAsync();
+
+            var reportsGroupedByVillages = groupedReports
+                .GroupBy(r => new { r.VillageId, r.VillageName })
+                .OrderByDescending(g => g.Sum(w => w.Count))
+                .Select(g => new
+                {
+                    Village = g.Key,
+                    Data = g.ToList()
+                })
+                .ToList();
+
+            var maxVillageCount = _config.View.NumberOfGroupedVillagesInProjectDashboard;
+
+            var truncatedVillagesList = reportsGroupedByVillages
+                .Take(maxVillageCount)
+                .Union(reportsGroupedByVillages
+                    .Skip(maxVillageCount)
+                    .SelectMany(_ => _.Data)
+                    .GroupBy(_ => true)
+                    .Select(g => new
+                    {
+                        Village = new { VillageId = 0, VillageName = "(rest)" },
+                        Data = g.ToList()
+                    })
+                )
+                .Select(x => new ReportByVillageAndDateResponseDto.VillageDto
+                {
+                    Name = x.Village.VillageName,
+                    Periods = x.Data.GroupBy(v => v.Period).OrderBy(v => v.Key.Year).ThenBy(x => x.Key.EpiWeek)
+                        .Select(g => new ReportByVillageAndDateResponseDto.PeriodDto
+                        {
+                            Period = g.Key.EpiWeek.ToString(),
+                            Count = g.Sum(w => w.Count)
+                        })
+                        .ToList()
+                })
+                .ToList();
+
+            var allPeriods = Enumerable
+                .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
+                .Select(w => startDate.AddDays(w * 7))
+                .Select(day => _dateTimeProvider.GetEpiWeek(day).ToString());
+
+            return new ReportByVillageAndDateResponseDto
+            {
+                Villages = truncatedVillagesList,
+                AllPeriods = allPeriods
+            };
         }
 
         private static async Task<IList<ReportByDateResponseDto>> GroupReportsByDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)

@@ -16,6 +16,7 @@ import { ProjectsDashboardReportSexAgeChart } from './components/ProjectsDashboa
 import { ProjectsDashboardReportSexAgeTable } from './components/ProjectsDashboardReportSexAgeTable';
 import { ProjectsDashboardDataCollectionPointChart } from "./components/ProjectsDashboardDataCollectionPointChart";
 import { strings, stringKeys } from "../../strings";
+import { ProjectsDashboardReportVillageChart } from "./components/ProjectsDashboardReportVillageChart";
 import SubmitButton from "../forms/submitButton/SubmitButton";
 
 const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, generatePdf, isGeneratingPdf, projectId, isFetching, ...props }) => {
@@ -67,17 +68,20 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
               <ProjectsDashboardReportChart data={props.reportsGroupedByDate} />
             </Grid>
             <Grid item xs={12}>
+              <ProjectsDashboardReportVillageChart data={props.reportsGroupedByVillageAndDate} />
+            </Grid>
+            <Grid item xs={12}>
               <ProjectsDashboardReportSexAgeChart data={props.reportsGroupedByFeaturesAndDate} />
             </Grid>
             <Grid item sm={6} xs={12}>
               <ProjectsDashboardReportSexAgeTable data={props.reportsGroupedByFeatures} />
             </Grid>
 
-            {props.filters.reportsType === "dataCollectionPoint" &&
+            {props.filters.reportsType === "dataCollectionPoint" && (
               <Grid item xs={12}>
                 <ProjectsDashboardDataCollectionPointChart data={props.dataCollectionPointsReportData} />
               </Grid>
-            }
+            )}
           </Fragment>
         )}
 
@@ -105,6 +109,7 @@ const mapStateToProps = state => ({
   filters: state.projectDashboard.filters,
   reportsGroupedByDate: state.projectDashboard.reportsGroupedByDate,
   reportsGroupedByFeaturesAndDate: state.projectDashboard.reportsGroupedByFeaturesAndDate,
+  reportsGroupedByVillageAndDate: state.projectDashboard.reportsGroupedByVillageAndDate,
   reportsGroupedByFeatures: state.projectDashboard.reportsGroupedByFeatures,
   reportsGroupedByLocation: state.projectDashboard.reportsGroupedByLocation,
   reportsGroupedByLocationDetails: state.projectDashboard.reportsGroupedByLocationDetails,

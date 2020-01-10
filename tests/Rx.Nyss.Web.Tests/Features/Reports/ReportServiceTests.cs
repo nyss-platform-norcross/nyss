@@ -57,10 +57,9 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _dateTimeProvider.GetEpiWeek(default).ReturnsForAnyArgs(1);
-            _dateTimeProvider.IsFirstWeekOfNextYear(default).ReturnsForAnyArgs(false);
-
             _reportService = new ReportService(_nyssContextMock, _userService, _config, _authorizationService, _excelExportService, _stringsResourcesService, _dateTimeProvider);
-
+            _dateTimeProvider.IsFirstWeekOfNextYear(default).ReturnsForAnyArgs(false);
+            
             ArrangeData();
         }
 
