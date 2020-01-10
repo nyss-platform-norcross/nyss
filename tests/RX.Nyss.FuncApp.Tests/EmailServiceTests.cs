@@ -19,7 +19,7 @@ namespace RX.Nyss.FuncApp.Tests
         {
             _loggerMock = Substitute.For<ILogger<EmailService>>();
             _configurationMock = Substitute.For<IConfig>();
-            _configurationMock.MailjetConfig = new NyssFuncAppConfig.MailjetConfigOptions();
+            _configurationMock.MailjetConfig = new NyssFuncAppConfig.MailjetConfigOptions(){ EnableFeedbackSms = true };
             _mailjetEmailClientMock = Substitute.For<IMailjetEmailClient>();
             _emailService = new EmailService(
                 _loggerMock,
