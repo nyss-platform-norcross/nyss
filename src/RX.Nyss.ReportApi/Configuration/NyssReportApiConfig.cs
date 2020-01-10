@@ -8,6 +8,7 @@
         NyssReportApiConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
         string GeneralBlobContainerName { get; set; }
         string StringsResourcesBlobObjectName { get; set; }
+        string SmsContentResourcesBlobObjectName { get; set; }
     }
 
     public class NyssReportApiConfig : IConfig
@@ -23,6 +24,8 @@
         public string GeneralBlobContainerName { get; set; }
 
         public string StringsResourcesBlobObjectName { get; set; }
+
+        public string SmsContentResourcesBlobObjectName { get; set; }
 
         public class LoggingOptions
         {

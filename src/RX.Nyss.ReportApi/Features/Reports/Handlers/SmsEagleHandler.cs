@@ -15,8 +15,10 @@ using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 using RX.Nyss.ReportApi.Services;
+using RX.Nyss.ReportApi.Services.StringsResources;
 using RX.Nyss.ReportApi.Utils;
 using RX.Nyss.ReportApi.Utils.Logging;
+using static RX.Nyss.ReportApi.Utils.DataContract.SmsContentKey;
 
 namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 {
@@ -41,12 +43,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
         private readonly IAlertService _alertService;
+        private readonly IStringsResourcesService _stringsResourcesService;
 
         public SmsEagleHandler(
             IReportMessageService reportMessageService,
             INyssContext nyssContext,
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,
+            IStringsResourcesService stringsResourcesService,
             IEmailToSmsPublisherService emailToSmsPublisherService, IAlertService alertService)
         {
             _reportMessageService = reportMessageService;
@@ -55,6 +59,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             _dateTimeProvider = dateTimeProvider;
             _emailToSmsPublisherService = emailToSmsPublisherService;
             _alertService = alertService;
+            _stringsResourcesService = stringsResourcesService;
         }
 
         public async Task Handle(string queryString)
@@ -192,16 +197,25 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 _loggerAdapter.Warn(e);
 
                 var sender = parsedQueryString[SenderParameterName];
+                var nationalSociety = await _nyssContext.NationalSocieties.Include(ns => ns.ContentLanguage).FirstOrDefaultAsync(ns => ns.Id == e.GatewaySetting.NationalSocietyId);
+
                 if (e.GatewaySetting != null && !string.IsNullOrEmpty(sender))
                 {
                     var feedbackMessage = e.ErrorType switch
                     {
-                        ReportErrorType.FormatError => "",
-                        ReportErrorType.HealthRiskNotFound => "",
-                        _ => ""
+                        ReportErrorType.FormatError => await GetFeedbackMessageContent(ReportError.FormatError, nationalSociety.ContentLanguage.LanguageCode),
+                        ReportErrorType.HealthRiskNotFound => await GetFeedbackMessageContent(ReportError.HealthRiskNotFound, nationalSociety.ContentLanguage.LanguageCode),
+                        ReportErrorType.DataCollectorNotFound => null,
+                        _ => await GetFeedbackMessageContent(ReportError.Other, nationalSociety.ContentLanguage.LanguageCode)
                     };
+
+                    if (string.IsNullOrEmpty(feedbackMessage))
+                    {
+                        return null;
+                    }
+
                     var senderList = new List<string>(new string[] { sender });
-                    await _emailToSmsPublisherService.SendMessages(e.GatewaySetting.EmailAddress, e.GatewaySetting.Name, senderList, "");
+                    await _emailToSmsPublisherService.SendMessages(e.GatewaySetting.EmailAddress, e.GatewaySetting.Name, senderList, feedbackMessage);
                 }
 
                 return null;
@@ -248,13 +262,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
             if (dataCollector == null)
             {
-                throw new ReportValidationException($"A Data Collector with phone number '{phoneNumber}' does not exist.");
+                throw new ReportValidationException($"A Data Collector with phone number '{phoneNumber}' does not exist.", ReportErrorType.DataCollectorNotFound);
             }
 
             if (dataCollector.Project.NationalSocietyId != gatewayNationalSociety.Id)
             {
                 throw new ReportValidationException($"A Data Collector's National Society identifier ('{dataCollector.Project.NationalSocietyId}') " +
-                                                    $"is different from SMS Gateway's ('{gatewayNationalSociety.Id}').");
+                                                    $"is different from SMS Gateway's ('{gatewayNationalSociety.Id}').", ReportErrorType.DataCollectorNotFound);
             }
 
             return dataCollector;
@@ -382,6 +396,19 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             {
                 throw new ReportValidationException("The receival time cannot be in the future.");
             }
+        }
+
+        private async Task<string> GetFeedbackMessageContent(string key, string languageCode)
+        {
+            var smsContents = await _stringsResourcesService.GetSmsContentResources(languageCode);
+            smsContents.Value.TryGetValue(key, out string message);
+
+            if (message == null)
+            {
+                _loggerAdapter.Warn($"No sms content resource found for key '{key}'");
+            }
+
+            return message;
         }
     }
 }

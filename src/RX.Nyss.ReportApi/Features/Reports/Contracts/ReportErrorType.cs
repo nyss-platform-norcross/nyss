@@ -4,6 +4,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Contracts
     {
         FormatError,
         HealthRiskNotFound,
+        DataCollectorNotFound,
         Other
     }
 }
