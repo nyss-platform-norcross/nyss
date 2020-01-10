@@ -33,7 +33,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         public void ParseReport_WhenEmptyReportSent_ShouldThrowException(string reportMessage)
         {
             // Assert
-            Should.Throw<ReportValidationException>(() => _reportMessageService.ParseReport(reportMessage));
+            Should.Throw<ReportValidationException>(() => _reportMessageService.ParseReport(reportMessage, new GatewaySetting()));
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             var reportMessage = "99";
 
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = _reportMessageService.ParseReport(reportMessage, new GatewaySetting());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.Activity);
@@ -64,7 +64,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             var reportMessage = "25";
 
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = _reportMessageService.ParseReport(reportMessage, new GatewaySetting());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.NonHuman);
@@ -91,7 +91,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = _reportMessageService.ParseReport(reportMessage, new GatewaySetting());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.Single);
@@ -112,7 +112,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = _reportMessageService.ParseReport(reportMessage, new GatewaySetting());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.Aggregate);
@@ -133,7 +133,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive, int referredCount, int deathCount, int fromOtherVillagesCount)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = _reportMessageService.ParseReport(reportMessage, new GatewaySetting());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.DataCollectionPoint);
