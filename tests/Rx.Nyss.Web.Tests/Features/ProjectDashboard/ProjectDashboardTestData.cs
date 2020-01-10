@@ -252,7 +252,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                         1 => 1,
                         2 => 1,
                         3 => 1,
-                        _ => r.ReportedCase.CountMalesBelowFive ?? 0 + r.ReportedCase.CountFemalesAtLeastFive ?? 0 + r.ReportedCase.CountFemalesBelowFive ?? 0 + r.ReportedCase.CountMalesAtLeastFive ?? 0
+                        _ => (r.ReportedCase.CountMalesBelowFive ?? 0) + (r.ReportedCase.CountFemalesAtLeastFive ?? 0) + (r.ReportedCase.CountFemalesBelowFive ?? 0) + (r.ReportedCase.CountMalesAtLeastFive ?? 0) + (r.DataCollectionPointCase.DeathCount ?? 0) + (r.DataCollectionPointCase.FromOtherVillagesCount ?? 0) + (r.DataCollectionPointCase.ReferredCount ?? 0)
                     };
 
                     r.ReportedCase = (r.Id % 4) switch
@@ -278,12 +278,22 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                         3 => new ReportCase { CountFemalesAtLeastFive = 1, CountMalesBelowFive = 0, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0 },
                         _ => r.ReportedCase
                     };
+
                     r.DataCollectionPointCase = (r.Id % 3) switch
                     {
                         0 => new DataCollectionPointCase { FromOtherVillagesCount = 1, ReferredCount = 0, DeathCount = 0 },
                         1 => new DataCollectionPointCase { ReferredCount = 1, FromOtherVillagesCount = 0, DeathCount = 0 },
                         2 => new DataCollectionPointCase { DeathCount = 1, FromOtherVillagesCount = 0, ReferredCount = 0 },
                         _ => r.DataCollectionPointCase
+                    };
+
+                    r.ReportedCaseCount = (r.Id % 4) switch
+                    {
+                        0 => 1,
+                        1 => 1,
+                        2 => 1,
+                        3 => 1,
+                        _ => (r.ReportedCase.CountMalesBelowFive ?? 0) + (r.ReportedCase.CountFemalesAtLeastFive ?? 0) + (r.ReportedCase.CountFemalesBelowFive ?? 0) + (r.ReportedCase.CountMalesAtLeastFive ?? 0) + (r.DataCollectionPointCase.DeathCount ?? 0) + (r.DataCollectionPointCase.FromOtherVillagesCount ?? 0) + (r.DataCollectionPointCase.ReferredCount ?? 0)
                     };
                 });
         }
