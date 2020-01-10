@@ -59,7 +59,7 @@ export const ProjectsDashboardReportVillageChart = ({ data }) => {
   const chartData = getOptions(strings(moduleStrings.numberOfReports, true), series, categories);
 
   return (
-    <Card>
+    <Card data-printable={true}>
       <CardHeader title={strings(moduleStrings.title)} />
       <CardContent>
         <HighchartsReact

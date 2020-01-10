@@ -381,7 +381,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     Periods = x.Data.GroupBy(v => v.Period).OrderBy(v => v.Key)
                         .Select(g => new ReportByVillageAndDateResponseDto.PeriodDto
                         {
-                            Period = g.Key.ToString("dd/MM"),
+                            Period = g.Key.ToString("dd/MM", CultureInfo.InvariantCulture),
                             Count = g.Sum(w => w.Count)
                         })
                         .ToList()
@@ -390,7 +390,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
             var allPeriods = Enumerable
                 .Range(0, endDate.Subtract(startDate).Days + 1)
-                .Select(i => startDate.AddDays(i).ToString("dd/MM"))
+                .Select(i => startDate.AddDays(i).ToString("dd/MM", CultureInfo.InvariantCulture))
                 .ToList();
 
             return new ReportByVillageAndDateResponseDto
