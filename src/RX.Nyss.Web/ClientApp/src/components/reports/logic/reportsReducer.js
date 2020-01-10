@@ -12,13 +12,13 @@ export function reportsReducer(state = initialState.reports, action) {
       return { ...state, listStale: action.projectId !== state.listProjectId };
 
     case actions.OPEN_REPORTS_LIST.SUCCESS:
-      return { ...state, listProjectId: action.projectId };
+      return { ...state, listProjectId: action.projectId, filtersData: action.filtersData };
 
     case actions.GET_REPORTS.REQUEST:
       return { ...state, paginatedListData: state.listStale ? null : state.paginatedListData, listFetching: true };
 
     case actions.GET_REPORTS.SUCCESS:
-      return { ...state, filter: action.filter, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
+      return { ...state, filters: action.filters, sorting: action.sorting, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
 
     case actions.GET_REPORTS.FAILURE:
       return { ...state, listFetching: false, paginatedListData: null };

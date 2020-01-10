@@ -1,6 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.Common.Domain
+﻿namespace RX.Nyss.Web.Features.Common.Dto
 {
-    public class HealthRiskName
+    public class HealthRiskDto
     {
         public int Id { get; set; }
 

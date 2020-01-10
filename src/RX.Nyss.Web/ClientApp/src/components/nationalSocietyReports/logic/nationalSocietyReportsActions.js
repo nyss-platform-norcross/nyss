@@ -13,8 +13,8 @@ export const openList = {
 };
 
 export const getList = {
-  invoke: (nationalSocietyId, pageNumber, filters) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.INVOKE, nationalSocietyId, pageNumber, filters }),
+  invoke: (nationalSocietyId, pageNumber, filters, sorting) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.INVOKE, nationalSocietyId, pageNumber, filters, sorting }),
   request: () => ({ type: GET_NATIONAL_SOCIETY_REPORTS.REQUEST }),
-  success: (data, page, rowsPerPage, totalRows, filters) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filters }),
+  success: (data, page, rowsPerPage, totalRows, filters, sorting) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filters, sorting }),
   failure: (message) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.FAILURE, message })
 };

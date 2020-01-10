@@ -7,6 +7,8 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
@@ -21,8 +23,9 @@ namespace RX.Nyss.Web.Features.Report
 {
     public interface IReportService
     {
-        Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter);
         Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter);
+        Task<Result<ReportListFilterResponseDto>> GetReportFilters(int nationalSocietyId);
+        Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter);
         Task<Result> MarkAsError(int reportId);
         Task<Result> UnmarkAsError(int reportId);
     }
@@ -32,16 +35,17 @@ namespace RX.Nyss.Web.Features.Report
         private readonly IConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
+        private readonly IProjectService _projectService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-
-        public ReportService(INyssContext nyssContext, IUserService userService, IConfig config, IAuthorizationService authorizationService, IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
+        public ReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, IConfig config, IAuthorizationService authorizationService, IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _userService = userService;
+            _projectService = projectService;
             _config = config;
             _authorizationService = authorizationService;
             _excelExportService = excelExportService;
@@ -77,12 +81,16 @@ namespace RX.Nyss.Web.Features.Report
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.IsTraining ?
-                      r.IsTraining.HasValue && r.IsTraining.Value :
-                      r.IsTraining.HasValue && !r.IsTraining.Value)
-                .Where(r => filter.ReportListType== ReportListType.FromDcp ?
+                .Where(r => filter.ReportsType== ReportListType.FromDcp ?
                             r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
-                            r.DataCollector.DataCollectorType == DataCollectorType.Human);
+                            r.DataCollector.DataCollectorType == DataCollectorType.Human)
+                .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
+                .Where(r => filter.Status ? r.Report != null : r.Report == null)
+                .Where(r => filter.IsTraining ?
+                    r.IsTraining.HasValue && r.IsTraining.Value :
+                    r.IsTraining.HasValue && !r.IsTraining.Value);
+
+            baseQuery = FilterReportsByArea(baseQuery, filter.Area);
 
             var result = baseQuery.Select(r => new ReportListResponseDto
                 {
@@ -178,10 +186,44 @@ namespace RX.Nyss.Web.Features.Report
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
                 })
-                .OrderByDescending(r => r.DateTime);
+                //ToDo: order base on filter.OrderBy property
+                .OrderBy(r => r.DateTime, filter.SortAscending);
 
             return (baseQuery, result);
         }
+
+        public async Task<Result<ReportListFilterResponseDto>> GetReportFilters(int projectId)
+        {
+            var projectHealthRiskNames = await _projectService.GetProjectHealthRiskNames(projectId);
+
+            var dto = new ReportListFilterResponseDto
+            {
+                HealthRisks = projectHealthRiskNames
+                    .Select(p => new HealthRiskDto { Id = p.Id, Name = p.Name })
+            };
+
+            return Success(dto);
+        }
+
+        //ToDo: use common logic with the project dashboard
+        private static IQueryable<RawReport> FilterReportsByArea(IQueryable<RawReport> rawReports, AreaDto area) =>
+            area?.Type switch
+            {
+                AreaDto.AreaTypeDto.Region =>
+                rawReports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.Id : r.DataCollector.Village.District.Region.Id == area.Id),
+
+                AreaDto.AreaTypeDto.District =>
+                rawReports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.Id : r.DataCollector.Village.District.Id == area.Id),
+
+                AreaDto.AreaTypeDto.Village =>
+                rawReports.Where(r => r.Report != null ? r.Report.Village.Id == area.Id : r.DataCollector.Village.Id == area.Id),
+
+                AreaDto.AreaTypeDto.Zone =>
+                rawReports.Where(r => r.Report != null ? r.Report.Zone.Id == area.Id : r.DataCollector.Zone.Id == area.Id),
+
+                _ =>
+                rawReports
+            };
 
         public async Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter)
         {

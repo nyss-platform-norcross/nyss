@@ -1,3 +1,6 @@
+import { ReportListType as ProjectReportListType } from './components/reports/logic/reportsConstants'
+import { ReportListType as NationalSocietyReportListType } from './components/nationalSocietyReports/logic/nationalSocietyReportsConstants'
+
 export const initialState = {
   appData: {
     appReady: false,
@@ -152,10 +155,11 @@ export const initialState = {
     listProjectId: null,
     paginatedListData: null,
     markingAsError: false,
-    reportListFilter: {
-      reportListType: "main",
-      isTraining: false
-    }
+    filtersData: {
+      healthRisks: []
+    },
+    filters: null,
+    sorting: null
   },
   nationalSocietyReports: {
     listFetching: false,
@@ -167,6 +171,7 @@ export const initialState = {
       healthRisks: []
     },
     filters: null,
+    sorting: null
   },
   alerts: {
     listFetching: false,

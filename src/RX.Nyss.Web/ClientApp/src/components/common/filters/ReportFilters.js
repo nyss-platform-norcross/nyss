@@ -1,4 +1,4 @@
-import styles from "./NationalSocietyReportsFilters.module.scss";
+import styles from "./ReportFilters.module.scss";
 
 import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
@@ -10,10 +10,11 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
-import { AreaFilter } from "../common/filters/AreaFilter";
-import { strings, stringKeys } from "../../strings";
+import { AreaFilter } from "./AreaFilter";
+import { strings, stringKeys } from "../../../strings";
+import { ReportListType } from './logic/reportFilterConstsants'
 
-export const NationalSocietyReportsFilters = ({ filters, nationalSocietyId, healthRisks, onChange }) => {
+export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChange, showTrainingFilter, showUnknownSenderOption }) => {
   const [value, setValue] = useState(filters);
 
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
@@ -50,24 +51,26 @@ export const NationalSocietyReportsFilters = ({ filters, nationalSocietyId, heal
   }
 
   return (
-    <Card className={styles.filters}>
+    <Card>
       <CardContent>
         <Grid container spacing={3}>
           <Grid item>
             <FormControl className={styles.filterItem}>
-              <InputLabel>{strings(stringKeys.nationalSocietyReports.list.filters.selectReportListType)}</InputLabel>
+              <InputLabel>{strings(stringKeys.filters.report.selectReportListType)}</InputLabel>
               <Select
                 onChange={handleReportsTypeChange}
                 value={filters.reportsType}
               >
-                <MenuItem value="unknownSender">
-                  {strings(stringKeys.nationalSocietyReports.list.filters.unknownSenderReportListType)}
+                {showUnknownSenderOption &&
+                  <MenuItem value={ReportListType.unknownSender}>
+                    {strings(stringKeys.filters.report.unknownSenderReportListType)}
+                  </MenuItem>
+                }
+                <MenuItem value={ReportListType.main}>
+                  {strings(stringKeys.filters.report.mainReportsListType)}
                 </MenuItem>
-                <MenuItem value="main">
-                  {strings(stringKeys.nationalSocietyReports.list.filters.mainReportsListType)}
-                </MenuItem>
-                <MenuItem value="fromDcp">
-                  {strings(stringKeys.nationalSocietyReports.list.filters.dcpReportListType)}
+                <MenuItem value={ReportListType.fromDcp}>
+                  {strings(stringKeys.filters.report.dcpReportListType)}
                 </MenuItem>
               </Select>
             </FormControl>
@@ -84,13 +87,13 @@ export const NationalSocietyReportsFilters = ({ filters, nationalSocietyId, heal
           <Grid item>
             <TextField
               select
-              label={strings(stringKeys.nationalSocietyReports.list.filters.healthRisk)}
+              label={strings(stringKeys.filters.report.healthRisk)}
               onChange={handleHealthRiskChange}
               value={value.healthRiskId || 0}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             >
-              <MenuItem value={0}>{strings(stringKeys.nationalSocietyReports.list.filters.healthRiskAll)}</MenuItem>
+              <MenuItem value={0}>{strings(stringKeys.filters.report.healthRiskAll)}</MenuItem>
 
               {healthRisks.map(healthRisk => (
                 <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
@@ -101,16 +104,30 @@ export const NationalSocietyReportsFilters = ({ filters, nationalSocietyId, heal
           </Grid>
 
           <Grid item>
-            <InputLabel className={styles.filterLabel}>{strings(stringKeys.nationalSocietyReports.list.filters.status)}</InputLabel>
+            <InputLabel className={styles.filterLabel}>{strings(stringKeys.filters.report.status)}</InputLabel>
             <RadioGroup
               value={filters.status}
               onChange={handleStatusChange}
               className={styles.filterRadioGroup}
             >
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.nationalSocietyReports.list.success)} value={true} />
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.nationalSocietyReports.list.error)} value={false} />
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.success)} value={true} />
+              <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.error)} value={false} />
             </RadioGroup>
           </Grid>
+
+          {showTrainingFilter &&
+            <Grid item>
+              <InputLabel className={styles.filterLabel}>{strings(stringKeys.filters.report.training)}</InputLabel>
+              <RadioGroup
+                value={filters.isTraining}
+                onChange={handleIsTrainingChange}
+                className={styles.filterRadioGroup}
+              >
+                <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.nonTrainingReports)} value={false} />
+                <FormControlLabel control={<Radio />} label={strings(stringKeys.filters.report.trainingReports)} value={true} />
+              </RadioGroup>
+            </Grid>
+          }
         </Grid>
       </CardContent>
     </Card>

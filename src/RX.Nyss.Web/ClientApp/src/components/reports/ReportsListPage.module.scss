@@ -1,8 +1,5 @@
-.trainingStateLabel {
-  margin-top: 6px;
-}
-
-.trainingStateRadioGroup {
-  flex-direction: row !important;
-  margin-top: 10px;
+.filtersGrid {
+  position: sticky;
+  top: -12px;
+  z-index: 1001;
 }

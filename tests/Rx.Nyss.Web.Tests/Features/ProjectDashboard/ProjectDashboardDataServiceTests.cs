@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
@@ -220,7 +218,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
-
         [Theory]
         [InlineData(1, 4, 2, 0)]
         [InlineData(2, 0, 0, 0)]
@@ -252,7 +249,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
-
 
         [Theory]
         [InlineData(1, 2, 1, 0)]
@@ -294,7 +290,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
-
         [Theory]
         [InlineData(1, 0, 0, 0)]
         [InlineData(2, 0, 0, 0)]
@@ -334,7 +329,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
-
 
         [Theory]
         [InlineData("2019-01-01","2019-01-05", 1, 1, 11)]
@@ -475,7 +469,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
             result.Where(x => x.Period == epiWeek.ToString())
                 .Select(x => x.DeathCount).Single().ShouldBe(deathCount);
-
         }
 
         [Theory]
@@ -521,7 +514,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
             result.Where(x => x.Period == day)
                 .Select(x => x.DeathCount).Single().ShouldBe(deathCount);
-
         }
 
         [Fact]

@@ -7,7 +7,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alerts.Dto;
-using RX.Nyss.Web.Features.Common.Domain;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.NationalSociety;
 using RX.Nyss.Web.Features.Project.Domain;
 using RX.Nyss.Web.Features.Project.Dto;
@@ -29,7 +29,7 @@ namespace RX.Nyss.Web.Features.Project
         Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
         Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
-        Task<IEnumerable<HealthRiskName>> GetProjectHealthRiskNames(int projectId);
+        Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId);
         Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId);
         Task<bool> HasCurrentUserAccessToProject(int projectId);
         Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
@@ -104,10 +104,10 @@ namespace RX.Nyss.Web.Features.Project
             return result;
         }
 
-        public async Task<IEnumerable<HealthRiskName>> GetProjectHealthRiskNames(int projectId) =>
+        public async Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId) =>
             await _nyssContext.ProjectHealthRisks
                 .Where(ph => ph.Project.Id == projectId && ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
-                .Select(ph => new HealthRiskName
+                .Select(ph => new HealthRiskDto
                 {
                     Id = ph.HealthRiskId,
                     Name = ph.HealthRisk.LanguageContents

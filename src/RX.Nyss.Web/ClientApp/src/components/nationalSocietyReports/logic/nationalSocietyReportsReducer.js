@@ -17,7 +17,7 @@ export function nationalSocietyReportsReducer(state = initialState.nationalSocie
       return { ...state, paginatedListData: state.listStale ? null : state.paginatedListData, listFetching: true };
 
     case actions.GET_NATIONAL_SOCIETY_REPORTS.SUCCESS:
-      return { ...state, filters: action.filters, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
+      return { ...state, filters: action.filters, sorting: action.sorting, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
 
     case actions.GET_NATIONAL_SOCIETY_REPORTS.FAILURE:
       return { ...state, listFetching: false, paginatedListData: null };

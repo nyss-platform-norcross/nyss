@@ -1,4 +1,5 @@
 import styles from "./NationalSocietyReportsListPage.module.scss";
+
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -6,9 +7,8 @@ import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsAc
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import NationalSocietyReportsTable from './NationalSocietyReportsTable';
-import { NationalSocietyReportsFilters } from './NationalSocietyReportsFilters';
+import { ReportFilters } from '../common/filters/ReportFilters';
 import { useMount } from '../../utils/lifecycle';
-import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 
 const NationalSocietyReportsListPageComponent = (props) => {
@@ -16,21 +16,29 @@ const NationalSocietyReportsListPageComponent = (props) => {
     props.openNationalSocietyReportsList(props.nationalSocietyId);
   });
 
-  if (!props.data || !props.filters) {
+  if (!props.data || !props.filters || !props.sorting) {
     return null;
   }
 
   const handleFiltersChange = (filters) =>
-    props.getList(props.nationalSocietyId, props.page, filters);
+    props.getList(props.nationalSocietyId, props.page, filters, props.sorting);
+
+  const handlePageChange = (page) =>
+    props.getList(props.nationalSocietyId, page, props.filters, props.sorting);
+
+  const handleSortChange = (sorting) =>
+    props.getList(props.nationalSocietyId, props.page, props.filters, sorting);
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} className={styles.filtersGrid}>
-        <NationalSocietyReportsFilters
+        <ReportFilters
           healthRisks={props.healthRisks}
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
+          showUnknownSenderOption={true}
+          showTrainingFilter={false}
         />
       </Grid>
 
@@ -38,12 +46,13 @@ const NationalSocietyReportsListPageComponent = (props) => {
         <NationalSocietyReportsTable
           list={props.data.data}
           isListFetching={props.isListFetching}
-          getList={props.getList}
-          nationalSocietyId={props.nationalSocietyId}
           page={props.data.page}
+          onChangePage={handlePageChange}
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
           reportsType={props.filters.reportsType}
+          sorting={props.sorting}
+          onSort={handleSortChange}
         />
       </Grid>
     </Grid>
@@ -62,6 +71,7 @@ const mapStateToProps = (state, ownProps) => ({
   isListFetching: state.nationalSocietyReports.listFetching,
   isRemoving: state.nationalSocietyReports.listRemoving,
   filters: state.nationalSocietyReports.filters,
+  sorting: state.nationalSocietyReports.sorting,
   healthRisks: state.nationalSocietyReports.filtersData.healthRisks
 });
 

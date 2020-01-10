@@ -8,6 +8,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.NationalSociety.Access;
 using RX.Nyss.Web.Features.Common.Domain;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -27,7 +28,7 @@ namespace RX.Nyss.Web.Features.NationalSociety
         Task<Result> SetAsHeadManager();
         Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents();
         Task<bool> HasUserAccessNationalSocieties(IEnumerable<int> providedNationalSocietyIds, string identityName, IEnumerable<string> roles);
-        Task<IEnumerable<HealthRiskName>> GetNationalSocietyHealthRiskNames(int nationalSocietyId);
+        Task<IEnumerable<HealthRiskDto>> GetNationalSocietyHealthRiskNames(int nationalSocietyId);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -270,10 +271,10 @@ namespace RX.Nyss.Web.Features.NationalSociety
         public bool HasAccessToAllNationalSocieties(IEnumerable<string> roles) =>
             roles.Any(c => _rolesWithAccessToAllNationalSocieties.Contains(c));
 
-        public async Task<IEnumerable<HealthRiskName>> GetNationalSocietyHealthRiskNames(int nationalSocietyId) =>
+        public async Task<IEnumerable<HealthRiskDto>> GetNationalSocietyHealthRiskNames(int nationalSocietyId) =>
             await _nyssContext.ProjectHealthRisks
                 .Where(ph => ph.Project.NationalSocietyId == nationalSocietyId && ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
-                .Select(ph => new HealthRiskName
+                .Select(ph => new HealthRiskDto
                 {
                     Id = ph.HealthRiskId,
                     Name = ph.HealthRisk.LanguageContents

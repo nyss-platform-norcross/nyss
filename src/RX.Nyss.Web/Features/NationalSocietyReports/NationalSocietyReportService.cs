@@ -90,7 +90,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
                 })
-                .OrderByDescending(r => r.DateTime)
+                //ToDo: order base on filter.OrderBy property
+                .OrderBy(r => r.DateTime, filter.SortAscending)
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync();
 
@@ -109,7 +110,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var dto = new NationalSocietyReportListFilterResponseDto
             {
                 HealthRisks = nationalSocietyHealthRiskNames
-                    .Select(p => new NationalSocietyReportListFilterResponseDto.HealthRiskDto { Id = p.Id, Name = p.Name })
+                    .Select(p => new HealthRiskDto { Id = p.Id, Name = p.Name })
             };
 
             return Success(dto);
