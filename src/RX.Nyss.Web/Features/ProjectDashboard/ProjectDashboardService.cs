@@ -43,6 +43,11 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<Result<ProjectDashboardResponseDto>> GetDashboardData(int projectId, FiltersRequestDto filtersDto)
         {
+            if (filtersDto.EndDate < filtersDto.StartDate)
+            {
+                return Success(ProjectDashboardResponseDto.Empty());
+            }
+
             var projectSummary = await _projectDashboardDataService.GetSummaryData(projectId, filtersDto);
             var reportsByDate = await _projectDashboardDataService.GetReportsGroupedByDate(projectId, filtersDto);
             var reportsByFeaturesAndDate = await _projectDashboardDataService.GetReportsGroupedByFeaturesAndDate(projectId, filtersDto);

@@ -7,6 +7,7 @@
         public int InactiveDataCollectorCount { get; set; }
 
         public int ReportCount { get; set; }
+        public int ErrorReportCount { get; set; }
 
         public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; }
     }

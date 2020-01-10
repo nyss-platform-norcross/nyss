@@ -21,5 +21,8 @@ namespace RX.Nyss.Web.Features.Project.Dto
 
             public int Count { get; set; }
         }
+
+        public static ReportByVillageAndDateResponseDto Empty() =>
+            new ReportByVillageAndDateResponseDto { AllPeriods = new List<string>(), Villages = new List<VillageDto>() };
     }
 }

@@ -18,5 +18,17 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
         public IEnumerable<DataCollectionPointsReportsByDateDto> DataCollectionPointReportsGroupedByDate { get; set; }
 
         public ReportByVillageAndDateResponseDto ReportsGroupedByVillageAndDate { get; set; }
+        
+        public static ProjectDashboardResponseDto Empty() =>
+            new ProjectDashboardResponseDto
+            {
+                Summary = new ProjectSummaryResponseDto(),
+                ReportsGroupedByDate = new List<ReportByDateResponseDto>(),
+                ReportsGroupedByFeaturesAndDate = new List<ReportByFeaturesAndDateResponseDto>(),
+                ReportsGroupedByFeatures = new ReportByFeaturesAndDateResponseDto(),
+                ReportsGroupedByLocation = new List<ProjectSummaryMapResponseDto>(),
+                DataCollectionPointReportsGroupedByDate = new List<DataCollectionPointsReportsByDateDto>(),
+                ReportsGroupedByVillageAndDate = ReportByVillageAndDateResponseDto.Empty()
+            };
     }
 }

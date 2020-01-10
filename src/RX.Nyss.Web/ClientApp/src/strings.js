@@ -184,6 +184,7 @@ export const stringKeys = {
       printTitle: "project.dashboard.printTitle",
       numbers: {
         totalReportCount: "project.dashboard.numbers.totalReportCount",
+        totalErrorReportCount: "project.dashboard.numbers.totalErrorReportCount",
         totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle"
       },
       filters: {
