@@ -1,5 +1,4 @@
 import styles from "./ReportsTable.module.scss";
-import commonTableStyles from '../common/table/Table.module.scss';
 
 import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
@@ -22,9 +21,9 @@ import { ReportListType } from '../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './logic/reportsConstants'
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
-export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, list, page, onChangePage, rowsPerPage, totalRows, reportsType, sorting, onSort }) => {
+export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, user, list, page, onChangePage, rowsPerPage, totalRows, reportsType, sorting, onSort }) => {
 
-  const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });  
+  const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });
   const [value, setValue] = useState(sorting);
 
   const updateValue = (change) => {
@@ -54,9 +53,9 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, li
     onChangePage(page);
   }
 
-  const markAsErrorConfirmed = () => {    
-    markAsError(markErrorConfirmationDialog.reportId, projectId, page, filters);    
-    setMarkErrorConfirmationDialog({isOpen: false })
+  const markAsErrorConfirmed = () => {
+    markAsError(markErrorConfirmationDialog.reportId);
+    setMarkErrorConfirmationDialog({ isOpen: false })
   }
 
   const hasMarkAsErrorAccess = user.roles.filter((r) => { return accessMap.reports.markAsError.indexOf(r) !== -1; }).length > 0;
@@ -67,56 +66,59 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, li
         {isListFetching && <Loading absolute />}
         <Table stickyHeader>
           <TableHead>
-          <TableRow>
-            <TableCell style={{ width: "9%", minWidth: "115px" }} className={styles.tableHeader}>
-              <TableSortLabel
-                active={sorting.orderBy === DateColumnName}
-                direction={sorting.sortAscending ? 'asc' : 'desc'}
-                onClick={createSortHandler(DateColumnName)}
-              >
-                {strings(stringKeys.reports.list.date)}
-              </TableSortLabel>
-            </TableCell>
-            <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.status)}</TableCell>
-            <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-            <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.dataCollectorPhoneNumber)}</TableCell>
-            <TableCell style={{ width: "18%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.location)}</TableCell>
-            <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
-            <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
-            <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
-            <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
-            <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
-            {reportsType === ReportListType.fromDcp &&
-              <Fragment>
-                <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
-                <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
-                <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
-              </Fragment>
-            }
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {list.map(row => (
-            <TableRow key={row.id} hover>
-              <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
-              <TableCell>{row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error)}</TableCell>
-              <TableCell>{row.dataCollectorDisplayName}</TableCell>
-              <TableCell>{row.phoneNumber}</TableCell>
-              <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
-              <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
-              <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
-              <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
-              <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
-              <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
+            <TableRow>
+              <TableCell style={{ width: "9%", minWidth: "115px" }} className={styles.tableHeader}>
+                <TableSortLabel
+                  active={sorting.orderBy === DateColumnName}
+                  direction={sorting.sortAscending ? 'asc' : 'desc'}
+                  onClick={createSortHandler(DateColumnName)}
+                >
+                  {strings(stringKeys.reports.list.date)}
+                </TableSortLabel>
+              </TableCell>
+              <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.status)}</TableCell>
+              <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
+              <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.dataCollectorPhoneNumber)}</TableCell>
+              <TableCell style={{ width: "18%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.location)}</TableCell>
+              <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
+              <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
+              <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
+              <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
+              <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
               {reportsType === ReportListType.fromDcp &&
                 <Fragment>
-                  <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
-                  <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
-                  <TableCell style={{ width: "9%", minWidth: "50px" }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
+                  <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
+                  <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
+                  <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
                 </Fragment>
               }
-              <TableCell style={{ width: "3%" }} />
+              <TableCell style={{ width: "3%" }} className={styles.tableHeader} />
             </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map(row => (
+              <TableRow key={row.id} hover>
+                <TableCell>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</TableCell>
+                <TableCell>
+                  {row.isMarkedAsError
+                    ? strings(stringKeys.reports.list.markedAsError)
+                    : row.isValid ? strings(stringKeys.reports.list.success) : strings(stringKeys.reports.list.error)}
+                </TableCell>
+                <TableCell>{row.dataCollectorDisplayName}</TableCell>
+                <TableCell>{row.phoneNumber}</TableCell>
+                <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
+                <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
+                <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
+                <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
+                <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>
+                <TableCell>{dashIfEmpty(row.countFemalesAtLeastFive)}</TableCell>
+                {reportsType === ReportListType.fromDcp &&
+                  <Fragment>
+                    <TableCell>{dashIfEmpty(row.referredCount)}</TableCell>
+                    <TableCell>{dashIfEmpty(row.deathCount)}</TableCell>
+                    <TableCell>{dashIfEmpty(row.fromOtherVillagesCount)}</TableCell>
+                  </Fragment>
+                }
                 <TableCell>
                   <TableRowActions>
                     {hasMarkAsErrorAccess && row.isValid && !row.isInAlert && !row.isMarkedAsError && (
@@ -127,27 +129,28 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, li
                         items={[
                           {
                             title: strings(stringKeys.reports.list.markAsError),
-                            action: () => setMarkErrorConfirmationDialog({isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
+                            action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
                           }
                         ]}
                       />
                     )}
                   </TableRowActions>
                 </TableCell>
-          ))}
-        </TableBody>
-      </Table>
-      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
-    </TableContainer>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
+      </TableContainer>
 
       {hasMarkAsErrorAccess && (
         <ConfirmationDialog
           isOpened={markErrorConfirmationDialog.isOpen}
-          isFetching = {isMarkingAsError}
-          titlteText = { strings(stringKeys.reports.list.markAsErrorConfirmation)}
-          contentText = {strings(stringKeys.reports.list.markAsErrorConfirmationText)}
-          submit={() => markAsErrorConfirmed() }
-          close={() => setMarkErrorConfirmationDialog({isOpen: false })}
+          isFetching={isMarkingAsError}
+          titlteText={strings(stringKeys.reports.list.markAsErrorConfirmation)}
+          contentText={strings(stringKeys.reports.list.markAsErrorConfirmationText)}
+          submit={() => markAsErrorConfirmed()}
+          close={() => setMarkErrorConfirmationDialog({ isOpen: false })}
         />
       )}
     </Fragment>

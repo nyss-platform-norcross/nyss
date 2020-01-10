@@ -20,9 +20,9 @@ namespace RX.Nyss.Web.Tests.Features.Users
         private readonly INyssContext _nyssContext;
         private readonly IAuthorizationService _authorizationService;
 
-        const string NationalSociety1Tag = "NationalSociety1";
-        const string NationalSociety2Tag = "NationalSociety2";
-        const string NationalSociety1And2Tag = "NationalSociety1And2";
+        private const string NationalSociety1Tag = "NationalSociety1";
+        private const string NationalSociety2Tag = "NationalSociety2";
+        private const string NationalSociety1And2Tag = "NationalSociety1And2";
 
         public UserServiceTest()
         {
@@ -71,13 +71,8 @@ namespace RX.Nyss.Web.Tests.Features.Users
             users.Value.ShouldAllBe(u => allowedRoles.Contains(u.Role));
         }
 
-        [Theory]
-        [InlineData(Role.Administrator)]
-        [InlineData(Role.DataConsumer)]
-        [InlineData(Role.Manager)]
-        [InlineData(Role.Supervisor)]
-        [InlineData(Role.TechnicalAdvisor)]
-        public async Task GetUsersInNationalSociety_WhenCallingRoleIsOtherThanGlobalCoordinator_ShouldReturnAllUsers(Role callingRole)
+        [Fact]
+        public async Task GetUsersInNationalSociety_WhenCallingRoleIsOtherThanGlobalCoordinator_ShouldReturnAllUsers()
         {
             var users = await _userService.GetUsers(1);
 

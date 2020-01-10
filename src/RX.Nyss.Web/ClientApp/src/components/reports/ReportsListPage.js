@@ -32,6 +32,11 @@ const ReportsListPageComponent = (props) => {
   const handleSortChange = (sorting) =>
     props.getList(props.projectId, props.page, props.filters, sorting);
 
+  const handleMarkAsError = (reportId) => {
+    props.markAsError(reportId);
+    props.getList(props.projectId, props.page, props.filters, props.sorting);
+  }
+
   return (
     <Grid container spacing={3}>
       <Grid item xs={12}>
@@ -64,9 +69,9 @@ const ReportsListPageComponent = (props) => {
           reportsType={props.filters.reportsType}
           sorting={props.sorting}
           onSort={handleSortChange}
-          markAsError = {props.markAsError}
-          isMarkingAsError ={props.isMarkingAsError}
-          user = {props.user}
+          markAsError={handleMarkAsError}
+          isMarkingAsError={props.isMarkingAsError}
+          user={props.user}
         />
       </Grid>
     </Grid>
@@ -87,7 +92,7 @@ const mapStateToProps = (state, ownProps) => ({
   isRemoving: state.reports.listRemoving,
   filters: state.reports.filters,
   sorting: state.reports.sorting,
-  healthRisks: state.reports.filtersData.healthRisks
+  healthRisks: state.reports.filtersData.healthRisks,
   user: state.appData.user,
   isMarkingAsError: state.reports.markingAsError
 });

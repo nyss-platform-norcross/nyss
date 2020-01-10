@@ -33,8 +33,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private List<Report> _reports;
-        private List<RawReport> _rawReports;
 
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
@@ -63,7 +61,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _dateTimeProvider.GetEpiWeek(default).ReturnsForAnyArgs(1);
-            _reportService = new ReportService(_nyssContextMock, _userService, _config, _authorizationService, _excelExportService, _stringsResourcesService, _dateTimeProvider);
+            _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _excelExportService, _stringsResourcesService, _dateTimeProvider);
             _dateTimeProvider.IsFirstWeekOfNextYear(default).ReturnsForAnyArgs(false);
             
             ArrangeData();
@@ -183,6 +181,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Id = 1,
                     Name = "Zone1",
                     Village = villages[0]
+                },
+                new Zone
+                {
+                    Id = 2,
+                    Name = "Zone2",
+                    Village = villages[0]
                 }
             };
 
@@ -231,7 +235,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 }
             };
 
-            var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0]);
+            var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[1]);
             var rawReports1 = BuildRawReports(reports1);
 
             var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0]);
@@ -243,8 +247,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0]);
             var dcpRawReports = BuildRawReports(dcpReports);
 
-            _reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
-            _rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).ToList();
+            var reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
+            var rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).ToList();
 
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
@@ -258,8 +262,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var districtsDbSet = districts.AsQueryable().BuildMockDbSet();
             var villagesDbSet = villages.AsQueryable().BuildMockDbSet();
             var dataCollectorsDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
-            var reportsDbSet = _reports.AsQueryable().BuildMockDbSet();
-            var rawReportsDbSet = _rawReports.AsQueryable().BuildMockDbSet();
+            var reportsDbSet = reports.AsQueryable().BuildMockDbSet();
+            var rawReportsDbSet = rawReports.AsQueryable().BuildMockDbSet();
 
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContextMock.ContentLanguages.Returns(contentLanguageMockDbSet);
@@ -335,27 +339,27 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _config.PaginationRowsPerPage.Returns(13);
 
             //act
-            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto());
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.FromDcp, IsTraining = false, Status = true});
 
             //assert
-            result.Value.Data.Count().ShouldBe(13);
+            result.Value.Data.Count.ShouldBe(13);
         }
 
         [Fact]
         public async Task List_WhenSelectedLastPageThatHasLessRows_ShouldReturnLessRows()
         {
             //act
-            var result = await _reportService.List(1, 2, new ReportListFilterRequestDto());
+            var result = await _reportService.List(2, 2, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true});
 
             //assert
-            result.Value.Data.Count().ShouldBe(3);
+            result.Value.Data.Count.ShouldBe(1);
         }
 
         [Fact]
-        public async Task List_WhenListTypeFilterIsTraining_ShouldReturnOnlyTraining()
+        public async Task List_WhenListFilterIsTraining_ShouldReturnOnlyTraining()
         {
             //act
-            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = true });
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = true, Status = true });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(100, _rowsPerPage));
@@ -363,14 +367,47 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         }
 
         [Fact]
-        public async Task List_WhenReportTypeFilterIsScp_ShouldReturnOnlyDcpReports()
+        public async Task List_WhenReportTypeFilterIsDcp_ShouldReturnOnlyDcpReports()
         {
             //act
-            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.FromDcp });
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.FromDcp, IsTraining = false, Status = true});
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(20, _rowsPerPage));
             result.Value.TotalRows.ShouldBe(20);
+        }
+
+        [Fact]
+        public async Task List_WhenListFilterIsSuccessStatus_ShouldReturnOnlySuccessReports()
+        {
+            //act
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true});
+
+            //assert
+            result.Value.Data.Count.ShouldBe(Math.Min(11, _rowsPerPage));
+            result.Value.TotalRows.ShouldBe(11);
+        }
+
+        [Fact]
+        public async Task List_WhenListFilterIsArea_ShouldReturnOnlyReportsFromArea()
+        {
+            //act
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true, Area = new AreaDto {Id = 2, Type = AreaDto.AreaType.Zone}});
+
+            //assert
+            result.Value.Data.Count.ShouldBe(Math.Min(13, _rowsPerPage));
+            result.Value.TotalRows.ShouldBe(13);
+        }
+
+        [Fact]
+        public async Task List_WhenListFilterIsHealthRisk_ShouldReturnOnlyReportsForHealthRisk()
+        {
+            //act
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true, HealthRiskId = 2});
+
+            //assert
+            result.Value.Data.Count.ShouldBe(Math.Min(11, _rowsPerPage));
+            result.Value.TotalRows.ShouldBe(11);
         }
     }
 }

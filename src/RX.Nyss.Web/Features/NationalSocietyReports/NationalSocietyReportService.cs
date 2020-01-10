@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 {
     public interface INationalSocietyReportService
     {
-        Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, string identityName, NationalSocietyReportListFilterRequestDto filter);
+        Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, NationalSocietyReportListFilterRequestDto filter);
         Task<Result<NationalSocietyReportListFilterResponseDto>> GetNationalSocietyReportFilters(int nationalSocietyId);
     }
 
@@ -120,16 +120,16 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private static IQueryable<RawReport> FilterReportsByArea(IQueryable<RawReport> rawReports, AreaDto area) =>
             area?.Type switch
             {
-                AreaDto.AreaTypeDto.Region =>
+                AreaDto.AreaType.Region =>
                 rawReports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.Id : r.DataCollector.Village.District.Region.Id == area.Id),
 
-                AreaDto.AreaTypeDto.District =>
+                AreaDto.AreaType.District =>
                 rawReports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.Id : r.DataCollector.Village.District.Id == area.Id),
 
-                AreaDto.AreaTypeDto.Village =>
+                AreaDto.AreaType.Village =>
                 rawReports.Where(r => r.Report != null ? r.Report.Village.Id == area.Id : r.DataCollector.Village.Id == area.Id),
 
-                AreaDto.AreaTypeDto.Zone =>
+                AreaDto.AreaType.Zone =>
                 rawReports.Where(r => r.Report != null ? r.Report.Zone.Id == area.Id : r.DataCollector.Zone.Id == area.Id),
 
                 _ =>

@@ -4,7 +4,7 @@ import * as actions from "./reportsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
-import {downloadFile} from "../../../utils/downloadFile";
+import { downloadFile } from "../../../utils/downloadFile";
 import { stringKeys } from "../../../strings";
 import { ReportListType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './reportsConstants'
@@ -89,14 +89,12 @@ function* openReportsModule(projectId) {
   }));
 }
 
-function* markAsError({ reportId, projectId, pageNumber, reportListFilter }) {
+function* markAsError({ reportId }) {
   yield put(actions.markAsError.request());
-  try {    
+  try {
     yield call(http.post, `/api/report/${reportId}/markAsError`);
     yield put(actions.markAsError.success());
     yield put(appActions.showMessage(stringKeys.reports.list.successfulyMarkedAsError));
-        
-    yield call(getReports, {projectId, pageNumber, reportListFilter});
   } catch (error) {
     yield put(actions.markAsError.failure());
   }

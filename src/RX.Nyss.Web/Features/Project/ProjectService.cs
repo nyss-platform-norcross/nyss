@@ -8,8 +8,6 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Common.Dto;
-using RX.Nyss.Web.Features.NationalSociety;
-using RX.Nyss.Web.Features.Project.Domain;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils;
@@ -30,8 +28,6 @@ namespace RX.Nyss.Web.Features.Project
         Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
         Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId);
-        Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId);
-        Task<bool> HasCurrentUserAccessToProject(int projectId);
         Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
     }
 

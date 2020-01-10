@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
 
-        public AreaTypeDto Type { get; set; }
+        public AreaType Type { get; set; }
         
-        public enum AreaTypeDto
+        public enum AreaType
         {
             Region,
             District,

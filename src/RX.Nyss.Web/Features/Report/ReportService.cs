@@ -130,7 +130,8 @@ namespace RX.Nyss.Web.Features.Report
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
                     FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
                 })
-                .OrderByDescending(r => r.DateTime);
+                //ToDo: order base on filter.OrderBy property
+                .OrderBy(r => r.DateTime, filter.SortAscending);
 
             return (baseQuery, result);
         }
@@ -145,7 +146,7 @@ namespace RX.Nyss.Web.Features.Report
                 .Where(r => filter.IsTraining ?
                       r.IsTraining.HasValue && r.IsTraining.Value :
                       r.IsTraining.HasValue && !r.IsTraining.Value)
-                .Where(r => filter.ReportListType== ReportListType.FromDcp ?
+                .Where(r => filter.ReportsType== ReportListType.FromDcp ?
                             r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
                             r.DataCollector.DataCollectorType == DataCollectorType.Human);
 
@@ -209,16 +210,16 @@ namespace RX.Nyss.Web.Features.Report
         private static IQueryable<RawReport> FilterReportsByArea(IQueryable<RawReport> rawReports, AreaDto area) =>
             area?.Type switch
             {
-                AreaDto.AreaTypeDto.Region =>
+                AreaDto.AreaType.Region =>
                 rawReports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.Id : r.DataCollector.Village.District.Region.Id == area.Id),
 
-                AreaDto.AreaTypeDto.District =>
+                AreaDto.AreaType.District =>
                 rawReports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.Id : r.DataCollector.Village.District.Id == area.Id),
 
-                AreaDto.AreaTypeDto.Village =>
+                AreaDto.AreaType.Village =>
                 rawReports.Where(r => r.Report != null ? r.Report.Village.Id == area.Id : r.DataCollector.Village.Id == area.Id),
 
-                AreaDto.AreaTypeDto.Zone =>
+                AreaDto.AreaType.Zone =>
                 rawReports.Where(r => r.Report != null ? r.Report.Zone.Id == area.Id : r.DataCollector.Zone.Id == area.Id),
 
                 _ =>

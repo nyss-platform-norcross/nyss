@@ -1,5 +1,4 @@
 import styles from "./NationalSocietyReportsTable.module.scss";
-import commonTableStyles from '../common/table/Table.module.scss';
 
 import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
@@ -9,6 +8,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tooltip from '@material-ui/core/Tooltip';
+import { TableContainer } from '../common/table/TableContainer';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import dayjs from "dayjs";
@@ -49,7 +49,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
   }
 
   return (
-    <div className={commonTableStyles.tableContainer}>
+    <TableContainer>
       {isListFetching && <Loading absolute />}
       <Table stickyHeader>
         <TableHead>
@@ -91,9 +91,9 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
                 </Tooltip>
               </TableCell>
               <TableCell>
-                    {row.isMarkedAsError
-                    ? strings(stringKeys.nationalSocietyReports.list.markedAsError)
-                    : row.isValid ? strings(stringKeys.nationalSocietyReports.list.success) : strings(stringKeys.nationalSocietyReports.list.error)}
+                {row.isMarkedAsError
+                  ? strings(stringKeys.nationalSocietyReports.list.markedAsError)
+                  : row.isValid ? strings(stringKeys.nationalSocietyReports.list.success) : strings(stringKeys.nationalSocietyReports.list.error)}
               </TableCell>
               <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
               <TableCell>{dashIfEmpty(row.dataCollectorDisplayName)}</TableCell>
@@ -116,7 +116,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
         </TableBody>
       </Table>
       <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
-    </div>
+    </TableContainer>
   );
 }
 

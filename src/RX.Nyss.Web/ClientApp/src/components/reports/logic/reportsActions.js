@@ -28,7 +28,7 @@ export const exportToExcel = {
 };
 
 export const markAsError = {
-  invoke: (reportId, projectId, pageNumber, reportListFilter, isError) => ({ type: MARK_AS_ERROR.INVOKE, reportId, projectId, pageNumber, reportListFilter, isError }),
+  invoke: (reportId) => ({ type: MARK_AS_ERROR.INVOKE, reportId }),
   request: () => ({ type: MARK_AS_ERROR.REQUEST }),
   success: () => ({ type: MARK_AS_ERROR.SUCCESS }),
   failure: (message) => ({ type: MARK_AS_ERROR.FAILURE, message })
