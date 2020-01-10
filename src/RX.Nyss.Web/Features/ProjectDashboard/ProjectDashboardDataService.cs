@@ -106,7 +106,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<ReportByVillageAndDateResponseDto> GetReportsGroupedByVillageAndDate(int projectId, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto);
+            var reports = GetFilteredReports(projectId, filtersDto)
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
             return filtersDto.GroupingType switch
             {

@@ -121,9 +121,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                                     + (reportData.ParsedReport.ReportedCase.CountFemalesBelowFive ?? 0)
                                     + (reportData.ParsedReport.ReportedCase.CountMalesAtLeastFive ?? 0)
                                     + (reportData.ParsedReport.ReportedCase.CountMalesBelowFive ?? 0)
-                                    + (reportData.ParsedReport.DataCollectionPointCase.DeathCount ?? 0)
-                                    + (reportData.ParsedReport.DataCollectionPointCase.FromOtherVillagesCount ?? 0)
-                                    + (reportData.ParsedReport.DataCollectionPointCase.ReferredCount ?? 0)
                                 : 1
                         };
 
