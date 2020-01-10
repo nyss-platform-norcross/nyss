@@ -11,6 +11,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Features.Alerts;
+using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 using RX.Nyss.ReportApi.Services;
@@ -170,8 +171,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 rawReport.DataCollector = dataCollector;
                 rawReport.IsTraining = dataCollector.IsInTrainingMode;
 
-                var parsedReport = _reportMessageService.ParseReport(text);
-                var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
+                var parsedReport = _reportMessageService.ParseReport(text, gatewaySetting);
+                var projectHealthRisk = await ValidateReport(parsedReport, dataCollector, gatewaySetting);
 
                 var receivedAt = ParseTimestamp(timestamp);
                 ValidateReceivalTime(receivedAt);
@@ -185,6 +186,25 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     GatewaySetting = gatewaySetting,
                     ParsedReport = parsedReport
                 };
+            }
+            catch (ReportValidationException e)
+            {
+                _loggerAdapter.Warn(e);
+
+                var sender = parsedQueryString[SenderParameterName];
+                if (e.GatewaySetting != null && !string.IsNullOrEmpty(sender))
+                {
+                    var feedbackMessage = e.ErrorType switch
+                    {
+                        ReportErrorType.FormatError => "",
+                        ReportErrorType.HealthRiskNotFound => "",
+                        _ => ""
+                    };
+                    var senderList = new List<string>(new string[] { sender });
+                    await _emailToSmsPublisherService.SendMessages(e.GatewaySetting.EmailAddress, e.GatewaySetting.Name, senderList, "");
+                }
+
+                return null;
             }
             catch (Exception e)
             {
@@ -240,7 +260,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             return dataCollector;
         }
 
-        private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
+        private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector, GatewaySetting gatewaySetting)
         {
             switch (dataCollector.DataCollectorType)
             {
@@ -276,7 +296,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
             if (projectHealthRisk == null)
             {
-                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.");
+                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.", ReportErrorType.HealthRiskNotFound, gatewaySetting);
             }
 
             switch (parsedReport.ReportType)

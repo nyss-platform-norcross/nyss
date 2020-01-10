@@ -2,6 +2,8 @@
 using System.Text.RegularExpressions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
+using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 
@@ -9,7 +11,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
 {
     public interface IReportMessageService
     {
-        ParsedReport ParseReport(string reportMessage);
+        ParsedReport ParseReport(string reportMessage, GatewaySetting gatewaySetting);
     }
 
     public class ReportMessageService : IReportMessageService
@@ -38,11 +40,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
             _nyssContext = nyssContext;
         }
 
-        public ParsedReport ParseReport(string reportMessage)
+        public ParsedReport ParseReport(string reportMessage, GatewaySetting gatewaySetting)
         {
             if (string.IsNullOrWhiteSpace(reportMessage))
             {
-                throw new ReportValidationException("A report cannot be empty.");
+                throw new ReportValidationException("A report cannot be empty.", ReportErrorType.Other, gatewaySetting);
             }
 
             if (SingleReportRegex.IsMatch(reportMessage))
@@ -65,7 +67,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 return ParseDcpReport(reportMessage);
             }
 
-            throw new ReportValidationException("A report format was not recognized.");
+            throw new ReportValidationException("A report format was not recognized.", ReportErrorType.FormatError, gatewaySetting);
         }
 
         internal static ParsedReport ParseSingleReport(string reportMessage)
@@ -137,7 +139,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 .Where(hr => hr.HealthRiskType == HealthRiskType.Activity)
                 .Select(hr => hr.HealthRiskCode)
                 .ToList();
-            
+
             var parsedReport = new ParsedReport
             {
                 HealthRiskCode = eventCode,
