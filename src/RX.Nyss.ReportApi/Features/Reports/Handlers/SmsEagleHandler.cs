@@ -217,6 +217,15 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 _loggerAdapter.Warn(e);
 
                 var sender = parsedQueryString[SenderParameterName];
+
+                if (e.GatewaySetting == null)
+                {
+                    return new ReportValidationResult
+                    {
+                        IsSuccess = false
+                    };
+                }
+
                 var nationalSociety = await _nyssContext.NationalSocieties.Include(ns => ns.ContentLanguage).FirstOrDefaultAsync(ns => ns.Id == e.GatewaySetting.NationalSocietyId);
 
                 return new ReportValidationResult
@@ -299,7 +308,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         parsedReport.ReportType != ReportType.Activity)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                                                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.NonHuman}', '{ReportType.Activity}'.");
+                                                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.NonHuman}', '{ReportType.Activity}'.", ReportErrorType.Other, gatewaySetting);
                     }
 
                     break;
@@ -309,7 +318,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         parsedReport.ReportType != ReportType.Activity)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                                                            $"'{ReportType.DataCollectionPoint}', '{ReportType.NonHuman}', '{ReportType.Activity}'.");
+                                                            $"'{ReportType.DataCollectionPoint}', '{ReportType.NonHuman}', '{ReportType.Activity}'.", ReportErrorType.Other, gatewaySetting);
                     }
 
                     break;
@@ -332,14 +341,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 case ReportType.Single:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.Other, gatewaySetting);
                     }
 
                     break;
                 case ReportType.Aggregate:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.Other, gatewaySetting);
                     }
 
                     break;
@@ -348,14 +357,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent)
                     {
                         throw new ReportValidationException(
-                            $"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.");
+                            $"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.", ReportErrorType.Other, gatewaySetting);
                     }
 
                     break;
                 case ReportType.Activity:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.");
+                        throw new ReportValidationException($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.", ReportErrorType.Other, gatewaySetting);
                     }
 
                     break;
@@ -367,7 +376,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     {
                         throw new ReportValidationException(
                             $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}', '{HealthRiskType.NonHuman}', " +
-                            $"'{HealthRiskType.UnusualEvent}', '{HealthRiskType.Activity}' event only.");
+                            $"'{HealthRiskType.UnusualEvent}', '{HealthRiskType.Activity}' event only.", ReportErrorType.Other, gatewaySetting);
                     }
 
                     break;
