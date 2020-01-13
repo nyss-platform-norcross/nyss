@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
                 .Where(u => u.EmailAddress == userName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleOrDefaultAsync() ?? "EN";
-                
+
             var healthRisks = await _nyssContext.HealthRisks
                 .Select(hr => new HealthRiskListItemResponseDto
                 {
@@ -107,7 +107,7 @@ namespace RX.Nyss.Web.Features.HealthRisk
                     CaseDefinition = lc.CaseDefinition,
                     ContentLanguage = contentLanguages[lc.LanguageId]
                 }).ToList(),
-                AlertRule = healthRiskRequestDto.AlertRuleCountThreshold.HasValue 
+                AlertRule = healthRiskRequestDto.AlertRuleCountThreshold.HasValue
                     ? new AlertRule
                     {
                         CountThreshold = healthRiskRequestDto.AlertRuleCountThreshold.Value,
@@ -213,11 +213,11 @@ namespace RX.Nyss.Web.Features.HealthRisk
             healthRiskRequestDto.HealthRiskCode != healthRisk.HealthRiskCode  ||
             healthRiskRequestDto.LanguageContent.Any(lcDto =>
                 healthRisk.LanguageContents.Any(lc =>
-                    lc.ContentLanguage.Id == lcDto.LanguageId) &&
+                    lc.ContentLanguage.Id == lcDto.LanguageId && !string.IsNullOrEmpty(lc.Name)) &&
                 lcDto.Name != healthRisk.LanguageContents.Single(lc => lc.ContentLanguage.Id == lcDto.LanguageId).Name);
 
         private async Task<bool> HealthRiskContainsReports(int healthRiskId) =>
-            await _nyssContext.ProjectHealthRisks.AnyAsync(phr => phr.HealthRiskId == healthRiskId && phr.Reports.Any());
+            await _nyssContext.ProjectHealthRisks.AnyAsync(phr => phr.HealthRiskId == healthRiskId && phr.Reports.Any(r => !r.IsTraining));
 
         private HealthRiskLanguageContent CreateNewLanguageContent(Nyss.Data.Models.HealthRisk healthRisk, int languageId)
         {
