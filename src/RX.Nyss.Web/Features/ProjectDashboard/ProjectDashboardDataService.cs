@@ -541,7 +541,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var endDate = filtersDto.EndDate.Date.AddDays(1);
             var reports = _nyssContext.RawReports
                 .Where(r => r.IsTraining.HasValue && r.IsTraining == filtersDto.IsTraining);
-            return reports.AsQueryable()
+
+            return reports
                 .FromKnownDataCollector()
                 .OnlyErrorReports()
                 .FilterReportsByProject(projectId)
@@ -569,7 +570,10 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private int InactiveDataCollectorCount(int projectId, IQueryable<Nyss.Data.Models.Report> reports, IQueryable<Nyss.Data.Models.RawReport> errorReports, FiltersRequestDto filtersDto)
         {
-            var activeDataCollectors = reports.Select(r => r.DataCollector.Id).Union(errorReports.FromKnownDataCollector().Select(r => r.DataCollector.Id)).Distinct();
+            var activeDataCollectors = reports
+                .Select(r => r.DataCollector.Id)
+                .Union(errorReports.FromKnownDataCollector().Select(r => r.DataCollector.Id))
+                .Distinct();
 
             return _nyssContext.DataCollectors
                 .FilterDataCollectorsByArea(filtersDto.Area)
