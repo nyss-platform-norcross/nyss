@@ -233,7 +233,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 r.Village = r.DataCollector.Village;
                 r.CreatedAt = BaseDate.AddDays(r.Id - 1);
                 r.ReceivedAt = r.CreatedAt;
-                r.EpiWeek = _dateTimeProvider.GetEpiWeek(r.CreatedAt);
+                r.EpiWeek = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiWeek;
+                r.EpiYear = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiYear;
                 r.ProjectHealthRisk = ProjectHealthRisks[ (((r.Id-1) % 3) == 0) ? 0 : 1];
                 r.RawReport = new RawReport { Id = r.Id, DataCollector = r.DataCollector, NationalSociety = NationalSocieties[0], IsTraining = r.IsTraining };
 

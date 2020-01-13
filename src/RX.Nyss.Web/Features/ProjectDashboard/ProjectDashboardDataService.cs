@@ -107,8 +107,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<ReportByVillageAndDateResponseDto> GetReportsGroupedByVillageAndDate(int projectId, FiltersRequestDto filtersDto)
         {
-            var reports = GetFilteredReports(projectId, filtersDto)
-                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
+            var reports = GetFilteredReports(projectId, filtersDto);
 
             return filtersDto.GroupingType switch
             {
@@ -180,12 +179,11 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private async Task<IList<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate,
-            DateTime endDate)
+        private async Task<IList<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
-                .Select(r => new { r.ReceivedAt.Year, r.EpiWeek, r.DataCollectionPointCase.ReferredCount, r.DataCollectionPointCase.DeathCount, r.DataCollectionPointCase.FromOtherVillagesCount })
-                .GroupBy(r => new { r.Year, r.EpiWeek })
+                .Select(r => new { r.EpiYear, r.EpiWeek, r.DataCollectionPointCase.ReferredCount, r.DataCollectionPointCase.DeathCount, r.DataCollectionPointCase.FromOtherVillagesCount })
+                .GroupBy(r => new { r.EpiYear, r.EpiWeek })
                 .Select(grouping => new
                 {
                     EpiPeriod = grouping.Key,
@@ -195,17 +193,15 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 })
                 .ToListAsync();
 
-            var missingWeeks = Enumerable
-                .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
-                .Select(w => startDate.AddDays(w * 7))
-                .Where(day => !groupedReports.Any(r => r.EpiPeriod.Year == day.Year && r.EpiPeriod.EpiWeek == _dateTimeProvider.GetEpiWeek(day)))
-                .Select(day => new { EpiPeriod = new { day.Year, EpiWeek = _dateTimeProvider.GetEpiWeek(day) }, ReferredCount = 0, DeathCount = 0, FromOtherVillagesCount = 0 });
+            var missingWeeks = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate)
+                .Where(epiDate => !groupedReports.Any(r => r.EpiPeriod.EpiYear == epiDate.EpiYear && r.EpiPeriod.EpiWeek == epiDate.EpiWeek))
+                .Select(epiDate => new { EpiPeriod = new { epiDate.EpiYear, epiDate.EpiWeek }, ReferredCount = 0, DeathCount = 0, FromOtherVillagesCount = 0 });
 
             return groupedReports
                 .Union(missingWeeks)
-                .OrderBy(r => r.EpiPeriod.Year)
+                .OrderBy(r => r.EpiPeriod.EpiYear)
                 .ThenBy(r => r.EpiPeriod.EpiWeek)
-                .Select(x => new DataCollectionPointsReportsByDateDto()
+                .Select(x => new DataCollectionPointsReportsByDateDto
                 {
                     Period = x.EpiPeriod.EpiWeek.ToString(),
                     ReferredCount = x.ReferredCount,
@@ -214,7 +210,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 })
                 .ToList();
         }
-
 
         public async Task<IEnumerable<ProjectSummaryMapResponseDto>> GetProjectSummaryMap(int projectId, FiltersRequestDto filtersDto)
         {
@@ -299,15 +294,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
         {
-            var mappedReports = await reports
-                .Select(r => new { r.ReceivedAt, r.EpiWeek, r.ReportedCase.CountFemalesAtLeastFive, r.ReportedCase.CountFemalesBelowFive, r.ReportedCase.CountMalesAtLeastFive, r.ReportedCase.CountMalesBelowFive })
-                .ToListAsync();
-
-            var groupedReports = mappedReports.GroupBy(r => new
-                {
-                    Year = _dateTimeProvider.IsFirstWeekOfNextYear(r.ReceivedAt) ? r.ReceivedAt.Year + 1 : r.ReceivedAt.Year,
-                    r.EpiWeek
-                })
+            var groupedReports = await reports
+                .Select(r => new { r.EpiYear, r.EpiWeek, r.ReportedCase.CountFemalesAtLeastFive, r.ReportedCase.CountFemalesBelowFive, r.ReportedCase.CountMalesAtLeastFive, r.ReportedCase.CountMalesBelowFive })
+                .GroupBy(r => new { r.EpiYear, r.EpiWeek })
                 .Select(grouping => new
                 {
                     EpiPeriod = grouping.Key,
@@ -316,17 +305,15 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     CountMalesAtLeastFive = (int)grouping.Sum(g => g.CountMalesAtLeastFive),
                     CountMalesBelowFive = (int)grouping.Sum(g => g.CountMalesBelowFive)
                 })
-                .ToList();
+                .ToListAsync();
 
-            var missingWeeks = Enumerable
-                .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
-                .Select(w => startDate.AddDays(w * 7))
-                .Where(day => !groupedReports.Any(r => r.EpiPeriod.Year == day.Year && r.EpiPeriod.EpiWeek == _dateTimeProvider.GetEpiWeek(day)) && !_dateTimeProvider.IsFirstWeekOfNextYear(day))
-                .Select(day => new { EpiPeriod = new { day.Year, EpiWeek = _dateTimeProvider.GetEpiWeek(day) }, CountFemalesAtLeastFive = 0, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0 });
+            var missingWeeks = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate)
+                .Where(epiDate => !groupedReports.Any(r => r.EpiPeriod.EpiYear == epiDate.EpiYear && r.EpiPeriod.EpiWeek == epiDate.EpiWeek))
+                .Select(epiDate => new { EpiPeriod = new { epiDate.EpiYear, epiDate.EpiWeek }, CountFemalesAtLeastFive = 0, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0 });
 
             return groupedReports
                 .Union(missingWeeks)
-                .OrderBy(r => r.EpiPeriod.Year)
+                .OrderBy(r => r.EpiPeriod.EpiYear)
                 .ThenBy(r => r.EpiPeriod.EpiWeek)
                 .Select(x => new ReportByFeaturesAndDateResponseDto
                 {
@@ -508,31 +495,19 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private async Task<IList<ReportByDateResponseDto>> GroupReportsByWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
         {
-            var mappedReports = await reports
-                .Select(r => new
-                {
-                    r.ReceivedAt,
-                    r.EpiWeek,
-                    Total = r.ReportedCaseCount,
-                }).ToListAsync();
-
-            var groupedReports = mappedReports.GroupBy(r => new
-                {
-                    Year = _dateTimeProvider.IsFirstWeekOfNextYear(r.ReceivedAt) ? r.ReceivedAt.Year + 1 : r.ReceivedAt.Year,
-                    r.EpiWeek
-                })
+            var groupedReports = await reports
+                .Select(r => new { r.EpiYear, r.EpiWeek, Total = r.ReportedCaseCount })
+                .GroupBy(r => new { r.EpiYear, r.EpiWeek })
                 .Select(grouping => new { EpiPeriod = grouping.Key, Count = grouping.Sum(r => r.Total) })
-                .ToList();
+                .ToListAsync();
 
-            var missingWeeks = Enumerable
-                .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
-                .Select(w => startDate.AddDays(w * 7))
-                .Where(day => !groupedReports.Any(r => r.EpiPeriod.Year == day.Year && r.EpiPeriod.EpiWeek == _dateTimeProvider.GetEpiWeek(day)) && !_dateTimeProvider.IsFirstWeekOfNextYear(day))
-                .Select(day => new { EpiPeriod = new { day.Year, EpiWeek = _dateTimeProvider.GetEpiWeek(day) }, Count = 0 });
+            var missingWeeks = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate)
+                .Where(epiDate => !groupedReports.Any(r => r.EpiPeriod.EpiYear == epiDate.EpiYear && r.EpiPeriod.EpiWeek == epiDate.EpiWeek))
+                .Select(epiDate => new { EpiPeriod = new { epiDate.EpiYear, epiDate.EpiWeek }, Count = 0 });
 
             return groupedReports
                 .Union(missingWeeks)
-                .OrderBy(r => r.EpiPeriod.Year)
+                .OrderBy(r => r.EpiPeriod.EpiYear)
                 .ThenBy(r => r.EpiPeriod.EpiWeek)
                 .Select(x => new ReportByDateResponseDto { Period = x.EpiPeriod.EpiWeek.ToString(), Count = x.Count })
                 .ToList();
