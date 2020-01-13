@@ -232,6 +232,11 @@ export const theme = createMuiTheme({
           color: '#C02C2C'
         }
       }
+    },
+    MuiTableSortLabel: {
+      root: {
+        verticalAlign: "unset"
+      }
     }
   },
 });
