@@ -30,6 +30,7 @@ namespace RX.Nyss.Web.Features.DataCollector
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng);
+        Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId);
         Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
     }
 
@@ -430,9 +431,9 @@ namespace RX.Nyss.Web.Features.DataCollector
                     DisplayName = dc.DataCollector.DataCollectorType == DataCollectorType.Human ? dc.DataCollector.DisplayName : dc.DataCollector.Name,
                     Status = dc.ReportsInTimeRange.Any()
                         ? dc.ReportsInTimeRange.All(r => r.Report != null)
-                            ? MapOverviewDataCollectorStatus.ReportingCorrectly
-                            : MapOverviewDataCollectorStatus.ReportingWithErrors
-                        : MapOverviewDataCollectorStatus.NotReporting
+                            ? DataCollectorStatus.ReportingCorrectly
+                            : DataCollectorStatus.ReportingWithErrors
+                        : DataCollectorStatus.NotReporting
                 })
                 .ToListAsync();
 
@@ -457,6 +458,62 @@ namespace RX.Nyss.Web.Features.DataCollector
                 ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
+        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId)
+        {
+            var userIdentityName = _authorizationService.GetCurrentUserName();
+
+            var dataCollectors = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                : _nyssContext.DataCollectors;
+
+            var to = _dateTimeProvider.UtcNow;
+            var from = to.AddMonths(-2);
+
+            var dataCollectorsWithReports = await dataCollectors
+                .Where(dc => dc.Project.Id == projectId && dc.DeletedAt == null)
+                .Select(dc => new
+                {
+                    DataCollectorName = dc.Name,
+                    ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
+                                                                                        &&  r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
+                        .Select(r => new RawReportData
+                        {
+                            IsValid = r.ReportId.HasValue,
+                            ReceivedAt = r.ReceivedAt.Date
+                        })
+                })
+                .ToListAsync();
+
+            var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
+            {
+                r.DataCollectorName,
+                ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(r => (int)(to - r.ReceivedAt).TotalDays / 7)
+            })
+            .Select(dc => new DataCollectorPerformanceResponseDto
+            {
+                Name = dc.DataCollectorName,
+                DaysSinceLastReport = dc.ReportsGroupedByWeek.Any() ? (int)(to  - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).FirstOrDefault().ReceivedAt).TotalDays : -1,
+                StatusLastWeek = GetDataCollectorStatus(0, dc.ReportsGroupedByWeek),
+                StatusTwoWeeksAgo = GetDataCollectorStatus(1, dc.ReportsGroupedByWeek),
+                StatusThreeWeeksAgo = GetDataCollectorStatus(2, dc.ReportsGroupedByWeek),
+                StatusFourWeeksAgo = GetDataCollectorStatus(3, dc.ReportsGroupedByWeek),
+                StatusFiveWeeksAgo = GetDataCollectorStatus(4, dc.ReportsGroupedByWeek),
+                StatusSixWeeksAgo = GetDataCollectorStatus(5, dc.ReportsGroupedByWeek),
+                StatusSevenWeeksAgo = GetDataCollectorStatus(6, dc.ReportsGroupedByWeek),
+                StatusEightWeeksAgo = GetDataCollectorStatus(7, dc.ReportsGroupedByWeek)
+            }).ToList();
+
+            return Success(dataCollectorPerformances);
+        }
+
+        private DataCollectorStatus GetDataCollectorStatus(int week, IEnumerable<IGrouping<int, RawReportData>> grouping)
+        {
+            var reports = grouping.Where(g => g.Key == week).SelectMany(g => g);
+            return reports.Any() ?
+                reports.All(x => x.IsValid) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
+                : DataCollectorStatus.NotReporting;
+        }
+
         private async Task<LocationDto> GetCountryLocationFromProject(int projectId)
         {
             var countryName = _nyssContext.Projects.Where(p => p.Id == projectId)
@@ -465,6 +522,12 @@ namespace RX.Nyss.Web.Features.DataCollector
 
             var result = await _geolocationService.GetLocationFromCountry(countryName);
             return result.IsSuccess ? result.Value : null;
+        }
+
+        private class RawReportData
+        {
+            public bool IsValid { get; set; }
+            public DateTime ReceivedAt { get; set; }
         }
     }
 }

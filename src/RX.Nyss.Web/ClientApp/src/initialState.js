@@ -137,7 +137,10 @@ export const initialState = {
     mapOverviewFilters: null,
     mapOverviewDetails: [],
     mapOverviewDetailsFetching: false,
-    settingTrainingState: {}
+    settingTrainingState: {},
+    performanceListData: [],
+    performanceListStale: true,
+    performanceListFetching: false
   },
   headManagerConsents: {
     nationalSocieties: []

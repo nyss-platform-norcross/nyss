@@ -4,7 +4,7 @@ import mapIconStyles from "../common/map/MarkerIcon.module.scss";
 
 import React from 'react';
 import Icon from "@material-ui/core/Icon";
-import { getMarkerIconFromStatus } from "./logic/dataCollectorsService";
+import { getIconFromStatus } from "./logic/dataCollectorsService";
 import { performanceStatus } from "./logic/dataCollectorsConstants";
 import { strings, stringKeys } from "../../strings";
 
@@ -12,7 +12,7 @@ export const DataCollectorsPerformanceMapLegend = () => {
   const renderItem = (status) => (
     <div className={styles.item}>
       <div className={`${mapIconStyles.marker} ${mapStyles[`marker_${status}`]} ${styles.icon}`}>
-        <Icon>{getMarkerIconFromStatus(status)}</Icon>
+        <Icon>{getIconFromStatus(status)}</Icon>
       </div>
       <div className={styles.description}>{strings(stringKeys.dataCollector.mapOverview.legend[status])}</div>
     </div>
