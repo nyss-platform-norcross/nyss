@@ -473,19 +473,25 @@ namespace RX.Nyss.Web.Features.DataCollector
                 .Where(dc => dc.Project.Id == projectId && dc.DeletedAt == null)
                 .Select(dc => new
                 {
-                    DataCollector = dc,
+                    DataCollectorName = dc.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
-                                                                &&  r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
-                }).ToListAsync();
+                                                                                        &&  r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
+                        .Select(r => new RawReportData
+                        {
+                            IsValid = r.ReportId.HasValue,
+                            ReceivedAt = r.ReceivedAt.Date
+                        })
+                })
+                .ToListAsync();
 
             var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
             {
-                DataCollector = r.DataCollector,
+                r.DataCollectorName,
                 ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(r => (int)(to - r.ReceivedAt).TotalDays / 7)
             })
             .Select(dc => new DataCollectorPerformanceResponseDto
             {
-                Name = dc.DataCollector.DataCollectorType == DataCollectorType.Human ? dc.DataCollector.DisplayName : dc.DataCollector.Name,
+                Name = dc.DataCollectorName,
                 DaysSinceLastReport = dc.ReportsGroupedByWeek.Any() ? (int)(to  - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).FirstOrDefault().ReceivedAt).TotalDays : -1,
                 StatusLastWeek = GetDataCollectorStatus(0, dc.ReportsGroupedByWeek),
                 StatusTwoWeeksAgo = GetDataCollectorStatus(1, dc.ReportsGroupedByWeek),
@@ -500,11 +506,11 @@ namespace RX.Nyss.Web.Features.DataCollector
             return Success(dataCollectorPerformances);
         }
 
-        private DataCollectorStatus GetDataCollectorStatus(int week, IEnumerable<IGrouping<int, RawReport>> grouping)
+        private DataCollectorStatus GetDataCollectorStatus(int week, IEnumerable<IGrouping<int, RawReportData>> grouping)
         {
             var reports = grouping.Where(g => g.Key == week).SelectMany(g => g);
             return reports.Any() ?
-                reports.All(x => x.Report != null) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
+                reports.All(x => x.IsValid) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
                 : DataCollectorStatus.NotReporting;
         }
 
@@ -516,6 +522,12 @@ namespace RX.Nyss.Web.Features.DataCollector
 
             var result = await _geolocationService.GetLocationFromCountry(countryName);
             return result.IsSuccess ? result.Value : null;
+        }
+
+        private class RawReportData
+        {
+            public bool IsValid { get; set; }
+            public DateTime ReceivedAt { get; set; }
         }
     }
 }

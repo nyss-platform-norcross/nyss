@@ -5,7 +5,7 @@ namespace RX.Nyss.Web.Features.DataCollector.Dto
     public class DataCollectorPerformanceResponseDto
     {
         public string Name { get; set; }
-        public int DaysSinceLastReport { get; set; }
+        public int? DaysSinceLastReport { get; set; }
         public DataCollectorStatus StatusLastWeek { get; set; }
         public DataCollectorStatus StatusTwoWeeksAgo { get; set; }
         public DataCollectorStatus StatusThreeWeeksAgo { get; set; }
