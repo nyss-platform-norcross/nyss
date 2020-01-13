@@ -4,6 +4,8 @@ import * as actions from "./nationalSocietyReportsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
+import { ReportListType } from '../../common/filters/logic/reportFilterConstsants'
+import { DateColumnName } from './nationalSocietyReportsConstants'
 
 export const nationalSocietyReportsSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_REPORTS_LIST.INVOKE, openNationalSocietyReportsList),
@@ -17,26 +19,36 @@ function* openNationalSocietyReportsList({ nationalSocietyId }) {
   try {
     yield openNationalSocietyReportsModule(nationalSocietyId);
 
+    const filtersData = yield call(http.get, `/api/nationalSocietyReport/filters?nationalSocietyId=${nationalSocietyId}`);
+    const filters = (yield select(state => state.nationalSocietyReports.filters)) ||
+    {
+      reportsType: ReportListType.main,
+      area: null,
+      healthRiskId: null,
+      status: true
+    };
+    const sorting = (yield select(state => state.nationalSocietyReports.sorting)) ||
+    {
+      orderBy: DateColumnName,
+      sortAscending: false
+    };
+
     if (listStale) {
-      yield call(getNationalSocietyReports, { nationalSocietyId });
+      yield call(getNationalSocietyReports, { nationalSocietyId, filters, sorting });
     }
 
-    yield put(actions.openList.success(nationalSocietyId));
+    yield put(actions.openList.success(nationalSocietyId, filtersData.value));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
   }
 };
 
-function* getNationalSocietyReports({ nationalSocietyId, pageNumber, reportListFilter }) {
+function* getNationalSocietyReports({ nationalSocietyId, pageNumber, filters, sorting }) {
   yield put(actions.getList.request());
   try {
-    const filter = reportListFilter || {
-      reportListType: "main"
-    };
-
-    const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, filter);
+    const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, { ...filters, ...sorting });
     http.ensureResponseIsSuccess(response);
-    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filter));
+    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters, sorting));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }

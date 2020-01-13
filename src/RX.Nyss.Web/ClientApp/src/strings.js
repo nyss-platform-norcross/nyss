@@ -236,9 +236,9 @@ export const stringKeys = {
       },
       activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
       inactiveDataCollectorCount: "project.dashboard.inactiveDataCollectorCount",
-      referredToHospitalCount:"project.dashboard.referredToHospitalCount",
-      fromOtherVillagesCount:"project.dashboard.fromOtherVillagesCount",
-      deathCount:"project.dashboard.deathCount",
+      referredToHospitalCount: "project.dashboard.referredToHospitalCount",
+      fromOtherVillagesCount: "project.dashboard.fromOtherVillagesCount",
+      deathCount: "project.dashboard.deathCount",
       startDate: "project.dashboard.startDate",
       dataCollectors: "project.dashboard.dataCollectors",
       dataCollectionPoints: "project.dashboard.dataCollectionPoints",
@@ -460,11 +460,7 @@ export const stringKeys = {
       fromOtherVillagesCount: "nationalSocietyReports.list.fromOtherVillagesCount",
       success: "nationalSocietyReports.list.success",
       error: "nationalSocietyReports.list.error",
-      markedAsError: "nationalSocietyReports.list.markedAsError",
-      selectReportListType: "nationalSocietyReports.list.selectReportListType",
-      mainReportsListType: "nationalSocietyReports.list.mainReportsListType",
-      dcpReportListType: "nationalSocietyReports.list.dcpReportListType",
-      unknownSenderReportListType: "nationalSocietyReports.list.unknownSenderReportListType"
+      markedAsError: "nationalSocietyReports.list.markedAsError"
     },
     title: "nationalSocietyReports.title"
   },
@@ -545,6 +541,20 @@ export const stringKeys = {
     area: {
       title: "filters.area.title",
       all: "filters.area.all"
+    },
+    report: {
+      healthRisk: "filters.report.healthRisk",
+      healthRiskAll: "filters.report.healthRiskAll",
+      selectReportListType: "filters.report.selectReportListType",
+      mainReportsListType: "filters.report.mainReportsListType",
+      dcpReportListType: "filters.report.dcpReportListType",
+      unknownSenderReportListType: "filters.report.unknownSenderReportListType",
+      status: "filters.report.status",
+      success: "filters.report.success",
+      error: "filters.report.error",
+      training: "filters.report.training",
+      trainingReports: "filters.report.trainingReports",
+      nonTrainingReports: "filters.report.nonTrainingReports"
     }
   },
   table: {

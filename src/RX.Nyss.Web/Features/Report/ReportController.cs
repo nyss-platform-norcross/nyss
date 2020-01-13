@@ -27,6 +27,15 @@ namespace RX.Nyss.Web.Features.Report
             await _reportService.List(projectId, pageNumber, filterRequest);
 
         /// <summary>
+        /// Gets filters data for the project report list.
+        /// </summary>
+        /// <param name="projectId">An identifier of a project</param>
+        [HttpGet("filters")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<Result<ReportListFilterResponseDto>> GetFilters(int projectId) =>
+            await _reportService.GetReportFilters(projectId);
+
+        /// <summary>
         /// Export the list of reports in a project to a csv file
         /// </summary>
         /// <param name="projectId">The ID of the project to export the reports from</param>

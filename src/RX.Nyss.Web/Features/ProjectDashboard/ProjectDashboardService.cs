@@ -36,7 +36,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var dto = new ProjectDashboardFiltersResponseDto
             {
                 HealthRisks = projectHealthRiskNames
-                    .Select(p => new ProjectDashboardFiltersResponseDto.HealthRiskDto { Id = p.Id, Name = p.Name })
             };
 
             return Success(dto);

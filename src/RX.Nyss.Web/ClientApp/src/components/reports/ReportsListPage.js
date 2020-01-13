@@ -1,113 +1,77 @@
-import React, { useState } from 'react';
 import styles from "./ReportsListPage.module.scss";
+
+import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as reportsActions from './logic/reportsActions';
+import TableActions from '../common/tableActions/TableActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import ReportsTable from './ReportsTable';
 import { useMount } from '../../utils/lifecycle';
-import { strings, stringKeys } from '../../strings';
-import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
-import Link from '@material-ui/core/Link';
-import TableActions from '../common/tableActions/TableActions';
+import { ReportFilters } from '../common/filters/ReportFilters';
+import { strings, stringKeys } from "../../strings";
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {
     props.openReportsList(props.projectId);
   });
 
-  const [reportListFilter, setReportListFilter] = useState(props.reportListFilter);
-
-  if (!props.data || !props.reportListFilter) {
+  if (!props.data || !props.filters || !props.sorting) {
     return null;
   }
 
-  const handleReportListTypeChange = event => {
-    const newFilter = {
-      ...props.reportListFilter,
-      ...{
-        reportListType: event.target.value
-      }
-    }
+  const handleFiltersChange = (filters) =>
+    props.getList(props.projectId, props.page, filters, props.sorting);
 
-    setReportListFilter(newFilter);
-    props.getList(props.projectId, props.page, newFilter);
-  }
+  const handlePageChange = (page) =>
+    props.getList(props.projectId, page, props.filters, props.sorting);
 
-  const handleIsTrainingChange = event => {
-    const newFilter = {
-      ...props.reportListFilter,
-      ...{
-        isTraining: event.target.value === "true"
-      }
-    }
-    setReportListFilter(newFilter);
-    props.getList(props.projectId, props.page, newFilter);
+  const handleSortChange = (sorting) =>
+    props.getList(props.projectId, props.page, props.filters, sorting);
+
+  const handleMarkAsError = (reportId) => {
+    props.markAsError(reportId);
+    props.getList(props.projectId, props.page, props.filters, props.sorting);
   }
 
   return (
     <Grid container spacing={3}>
-      
       <Grid item xs={12}>
-
-      <TableActions>          
-          <Button onClick={() => props.exportToExcel(props.projectId, props.reportListFilter)} variant="outlined" color="primary">
+        <TableActions>
+          <Button onClick={() => props.exportToExcel(props.projectId, props.filters, props.sorting)} variant="outlined" color="primary">
             {strings(stringKeys.reports.list.exportToExcel)}
           </Button>
-      </TableActions>
+        </TableActions>
+      </Grid>
 
-        <Grid container spacing={3}>
-          <Grid item>
-            <FormControl style={{ minWidth: '250px' }}>
-              <InputLabel>{strings(stringKeys.reports.list.selectReportListType)}</InputLabel>
-              <Select
-                onChange={handleReportListTypeChange}
-                value={props.reportListFilter.reportListType}
-              >
-                <MenuItem value="main">
-                  {strings(stringKeys.reports.list.mainReportsListType)}
-                </MenuItem>
-                <MenuItem value="fromDcp">
-                  {strings(stringKeys.reports.list.dcpReportListType)}
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          <Grid item>
-            <InputLabel className={styles.trainingStateLabel}>{strings(stringKeys.reports.list.trainingReportsListType)}</InputLabel>
-            <RadioGroup
-              value={props.reportListFilter.isTraining}
-              onChange={handleIsTrainingChange}
-              className={styles.trainingStateRadioGroup}
-            >
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.reports.list.nonTraining)} value={false} />
-              <FormControlLabel control={<Radio />} label={strings(stringKeys.reports.list.training)} value={true} />
-            </RadioGroup >
-          </Grid>
-        </Grid>
+      <Grid item xs={12} className={styles.filtersGrid}>
+        <ReportFilters
+          healthRisks={props.healthRisks}
+          nationalSocietyId={props.nationalSocietyId}
+          onChange={handleFiltersChange}
+          filters={props.filters}
+          showUnknownSenderOption={false}
+          showTrainingFilter={true}
+        />
       </Grid>
 
       <Grid item xs={12}>
         <ReportsTable
           list={props.data.data}
           isListFetching={props.isListFetching}
-          getList={props.getList}
-          projectId={props.projectId}
           page={props.data.page}
+          onChangePage={handlePageChange}
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
-          reportListType={props.reportListFilter.reportListType}
-          markAsError = {props.markAsError}
-          isMarkingAsError ={props.isMarkingAsError}
-          user = {props.user}
-          filters = {props.reportListFilter}
+          reportsType={props.filters.reportsType}
+          sorting={props.sorting}
+          onSort={handleSortChange}
+          markAsError={handleMarkAsError}
+          isMarkingAsError={props.isMarkingAsError}
+          user={props.user}
         />
       </Grid>
     </Grid>
@@ -122,10 +86,13 @@ ReportsListPageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
+  nationalSocietyId: state.appData.siteMap.parameters.nationalSocietyId,
   data: state.reports.paginatedListData,
   isListFetching: state.reports.listFetching,
   isRemoving: state.reports.listRemoving,
-  reportListFilter: state.reports.filter,
+  filters: state.reports.filters,
+  sorting: state.reports.sorting,
+  healthRisks: state.reports.filtersData.healthRisks,
   user: state.appData.user,
   isMarkingAsError: state.reports.markingAsError
 });

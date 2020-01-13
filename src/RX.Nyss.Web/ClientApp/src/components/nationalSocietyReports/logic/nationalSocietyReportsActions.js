@@ -8,13 +8,13 @@ export const goToList = (nationalSocietyId) => push(`/nationalsociety/${national
 export const openList = {
   invoke: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_REPORTS_LIST.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_REPORTS_LIST.REQUEST }),
-  success: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_REPORTS_LIST.SUCCESS, nationalSocietyId }),
+  success: (nationalSocietyId, filtersData) => ({ type: OPEN_NATIONAL_SOCIETY_REPORTS_LIST.SUCCESS, nationalSocietyId, filtersData }),
   failure: (message) => ({ type: OPEN_NATIONAL_SOCIETY_REPORTS_LIST.FAILURE, message })
 };
 
 export const getList = {
-  invoke: (nationalSocietyId, pageNumber, reportListFilter) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.INVOKE, nationalSocietyId, pageNumber, reportListFilter }),
+  invoke: (nationalSocietyId, pageNumber, filters, sorting) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.INVOKE, nationalSocietyId, pageNumber, filters, sorting }),
   request: () => ({ type: GET_NATIONAL_SOCIETY_REPORTS.REQUEST }),
-  success: (data, page, rowsPerPage, totalRows, filter) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filter }),
+  success: (data, page, rowsPerPage, totalRows, filters, sorting) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filters, sorting }),
   failure: (message) => ({ type: GET_NATIONAL_SOCIETY_REPORTS.FAILURE, message })
 };

@@ -1,3 +1,5 @@
+import styles from "./NationalSocietyReportsListPage.module.scss";
+
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -5,74 +7,52 @@ import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsAc
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import NationalSocietyReportsTable from './NationalSocietyReportsTable';
+import { ReportFilters } from '../common/filters/ReportFilters';
 import { useMount } from '../../utils/lifecycle';
-import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 
 const NationalSocietyReportsListPageComponent = (props) => {
   useMount(() => {
     props.openNationalSocietyReportsList(props.nationalSocietyId);
   });
 
-  const [reportListFilter, setReportListFilter] = useState(props.reportListFilter);
-
-  if (!props.data || !props.reportListFilter) {
+  if (!props.data || !props.filters || !props.sorting) {
     return null;
   }
 
-  const handleReportListTypeChange = event => {
-    const newFilter = {
-      ...props.reportListFilter,
-      ...{
-        reportListType: event.target.value
-      }
-    }
+  const handleFiltersChange = (filters) =>
+    props.getList(props.nationalSocietyId, props.page, filters, props.sorting);
 
-    setReportListFilter(newFilter);
-    props.getList(props.nationalSocietyId, props.page, newFilter);
-  }
+  const handlePageChange = (page) =>
+    props.getList(props.nationalSocietyId, page, props.filters, props.sorting);
+
+  const handleSortChange = (sorting) =>
+    props.getList(props.nationalSocietyId, props.page, props.filters, sorting);
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Grid container spacing={3}>
-          <Grid item>
-            <FormControl style={{ minWidth: '250px' }}>
-              <InputLabel>{strings(stringKeys.nationalSocietyReports.list.selectReportListType)}</InputLabel>
-              <Select
-                onChange={handleReportListTypeChange}
-                value={props.reportListFilter.reportListType}
-              >
-                <MenuItem value="unknownSender">
-                  {strings(stringKeys.nationalSocietyReports.list.unknownSenderReportListType)}
-                </MenuItem>
-                <MenuItem value="main">
-                  {strings(stringKeys.nationalSocietyReports.list.mainReportsListType)}
-                </MenuItem>
-                <MenuItem value="fromDcp">
-                  {strings(stringKeys.nationalSocietyReports.list.dcpReportListType)}
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
+      <Grid item xs={12} className={styles.filtersGrid}>
+        <ReportFilters
+          healthRisks={props.healthRisks}
+          nationalSocietyId={props.nationalSocietyId}
+          onChange={handleFiltersChange}
+          filters={props.filters}
+          showUnknownSenderOption={true}
+          showTrainingFilter={false}
+        />
       </Grid>
 
       <Grid item xs={12}>
         <NationalSocietyReportsTable
           list={props.data.data}
           isListFetching={props.isListFetching}
-          getList={props.getList}
-          nationalSocietyId={props.nationalSocietyId}
           page={props.data.page}
+          onChangePage={handlePageChange}
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
-          reportListType={props.reportListFilter.reportListType}
-          filters={props.reportListFilter}
+          reportsType={props.filters.reportsType}
+          sorting={props.sorting}
+          onSort={handleSortChange}
         />
       </Grid>
     </Grid>
@@ -90,7 +70,9 @@ const mapStateToProps = (state, ownProps) => ({
   data: state.nationalSocietyReports.paginatedListData,
   isListFetching: state.nationalSocietyReports.listFetching,
   isRemoving: state.nationalSocietyReports.listRemoving,
-  reportListFilter: state.nationalSocietyReports.filter
+  filters: state.nationalSocietyReports.filters,
+  sorting: state.nationalSocietyReports.sorting,
+  healthRisks: state.nationalSocietyReports.filtersData.healthRisks
 });
 
 const mapDispatchToProps = {

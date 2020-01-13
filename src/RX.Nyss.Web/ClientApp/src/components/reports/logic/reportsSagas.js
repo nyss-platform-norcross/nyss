@@ -4,9 +4,10 @@ import * as actions from "./reportsActions";
 import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
-import {downloadFile} from "../../../utils/downloadFile";
+import { downloadFile } from "../../../utils/downloadFile";
 import { stringKeys } from "../../../strings";
-
+import { ReportListType } from '../../common/filters/logic/reportFilterConstsants'
+import { DateColumnName } from './reportsConstants'
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
@@ -22,45 +23,51 @@ function* openReportsList({ projectId }) {
   try {
     yield openReportsModule(projectId);
 
+    const filtersData = yield call(http.get, `/api/report/filters?projectId=${projectId}`);
+    const filters = (yield select(state => state.reports.filters)) ||
+    {
+      reportsType: ReportListType.main,
+      area: null,
+      healthRiskId: null,
+      status: true,
+      isTraining: false
+    };
+    const sorting = (yield select(state => state.reports.sorting)) ||
+    {
+      orderBy: DateColumnName,
+      sortAscending: false
+    };
+
     if (listStale) {
-      yield call(getReports, { projectId });
+      yield call(getReports, { projectId, filters, sorting });
     }
 
-    yield put(actions.openList.success(projectId));
+    yield put(actions.openList.success(projectId, filtersData.value));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
   }
 };
 
-function* getReports({ projectId, pageNumber, reportListFilter }) {
+function* getReports({ projectId, pageNumber, filters, sorting }) {
   yield put(actions.getList.request());
   try {
-    const filter = reportListFilter || {
-      reportListType: "main",
-      isTraining: false
-    };
-
-    const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`, filter);
+    const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`, { ...filters, ...sorting });
     http.ensureResponseIsSuccess(response);
-    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filter));
+    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters, sorting));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }
 };
 
-function* getExportData({ projectId, reportListFilter }) {
+function* getExportData({ projectId, filters, sorting }) {
   yield put(actions.exportToExcel.request());
   try {
-    const filter = reportListFilter || {
-      reportListType: "main"
-    };
-
     yield downloadFile({
       url: `/api/report/exportToExcel?projectId=${projectId}`,
       fileName: `reports.csv`,
-      data: filter
+      data: { ...filters, ...sorting }
     });
-    
+
     yield put(actions.exportToExcel.success());
   } catch (error) {
     yield put(actions.exportToExcel.failure(error.message));
@@ -82,14 +89,12 @@ function* openReportsModule(projectId) {
   }));
 }
 
-function* markAsError({ reportId, projectId, pageNumber, reportListFilter }) {
+function* markAsError({ reportId }) {
   yield put(actions.markAsError.request());
-  try {    
+  try {
     yield call(http.post, `/api/report/${reportId}/markAsError`);
     yield put(actions.markAsError.success());
     yield put(appActions.showMessage(stringKeys.reports.list.successfulyMarkedAsError));
-        
-    yield call(getReports, {projectId, pageNumber, reportListFilter});
   } catch (error) {
     yield put(actions.markAsError.failure());
   }

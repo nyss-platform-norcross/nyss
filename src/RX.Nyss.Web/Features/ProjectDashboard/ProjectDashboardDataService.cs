@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Utils;
@@ -557,20 +558,20 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .FilterReportsByProject(projectId);
         }
 
-        private static IQueryable<Nyss.Data.Models.Report> FilterReportsByRegion(IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto.AreaDto area) =>
+        private static IQueryable<Nyss.Data.Models.Report> FilterReportsByRegion(IQueryable<Nyss.Data.Models.Report> reports, AreaDto area) =>
             area?.Type switch
             {
-                FiltersRequestDto.AreaTypeDto.Region =>
-                reports.Where(r => r.DataCollector.Village.District.Region.Id == area.Id),
+                AreaDto.AreaType.Region =>
+                reports.Where(r => r.Village.District.Region.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.District =>
-                reports.Where(r => r.DataCollector.Village.District.Id == area.Id),
+                AreaDto.AreaType.District =>
+                reports.Where(r => r.Village.District.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.Village =>
-                reports.Where(r => r.DataCollector.Village.Id == area.Id),
+                AreaDto.AreaType.Village =>
+                reports.Where(r => r.Village.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.Zone =>
-                reports.Where(r => r.DataCollector.Zone.Id == area.Id),
+                AreaDto.AreaType.Zone =>
+                reports.Where(r => r.Zone.Id == area.Id),
 
                 _ =>
                 reports
@@ -627,19 +628,19 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 reports
             };
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsByArea(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, FiltersRequestDto.AreaDto area) =>
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsByArea(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, AreaDto area) =>
             area?.Type switch
             {
-                FiltersRequestDto.AreaTypeDto.Region =>
+                AreaDto.AreaType.Region =>
                 dataCollectors.Where(dc => dc.Village.District.Region.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.District =>
+                AreaDto.AreaType.District =>
                 dataCollectors.Where(dc => dc.Village.District.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.Village =>
+                AreaDto.AreaType.Village =>
                 dataCollectors.Where(dc => dc.Village.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.Zone =>
+                AreaDto.AreaType.Zone =>
                 dataCollectors.Where(dc => dc.Zone.Id == area.Id),
 
                 _ =>

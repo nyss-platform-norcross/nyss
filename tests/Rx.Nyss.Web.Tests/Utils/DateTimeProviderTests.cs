@@ -28,7 +28,7 @@ namespace RX.Nyss.Web.Tests.Utils
         }
 
         [Theory, MemberData(nameof(TestData))]
-        public async Task GetEpiWeek_ShouldReturnCorrectWeekNumber(DateTime date, int weekNumber)
+        public void GetEpiWeek_ShouldReturnCorrectWeekNumber(DateTime date, int weekNumber)
         {
             // act
             var result = _dateTimeProvider.GetEpiWeek(date);

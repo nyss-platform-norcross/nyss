@@ -11,13 +11,13 @@ export function nationalSocietyReportsReducer(state = initialState.nationalSocie
       return { ...state, listStale: action.nationalSocietyId !== state.listNationalSocietyId };
 
     case actions.OPEN_NATIONAL_SOCIETY_REPORTS_LIST.SUCCESS:
-      return { ...state, listNationalSocietyId: action.nationalSocietyId };
+      return { ...state, listNationalSocietyId: action.nationalSocietyId, filtersData: action.filtersData };
 
     case actions.GET_NATIONAL_SOCIETY_REPORTS.REQUEST:
       return { ...state, paginatedListData: state.listStale ? null : state.paginatedListData, listFetching: true };
 
     case actions.GET_NATIONAL_SOCIETY_REPORTS.SUCCESS:
-      return { ...state, filter: action.filter, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
+      return { ...state, filters: action.filters, sorting: action.sorting, listFetching: false, listStale: false, paginatedListData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
 
     case actions.GET_NATIONAL_SOCIETY_REPORTS.FAILURE:
       return { ...state, listFetching: false, paginatedListData: null };
