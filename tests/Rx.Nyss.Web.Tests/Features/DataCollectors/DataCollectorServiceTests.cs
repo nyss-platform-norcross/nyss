@@ -413,13 +413,13 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             yield return new object[]
             {
                 DataCollectorPhoneNumber1,
-                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow, IsTraining = false, Report = new Report() }}
+                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow, IsTraining = false, Report = new Report() , ReportId = 1}}
             };
 
             yield return new object[]
             {
                 DataCollectorPhoneNumber1,
-                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-8), IsTraining = false, Report = new Report()}, new RawReport { ReceivedAt = DateTime.UtcNow, IsTraining = false, }}
+                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-8), IsTraining = false, Report = new Report(), ReportId = 2 }, new RawReport { ReceivedAt = DateTime.UtcNow, IsTraining = false, }}
             };
 
             yield return new object[]
@@ -431,7 +431,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             yield return new object[]
             {
                 DataCollectorPhoneNumber1,
-                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-8), IsTraining = false, Report = new Report()}, new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-35), IsTraining = false, }}
+                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-8), IsTraining = false, Report = new Report(), ReportId = 3 }, new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-35), IsTraining = false, }}
             };
         }
     }
