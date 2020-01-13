@@ -539,9 +539,12 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         {
             var startDate = filtersDto.StartDate.Date;
             var endDate = filtersDto.EndDate.Date.AddDays(1);
-            return _nyssContext.RawReports.AsQueryable()
-                .Where(r => r.DataCollector.Project.Id == projectId)
+            var reports = _nyssContext.RawReports
+                .Where(r => r.IsTraining.HasValue && r.IsTraining == filtersDto.IsTraining);
+            return reports.AsQueryable()
+                .FromKnownDataCollector()
                 .OnlyErrorReports()
+                .FilterReportsByProject(projectId)
                 .FilterReportsByDate(startDate, endDate);
         }
 
@@ -604,6 +607,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public static IQueryable<Nyss.Data.Models.RawReport> FilterReportsByDate(this IQueryable<Nyss.Data.Models.RawReport> reports, DateTime startDate, DateTime endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
+
+        public static IQueryable<Nyss.Data.Models.RawReport> FilterReportsByProject(this IQueryable<Nyss.Data.Models.RawReport> reports, int projectId) =>
+            reports.Where(r => r.DataCollector.Project.Id == projectId);
 
         public static IQueryable<Nyss.Data.Models.RawReport> OnlyErrorReports(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
             reports.Where(r => r.ReportId == null);

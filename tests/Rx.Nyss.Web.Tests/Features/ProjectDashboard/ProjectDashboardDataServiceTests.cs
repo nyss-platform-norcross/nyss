@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
         [Theory]
         [InlineData(true, 8, 4, 0, 2, 1 ,1)]
-        [InlineData(false, 24, 12, 0, 2, 3, 3)]
+        [InlineData(false, 24, 13, 0, 2, 3, 3)]
         public async Task GetSummaryData_FilterReportsOnlyOnTraining_ShouldShowAllReportsAccordingToTrainingStatus(
             bool isTraining,
             int expectedReportsCount,
@@ -66,8 +66,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(DataCollectorType.Human, false, 16, 8, 0, 0, 0, 0)]
-        [InlineData(DataCollectorType.CollectionPoint, false, 8, 4, 0, 2, 3, 3)]
+        [InlineData(DataCollectorType.Human, false, 16, 9, 0, 0, 0, 0)]
+        [InlineData(DataCollectorType.CollectionPoint, false, 8, 5, 0, 2, 3, 3)]
         [InlineData(DataCollectorType.Human, true, 4, 2, 0, 0, 0, 0)]
         [InlineData(DataCollectorType.CollectionPoint, true, 4, 2, 0, 2, 1, 1)]
         public async Task GetSummaryData_FilterReportsOnDataCollectorTypeAndTrainingStatus_ShouldShowAllReportsAccordingToDataCollectorType(
@@ -108,9 +108,9 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
         [Theory]
         [InlineData(1, true, 3, 4, 0, 0, 1, 0)]
-        [InlineData(1, false, 8, 12, 0, 0, 3, 0)]
+        [InlineData(1, false, 8, 13, 0, 0, 3, 0)]
         [InlineData(2, true, 5, 4, 0, 2, 0, 1)]
-        [InlineData(2, false, 16, 12, 0, 2, 0, 3)]
+        [InlineData(2, false, 16, 13, 0, 2, 0, 3)]
         public async Task GetSummaryData_FilterReportsOnHealthRisks_ShouldReturnCorrectNumbers(
             int healthRiskId,
             bool isTraining,
@@ -146,8 +146,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(1, false, 12, 6, 0, 0, 0, 0)]
-        [InlineData(2, false, 12, 6, 0, 2, 3, 3)]
+        [InlineData(1, false, 12, 7, 0, 0, 0, 0)]
+        [InlineData(2, false, 12, 7, 0, 2, 3, 3)]
         [InlineData(1, true, 4, 2, 0, 0, 0, 0)]
         [InlineData(2, true, 4, 2, 0, 2, 1, 1)]
         public async Task GetSummaryData_FilterReportsOnRegion_ShouldReturnCorrectNumbers(
@@ -185,10 +185,10 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(1, false, 4, 2, 0)]
-        [InlineData(2, false, 8, 4, 0)]
-        [InlineData(3, false, 4, 2, 0)]
-        [InlineData(4, false, 8, 4, 0)]
+        [InlineData(1, false, 4, 3, 0)]
+        [InlineData(2, false, 8, 5, 0)]
+        [InlineData(3, false, 4, 3, 0)]
+        [InlineData(4, false, 8, 5, 0)]
         [InlineData(1, true, 4, 2, 0)]
         [InlineData(2, true, 0, 0, 0)]
         [InlineData(3, true, 4, 2, 0)]
@@ -292,22 +292,22 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
 
         [Theory]
-        [InlineData(1, 0, 0, 0)]
-        [InlineData(2, 0, 0, 0)]
-        [InlineData(3, 2, 1, 0)]
-        [InlineData(4, 2, 1, 0)]
-        [InlineData(5, 2, 1, 0)]
-        [InlineData(6, 2, 1, 0)]
-        [InlineData(7, 2, 1, 0)]
-        [InlineData(8, 2, 1, 0)]
-        [InlineData(9, 2, 1, 0)]
-        [InlineData(10, 2, 1, 0)]
-        [InlineData(11, 0, 0, 0)]
-        [InlineData(12, 0, 0, 0)]
-        [InlineData(13, 2, 1, 0)]
-        [InlineData(14, 2, 1, 0)]
-        [InlineData(15, 2, 1, 0)]
-        [InlineData(16, 2, 1, 0)]
+        [InlineData(1, 0, 1, 0)]
+        [InlineData(2, 0, 1, 0)]
+        [InlineData(3, 2, 2, 0)]
+        [InlineData(4, 2, 2, 0)]
+        [InlineData(5, 2, 2, 0)]
+        [InlineData(6, 2, 2, 0)]
+        [InlineData(7, 2, 2, 0)]
+        [InlineData(8, 2, 2, 0)]
+        [InlineData(9, 2, 2, 0)]
+        [InlineData(10, 2, 2, 0)]
+        [InlineData(11, 0, 1, 0)]
+        [InlineData(12, 0, 1, 0)]
+        [InlineData(13, 2, 2, 0)]
+        [InlineData(14, 2, 2, 0)]
+        [InlineData(15, 2, 2, 0)]
+        [InlineData(16, 2, 2, 0)]
         public async Task GetSummaryData_FilterMainReportsOnZone_ShouldReturnCorrectNumbers(int zoneId, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
         {
             //arrange
@@ -333,9 +333,9 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
 
         [Theory]
-        [InlineData("2019-01-01","2019-01-05", 1, 1, 11)]
-        [InlineData("2019-01-01","2019-01-10", 6, 3, 9)]
-        [InlineData("2019-01-07","2019-12-31", 22, 11, 1)]
+        [InlineData("2019-01-01","2019-01-05", 1, 2, 11)]
+        [InlineData("2019-01-01","2019-01-10", 6, 4, 9)]
+        [InlineData("2019-01-07","2019-12-31", 22, 11, 2)]
         public async Task GetSummaryData_FilterMainReportsByDate_ShouldReturnCorrectNumbers(string startDate, string endDate, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
         {
             //arrange

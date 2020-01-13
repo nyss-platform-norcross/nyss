@@ -24,6 +24,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         public List<ProjectHealthRisk> ProjectHealthRisks { get; set; }
         public List<DataCollector> DataCollectors { get; set; }
         public List<Report> Reports { get; set; }
+        public List<RawReport> RawReports { get; set; }
         public List<User> Users { get; set; }
         public List<SupervisorUserProject> SupervisorUserProjects { get; set; }
         public List<UserNationalSociety> UserNationalSocieties { get; set; }
@@ -43,6 +44,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             var projectHealthRisksDbSet = ProjectHealthRisks.AsQueryable().BuildMockDbSet();
             var dataCollectorsDbSet = DataCollectors.AsQueryable().BuildMockDbSet();
             var reportsDbSet = Reports.AsQueryable().BuildMockDbSet();
+            var rawReportsDbSet = RawReports.AsQueryable().BuildMockDbSet();
             var usersDbSet = Users.AsQueryable().BuildMockDbSet();
             var supervisorUserProjectsDbSet = SupervisorUserProjects.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesDbSet = UserNationalSocieties.AsQueryable().BuildMockDbSet();
@@ -58,6 +60,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksDbSet);
             nyssContextMock.DataCollectors.Returns(dataCollectorsDbSet);
             nyssContextMock.Reports.Returns(reportsDbSet);
+            nyssContextMock.RawReports.Returns(rawReportsDbSet);
             nyssContextMock.Users.Returns(usersDbSet);
             nyssContextMock.SupervisorUserProjects.Returns(supervisorUserProjectsDbSet);
             nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
@@ -187,14 +190,15 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
         private void GenerateDataCollectorsWithReports()
         {
-            var numberOfDataCollectors = 16;
+            var numberOfDataCollectors = 17;
             var numberOfHumanDataCollectors = 10;
             var numberOfDataCollectionPoints = 6;
             var humansStartIndex = 0;
             var collectionPointsStartIndex = numberOfHumanDataCollectors;
             var numberOfTrainingHumans = 2;
             var numberOfTrainingCollectionPoints = 2;
-            var numberOfReports = numberOfDataCollectors * 2;
+            var numberOfReports = (numberOfDataCollectors - 1) * 2;
+            var numberOfErrorReports = 2;
 
 
             DataCollectors = Enumerable.Range(1, numberOfDataCollectors)
@@ -206,14 +210,25 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     DataCollectorType = DataCollectorType.Human,
                     IsInTrainingMode = false,
                     Reports = new List<Report>(),
-                    Zone = Zones [i-1],
-                    Village = Zones[i-1].Village
+                    RawReports = new List<RawReport>(),
+                    Zone = i == numberOfDataCollectors ? Zones[i-2] : Zones [i-1],
+                    Village = i == numberOfDataCollectors ? Zones[i-2].Village : Zones [i-1].Village
                 })
                 .ToList();
 
             DataCollectors.GetRange(collectionPointsStartIndex, numberOfDataCollectionPoints).ForEach(dc => dc.DataCollectorType = DataCollectorType.CollectionPoint);
             DataCollectors.GetRange(humansStartIndex, numberOfTrainingHumans).ForEach(dc => dc.IsInTrainingMode = true);
             DataCollectors.GetRange(collectionPointsStartIndex, numberOfTrainingCollectionPoints).ForEach(dc => dc.IsInTrainingMode = true);
+
+            RawReports = Enumerable.Range(1, numberOfErrorReports)
+                .Select(i => new RawReport
+                {
+                    Id = i,
+                    DataCollector = DataCollectors[DataCollectors.Count - 1],
+                    ReceivedAt = BaseDate.AddDays(i - 1),
+                    IsTraining = false
+                }).ToList();
+            RawReports.ForEach(r => r.DataCollector.RawReports.Add(r));
 
             Reports = Enumerable.Range(1, numberOfReports)
                 .Select(i => new Report
