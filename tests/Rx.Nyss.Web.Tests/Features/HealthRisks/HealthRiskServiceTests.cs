@@ -370,7 +370,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
                     HealthRiskId = HealthRiskId,
                     Reports = new List<Report>
                     {
-                        new Report()
+                        new Report() { IsTraining = false }
                     }
                 }
             };
@@ -395,8 +395,14 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
                 }
             };
 
+            _healthRisk.LanguageContents = languageContents;
+
+            var healthRisks = new List<HealthRisk> { _healthRisk };
+
+            var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
             var languageContentMockDbSet = languageContents.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
             _nyssContextMock.HealthRiskLanguageContents.Returns(languageContentMockDbSet);
 
