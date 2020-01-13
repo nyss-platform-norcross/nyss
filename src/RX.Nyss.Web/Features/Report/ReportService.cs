@@ -185,7 +185,9 @@ namespace RX.Nyss.Web.Features.Report
                     CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
+                    EpiWeek = r.Report.EpiWeek,
+                    EpiYear = r.Report.EpiYear
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -301,8 +303,8 @@ namespace RX.Nyss.Web.Features.Report
                     Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
                     Location = report.Location != null ? $"{report.Location.Y}/{report.Location.Coordinate.X}" : "",
                     report.Message,
-                    EpiYear = _dateTimeProvider.IsFirstWeekOfNextYear(report.DateTime) ? report.DateTime.Year + 1 : report.DateTime.Year,
-                    EpiWeek = _dateTimeProvider.GetEpiWeek(report.DateTime)
+                    EpiYear = report.EpiWeek,
+                    EpiWeek = report.EpiYear
                 };
             });
 

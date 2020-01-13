@@ -11,8 +11,6 @@ namespace RX.Nyss.Common.Utils
 
         int GetEpiWeek(DateTime date);
 
-        bool IsFirstWeekOfNextYear(DateTime date);
-
         EpiDate GetEpiDate(DateTime date);
 
         IEnumerable<EpiDate> GetEpiWeeksRange(DateTime startDate, DateTime endDate);
@@ -69,13 +67,6 @@ namespace RX.Nyss.Common.Utils
                 .Select(GetEpiDate)
                 .Distinct()
                 .ToList();
-
-        public bool IsFirstWeekOfNextYear(DateTime date)
-        {
-            var epiWeek = GetEpiWeek(date);
-
-            return epiWeek == 1 && date.Month == 12;
-        }
     }
 
     public struct EpiDate

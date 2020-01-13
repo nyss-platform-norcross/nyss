@@ -24,5 +24,7 @@ namespace RX.Nyss.Web.Features.Report.Dto
         public int? ReferredCount { get; set; }
         public int? DeathCount { get; set; }
         public int? FromOtherVillagesCount { get; set; }
+        public int EpiWeek { get; set; }
+        public int EpiYear { get; set; }
     }
 }
