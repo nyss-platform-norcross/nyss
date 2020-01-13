@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -16,7 +17,6 @@ using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.StringsResources;
-using RX.Nyss.Web.Utils;
 using Shouldly;
 using Xunit;
 
@@ -62,7 +62,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _dateTimeProvider.GetEpiWeek(default).ReturnsForAnyArgs(1);
             _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _excelExportService, _stringsResourcesService, _dateTimeProvider);
-            _dateTimeProvider.IsFirstWeekOfNextYear(default).ReturnsForAnyArgs(false);
             
             ArrangeData();
         }

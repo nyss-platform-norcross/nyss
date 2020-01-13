@@ -16,6 +16,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.ModifiedBy).HasMaxLength(100);
             builder.Property(x => x.IsTraining).IsRequired();
             builder.Property(x => x.EpiWeek).IsRequired();
+            builder.Property(x => x.EpiYear).IsRequired().HasDefaultValue(2020);
             builder.Property(x => x.PhoneNumber).HasMaxLength(20).IsRequired();
             builder.Property(x => x.Location).IsRequired();
             builder.Property(x => x.ReportType).HasConversion<string>().HasMaxLength(20).IsRequired();

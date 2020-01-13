@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Web;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -93,6 +94,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         gatewaySetting = reportData.GatewaySetting;
                         projectHealthRisk = reportData.ProjectHealthRisk;
 
+                        var epiDate = _dateTimeProvider.GetEpiDate(reportData.ReceivedAt);
+
                         var report = new Report
                         {
                             IsTraining = reportData.DataCollector.IsInTrainingMode,
@@ -101,7 +104,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                             ReceivedAt = reportData.ReceivedAt,
                             CreatedAt = _dateTimeProvider.UtcNow,
                             DataCollector = reportData.DataCollector,
-                            EpiWeek = _dateTimeProvider.GetEpiWeek(reportData.ReceivedAt),
+                            EpiWeek = epiDate.EpiWeek,
+                            EpiYear = epiDate.EpiYear,
                             PhoneNumber = sender,
                             Location = reportData.DataCollector.Location,
                             ReportedCase = reportData.ParsedReport.ReportedCase,

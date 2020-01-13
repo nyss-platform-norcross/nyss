@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
