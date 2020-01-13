@@ -360,6 +360,82 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
         }
 
         [Fact]
+        public async Task EditHealthRisk_WhenHealthRiskNameForExistingLanguageIsAdded_ShouldReturnSuccess()
+        {
+            // Arrange
+            var projectHealthRisks = new List<ProjectHealthRisk>
+            {
+                new ProjectHealthRisk
+                {
+                    HealthRiskId = HealthRiskId,
+                    Reports = new List<Report>
+                    {
+                        new Report()
+                    }
+                }
+            };
+
+            var languageContents = new List<HealthRiskLanguageContent>
+            {
+                new HealthRiskLanguageContent
+                {
+                    Id = LanguageId,
+                    CaseDefinition = CaseDefinition,
+                    FeedbackMessage = FeedbackMessage,
+                    Name = HealthRiskName,
+                    ContentLanguage = _nyssContextMock.ContentLanguages.ElementAt(0)
+                },
+                new HealthRiskLanguageContent
+                {
+                    Id = NewLanguageId,
+                    CaseDefinition = "",
+                    FeedbackMessage = "",
+                    Name = "",
+                    ContentLanguage = _nyssContextMock.ContentLanguages.ElementAt(1)
+                }
+            };
+
+            var projectHealthRisksMockDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            var languageContentMockDbSet = languageContents.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
+            _nyssContextMock.HealthRiskLanguageContents.Returns(languageContentMockDbSet);
+
+
+            var healthRiskRequestDto = new HealthRiskRequestDto
+            {
+                HealthRiskCode = HealthRiskCode,
+                HealthRiskType = HealthRiskType,
+                AlertRuleCountThreshold = AlertRuleCountThreshold,
+                AlertRuleDaysThreshold = AlertRuleDaysThreshold,
+                AlertRuleKilometersThreshold = 1,
+                LanguageContent = new List<HealthRiskLanguageContentDto>
+                {
+                    new HealthRiskLanguageContentDto
+                    {
+                        LanguageId = LanguageId,
+                        CaseDefinition = CaseDefinition,
+                        FeedbackMessage = FeedbackMessage,
+                        Name = HealthRiskName
+                    },
+                    new HealthRiskLanguageContentDto
+                    {
+                        LanguageId = NewLanguageId,
+                        CaseDefinition = CaseDefinition,
+                        FeedbackMessage = FeedbackMessage,
+                        Name = "New health risk name"
+                    }
+                }
+            };
+
+            // Act
+            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.EditSuccess);
+        }
+
+        [Fact]
         public async Task EditHealthRisk_WhenSuccess_ShouldReturnSuccess()
         {
             // Arrange
