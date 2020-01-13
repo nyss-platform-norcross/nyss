@@ -25,6 +25,8 @@ namespace RX.Nyss.Data.Models
 
         public int EpiWeek { get; set; }
 
+        public int EpiYear { get; set; }
+
         public string PhoneNumber { get; set; }
 
         public Point Location { get; set; }
