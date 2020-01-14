@@ -445,10 +445,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 })
                 .ToList();
 
-            var allPeriods = Enumerable
-                .Range(0, (endDate.Subtract(startDate).Days / 7) + 1)
-                .Select(w => startDate.AddDays(w * 7))
-                .Select(day => _dateTimeProvider.GetEpiWeek(day).ToString());
+            var allPeriods = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate)
+                .Select(day => day.EpiWeek.ToString());
 
             return new ReportByVillageAndDateResponseDto
             {
