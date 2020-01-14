@@ -10,13 +10,10 @@ namespace RX.Nyss.Web.Services.StringsResources
         {
             public string Key { get; set; }
 
-            public string DefaultValue { get; set; }
-
             public IDictionary<string, string> Translations { get; set; }
 
             public string GetTranslation(string languageCode) =>
-                (Translations.ContainsKey(languageCode) ? Translations[languageCode] : default) ??
-                DefaultValue ?? Key;
+                (Translations.ContainsKey(languageCode) ? Translations[languageCode] : default) ?? Key;
         }
     }
 }

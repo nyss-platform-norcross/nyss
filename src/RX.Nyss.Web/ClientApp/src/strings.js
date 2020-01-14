@@ -181,6 +181,7 @@ export const stringKeys = {
     },
     dashboard: {
       title: "project.dashboard.title",
+      printTitle: "project.dashboard.printTitle",
       numbers: {
         totalReportCount: "project.dashboard.numbers.totalReportCount",
         totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle"

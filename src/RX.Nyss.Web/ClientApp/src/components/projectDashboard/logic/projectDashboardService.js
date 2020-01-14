@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 
-export const generatePdfDocument = async (containerElement) => {
+export const generatePdfDocument = async (title, containerElement) => {
   const reportFileName = "Report";
 
   const pageWidth = 210; // mm
@@ -15,6 +15,11 @@ export const generatePdfDocument = async (containerElement) => {
 
   let pdf = new jsPDF('p', 'mm', 'a4');
   let currentPositionY = margin;
+
+  pdf.setFontSize(10);
+  pdf.text(title, 105, currentPositionY + 2, "center");
+
+  currentPositionY += 10;
 
   for (const element of elements) {
     const imageData = await domtoimage.toPng(element)
