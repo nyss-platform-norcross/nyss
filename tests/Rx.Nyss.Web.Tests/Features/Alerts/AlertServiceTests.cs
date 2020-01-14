@@ -9,6 +9,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
@@ -23,6 +24,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
         private readonly AlertService _alertService;
         private readonly List<Alert> _alerts;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly DateTime _now = DateTime.UtcNow;
+        private readonly User _currentUser = new GlobalCoordinatorUser();
 
         public AlertServiceTests()
         {
@@ -33,7 +38,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var config = Substitute.For<IConfig>();
             var loggerAdapter = Substitute.For<ILoggerAdapter>();
 
-            _alertService = new AlertService(_nyssContext, _emailPublisherService, emailTextGeneratorService, config, _smsTextGeneratorService, loggerAdapter);
+            _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+            _authorizationService = Substitute.For<IAuthorizationService>();
+            _alertService = new AlertService(_nyssContext, _emailPublisherService, emailTextGeneratorService, config, _smsTextGeneratorService, loggerAdapter, _dateTimeProvider, _authorizationService);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
@@ -45,6 +52,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             emailTextGeneratorService.GenerateEscalatedAlertEmail(TestData.ContentLanguageCode)
                 .Returns((TestData.EscalationEmailSubject, TestData.EscalationEmailBody));
+
+            _dateTimeProvider.UtcNow.Returns(_now);
+            _authorizationService.GetCurrentUser().Returns(_currentUser);
         }
 
         [Theory]

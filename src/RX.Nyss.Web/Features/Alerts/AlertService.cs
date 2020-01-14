@@ -10,6 +10,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
 using RX.Nyss.Web.Utils.Logging;
@@ -47,13 +48,17 @@ namespace RX.Nyss.Web.Features.Alerts
             IEmailTextGeneratorService emailTextGeneratorService,
             IConfig config,
             ISmsTextGeneratorService smsTextGeneratorService,
-            ILoggerAdapter loggerAdapter)
+            ILoggerAdapter loggerAdapter,
+            IDateTimeProvider dateTimeProvider,
+            IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
             _emailTextGeneratorService = emailTextGeneratorService;
             _smsTextGeneratorService = smsTextGeneratorService;
             _loggerAdapter = loggerAdapter;
+            _dateTimeProvider = dateTimeProvider;
+            _authorizationService = authorizationService;
             _config = config;
         }
 
@@ -197,6 +202,8 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertData.Alert.Status = AlertStatus.Escalated;
+            alertData.Alert.EscalatedAt = _dateTimeProvider.UtcNow;
+            alertData.Alert.EscalatedBy = _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
             try
@@ -237,11 +244,12 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertData.Alert.Status = AlertStatus.Dismissed;
+            alertData.Alert.DismissedAt = _dateTimeProvider.UtcNow;
+            alertData.Alert.DismissedBy = _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
             return Success();
         }
-
 
         public async Task<Result> CloseAlert(int alertId, string comments)
         {
@@ -265,6 +273,8 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertData.Alert.Status = AlertStatus.Closed;
+            alertData.Alert.ClosedAt = _dateTimeProvider.UtcNow;
+            alertData.Alert.ClosedBy = _authorizationService.GetCurrentUser();
             alertData.Alert.Comments = comments;
 
             FormattableString updateReportsCommand = $@"UPDATE Nyss.Reports SET Status = {ReportStatus.Closed.ToString()} WHERE Status = {ReportStatus.Pending.ToString()}

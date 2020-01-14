@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -10,6 +12,7 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
@@ -24,6 +27,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly List<AlertReport> _alertReports;
         private readonly IAlertService _alertService;
         private readonly IQueueService _queueService;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly DateTime _now = DateTime.UtcNow;
+        private readonly User _currentUser = new GlobalCoordinatorUser();
 
         public AlertReportServiceTests()
         {
@@ -32,7 +39,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alertService = Substitute.For<IAlertService>();
             _queueService = Substitute.For<IQueueService>();
-            _alertReportService = new AlertReportService(_config, _nyssContext, _alertService, _queueService);
+            _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+            _authorizationService = Substitute.For<IAuthorizationService>();
+            _alertReportService = new AlertReportService(_config, _nyssContext, _alertService, _queueService, _dateTimeProvider, _authorizationService);
 
             _alertReports = TestData.GetAlertReports();
             var alertReportsDbSet = _alertReports.AsQueryable().BuildMockDbSet();
@@ -42,6 +51,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             {
                 ReportDismissalQueue = TestData.ReportDismissalQueue
             });
+
+            _dateTimeProvider.UtcNow.Returns(_now);
+            _authorizationService.GetCurrentUser().Returns(_currentUser);
         }
 
         [Fact]
@@ -92,6 +104,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             await _alertReportService.AcceptReport(TestData.AlertId, TestData.ReportId);
 
             _alertReports.First().Report.Status.ShouldBe(ReportStatus.Accepted);
+            _alertReports.First().Report.AcceptedAt.ShouldBe(_now);
+            _alertReports.First().Report.AcceptedBy.ShouldBe(_currentUser);
             await _nyssContext.Received(1).SaveChangesAsync();
         }
 
@@ -145,6 +159,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
 
             _alertReports.First().Report.Status.ShouldBe(ReportStatus.Rejected);
+            _alertReports.First().Report.RejectedAt.ShouldBe(_now);
+            _alertReports.First().Report.RejectedBy.ShouldBe(_currentUser);
             await _nyssContext.Received(1).SaveChangesAsync();
         }
 
