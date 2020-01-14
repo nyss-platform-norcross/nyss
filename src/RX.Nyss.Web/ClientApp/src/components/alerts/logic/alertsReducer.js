@@ -35,6 +35,15 @@ export function alertsReducer(state = initialState.alerts, action) {
     case actions.OPEN_ALERTS_ASSESSMENT.FAILURE:
       return { ...state, formFetching: false };
 
+    case actions.OPEN_ALERTS_LOGS.REQUEST:
+      return { ...state, logsFetching: true, logsData: null };
+
+    case actions.OPEN_ALERTS_LOGS.SUCCESS:
+      return { ...state, logsFetching: false, logsData: action.data.items };
+
+    case actions.OPEN_ALERTS_LOGS.FAILURE:
+      return { ...state, logsFetching: false };
+
     case actions.ACCEPT_REPORT.REQUEST:
       return {
         ...state,

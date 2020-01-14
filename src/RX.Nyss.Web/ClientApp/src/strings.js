@@ -228,7 +228,7 @@ export const stringKeys = {
         rest: "project.dashboard.reportsPerVillageAndDate.rest",
         numberOfReports: "project.dashboard.reportsPerVillageAndDate.numberOfReports"
       },
-      dataCollectionPointReportsByDate:{
+      dataCollectionPointReportsByDate: {
         referredToHospitalCount: "project.dashboard.dataCollectionPointReportsByDate.referredToHospitalCount",
         deathCount: "project.dashboard.dataCollectionPointReportsByDate.deathCount",
         fromOtherVillagesCount: "project.dashboard.dataCollectionPointReportsByDate.fromOtherVillagesCount",
@@ -476,6 +476,9 @@ export const stringKeys = {
       success: "alerts.list.success",
       error: "alerts.list.error"
     },
+    details: {
+      title: "alerts.details.title"
+    },
     assess: {
       title: "alerts.assess.title",
       caseDefinition: "alerts.assess.caseDefinition",
@@ -512,6 +515,15 @@ export const stringKeys = {
         village: "alerts.assess.report.village",
         sex: "alerts.assess.report.sex",
         age: "alerts.assess.report.age",
+        id: "alerts.assess.report.id",
+      }
+    },
+    logs: {
+      title: "alerts.logs.title",
+      list: {
+        date: "alerts.logs.list.date",
+        logType: "alerts.logs.list.logType",
+        userName: "alerts.logs.list.userName"
       }
     },
     constants: {
@@ -534,6 +546,14 @@ export const stringKeys = {
       age: {
         "BelowFive": "alerts.age.belowFive",
         "AtLeastFive": "alerts.age.atLeastFive",
+      },
+      logType: {
+        "TriggeredAlert": "alerts.logType.TriggeredAlert",
+        "EscalatedAlert": "alerts.logType.EscalatedAlert",
+        "DismissedAlert": "alerts.logType.DismissedAlert",
+        "ClosedAlert": "alerts.logType.ClosedAlert",
+        "AcceptedReport": "alerts.logType.AcceptedReport",
+        "RejectedReport": "alerts.logType.RejectedReport"
       }
     },
     title: "alerts.title"

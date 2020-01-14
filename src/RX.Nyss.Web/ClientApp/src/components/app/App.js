@@ -48,6 +48,7 @@ import { AlertsAssessmentPage } from '../alerts/AlertsAssessmentPage';
 import { NationalSocietyReportsListPage } from '../nationalSocietyReports/NationalSocietyReportsListPage';
 import { ProjectsOverviewPage } from '../projects/ProjectsOverviewPage';
 import { DataCollectorsPerformancePage } from '../dataCollectors/DataCollectorsPerformancePage';
+import { AlertsLogsPage } from '../alerts/AlertsLogsPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -109,6 +110,7 @@ export const App = ({ history }) => (
 
           <AuthRoute exact path='/projects/:projectId/alerts' component={AlertsListPage} roles={accessMap.alerts.list} />
           <AuthRoute exact path='/projects/:projectId/alerts/:alertId/assess' component={AlertsAssessmentPage} roles={accessMap.alerts.assess} />
+          <AuthRoute exact path='/projects/:projectId/alerts/:alertId/logs' component={AlertsLogsPage} roles={accessMap.alerts.assess} />
         </Switch>
       </ConnectedRouter>
     </MuiPickersUtilsProvider>

@@ -11,6 +11,7 @@ export const alertsSagas = () => [
   takeEvery(consts.OPEN_ALERTS_LIST.INVOKE, openAlertsList),
   takeEvery(consts.GET_ALERTS.INVOKE, getAlerts),
   takeEvery(consts.OPEN_ALERTS_ASSESSMENT.INVOKE, openAlertsAssessment),
+  takeEvery(consts.OPEN_ALERTS_LOGS.INVOKE, openAlertsLogs),
   takeEvery(consts.ACCEPT_REPORT.INVOKE, acceptReport),
   takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport),
   takeEvery(consts.ESCALATE_ALERT.INVOKE, escalateAlert),
@@ -18,13 +19,13 @@ export const alertsSagas = () => [
   takeEvery(consts.CLOSE_ALERT.INVOKE, closeAlert),
 ];
 
-function* openAlertsList({ projectId }) { 
+function* openAlertsList({ projectId }) {
   yield put(actions.openList.request());
   try {
     yield openAlertsModule(projectId);
-    
+
     yield call(getAlerts, { projectId });
-    
+
     yield put(actions.openList.success(projectId));
 
   } catch (error) {
@@ -48,12 +49,27 @@ function* openAlertsAssessment({ projectId, alertId }) {
     const response = yield call(http.get, `/api/alert/${alertId}/get`);
     const data = response.value;
 
-    const title = `${strings(stringKeys.alerts.assess.title)} - ${data.healthRisk} ${dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}`;
+    const title = `${strings(stringKeys.alerts.details.title, true)} - ${data.healthRisk} ${dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}`;
 
     yield openAlertsModule(projectId, title);
     yield put(actions.openAssessment.success(alertId, data));
   } catch (error) {
     yield put(actions.openAssessment.failure(error.message));
+  }
+};
+
+function* openAlertsLogs({ projectId, alertId }) {
+  yield put(actions.openLogs.request());
+  try {
+    const response = yield call(http.get, `/api/alert/${alertId}/getLogs`);
+    const data = response.value;
+
+    const title = `${strings(stringKeys.alerts.details.title, true)} - ${data.healthRisk} ${dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}`;
+
+    yield openAlertsModule(projectId, title);
+    yield put(actions.openLogs.success(alertId, data));
+  } catch (error) {
+    yield put(actions.openLogs.failure(error.message));
   }
 };
 

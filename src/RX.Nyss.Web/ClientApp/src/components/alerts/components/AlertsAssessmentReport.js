@@ -11,7 +11,6 @@ import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
 import Icon from "@material-ui/core/Icon";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
-import Button from "@material-ui/core/Button";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>
@@ -66,6 +65,10 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
             value={strings(stringKeys.alerts.constants.age[report.age])}
           />
         )}
+        <ReportFormLabel
+          label={strings(stringKeys.alerts.assess.report.id)}
+          value={report.id}
+        />
       </ExpansionPanelDetails>
 
       <Fragment>
