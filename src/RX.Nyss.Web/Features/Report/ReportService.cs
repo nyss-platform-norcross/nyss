@@ -86,6 +86,7 @@ namespace RX.Nyss.Web.Features.Report
 
         public async Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter)
         {
+            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
             //ToDo: use common logic with the project dashboard
             var currentUser = _authorizationService.GetCurrentUser();
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.Name);
@@ -152,9 +153,9 @@ namespace RX.Nyss.Web.Features.Report
 
         public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports)
         {
-            var user = _authorizationService.GetCurrentUser();
+            var userName = _authorizationService.GetCurrentUserName();
             var userApplicationLanguage = _nyssContext.Users
-                .Where(u => u.EmailAddress == user.Name)
+                .Where(u => u.EmailAddress == userName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .Single();
 

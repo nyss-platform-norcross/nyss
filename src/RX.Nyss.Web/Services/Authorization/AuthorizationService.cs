@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Services.Authorization
 {
     public interface IAuthorizationService
     {
-        CurrentUser GetCurrentUser();
+        User GetCurrentUser();
         bool IsCurrentUserInRole(Role role);
         string GetCurrentUserName();
         bool IsCurrentUserInAnyRole(IEnumerable<Role> roles);
@@ -18,24 +20,20 @@ namespace RX.Nyss.Web.Services.Authorization
     public class AuthorizationService : IAuthorizationService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly INyssContext _nyssContext;
 
-        public AuthorizationService(IHttpContextAccessor httpContextAccessor)
+        public AuthorizationService(
+            IHttpContextAccessor httpContextAccessor,
+            INyssContext nyssContext)
         {
             _httpContextAccessor = httpContextAccessor;
+            _nyssContext = nyssContext;
         }
 
-        public CurrentUser GetCurrentUser()
+        public User GetCurrentUser()
         {
-            var httpContext = _httpContextAccessor.HttpContext;
-
-            var identityName = httpContext.User.Identity.Name;
-            var roles = httpContext.User.GetRoles();
-
-            return new CurrentUser
-            {
-                Name = identityName,
-                Roles = roles.Select(Enum.Parse<Role>).ToList()
-            };
+            var userName = GetCurrentUserName();
+            return _nyssContext.Users.SingleOrDefault(u => u.EmailAddress == userName);
         }
 
         public string GetCurrentUserName() =>

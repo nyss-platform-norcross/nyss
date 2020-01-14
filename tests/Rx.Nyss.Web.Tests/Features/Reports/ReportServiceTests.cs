@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _projectService.GetProjectHealthRiskNames(Arg.Any<int>()).Returns(Task.FromResult(Enumerable.Empty<HealthRiskDto>()));
 
             _authorizationService = Substitute.For<IAuthorizationService>();
-            _authorizationService.GetCurrentUser().Returns(new CurrentUser());
+            _authorizationService.GetCurrentUserName().Returns((string)null);
 
             _excelExportService = Substitute.For<IExcelExportService>();
             _stringsResourcesService = Substitute.For<IStringsResourcesService>();
