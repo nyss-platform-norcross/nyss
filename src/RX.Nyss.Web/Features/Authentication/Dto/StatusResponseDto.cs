@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace RX.Nyss.Web.Features.Authentication.Dto
+﻿namespace RX.Nyss.Web.Features.Authentication.Dto
 {
     public class StatusResponseDto
     {

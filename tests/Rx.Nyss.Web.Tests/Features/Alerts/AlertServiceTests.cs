@@ -1,13 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Extensions;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
+using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -75,6 +79,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task EscalateAlert_WhenAlertAcceptedReportCountIsLowerThanThreshold_ShouldReturnError()
         {
+            _alerts.First().Status = AlertStatus.Pending;
+
             _alerts.First().AlertReports = new List<AlertReport>
             {
                 new AlertReport { Report = new Report {
@@ -108,6 +114,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var smsText = "hey";
 
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
+
+            _alerts.First().Status = AlertStatus.Pending;
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
@@ -147,6 +155,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var smsText = "hey";
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
 
+            _alerts.First().Status = AlertStatus.Pending;
+
             _alerts.First().AlertReports = new List<AlertReport>
             {
                 new AlertReport { Report = new Report {
@@ -172,6 +182,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task EscalateAlert_WhenAlertMeetsTheCriteria_ChangesAlertStatus()
         {
+            _alerts.First().Status = AlertStatus.Pending;
+
             _alerts.First().AlertReports = new List<AlertReport>
             {
                 new AlertReport {
@@ -190,6 +202,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.EscalateAlert(TestData.AlertId);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Escalated);
+            _alerts.First().EscalatedAt.ShouldBe(_now);
+            _alerts.First().EscalatedBy.ShouldBe(_currentUser);
             await _nyssContext.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
         }
@@ -208,6 +222,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task DismissAlert_WhenAlertAcceptedReportAndPendingReportCountIsGreaterOrEqualToThreshold_ShouldReturnError()
         {
+            _alerts.First().Status = AlertStatus.Pending;
+
             _alerts.First().AlertReports = new List<AlertReport>
             {
                 new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } },
@@ -242,6 +258,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.DismissAlert(TestData.AlertId);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Dismissed);
+            _alerts.First().DismissedAt.ShouldBe(_now);
+            _alerts.First().DismissedBy.ShouldBe(_currentUser);
             await _nyssContext.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
         }
@@ -271,14 +289,154 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.CloseAlert(TestData.AlertId, comments);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Closed);
+            _alerts.First().ClosedAt.ShouldBe(_now);
+            _alerts.First().ClosedBy.ShouldBe(_currentUser);
             _alerts.First().Comments.ShouldBe(comments);
             await _nyssContext.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
         }
 
+        [Fact]
+        public async Task GetAlertLogs_ShouldMapAlertCreation()
+        {
+            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Items.ElementAt(0).Date.ShouldBe(TestData.AlertCreatedAt.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(0).LogType.ShouldBe(AlertLogResponseDto.LogType.TriggeredAlert);
+            result.Value.Items.ElementAt(0).UserName.ShouldBe(null);
+        }
+
+        [Fact]
+        public async Task GetAlertLogs_ShouldMapReportAcceptance()
+        {
+            var date = new DateTime(2020, 1, 5);
+            var userName = "User";
+            var user = new GlobalCoordinatorUser { Name = userName };
+
+            _alerts.First().AlertReports.First().Report.Status = ReportStatus.Accepted;
+            _alerts.First().AlertReports.First().Report.AcceptedAt = date;
+            _alerts.First().AlertReports.First().Report.AcceptedBy = user;
+
+            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.AcceptedReport);
+            result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
+        }
+
+        [Fact]
+        public async Task GetAlertLogs_ShouldMapReportDismissal()
+        {
+            var date = new DateTime(2020, 1, 5);
+            var userName = "User";
+            var user = new GlobalCoordinatorUser { Name = userName };
+
+            _alerts.First().AlertReports.First().Report.Status = ReportStatus.Rejected;
+            _alerts.First().AlertReports.First().Report.RejectedAt = date;
+            _alerts.First().AlertReports.First().Report.RejectedBy = user;
+
+            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.RejectedReport);
+            result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
+        }
+
+        [Fact]
+        public async Task GetAlertLogs_ShouldMapAlertEscalation()
+        {
+            var date = new DateTime(2020, 1, 5);
+            var userName = "User";
+            var user = new GlobalCoordinatorUser { Name = userName };
+
+            _alerts.First().Status = AlertStatus.Escalated;
+            _alerts.First().EscalatedAt = date;
+            _alerts.First().EscalatedBy = user;
+
+            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.EscalatedAlert);
+            result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
+        }
+
+        [Fact]
+        public async Task GetAlertLogs_ShouldMapAlertDismissal()
+        {
+            var date = new DateTime(2020, 1, 5);
+            var userName = "User";
+            var user = new GlobalCoordinatorUser { Name = userName };
+
+            _alerts.First().Status = AlertStatus.Dismissed;
+            _alerts.First().DismissedAt = date;
+            _alerts.First().DismissedBy = user;
+
+            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.DismissedAlert);
+            result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
+        }
+
+        [Fact]
+        public async Task GetAlertLogs_ShouldMapAlertClosure()
+        {
+            var date = new DateTime(2020, 1, 5);
+            var userName = "User";
+            var user = new GlobalCoordinatorUser { Name = userName };
+
+            _alerts.First().Status = AlertStatus.Closed;
+            _alerts.First().ClosedAt = date;
+            _alerts.First().ClosedBy = user;
+
+            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.ClosedAlert);
+            result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
+        }
+
+        [Fact]
+        public async Task GetAlertLogs_ShouldOrderItemsByDate()
+        {
+            var reportAcceptedAt = new DateTime(2020, 1, 5);
+            var escalatedAt = new DateTime(2020, 1, 10);
+            var closedAt = new DateTime(2020, 1, 15);
+            var user = new GlobalCoordinatorUser();
+
+            _alerts.First().Status = AlertStatus.Closed;
+            _alerts.First().EscalatedAt = escalatedAt;
+            _alerts.First().EscalatedBy = user;
+            _alerts.First().ClosedAt = closedAt;
+            _alerts.First().ClosedBy = user;
+
+            _alerts.First().AlertReports.First().Report.Status = ReportStatus.Accepted;
+            _alerts.First().AlertReports.First().Report.AcceptedAt = reportAcceptedAt;
+            _alerts.First().AlertReports.First().Report.AcceptedBy = user;
+
+            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Items.Count().ShouldBe(4);
+            result.Value.Items.ElementAt(0).Date.ShouldBe(TestData.AlertCreatedAt.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).Date.ShouldBe(reportAcceptedAt.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(2).Date.ShouldBe(escalatedAt.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(3).Date.ShouldBe(closedAt.ApplyTimeZone(TestData.TimeZone));
+        }
+
         private static class TestData
         {
             public const int AlertId = 1;
+            public static readonly DateTime AlertCreatedAt = new DateTime(2020, 1, 1);
+            public static readonly string TimeZoneName = "Dateline Standard Time";
+            public static readonly TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName);
+            public static readonly GlobalCoordinatorUser DefaultUser = new GlobalCoordinatorUser { Name = "DefaultUser" };
             public const int ReportId = 23;
             public const int ContentLanguageId = 4;
             public const int NationalSocietyId = 5;
@@ -294,6 +452,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                     new Alert
                     {
                         Id = AlertId,
+                        Status = AlertStatus.Escalated,
+                        CreatedAt = AlertCreatedAt,
+                        EscalatedBy = DefaultUser,
+                        DismissedBy = DefaultUser,
+                        ClosedBy = DefaultUser,
                         AlertReports = new List<AlertReport>
                         {
                             new AlertReport
@@ -301,7 +464,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 Report = new Report
                                 {
                                     Id = ReportId,
-                                    Status = ReportStatus.Accepted,
+                                    Status = ReportStatus.Pending,
+                                    AcceptedBy = DefaultUser,
+                                    RejectedBy = DefaultUser,
                                     Village = new Village(),
                                     RawReport = new RawReport
                                     {
@@ -329,7 +494,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             },
                             Project = new Project
                             {
-                                TimeZone = "Dateline Standard Time",
+                                TimeZone = TimeZoneName,
                                 EmailAlertRecipients = new List<EmailAlertRecipient>
                                 {
                                     new EmailAlertRecipient
