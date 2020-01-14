@@ -11,14 +11,14 @@ import Hidden from '@material-ui/core/Hidden';
 const BreadcrumbComponent = ({ breadcrumb, push }) => {
   const breadcrumbVisibleItems = breadcrumb.filter(b => !b.hidden);
 
-  const renderBreadcrumb = (items) => (
+  const renderBreadcrumb = (items, disableLastItem) => (
     <Breadcrumbs
       className={styles.container}
       separator={<NavigateNextIcon fontSize="small" color="primary" />}>
       {items.map((item, index) => (
         <div key={`breadcrumbItem${item.url}`} className={`${styles.item} ${item.isActive ? styles.selected : ""}`}>
           <div
-            onClick={() => index !== items.length - 1 ? push(item.url) : null}
+            onClick={() => (!disableLastItem || index !== items.length - 1) ? push(item.url) : null}
             className={styles.title}>
             {item.title}
           </div>
@@ -34,10 +34,10 @@ const BreadcrumbComponent = ({ breadcrumb, push }) => {
   return (
     <Fragment>
       <Hidden xsDown>
-        {renderBreadcrumb(breadcrumbVisibleItems)}
+        {renderBreadcrumb(breadcrumbVisibleItems, true)}
       </Hidden>
       <Hidden smUp>
-        {renderBreadcrumb(breadcrumbVisibleItems.slice(breadcrumbVisibleItems.length - 3, breadcrumbVisibleItems.length - 1))}
+        {renderBreadcrumb(breadcrumbVisibleItems.slice(breadcrumbVisibleItems.length - 3, breadcrumbVisibleItems.length - 1), false)}
       </Hidden>
     </Fragment>
   );
