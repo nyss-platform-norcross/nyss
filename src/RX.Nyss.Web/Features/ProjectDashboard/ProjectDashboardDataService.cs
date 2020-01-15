@@ -8,6 +8,7 @@ using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
@@ -528,7 +529,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
             return reports
                 .FromKnownDataCollector()
-                .FilterByDataCollectorType(filtersDto.ReportsType)
+                .FilterByDataCollectorType(MapToDataCollectorType(filtersDto.ReportsType))
                 .FilterReportsByProject(projectId)
                 .FilterReportsByDate(startDate, endDate);
         }
@@ -560,125 +561,19 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
             return _nyssContext.DataCollectors
                 .FilterDataCollectorsByArea(filtersDto.Area)
-                .FilterByDataCollectorType(filtersDto.ReportsType)
+                .FilterByDataCollectorType(MapToDataCollectorType(filtersDto.ReportsType))
                 .FilterDataCollectorsByProject(projectId)
                 .FilterDataCollectorsByTrainingMode(filtersDto.IsTraining)
                 .FilterOnlyNotDeleted()
                 .Count(dc => !activeDataCollectors.Contains(dc.Id));
         }
-    }
 
-    public static class DataCollectorQueryableExtensions
-    {
-        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByDate(this IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate) =>
-            reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
-
-        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByProject(this IQueryable<Nyss.Data.Models.Report> reports, int projectId) =>
-            reports.Where(r => r.DataCollector.Project.Id == projectId);
-
-        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByHealthRisk(this IQueryable<Nyss.Data.Models.Report> reports, int? healthRiskId) =>
-            reports.Where(r => !healthRiskId.HasValue || r.ProjectHealthRisk.HealthRiskId == healthRiskId.Value);
-
-        public static IQueryable<Nyss.Data.Models.Report> FilterByDataCollectorType(this IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto.ReportsTypeDto reportsType) =>
+        private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.ReportsTypeDto reportsType) =>
             reportsType switch
             {
-                FiltersRequestDto.ReportsTypeDto.DataCollector =>
-                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
-
-                FiltersRequestDto.ReportsTypeDto.DataCollectionPoint =>
-                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
-
-                _ =>
-                reports
+                FiltersRequestDto.ReportsTypeDto.DataCollector => DataCollectorType.Human,
+                FiltersRequestDto.ReportsTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
+                _ => null as DataCollectorType?
             };
-
-        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByRegion(this IQueryable<Nyss.Data.Models.Report> reports, AreaDto area) =>
-            area?.Type switch
-            {
-                AreaDto.AreaType.Region =>
-                reports.Where(r => r.Village.District.Region.Id == area.Id),
-
-                AreaDto.AreaType.District =>
-                reports.Where(r => r.Village.District.Id == area.Id),
-
-                AreaDto.AreaType.Village =>
-                reports.Where(r => r.Village.Id == area.Id),
-
-                AreaDto.AreaType.Zone =>
-                reports.Where(r => r.Zone.Id == area.Id),
-
-                _ =>
-                reports
-            };
-
-        public static IQueryable<Nyss.Data.Models.RawReport> FilterByDataCollectorType(this IQueryable<Nyss.Data.Models.RawReport> reports, FiltersRequestDto.ReportsTypeDto reportsType) =>
-            reportsType switch
-            {
-                FiltersRequestDto.ReportsTypeDto.DataCollector =>
-                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
-
-                FiltersRequestDto.ReportsTypeDto.DataCollectionPoint =>
-                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
-
-                _ =>
-                reports
-            };
-
-        public static IQueryable<Nyss.Data.Models.Report> AllSuccessfulReports(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
-            reports.Where(r => r.Report != null).Select(r => r.Report);
-
-
-        public static IQueryable<Nyss.Data.Models.RawReport> FilterReportsByDate(this IQueryable<Nyss.Data.Models.RawReport> reports, DateTime startDate, DateTime endDate) =>
-            reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
-
-        public static IQueryable<Nyss.Data.Models.RawReport> FilterReportsByProject(this IQueryable<Nyss.Data.Models.RawReport> reports, int projectId) =>
-            reports.Where(r => r.DataCollector.Project.Id == projectId);
-
-        public static IQueryable<Nyss.Data.Models.RawReport> OnlyErrorReports(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
-            reports.Where(r => r.ReportId == null);
-
-        public static IQueryable<Nyss.Data.Models.RawReport> FromKnownDataCollector(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
-            reports.Where(r => r.DataCollector != null);
-
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByDataCollectorType(this IQueryable<Nyss.Data.Models.DataCollector> reports, FiltersRequestDto.ReportsTypeDto reportsType) =>
-            reportsType switch
-            {
-                FiltersRequestDto.ReportsTypeDto.DataCollector =>
-                reports.Where(dc => dc.DataCollectorType == DataCollectorType.Human),
-
-                FiltersRequestDto.ReportsTypeDto.DataCollectionPoint =>
-                reports.Where(dc => dc.DataCollectorType == DataCollectorType.CollectionPoint),
-
-                _ =>
-                reports
-            };
-
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsByArea(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, AreaDto area) =>
-            area?.Type switch
-            {
-                AreaDto.AreaType.Region =>
-                dataCollectors.Where(dc => dc.Village.District.Region.Id == area.Id),
-
-                AreaDto.AreaType.District =>
-                dataCollectors.Where(dc => dc.Village.District.Id == area.Id),
-
-                AreaDto.AreaType.Village =>
-                dataCollectors.Where(dc => dc.Village.Id == area.Id),
-
-                AreaDto.AreaType.Zone =>
-                dataCollectors.Where(dc => dc.Zone.Id == area.Id),
-
-                _ =>
-                dataCollectors
-            };
-
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsByProject(this IQueryable<Nyss.Data.Models.DataCollector> reports, int projectId) =>
-            reports.Where(dc => dc.Project.Id == projectId);
-
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsByTrainingMode(this IQueryable<Nyss.Data.Models.DataCollector> reports, bool isInTraining) =>
-            reports.Where(dc => (isInTraining ? dc.IsInTrainingMode : !dc.IsInTrainingMode));
-
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterOnlyNotDeleted(this IQueryable<Nyss.Data.Models.DataCollector> reports) =>
-            reports.Where(dc => !dc.DeletedAt.HasValue);
     }
 }
