@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using RX.Nyss.Common.Configuration;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Utils;
@@ -25,13 +26,13 @@ namespace RX.Nyss.Web.Services.Geolocation
         private const string CustomUserAgent = "Geo";
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IConfig _config;
+        private readonly IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> _config;
         private readonly IInMemoryCache _inMemoryCache;
 
         public GeolocationService(
             IHttpClientFactory httpClientFactory,
             ILoggerAdapter loggerAdapter,
-            IConfig config,
+            IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> config,
             IInMemoryCache inMemoryCache)
         {
             _httpClientFactory = httpClientFactory;

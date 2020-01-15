@@ -10,6 +10,7 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 using RX.Nyss.Web.Utils.Logging;
+using RX.Nyss.Common.Configuration;
 
 namespace RX.Nyss.Web.Services
 {
@@ -29,12 +30,12 @@ namespace RX.Nyss.Web.Services
         private readonly UserManager<IdentityUser> _userManager;
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IConfig _config;
+        private readonly IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> _config;
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
 
         public IdentityUserRegistrationService(UserManager<IdentityUser> userManager,
-            ILoggerAdapter loggerAdapter, IConfig config, IEmailPublisherService emailPublisherService, INyssContext nyssContext, IEmailTextGeneratorService emailTextGeneratorService)
+            ILoggerAdapter loggerAdapter, IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> config, IEmailPublisherService emailPublisherService, INyssContext nyssContext, IEmailTextGeneratorService emailTextGeneratorService)
         {
             _userManager = userManager;
             _loggerAdapter = loggerAdapter;

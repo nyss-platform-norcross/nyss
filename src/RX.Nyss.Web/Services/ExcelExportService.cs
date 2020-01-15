@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation.Internal;
+using RX.Nyss.Common.Configuration;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
@@ -16,9 +17,9 @@ namespace RX.Nyss.Web.Services
 
     public class ExcelExportService: IExcelExportService
     {
-        private readonly IConfig _config;
+        private readonly IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> _config;
 
-        public ExcelExportService(IConfig config)
+        public ExcelExportService(IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> config)
         {
             _config = config;
         }

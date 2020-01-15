@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Utils;
 using RX.Nyss.Web.Utils.DataContract;
@@ -15,10 +17,10 @@ namespace RX.Nyss.Web.Services
     public class SmsGatewayBlobProvider : ISmsGatewayBlobProvider
     {
         private readonly BlobProvider _blobProvider;
-        private readonly IConfig _config;
+        private readonly IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> _config;
         private readonly ILoggerAdapter _loggerAdapter;
 
-        public SmsGatewayBlobProvider(IConfig config, ILoggerAdapter loggerAdapter)
+        public SmsGatewayBlobProvider(IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> config, ILoggerAdapter loggerAdapter)
         {
             _config = config;
             _loggerAdapter = loggerAdapter;

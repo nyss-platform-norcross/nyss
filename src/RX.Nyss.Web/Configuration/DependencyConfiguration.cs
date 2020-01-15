@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.OpenApi.Models;
+using RX.Nyss.Common.Configuration;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.Alerts.Access;
@@ -99,7 +100,7 @@ namespace RX.Nyss.Web.Configuration
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
             });
-            
+
             RegisterAuthorizationPolicies(serviceCollection);
 
             serviceCollection.ConfigureApplicationCookie(options =>
@@ -159,7 +160,7 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.TechnicalAdvisorAccess.ToString(),
                     policy => policy.Requirements.Add(new TechnicalAdvisorAccessHandler.Requirement()));
-                    
+
                 options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
                     policy => policy.Requirements.Add(new SmsGatewayAccessHandler.Requirement()));
 
@@ -252,7 +253,7 @@ namespace RX.Nyss.Web.Configuration
 
         private static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssConfig config)
         {
-            serviceCollection.AddSingleton<IConfig>(config);
+            serviceCollection.AddSingleton<IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions>>(config);
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 

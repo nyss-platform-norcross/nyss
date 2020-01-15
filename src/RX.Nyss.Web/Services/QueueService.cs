@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
+using RX.Nyss.Common.Configuration;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
@@ -13,9 +14,9 @@ namespace RX.Nyss.Web.Services
 
     public class QueueService : IQueueService
     {
-        private readonly IConfig _config;
+        private readonly IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> _config;
 
-        public QueueService(IConfig config)
+        public QueueService(IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> config)
         {
             _config = config;
         }
