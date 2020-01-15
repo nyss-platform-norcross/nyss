@@ -43,11 +43,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto)
         {
-            var allReports = GetFilteredReportsForAllHealthRisks(projectId, filtersDto);
-            var allErrorReports = GetFilteredErrorReports(projectId, filtersDto);
-            var healthRiskReports = allReports
-                .Where(r => !r.MarkedAsError)
-                .FilterReportsByHealthRisk(filtersDto.HealthRiskId)
+            var allReports = GetAllReportsForProject(projectId, filtersDto);
+            // var allErrorReports = GetAllReportsForProject(projectId, filtersDto);
+            var healthRiskReports = GetFilteredReports(projectId, filtersDto)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
             var dataCollectionPointReports = healthRiskReports.Where(r => r.DataCollectionPointCase != null);
 
@@ -57,11 +55,10 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 {
                     ReportCount = healthRiskReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = allReports
-                        .Where(r => r.DataCollector.Name != Anonymization.Text && r.DataCollector.DeletedAt == null)
+                        .Where(r => r.DataCollector.DeletedAt == null)
                         .Select(r => r.DataCollector.Id)
-                        .Union(allErrorReports.FromKnownDataCollector().Select(er => er.DataCollector.Id))
                         .Distinct().Count(),
-                    InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, allReports, allErrorReports, filtersDto),
+                    InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, allReports, filtersDto),
                     DataCollectionPointSummary = new DataCollectionPointsSummaryResponse
                         {
                             FromOtherVillagesCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.FromOtherVillagesCount ?? 0),
@@ -516,26 +513,13 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         }
 
         private IQueryable<Nyss.Data.Models.Report> GetFilteredReports(int projectId, FiltersRequestDto filtersDto) =>
-            GetFilteredReportsForAllHealthRisks(projectId, filtersDto)
+            GetAllReportsForProject(projectId, filtersDto)
+                .AllSuccessfulReports()
+                .FilterReportsByRegion(filtersDto.Area)
                 .Where(r => !r.MarkedAsError)
                 .FilterReportsByHealthRisk(filtersDto.HealthRiskId);
 
-        private IQueryable<Nyss.Data.Models.Report> GetFilteredReportsForAllHealthRisks(int projectId, FiltersRequestDto filtersDto)
-        {
-            var startDate = filtersDto.StartDate.Date;
-            var endDate = filtersDto.EndDate.Date.AddDays(1);
-            var reports = _nyssContext.Reports
-                .Where(r => filtersDto.IsTraining ?
-                    r.IsTraining :
-                    !r.IsTraining);
-
-            return FilterReportsByRegion(reports, filtersDto.Area)
-                .FilterByDataCollectorType(filtersDto.ReportsType)
-                .FilterReportsByDate(startDate, endDate)
-                .FilterReportsByProject(projectId);
-        }
-
-        private IQueryable<Nyss.Data.Models.RawReport> GetFilteredErrorReports(int projectId, FiltersRequestDto filtersDto)
+        private IQueryable<Nyss.Data.Models.RawReport> GetAllReportsForProject(int projectId, FiltersRequestDto filtersDto)
         {
             var startDate = filtersDto.StartDate.Date;
             var endDate = filtersDto.EndDate.Date.AddDays(1);
@@ -544,12 +528,12 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
             return reports
                 .FromKnownDataCollector()
-                .OnlyErrorReports()
+                .FilterByDataCollectorType(filtersDto.ReportsType)
                 .FilterReportsByProject(projectId)
                 .FilterReportsByDate(startDate, endDate);
         }
 
-        private static IQueryable<Nyss.Data.Models.Report> FilterReportsByRegion(IQueryable<Nyss.Data.Models.Report> reports, FiltersRequestDto.AreaDto area) =>
+        private static IQueryable<Nyss.Data.Models.Report> FilterReportsByRegion(IQueryable<Nyss.Data.Models.Report> reports, AreaDto area) =>
             area?.Type switch
             {
                 AreaDto.AreaType.Region =>
@@ -568,11 +552,10 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 reports
             };
 
-        private int InactiveDataCollectorCount(int projectId, IQueryable<Nyss.Data.Models.Report> reports, IQueryable<Nyss.Data.Models.RawReport> errorReports, FiltersRequestDto filtersDto)
+        private int InactiveDataCollectorCount(int projectId, IQueryable<Nyss.Data.Models.RawReport> reports, FiltersRequestDto filtersDto)
         {
             var activeDataCollectors = reports
                 .Select(r => r.DataCollector.Id)
-                .Union(errorReports.FromKnownDataCollector().Select(r => r.DataCollector.Id))
                 .Distinct();
 
             return _nyssContext.DataCollectors
@@ -609,6 +592,42 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 reports
             };
 
+        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByRegion(this IQueryable<Nyss.Data.Models.Report> reports, AreaDto area) =>
+            area?.Type switch
+            {
+                AreaDto.AreaType.Region =>
+                reports.Where(r => r.Village.District.Region.Id == area.Id),
+
+                AreaDto.AreaType.District =>
+                reports.Where(r => r.Village.District.Id == area.Id),
+
+                AreaDto.AreaType.Village =>
+                reports.Where(r => r.Village.Id == area.Id),
+
+                AreaDto.AreaType.Zone =>
+                reports.Where(r => r.Zone.Id == area.Id),
+
+                _ =>
+                reports
+            };
+
+        public static IQueryable<Nyss.Data.Models.RawReport> FilterByDataCollectorType(this IQueryable<Nyss.Data.Models.RawReport> reports, FiltersRequestDto.ReportsTypeDto reportsType) =>
+            reportsType switch
+            {
+                FiltersRequestDto.ReportsTypeDto.DataCollector =>
+                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
+
+                FiltersRequestDto.ReportsTypeDto.DataCollectionPoint =>
+                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
+
+                _ =>
+                reports
+            };
+
+        public static IQueryable<Nyss.Data.Models.Report> AllSuccessfulReports(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
+            reports.Where(r => r.Report != null).Select(r => r.Report);
+
+
         public static IQueryable<Nyss.Data.Models.RawReport> FilterReportsByDate(this IQueryable<Nyss.Data.Models.RawReport> reports, DateTime startDate, DateTime endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 
@@ -619,7 +638,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             reports.Where(r => r.ReportId == null);
 
         public static IQueryable<Nyss.Data.Models.RawReport> FromKnownDataCollector(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
-            reports.Where(r => r.DataCollector.Id > 0);
+            reports.Where(r => r.DataCollector != null);
 
         public static IQueryable<Nyss.Data.Models.DataCollector> FilterByDataCollectorType(this IQueryable<Nyss.Data.Models.DataCollector> reports, FiltersRequestDto.ReportsTypeDto reportsType) =>
             reportsType switch
