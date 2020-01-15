@@ -21,7 +21,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly INyssContext _nyssContext;
         private readonly ProjectDashboardTestData _testData;
-        private readonly IConfig _config;
+        private INyssConfig _config;
 
         public ProjectDashboardDataServiceTests()
         {
@@ -29,7 +29,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             _testData = new ProjectDashboardTestData(_dateTimeProvider);
 
             _nyssContext = _testData.GetNyssContextMock();
-            _config = Substitute.For<IConfig>();
+            _config = Substitute.For<INyssConfig>();
             _projectDashboardDataService = new ProjectDashboardDataService(_nyssContext,_dateTimeProvider, _config);
         }
 
@@ -523,7 +523,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         {
             var numberOfGroupedVillagesInProjectDashboard = 3;
 
-            _config.View.Returns(new NyssConfig.ViewOptions
+            _config.View.Returns(new ConfigSingleton.ViewOptions
             {
                 NumberOfGroupedVillagesInProjectDashboard = numberOfGroupedVillagesInProjectDashboard
             });

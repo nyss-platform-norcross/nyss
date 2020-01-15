@@ -16,6 +16,7 @@ namespace RX.Nyss.Web.Services
     public class EmailTextGeneratorService : IEmailTextGeneratorService
     {
         private readonly IStringsResourcesService _stringsResourcesService;
+
         public EmailTextGeneratorService(IStringsResourcesService stringsResourcesService)
         {
             _stringsResourcesService = stringsResourcesService;
@@ -37,6 +38,7 @@ namespace RX.Nyss.Web.Services
             {
                 throw new Exception($"Could not find translations for email.reset.subject with language: {languageCode}");
             }
+
             if (!emailContents.Value.TryGetValue("email.reset.body", out var body))
             {
                 throw new Exception($"Could not find translations for email.reset.body with language: {languageCode}");
@@ -57,6 +59,7 @@ namespace RX.Nyss.Web.Services
             {
                 throw new Exception($"Could not find translations for email.verification.subject with language: {languageCode}");
             }
+
             if (!emailContents.Value.TryGetValue("email.verification.body", out var body))
             {
                 throw new Exception($"Could not find translations for email.verification.body with language: {languageCode}");

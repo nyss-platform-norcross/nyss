@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Concepts;
@@ -30,7 +32,7 @@ namespace RX.Nyss.Web.Features.Report
 
     public class ReportService : IReportService
     {
-        private readonly IConfig _config;
+        private readonly INyssConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
         private readonly IProjectService _projectService;
@@ -38,14 +40,7 @@ namespace RX.Nyss.Web.Features.Report
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
 
-        public ReportService(
-            INyssContext nyssContext,
-            IUserService userService,
-            IProjectService projectService,
-            IConfig config,
-            IAuthorizationService authorizationService,
-            IExcelExportService excelExportService,
-            IStringsResourcesService stringsResourcesService)
+        public ReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INyssConfig config, IAuthorizationService authorizationService, IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _userService = userService;

@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Configuration;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.AppData.Dto;
@@ -17,11 +18,11 @@ namespace RX.Nyss.Web.Features.AppData
     public class AppDataService : IAppDataService
     {
         private readonly INyssContext _nyssContext;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
 
         public AppDataService(
             INyssContext context, 
-            IConfig config)
+            INyssWebConfig config)
         {
             _nyssContext = context;
             _config = config;

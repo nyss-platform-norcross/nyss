@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.NationalSociety;
@@ -10,7 +11,6 @@ using RX.Nyss.Web.Features.NationalSociety.Access;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 

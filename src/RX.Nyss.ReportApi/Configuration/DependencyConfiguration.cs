@@ -22,17 +22,16 @@ namespace RX.Nyss.ReportApi.Configuration
     {
         public static void ConfigureDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            var config = configuration.Get<NyssReportApiConfig>();
-            var blobConfig = configuration.Get<BlobConfig>();
+            var config = configuration.Get<ConfigSingleton>();
             RegisterLogger(serviceCollection, config.Logging, configuration);
             RegisterDatabases(serviceCollection, config.ConnectionStrings);
             RegisterWebFramework(serviceCollection);
             RegisterSwagger(serviceCollection);
-            RegisterServiceCollection(serviceCollection, config, blobConfig);
+            RegisterServiceCollection(serviceCollection, config);
         }
 
         private static void RegisterLogger(IServiceCollection serviceCollection,
-            NyssReportApiConfig.LoggingOptions loggingOptions, IConfiguration configuration)
+            ILoggingOptions loggingOptions, IConfiguration configuration)
         {
             const string applicationInsightsEnvironmentVariable = "APPINSIGHTS_INSTRUMENTATIONKEY";
             var appInsightsInstrumentationKey = configuration[applicationInsightsEnvironmentVariable];
@@ -46,7 +45,7 @@ namespace RX.Nyss.ReportApi.Configuration
             }
         }
 
-        private static void RegisterDatabases(IServiceCollection serviceCollection, NyssReportApiConfig.ConnectionStringOptions connectionStringOptions) =>
+        private static void RegisterDatabases(IServiceCollection serviceCollection, IConnectionStringOptions connectionStringOptions) =>
             serviceCollection.AddDbContext<NyssContext>(options =>
                 options.UseSqlServer(connectionStringOptions.NyssDatabase,
                     x => x.UseNetTopologySuite()));
@@ -86,10 +85,10 @@ namespace RX.Nyss.ReportApi.Configuration
                 c.IncludeXmlComments(xmlPath);
             });
 
-        private static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssReportApiConfig nyssReportApiConfig, BlobConfig blobConfig)
+        private static void RegisterServiceCollection(IServiceCollection serviceCollection, ConfigSingleton nyssReportApiConfig)
         {
-            serviceCollection.AddSingleton<IConfig<NyssReportApiConfig.ConnectionStringOptions, NyssReportApiConfig.ServiceBusQueuesOptions>>(nyssReportApiConfig);
-            serviceCollection.AddSingleton<IConfig<BlobConfig.ConnectionStringOptions, BlobConfig.ServiceBusQueuesOptions>>(blobConfig);
+            serviceCollection.AddSingleton<IConfig>(nyssReportApiConfig);
+            serviceCollection.AddSingleton<INyssReportApiConfig>(nyssReportApiConfig);
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 

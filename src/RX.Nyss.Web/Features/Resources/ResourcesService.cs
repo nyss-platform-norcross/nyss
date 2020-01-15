@@ -21,12 +21,12 @@ namespace RX.Nyss.Web.Features.Resources
     {
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly INyssContext _nyssContext;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
 
         public ResourcesService(
             IStringsResourcesService stringsResourcesService,
             INyssContext nyssContext,
-            IConfig config)
+            INyssWebConfig config)
         {
             _stringsResourcesService = stringsResourcesService;
             _nyssContext = nyssContext;

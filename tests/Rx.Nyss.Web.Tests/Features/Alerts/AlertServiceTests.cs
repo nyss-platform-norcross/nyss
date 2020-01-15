@@ -6,6 +6,7 @@ using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -15,7 +16,6 @@ using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _emailPublisherService = Substitute.For<IEmailPublisherService>();
             var emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
             _smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
-            var config = Substitute.For<IConfig>();
+            var config = Substitute.For<INyssWebConfig>();
             var loggerAdapter = Substitute.For<ILoggerAdapter>();
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();

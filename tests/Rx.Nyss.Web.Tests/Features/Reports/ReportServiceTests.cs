@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IProjectService _projectService;
         private readonly IReportService _reportService;
         private readonly INyssContext _nyssContextMock;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
         private readonly IAuthorizationService _authorizationService;
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
@@ -42,7 +42,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         {
             _nyssContextMock = Substitute.For<INyssContext>();
 
-            _config = Substitute.For<IConfig>();
+            _config = Substitute.For<INyssWebConfig>();
             _config.PaginationRowsPerPage.Returns(_rowsPerPage);
 
             _userService = Substitute.For<IUserService>();

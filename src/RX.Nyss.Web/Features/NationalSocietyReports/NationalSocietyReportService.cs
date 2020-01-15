@@ -26,14 +26,14 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 
     public class NationalSocietyReportService : INationalSocietyReportService
     {
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
         private readonly IProjectService _projectService;
         private readonly INationalSocietyService _nationalSocietyService;
         private readonly IAuthorizationService _authorizationService;
 
-        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INationalSocietyService nationalSocietyService, IConfig config, IAuthorizationService authorizationService)
+        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INationalSocietyService nationalSocietyService, INyssConfig config, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _userService = userService;

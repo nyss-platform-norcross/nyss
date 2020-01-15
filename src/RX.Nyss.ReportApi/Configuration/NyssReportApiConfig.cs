@@ -2,44 +2,29 @@ using RX.Nyss.Common.Configuration;
 
 namespace RX.Nyss.ReportApi.Configuration
 {
-    public interface INyssReportApiConfig : IConfig<NyssReportApiConfig.ConnectionStringOptions, NyssReportApiConfig.ServiceBusQueuesOptions>, ILoggingConfig<NyssReportApiConfig.LoggingOptions>
+    public interface INyssReportApiConfig : IConfig
     {
         string BaseUrl { get; set; }
     }
 
-    public class NyssReportApiConfig : INyssReportApiConfig
+    public class ConfigSingleton : INyssReportApiConfig
     {
         public string BaseUrl { get; set; }
 
-        public NyssReportApiConfig.LoggingOptions Logging { get; set; }
+        public LoggingOptions Logging { get; set; }
 
-        public NyssReportApiConfig.ConnectionStringOptions ConnectionStrings { get; set; }
+        public ConnectionStringOptions ConnectionStrings { get; set; }
 
-        public NyssReportApiConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
+        public ServiceBusQueuesOptions ServiceBusQueues { get; set; }
 
         public string GeneralBlobContainerName { get; set; }
 
+        public string SmsGatewayBlobContainerName { get; set; }
+
         public string StringsResourcesBlobObjectName { get; set; }
 
+        public string EmailContentResourcesBlobObjectName { get; set; }
+
         public string SmsContentResourcesBlobObjectName { get; set; }
-
-        public class ConnectionStringOptions : IConnectionStringOptions
-        {
-            public string NyssDatabase { get; set; }
-            public string ServiceBus { get; set; }
-            public string GeneralBlobContainer { get; set; }
-        }
-
-        public class LoggingOptions : ILoggingOptions
-        {
-            public string LogsLocation { get; set; }
-            public string LogMessageTemplate { get; set; }
-            public string LogFile { get; set; }
-        }
-
-        public class ServiceBusQueuesOptions : IServiceBusQueuesOptions
-        {
-            public string SendEmailQueue { get; set; }
-        }
     }
 }

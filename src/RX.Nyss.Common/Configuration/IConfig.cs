@@ -1,13 +1,9 @@
 namespace RX.Nyss.Common.Configuration
 {
-    public interface IConfig<TConnectionStringOptions, TServiceBusQueuesOptions>
-        where TConnectionStringOptions : IConnectionStringOptions
-        where TServiceBusQueuesOptions : IServiceBusQueuesOptions
+    public interface IConfig : IBlobConfig
     {
-        string GeneralBlobContainerName { get; set; }
-        string StringsResourcesBlobObjectName { get; set; }
-        string SmsContentResourcesBlobObjectName { get; set; }
-        TConnectionStringOptions ConnectionStrings { get; set; }
-        TServiceBusQueuesOptions ServiceBusQueues { get; set; }
+        public ConnectionStringOptions ConnectionStrings { get; set; }
+        public LoggingOptions Logging { get; set; }
+        public ServiceBusQueuesOptions ServiceBusQueues { get; set; }
     }
 }

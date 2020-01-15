@@ -17,9 +17,9 @@ namespace RX.Nyss.Web.Services
 
     public class ExcelExportService: IExcelExportService
     {
-        private readonly IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> _config;
+        private readonly INyssWebConfig _config;
 
-        public ExcelExportService(IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> config)
+        public ExcelExportService(INyssWebConfig config)
         {
             _config = config;
         }

@@ -2,20 +2,19 @@
 
 namespace RX.Nyss.Web.Configuration
 {
-    public interface INyssConfig : IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions>, ILoggingConfig<NyssConfig.LoggingOptions>
+    public interface INyssWebConfig : IConfig
     {
         string BaseUrl { get; set; }
         string Environment { get; set; }
         bool IsProduction { get; }
         string AuthorizedApiKeysBlobObjectName { get; set; }
-        string EmailContentResourcesBlobObjectName { get; set; }
         int PaginationRowsPerPage { get; set; }
-        NyssConfig.AuthenticationOptions Authentication { get; set; }
-        NyssConfig.ExportOptions Export { get; set; }
-        NyssConfig.ViewOptions View { get; set; }
+        ConfigSingleton.AuthenticationOptions Authentication { get; set; }
+        ConfigSingleton.ExportOptions Export { get; set; }
+        ConfigSingleton.ViewOptions View { get; set; }
     }
 
-    public class NyssConfig : INyssConfig
+    public class ConfigSingleton : INyssWebConfig
     {
         public string BaseUrl { get; set; }
 
@@ -39,42 +38,20 @@ namespace RX.Nyss.Web.Configuration
 
         public LoggingOptions Logging { get; set; }
 
-        public NyssConfig.ConnectionStringOptions ConnectionStrings { get; set; }
-
-        public AuthenticationOptions Authentication { get; set; }
+        public ConnectionStringOptions ConnectionStrings { get; set; }
 
         public ServiceBusQueuesOptions ServiceBusQueues { get; set; }
+
+        public AuthenticationOptions Authentication { get; set; }
 
         public ExportOptions Export { get; set; }
 
         public ViewOptions View { get; set; }
 
-        public class LoggingOptions : ILoggingOptions
-        {
-            public string LogsLocation { get; set; }
-            public string LogMessageTemplate { get; set; }
-            public string LogFile { get; set; }
-        }
-
         public class AuthenticationOptions
         {
             public string CookieName { get; set; }
             public int CookieExpirationTime { get; set; }
-        }
-
-        public class ConnectionStringOptions : IConnectionStringOptions
-        {
-            public string NyssDatabase { get; set; }
-            public string ServiceBus { get; set; }
-            public string GeneralBlobContainer { get; set; }
-            public string SmsGatewayBlobContainer { get; set; }
-            public string Nominatim { get; set; }
-        }
-
-        public class ServiceBusQueuesOptions : IServiceBusQueuesOptions
-        {
-            public string SendEmailQueue { get; set; }
-            public string ReportDismissalQueue { get; set; }
         }
 
         public class ExportOptions

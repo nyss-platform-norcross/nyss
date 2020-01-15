@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Configuration
@@ -21,6 +21,7 @@ namespace RX.Nyss.Web.Configuration
                 context.Response.ContentType = "application/json";
 
                 var contextFeature = context.Features.Get<IExceptionHandlerFeature>();
+
                 if (contextFeature != null)
                 {
                     var logger = context.RequestServices.GetService(typeof(ILoggerAdapter)) as ILoggerAdapter;

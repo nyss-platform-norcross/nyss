@@ -4,7 +4,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
-using RX.Nyss.Common.Configuration;
 using RX.Nyss.ReportApi.Configuration;
 
 namespace RX.Nyss.ReportApi.Services
@@ -18,7 +17,7 @@ namespace RX.Nyss.ReportApi.Services
     {
         private readonly IQueueClient _queueClient;
 
-        public EmailToSmsPublisherService(IConfig<NyssReportApiConfig.ConnectionStringOptions, NyssReportApiConfig.ServiceBusQueuesOptions> config)
+        public EmailToSmsPublisherService(INyssReportApiConfig config)
         {
             _queueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
         }

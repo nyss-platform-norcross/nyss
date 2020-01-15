@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using RX.Nyss.Web.Services;
+using RX.Nyss.Common.Services;
 using RX.Nyss.Web.Services.StringsResources;
 using Shouldly;
 using Xunit;

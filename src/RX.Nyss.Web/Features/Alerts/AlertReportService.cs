@@ -1,7 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using RX.Nyss.Common.Utils;
+using RX.Nyss.Common;
+using RX.Nyss.Common.Configuration;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -22,7 +23,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
     public class AlertReportService : IAlertReportService
     {
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IAlertService _alertService;
         private readonly IQueueService _queueService;
@@ -30,7 +31,7 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly IAuthorizationService _authorizationService;
 
         public AlertReportService(
-            IConfig config,
+            INyssWebConfig config,
             INyssContext nyssContext,
             IAlertService alertService,
             IQueueService queueService,

@@ -14,13 +14,12 @@ namespace RX.Nyss.Web.Services
 
     public class EmailPublisherService : IEmailPublisherService
     {
-        private readonly IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> _config;
         private readonly QueueClient _queueClient;
 
-        public EmailPublisherService(IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions> config)
+        public EmailPublisherService(INyssWebConfig config)
         {
-            _config = config;
-            _queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, _config.ServiceBusQueues.SendEmailQueue);
+            var config1 = config;
+            _queueClient = new QueueClient(config1.ConnectionStrings.ServiceBus, config1.ServiceBusQueues.SendEmailQueue);
         }
 
         public async Task SendEmail((string email, string name) to, string subject, string body, bool sendAsTextOnly = false)
