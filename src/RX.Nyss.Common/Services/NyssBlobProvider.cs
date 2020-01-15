@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using RX.Nyss.ReportApi.Configuration;
-using RX.Nyss.ReportApi.Utils;
+using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Utils;
 
-namespace RX.Nyss.ReportApi.Services
+namespace RX.Nyss.Common.Services
 {
     public interface INyssBlobProvider
     {
@@ -11,10 +11,10 @@ namespace RX.Nyss.ReportApi.Services
 
     public class NyssBlobProvider : INyssBlobProvider
     {
-        private readonly IConfig _config;
+        private readonly IConfig<BlobConfig.ConnectionStringOptions> _config;
         private readonly BlobProvider _blobProvider;
 
-        public NyssBlobProvider(IConfig config)
+        public NyssBlobProvider(IConfig<BlobConfig.ConnectionStringOptions> config)
         {
             _config = config;
             _blobProvider = new BlobProvider(config.GeneralBlobContainerName, config.ConnectionStrings.GeneralBlobContainer);

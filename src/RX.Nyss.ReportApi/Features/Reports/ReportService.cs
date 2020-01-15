@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.ReportApi.Features.Alerts;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Handlers;
-using RX.Nyss.ReportApi.Utils.Logging;
+// using RX.Nyss.ReportApi.Utils.Logging;
 
 namespace RX.Nyss.ReportApi.Features.Reports
 {

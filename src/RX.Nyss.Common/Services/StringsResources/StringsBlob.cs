@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace RX.Nyss.ReportApi.Services.StringsResources
+namespace RX.Nyss.Common.Services.StringsResources
 {
     public class StringsBlob
     {

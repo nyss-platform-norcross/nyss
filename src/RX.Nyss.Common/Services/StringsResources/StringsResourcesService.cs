@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using RX.Nyss.ReportApi.Utils.DataContract;
-using static RX.Nyss.ReportApi.Utils.DataContract.Result;
+using RX.Nyss.Common.Utils.DataContract;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
-namespace RX.Nyss.ReportApi.Services.StringsResources
+namespace RX.Nyss.Common.Services.StringsResources
 {
     public interface IStringsResourcesService
     {

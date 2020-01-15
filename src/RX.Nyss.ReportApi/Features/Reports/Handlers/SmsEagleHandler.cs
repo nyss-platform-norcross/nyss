@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Transactions;
 using System.Web;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -15,9 +17,9 @@ using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 using RX.Nyss.ReportApi.Services;
-using RX.Nyss.ReportApi.Services.StringsResources;
+// using RX.Nyss.ReportApi.Services.StringsResources;
 using RX.Nyss.ReportApi.Utils;
-using RX.Nyss.ReportApi.Utils.Logging;
+// using RX.Nyss.ReportApi.Utils.Logging;
 using static RX.Nyss.ReportApi.Utils.DataContract.SmsContentKey;
 
 namespace RX.Nyss.ReportApi.Features.Reports.Handlers

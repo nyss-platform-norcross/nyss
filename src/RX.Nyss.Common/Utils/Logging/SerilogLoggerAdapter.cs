@@ -1,7 +1,7 @@
 ﻿using System;
 using Serilog;
 
-namespace RX.Nyss.ReportApi.Utils.Logging
+namespace RX.Nyss.Common.Utils.Logging
 {
     public class SerilogLoggerAdapter : ILoggerAdapter
     {
@@ -25,7 +25,7 @@ namespace RX.Nyss.ReportApi.Utils.Logging
         public void WarnFormat(string format, params object[] args) => _logger.Warning(string.Format(format, args));
 
         public void Error(object obj) => _logger.Error(obj?.ToString());
-        
+
         public void Error(Exception exception, string message) => _logger.Error(exception, message);
 
         public void ErrorFormat(string format, params object[] args) => _logger.Error(string.Format(format, args));

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Services;
-using RX.Nyss.ReportApi.Utils.Logging;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
 {
@@ -26,10 +27,11 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         private readonly IReportLabelingService _reportLabelingService;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
-        private readonly IConfig _config;
+        private readonly INyssReportApiConfig _config;
 
 
-        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IEmailToSmsPublisherService emailToSmsPublisherService, IConfig config)
+        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IEmailToSmsPublisherService emailToSmsPublisherService,
+            INyssReportApiConfig config)
         {
             _nyssContext = nyssContext;
             _reportLabelingService = reportLabelingService;
