@@ -24,24 +24,11 @@ function* openReportsList({ projectId }) {
     yield openReportsModule(projectId);
 
     const filtersData = yield call(http.get, `/api/report/filters?projectId=${projectId}`);
-    const filters = (yield select(state => state.reports.filters)) ||
-    {
-      reportsType: ReportListType.main,
-      area: null,
-      healthRiskId: null,
-      status: true,
-      isTraining: false
-    };
-    const sorting = (yield select(state => state.reports.sorting)) ||
-    {
-      orderBy: DateColumnName,
-      sortAscending: false
-    };
 
     if (listStale) {
-      yield call(getReports, { projectId, filters, sorting });
+      yield call(getReports, { projectId });
     }
-
+    
     yield put(actions.openList.success(projectId, filtersData.value));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
@@ -49,11 +36,27 @@ function* openReportsList({ projectId }) {
 };
 
 function* getReports({ projectId, pageNumber, filters, sorting }) {
+  const requestFilters = filters || (yield select(state => state.reports.filters)) ||
+  {
+    reportsType: ReportListType.main,
+    area: null,
+    healthRiskId: null,
+    status: true,
+    isTraining: false
+  };
+  const requestSorting = sorting || (yield select(state => state.reports.sorting)) ||
+  {
+    orderBy: DateColumnName,
+    sortAscending: false
+  };
+
+  const page = pageNumber || (yield select(state => state.reports.paginatedListData && state.reports.paginatedListData.page)) || 1;
+
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`, { ...filters, ...sorting });
+    const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${page}`, { ...requestFilters, ...requestSorting });
     http.ensureResponseIsSuccess(response);
-    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters, sorting));
+    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, requestFilters, requestSorting));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }
@@ -90,11 +93,16 @@ function* openReportsModule(projectId) {
 }
 
 function* markAsError({ reportId }) {
+  const projectId = yield select(state => state.appData.route.params.projectId)
+
   yield put(actions.markAsError.request());
   try {
     yield call(http.post, `/api/report/${reportId}/markAsError`);
     yield put(actions.markAsError.success());
     yield put(appActions.showMessage(stringKeys.reports.list.successfulyMarkedAsError));
+
+    yield call(getReports, { projectId });
+    
   } catch (error) {
     yield put(actions.markAsError.failure());
   }

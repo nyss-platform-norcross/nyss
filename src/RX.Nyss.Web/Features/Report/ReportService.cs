@@ -27,7 +27,6 @@ namespace RX.Nyss.Web.Features.Report
         Task<Result<ReportListFilterResponseDto>> GetReportFilters(int nationalSocietyId);
         Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter);
         Task<Result> MarkAsError(int reportId);
-        Task<Result> UnmarkAsError(int reportId);
     }
 
     public class ReportService : IReportService
@@ -313,12 +312,6 @@ namespace RX.Nyss.Web.Features.Report
 
         private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
             stringResources.Keys.Contains(key) ? stringResources[key] : key;
-
-        public async Task<Result> UnmarkAsError(int reportId)
-        {
-            await SetMarkedAsError(reportId, false);
-            return Success();
-        }
 
         public async Task<Result> MarkAsError(int reportId)
         {
