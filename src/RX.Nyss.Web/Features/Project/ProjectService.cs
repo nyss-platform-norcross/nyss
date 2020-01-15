@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -12,9 +13,7 @@ using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Utils;
-using RX.Nyss.Web.Utils.DataContract;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Project
 {

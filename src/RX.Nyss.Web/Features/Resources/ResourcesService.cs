@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Resources.Dto;
-using RX.Nyss.Web.Services.StringsResources;
-using RX.Nyss.Web.Utils.DataContract;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Resources
 {

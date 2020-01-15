@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
-using RX.Nyss.Common.Configuration;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services

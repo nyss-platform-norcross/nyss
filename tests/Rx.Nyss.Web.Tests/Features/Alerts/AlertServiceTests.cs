@@ -6,6 +6,7 @@ using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;

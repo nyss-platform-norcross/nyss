@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace RX.Nyss.Common.Utils.DataContract
+﻿namespace RX.Nyss.Common.Utils.DataContract
 {
     public class Result
     {
@@ -35,7 +33,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             get;
         }
 
-        internal Result(T value, bool isSuccess, string messageKey = null, object messageData = null)
+        public Result(T value, bool isSuccess, string messageKey = null, object messageData = null)
             : base(isSuccess, messageKey, messageData)
         {
             Value = value;

@@ -6,6 +6,7 @@ using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -35,7 +36,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         public AlertReportServiceTests()
         {
             _nyssContext = Substitute.For<INyssContext>();
-            var config = Substitute.For<INyssConfig>();
+            var config = Substitute.For<INyssWebConfig>();
 
             _alertService = Substitute.For<IAlertService>();
             _queueService = Substitute.For<IQueueService>();

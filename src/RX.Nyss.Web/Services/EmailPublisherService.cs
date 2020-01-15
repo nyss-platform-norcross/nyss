@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
-using RX.Nyss.Common.Configuration;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
@@ -18,8 +17,7 @@ namespace RX.Nyss.Web.Services
 
         public EmailPublisherService(INyssWebConfig config)
         {
-            var config1 = config;
-            _queueClient = new QueueClient(config1.ConnectionStrings.ServiceBus, config1.ServiceBusQueues.SendEmailQueue);
+            _queueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
         }
 
         public async Task SendEmail((string email, string name) to, string subject, string body, bool sendAsTextOnly = false)

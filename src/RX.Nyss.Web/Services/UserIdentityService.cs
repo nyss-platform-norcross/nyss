@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Common.Utils.DataContract;
 
 namespace RX.Nyss.Web.Services
 {

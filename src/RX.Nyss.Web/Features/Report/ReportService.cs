@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Concepts;
@@ -15,10 +16,9 @@ using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Services.StringsResources;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Report
 {
@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.Report
 
     public class ReportService : IReportService
     {
-        private readonly INyssConfig _config;
+        private readonly INyssWebConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
         private readonly IProjectService _projectService;
@@ -40,7 +40,7 @@ namespace RX.Nyss.Web.Features.Report
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
 
-        public ReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INyssConfig config, IAuthorizationService authorizationService, IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
+        public ReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INyssWebConfig config, IAuthorizationService authorizationService, IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _userService = userService;

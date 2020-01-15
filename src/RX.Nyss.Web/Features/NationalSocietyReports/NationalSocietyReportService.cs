@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -14,7 +15,7 @@ using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.NationalSocietyReports
 {
@@ -33,7 +34,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private readonly INationalSocietyService _nationalSocietyService;
         private readonly IAuthorizationService _authorizationService;
 
-        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INationalSocietyService nationalSocietyService, INyssConfig config, IAuthorizationService authorizationService)
+        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INationalSocietyService nationalSocietyService, INyssWebConfig config, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _userService = userService;

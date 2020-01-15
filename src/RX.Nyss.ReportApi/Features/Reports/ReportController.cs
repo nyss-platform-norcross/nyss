@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using RX.Nyss.ReportApi.Features.Alerts;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
 
 namespace RX.Nyss.ReportApi.Features.Reports

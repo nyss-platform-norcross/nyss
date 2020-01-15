@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.OpenApi.Models;
 using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
@@ -32,7 +33,6 @@ using RX.Nyss.Web.Features.SmsGateway.Access;
 using RX.Nyss.Web.Features.Supervisor.Access;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Access;
 using RX.Nyss.Web.Features.User.Access;
-using RX.Nyss.Web.Utils.DataContract;
 using Serilog;
 
 namespace RX.Nyss.Web.Configuration
@@ -254,7 +254,7 @@ namespace RX.Nyss.Web.Configuration
         private static void RegisterServiceCollection(IServiceCollection serviceCollection, ConfigSingleton config)
         {
             serviceCollection.AddSingleton<IConfig>(config);
-            serviceCollection.AddSingleton<INyssConfig>(config);
+            serviceCollection.AddSingleton<INyssWebConfig>(config);
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 

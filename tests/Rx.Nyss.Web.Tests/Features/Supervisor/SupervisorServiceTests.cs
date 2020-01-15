@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -12,7 +13,6 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Supervisor;
 using RX.Nyss.Web.Features.Supervisor.Dto;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 

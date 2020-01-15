@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RX.Nyss.Web.Features.NationalSociety.Dto
 {
     public class PendingHeadManagerConsentDto

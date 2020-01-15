@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Services.StringsResources;
 
 namespace RX.Nyss.Web.Services
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -11,8 +12,7 @@ using RX.Nyss.Web.Features.NationalSociety.Access;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.NationalSociety.Dto;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Utils.DataContract;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.NationalSociety
 {

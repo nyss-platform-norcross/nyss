@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.Supervisor.Dto
 {

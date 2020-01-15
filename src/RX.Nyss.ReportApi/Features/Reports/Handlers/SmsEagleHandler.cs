@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -18,10 +19,6 @@ using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 using RX.Nyss.ReportApi.Services;
-// using RX.Nyss.ReportApi.Services.StringsResources;
-using RX.Nyss.ReportApi.Utils;
-// using RX.Nyss.ReportApi.Utils.Logging;
-using static RX.Nyss.ReportApi.Utils.DataContract.SmsContentKey;
 
 namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 {
@@ -105,9 +102,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         gatewaySetting = reportValidationResult.ReportData.GatewaySetting;
                         projectHealthRisk = reportValidationResult.ReportData.ProjectHealthRisk;
 
-                        var epiDate = _dateTimeProvider.GetEpiDate(reportData.ReceivedAt);
+                        var epiDate = _dateTimeProvider.GetEpiDate(reportValidationResult.ReportData.ReceivedAt);
 
-                        var report = new Report
+                        var report = new Data.Models.Report
                         {
                             IsTraining = reportValidationResult.ReportData.DataCollector.IsInTrainingMode,
                             ReportType = reportValidationResult.ReportData.ParsedReport.ReportType,
@@ -136,9 +133,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                                     + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountFemalesBelowFive ?? 0)
                                     + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountMalesAtLeastFive ?? 0)
                                     + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountMalesBelowFive ?? 0)
-                                    + (reportValidationResult.ReportData.ParsedReport.DataCollectionPointCase.DeathCount ?? 0)
-                                    + (reportValidationResult.ReportData.ParsedReport.DataCollectionPointCase.FromOtherVillagesCount ?? 0)
-                                    + (reportValidationResult.ReportData.ParsedReport.DataCollectionPointCase.ReferredCount ?? 0)
                                 : 1
                         };
 
@@ -425,10 +419,10 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             {
                 var feedbackMessage = errorReport.ReportErrorType switch
                 {
-                    ReportErrorType.FormatError => await GetFeedbackMessageContent(ReportError.FormatError, errorReport.LanguageCode),
-                    ReportErrorType.HealthRiskNotFound => await GetFeedbackMessageContent(ReportError.HealthRiskNotFound, errorReport.LanguageCode),
+                    ReportErrorType.FormatError => await GetFeedbackMessageContent(SmsContentKey.ReportError.FormatError, errorReport.LanguageCode),
+                    ReportErrorType.HealthRiskNotFound => await GetFeedbackMessageContent(SmsContentKey.ReportError.HealthRiskNotFound, errorReport.LanguageCode),
                     ReportErrorType.DataCollectorNotFound => null,
-                    _ => await GetFeedbackMessageContent(ReportError.Other, errorReport.LanguageCode)
+                    _ => await GetFeedbackMessageContent(SmsContentKey.ReportError.Other, errorReport.LanguageCode)
                 };
 
                 if (string.IsNullOrEmpty(feedbackMessage))
@@ -445,7 +439,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private async Task<string> GetFeedbackMessageContent(string key, string languageCode)
         {
             var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "EN");
-            smsContents.Value.TryGetValue(key, out string message);
+            smsContents.Value.TryGetValue(key, out var message);
 
             if (message == null)
             {

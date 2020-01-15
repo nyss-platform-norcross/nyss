@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Services
 {

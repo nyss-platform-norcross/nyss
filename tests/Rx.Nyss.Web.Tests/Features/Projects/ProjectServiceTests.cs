@@ -7,6 +7,7 @@ using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -14,8 +15,6 @@ using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Project;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Utils;
-using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 

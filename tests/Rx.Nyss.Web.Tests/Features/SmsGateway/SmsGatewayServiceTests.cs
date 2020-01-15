@@ -4,6 +4,7 @@ using MockQueryable.NSubstitute;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.ReturnsExtensions;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -12,7 +13,6 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.SmsGateway;
 using RX.Nyss.Web.Features.SmsGateway.Dto;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 

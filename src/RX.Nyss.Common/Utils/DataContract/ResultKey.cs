@@ -202,7 +202,6 @@
             }
 
             public const string InconsistentReportData = "alert.inconsistentReportData";
-
         }
     }
 }
