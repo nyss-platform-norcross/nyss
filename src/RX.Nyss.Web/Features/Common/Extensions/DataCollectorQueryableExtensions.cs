@@ -1,50 +1,51 @@
-﻿using System.Linq;
+using System;
+using System.Linq;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.ProjectDashboard.Dto;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.Common.Extensions
 {
     public static class DataCollectorQueryableExtensions
     {
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByType(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, FiltersRequestDto.ReportsTypeDto reportsType) =>
-            reportsType switch
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByType(this IQueryable<Nyss.Data.Models.DataCollector> reports, DataCollectorType? dataCollectorType) =>
+            dataCollectorType switch
             {
-                FiltersRequestDto.ReportsTypeDto.DataCollector =>
-                dataCollectors.Where(dc => dc.DataCollectorType == DataCollectorType.Human),
+                DataCollectorType.Human =>
+                reports.Where(dc => dc.DataCollectorType == DataCollectorType.Human),
 
-                FiltersRequestDto.ReportsTypeDto.DataCollectionPoint =>
-                dataCollectors.Where(dc => dc.DataCollectorType == DataCollectorType.CollectionPoint),
+                DataCollectorType.CollectionPoint =>
+                reports.Where(dc => dc.DataCollectorType == DataCollectorType.CollectionPoint),
 
                 _ =>
-                dataCollectors
+                reports
             };
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByArea(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, FiltersRequestDto.AreaDto area) =>
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByArea(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, AreaDto area) =>
             area?.Type switch
             {
-                FiltersRequestDto.AreaTypeDto.Region =>
+                AreaDto.AreaType.Region =>
                 dataCollectors.Where(dc => dc.Village.District.Region.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.District =>
+                AreaDto.AreaType.District =>
                 dataCollectors.Where(dc => dc.Village.District.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.Village =>
+                AreaDto.AreaType.Village =>
                 dataCollectors.Where(dc => dc.Village.Id == area.Id),
 
-                FiltersRequestDto.AreaTypeDto.Zone =>
+                AreaDto.AreaType.Zone =>
                 dataCollectors.Where(dc => dc.Zone.Id == area.Id),
 
                 _ =>
                 dataCollectors
             };
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByProject(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, int projectId) =>
-            dataCollectors.Where(dc => dc.Project.Id == projectId);
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByProject(this IQueryable<Nyss.Data.Models.DataCollector> reports, int projectId) =>
+            reports.Where(dc => dc.Project.Id == projectId);
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByTrainingMode(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, bool isInTraining) =>
-            dataCollectors.Where(dc => (isInTraining ? dc.IsInTrainingMode : !dc.IsInTrainingMode));
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByTrainingMode(this IQueryable<Nyss.Data.Models.DataCollector> reports, bool isInTraining) =>
+            reports.Where(dc => (isInTraining ? dc.IsInTrainingMode : !dc.IsInTrainingMode));
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterOnlyNotDeleted(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors) =>
-            dataCollectors.Where(dc => !dc.DeletedAt.HasValue);
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterOnlyNotDeletedBefore(this IQueryable<Nyss.Data.Models.DataCollector> reports, DateTime startDate) =>
+            reports.Where(dc => dc.DeletedAt == null || dc.DeletedAt > startDate);
     }
 }

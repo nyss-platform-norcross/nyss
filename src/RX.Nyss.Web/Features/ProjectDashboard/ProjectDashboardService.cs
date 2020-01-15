@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         {
             if (filtersDto.EndDate < filtersDto.StartDate)
             {
-                return Success(ProjectDashboardResponseDto.Empty());
+                return Success(new ProjectDashboardResponseDto());
             }
 
             var projectSummary = await _projectDashboardDataService.GetSummaryData(projectId, filtersDto);

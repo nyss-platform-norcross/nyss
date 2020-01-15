@@ -10,6 +10,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 
@@ -60,6 +61,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     ReportCount = validReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
+                    ErrorReportCount = assignedRawReports.Count() - validReports.Count(),
                     DataCollectionPointSummary = new DataCollectionPointsSummaryResponse
                     {
                         FromOtherVillagesCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.FromOtherVillagesCount ?? 0),
@@ -511,7 +513,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private IQueryable<RawReport> GetAssignedRawReports(int projectId, FiltersRequestDto filtersDto) =>
             _nyssContext.RawReports
-                .Where(r => r.IsTraining.HasValue && r.IsTraining == filtersDto.IsTraining)
+                .FilterByTrainingMode(filtersDto.IsTraining)
                 .FromKnownDataCollector()
                 .FilterByArea(filtersDto.Area)
                 .FilterByDataCollectorType(MapToDataCollectorType(filtersDto.ReportsType))
