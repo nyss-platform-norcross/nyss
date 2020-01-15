@@ -11,10 +11,10 @@ namespace RX.Nyss.Common.Services
 
     public class NyssBlobProvider : INyssBlobProvider
     {
-        private readonly IConfig<BlobConfig.ConnectionStringOptions> _config;
+        private readonly IConfig<BlobConfig.ConnectionStringOptions, BlobConfig.ServiceBusQueuesOptions> _config;
         private readonly BlobProvider _blobProvider;
 
-        public NyssBlobProvider(IConfig<BlobConfig.ConnectionStringOptions> config)
+        public NyssBlobProvider(IConfig<BlobConfig.ConnectionStringOptions, BlobConfig.ServiceBusQueuesOptions> config)
         {
             _config = config;
             _blobProvider = new BlobProvider(config.GeneralBlobContainerName, config.ConnectionStrings.GeneralBlobContainer);

@@ -2,10 +2,9 @@ using RX.Nyss.Common.Configuration;
 
 namespace RX.Nyss.ReportApi.Configuration
 {
-    public interface INyssReportApiConfig : IConfig<NyssReportApiConfig.ConnectionStringOptions>, ILoggingConfig<NyssReportApiConfig.LoggingOptions>
+    public interface INyssReportApiConfig : IConfig<NyssReportApiConfig.ConnectionStringOptions, NyssReportApiConfig.ServiceBusQueuesOptions>, ILoggingConfig<NyssReportApiConfig.LoggingOptions>
     {
         string BaseUrl { get; set; }
-        NyssReportApiConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
     }
 
     public class NyssReportApiConfig : INyssReportApiConfig

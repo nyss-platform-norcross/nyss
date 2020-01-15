@@ -88,8 +88,8 @@ namespace RX.Nyss.ReportApi.Configuration
 
         private static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssReportApiConfig nyssReportApiConfig, BlobConfig blobConfig)
         {
-            serviceCollection.AddSingleton<IConfig<NyssReportApiConfig.ConnectionStringOptions>>(nyssReportApiConfig);
-            serviceCollection.AddSingleton<IConfig<BlobConfig.ConnectionStringOptions>>(blobConfig);
+            serviceCollection.AddSingleton<IConfig<NyssReportApiConfig.ConnectionStringOptions, NyssReportApiConfig.ServiceBusQueuesOptions>>(nyssReportApiConfig);
+            serviceCollection.AddSingleton<IConfig<BlobConfig.ConnectionStringOptions, BlobConfig.ServiceBusQueuesOptions>>(blobConfig);
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 

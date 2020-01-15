@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.Common.Configuration
 {
-    public interface INyssConfig : IConfig<NyssConfig.ConnectionStringOptions>
+    public interface INyssConfig : IConfig<NyssConfig.ConnectionStringOptions, NyssConfig.ServiceBusQueuesOptions>
     {
         string BaseUrl { get; set; }
         string Environment { get; set; }
@@ -8,7 +8,6 @@
         string AuthorizedApiKeysBlobObjectName { get; set; }
         string EmailContentResourcesBlobObjectName { get; set; }
         int PaginationRowsPerPage { get; set; }
-        NyssConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
         NyssConfig.AuthenticationOptions Authentication { get; set; }
         NyssConfig.ExportOptions Export { get; set; }
         NyssConfig.ViewOptions View { get; set; }
