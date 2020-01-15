@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using System.Web;
@@ -154,20 +155,22 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     transactionScope.Complete();
                 }
 
-                if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
+                if (reportErrorData == null)
                 {
-                    var recipients = new List<string>{ sender };
-                    await _emailToSmsPublisherService.SendMessages(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
-                }
+                    if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
+                    {
+                        var recipients = new List<string>{ sender };
+                        await _emailToSmsPublisherService.SendMessages(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
+                    }
 
-                if (reportErrorData != null)
+                    if (triggeredAlert != null)
+                    {
+                        await _alertService.SendNotificationsForNewAlert(triggeredAlert, gatewaySetting);
+                    }
+                }
+                else
                 {
                     await SendFeedbackOnError(reportErrorData, gatewaySetting);
-                }
-
-                if (triggeredAlert != null)
-                {
-                    await _alertService.SendNotificationsForNewAlert(triggeredAlert, gatewaySetting);
                 }
             }
             catch (ReportValidationException e)
@@ -178,6 +181,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
         private async Task<ReportValidationResult> ParseAndValidateReport(RawReport rawReport, NameValueCollection parsedQueryString)
         {
+            GatewaySetting gatewaySetting = null;
             try
             {
                 var apiKey = parsedQueryString[ApiKeyParameterName];
@@ -185,7 +189,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 var timestamp = parsedQueryString[TimestampParameterName];
                 var text = parsedQueryString[TextParameterName];
 
-                var gatewaySetting = await ValidateGatewaySetting(apiKey);
+                gatewaySetting = await ValidateGatewaySetting(apiKey);
                 rawReport.NationalSociety = gatewaySetting.NationalSociety;
 
                 var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSociety);
@@ -193,7 +197,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 rawReport.IsTraining = dataCollector.IsInTrainingMode;
 
                 var parsedReport = _reportMessageService.ParseReport(text);
-                var projectHealthRisk = await ValidateReport(parsedReport, dataCollector, gatewaySetting);
+                var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
 
                 var receivedAt = ParseTimestamp(timestamp);
                 ValidateReceivalTime(receivedAt);
@@ -218,7 +222,10 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                 var sender = parsedQueryString[SenderParameterName];
 
-                var nationalSociety = await _nyssContext.NationalSocieties.Include(ns => ns.ContentLanguage).FirstOrDefaultAsync(ns => ns.Id == e.GatewaySetting.NationalSocietyId);
+                var languageCode = await _nyssContext.NationalSocieties
+                    .Where(ns => ns.Id == gatewaySetting.NationalSocietyId)
+                    .Select(ns => ns.ContentLanguage.LanguageCode)
+                    .FirstOrDefaultAsync();
 
                 return new ReportValidationResult
                 {
@@ -226,7 +233,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     ErrorReportData = new ErrorReportData
                     {
                         Sender = sender,
-                        LanguageCode = nationalSociety.ContentLanguage.LanguageCode,
+                        LanguageCode = languageCode,
                         ReportErrorType = e.ErrorType
                     }
                 };
@@ -288,7 +295,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             return dataCollector;
         }
 
-        private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector, GatewaySetting gatewaySetting)
+        private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
         {
             switch (dataCollector.DataCollectorType)
             {
@@ -299,7 +306,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         parsedReport.ReportType != ReportType.Activity)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                                                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.NonHuman}', '{ReportType.Activity}'.", ReportErrorType.Other, gatewaySetting);
+                                                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.NonHuman}', '{ReportType.Activity}'.", ReportErrorType.Other);
                     }
 
                     break;
@@ -309,7 +316,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         parsedReport.ReportType != ReportType.Activity)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                                                            $"'{ReportType.DataCollectionPoint}', '{ReportType.NonHuman}', '{ReportType.Activity}'.", ReportErrorType.Other, gatewaySetting);
+                                                            $"'{ReportType.DataCollectionPoint}', '{ReportType.NonHuman}', '{ReportType.Activity}'.", ReportErrorType.Other);
                     }
 
                     break;
@@ -324,7 +331,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
             if (projectHealthRisk == null)
             {
-                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.", ReportErrorType.HealthRiskNotFound, gatewaySetting);
+                throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.", ReportErrorType.HealthRiskNotFound);
             }
 
             switch (parsedReport.ReportType)
@@ -332,14 +339,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 case ReportType.Single:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.Other, gatewaySetting);
+                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.Other);
                     }
 
                     break;
                 case ReportType.Aggregate:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.Other, gatewaySetting);
+                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.Other);
                     }
 
                     break;
@@ -348,14 +355,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent)
                     {
                         throw new ReportValidationException(
-                            $"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.", ReportErrorType.Other, gatewaySetting);
+                            $"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.", ReportErrorType.Other);
                     }
 
                     break;
                 case ReportType.Activity:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.", ReportErrorType.Other, gatewaySetting);
+                        throw new ReportValidationException($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.", ReportErrorType.Other);
                     }
 
                     break;
@@ -367,7 +374,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     {
                         throw new ReportValidationException(
                             $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}', '{HealthRiskType.NonHuman}', " +
-                            $"'{HealthRiskType.UnusualEvent}', '{HealthRiskType.Activity}' event only.", ReportErrorType.Other, gatewaySetting);
+                            $"'{HealthRiskType.UnusualEvent}', '{HealthRiskType.Activity}' event only.", ReportErrorType.Other);
                     }
 
                     break;
@@ -426,6 +433,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                 if (string.IsNullOrEmpty(feedbackMessage))
                 {
+                    _loggerAdapter.Warn($"No feedback message found for error type {errorReport.ReportErrorType}");
                     return;
                 }
 
@@ -436,7 +444,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
         private async Task<string> GetFeedbackMessageContent(string key, string languageCode)
         {
-            var smsContents = await _stringsResourcesService.GetSmsContentResources(languageCode);
+            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "EN");
             smsContents.Value.TryGetValue(key, out string message);
 
             if (message == null)

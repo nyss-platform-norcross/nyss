@@ -7,11 +7,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Exceptions
     public class ReportValidationException : Exception
     {
         public ReportErrorType ErrorType { get; set; }
-        public GatewaySetting GatewaySetting { get; set; }
-        public ReportValidationException(string message, ReportErrorType errorType = ReportErrorType.Other, GatewaySetting gatewaySetting = null) : base(message)
+        public ReportValidationException(string message, ReportErrorType errorType = ReportErrorType.Other) : base(message)
         {
             ErrorType = errorType;
-            GatewaySetting = gatewaySetting;
         }
     }
 }
