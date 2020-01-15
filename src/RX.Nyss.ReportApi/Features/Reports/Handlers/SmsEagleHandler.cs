@@ -162,7 +162,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                 if (reportErrorData != null)
                 {
-                    await SendFeedbackOnError(reportErrorData);
+                    await SendFeedbackOnError(reportErrorData, gatewaySetting);
                 }
 
                 if (triggeredAlert != null)
@@ -192,26 +192,24 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 rawReport.DataCollector = dataCollector;
                 rawReport.IsTraining = dataCollector.IsInTrainingMode;
 
-                var parsedReport = _reportMessageService.ParseReport(text, gatewaySetting);
+                var parsedReport = _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector, gatewaySetting);
 
                 var receivedAt = ParseTimestamp(timestamp);
                 ValidateReceivalTime(receivedAt);
                 rawReport.ReceivedAt = receivedAt;
 
-                var reportData = new ReportData
-                {
-                    DataCollector = dataCollector,
-                    ProjectHealthRisk = projectHealthRisk,
-                    ReceivedAt = receivedAt,
-                    GatewaySetting = gatewaySetting,
-                    ParsedReport = parsedReport
-                };
-
                 return new ReportValidationResult
                 {
                     IsSuccess = true,
-                    ReportData = reportData
+                    ReportData = new ReportData
+                    {
+                        DataCollector = dataCollector,
+                        ProjectHealthRisk = projectHealthRisk,
+                        ReceivedAt = receivedAt,
+                        GatewaySetting = gatewaySetting,
+                        ParsedReport = parsedReport
+                    }
                 };
             }
             catch (ReportValidationException e)
@@ -219,14 +217,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 _loggerAdapter.Warn(e);
 
                 var sender = parsedQueryString[SenderParameterName];
-
-                if (e.GatewaySetting == null)
-                {
-                    return new ReportValidationResult
-                    {
-                        IsSuccess = false
-                    };
-                }
 
                 var nationalSociety = await _nyssContext.NationalSocieties.Include(ns => ns.ContentLanguage).FirstOrDefaultAsync(ns => ns.Id == e.GatewaySetting.NationalSocietyId);
 
@@ -236,7 +226,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     ErrorReportData = new ErrorReportData
                     {
                         Sender = sender,
-                        GatewaySetting = e.GatewaySetting,
                         LanguageCode = nationalSociety.ContentLanguage.LanguageCode,
                         ReportErrorType = e.ErrorType
                     }
@@ -423,9 +412,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private async Task SendFeedbackOnError(ErrorReportData errorReport)
+        private async Task SendFeedbackOnError(ErrorReportData errorReport, GatewaySetting gatewaySetting)
         {
-            if (errorReport.GatewaySetting != null && !string.IsNullOrEmpty(errorReport.Sender))
+            if (gatewaySetting != null && !string.IsNullOrEmpty(errorReport.Sender))
             {
                 var feedbackMessage = errorReport.ReportErrorType switch
                 {
@@ -441,7 +430,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 }
 
                 var senderList = new List<string>(new string[] { errorReport.Sender });
-                await _emailToSmsPublisherService.SendMessages(errorReport.GatewaySetting.EmailAddress, errorReport.GatewaySetting.Name, senderList, feedbackMessage);
+                await _emailToSmsPublisherService.SendMessages(gatewaySetting.EmailAddress, gatewaySetting.Name, senderList, feedbackMessage);
             }
         }
 

@@ -17,7 +17,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
     public class ErrorReportData
     {
         public string Sender { get; set; }
-        public GatewaySetting GatewaySetting { get; set; }
         public string LanguageCode { get; set; }
         public ReportErrorType ReportErrorType { get; set; }
     }

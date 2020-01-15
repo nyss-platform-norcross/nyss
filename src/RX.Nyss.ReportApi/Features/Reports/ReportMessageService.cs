@@ -11,7 +11,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
 {
     public interface IReportMessageService
     {
-        ParsedReport ParseReport(string reportMessage, GatewaySetting gatewaySetting);
+        ParsedReport ParseReport(string reportMessage);
     }
 
     public class ReportMessageService : IReportMessageService
@@ -40,11 +40,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
             _nyssContext = nyssContext;
         }
 
-        public ParsedReport ParseReport(string reportMessage, GatewaySetting gatewaySetting)
+        public ParsedReport ParseReport(string reportMessage)
         {
             if (string.IsNullOrWhiteSpace(reportMessage))
             {
-                throw new ReportValidationException("A report cannot be empty.", ReportErrorType.Other, gatewaySetting);
+                throw new ReportValidationException("A report cannot be empty.", ReportErrorType.Other);
             }
 
             if (SingleReportRegex.IsMatch(reportMessage))
@@ -67,7 +67,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 return ParseDcpReport(reportMessage);
             }
 
-            throw new ReportValidationException("A report format was not recognized.", ReportErrorType.FormatError, gatewaySetting);
+            throw new ReportValidationException("A report format was not recognized.", ReportErrorType.FormatError);
         }
 
         internal static ParsedReport ParseSingleReport(string reportMessage)
