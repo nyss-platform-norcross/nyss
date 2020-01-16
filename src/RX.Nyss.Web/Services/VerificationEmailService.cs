@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 
@@ -16,9 +15,9 @@ namespace RX.Nyss.Web.Services
     {
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
 
-        public VerificationEmailService(IConfig config, IEmailPublisherService emailPublisherService, IEmailTextGeneratorService emailTextGeneratorService)
+        public VerificationEmailService(INyssWebConfig config, IEmailPublisherService emailPublisherService, IEmailTextGeneratorService emailTextGeneratorService)
         {
             _config = config;
             _emailPublisherService = emailPublisherService;

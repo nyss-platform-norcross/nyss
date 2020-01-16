@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -15,7 +17,6 @@ using RX.Nyss.Web.Features.Report.Dto;
 using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Services.StringsResources;
 using Shouldly;
 using Xunit;
 
@@ -27,10 +28,11 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IProjectService _projectService;
         private readonly IReportService _reportService;
         private readonly INyssContext _nyssContextMock;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
         private readonly IAuthorizationService _authorizationService;
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
@@ -42,7 +44,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         {
             _nyssContextMock = Substitute.For<INyssContext>();
 
-            _config = Substitute.For<IConfig>();
+            _config = Substitute.For<INyssWebConfig>();
             _config.PaginationRowsPerPage.Returns(_rowsPerPage);
 
             _userService = Substitute.For<IUserService>();
@@ -57,7 +59,9 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _excelExportService = Substitute.For<IExcelExportService>();
             _stringsResourcesService = Substitute.For<IStringsResourcesService>();
 
-            _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _excelExportService, _stringsResourcesService);
+            _dateTimeProvider = Substitute.For<IDateTimeProvider>();
+
+            _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _excelExportService, _stringsResourcesService, _dateTimeProvider);
 
             _authorizationService.IsCurrentUserInRole(Role.Supervisor).Returns(false);
             _authorizationService.GetCurrentUserName().Returns("admin@domain.com");

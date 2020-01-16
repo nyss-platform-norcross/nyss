@@ -1,16 +1,13 @@
-﻿namespace RX.Nyss.ReportApi.Configuration
+using RX.Nyss.Common.Configuration;
+
+namespace RX.Nyss.ReportApi.Configuration
 {
-    public interface IConfig
+    public interface INyssReportApiConfig : IConfig
     {
         string BaseUrl { get; set; }
-        NyssReportApiConfig.LoggingOptions Logging { get; set; }
-        NyssReportApiConfig.ConnectionStringOptions ConnectionStrings { get; set; }
-        NyssReportApiConfig.ServiceBusQueuesOptions ServiceBusQueues { get; set; }
-        string GeneralBlobContainerName { get; set; }
-        string StringsResourcesBlobObjectName { get; set; }
     }
 
-    public class NyssReportApiConfig : IConfig
+    public class ConfigSingleton : INyssReportApiConfig
     {
         public string BaseUrl { get; set; }
 
@@ -22,24 +19,12 @@
 
         public string GeneralBlobContainerName { get; set; }
 
+        public string SmsGatewayBlobContainerName { get; set; }
+
         public string StringsResourcesBlobObjectName { get; set; }
 
-        public class LoggingOptions
-        {
-            public string LogsLocation { get; set; }
-            public string LogMessageTemplate { get; set; }
-        }
+        public string EmailContentResourcesBlobObjectName { get; set; }
 
-        public class ConnectionStringOptions
-        {
-            public string NyssDatabase { get; set; }
-            public string ServiceBus { get; set; }
-            public string GeneralBlobContainer { get; set; }
-        }
-
-        public class ServiceBusQueuesOptions
-        {
-            public string SendEmailQueue { get; set; }
-        }
+        public string SmsContentResourcesBlobObjectName { get; set; }
     }
 }

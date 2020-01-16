@@ -17,6 +17,7 @@
             public string FromName { get; set; }
             public bool SendToAll { get; set; }
             public string SendMailUrl { get; set; }
+            public bool EnableFeedbackSms { get; set; }
             public bool SendFeedbackSmsToAll { get; set; }
         }
     }

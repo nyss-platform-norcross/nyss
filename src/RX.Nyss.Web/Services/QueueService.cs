@@ -13,9 +13,9 @@ namespace RX.Nyss.Web.Services
 
     public class QueueService : IQueueService
     {
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
 
-        public QueueService(IConfig config)
+        public QueueService(INyssWebConfig config)
         {
             _config = config;
         }

@@ -3,7 +3,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using RX.Nyss.ReportApi.Utils.Logging;
+using RX.Nyss.Common.Utils.Logging;
 
 namespace RX.Nyss.ReportApi.Configuration
 {

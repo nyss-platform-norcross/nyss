@@ -3,13 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
 using RX.Nyss.Common.Utils;
-using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
-using RX.Nyss.Web.Utils;
 using Shouldly;
 using Xunit;
 
@@ -18,19 +16,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
     public class ProjectDashboardDataServiceTests
     {
         private readonly IProjectDashboardDataService _projectDashboardDataService;
-        private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly INyssContext _nyssContext;
         private readonly ProjectDashboardTestData _testData;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
 
         public ProjectDashboardDataServiceTests()
         {
-            _dateTimeProvider = new DateTimeProvider();
-            _testData = new ProjectDashboardTestData(_dateTimeProvider);
+            IDateTimeProvider dateTimeProvider = new DateTimeProvider();
+            _testData = new ProjectDashboardTestData(dateTimeProvider);
 
-            _nyssContext = _testData.GetNyssContextMock();
-            _config = Substitute.For<IConfig>();
-            _projectDashboardDataService = new ProjectDashboardDataService(_nyssContext,_dateTimeProvider, _config);
+            var nyssContext = _testData.GetNyssContextMock();
+            _config = Substitute.For<INyssWebConfig>();
+            _projectDashboardDataService = new ProjectDashboardDataService(nyssContext,dateTimeProvider, _config);
         }
 
         [Theory]
@@ -220,6 +216,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
+
         [Theory]
         [InlineData(1, 4, 2, 0)]
         [InlineData(2, 0, 0, 0)]
@@ -251,6 +248,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
+
 
         [Theory]
         [InlineData(1, 2, 1, 0)]
@@ -292,6 +290,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
+
         [Theory]
         [InlineData(1, 0, 0, 0)]
         [InlineData(2, 0, 0, 0)]
@@ -331,6 +330,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
             summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
+
 
         [Theory]
         [InlineData("2019-01-01","2019-01-05", 1, 1, 11)]
@@ -471,6 +471,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
             result.Where(x => x.Period == epiWeek.ToString())
                 .Select(x => x.DeathCount).Single().ShouldBe(deathCount);
+
         }
 
         [Theory]
@@ -516,6 +517,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
             result.Where(x => x.Period == day)
                 .Select(x => x.DeathCount).Single().ShouldBe(deathCount);
+
         }
 
         [Fact]
@@ -523,7 +525,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         {
             var numberOfGroupedVillagesInProjectDashboard = 3;
 
-            _config.View.Returns(new NyssConfig.ViewOptions
+            _config.View.Returns(new ConfigSingleton.ViewOptions
             {
                 NumberOfGroupedVillagesInProjectDashboard = numberOfGroupedVillagesInProjectDashboard
             });

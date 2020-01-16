@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.SmsGateway.Access

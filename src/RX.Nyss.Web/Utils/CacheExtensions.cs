@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils.DataContract;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Utils
 {

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -22,7 +24,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
     public class AlertReportServiceTests
     {
         private readonly INyssContext _nyssContext;
-        private readonly IConfig _config;
         private readonly AlertReportService _alertReportService;
         private readonly List<AlertReport> _alertReports;
         private readonly IAlertService _alertService;
@@ -35,19 +36,19 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         public AlertReportServiceTests()
         {
             _nyssContext = Substitute.For<INyssContext>();
-            _config = Substitute.For<IConfig>();
+            var config = Substitute.For<INyssWebConfig>();
 
             _alertService = Substitute.For<IAlertService>();
             _queueService = Substitute.For<IQueueService>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _authorizationService = Substitute.For<IAuthorizationService>();
-            _alertReportService = new AlertReportService(_config, _nyssContext, _alertService, _queueService, _dateTimeProvider, _authorizationService);
+            _alertReportService = new AlertReportService(config, _nyssContext, _alertService, _queueService, _dateTimeProvider, _authorizationService);
 
             _alertReports = TestData.GetAlertReports();
             var alertReportsDbSet = _alertReports.AsQueryable().BuildMockDbSet();
             _nyssContext.AlertReports.Returns(alertReportsDbSet);
 
-            _config.ServiceBusQueues.Returns(new NyssConfig.ServiceBusQueuesOptions
+            config.ServiceBusQueues.Returns(new ServiceBusQueuesOptions
             {
                 ReportDismissalQueue = TestData.ReportDismissalQueue
             });

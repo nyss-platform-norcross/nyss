@@ -3,13 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.HealthRisk;
 using RX.Nyss.Web.Features.HealthRisk.Dto;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 

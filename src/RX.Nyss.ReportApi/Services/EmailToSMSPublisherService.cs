@@ -17,7 +17,7 @@ namespace RX.Nyss.ReportApi.Services
     {
         private readonly IQueueClient _queueClient;
 
-        public EmailToSmsPublisherService(IConfig config)
+        public EmailToSmsPublisherService(INyssReportApiConfig config)
         {
             _queueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
         }

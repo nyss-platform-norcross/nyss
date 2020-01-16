@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
 
 namespace RX.Nyss.Web.Features.DataCollector.Dto

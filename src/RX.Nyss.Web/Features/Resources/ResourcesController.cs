@@ -1,9 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Web.Features.Resources.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils;
-using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.Resources
 {

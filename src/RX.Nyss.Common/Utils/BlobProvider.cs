@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 
-namespace RX.Nyss.Web.Utils
+namespace RX.Nyss.Common.Utils
 {
     public class BlobProvider
     {

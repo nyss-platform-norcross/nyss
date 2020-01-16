@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using RX.Nyss.Web.Utils.DataContract;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
-namespace RX.Nyss.Web.Services.StringsResources
+namespace RX.Nyss.Common.Services.StringsResources
 {
     public interface IStringsResourcesService
     {
@@ -21,14 +21,14 @@ namespace RX.Nyss.Web.Services.StringsResources
     public class StringsResourcesService : IStringsResourcesService
     {
         private readonly INyssBlobProvider _nyssBlobProvider;
-        private readonly ILogger<StringsResourcesService> _logger;
+        private readonly ILoggerAdapter _loggerAdapter;
 
         public StringsResourcesService(
             INyssBlobProvider nyssBlobProvider,
-            ILogger<StringsResourcesService> logger)
+            ILoggerAdapter loggerAdapter)
         {
             _nyssBlobProvider = nyssBlobProvider;
-            _logger = logger;
+            _loggerAdapter = loggerAdapter;
         }
 
         public async Task<Result<IDictionary<string, string>>> GetStringsResources(string languageCode)
@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Services.StringsResources
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "There was a problem during fetching the strings resources");
+                _loggerAdapter.Error(exception, "There was a problem during fetching the strings resources");
                 return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
             }
         }
@@ -72,7 +72,7 @@ namespace RX.Nyss.Web.Services.StringsResources
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "There was a problem during fetching the email contents resources");
+                _loggerAdapter.Error(exception, "There was a problem during fetching the email contents resources");
                 return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
             }
         }
@@ -96,7 +96,7 @@ namespace RX.Nyss.Web.Services.StringsResources
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "There was a problem during fetching the Sms contents resources");
+                _loggerAdapter.Error(exception, "There was a problem during fetching the Sms contents resources");
                 return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
             }
         }

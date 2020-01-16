@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Utils.DataContract
+﻿namespace RX.Nyss.Common.Utils.DataContract
 {
     public static class ResultKey
     {
@@ -202,7 +202,6 @@
             }
 
             public const string InconsistentReportData = "alert.inconsistentReportData";
-
         }
     }
 }

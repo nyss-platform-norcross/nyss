@@ -6,6 +6,7 @@ using MockQueryable.NSubstitute;
 using NetTopologySuite.Geometries;
 using NSubstitute;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -16,11 +17,9 @@ using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
-using RX.Nyss.Web.Utils;
-using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Tests.Features.DataCollectors
 {

@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 
@@ -42,7 +43,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
         {
             if (string.IsNullOrWhiteSpace(reportMessage))
             {
-                throw new ReportValidationException("A report cannot be empty.");
+                throw new ReportValidationException("A report cannot be empty.", ReportErrorType.Other);
             }
 
             if (SingleReportRegex.IsMatch(reportMessage))
@@ -65,7 +66,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 return ParseDcpReport(reportMessage);
             }
 
-            throw new ReportValidationException("A report format was not recognized.");
+            throw new ReportValidationException("A report format was not recognized.", ReportErrorType.FormatError);
         }
 
         internal static ParsedReport ParseSingleReport(string reportMessage)
@@ -137,7 +138,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 .Where(hr => hr.HealthRiskType == HealthRiskType.Activity)
                 .Select(hr => hr.HealthRiskCode)
                 .ToList();
-            
+
             var parsedReport = new ParsedReport
             {
                 HealthRiskCode = eventCode,

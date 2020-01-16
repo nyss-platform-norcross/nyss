@@ -1,7 +1,7 @@
 ﻿using System;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
-namespace RX.Nyss.Web.Utils.DataContract
+namespace RX.Nyss.Common.Utils.DataContract
 {
     public class ResultException : Exception
     {

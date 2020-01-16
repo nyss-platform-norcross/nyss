@@ -29,12 +29,12 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     {
         private readonly INyssContext _nyssContext;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
 
         public ProjectDashboardDataService(
             INyssContext nyssContext,
             IDateTimeProvider dateTimeProvider,
-            IConfig config)
+            INyssWebConfig config)
         {
             _nyssContext = nyssContext;
             _dateTimeProvider = dateTimeProvider;

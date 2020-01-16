@@ -1,11 +1,14 @@
 ﻿using System;
+using RX.Nyss.ReportApi.Features.Reports.Contracts;
 
 namespace RX.Nyss.ReportApi.Features.Reports.Exceptions
 {
     public class ReportValidationException : Exception
     {
-        public ReportValidationException(string message) : base(message)
+        public ReportErrorType ErrorType { get; set; }
+        public ReportValidationException(string message, ReportErrorType errorType = ReportErrorType.Other) : base(message)
         {
+            ErrorType = errorType;
         }
     }
 }

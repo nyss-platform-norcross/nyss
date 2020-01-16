@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace RX.Nyss.Web.Utils.Logging
+namespace RX.Nyss.Common.Utils.Logging
 {
     public interface ILoggerAdapter
     {
@@ -17,7 +17,7 @@ namespace RX.Nyss.Web.Utils.Logging
         void WarnFormat(string format, params object[] args);
 
         void Error(object obj);
-        
+
         void Error(Exception exception, string message);
 
         void ErrorFormat(string format, params object[] args);

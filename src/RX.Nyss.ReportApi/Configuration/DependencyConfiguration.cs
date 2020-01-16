@@ -11,8 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.OpenApi.Models;
+using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
-using RX.Nyss.ReportApi.Utils.Logging;
 using Serilog;
 
 namespace RX.Nyss.ReportApi.Configuration
@@ -21,7 +22,7 @@ namespace RX.Nyss.ReportApi.Configuration
     {
         public static void ConfigureDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            var config = configuration.Get<NyssReportApiConfig>();
+            var config = configuration.Get<ConfigSingleton>();
             RegisterLogger(serviceCollection, config.Logging, configuration);
             RegisterDatabases(serviceCollection, config.ConnectionStrings);
             RegisterWebFramework(serviceCollection);
@@ -30,7 +31,7 @@ namespace RX.Nyss.ReportApi.Configuration
         }
 
         private static void RegisterLogger(IServiceCollection serviceCollection,
-            NyssReportApiConfig.LoggingOptions loggingOptions, IConfiguration configuration)
+            ILoggingOptions loggingOptions, IConfiguration configuration)
         {
             const string applicationInsightsEnvironmentVariable = "APPINSIGHTS_INSTRUMENTATIONKEY";
             var appInsightsInstrumentationKey = configuration[applicationInsightsEnvironmentVariable];
@@ -44,7 +45,7 @@ namespace RX.Nyss.ReportApi.Configuration
             }
         }
 
-        private static void RegisterDatabases(IServiceCollection serviceCollection, NyssReportApiConfig.ConnectionStringOptions connectionStringOptions) =>
+        private static void RegisterDatabases(IServiceCollection serviceCollection, IConnectionStringOptions connectionStringOptions) =>
             serviceCollection.AddDbContext<NyssContext>(options =>
                 options.UseSqlServer(connectionStringOptions.NyssDatabase,
                     x => x.UseNetTopologySuite()));
@@ -84,9 +85,10 @@ namespace RX.Nyss.ReportApi.Configuration
                 c.IncludeXmlComments(xmlPath);
             });
 
-        private static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssReportApiConfig nyssReportApiConfig)
+        private static void RegisterServiceCollection(IServiceCollection serviceCollection, ConfigSingleton nyssReportApiConfig)
         {
             serviceCollection.AddSingleton<IConfig>(nyssReportApiConfig);
+            serviceCollection.AddSingleton<INyssReportApiConfig>(nyssReportApiConfig);
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 

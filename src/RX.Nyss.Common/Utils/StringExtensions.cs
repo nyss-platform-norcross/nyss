@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.ReportApi.Utils
+﻿namespace RX.Nyss.Common.Utils
 {
     public static class StringExtensions
     {

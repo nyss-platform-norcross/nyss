@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
-using FluentValidation.Internal;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
@@ -16,9 +12,9 @@ namespace RX.Nyss.Web.Services
 
     public class ExcelExportService: IExcelExportService
     {
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
 
-        public ExcelExportService(IConfig config)
+        public ExcelExportService(INyssWebConfig config)
         {
             _config = config;
         }

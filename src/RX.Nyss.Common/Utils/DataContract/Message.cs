@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Utils.DataContract
+﻿namespace RX.Nyss.Common.Utils.DataContract
 {
     public class Message
     {

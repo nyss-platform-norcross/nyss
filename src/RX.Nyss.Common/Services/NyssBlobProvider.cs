@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
-using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Utils;
+using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Utils;
 
-namespace RX.Nyss.Web.Services
+namespace RX.Nyss.Common.Services
 {
     public interface INyssBlobProvider
     {
         Task<string> GetStringsResources();
-        Task<string> GetEmailContentResources();
         Task SaveStringsResources(string value);
+        Task<string> GetEmailContentResources();
         Task<string> GetSmsContentResources();
     }
 

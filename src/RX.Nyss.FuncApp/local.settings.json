@@ -18,7 +18,8 @@
     "FromName": "Nyss Platform",
     "SendMailUrl": "https://api.mailjet.com/v3.1/send",
     "SendToAll": false,
-    "SendFeedbackSmsToAll": false
+    "SendFeedbackSmsToAll": false,
+    "EnableFeedbackSms": true
   },
   "Host": {
     "LocalHttpPort": 7070

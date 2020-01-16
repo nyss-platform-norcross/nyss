@@ -1,20 +1,16 @@
-﻿using System;
-using System.Net;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.GlobalCoordinator.Dto;
-using RX.Nyss.Web.Features.User;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.GlobalCoordinator
 {
@@ -29,7 +25,6 @@ namespace RX.Nyss.Web.Features.GlobalCoordinator
 
     public class GlobalCoordinatorService : IGlobalCoordinatorService
     {
-
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly ILoggerAdapter _loggerAdapter;

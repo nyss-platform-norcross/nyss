@@ -4,6 +4,8 @@ using MockQueryable.NSubstitute;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NSubstitute.ReturnsExtensions;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -11,8 +13,6 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.SmsGateway;
 using RX.Nyss.Web.Features.SmsGateway.Dto;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
@@ -28,7 +28,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
         {
             _nyssContextMock = Substitute.For<INyssContext>();
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            var config = Substitute.For<IConfig>();
+            var config = Substitute.For<INyssWebConfig>();
             _smsGatewayBlobProviderMock = Substitute.For<ISmsGatewayBlobProvider>();
             _smsGatewayService = new SmsGatewayService(_nyssContextMock, loggerAdapterMock, _smsGatewayBlobProviderMock);
         }

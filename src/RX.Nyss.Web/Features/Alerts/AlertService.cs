@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
@@ -15,8 +17,7 @@ using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
-using RX.Nyss.Web.Utils.Logging;
-using static RX.Nyss.Web.Utils.DataContract.Result;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Alerts
 {
@@ -42,7 +43,7 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
@@ -51,7 +52,7 @@ namespace RX.Nyss.Web.Features.Alerts
             INyssContext nyssContext,
             IEmailPublisherService emailPublisherService,
             IEmailTextGeneratorService emailTextGeneratorService,
-            IConfig config,
+            INyssWebConfig config,
             ISmsTextGeneratorService smsTextGeneratorService,
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,

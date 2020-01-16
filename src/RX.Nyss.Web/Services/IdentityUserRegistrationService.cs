@@ -4,12 +4,12 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
-using RX.Nyss.Web.Utils.DataContract;
-using static RX.Nyss.Web.Utils.DataContract.Result;
-using RX.Nyss.Web.Utils.Logging;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Services
 {
@@ -29,12 +29,12 @@ namespace RX.Nyss.Web.Services
         private readonly UserManager<IdentityUser> _userManager;
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IConfig _config;
+        private readonly INyssWebConfig _config;
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
 
         public IdentityUserRegistrationService(UserManager<IdentityUser> userManager,
-            ILoggerAdapter loggerAdapter, IConfig config, IEmailPublisherService emailPublisherService, INyssContext nyssContext, IEmailTextGeneratorService emailTextGeneratorService)
+            ILoggerAdapter loggerAdapter, INyssWebConfig config, IEmailPublisherService emailPublisherService, INyssContext nyssContext, IEmailTextGeneratorService emailTextGeneratorService)
         {
             _userManager = userManager;
             _loggerAdapter = loggerAdapter;
@@ -105,6 +105,7 @@ namespace RX.Nyss.Web.Services
             {
                 return Error(ResultKey.User.ResetPassword.UserNotFound);
             }
+            
             var passwordAddResult = await _userManager.AddPasswordAsync(user, newPassword);
 
             var isPasswordTooWeak = passwordAddResult.Errors.Any(x => x.IsPasswordTooWeak());

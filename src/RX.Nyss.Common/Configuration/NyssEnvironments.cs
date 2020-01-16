@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Configuration
+﻿namespace RX.Nyss.Common.Configuration
 {
     public static class NyssEnvironments
     {

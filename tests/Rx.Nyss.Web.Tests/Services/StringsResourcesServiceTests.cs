@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
-using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Services.StringsResources;
+using RX.Nyss.Common.Services;
+using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils.Logging;
 using Shouldly;
 using Xunit;
 
@@ -12,13 +13,13 @@ namespace RX.Nyss.Web.Tests.Services
 {
     public class StringsResourcesServiceTests
     {
-        private readonly StringsResourcesService _stringsResourcesService;
+        private readonly IStringsResourcesService _stringsResourcesService;
         private readonly INyssBlobProvider _nyssBlobProvider;
         private const string DefaultLanguageCode = "en";
 
         public StringsResourcesServiceTests()
         {
-            var logger = Substitute.For<ILogger<StringsResourcesService>>();
+            var logger = Substitute.For<ILoggerAdapter>();
             _nyssBlobProvider = Substitute.For<INyssBlobProvider>();
 
             _stringsResourcesService = new StringsResourcesService(_nyssBlobProvider, logger);

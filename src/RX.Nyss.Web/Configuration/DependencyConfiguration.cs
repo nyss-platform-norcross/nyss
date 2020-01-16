@@ -15,6 +15,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.OpenApi.Models;
+using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.Alerts.Access;
@@ -30,8 +33,6 @@ using RX.Nyss.Web.Features.SmsGateway.Access;
 using RX.Nyss.Web.Features.Supervisor.Access;
 using RX.Nyss.Web.Features.TechnicalAdvisor.Access;
 using RX.Nyss.Web.Features.User.Access;
-using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using Serilog;
 
 namespace RX.Nyss.Web.Configuration
@@ -40,7 +41,7 @@ namespace RX.Nyss.Web.Configuration
     {
         public static void ConfigureDependencies(this IServiceCollection serviceCollection, IConfiguration configuration)
         {
-            var config = configuration.Get<NyssConfig>();
+            var config = configuration.Get<ConfigSingleton>();
             RegisterLogger(serviceCollection, config.Logging, configuration);
             RegisterDatabases(serviceCollection, config.ConnectionStrings);
             RegisterAuth(serviceCollection, config.Authentication);
@@ -54,7 +55,7 @@ namespace RX.Nyss.Web.Configuration
         }
 
         private static void RegisterLogger(IServiceCollection serviceCollection,
-            NyssConfig.LoggingOptions loggingOptions, IConfiguration configuration)
+            ILoggingOptions loggingOptions, IConfiguration configuration)
         {
             const string applicationInsightsEnvironmentVariable = "APPINSIGHTS_INSTRUMENTATIONKEY";
             var appInsightsInstrumentationKey = configuration[applicationInsightsEnvironmentVariable];
@@ -68,7 +69,7 @@ namespace RX.Nyss.Web.Configuration
             }
         }
 
-        private static void RegisterDatabases(IServiceCollection serviceCollection, NyssConfig.ConnectionStringOptions connectionStringOptions)
+        private static void RegisterDatabases(IServiceCollection serviceCollection, IConnectionStringOptions connectionStringOptions)
         {
             serviceCollection.AddDbContext<NyssContext>(options =>
                 options.UseSqlServer(connectionStringOptions.NyssDatabase,
@@ -78,7 +79,7 @@ namespace RX.Nyss.Web.Configuration
                 options.UseSqlServer(connectionStringOptions.NyssDatabase));
         }
 
-        private static void RegisterAuth(IServiceCollection serviceCollection, NyssConfig.AuthenticationOptions authenticationOptions)
+        private static void RegisterAuth(IServiceCollection serviceCollection, ConfigSingleton.AuthenticationOptions authenticationOptions)
         {
             serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -99,7 +100,7 @@ namespace RX.Nyss.Web.Configuration
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireDigit = false;
             });
-            
+
             RegisterAuthorizationPolicies(serviceCollection);
 
             serviceCollection.ConfigureApplicationCookie(options =>
@@ -159,7 +160,7 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.TechnicalAdvisorAccess.ToString(),
                     policy => policy.Requirements.Add(new TechnicalAdvisorAccessHandler.Requirement()));
-                    
+
                 options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
                     policy => policy.Requirements.Add(new SmsGatewayAccessHandler.Requirement()));
 
@@ -250,9 +251,10 @@ namespace RX.Nyss.Web.Configuration
                 c.IncludeXmlComments(xmlPath);
             });
 
-        private static void RegisterServiceCollection(IServiceCollection serviceCollection, NyssConfig config)
+        private static void RegisterServiceCollection(IServiceCollection serviceCollection, ConfigSingleton config)
         {
             serviceCollection.AddSingleton<IConfig>(config);
+            serviceCollection.AddSingleton<INyssWebConfig>(config);
             RegisterTypes(serviceCollection, "RX.Nyss");
         }
 

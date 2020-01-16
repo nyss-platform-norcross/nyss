@@ -6,6 +6,8 @@ using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -15,7 +17,6 @@ using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using Shouldly;
 using Xunit;
 
@@ -39,7 +40,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _emailPublisherService = Substitute.For<IEmailPublisherService>();
             var emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
             _smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
-            var config = Substitute.For<IConfig>();
+            var config = Substitute.For<INyssWebConfig>();
             var loggerAdapter = Substitute.For<ILoggerAdapter>();
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
@@ -172,7 +173,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             {
                 new SmsAlertRecipient{ PhoneNumber= phonenumber }
             };
-            
+
             await _alertService.EscalateAlert(TestData.AlertId);
 
             await _emailPublisherService.Received(1)
@@ -434,7 +435,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             public const int AlertId = 1;
             public static readonly DateTime AlertCreatedAt = new DateTime(2020, 1, 1);
-            public static readonly string TimeZoneName = "Dateline Standard Time";
+            public static readonly string TimeZoneName = "UTC";
             public static readonly TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName);
             public static readonly GlobalCoordinatorUser DefaultUser = new GlobalCoordinatorUser { Name = "DefaultUser" };
             public const int ReportId = 23;

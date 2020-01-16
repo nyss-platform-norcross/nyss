@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Services;
-using RX.Nyss.Web.Utils.DataContract;
-using RX.Nyss.Web.Utils.Logging;
 using Xunit;
 
 namespace RX.Nyss.Web.Tests.Services
@@ -18,7 +18,7 @@ namespace RX.Nyss.Web.Tests.Services
     public class IdentityUserServiceTests
     {
         private readonly ILoggerAdapter _loggerAdapterMock;
-        private readonly IConfig _configMock;
+        private readonly INyssWebConfig _configMock;
         private readonly IEmailPublisherService _emailPublisherServiceMock;
         private readonly IEmailTextGeneratorService _emailTextGeneratorServiceMock;
         private readonly INyssContext _nyssContextMock;
@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Tests.Services
         public IdentityUserServiceTests()
         {
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _configMock = new NyssConfig();
+            _configMock = new ConfigSingleton();
             _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
             _nyssContextMock = Substitute.For<INyssContext>();
             _emailTextGeneratorServiceMock = Substitute.For<IEmailTextGeneratorService>();
