@@ -67,7 +67,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
         [Theory]
         [InlineData(DataCollectorType.Human, false, 16, 9, 0, 0, 0, 0)]
-        [InlineData(DataCollectorType.CollectionPoint, false, 8, 5, 0, 2, 3, 3)]
+        [InlineData(DataCollectorType.CollectionPoint, false, 8, 4, 0, 2, 3, 3)]
         [InlineData(DataCollectorType.Human, true, 4, 2, 0, 0, 0, 0)]
         [InlineData(DataCollectorType.CollectionPoint, true, 4, 2, 0, 2, 1, 1)]
         public async Task GetSummaryData_FilterReportsOnDataCollectorTypeAndTrainingStatus_ShouldShowAllReportsAccordingToDataCollectorType(
@@ -146,7 +146,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(1, false, 12, 7, 0, 0, 0, 0)]
+        [InlineData(1, false, 12, 6, 0, 0, 0, 0)]
         [InlineData(2, false, 12, 7, 0, 2, 3, 3)]
         [InlineData(1, true, 4, 2, 0, 0, 0, 0)]
         [InlineData(2, true, 4, 2, 0, 2, 1, 1)]
@@ -185,9 +185,9 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(1, false, 4, 3, 0)]
-        [InlineData(2, false, 8, 5, 0)]
-        [InlineData(3, false, 4, 3, 0)]
+        [InlineData(1, false, 4, 2, 0)]
+        [InlineData(2, false, 8, 4, 0)]
+        [InlineData(3, false, 4, 2, 0)]
         [InlineData(4, false, 8, 5, 0)]
         [InlineData(1, true, 4, 2, 0)]
         [InlineData(2, true, 0, 0, 0)]
@@ -292,21 +292,21 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
 
         [Theory]
-        [InlineData(1, 0, 1, 0)]
-        [InlineData(2, 0, 1, 0)]
-        [InlineData(3, 2, 2, 0)]
-        [InlineData(4, 2, 2, 0)]
-        [InlineData(5, 2, 2, 0)]
-        [InlineData(6, 2, 2, 0)]
-        [InlineData(7, 2, 2, 0)]
-        [InlineData(8, 2, 2, 0)]
-        [InlineData(9, 2, 2, 0)]
-        [InlineData(10, 2, 2, 0)]
-        [InlineData(11, 0, 1, 0)]
-        [InlineData(12, 0, 1, 0)]
-        [InlineData(13, 2, 2, 0)]
-        [InlineData(14, 2, 2, 0)]
-        [InlineData(15, 2, 2, 0)]
+        [InlineData(1, 0, 0, 0)]
+        [InlineData(2, 0, 0, 0)]
+        [InlineData(3, 2, 1, 0)]
+        [InlineData(4, 2, 1, 0)]
+        [InlineData(5, 2, 1, 0)]
+        [InlineData(6, 2, 1, 0)]
+        [InlineData(7, 2, 1, 0)]
+        [InlineData(8, 2, 1, 0)]
+        [InlineData(9, 2, 1, 0)]
+        [InlineData(10, 2, 1, 0)]
+        [InlineData(11, 0, 0, 0)]
+        [InlineData(12, 0, 0, 0)]
+        [InlineData(13, 2, 1, 0)]
+        [InlineData(14, 2, 1, 0)]
+        [InlineData(15, 2, 1, 0)]
         [InlineData(16, 2, 2, 0)]
         public async Task GetSummaryData_FilterMainReportsOnZone_ShouldReturnCorrectNumbers(int zoneId, int expectedReportsCount, int expectedActiveCollectorsCount, int expectedInactiveCollectorsCount)
         {

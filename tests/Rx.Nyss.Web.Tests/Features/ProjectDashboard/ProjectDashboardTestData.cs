@@ -72,7 +72,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             return nyssContextMock;
         }
 
-    public ProjectDashboardTestData(IDateTimeProvider dateTimeProvider)
+        public ProjectDashboardTestData(IDateTimeProvider dateTimeProvider)
         {
             _dateTimeProvider = dateTimeProvider;
 
@@ -220,16 +220,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             DataCollectors.GetRange(humansStartIndex, numberOfTrainingHumans).ForEach(dc => dc.IsInTrainingMode = true);
             DataCollectors.GetRange(collectionPointsStartIndex, numberOfTrainingCollectionPoints).ForEach(dc => dc.IsInTrainingMode = true);
 
-            RawReports = Enumerable.Range(1, numberOfErrorReports)
-                .Select(i => new RawReport
-                {
-                    Id = i,
-                    DataCollector = DataCollectors[DataCollectors.Count - 1],
-                    ReceivedAt = BaseDate.AddDays(i - 1),
-                    IsTraining = false
-                }).ToList();
-            RawReports.ForEach(r => r.DataCollector.RawReports.Add(r));
-
             Reports = Enumerable.Range(1, numberOfReports)
                 .Select(i => new Report
                 {
@@ -311,6 +301,32 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                         _ => (r.ReportedCase.CountMalesBelowFive ?? 0) + (r.ReportedCase.CountFemalesAtLeastFive ?? 0) + (r.ReportedCase.CountFemalesBelowFive ?? 0) + (r.ReportedCase.CountMalesAtLeastFive ?? 0) + (r.DataCollectionPointCase.DeathCount ?? 0) + (r.DataCollectionPointCase.FromOtherVillagesCount ?? 0) + (r.DataCollectionPointCase.ReferredCount ?? 0)
                     };
                 });
+
+            RawReports = new List<RawReport>();
+            Reports.ForEach(r => {
+                var rawReport = new RawReport
+                {
+                    Id = r.Id,
+                    DataCollector = r.DataCollector,
+                    ReceivedAt = r.ReceivedAt,
+                    IsTraining = r.IsTraining,
+                    Report = r
+                };
+                RawReports.Add(rawReport);
+            });
+
+            var errorReports = Enumerable.Range(1, numberOfErrorReports)
+                .Select(i => new RawReport
+                {
+                    Id = i + numberOfReports,
+                    DataCollector = DataCollectors[DataCollectors.Count - 1],
+                    ReceivedAt = BaseDate.AddDays(i - 1),
+                    IsTraining = false
+                }).ToList();
+
+            RawReports.AddRange(errorReports);
+
+            RawReports.ForEach(r => r.DataCollector.RawReports.Add(r));
         }
     }
 }
