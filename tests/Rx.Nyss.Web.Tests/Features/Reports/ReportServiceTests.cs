@@ -62,7 +62,9 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _dateTimeProvider.GetEpiWeek(default).ReturnsForAnyArgs(1);
             _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _excelExportService, _stringsResourcesService, _dateTimeProvider);
-            
+
+            _authorizationService.IsCurrentUserInRole(Role.Supervisor).Returns(false);
+            _authorizationService.GetCurrentUser().Returns(new CurrentUser() { Name = "admin@domain.com" });
             ArrangeData();
         }
 
@@ -249,6 +251,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
             var rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).ToList();
 
+            var users = new List<User> { new AdministratorUser{ Role = Role.Administrator, EmailAddress = "admin@domain.com"} };
+
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
             var languageContentsMockDbSet = languageContents.AsQueryable().BuildMockDbSet();
@@ -263,6 +267,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var dataCollectorsDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
             var reportsDbSet = reports.AsQueryable().BuildMockDbSet();
             var rawReportsDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            var usersDbSet = users.AsQueryable().BuildMockDbSet();
 
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContextMock.ContentLanguages.Returns(contentLanguageMockDbSet);
@@ -278,6 +283,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _nyssContextMock.DataCollectors.Returns(dataCollectorsDbSet);
             _nyssContextMock.Reports.Returns(reportsDbSet);
             _nyssContextMock.RawReports.Returns(rawReportsDbSet);
+            _nyssContextMock.Users.Returns(usersDbSet);
 
             _nyssContextMock.Projects.FindAsync(1).Returns(projects.Single(x => x.Id == 1));
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
