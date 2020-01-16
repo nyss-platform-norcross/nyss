@@ -109,6 +109,7 @@ namespace RX.Nyss.Web.Features.Report
                         .Select(lc => lc.Name)
                         .Single(),
                     IsValid = r.Report != null,
+                    MarkedAsError = r.Report.MarkedAsError,
                     Region = r.Report != null
                         ? r.Report.Village.District.Region.Name
                         : r.DataCollector.Village.District.Region.Name,
@@ -192,9 +193,7 @@ namespace RX.Nyss.Web.Features.Report
                 {
                     Date = report.DateTime.ToString("yyyy-MM-dd"),
                     Time = report.DateTime.ToString("HH:mm"),
-                    Status = report.IsValid
-                        ? GetStringResource(stringResources, "reports.list.success")
-                        : GetStringResource(stringResources, "reports.list.error"),
+                    Status = GetReportStatus(report, stringResources),
                     report.DataCollectorDisplayName,
                     report.PhoneNumber,
                     report.Region,
@@ -220,6 +219,15 @@ namespace RX.Nyss.Web.Features.Report
 
             return _excelExportService.ToCsv(reportData, columnLabels);
         }
+
+        private string GetReportStatus(ExportReportListResponseDto report, IDictionary<string, string> stringResources) =>
+            report.MarkedAsError switch
+            {
+                true => GetStringResource(stringResources, "reports.list.markedAsError"),
+                false => report.IsValid
+                    ? GetStringResource(stringResources, "reports.list.success")
+                    : GetStringResource(stringResources, "reports.list.error")
+            };
 
         public async Task<Result> MarkAsError(int reportId)
         {

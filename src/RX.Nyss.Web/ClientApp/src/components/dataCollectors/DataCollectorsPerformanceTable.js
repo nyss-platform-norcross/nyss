@@ -5,17 +5,12 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { getIconFromStatus } from './logic/dataCollectorsService';
 import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
 
-export const DataCollectorsPerformanceTable = ({ isListFetching, list, projectId }) => {
-  if (isListFetching) {
-    return <Loading />;
-  }
-
+export const DataCollectorsPerformanceTable = ({ list }) => {
   return (
     <TableContainer>
       <Table>

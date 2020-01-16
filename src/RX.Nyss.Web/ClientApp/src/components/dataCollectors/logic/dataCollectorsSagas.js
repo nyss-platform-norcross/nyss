@@ -178,17 +178,10 @@ function* setTrainingState({ dataCollectorId, inTraining }) {
 };
 
 function* openDataCollectorsPerformanceList({ projectId }) {
-  const listStale = yield select(state => state.dataCollectors.performanceListStale);
-  const listProjectId = yield select(state => state.dataCollectors.listProjectId);
-
   yield put(actions.openDataCollectorsPerformanceList.request());
   try {
     yield openDataCollectorsModule(projectId);
-
-    if (listStale || listProjectId !== projectId) {
-      yield call(getDataCollectorsPerformance, projectId);
-    }
-
+    yield call(getDataCollectorsPerformance, projectId);
     yield put(actions.openDataCollectorsPerformanceList.success(projectId));
   } catch (error) {
     yield put(actions.openDataCollectorsPerformanceList.failure(error.message));

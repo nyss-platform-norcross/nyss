@@ -16,7 +16,7 @@ import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { accessMap } from '../../authentication/accessMap';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { ConfirmationDialog } from '../common/ConfirmationDialog';
+import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 import { ReportListType } from '../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './logic/reportsConstants'
 import TableSortLabel from '@material-ui/core/TableSortLabel';

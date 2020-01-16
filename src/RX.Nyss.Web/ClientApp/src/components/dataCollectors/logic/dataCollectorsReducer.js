@@ -99,7 +99,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, performanceListFetching: true, performanceListData: [] };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS:
-      return { ...state, performanceListFetching: false, performanceListData: action.list, performanceListStale: false };
+      return { ...state, performanceListFetching: false, performanceListData: action.list };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.FAILURE:
       return { ...state, performanceListFetching: false, performanceListData: [] };

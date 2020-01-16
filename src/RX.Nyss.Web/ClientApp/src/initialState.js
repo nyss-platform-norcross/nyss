@@ -142,7 +142,6 @@ export const initialState = {
     mapOverviewDetailsFetching: false,
     settingTrainingState: {},
     performanceListData: [],
-    performanceListStale: true,
     performanceListFetching: false
   },
   headManagerConsents: {

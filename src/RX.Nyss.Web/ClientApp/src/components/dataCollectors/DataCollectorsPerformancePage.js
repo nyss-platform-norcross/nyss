@@ -3,23 +3,23 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
-import TableActions from '../common/tableActions/TableActions';
 import { useMount } from '../../utils/lifecycle';
-import { strings, stringKeys } from '../../strings';
 import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
-import {DataCollectorsPerformanceTableLegend} from './DataCollectorsPerformanceTableLegend';
+import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
+import { Loading } from '../common/loading/Loading';
 
 const DataCollectorsPerformancePageComponent = (props) => {
   useMount(() => {
     props.openDataCollectorsPerformanceList(props.projectId);
   });
 
+  if (props.isListFetching) {
+    return <Loading />;
+  }
+
   return (
     <Fragment>
-          
       <DataCollectorsPerformanceTable
         list={props.list}
         goToDashboard={props.goToDashboard}
