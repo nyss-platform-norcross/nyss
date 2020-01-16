@@ -1,5 +1,7 @@
 .filtersGrid {
-  position: sticky;
-  top: -12px;
-  z-index: 1001;
+  @media not all and (max-height: 767px) {
+    position: sticky;
+    top: -12px;
+    z-index: 1001;
+  }
 }

@@ -148,12 +148,14 @@ namespace RX.Nyss.Web.Features.Report
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.IsTraining ?
-                      r.IsTraining.HasValue && r.IsTraining.Value :
-                      r.IsTraining.HasValue && !r.IsTraining.Value)
                 .Where(r => filter.ReportsType== ReportListType.FromDcp ?
-                            r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
-                            r.DataCollector.DataCollectorType == DataCollectorType.Human);
+                    r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
+                    r.DataCollector.DataCollectorType == DataCollectorType.Human)
+                .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
+                .Where(r => filter.Status ? r.Report != null : r.Report == null)
+                .Where(r => filter.IsTraining ?
+                    r.IsTraining.HasValue && r.IsTraining.Value :
+                    r.IsTraining.HasValue && !r.IsTraining.Value);
 
             var result = baseQuery.Select(r => new ExportReportListResponseDto
                 {
