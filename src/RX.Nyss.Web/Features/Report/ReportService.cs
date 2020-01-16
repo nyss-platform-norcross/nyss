@@ -76,6 +76,11 @@ namespace RX.Nyss.Web.Features.Report
         private  async Task <(IQueryable<RawReport> baseQuery, IQueryable<IReportListResponseDto> result)> GetReportQueries(int projectId, ReportListFilterRequestDto filter)
         {
             var currentUser = _authorizationService.GetCurrentUser();
+            var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
+            var currentUserId = await _nyssContext.Users
+                .Where(u => u.EmailAddress == currentUser.Name)
+                .Select(u => u.Id)
+                .SingleAsync();
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.Name);
 
             var baseQuery = _nyssContext.RawReports
@@ -119,6 +124,7 @@ namespace RX.Nyss.Web.Features.Report
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
+                    UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
                     IsInAlert = r.Report.ReportAlerts.Any(),
                     ReportId = r.ReportId,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,

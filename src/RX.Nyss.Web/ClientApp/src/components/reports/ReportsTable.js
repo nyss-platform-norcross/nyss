@@ -121,7 +121,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, us
                 }
                 <TableCell>
                   <TableRowActions>
-                    {hasMarkAsErrorAccess && row.isValid && !row.isInAlert && !row.isMarkedAsError && (
+                    {hasMarkAsErrorAccess && row.isValid && !row.isInAlert && !row.isMarkedAsError && row.userHasAccessToReportDataCollector && (
                       <TableRowMenu
                         id={row.id}
                         icon={<MoreVertIcon />}
