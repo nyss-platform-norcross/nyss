@@ -34,7 +34,6 @@ const ReportsListPageComponent = (props) => {
 
   const handleMarkAsError = (reportId) => {
     props.markAsError(reportId);
-    props.getList(props.projectId, props.page, props.filters, props.sorting);
   }
 
   return (

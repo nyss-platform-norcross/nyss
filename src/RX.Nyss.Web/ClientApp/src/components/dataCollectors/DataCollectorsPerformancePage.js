@@ -19,12 +19,7 @@ const DataCollectorsPerformancePageComponent = (props) => {
 
   return (
     <Fragment>
-      <TableActions>
-        <Button onClick={() => props.goToCreation(props.projectId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          {strings(stringKeys.dataCollector.addNew)}
-       </Button>
-      </TableActions>
-
+          
       <DataCollectorsPerformanceTable
         list={props.list}
         goToDashboard={props.goToDashboard}

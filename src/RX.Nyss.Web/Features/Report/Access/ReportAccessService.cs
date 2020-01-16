@@ -29,7 +29,8 @@ namespace RX.Nyss.Web.Features.Report.Access
 
         public async Task<bool> HasCurrentUserAccessToReport(int reportId)
         {
-            var reportProjectId = await _nyssContext.Reports.Select(r => r.ProjectHealthRisk.Project.Id).FirstOrDefaultAsync();
+            var reportProjectId = await _nyssContext.Reports.Where(r => r.Id == reportId)
+                .Select(r => r.ProjectHealthRisk.Project.Id).FirstOrDefaultAsync();
             return await _projectAccessService.HasCurrentUserAccessToProject(reportProjectId);
         }
     }
