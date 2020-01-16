@@ -65,6 +65,25 @@ namespace RX.Nyss.Web.Features.Common
 
         public static IQueryable<Nyss.Data.Models.RawReport> FromKnownDataCollector(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
             reports.Where(r => r.DataCollector.Id > 0);
+
+        public static IQueryable<Nyss.Data.Models.RawReport> FilterDataCollectorsByArea(this IQueryable<Nyss.Data.Models.RawReport> reports, AreaDto area) =>
+            area?.Type switch
+            {
+                AreaDto.AreaType.Region =>
+                reports.Where(r => r.Report.Village.District.Region.Id == area.Id),
+
+                AreaDto.AreaType.District =>
+                reports.Where(r => r.Report.Village.District.Id == area.Id),
+
+                AreaDto.AreaType.Village =>
+                reports.Where(r => r.Report.Village.Id == area.Id),
+
+                AreaDto.AreaType.Zone =>
+                reports.Where(r => r.Report.Zone.Id == area.Id),
+
+                _ =>
+                reports
+            };
     }
 
     public static class DataCollectorQueryableExtensions

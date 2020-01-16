@@ -55,10 +55,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Select(p => new ProjectSummaryResponseDto
                 {
                     ReportCount = healthRiskReports.Sum(r => r.ReportedCaseCount),
-                    ActiveDataCollectorCount = allReports
-                        .Where(r => r.DataCollector.DeletedAt == null)
-                        .Select(r => r.DataCollector.Id)
-                        .Distinct().Count(),
+                    ActiveDataCollectorCount = ActiveDataCollectorCount(allReports, filtersDto),
                     InactiveDataCollectorCount = InactiveDataCollectorCount(projectId, allReports, filtersDto),
                     DataCollectionPointSummary = new DataCollectionPointsSummaryResponse
                         {
@@ -566,6 +563,16 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .FilterDataCollectorsByTrainingMode(filtersDto.IsTraining)
                 .FilterOnlyNotDeleted()
                 .Count(dc => !activeDataCollectors.Contains(dc.Id));
+        }
+
+        private int ActiveDataCollectorCount(IQueryable<Nyss.Data.Models.RawReport> reports, FiltersRequestDto filtersDto)
+        {
+            return reports
+                .Where(r => r.DataCollector.DeletedAt == null)
+                .Select(r => r.DataCollector)
+                .FilterDataCollectorsByArea(filtersDto.Area)
+                .Select(dc => dc.Id)
+                .Distinct().Count();
         }
 
         private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.ReportsTypeDto reportsType) =>
