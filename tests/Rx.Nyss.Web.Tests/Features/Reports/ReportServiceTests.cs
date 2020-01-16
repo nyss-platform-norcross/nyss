@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
-using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -32,7 +31,6 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         private readonly IAuthorizationService _authorizationService;
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
-        private readonly IDateTimeProvider _dateTimeProvider;
 
         private readonly int _rowsPerPage = 10;
         private readonly List<int> _reportIdsFromProject1 = Enumerable.Range(1, 13).ToList();
@@ -59,12 +57,10 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _excelExportService = Substitute.For<IExcelExportService>();
             _stringsResourcesService = Substitute.For<IStringsResourcesService>();
 
-            _dateTimeProvider = Substitute.For<IDateTimeProvider>();
-            _dateTimeProvider.GetEpiWeek(default).ReturnsForAnyArgs(1);
-            _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _excelExportService, _stringsResourcesService, _dateTimeProvider);
+            _reportService = new ReportService(_nyssContextMock, _userService, _projectService, _config, _authorizationService, _excelExportService, _stringsResourcesService);
 
             _authorizationService.IsCurrentUserInRole(Role.Supervisor).Returns(false);
-            _authorizationService.GetCurrentUser().Returns(new CurrentUser() { Name = "admin@domain.com" });
+            _authorizationService.GetCurrentUserName().Returns("admin@domain.com");
             ArrangeData();
         }
 
