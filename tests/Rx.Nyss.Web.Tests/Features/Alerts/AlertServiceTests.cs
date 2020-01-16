@@ -173,7 +173,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             {
                 new SmsAlertRecipient{ PhoneNumber= phonenumber }
             };
-            
+
             await _alertService.EscalateAlert(TestData.AlertId);
 
             await _emailPublisherService.Received(1)
@@ -435,7 +435,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             public const int AlertId = 1;
             public static readonly DateTime AlertCreatedAt = new DateTime(2020, 1, 1);
-            public static readonly string TimeZoneName = "Dateline Standard Time";
+            public static readonly string TimeZoneName = "UTC";
             public static readonly TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName);
             public static readonly GlobalCoordinatorUser DefaultUser = new GlobalCoordinatorUser { Name = "DefaultUser" };
             public const int ReportId = 23;

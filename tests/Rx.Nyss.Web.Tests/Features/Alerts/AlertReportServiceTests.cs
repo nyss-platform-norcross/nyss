@@ -42,7 +42,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _queueService = Substitute.For<IQueueService>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _authorizationService = Substitute.For<IAuthorizationService>();
-            _alertReportService = new AlertReportService(_config, _nyssContext, _alertService, _queueService, _dateTimeProvider, _authorizationService);
+            _alertReportService = new AlertReportService(config, _nyssContext, _alertService, _queueService, _dateTimeProvider, _authorizationService);
 
             _alertReports = TestData.GetAlertReports();
             var alertReportsDbSet = _alertReports.AsQueryable().BuildMockDbSet();

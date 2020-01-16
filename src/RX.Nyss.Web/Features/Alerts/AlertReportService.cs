@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -9,7 +10,6 @@ using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Alerts
@@ -57,7 +57,7 @@ namespace RX.Nyss.Web.Features.Alerts
             {
                 return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReport.WrongAlertStatus);
             }
-            
+
             if (alertReport.Report.Status != ReportStatus.Pending)
             {
                 return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReport.WrongReportStatus);
