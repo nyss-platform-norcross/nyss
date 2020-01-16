@@ -72,13 +72,13 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var inspectedAlert = await _nyssContext.AlertReports
                 .Where(ar => ar.ReportId == reportId)
-                .Where(ar => ar.Alert.Status == AlertStatus.Pending || ar.Alert.Status == AlertStatus.Dismissed)
+                .Where(ar => ar.Alert.Status == AlertStatus.Pending)
                 .Select(ar => ar.Alert)
                 .SingleOrDefaultAsync();
 
             if (inspectedAlert == null)
             {
-                _loggerAdapter.Warn($"The alert for report with id {reportId} does not exist or has status different than pending or dismissed.");
+                _loggerAdapter.Warn($"The alert for report with id {reportId} does not exist or has status different than pending.");
                 return;
             }
 
