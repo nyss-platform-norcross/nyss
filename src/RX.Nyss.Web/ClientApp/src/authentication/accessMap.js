@@ -8,6 +8,9 @@ export const accessMap = {
     delete: [Administrator, GlobalCoordinator],
     get: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer],
   },
+  nationalSocietyStructure: {
+    edit: [Administrator, Manager, TechnicalAdvisor]
+  },
   smsGateways: {
     list: [Administrator, Manager, TechnicalAdvisor],
     add: [Administrator, Manager, TechnicalAdvisor],
