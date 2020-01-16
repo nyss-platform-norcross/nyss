@@ -7,7 +7,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 {
     public class ReportData
     {
-        public GatewaySetting GatewaySetting { get; set; }
         public DataCollector DataCollector { get; set; }
         public ParsedReport ParsedReport { get; set; }
         public ProjectHealthRisk ProjectHealthRisk { get; set; }
@@ -26,5 +25,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         public bool IsSuccess { get; set; }
         public ReportData ReportData { get; set; }
         public ErrorReportData ErrorReportData { get; set; }
+        public GatewaySetting GatewaySetting { get; set; }
     }
 }

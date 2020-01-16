@@ -99,7 +99,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     var reportValidationResult = await ParseAndValidateReport(rawReport, parsedQueryString);
                     if (reportValidationResult.IsSuccess)
                     {
-                        gatewaySetting = reportValidationResult.ReportData.GatewaySetting;
+                        gatewaySetting = reportValidationResult.GatewaySetting;
                         projectHealthRisk = reportValidationResult.ReportData.ProjectHealthRisk;
 
                         var epiDate = _dateTimeProvider.GetEpiDate(reportValidationResult.ReportData.ReceivedAt);
@@ -143,6 +143,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     else
                     {
                         reportErrorData = reportValidationResult.ErrorReportData;
+                        gatewaySetting = reportValidationResult.GatewaySetting;
                     }
 
                     await _nyssContext.SaveChangesAsync();
@@ -205,9 +206,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         DataCollector = dataCollector,
                         ProjectHealthRisk = projectHealthRisk,
                         ReceivedAt = receivedAt,
-                        GatewaySetting = gatewaySetting,
                         ParsedReport = parsedReport
-                    }
+                    },
+                    GatewaySetting = gatewaySetting
                 };
             }
             catch (ReportValidationException e)
@@ -229,7 +230,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         Sender = sender,
                         LanguageCode = languageCode,
                         ReportErrorType = e.ErrorType
-                    }
+                    },
+                    GatewaySetting = gatewaySetting
                 };
             }
             catch (Exception e)
