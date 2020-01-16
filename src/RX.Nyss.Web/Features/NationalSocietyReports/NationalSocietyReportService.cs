@@ -49,7 +49,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(_authorizationService.GetCurrentUserName());
             var rowsPerPage = _config.PaginationRowsPerPage;
 
-            var baseQuery = _nyssContext.RawReports
+            var baseQuery = FilterReportsByArea(_nyssContext.RawReports, filter.Area)
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
                 .Where(r =>
@@ -64,8 +64,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 baseQuery = baseQuery
                     .Where(r => r.DataCollector == null || supervisorProjectIds == null || supervisorProjectIds.Contains(r.DataCollector.Project.Id));
             }
-
-            baseQuery = FilterReportsByArea(baseQuery, filter.Area);
 
             var result = await baseQuery.Select(r => new NationalSocietyReportListResponseDto
                 {
