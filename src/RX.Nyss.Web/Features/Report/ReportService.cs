@@ -157,6 +157,8 @@ namespace RX.Nyss.Web.Features.Report
                     r.IsTraining.HasValue && r.IsTraining.Value :
                     r.IsTraining.HasValue && !r.IsTraining.Value);
 
+            baseQuery = FilterReportsByArea(baseQuery, filter.Area);
+
             var result = baseQuery.Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,
@@ -288,7 +290,7 @@ namespace RX.Nyss.Web.Features.Report
                 return new
                 {
                     Date = report.DateTime.ToString("yyyy-MM-dd"),
-                    Time = report.DateTime.ToString("hh:mm"),
+                    Time = report.DateTime.ToString("HH:mm"),
                     Status = report.IsValid
                         ? GetStringResource(stringResources, "reports.list.success")
                         : GetStringResource(stringResources, "reports.list.error"),
