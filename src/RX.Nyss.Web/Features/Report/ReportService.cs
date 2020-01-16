@@ -87,9 +87,6 @@ namespace RX.Nyss.Web.Features.Report
         public async Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter)
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
-            //ToDo: use common logic with the project dashboard
-            var currentUser = _authorizationService.GetCurrentUser();
-            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.Name);
 
             var reportsQuery = FilterReportsByArea(_nyssContext.RawReports, filter.Area)
                 .Where(r => r.DataCollector.Project.Id == projectId)
