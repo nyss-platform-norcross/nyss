@@ -57,7 +57,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     filter.ReportsType == NationalSocietyReportListType.Main ? r.DataCollector.DataCollectorType == DataCollectorType.Human :
                     r.DataCollector == null)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                .Where(r => filter.Status ? r.Report != null : r.Report == null);
+                .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || (r.Report != null && r.Report.MarkedAsError));
 
             if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
             {

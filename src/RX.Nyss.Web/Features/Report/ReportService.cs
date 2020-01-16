@@ -89,7 +89,7 @@ namespace RX.Nyss.Web.Features.Report
                             r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
                             r.DataCollector.DataCollectorType == DataCollectorType.Human)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                .Where(r => filter.Status ? r.Report != null : r.Report == null)
+                .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
                 .Where(r => filter.IsTraining ?
                     r.IsTraining.HasValue && r.IsTraining.Value :
                     r.IsTraining.HasValue && !r.IsTraining.Value);
@@ -152,7 +152,7 @@ namespace RX.Nyss.Web.Features.Report
                     r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
                     r.DataCollector.DataCollectorType == DataCollectorType.Human)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                .Where(r => filter.Status ? r.Report != null : r.Report == null)
+                .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
                 .Where(r => filter.IsTraining ?
                     r.IsTraining.HasValue && r.IsTraining.Value :
                     r.IsTraining.HasValue && !r.IsTraining.Value);
