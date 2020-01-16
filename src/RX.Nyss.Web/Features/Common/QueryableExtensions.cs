@@ -51,8 +51,8 @@ namespace RX.Nyss.Web.Features.Common
                 reports
             };
 
-        public static IQueryable<Nyss.Data.Models.Report> AllSuccessfulReports(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
-            reports.Where(r => r.Report != null).Select(r => r.Report);
+        public static IQueryable<Nyss.Data.Models.RawReport> AllSuccessfulReports(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
+            reports.Where(r => r.Report != null);
 
         public static IQueryable<Nyss.Data.Models.RawReport> FilterReportsByDate(this IQueryable<Nyss.Data.Models.RawReport> reports, DateTime startDate, DateTime endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);

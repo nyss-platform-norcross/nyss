@@ -9,7 +9,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common;
-using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 
@@ -432,7 +431,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Select(x => new ReportByVillageAndDateResponseDto.VillageDto
                 {
                     Name = x.Village.VillageName,
-                    Periods = x.Data.GroupBy(v => v.Period).OrderBy(v => v.Key.Year).ThenBy(x => x.Key.EpiWeek)
+                    Periods = x.Data.GroupBy(v => v.Period).OrderBy(g => g.Key.Year).ThenBy(g => g.Key.EpiWeek)
                         .Select(g => new ReportByVillageAndDateResponseDto.PeriodDto
                         {
                             Period = g.Key.EpiWeek.ToString(),
@@ -512,6 +511,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         private IQueryable<Nyss.Data.Models.Report> GetFilteredReports(int projectId, FiltersRequestDto filtersDto) =>
             GetAllReportsForProject(projectId, filtersDto)
                 .AllSuccessfulReports()
+                .Select(r => r.Report)
                 .FilterReportsByRegion(filtersDto.Area)
                 .Where(r => !r.MarkedAsError)
                 .FilterReportsByHealthRisk(filtersDto.HealthRiskId);
@@ -545,15 +545,13 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Count(dc => !activeDataCollectors.Contains(dc.Id));
         }
 
-        private int ActiveDataCollectorCount(IQueryable<Nyss.Data.Models.RawReport> reports, FiltersRequestDto filtersDto)
-        {
-            return reports
+        private int ActiveDataCollectorCount(IQueryable<Nyss.Data.Models.RawReport> reports, FiltersRequestDto filtersDto) =>
+            reports
                 .Where(r => r.DataCollector.DeletedAt == null)
                 .Select(r => r.DataCollector)
                 .FilterDataCollectorsByArea(filtersDto.Area)
                 .Select(dc => dc.Id)
                 .Distinct().Count();
-        }
 
         private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.ReportsTypeDto reportsType) =>
             reportsType switch
