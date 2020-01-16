@@ -56,15 +56,6 @@ export function nationalSocietiesReducer(state = initialState.nationalSocieties,
     case actions.EDIT_NATIONAL_SOCIETY.FAILURE:
       return { ...state, formSaving: false, formError: action.message };
 
-    case actions.OPEN_NATIONAL_SOCIETY_DASHBOARD.REQUEST:
-      return { ...state, dashboard: { ...state.dashboard, isFetching: true } };
-
-    case actions.OPEN_NATIONAL_SOCIETY_DASHBOARD.SUCCESS:
-      return { ...state, dashboard: { ...state.dashboard, name: action.name, isFetching: false } };
-
-    case actions.OPEN_NATIONAL_SOCIETY_DASHBOARD.FAILURE:
-      return { ...state, dashboard: { ...state.dashboard, name: null, isFetching: false } };
-
     case actions.REMOVE_NATIONAL_SOCIETY.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };
 

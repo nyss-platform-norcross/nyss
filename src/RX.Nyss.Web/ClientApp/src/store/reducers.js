@@ -16,6 +16,7 @@ import { nationalSocietyReportsReducer } from "../components/nationalSocietyRepo
 import { nationalSocietyStructureReducer } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureReducer";
 import { projectDashboardReducer } from "../components/projectDashboard/logic/projectDashboardReducer";
 import { alertsReducer } from "../components/alerts/logic/alertsReducer";
+import { nationalSocietyDashboardReducer } from "../components/nationalSocietyDashboard/logic/nationalSocietyDashboardReducer";
 
 export const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -34,5 +35,6 @@ export const createRootReducer = (history) => combineReducers({
   headManagerConsents: headManagerConsentsReducer,
   reports: reportsReducer,
   nationalSocietyReports: nationalSocietyReportsReducer,
+  nationalSocietyDashboard: nationalSocietyDashboardReducer,
   alerts: alertsReducer
 });

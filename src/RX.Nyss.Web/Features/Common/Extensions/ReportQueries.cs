@@ -1,11 +1,28 @@
-using System;
+﻿using System;
 using System.Linq;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.Common.Extensions
 {
-    public static class ReportQueryableExtensions
+    public static class ReportQueries
     {
+        public static IQueryable<Nyss.Data.Models.Report> FilterByNationalSociety(this IQueryable<Nyss.Data.Models.Report> reports, int nationalSocietyId) =>
+            reports.Where(r => r.DataCollector.Project.NationalSocietyId == nationalSocietyId);
+
+        public static IQueryable<Nyss.Data.Models.Report> FilterByDataCollectorType(this IQueryable<Nyss.Data.Models.Report> reports, DataCollectorType? dataCollectorType) =>
+            dataCollectorType switch
+            {
+                DataCollectorType.Human =>
+                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
+
+                DataCollectorType.CollectionPoint =>
+                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
+
+                _ =>
+                reports
+            };
+
         public static IQueryable<Nyss.Data.Models.Report> FilterByDate(this IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 

@@ -51,7 +51,39 @@ export const stringKeys = {
       title: "nationalSociety.settings.title"
     },
     dashboard: {
-      title: "nationalSociety.dashboard.title"
+      title: "nationalSociety.dashboard.title",
+      numbers: {
+        totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",
+        totalReportCountTitle: "nationalsociety.dashboard.numbers.totalReportCountTitle"
+      },
+      filters: {
+        startDate: "nationalsociety.dashboard.filters.startDate",
+        endDate: "nationalsociety.dashboard.filters.endDate",
+        timeGrouping: "nationalsociety.dashboard.filters.timeGrouping",
+        timeGroupingDay: "nationalsociety.dashboard.filters.timeGrouping.day",
+        timeGroupingWeek: "nationalsociety.dashboard.filters.timeGrouping.week",
+        healthRisk: "nationalsociety.dashboard.filters.healthRisk",
+        healthRiskAll: "nationalsociety.dashboard.filters.healthRiskAll",
+        reportsType: "nationalsociety.dashboard.filters.reportsType",
+        allReportsType: "nationalsociety.dashboard.filters.allReportsType",
+        dataCollectorReportsType: "nationalsociety.dashboard.filters.dataCollectorReportsType",
+        dataCollectionPointReportsType: "nationalsociety.dashboard.filters.dataCollectionPointReportsType"
+      },
+      activeDataCollectorCount: "nationalsociety.dashboard.activeDataCollectorCount",
+      inactiveDataCollectorCount: "nationalsociety.dashboard.inactiveDataCollectorCount",
+      referredToHospitalCount: "nationalsociety.dashboard.referredToHospitalCount",
+      fromOtherVillagesCount: "nationalsociety.dashboard.fromOtherVillagesCount",
+      deathCount: "nationalsociety.dashboard.deathCount",
+      startDate: "nationalsociety.dashboard.startDate",
+      dataCollectors: "nationalsociety.dashboard.dataCollectors",
+      dataCollectionPoints: "nationalsociety.dashboard.dataCollectionPoints",
+      healthRisks: "nationalsociety.dashboard.healthRisks",
+      map: {
+        reportCount: "nationalsociety.dashboard.map.reportCount",
+        title: "nationalsociety.dashboard.map.title",
+        reports: "nationalsociety.dashboard.map.reports",
+        report: "nationalsociety.dashboard.map.report",
+      }
     },
     overview: {
       title: "nationalSociety.dashboard.overview"
@@ -71,6 +103,10 @@ export const stringKeys = {
     setHead: {
       notAMemberOfSociety: "nationalSociety.setHead.notAMemberOfSociety"
     }
+  },
+  reportsMap: {
+    reports: "reportsMap.reports",
+    report: "reportsMap.report",
   },
   healthRisk: {
     title: "healthRisk.title",

@@ -10,7 +10,6 @@ import { stringKeys } from "../../../strings";
 export const nationalSocietiesSagas = () => [
   takeEvery(consts.GET_NATIONAL_SOCIETIES.INVOKE, getNationalSocieties),
   takeEvery(consts.OPEN_EDITION_NATIONAL_SOCIETY.INVOKE, openNationalSocietyEdition),
-  takeEvery(consts.OPEN_NATIONAL_SOCIETY_DASHBOARD.INVOKE, openNationalSocietyDashboard),
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_OVERVIEW.INVOKE, openNationalSocietyOverview),
   takeEvery(consts.EDIT_NATIONAL_SOCIETY.INVOKE, editNationalSociety),
   takeEvery(consts.CREATE_NATIONAL_SOCIETY.INVOKE, createNationalSociety),
@@ -64,23 +63,6 @@ function* openNationalSocietyOverview({ path, params }) {
     yield put(actions.openOverview.success(response.value));
   } catch (error) {
     yield put(actions.openOverview.failure(error.message));
-  }
-};
-
-function* openNationalSocietyDashboard({ path, params }) {
-  yield put(actions.openDashbaord.request());
-  try {
-    const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
-
-    yield put(appActions.openModule.invoke(path, {
-      nationalSocietyCountry: response.value.countryName,
-      nationalSocietyName: response.value.name,
-      nationalSocietyId: response.value.id
-    }));
-
-    yield put(actions.openDashbaord.success(response.value.name));
-  } catch (error) {
-    yield put(actions.openDashbaord.failure(error.message));
   }
 };
 

@@ -5,8 +5,8 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import dayjs from "dayjs";
-import { generatePdfDocument } from "./projectDashboardService";
 import { stringsFormat, stringKeys } from "../../../strings";
+import { generatePdfDocument } from "../../../utils/pdf";
 
 export const projectDashboardSagas = () => [
   takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard),
@@ -71,6 +71,8 @@ function* getProjectDashboardReportHealthRisks({ projectId, latitude, longitude 
 };
 
 function* generatePdf({ containerElement }) {
+  const reportFileName = "Report";
+
   yield put(actions.generatePdf.request());
   try {
     const siteMapParams = yield select(state => state.appData.siteMap.parameters);
@@ -82,7 +84,7 @@ function* generatePdf({ containerElement }) {
 
     const title = stringsFormat(stringKeys.project.dashboard.printTitle, printTitleParams, true);
 
-    yield call(generatePdfDocument, title, containerElement);
+    yield call(generatePdfDocument, title, containerElement, reportFileName);
     yield put(actions.generatePdf.success());
   } catch (error) {
     yield put(actions.generatePdf.failure(error.message));

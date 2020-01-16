@@ -5,13 +5,13 @@ import CardHeader from '@material-ui/core/CardHeader';
 import { strings, stringKeys } from "../../../strings";
 import { ReportsMap } from "../../maps/ReportsMap";
 
-export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, projectId, getReportHealthRisks }) => {
+export const NationalSocietyDashboardReportsMap = ({ data, details, detailsFetching, nationalSocietyId, getReportHealthRisks }) => {
   const handleMarkerClick = (lat, lng) =>
-    getReportHealthRisks(projectId, lat, lng);
+    getReportHealthRisks(nationalSocietyId, lat, lng);
 
   return (
-    <Card data-printable={true}>
-      <CardHeader title={strings(stringKeys.project.dashboard.map.title)} />
+    <Card>
+      <CardHeader title={strings(stringKeys.nationalSociety.dashboard.map.title)} />
       <CardContent>
         <ReportsMap
           data={data}
