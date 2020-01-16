@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Extensions;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
 using RX.Nyss.Web.Utils.Logging;
@@ -25,6 +28,7 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<Result> DismissAlert(int alertId);
         Task<Result> CloseAlert(int alertId, string comments);
         Task<AlertAssessmentStatus> GetAlertAssessmentStatus(int alertId);
+        Task<Result<AlertLogResponseDto>> GetAlertLogs(int alertId);
     }
 
     public class AlertService : IAlertService
@@ -40,6 +44,8 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
         private readonly IConfig _config;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAuthorizationService _authorizationService;
 
         public AlertService(
             INyssContext nyssContext,
@@ -47,13 +53,17 @@ namespace RX.Nyss.Web.Features.Alerts
             IEmailTextGeneratorService emailTextGeneratorService,
             IConfig config,
             ISmsTextGeneratorService smsTextGeneratorService,
-            ILoggerAdapter loggerAdapter)
+            ILoggerAdapter loggerAdapter,
+            IDateTimeProvider dateTimeProvider,
+            IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
             _emailTextGeneratorService = emailTextGeneratorService;
             _smsTextGeneratorService = smsTextGeneratorService;
             _loggerAdapter = loggerAdapter;
+            _dateTimeProvider = dateTimeProvider;
+            _authorizationService = authorizationService;
             _config = config;
         }
 
@@ -197,6 +207,8 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertData.Alert.Status = AlertStatus.Escalated;
+            alertData.Alert.EscalatedAt = _dateTimeProvider.UtcNow;
+            alertData.Alert.EscalatedBy = _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
             try
@@ -237,11 +249,12 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertData.Alert.Status = AlertStatus.Dismissed;
+            alertData.Alert.DismissedAt = _dateTimeProvider.UtcNow;
+            alertData.Alert.DismissedBy = _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
             return Success();
         }
-
 
         public async Task<Result> CloseAlert(int alertId, string comments)
         {
@@ -265,6 +278,8 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertData.Alert.Status = AlertStatus.Closed;
+            alertData.Alert.ClosedAt = _dateTimeProvider.UtcNow;
+            alertData.Alert.ClosedBy = _authorizationService.GetCurrentUser();
             alertData.Alert.Comments = comments;
 
             FormattableString updateReportsCommand = $@"UPDATE Nyss.Reports SET Status = {ReportStatus.Closed.ToString()} WHERE Status = {ReportStatus.Pending.ToString()}
@@ -292,6 +307,81 @@ namespace RX.Nyss.Web.Features.Alerts
                 .SingleAsync();
 
             return GetAlertAssessmentStatus(alertData.Status, alertData.AcceptedReports, alertData.PendingReports, alertData.CountThreshold);
+        }
+
+        public async Task<Result<AlertLogResponseDto>> GetAlertLogs(int alertId)
+        {
+            var alert = await _nyssContext.Alerts
+                .Where(a => a.Id == alertId)
+                .Select(a => new
+                {
+                    a.CreatedAt,
+                    a.EscalatedAt,
+                    a.DismissedAt,
+                    a.ClosedAt,
+                    EscalatedBy = a.EscalatedBy.Name,
+                    DismissedBy = a.DismissedBy.Name,
+                    ClosedBy = a.ClosedBy.Name,
+                    ProjectTimeZone = a.ProjectHealthRisk.Project.TimeZone,
+                    HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
+                        .Select(lc => lc.Name)
+                        .Single(),
+                    Reports = a.AlertReports
+                        .Where(ar => ar.Report.Status == ReportStatus.Accepted || ar.Report.Status == ReportStatus.Rejected)
+                        .Select(ar => new
+                        {
+                            ar.ReportId,
+                            ar.Report.AcceptedAt,
+                            ar.Report.RejectedAt,
+                            AcceptedBy = ar.Report.AcceptedBy.Name,
+                            RejectedBy = ar.Report.RejectedBy.Name
+                        })
+                        .ToList()
+                })
+                .SingleAsync();
+
+            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(alert.ProjectTimeZone);
+
+            var list = new List<AlertLogResponseDto.Item>
+            {
+                new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.TriggeredAlert, alert.CreatedAt.ApplyTimeZone(timeZone), null)
+            };
+
+            if (alert.EscalatedAt.HasValue)
+            {
+                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.EscalatedAlert, alert.EscalatedAt.Value.ApplyTimeZone(timeZone), alert.EscalatedBy));
+            }
+
+            if (alert.DismissedAt.HasValue)
+            {
+                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.DismissedAlert, alert.DismissedAt.Value.ApplyTimeZone(timeZone), alert.DismissedBy));
+            }
+
+            if (alert.ClosedAt.HasValue)
+            {
+                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.ApplyTimeZone(timeZone), alert.ClosedBy));
+            }
+
+            foreach (var report in alert.Reports)
+            {
+                if (report.AcceptedAt.HasValue)
+                {
+                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.AcceptedReport, report.AcceptedAt.Value.ApplyTimeZone(timeZone), report.AcceptedBy, new { report.ReportId }));
+                }
+
+                if (report.RejectedAt.HasValue)
+                {
+                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.RejectedReport, report.RejectedAt.Value.ApplyTimeZone(timeZone), report.RejectedBy, new { report.ReportId }));
+                }
+            }
+
+            return Success(new AlertLogResponseDto
+            {
+                HealthRisk = alert.HealthRisk,
+                CreatedAt = alert.CreatedAt.ApplyTimeZone(timeZone),
+                Items = list.OrderBy(x => x.Date).ToList()
+            });
         }
 
         private static AlertAssessmentStatus GetAlertAssessmentStatus(AlertStatus alertStatus, int acceptedReports, int pendingReports, int countThreshold) =>

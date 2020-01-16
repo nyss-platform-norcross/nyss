@@ -13,6 +13,8 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.CreatedAt).IsRequired();
             builder.Property(x => x.ReceivedAt).IsRequired();
             builder.Property(x => x.ModifiedAt);
+            builder.Property(x => x.AcceptedAt);
+            builder.Property(x => x.RejectedAt);
             builder.Property(x => x.ModifiedBy).HasMaxLength(100);
             builder.Property(x => x.IsTraining).IsRequired();
             builder.Property(x => x.EpiWeek).IsRequired();
@@ -39,7 +41,8 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasOne(x => x.ProjectHealthRisk).WithMany(x => x.Reports).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.Zone).WithMany().OnDelete(DeleteBehavior.Restrict);
-
+            builder.HasOne(x => x.AcceptedBy).WithMany().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.RejectedBy).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasIndex(x => x.CreatedAt);
             builder.HasIndex(x => x.ReceivedAt);
             builder.HasIndex(x => x.EpiWeek);

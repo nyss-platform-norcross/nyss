@@ -4,7 +4,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import ConfirmationAction from "../confirmationAction/ConfirmationAction";
 import { useAccessRestriction } from "../hasAccess/HasAccess";
 
-const TableRowActionComponent = ({ icon, onClick, title, isFetching, confirmationText, roles }) => {
+const TableRowActionComponent = ({ icon, onClick, title, isFetching, confirmationText }) => {
   const handleClick = (e) => {
     e.stopPropagation();
     onClick();

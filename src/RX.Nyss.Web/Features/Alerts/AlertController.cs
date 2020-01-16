@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Alerts.Dto;
@@ -94,5 +95,15 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> CloseAlert(int alertId, [FromBody]CloseAlertRequestDto dto) =>
             _alertService.CloseAlert(alertId, dto.Comments);
+
+        /// <summary>
+        /// Retrieves the alert actions' log
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        [HttpGet("{alertId:int}/getLogs")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result<AlertLogResponseDto>> GetLogs(int alertId) =>
+            _alertService.GetAlertLogs(alertId);
     }
 }

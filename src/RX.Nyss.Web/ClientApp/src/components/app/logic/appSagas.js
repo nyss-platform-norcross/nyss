@@ -74,16 +74,20 @@ function* switchStrings() {
 }
 
 function* openModule({ path, params }) {
-  path = path || (yield select(state => state.appData.route && state.appData.route.path));
+  const route = yield select(state => state.appData.route);
+  path = path || (yield select(state => route && route.path));
 
   const user = yield select(state => state.appData.user);
 
-  const breadcrumb = getBreadcrumb(path, params, user);
-  const topMenu = getMenu("/", params, placeholders.topMenu, path, user);
-  const sideMenu = getMenu(path, params, placeholders.leftMenu, path, user);
-  const tabMenu = getMenu(path, params, placeholders.tabMenu, path, user);
+  const routeParams = (route && route.params) || {};
+  const menuParams = { ...routeParams, ...params };
 
-  yield put(actions.openModule.success(path, params, breadcrumb, topMenu, sideMenu, tabMenu, params.title))
+  const breadcrumb = getBreadcrumb(path, menuParams, user);
+  const topMenu = getMenu("/", menuParams, placeholders.topMenu, path, user);
+  const sideMenu = getMenu(path, menuParams, placeholders.leftMenu, path, user);
+  const tabMenu = getMenu(path, menuParams, placeholders.tabMenu, path, user);
+
+  yield put(actions.openModule.success(path, menuParams, breadcrumb, topMenu, sideMenu, tabMenu, params.title))
 }
 
 function* getAppData() {

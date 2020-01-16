@@ -16,7 +16,15 @@ namespace RX.Nyss.Data.Models
         public DateTime CreatedAt { get; set; }
         
         public DateTime? ModifiedAt { get; set; }
-        
+
+        public DateTime? AcceptedAt { get; set; }
+
+        public virtual User AcceptedBy { get; set; }
+
+        public DateTime? RejectedAt { get; set; }
+
+        public virtual User RejectedBy { get; set; }
+
         public string ModifiedBy { get; set; }
 
         public ReportStatus Status { get; set; }

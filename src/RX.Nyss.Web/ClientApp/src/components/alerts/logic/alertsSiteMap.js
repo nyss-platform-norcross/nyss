@@ -14,8 +14,24 @@ export const alertsSiteMap = [
   },
   {
     parentPath: "/projects/:projectId/alerts",
+    path: "/projects/:projectId/alerts/:alertId/details",
+    title: () => strings(stringKeys.alerts.details.title),
+    access: accessMap.alerts.assess
+  },
+  {
+    parentPath: "/projects/:projectId/alerts",
     path: "/projects/:projectId/alerts/:alertId/assess",
     title: () => strings(stringKeys.alerts.assess.title),
-    access: accessMap.alerts.assess
+    placeholder: placeholders.tabMenu,
+    access: accessMap.alerts.assess,
+    middleStepOnly: true
+  },
+  {
+    parentPath: "/projects/:projectId/alerts",
+    path: "/projects/:projectId/alerts/:alertId/logs",
+    title: () => strings(stringKeys.alerts.logs.title),
+    placeholder: placeholders.tabMenu,
+    access: accessMap.alerts.assess,
+    middleStepOnly: true
   }
 ];

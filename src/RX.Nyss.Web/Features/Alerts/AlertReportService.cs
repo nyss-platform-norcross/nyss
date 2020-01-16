@@ -1,12 +1,14 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using static RX.Nyss.Web.Utils.DataContract.Result;
 
@@ -24,17 +26,23 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly INyssContext _nyssContext;
         private readonly IAlertService _alertService;
         private readonly IQueueService _queueService;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IAuthorizationService _authorizationService;
 
         public AlertReportService(
             IConfig config,
             INyssContext nyssContext,
             IAlertService alertService,
-            IQueueService queueService)
+            IQueueService queueService,
+            IDateTimeProvider dateTimeProvider,
+            IAuthorizationService authorizationService)
         {
             _config = config;
             _nyssContext = nyssContext;
             _alertService = alertService;
             _queueService = queueService;
+            _dateTimeProvider = dateTimeProvider;
+            _authorizationService = authorizationService;
         }
 
         public async Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId)
@@ -56,6 +64,8 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertReport.Report.Status = ReportStatus.Accepted;
+            alertReport.Report.AcceptedAt = _dateTimeProvider.UtcNow;
+            alertReport.Report.AcceptedBy = _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
             var response = new AcceptReportResponseDto
@@ -88,6 +98,8 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertReport.Report.Status = ReportStatus.Rejected;
+            alertReport.Report.RejectedAt = _dateTimeProvider.UtcNow;
+            alertReport.Report.RejectedBy = _authorizationService.GetCurrentUser();
 
             await DismissAlertReport(reportId);
 

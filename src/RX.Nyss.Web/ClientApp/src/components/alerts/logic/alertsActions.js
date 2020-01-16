@@ -1,6 +1,8 @@
 import { push } from "connected-react-router";
 import {
-  OPEN_ALERTS_LIST, GET_ALERTS, OPEN_ALERTS_ASSESSMENT, ACCEPT_REPORT, DISMISS_REPORT, ESCALATE_ALERT, DISMISS_ALERT, CLOSE_ALERT
+  OPEN_ALERTS_LIST, GET_ALERTS, OPEN_ALERTS_ASSESSMENT,
+  ACCEPT_REPORT, DISMISS_REPORT, ESCALATE_ALERT,
+  DISMISS_ALERT, CLOSE_ALERT, OPEN_ALERTS_LOGS
 } from "./alertsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/alerts`);
@@ -25,6 +27,13 @@ export const openAssessment = {
   request: () => ({ type: OPEN_ALERTS_ASSESSMENT.REQUEST }),
   success: (alertId, data) => ({ type: OPEN_ALERTS_ASSESSMENT.SUCCESS, alertId, data }),
   failure: (message) => ({ type: OPEN_ALERTS_ASSESSMENT.FAILURE, message })
+};
+
+export const openLogs = {
+  invoke: (projectId, alertId) => ({ type: OPEN_ALERTS_LOGS.INVOKE, projectId, alertId }),
+  request: () => ({ type: OPEN_ALERTS_LOGS.REQUEST }),
+  success: (alertId, data) => ({ type: OPEN_ALERTS_LOGS.SUCCESS, alertId, data }),
+  failure: (message) => ({ type: OPEN_ALERTS_LOGS.FAILURE, message })
 };
 
 export const acceptReport = {
