@@ -31,14 +31,20 @@ const createIcon = (count) => {
 export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, projectId, getReportHealthRisks }) => {
   const [bounds, setBounds] = useState(null);
   const [center, setCenter] = useState(null);
+  const [isMapLoading, setIsMapLoading] = useState(false);
 
   useEffect(() => {
     if (!data) {
       return;
     }
 
-    setBounds(data.length > 1 ? calculateBounds(data) : null)
-    setCenter(data.length > 1 ? null : calculateCenter(data.map(l => ({ lat: l.location.latitude, lng: l.location.longitude }))));
+    setIsMapLoading(true); // used to remove the component from the view and clean the marker groups
+
+    setTimeout(() => {
+      setBounds(data.length > 1 ? calculateBounds(data) : null)
+      setCenter(data.length > 1 ? null : calculateCenter(data.map(l => ({ lat: l.location.latitude, lng: l.location.longitude }))));
+      setIsMapLoading(false);
+    }, 0)
   }, [data])
 
   const handleMarkerClick = e =>
@@ -61,37 +67,39 @@ export const ProjectsDashboardReportsMap = ({ data, details, detailsFetching, pr
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          <MarkerClusterGroup
-            showCoverageOnHover={false}
-            iconCreateFunction={createClusterIcon}>
-            {data && data.map(point =>
-              <Marker
-                key={`marker_${point.location.latitude}_${point.location.longitude}`}
-                position={{ lat: point.location.latitude, lng: point.location.longitude }}
-                icon={createIcon(point.reportsCount)}
-                reportsCount={point.reportsCount}
-                onclick={handleMarkerClick}
-              >
-                <Popup>
-                  <div className={styles.popup}>
-                    {!detailsFetching
-                      ? (
-                        <div>
-                          {details && details.map(h => (
-                            <div className={styles.reportHealthRiskDetails} key={`reportHealthRisk_${h.name}`}>
-                              <div>{h.name}:</div>
-                              <div>{h.value} {strings(h.value === 1 ? stringKeys.project.dashboard.map.report : stringKeys.project.dashboard.map.reports)}</div>
-                            </div>
-                          ))}
-                        </div>
-                      )
-                      : (<Loading inline noWait />)
-                    }
-                  </div>
-                </Popup>
-              </Marker>
-            )}
-          </MarkerClusterGroup>
+          {(data && !isMapLoading) && (
+            <MarkerClusterGroup
+              showCoverageOnHover={false}
+              iconCreateFunction={createClusterIcon}>
+              {data.map(point =>
+                <Marker
+                  key={`marker_${point.location.latitude}_${point.location.longitude}`}
+                  position={{ lat: point.location.latitude, lng: point.location.longitude }}
+                  icon={createIcon(point.reportsCount)}
+                  reportsCount={point.reportsCount}
+                  onclick={handleMarkerClick}
+                >
+                  <Popup>
+                    <div className={styles.popup}>
+                      {!detailsFetching
+                        ? (
+                          <div>
+                            {details && details.map(h => (
+                              <div className={styles.reportHealthRiskDetails} key={`reportHealthRisk_${h.name}`}>
+                                <div>{h.name}:</div>
+                                <div>{h.value} {strings(h.value === 1 ? stringKeys.project.dashboard.map.report : stringKeys.project.dashboard.map.reports)}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )
+                        : (<Loading inline noWait />)
+                      }
+                    </div>
+                  </Popup>
+                </Marker>
+              )}
+            </MarkerClusterGroup>
+          )}
         </Map>
       </CardContent>
     </Card>
