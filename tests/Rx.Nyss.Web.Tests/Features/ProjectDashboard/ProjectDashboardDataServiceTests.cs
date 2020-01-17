@@ -107,10 +107,10 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Theory]
-        [InlineData(1, true, 3, 4, 0, 0, 1, 0)]
-        [InlineData(1, false, 8, 13, 0, 0, 3, 0)]
+        [InlineData(1, true, 3, 3, 1, 0, 1, 0)]
+        [InlineData(1, false, 8, 8, 5, 0, 3, 0)]
         [InlineData(2, true, 5, 4, 0, 2, 0, 1)]
-        [InlineData(2, false, 16, 13, 0, 2, 0, 3)]
+        [InlineData(2, false, 16, 12, 1, 2, 0, 3)]
         public async Task GetSummaryData_FilterReportsOnHealthRisks_ShouldReturnCorrectNumbers(
             int healthRiskId,
             bool isTraining,

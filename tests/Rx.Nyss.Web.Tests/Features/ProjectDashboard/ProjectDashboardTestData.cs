@@ -225,7 +225,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 {
                     Id = i,
                     DataCollector = DataCollectors[(i-1)/2],
-                    Status = ReportStatus.New,
+                    Status = ReportStatus.New
                 })
                 .ToList();
 

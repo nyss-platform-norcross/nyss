@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto)
         {
-            var allReports = GetAssignedReports(projectId, filtersDto);
+            var assignedRawReports = GetAssignedRawReports(projectId, filtersDto);
             var validReports = GetValidReports(projectId, filtersDto);
             var dataCollectionPointReports = validReports.Where(r => r.DataCollectionPointCase != null);
 
@@ -53,7 +53,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .Select(ph => new
                 {
                     allDataCollectorCount = AllDataCollectorCount(filtersDto, projectId),
-                    activeDataCollectorCount = allReports.Select(r => r.DataCollector.Id).Distinct().Count()
+                    activeDataCollectorCount = assignedRawReports.Select(r => r.DataCollector.Id).Distinct().Count()
                 })
                 .Select(data => new ProjectSummaryResponseDto
                 {
@@ -509,22 +509,22 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private IQueryable<RawReport> GetAssignedReports(int projectId, FiltersRequestDto filtersDto) =>
+        private IQueryable<RawReport> GetAssignedRawReports(int projectId, FiltersRequestDto filtersDto) =>
             _nyssContext.RawReports
                 .Where(r => r.IsTraining.HasValue && r.IsTraining == filtersDto.IsTraining)
                 .FromKnownDataCollector()
                 .FilterByArea(filtersDto.Area)
                 .FilterByDataCollectorType(MapToDataCollectorType(filtersDto.ReportsType))
                 .FilterByProject(projectId)
-                .FilterByDate(filtersDto.StartDate.Date, filtersDto.EndDate.Date.AddDays(1));
+                .FilterByDate(filtersDto.StartDate.Date, filtersDto.EndDate.Date.AddDays(1))
+                .FilterByHealthRisk(filtersDto.HealthRiskId);
 
         private IQueryable<Nyss.Data.Models.Report> GetValidReports(int projectId, FiltersRequestDto filtersDto) =>
-            GetAssignedReports(projectId, filtersDto)
+            GetAssignedRawReports(projectId, filtersDto)
                 .AllSuccessfulReports()
                 .Select(r => r.Report)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
-                .Where(r => !r.MarkedAsError)
-                .FilterByHealthRisk(filtersDto.HealthRiskId);
+                .Where(r => !r.MarkedAsError);
 
         private int AllDataCollectorCount(FiltersRequestDto filtersDto, int projectId) =>
             _nyssContext.DataCollectors
