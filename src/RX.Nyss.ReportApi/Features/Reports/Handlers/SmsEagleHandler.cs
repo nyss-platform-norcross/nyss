@@ -293,33 +293,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
         private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
         {
-            switch (dataCollector.DataCollectorType)
-            {
-                case DataCollectorType.Human:
-                    if (parsedReport.ReportType != ReportType.Single &&
-                        parsedReport.ReportType != ReportType.Aggregate &&
-                        parsedReport.ReportType != ReportType.NonHuman &&
-                        parsedReport.ReportType != ReportType.Activity)
-                    {
-                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                                                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.NonHuman}', '{ReportType.Activity}'.", ReportErrorType.Other);
-                    }
-
-                    break;
-                case DataCollectorType.CollectionPoint:
-                    if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
-                        parsedReport.ReportType != ReportType.NonHuman &&
-                        parsedReport.ReportType != ReportType.Activity)
-                    {
-                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                                                            $"'{ReportType.DataCollectionPoint}', '{ReportType.NonHuman}', '{ReportType.Activity}'.", ReportErrorType.Other);
-                    }
-
-                    break;
-                default:
-                    throw new ReportValidationException($"A data collector of type '{dataCollector.DataCollectorType}' is not supported.");
-            }
-
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
                 .SingleOrDefaultAsync(phr => phr.HealthRisk.HealthRiskCode == parsedReport.HealthRiskCode &&
@@ -328,6 +301,33 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             if (projectHealthRisk == null)
             {
                 throw new ReportValidationException($"A health risk with code '{parsedReport.HealthRiskCode}' is not listed in project with id '{dataCollector.Project.Id}'.", ReportErrorType.HealthRiskNotFound);
+            }
+
+            switch (dataCollector.DataCollectorType)
+            {
+                case DataCollectorType.Human:
+                    if (parsedReport.ReportType != ReportType.Single &&
+                        parsedReport.ReportType != ReportType.Aggregate &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                    {
+                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
+                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{HealthRiskType.NonHuman}', '{HealthRiskType.Activity}'.", ReportErrorType.Other);
+                    }
+
+                    break;
+                case DataCollectorType.CollectionPoint:
+                    if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                    {
+                        throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
+                            $"'{ReportType.DataCollectionPoint}', '{HealthRiskType.NonHuman}', '{HealthRiskType.Activity}'.", ReportErrorType.Other);
+                    }
+
+                    break;
+                default:
+                    throw new ReportValidationException($"A data collector of type '{dataCollector.DataCollectorType}' is not supported.");
             }
 
             switch (parsedReport.ReportType)
@@ -346,19 +346,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     }
 
                     break;
-                case ReportType.NonHuman:
+                case ReportType.OneInteger:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent)
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent &&
+                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                     {
                         throw new ReportValidationException(
-                            $"A report of type '{ReportType.NonHuman}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' event only.", ReportErrorType.Other);
-                    }
-
-                    break;
-                case ReportType.Activity:
-                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
-                    {
-                        throw new ReportValidationException($"A report of type '{ReportType.Activity}' has to be related to '{HealthRiskType.Activity}' event only.", ReportErrorType.Other);
+                            $"A report of type '{ReportType.OneInteger}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' or '{HealthRiskType.Activity}' event only.", ReportErrorType.Other);
                     }
 
                     break;
