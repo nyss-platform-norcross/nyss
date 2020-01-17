@@ -41,6 +41,11 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         /// </Summary>
         public async Task ResolveLabelsOnReportAdded(Report addedReport, ProjectHealthRisk projectHealthRisk)
         {
+            if (addedReport.IsTraining)
+            {
+                return;
+            }
+
             var reportsInRange = await FindReportsSatisfyingRangeAndTimeRequirements(addedReport, projectHealthRisk);
 
             var reportLabelsExistingInRange = reportsInRange.Select(r => r.ReportGroupLabel)

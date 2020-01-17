@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="GeoCoordinate.NetCore" Version="1.0.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="MockQueryable.NSubstitute" Version="3.0.1" />
+    <PackageReference Include="MockQueryable.NSubstitute" Version="3.0.2" />
     <PackageReference Include="NSubstitute" Version="4.2.1" />
     <PackageReference Include="Shouldly" Version="3.0.2" />
     <PackageReference Include="coverlet.collector" Version="1.1.0">
@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RX.Nyss.ReportApi\RX.Nyss.ReportApi.csproj" />
+    <ProjectReference Include="..\RX.Nyss.TestData\RX.Nyss.TestData.csproj" />
   </ItemGroup>
 
 </Project>
