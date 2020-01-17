@@ -239,7 +239,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 r.EpiWeek = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiWeek;
                 r.EpiYear = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiYear;
                 r.ProjectHealthRisk = ProjectHealthRisks[ (((r.Id-1) % 3) == 0) ? 0 : 1];
-                r.RawReport = new RawReport { Id = r.Id, DataCollector = r.DataCollector, NationalSociety = NationalSocieties[0], IsTraining = r.IsTraining };
+                r.RawReport = new RawReport { Id = r.Id, DataCollector = r.DataCollector, NationalSociety = NationalSocieties[0], IsTraining = r.IsTraining, Report = r };
 
                 r.DataCollector.Reports.Add(r);
                 r.ProjectHealthRisk.Reports.Add(r);
@@ -310,7 +310,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     DataCollector = r.DataCollector,
                     ReceivedAt = r.ReceivedAt,
                     IsTraining = r.IsTraining,
-                    Report = r
+                    Report = r,
                 };
                 RawReports.Add(rawReport);
             });

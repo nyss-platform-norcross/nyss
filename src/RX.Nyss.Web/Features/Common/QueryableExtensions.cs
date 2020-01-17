@@ -7,16 +7,16 @@ namespace RX.Nyss.Web.Features.Common
 {
     public static class ReportQueryableExtensions
     {
-        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByDate(this IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate) =>
+        public static IQueryable<Nyss.Data.Models.Report> FilterByDate(this IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 
-        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByProject(this IQueryable<Nyss.Data.Models.Report> reports, int projectId) =>
+        public static IQueryable<Nyss.Data.Models.Report> FilterByProject(this IQueryable<Nyss.Data.Models.Report> reports, int projectId) =>
             reports.Where(r => r.DataCollector.Project.Id == projectId);
 
-        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByHealthRisk(this IQueryable<Nyss.Data.Models.Report> reports, int? healthRiskId) =>
+        public static IQueryable<Nyss.Data.Models.Report> FilterByHealthRisk(this IQueryable<Nyss.Data.Models.Report> reports, int? healthRiskId) =>
             reports.Where(r => !healthRiskId.HasValue || r.ProjectHealthRisk.HealthRiskId == healthRiskId.Value);
 
-        public static IQueryable<Nyss.Data.Models.Report> FilterReportsByRegion(this IQueryable<Nyss.Data.Models.Report> reports, AreaDto area) =>
+        public static IQueryable<Nyss.Data.Models.Report> FilterByArea(this IQueryable<Nyss.Data.Models.Report> reports, AreaDto area) =>
             area?.Type switch
             {
                 AreaDto.AreaType.Region =>
@@ -54,32 +54,29 @@ namespace RX.Nyss.Web.Features.Common
         public static IQueryable<Nyss.Data.Models.RawReport> AllSuccessfulReports(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
             reports.Where(r => r.Report != null);
 
-        public static IQueryable<Nyss.Data.Models.RawReport> FilterReportsByDate(this IQueryable<Nyss.Data.Models.RawReport> reports, DateTime startDate, DateTime endDate) =>
+        public static IQueryable<Nyss.Data.Models.RawReport> FilterByDate(this IQueryable<Nyss.Data.Models.RawReport> reports, DateTime startDate, DateTime endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 
-        public static IQueryable<Nyss.Data.Models.RawReport> FilterReportsByProject(this IQueryable<Nyss.Data.Models.RawReport> reports, int projectId) =>
+        public static IQueryable<Nyss.Data.Models.RawReport> FilterByProject(this IQueryable<Nyss.Data.Models.RawReport> reports, int projectId) =>
             reports.Where(r => r.DataCollector.Project.Id == projectId);
 
-        public static IQueryable<Nyss.Data.Models.RawReport> OnlyErrorReports(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
-            reports.Where(r => r.ReportId == null);
-
         public static IQueryable<Nyss.Data.Models.RawReport> FromKnownDataCollector(this IQueryable<Nyss.Data.Models.RawReport> reports) =>
-            reports.Where(r => r.DataCollector.Id > 0);
+            reports.Where(r => r.DataCollector != null);
 
-        public static IQueryable<Nyss.Data.Models.RawReport> FilterDataCollectorsByArea(this IQueryable<Nyss.Data.Models.RawReport> reports, AreaDto area) =>
+        public static IQueryable<Nyss.Data.Models.RawReport> FilterByArea(this IQueryable<Nyss.Data.Models.RawReport> reports, AreaDto area) =>
             area?.Type switch
             {
                 AreaDto.AreaType.Region =>
-                reports.Where(r => r.Report.Village.District.Region.Id == area.Id),
+                reports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.Id : r.DataCollector.Village.District.Region.Id == area.Id),
 
                 AreaDto.AreaType.District =>
-                reports.Where(r => r.Report.Village.District.Id == area.Id),
+                reports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.Id : r.DataCollector.Village.District.Id == area.Id),
 
                 AreaDto.AreaType.Village =>
-                reports.Where(r => r.Report.Village.Id == area.Id),
+                reports.Where(r => r.Report != null ? r.Report.Village.Id == area.Id : r.DataCollector.Village.Id == area.Id),
 
                 AreaDto.AreaType.Zone =>
-                reports.Where(r => r.Report.Zone.Id == area.Id),
+                reports.Where(r => r.Report != null ? r.Report.Zone.Id == area.Id : r.DataCollector.Zone.Id == area.Id),
 
                 _ =>
                 reports
@@ -88,8 +85,7 @@ namespace RX.Nyss.Web.Features.Common
 
     public static class DataCollectorQueryableExtensions
     {
-
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByDataCollectorType(this IQueryable<Nyss.Data.Models.DataCollector> reports, DataCollectorType? dataCollectorType) =>
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByType(this IQueryable<Nyss.Data.Models.DataCollector> reports, DataCollectorType? dataCollectorType) =>
             dataCollectorType switch
             {
                 DataCollectorType.Human =>
@@ -102,7 +98,7 @@ namespace RX.Nyss.Web.Features.Common
                 reports
             };
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsByArea(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, AreaDto area) =>
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByArea(this IQueryable<Nyss.Data.Models.DataCollector> dataCollectors, AreaDto area) =>
             area?.Type switch
             {
                 AreaDto.AreaType.Region =>
@@ -121,13 +117,13 @@ namespace RX.Nyss.Web.Features.Common
                 dataCollectors
             };
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsByProject(this IQueryable<Nyss.Data.Models.DataCollector> reports, int projectId) =>
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByProject(this IQueryable<Nyss.Data.Models.DataCollector> reports, int projectId) =>
             reports.Where(dc => dc.Project.Id == projectId);
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterDataCollectorsByTrainingMode(this IQueryable<Nyss.Data.Models.DataCollector> reports, bool isInTraining) =>
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterByTrainingMode(this IQueryable<Nyss.Data.Models.DataCollector> reports, bool isInTraining) =>
             reports.Where(dc => (isInTraining ? dc.IsInTrainingMode : !dc.IsInTrainingMode));
 
-        public static IQueryable<Nyss.Data.Models.DataCollector> FilterOnlyNotDeleted(this IQueryable<Nyss.Data.Models.DataCollector> reports) =>
-            reports.Where(dc => !dc.DeletedAt.HasValue);
+        public static IQueryable<Nyss.Data.Models.DataCollector> FilterOnlyNotDeletedBefore(this IQueryable<Nyss.Data.Models.DataCollector> reports, DateTime startDate) =>
+            reports.Where(dc => dc.DeletedAt == null || dc.DeletedAt > startDate);
     }
 }
