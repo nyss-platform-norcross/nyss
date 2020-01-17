@@ -31,7 +31,7 @@ export const InlineTextEditor = ({ initialValue, onSave, onClose, placeholder, a
   const button = () => (
     <InputAdornment position="end">
       {onClose && <Button onClick={handleCancel}>{strings(stringKeys.form.cancel)}</Button>}
-      <Button onClick={stopPropagation} type="submit" color="primary">{strings(stringKeys.form.inlineSave)}</Button>
+      <Button onClick={stopPropagation} onMouseDown={event => event.preventDefault()} type="submit" color="primary">{strings(stringKeys.form.inlineSave)}</Button>
     </InputAdornment>
   );
 

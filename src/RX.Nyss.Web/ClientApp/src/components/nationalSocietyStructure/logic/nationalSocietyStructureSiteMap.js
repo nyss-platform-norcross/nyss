@@ -9,7 +9,7 @@ export const nationalSocietyStructureSiteMap = [
     title: () => strings(stringKeys.nationalSociety.structure.title),
     placeholder: placeholders.tabMenu,
     placeholderIndex: 3,
-    access: accessMap.nationalSocieties.edit,
+    access: accessMap.nationalSocietyStructure.edit,
     middleStepOnly: true
   }
 ];
