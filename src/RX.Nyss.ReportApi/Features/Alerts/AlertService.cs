@@ -10,6 +10,8 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Services;
+using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils.DataContract;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
 {
@@ -27,16 +29,17 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
         private readonly INyssReportApiConfig _config;
-
+        private readonly IStringsResourcesService _stringsResourcesService;
 
         public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IEmailToSmsPublisherService emailToSmsPublisherService,
-            INyssReportApiConfig config)
+            INyssReportApiConfig config, IStringsResourcesService stringsResourcesService)
         {
             _nyssContext = nyssContext;
             _reportLabelingService = reportLabelingService;
             _loggerAdapter = loggerAdapter;
             _emailToSmsPublisherService = emailToSmsPublisherService;
             _config = config;
+            _stringsResourcesService = stringsResourcesService;
         }
 
         public async Task<Alert> ReportAdded(Report report)
@@ -256,21 +259,36 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
 
             //ToDo: get this from blob storage instead of hardcoded text
-            var smsTemplateEn = "An alert for {{healthRisk/event}} has been triggered by one of your DC. Last report sent from {{village}}. Please check alert list and cross-check alert: {{linkToAlert}}";
-            var smsTemplateFr = "Une alerte pour {{healthRisk/event}} a été déclenchée par l'un de vos DC. Dernier rapport envoyé par {{village}}. Veuillez vérifier la liste des alertes et recouper l'alerte: {{linkToAlert}}";
-            var smsTemplate = alertData.LanguageCode.ToLower() == "en"
-                ? smsTemplateEn
-                : smsTemplateFr;
+            // var smsTemplateEn = "An alert for {{healthRisk/event}} has been triggered by one of your DC. Last report sent from {{village}}. Please check alert list and cross-check alert: {{linkToAlert}}";
+            // var smsTemplateFr = "Une alerte pour {{healthRisk/event}} a été déclenchée par l'un de vos DC. Dernier rapport envoyé par {{village}}. Veuillez vérifier la liste des alertes et recouper l'alerte: {{linkToAlert}}";
+            // var smsTemplate = alertData.LanguageCode.ToLower() == "en"
+            //     ? smsTemplateEn
+            //     : smsTemplateFr;
+
+            var message = await GetNotificationMessageContent(SmsContentKey.Alerts.AlertEscalated, alertData.LanguageCode.ToLower());
 
             var baseUrl = new Uri(_config.BaseUrl);
             var relativeUrl = $"projects/{alertData.ProjectId}/alerts/{alert.Id}/assess";
             var linkToAlert = new Uri(baseUrl, relativeUrl);
 
-            smsTemplate = smsTemplate.Replace("{{healthRisk/event}}", alertData.HealthRiskName);
-            smsTemplate = smsTemplate.Replace("{{village}}", alertData.VillageOfLastReport);
-            smsTemplate = smsTemplate.Replace("{{linkToAlert}}", linkToAlert.ToString());
+            message = message.Replace("{{healthRisk/event}}", alertData.HealthRiskName);
+            message = message.Replace("{{village}}", alertData.VillageOfLastReport);
+            message = message.Replace("{{linkToAlert}}", linkToAlert.ToString());
 
-            return smsTemplate;
+            return message;
+        }
+
+        private async Task<string> GetNotificationMessageContent(string key, string languageCode)
+        {
+            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "EN");
+            smsContents.Value.TryGetValue(key, out var message);
+
+            if (message == null)
+            {
+                _loggerAdapter.Warn($"No sms content resource found for key '{key}'");
+            }
+
+            return message;
         }
     }
 }
