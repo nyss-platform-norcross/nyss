@@ -134,15 +134,10 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
             var eventCode = int.Parse(eventCodeMatch);
 
-            var activityCodes = _nyssContext.HealthRisks
-                .Where(hr => hr.HealthRiskType == HealthRiskType.Activity)
-                .Select(hr => hr.HealthRiskCode)
-                .ToList();
-
             var parsedReport = new ParsedReport
             {
                 HealthRiskCode = eventCode,
-                ReportType = activityCodes.Contains(eventCode) ? ReportType.Activity : ReportType.NonHuman
+                ReportType = ReportType.Statement
             };
 
             return parsedReport;

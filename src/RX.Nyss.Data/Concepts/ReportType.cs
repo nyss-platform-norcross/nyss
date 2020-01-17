@@ -4,8 +4,7 @@
     {
         Single,
         Aggregate,
-        Activity,
-        NonHuman,
+        Statement,
         DataCollectionPoint
     }
 }
