@@ -44,9 +44,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<ProjectSummaryResponseDto> GetSummaryData(int projectId, FiltersRequestDto filtersDto)
         {
-            var allReports = GetAssignedReports(projectId, filtersDto).ToList();
-            var validReports = GetValidReports(projectId, filtersDto).ToList();
-            var dataCollectionPointReports = validReports.Where(r => r.DataCollectionPointCase != null).ToList();
+            var allReports = GetAssignedReports(projectId, filtersDto);
+            var validReports = GetValidReports(projectId, filtersDto);
+            var dataCollectionPointReports = validReports.Where(r => r.DataCollectionPointCase != null);
 
             return await _nyssContext.Projects
                 .Where(ph => ph.Id == projectId)
