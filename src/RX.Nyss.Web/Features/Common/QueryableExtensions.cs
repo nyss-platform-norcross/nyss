@@ -57,6 +57,9 @@ namespace RX.Nyss.Web.Features.Common
         public static IQueryable<Nyss.Data.Models.RawReport> FilterByDate(this IQueryable<Nyss.Data.Models.RawReport> reports, DateTime startDate, DateTime endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 
+        public static IQueryable<Nyss.Data.Models.RawReport> FilterByHealthRisk(this IQueryable<Nyss.Data.Models.RawReport> reports, int? healthRiskId) =>
+            reports.Where(r =>  !healthRiskId.HasValue || (r.Report != null && r.Report.ProjectHealthRisk.HealthRiskId == healthRiskId.Value));
+
         public static IQueryable<Nyss.Data.Models.RawReport> FilterByProject(this IQueryable<Nyss.Data.Models.RawReport> reports, int projectId) =>
             reports.Where(r => r.DataCollector.Project.Id == projectId);
 
