@@ -24,6 +24,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         public List<ProjectHealthRisk> ProjectHealthRisks { get; set; }
         public List<DataCollector> DataCollectors { get; set; }
         public List<Report> Reports { get; set; }
+        public List<RawReport> RawReports { get; set; }
         public List<User> Users { get; set; }
         public List<SupervisorUserProject> SupervisorUserProjects { get; set; }
         public List<UserNationalSociety> UserNationalSocieties { get; set; }
@@ -43,6 +44,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             var projectHealthRisksDbSet = ProjectHealthRisks.AsQueryable().BuildMockDbSet();
             var dataCollectorsDbSet = DataCollectors.AsQueryable().BuildMockDbSet();
             var reportsDbSet = Reports.AsQueryable().BuildMockDbSet();
+            var rawReportsDbSet = RawReports.AsQueryable().BuildMockDbSet();
             var usersDbSet = Users.AsQueryable().BuildMockDbSet();
             var supervisorUserProjectsDbSet = SupervisorUserProjects.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesDbSet = UserNationalSocieties.AsQueryable().BuildMockDbSet();
@@ -58,6 +60,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksDbSet);
             nyssContextMock.DataCollectors.Returns(dataCollectorsDbSet);
             nyssContextMock.Reports.Returns(reportsDbSet);
+            nyssContextMock.RawReports.Returns(rawReportsDbSet);
             nyssContextMock.Users.Returns(usersDbSet);
             nyssContextMock.SupervisorUserProjects.Returns(supervisorUserProjectsDbSet);
             nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
@@ -69,7 +72,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             return nyssContextMock;
         }
 
-    public ProjectDashboardTestData(IDateTimeProvider dateTimeProvider)
+        public ProjectDashboardTestData(IDateTimeProvider dateTimeProvider)
         {
             _dateTimeProvider = dateTimeProvider;
 
@@ -187,14 +190,15 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
         private void GenerateDataCollectorsWithReports()
         {
-            var numberOfDataCollectors = 16;
+            var numberOfDataCollectors = 17;
             var numberOfHumanDataCollectors = 10;
             var numberOfDataCollectionPoints = 6;
             var humansStartIndex = 0;
             var collectionPointsStartIndex = numberOfHumanDataCollectors;
             var numberOfTrainingHumans = 2;
             var numberOfTrainingCollectionPoints = 2;
-            var numberOfReports = numberOfDataCollectors * 2;
+            var numberOfReports = (numberOfDataCollectors - 1) * 2;
+            var numberOfErrorReports = 2;
 
 
             DataCollectors = Enumerable.Range(1, numberOfDataCollectors)
@@ -206,8 +210,9 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     DataCollectorType = DataCollectorType.Human,
                     IsInTrainingMode = false,
                     Reports = new List<Report>(),
-                    Zone = Zones [i-1],
-                    Village = Zones[i-1].Village
+                    RawReports = new List<RawReport>(),
+                    Zone = i == numberOfDataCollectors ? Zones[i-2] : Zones [i-1],
+                    Village = i == numberOfDataCollectors ? Zones[i-2].Village : Zones [i-1].Village
                 })
                 .ToList();
 
@@ -234,7 +239,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 r.EpiWeek = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiWeek;
                 r.EpiYear = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiYear;
                 r.ProjectHealthRisk = ProjectHealthRisks[ (((r.Id-1) % 3) == 0) ? 0 : 1];
-                r.RawReport = new RawReport { Id = r.Id, DataCollector = r.DataCollector, NationalSociety = NationalSocieties[0], IsTraining = r.IsTraining };
+                r.RawReport = new RawReport { Id = r.Id, DataCollector = r.DataCollector, NationalSociety = NationalSocieties[0], IsTraining = r.IsTraining, Report = r };
 
                 r.DataCollector.Reports.Add(r);
                 r.ProjectHealthRisk.Reports.Add(r);
@@ -296,6 +301,32 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                         _ => (r.ReportedCase.CountMalesBelowFive ?? 0) + (r.ReportedCase.CountFemalesAtLeastFive ?? 0) + (r.ReportedCase.CountFemalesBelowFive ?? 0) + (r.ReportedCase.CountMalesAtLeastFive ?? 0) + (r.DataCollectionPointCase.DeathCount ?? 0) + (r.DataCollectionPointCase.FromOtherVillagesCount ?? 0) + (r.DataCollectionPointCase.ReferredCount ?? 0)
                     };
                 });
+
+            RawReports = new List<RawReport>();
+            Reports.ForEach(r => {
+                var rawReport = new RawReport
+                {
+                    Id = r.Id,
+                    DataCollector = r.DataCollector,
+                    ReceivedAt = r.ReceivedAt,
+                    IsTraining = r.IsTraining,
+                    Report = r,
+                };
+                RawReports.Add(rawReport);
+            });
+
+            var errorReports = Enumerable.Range(1, numberOfErrorReports)
+                .Select(i => new RawReport
+                {
+                    Id = i + numberOfReports,
+                    DataCollector = DataCollectors[DataCollectors.Count - 1],
+                    ReceivedAt = BaseDate.AddDays(i - 1),
+                    IsTraining = false
+                }).ToList();
+
+            RawReports.AddRange(errorReports);
+
+            RawReports.ForEach(r => r.DataCollector.RawReports.Add(r));
         }
     }
 }
