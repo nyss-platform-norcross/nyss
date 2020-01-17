@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -66,7 +67,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                         FromOtherVillagesCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.FromOtherVillagesCount ?? 0),
                         ReferredToHospitalCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.ReferredCount ?? 0),
                         DeathCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.DeathCount ?? 0),
-                    }
+                    },
+                    AlertsSummary = AlertsSummary(projectId, filtersDto)
                 })
                 .FirstOrDefaultAsync();
         }
@@ -535,6 +537,23 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .FilterByTrainingMode(filtersDto.IsTraining)
                 .FilterOnlyNotDeletedBefore(filtersDto.StartDate)
                 .Count();
+
+        private AlertsSummaryResponseDto AlertsSummary(int projectId, FiltersRequestDto filtersDto)
+        {
+            var startDate = filtersDto.StartDate;
+            var endDate = filtersDto.EndDate.AddDays(1);
+
+            var alerts = _nyssContext.Alerts
+                .FilterByProject(projectId)
+                .FilterByDateAndStatus(startDate, endDate);
+
+            return new AlertsSummaryResponseDto
+            {
+                Escalated = alerts.Count(a => a.Status == AlertStatus.Escalated),
+                Dismissed = alerts.Count(a => a.Status == AlertStatus.Dismissed),
+                Closed = alerts.Count(a => a.Status == AlertStatus.Closed)
+            };
+        }
 
         private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.ReportsTypeDto reportsType) =>
             reportsType switch

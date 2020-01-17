@@ -223,7 +223,10 @@ export const stringKeys = {
       numbers: {
         totalReportCount: "project.dashboard.numbers.totalReportCount",
         totalErrorReportCount: "project.dashboard.numbers.totalErrorReportCount",
-        totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle"
+        totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle",
+        dismissedAlerts: "project.dashboard.numbers.dismissedAlerts",
+        escalatedAlerts: "project.dashboard.numbers.escalatedAlerts",
+        closedAlerts: "project.dashboard.numbers.closedAlerts"
       },
       filters: {
         startDate: "project.dashboard.filters.startDate",
@@ -287,6 +290,7 @@ export const stringKeys = {
       supervisorEmailAddress: "project.dashboard.supervisorEmailAddress",
       supervisorPhoneNumber: "project.dashboard.supervisorPhoneNumber",
       supervisorAdditionalPhoneNumber: "project.dashboard.supervisorAdditionalPhoneNumber",
+      alertsSummary: "project.dashboard.alertsSummary",
       map: {
         reportCount: "project.dashboard.map.reportCount",
         title: "project.dashboard.map.title",

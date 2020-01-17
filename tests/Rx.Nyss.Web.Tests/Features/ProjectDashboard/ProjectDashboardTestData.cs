@@ -32,6 +32,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         public List<District> Districts { get; set; }
         public List<Village> Villages { get; set; }
         public List<Zone> Zones { get; set; }
+        public List<Alert> Alerts { get; set; }
 
         public INyssContext GetNyssContextMock()
         {
@@ -52,6 +53,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             var districtsDbSet = Districts.AsQueryable().BuildMockDbSet();
             var villagesDbSet = Villages.AsQueryable().BuildMockDbSet();
             var zonesDbSet = Zones.AsQueryable().BuildMockDbSet();
+            var alertsDbSet = Alerts.AsQueryable().BuildMockDbSet();
 
             nyssContextMock.NationalSocieties.Returns(nationalSocietiesDbSet);
             nyssContextMock.HealthRisks.Returns(healthRisksDbSet);
@@ -68,6 +70,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             nyssContextMock.Districts.Returns(districtsDbSet);
             nyssContextMock.Villages.Returns(villagesDbSet);
             nyssContextMock.Zones.Returns(zonesDbSet);
+            nyssContextMock.Alerts.Returns(alertsDbSet);
 
             return nyssContextMock;
         }
@@ -116,6 +119,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 new ProjectHealthRisk{Id=1, AlertRule = AlertRules[0], Project = Projects[0], HealthRisk = HealthRisks[0], HealthRiskId = HealthRisks[0].Id, Reports = new List<Report>() },
                 new ProjectHealthRisk{Id=2, AlertRule = AlertRules[1], Project = Projects[0], HealthRisk = HealthRisks[1], HealthRiskId = HealthRisks[1].Id, Reports = new List<Report>() }
             };
+
+            Alerts = new List<Alert>();
 
             GenerateGeographicalStructure();
             GenerateDataCollectorsWithReports();
