@@ -14,6 +14,9 @@ namespace RX.Nyss.Web.Services
     {
         private readonly INyssWebConfig _config;
 
+        private readonly char[] CHARS_TO_ESCAPE = new char[] { ',', ';' };
+        private readonly string QUOTE = "\"";
+
         public ExcelExportService(INyssWebConfig config)
         {
             _config = config;
@@ -25,7 +28,7 @@ namespace RX.Nyss.Web.Services
             {
                 var type = typeof(T);
                 var rowValues = type.GetProperties()
-                    .Select(p => p.GetValue(x))
+                    .Select(p => EscapeCharacters(p.GetValue(x)))
                     .ToList();
                 return rowValues;
             })
@@ -37,6 +40,22 @@ namespace RX.Nyss.Web.Services
                 builder.AppendLine(string.Join(_config.Export.CsvFieldSeparator, row)));
 
             return Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(builder.ToString())).ToArray();
+        }
+
+        public string EscapeCharacters(object data)
+        {
+            if (data == null)
+            {
+                return null;
+            }
+
+            var value = data.ToString();
+
+            if (value.IndexOfAny(CHARS_TO_ESCAPE) > - 1)
+            {
+                return QUOTE + value + QUOTE;
+            }
+            return value;
         }
     }
 }
