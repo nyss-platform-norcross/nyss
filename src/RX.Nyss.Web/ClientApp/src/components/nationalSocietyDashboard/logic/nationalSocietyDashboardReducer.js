@@ -25,6 +25,7 @@ export function nationalSocietyDashboardReducer(state = initialState.nationalSoc
         filters: action.filters,
         summary: action.summary,
         reportsGroupedByLocation: action.reportsGroupedByLocation,
+        reportsGroupedByVillageAndDate: action.reportsGroupedByVillageAndDate,
         isFetching: false
       };
 

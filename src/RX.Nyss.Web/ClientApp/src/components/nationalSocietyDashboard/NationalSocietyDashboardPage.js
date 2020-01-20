@@ -11,6 +11,7 @@ import { useMount } from '../../utils/lifecycle';
 import { NationalSocietyDashboardFilters } from "./components/NationalSocietyDashboardFilters";
 import { NationalSocietyDashboardNumbers } from './components/NationalSocietyDashboardNumbers';
 import { NationalSocietyDashboardReportsMap } from './components/NationalSocietyDashboardReportsMap';
+import { NationalSocietyDashboardReportVillageChart } from './components/NationalSocietyDashboardReportVillageChart';
 
 const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData, isGeneratingPdf, isFetching, ...props }) => {
   useMount(() => {
@@ -55,6 +56,9 @@ const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData
                 getReportHealthRisks={props.getReportHealthRisks}
               />
             </Grid>
+            <Grid item xs={12}>
+              <NationalSocietyDashboardReportVillageChart data={props.reportsGroupedByVillageAndDate} />
+            </Grid>
           </Fragment>
         )}
     </Grid>
@@ -72,6 +76,7 @@ const mapStateToProps = state => ({
   filters: state.nationalSocietyDashboard.filters,
   reportsGroupedByLocation: state.nationalSocietyDashboard.reportsGroupedByLocation,
   reportsGroupedByLocationDetails: state.nationalSocietyDashboard.reportsGroupedByLocationDetails,
+  reportsGroupedByVillageAndDate: state.nationalSocietyDashboard.reportsGroupedByVillageAndDate,
   reportsGroupedByLocationDetailsFetching: state.nationalSocietyDashboard.reportsGroupedByLocationDetailsFetching,
   isGeneratingPdf: state.nationalSocietyDashboard.isGeneratingPdf,
   isFetching: state.nationalSocietyDashboard.isFetching

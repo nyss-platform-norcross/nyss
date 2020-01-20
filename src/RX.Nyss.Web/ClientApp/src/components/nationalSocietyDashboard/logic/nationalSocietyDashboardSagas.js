@@ -44,7 +44,8 @@ function* getNationalSocietyDashboardData({ nationalSocietyId, filters }) {
     yield put(actions.getDashboardData.success(
       filters,
       response.value.summary,
-      response.value.reportsGroupedByLocation
+      response.value.reportsGroupedByLocation,
+      response.value.reportsGroupedByVillageAndDate
     ));
   } catch (error) {
     yield put(actions.getDashboardData.failure(error.message));

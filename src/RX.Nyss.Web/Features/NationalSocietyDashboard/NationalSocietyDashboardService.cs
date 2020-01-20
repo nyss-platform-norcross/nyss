@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
     public interface INationalSocietyDashboardService
     {
         Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetDashboardFiltersData(int nationalSocietyId);
-        
+
         Task<Result<NationalSocietyDashboardResponseDto>> GetDashboardData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto);
 
         Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportsHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto);
@@ -52,11 +52,13 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         public async Task<Result<NationalSocietyDashboardResponseDto>> GetDashboardData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
             var filters = MapToReportFilters(nationalSocietyId, filtersDto);
+            var reportsGroupedByVillageAndDate = await _nationalSocietyDashboardSummaryService.GetReportsGroupedByVillageAndDate(nationalSocietyId, filtersDto);
 
             var dashboardDataDto = new NationalSocietyDashboardResponseDto
             {
                 Summary = await _nationalSocietyDashboardSummaryService.GetSummaryData(filters),
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),
+                ReportsGroupedByVillageAndDate = reportsGroupedByVillageAndDate
             };
 
             return Success(dashboardDataDto);
