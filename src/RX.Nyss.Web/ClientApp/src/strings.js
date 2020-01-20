@@ -27,6 +27,16 @@ export const stringKeys = {
     title: "nationalSociety.title",
     addNew: "nationalSociety.addNew",
     edit: "nationalSociety.edit",
+    archive:
+    {
+      title: "nationalSociety.archive.title",
+      content: "nationalSociety.archive.content"
+    },
+    reopen:
+    {
+      title: "nationalSociety.reopen.title",
+      content: "nationalSociety.reopen.content"
+    },
     form: {
       creationTitle: "nationalSociety.form.creationTitle",
       editionTitle: "nationalSociety.form.editionTitle",
@@ -46,6 +56,8 @@ export const stringKeys = {
       headManager: "nationalSociety.list.headManager",
       technicalAdvisor: "nationalSociety.list.technicalAdvisor",
       removalConfirmation: "nationalSociety.list.removalConfirmation",
+      archive: "nationalSociety.list.archive",
+      reopen: "nationalSociety.list.reopen",
     },
     settings: {
       title: "nationalSociety.settings.title"

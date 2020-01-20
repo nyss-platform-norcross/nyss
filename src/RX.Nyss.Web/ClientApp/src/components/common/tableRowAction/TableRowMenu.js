@@ -2,9 +2,11 @@ import styles from "./TableRowAction.module.scss";
 import React, { Fragment, useState } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import { TableRowMenuItem } from "./TableRowMenuItem";
+import { useUser } from "../hasAccess/HasUser";
 
-export const TableRowMenu = ({ id, icon, items, isFetching }) => {
+
+const TableRowMenuComponent = ({ id, icon, items, isFetching, user }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleDropdownClick = (e) => {
@@ -17,14 +19,8 @@ export const TableRowMenu = ({ id, icon, items, isFetching }) => {
     setAnchorEl(null);
   };
 
-  const handleMenuClick = (e, onClick) => {
-    e.stopPropagation();
-    onClick();
-    handleDropdownClose();
-  };
-
   return (
-    items.some(item => item.condition) && (
+    items.some(item => item.condition === undefined || item.condition) && items.some(item => !item.roles || user.roles.some(role => item.roles.indexOf(role) > -1)) && (
       <Fragment>
         <div className={`${styles.tableRowAction} ${(isFetching ? styles.fetching : "")}`} title={`more...`} onClick={handleDropdownClick}>
           {isFetching && <CircularProgress size={20} className={styles.loader} />}
@@ -33,17 +29,23 @@ export const TableRowMenu = ({ id, icon, items, isFetching }) => {
           </div>
         </div>
         <Menu
+          key={`tableRowMenu_${id}`}
           anchorEl={anchorEl}
           onClose={handleDropdownClose}
-          open={Boolean(anchorEl)}>
-
-          {items.map(menuItem => (
-            <MenuItem key={`${menuItem.title}-${id}`} onClick={(e) => { handleMenuClick(e, menuItem.action) }}>
-              {menuItem.title}
-            </MenuItem>
-          ))}
-
+          open={Boolean(anchorEl)}
+        >
+          {
+            items.map(menuItem => (
+              <TableRowMenuItem id={menuItem.id} title={menuItem.title} roles={menuItem.roles} condition={menuItem.condition}
+                action={menuItem.action} handleDropdownClose={handleDropdownClose}>
+                {menuItem.title}
+              </TableRowMenuItem>
+            ))
+          }
         </Menu>
-      </Fragment>)
+      </Fragment>
+    )
   );
 };
+
+export const TableRowMenu = useUser(TableRowMenuComponent);

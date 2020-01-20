@@ -7,9 +7,12 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
+using RX.Nyss.Web.Features.SmsGateways;
+using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
@@ -34,8 +37,12 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             var authorizationService = Substitute.For<IAuthorizationService>();
             authorizationService.GetCurrentUserName().Returns("yo");
+            var managerServiceMock = Substitute.For<IManagerService>();
+            var technicalAdvisorServiceMock = Substitute.For<ITechnicalAdvisorService>();
+            var smsGatewayServiceMock = Substitute.For<ISmsGatewayService>();
 
-            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, Substitute.For<INationalSocietyAccessService>(), loggerAdapterMock, authorizationService);
+            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, Substitute.For<INationalSocietyAccessService>(), loggerAdapterMock,
+                authorizationService, managerServiceMock, technicalAdvisorServiceMock, smsGatewayServiceMock);
 
             // Arrange
 

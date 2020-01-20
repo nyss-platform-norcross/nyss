@@ -54,11 +54,12 @@ const NationalSocietiesOverviewPageComponent = (props) => {
           </Grid>
         </Grid>
 
-        <FormActions>
-          <Button variant="outlined" color="primary" onClick={() => props.openEdition(props.data.id)}>
+        {!props.nationalSocietyIsArchived && 
+        <FormActions>          
+           <Button variant="outlined" color="primary" onClick={() => props.openEdition(props.data.id)}>
             {strings(stringKeys.nationalSociety.edit)}
           </Button>
-        </FormActions>
+        </FormActions>}
       </Form>
 
     </Fragment >
@@ -72,7 +73,8 @@ NationalSocietiesOverviewPageComponent.propTypes = {
 
 const mapStateToProps = state => ({
   isFetching: state.nationalSocieties.overviewFetching,
-  data: state.nationalSocieties.overviewData
+  data: state.nationalSocieties.overviewData,
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 
 const mapDispatchToProps = {

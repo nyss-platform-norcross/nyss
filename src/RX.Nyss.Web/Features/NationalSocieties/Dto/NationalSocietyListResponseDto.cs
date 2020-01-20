@@ -21,5 +21,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
         public string HeadManagerName { get; set; }
 
         public string PendingHeadManagerName { get; set; }
+        public bool IsArchived { get; set; }
     }
 }

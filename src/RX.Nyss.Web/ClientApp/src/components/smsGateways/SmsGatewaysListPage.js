@@ -18,11 +18,12 @@ const SmsGatewaysListPageComponent = (props) => {
 
   return (
     <Fragment>
+      {!props.nationalSocietyIsArchived &&
       <TableActions>
         <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.smsGateway.addNew)}
        </Button>
-      </TableActions>
+      </TableActions>}
 
       <SmsGatewaysTable
         list={props.list}
@@ -50,7 +51,8 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   list: state.smsGateways.listData,
   isListFetching: state.smsGateways.listFetching,
-  isRemoving: state.smsGateways.listRemoving
+  isRemoving: state.smsGateways.listRemoving,
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 
 const mapDispatchToProps = {

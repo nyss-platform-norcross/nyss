@@ -30,6 +30,8 @@ export const initialState = {
   nationalSocieties: {
     listFetching: false,
     listRemoving: {},
+    listArchiving: {},
+    listReopening: {},
     listData: [],
     formFetching: false,
     formSaving: false,

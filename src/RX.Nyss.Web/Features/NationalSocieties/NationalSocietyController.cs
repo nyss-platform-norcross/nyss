@@ -98,5 +98,26 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> GetPendingConsents() =>
             await _nationalSocietyService.GetPendingHeadManagerConsents();
+
+
+        /// <summary>
+        /// Archives an existing National Society.
+        /// </summary>
+        /// <param name="nationalSocietyId"></param>
+        /// <returns></returns>
+        [HttpPost("{nationalSocietyId}/archive")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result> Archive(int nationalSocietyId) =>
+            await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyId);
+
+        /// <summary>
+        /// Reopens an archived National Society.
+        /// </summary>
+        /// <param name="nationalSocietyId"></param>
+        /// <returns></returns>
+        [HttpPost("{nationalSocietyId}/reopen")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result> Reopen(int nationalSocietyId) =>
+            await _nationalSocietyService.ReopenNationalSociety(nationalSocietyId);
     }
 }

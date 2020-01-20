@@ -71,7 +71,8 @@ const mapStateToProps = (state, ownProps) => ({
   isRemoving: state.nationalSocietyReports.listRemoving,
   filters: state.nationalSocietyReports.filters,
   sorting: state.nationalSocietyReports.sorting,
-  healthRisks: state.nationalSocietyReports.filtersData.healthRisks
+  healthRisks: state.nationalSocietyReports.filtersData.healthRisks,
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 
 const mapDispatchToProps = {

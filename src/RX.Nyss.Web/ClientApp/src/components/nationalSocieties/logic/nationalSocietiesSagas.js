@@ -13,7 +13,9 @@ export const nationalSocietiesSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_OVERVIEW.INVOKE, openNationalSocietyOverview),
   takeEvery(consts.EDIT_NATIONAL_SOCIETY.INVOKE, editNationalSociety),
   takeEvery(consts.CREATE_NATIONAL_SOCIETY.INVOKE, createNationalSociety),
-  takeEvery(consts.REMOVE_NATIONAL_SOCIETY.INVOKE, removeNationalSociety)
+  takeEvery(consts.REMOVE_NATIONAL_SOCIETY.INVOKE, removeNationalSociety),
+  takeEvery(consts.ARCHIVE_NATIONAL_SOCIETY.INVOKE, archiveNationalSociety),
+  takeEvery(consts.REOPEN_NATIONAL_SOCIETY.INVOKE, reopenNationalSociety)
 ];
 
 function* getNationalSocieties(force) {
@@ -51,13 +53,14 @@ function* openNationalSocietyEdition({ path, params }) {
 
 function* openNationalSocietyOverview({ path, params }) {
   yield put(actions.openOverview.request());
-  try {
+  try {        
     const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
       nationalSocietyCountry: response.value.countryName,
       nationalSocietyName: response.value.name,
-      nationalSocietyId: response.value.id
+      nationalSocietyId: response.value.id,
+      nationalSocietyIsArchived: response.value.isArchived
     }));
 
     yield put(actions.openOverview.success(response.value));
@@ -99,5 +102,29 @@ function* removeNationalSociety({ id }) {
     yield call(getNationalSocieties, true);
   } catch (error) {
     yield put(actions.remove.failure(id, error.message));
+  }
+};
+
+function* archiveNationalSociety({ id }) {
+  yield put(actions.archive.request(id));
+  try {
+    yield call(http.post, `/api/nationalSociety/${id}/archive`);
+    yield put(actions.archive.success(id));
+    yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
+    yield call(getNationalSocieties, true);
+  } catch (error) {
+    yield put(actions.archive.failure(id, error.message));
+  }
+};
+
+function* reopenNationalSociety({ id }) {
+  yield put(actions.reopen.request(id));
+  try {
+    yield call(http.post, `/api/nationalSociety/${id}/reopen`);
+    yield put(actions.reopen.success(id));
+    yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
+    yield call(getNationalSocieties, true);
+  } catch (error) {
+    yield put(actions.reopen.failure(id, error.message));
   }
 };

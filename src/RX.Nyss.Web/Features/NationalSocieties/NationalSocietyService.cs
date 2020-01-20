@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
@@ -9,8 +10,12 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
+using RX.Nyss.Web.Features.SmsGateways;
+using RX.Nyss.Web.Features.SmsGateways.Dto;
+using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
@@ -23,10 +28,12 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
         Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
         Task<Result> RemoveNationalSociety(int id);
+        Task<Result> ArchiveNationalSociety(int nationalSocietyId);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
         Task<Result> SetAsHeadManager();
         Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents();
         Task<IEnumerable<HealthRiskDto>> GetNationalSocietyHealthRiskNames(int nationalSocietyId);
+        Task<Result> ReopenNationalSociety(int nationalSocietyId);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -35,16 +42,24 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         private readonly INationalSocietyAccessService _nationalSocietyAccessService;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IManagerService _managerService;
+        private readonly ITechnicalAdvisorService _technicalAdvisorService;
+        private readonly ISmsGatewayService _smsGatewayService;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
-            ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService)
+            ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService,
+            IManagerService managerService, ITechnicalAdvisorService technicalAdvisorService,
+            ISmsGatewayService smsGatewayService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
             _loggerAdapter = loggerAdapter;
             _authorizationService = authorizationService;
+            _managerService = managerService;
+            _technicalAdvisorService = technicalAdvisorService;
+            _smsGatewayService = smsGatewayService;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties()
@@ -63,7 +78,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     StartDate = n.StartDate,
                     HeadManagerName = n.HeadManager.Name,
                     PendingHeadManagerName = n.PendingHeadManager.Name,
-                    TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.Where(u => u.User.Role == Role.TechnicalAdvisor).Select(u => u.User.Name).ToList())
+                    TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.Where(u => u.User.Role == Role.TechnicalAdvisor).Select(u => u.User.Name).ToList()),
+                    IsArchived = n.IsArchived
                 })
                 .OrderBy(n => n.Name)
                 .ToListAsync();
@@ -82,7 +98,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     Name = n.Name,
                     CountryId = n.Country.Id,
                     CountryName = n.Country.Name,
-                    HeadManagerId = n.HeadManager.Id
+                    HeadManagerId = n.HeadManager.Id,
+                    IsArchived = n.IsArchived
                 })
                 .FirstOrDefaultAsync(n => n.Id == id);
 
@@ -134,6 +151,11 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             }
 
             var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
+
+            if (nationalSociety.IsArchived)
+            {
+                return Error(ResultKey.NationalSociety.Edit.CannotEditArchivedNationalSociety);
+            }
 
             nationalSociety.Name = dto.Name;
             nationalSociety.ContentLanguage = await GetLanguageById(dto.ContentLanguageId);
@@ -275,5 +297,95 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 .Distinct()
                 .OrderBy(x => x.Name)
                 .ToListAsync();
+
+        public async Task<Result> ArchiveNationalSociety(int nationalSocietyId)
+        {
+            var openedProjectsQuery = _nyssContext.Projects.Where(p => p.State == ProjectState.Open);
+            var nationalSocietyData = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Where(ns => !ns.IsArchived)
+                .Select(ns => new
+                {
+                    NationalSociety = ns,
+                    HasRegisteredUsers = ns.NationalSocietyUsers.Any(uns => uns.UserId != ns.HeadManager.Id),
+                    HasOpenedProjects = openedProjectsQuery.Any(p => p.NationalSocietyId == ns.Id),
+                    HeadManagerId = ns.HeadManager != null ? (int?)ns.HeadManager.Id : null,
+                    HeadManagerRole = ns.HeadManager != null ? (Role?)ns.HeadManager.Role : null,
+                })
+                .SingleAsync();
+
+            if (nationalSocietyData.HasOpenedProjects)
+            {
+                return Error(ResultKey.NationalSociety.Archive.ErrorHasOpenedProjects);
+            }
+
+            if (nationalSocietyData.HasRegisteredUsers)
+            {
+                return Error(ResultKey.NationalSociety.Archive.ErrorHasRegisteredUsers);
+            }
+
+            try
+            {
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                if (nationalSocietyData.HeadManagerId.HasValue)
+                {
+                    await DeleteHeadManager(nationalSocietyData.NationalSociety.Id, nationalSocietyData.HeadManagerId.Value, nationalSocietyData.HeadManagerRole.Value);
+                }
+
+                await RemoveApiKeys(nationalSocietyData.NationalSociety.Id);
+                nationalSocietyData.NationalSociety.IsArchived = true;
+
+                await _nyssContext.SaveChangesAsync();
+                transactionScope.Complete();
+
+                return SuccessMessage(ResultKey.NationalSociety.Archive.Success);
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result;
+            }
+        }
+
+        private async Task RemoveApiKeys(int nationalSocietyId)
+        {
+            var gatewaysResult = await _smsGatewayService.GetSmsGateways(nationalSocietyId);
+            ThrowIfErrorResult(gatewaysResult);
+
+            foreach (var gateway in gatewaysResult.Value)
+            {
+                var deleteResult = await _smsGatewayService.DeleteSmsGateway(gateway.Id);
+                ThrowIfErrorResult(gatewaysResult);
+            }
+        }
+
+        private void ThrowIfErrorResult<T>(Result<T> result)
+        {
+            if (!result.IsSuccess)
+            {
+                throw new ResultException(result.Message.Key, result.Message.Data);
+            }
+        }
+
+        private async Task DeleteHeadManager(int nationalSocietyId, int headManagerId, Role headManagerRole)
+        {
+            if (headManagerRole == Role.Manager)
+            {
+                await _managerService.RemoveManagerIncludingHeadManagerFlag(headManagerId);
+            }
+            else if (headManagerRole == Role.TechnicalAdvisor)
+            {
+                await _technicalAdvisorService.RemoveTechnicalAdvisorIncludingHeadManagerFlag(nationalSocietyId, headManagerId);
+            }
+        }
+
+        public async Task<Result> ReopenNationalSociety(int nationalSocietyId)
+        {
+            var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
+            nationalSociety.IsArchived = false;
+            await _nyssContext.SaveChangesAsync();
+            return SuccessMessage(ResultKey.NationalSociety.Archive.ReopenSuccess);
+        }
     }
 }

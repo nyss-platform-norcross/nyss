@@ -25,6 +25,8 @@
                 public const string UserNotFound = "user.registration.userNotFound";
                 public const string PasswordTooWeak = "user.registration.passwordTooWeak";
                 public const string NationalSocietyDoesNotExist = "user.registration.nationalSocietyDoesNotExist";
+                public const string CannotCreateUsersInArchivedNationalSociety = "user.registration.cannotCreateUsersInArchivedNationalSociety";
+                public const string CannotAddExistingUsersToArchivedNationalSociety = "user.registration.cannotAddExistingUsersToArchivedNationalSociety";
                 public const string NoAssignableUserWithThisEmailFound = "user.registration.noAssignableUserWithThisEmailFound";
                 public const string UserIsNotAssignedToThisNationalSociety = "user.registration.userIsNotAssignedToThisNationalSociety";
                 public const string UserIsAlreadyInThisNationalSociety = "user.registration.userIsAlreadyInThisNationalSociety";
@@ -85,11 +87,20 @@
             public static class Edit
             {
                 public const string Success = "nationalSociety.edit.success";
+                public const string CannotEditArchivedNationalSociety = "nationalSociety.edit.cannotEditArchivedNationalSociety";
             }
 
             public static class Remove
             {
                 public const string Success = "nationalSociety.remove.success";
+            }
+
+            public static class Archive
+            {
+                public const string Success = "nationalSociety.archive.success";
+                public const string ErrorHasOpenedProjects = "nationalSociety.archive.errorHasOpenedProjects";
+                public const string ErrorHasRegisteredUsers = "nationalSociety.archive.errorHasRegisteredUsers";
+                public const string ReopenSuccess = "nationalSociety.archive.repoenSuccess";
             }
 
             public static class SmsGateway
@@ -111,6 +122,7 @@
             public static class Structure
             {
                 public const string ItemAlreadyExists = "nationalSociety.structure.itemAlreadyExists";
+                public const string CannotCreateItemInArchivedNationalSociety = "nationalSociety.structure.cannotCreateItemInArchivedNationalSociety";
             }
         }
 
@@ -163,6 +175,7 @@
             public const string NationalSocietyDoesNotExist = "project.nationalSocietyDoesNotExist";
             public const string HealthRiskDoesNotExist = "project.healthRiskDoesNotExist";
             public const string HealthRiskContainsReports = "project.healthRiskContainsReports";
+            public const string CannotAddProjectInArchivedNationalSociety = "project.cannotAddProjectInArchivedNationalSociety";
             public const string ProjectHasOpenOrEscalatedAlerts = "project.projectHasOpenOrEscalatedAlerts";
         }
         

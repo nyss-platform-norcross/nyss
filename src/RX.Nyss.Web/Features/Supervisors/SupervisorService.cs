@@ -76,6 +76,10 @@ namespace RX.Nyss.Web.Features.Supervisors
             {
                 throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
             }
+            if (nationalSociety.IsArchived)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
+            }
 
             var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
                 .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);

@@ -20,6 +20,7 @@ namespace RX.Nyss.Web.Features.Managers
         Task<Result<GetManagerResponseDto>> GetManager(int managerId);
         Task<Result> UpdateManager(int managerId, EditManagerRequestDto editManagerRequestDto);
         Task<Result> DeleteManager(int managerId);
+        Task RemoveManagerIncludingHeadManagerFlag(int managerId);
     }
 
 
@@ -75,6 +76,10 @@ namespace RX.Nyss.Web.Features.Managers
             if (nationalSociety == null)
             {
                 throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+            }
+            if (nationalSociety.IsArchived)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
             }
 
             var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
@@ -160,12 +165,7 @@ namespace RX.Nyss.Web.Features.Managers
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
-
-                await HandleHeadManagerStatus(manager);
-
-                _nationalSocietyUserService.DeleteNationalSocietyUser<ManagerUser>(manager);
-                await _identityUserRegistrationService.DeleteIdentityUser(manager.IdentityUserId);
+                await RemoveManagerFromDb(managerId);
 
                 await _dataContext.SaveChangesAsync();
 
@@ -177,19 +177,36 @@ namespace RX.Nyss.Web.Features.Managers
                 _loggerAdapter.Debug(e);
                 return e.Result;
             }
+        }
 
-            async Task HandleHeadManagerStatus(ManagerUser manager)
+        private async Task RemoveManagerFromDb(int managerId, bool allowHeadManagerDeletion = false)
+        {
+            var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
+
+            await HandleHeadManagerStatus(manager, allowHeadManagerDeletion);
+
+            _nationalSocietyUserService.DeleteNationalSocietyUser<ManagerUser>(manager);
+            await _identityUserRegistrationService.DeleteIdentityUser(manager.IdentityUserId);
+        }
+
+        private async Task HandleHeadManagerStatus(ManagerUser manager, bool allowHeadManagerDeletion)
+        {
+            var nationalSociety = await _dataContext.NationalSocieties.FindAsync(manager.UserNationalSocieties.Single().NationalSocietyId);
+            if (nationalSociety.PendingHeadManager == manager)
             {
-                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(manager.UserNationalSocieties.Single().NationalSocietyId);
-                if (nationalSociety.PendingHeadManager == manager)
-                {
-                    nationalSociety.PendingHeadManager = null;
-                }
-                if (nationalSociety.HeadManager == manager)
+                nationalSociety.PendingHeadManager = null;
+            }
+            if (nationalSociety.HeadManager == manager)
+            {
+                if (!allowHeadManagerDeletion)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
+                nationalSociety.HeadManager = null;
             }
         }
+
+        public async Task RemoveManagerIncludingHeadManagerFlag(int managerId) =>
+            await RemoveManagerFromDb(managerId, true);
     }
 }

@@ -1,6 +1,6 @@
 import { push } from "connected-react-router";
 import { GET_NATIONAL_SOCIETIES, CREATE_NATIONAL_SOCIETY, REMOVE_NATIONAL_SOCIETY, OPEN_NATIONAL_SOCIETY_OVERVIEW } from "./nationalSocietiesConstants";
-import { OPEN_EDITION_NATIONAL_SOCIETY, EDIT_NATIONAL_SOCIETY } from "./nationalSocietiesConstants";
+import { OPEN_EDITION_NATIONAL_SOCIETY, EDIT_NATIONAL_SOCIETY, ARCHIVE_NATIONAL_SOCIETY, REOPEN_NATIONAL_SOCIETY } from "./nationalSocietiesConstants";
 
 export const goToCreation = () => push("/nationalsocieties/add");
 export const goToList = () => push("/nationalsocieties");
@@ -47,4 +47,18 @@ export const remove = {
   request: (id) => ({ type: REMOVE_NATIONAL_SOCIETY.REQUEST, id }),
   success: (id) => ({ type: REMOVE_NATIONAL_SOCIETY.SUCCESS, id }),
   failure: (id, message) => ({ type: REMOVE_NATIONAL_SOCIETY.FAILURE, id, message })
+};
+
+export const archive = {
+  invoke: (id) => ({ type: ARCHIVE_NATIONAL_SOCIETY.INVOKE, id }),
+  request: (id) => ({ type: ARCHIVE_NATIONAL_SOCIETY.REQUEST, id }),
+  success: (id) => ({ type: ARCHIVE_NATIONAL_SOCIETY.SUCCESS, id }),
+  failure: (id, message) => ({ type: ARCHIVE_NATIONAL_SOCIETY.FAILURE, id, message })
+};
+
+export const reopen = {
+  invoke: (id) => ({ type: REOPEN_NATIONAL_SOCIETY.INVOKE, id }),
+  request: (id) => ({ type: REOPEN_NATIONAL_SOCIETY.REQUEST, id }),
+  success: (id) => ({ type: REOPEN_NATIONAL_SOCIETY.SUCCESS, id }),
+  failure: (id, message) => ({ type: REOPEN_NATIONAL_SOCIETY.FAILURE, id, message })
 };

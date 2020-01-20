@@ -31,6 +31,7 @@ const NationalSocietyStructurePageComponent = (props) => {
         zones={zones}
         isFetching={isFetching}
         nationalSocietyId={nationalSocietyId}
+        nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
 
         expandedItems={props.expandedItems}
         updateExpandedItems={props.updateExpandedItems}
@@ -62,7 +63,8 @@ const mapStateToProps = (state, ownProps) => ({
   districts: state.nationalSocietyStructure.districts,
   villages: state.nationalSocietyStructure.villages,
   zones: state.nationalSocietyStructure.zones,
-  expandedItems: state.nationalSocietyStructure.expandedItems
+  expandedItems: state.nationalSocietyStructure.expandedItems,
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 
 const mapDispatchToProps = {
