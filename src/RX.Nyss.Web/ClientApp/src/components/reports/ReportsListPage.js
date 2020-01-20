@@ -24,7 +24,7 @@ const ReportsListPageComponent = (props) => {
   }
 
   const handleFiltersChange = (filters) =>
-    props.getList(props.projectId, props.page, filters, props.sorting);
+    props.getList(props.projectId, 1, filters, props.sorting);
 
   const handlePageChange = (page) =>
     props.getList(props.projectId, page, props.filters, props.sorting);
