@@ -5,7 +5,7 @@
     display: flex;
     padding-top: 30px;
 
-    @media screen and (max-width: 600px) {
+    @media screen and (max-width: 1280px) {
       padding-top: 0;
     }
 }
@@ -13,7 +13,7 @@
 .paperHeader {
   margin: 60px 0 !important;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 1280px) {
     font-size: 22px !important;
     margin: 30px 0 !important;
     text-align: center;
@@ -21,7 +21,7 @@
 }
 
 .loginHeader {
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 1280px) {
     text-align: center;
     font-weight: normal !important;
     font-size: 16px !important;
@@ -31,7 +31,7 @@
 .loginPaper {
   width: 750px;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 1280px) {
     background: none !important;
     width: unset;
   }
@@ -41,7 +41,7 @@
   padding: 0 20px;
   padding-bottom: 20px;
 
-  @media screen and (min-width: 600px) {
+  @media screen and (min-width: 1280px) {
     padding: 50px 160px;
   }
 }

@@ -15,7 +15,7 @@ import { toggleSideMenu } from '../app/logic/appActions';
 
 const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => {
   const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const handleItemClick = (item) => {
     push(item.url);

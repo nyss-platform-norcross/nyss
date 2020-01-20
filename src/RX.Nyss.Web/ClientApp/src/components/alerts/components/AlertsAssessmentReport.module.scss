@@ -2,7 +2,7 @@
   display: flex;
   margin: 10px 0;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 1280px) {
       flex-direction: column;
   }
 }
@@ -23,7 +23,7 @@
   font-weight: bold;
   align-self: center;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 1280px) {
     width: 100px;
   }
 }
@@ -31,7 +31,7 @@
 .senderContainer {
   display: flex;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 1280px) {
     flex-direction: column;
     margin-left: 10px;
   }
@@ -41,7 +41,7 @@
   margin: 0 10px;
   white-space: nowrap;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 1280px) {
     margin: 0;
   }
 }
