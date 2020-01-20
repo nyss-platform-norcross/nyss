@@ -2,7 +2,7 @@ import { Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsum
 
 export const accessMap = {
   nationalSocieties: {
-    showDashboard: [Administrator, GlobalCoordinator, TechnicalAdvisor, DataConsumer],
+    showDashboard: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer],
     list: [Administrator, GlobalCoordinator, TechnicalAdvisor, DataConsumer],
     add: [Administrator, GlobalCoordinator],
     edit: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
