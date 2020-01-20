@@ -148,6 +148,7 @@
                 public const string HealthRiskCannotBeEdited = "report.healthRiskCannotBeEdited";
             }
 
+            public const string ProjectIsClosed = "report.projectIsClosed";
             public const string ReportNotFound = "report.reportNotFound";
         }
 
@@ -164,12 +165,7 @@
             public const string HealthRiskContainsReports = "project.healthRiskContainsReports";
             public const string ProjectHasOpenOrEscalatedAlerts = "project.projectHasOpenOrEscalatedAlerts";
         }
-
-        public static class Report
-        {
-            public const string ProjectIsClosed = "report.projectIsClosed";
-        }
-
+        
         public const string UnexpectedError = "error.unexpected";
 
         public class SqlExceptions

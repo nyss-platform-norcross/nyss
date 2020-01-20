@@ -64,18 +64,17 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
                 <TableCell>{project.escalatedAlertCount}</TableCell>
                 <TableCell>
                   <TableRowActions>
-
-                    {(!project.isClosed && userCanCloseProject) && (
                       <TableRowMenu
                         id={project.id}
                         items={[{
+                          id: `menuItem_${project.id}_1`,
                           title: strings(stringKeys.project.list.close),
+                          condition: !project.isClosed && userCanCloseProject,
                           action: () => setRemoveConfirmationDialog({ isOpen: true, projectId: project.id })
                         }]}
                         icon={<MoreVertIcon />}
                         isFetching={isClosing[project.id]}
                       />
-                    )}
                   </TableRowActions>
                 </TableCell>
               </TableRow>
