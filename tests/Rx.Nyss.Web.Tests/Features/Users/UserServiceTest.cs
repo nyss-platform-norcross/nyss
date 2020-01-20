@@ -7,7 +7,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.User;
+using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;

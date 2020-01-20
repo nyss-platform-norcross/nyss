@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Utils.DataContract;
-using RX.Nyss.Web.Features.Project;
-using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
+using RX.Nyss.Web.Features.Projects;
+using RX.Nyss.Web.Features.Projects.Dto;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard

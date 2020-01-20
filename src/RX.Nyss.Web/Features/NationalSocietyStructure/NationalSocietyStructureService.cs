@@ -85,7 +85,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             var entry = await _nyssContext.Regions.AddAsync(new Region
             {
                 NationalSociety = _nyssContext.NationalSocieties
-                    .Attach(new Nyss.Data.Models.NationalSociety { Id = nationalSocietyId })
+                    .Attach(new NationalSociety { Id = nationalSocietyId })
                     .Entity,
                 Name = name
             });

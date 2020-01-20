@@ -11,8 +11,8 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Extensions;
-using RX.Nyss.Web.Features.Project.Dto;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
+using RX.Nyss.Web.Features.Projects.Dto;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard
 {
@@ -147,7 +147,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             };
         }
 
-        private static async Task<IList<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate,
+        private static async Task<IList<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndDay(IQueryable<Report> reports, DateTime startDate,
             DateTime endDate)
         {
             var groupedReports = await reports
@@ -181,7 +181,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private async Task<IList<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<IList<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .Select(r => new { r.EpiYear, r.EpiWeek, r.DataCollectionPointCase.ReferredCount, r.DataCollectionPointCase.DeathCount, r.DataCollectionPointCase.FromOtherVillagesCount })
@@ -257,7 +257,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToListAsync();
         }
 
-        private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .Select(r => new { r.ReceivedAt, r.ReportedCase.CountFemalesAtLeastFive, r.ReportedCase.CountFemalesBelowFive, r.ReportedCase.CountMalesAtLeastFive, r.ReportedCase.CountMalesBelowFive })
@@ -292,7 +292,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .Select(r => new { r.EpiYear, r.EpiWeek, r.ReportedCase.CountFemalesAtLeastFive, r.ReportedCase.CountFemalesBelowFive, r.ReportedCase.CountMalesAtLeastFive, r.ReportedCase.CountMalesBelowFive })
@@ -326,7 +326,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .GroupBy(r => new { r.ReceivedAt.Date, VillageId = r.Village.Id, VillageName = r.Village.Name })
@@ -389,7 +389,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             };
         }
 
-        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .GroupBy(r => new { r.EpiWeek, ReceivedAt = r.ReceivedAt.Date, VillageId = r.Village.Id, VillageName = r.Village.Name })
@@ -454,7 +454,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             };
         }
 
-        private static async Task<IList<ReportByDateResponseDto>> GroupReportsByDay(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        private static async Task<IList<ReportByDateResponseDto>> GroupReportsByDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .Select(r => new
@@ -491,7 +491,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .ToList();
         }
 
-        private async Task<IList<ReportByDateResponseDto>> GroupReportsByWeek(IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<IList<ReportByDateResponseDto>> GroupReportsByWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
                 .Select(r => new { r.EpiYear, r.EpiWeek, Total = r.ReportedCaseCount })
@@ -521,7 +521,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .FilterByDate(filtersDto.StartDate.Date, filtersDto.EndDate.Date.AddDays(1))
                 .FilterByHealthRisk(filtersDto.HealthRiskId);
 
-        private IQueryable<Nyss.Data.Models.Report> GetValidReports(int projectId, FiltersRequestDto filtersDto) =>
+        private IQueryable<Report> GetValidReports(int projectId, FiltersRequestDto filtersDto) =>
             GetAssignedRawReports(projectId, filtersDto)
                 .AllSuccessfulReports()
                 .Select(r => r.Report)
