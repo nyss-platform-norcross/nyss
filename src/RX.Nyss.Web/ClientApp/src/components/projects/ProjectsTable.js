@@ -91,8 +91,8 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
         <Grid container spacing={3} alignItems="center">
           <Grid item>
             <Grid container direction="row" spacing={3} alignItems="center">
-              <Grid item xs={2}>
-                <WarningIcon color="error" fontSize="large" />
+              <Grid item xs={2} style={{textAlign: "center"}}>
+                <WarningIcon color="error" style={{fontSize: "45px", verticalAlign: "bottom"}} />
               </Grid>
               <Grid item xs={10}>
                 <Typography variant="body1">{strings(stringKeys.project.list.removalConfirmationText)}</Typography>
