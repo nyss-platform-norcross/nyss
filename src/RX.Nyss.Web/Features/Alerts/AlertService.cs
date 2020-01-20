@@ -457,9 +457,9 @@ namespace RX.Nyss.Web.Features.Alerts
                 var (subject, body) = await _emailTextGeneratorService.GenerateEscalatedAlertEmail(languageCode);
 
                 body = body
-                    .Replace("{project}", project)
-                    .Replace("{healthRisk}", healthRisk)
-                    .Replace("{lastReportVillage}", lastReportVillage);
+                    .Replace("{{project}}", project)
+                    .Replace("{{healthRisk}}", healthRisk)
+                    .Replace("{{lastReportVillage}}", lastReportVillage);
 
                 foreach (var email in notificationEmails)
                 {
@@ -484,9 +484,9 @@ namespace RX.Nyss.Web.Features.Alerts
                 var text = await _smsTextGeneratorService.GenerateEscalatedAlertSms(languageCode);
 
                 text = text
-                    .Replace("{project}", project)
-                    .Replace("{healthRisk}", healthRisk)
-                    .Replace("{lastReportVillage}", lastReportVillage);
+                    .Replace("{{project}}", project)
+                    .Replace("{{healthRisk}}", healthRisk)
+                    .Replace("{{lastReportVillage}}", lastReportVillage);
 
                 foreach (var sms in notificationPhoneNumbers)
                 {
