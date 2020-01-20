@@ -8,7 +8,7 @@ export function reportsReducer(state = initialState.reports, action) {
       return { ...state, formData: null }
 
     case actions.OPEN_REPORTS_LIST.INVOKE:
-      return { ...state, listStale: action.projectId !== state.listProjectId };
+      return { ...state, listStale: state.listStale || action.projectId !== state.listProjectId };
 
     case actions.OPEN_REPORTS_LIST.SUCCESS:
       return { ...state, listProjectId: action.projectId, filtersData: action.filtersData };
@@ -21,6 +21,27 @@ export function reportsReducer(state = initialState.reports, action) {
 
     case actions.GET_REPORTS.FAILURE:
       return { ...state, listFetching: false, paginatedListData: null };
+
+    case actions.OPEN_REPORT_EDITION.INVOKE:
+      return { ...state, formFetching: true, formData: null };
+
+    case actions.OPEN_REPORT_EDITION.REQUEST:
+      return { ...state, formFetching: true, formData: null };
+
+    case actions.OPEN_REPORT_EDITION.SUCCESS:
+      return { ...state, formFetching: false, formData: action.data, formHealthRisks: action.healthRisks };
+
+    case actions.OPEN_REPORT_EDITION.FAILURE:
+      return { ...state, formFetching: false };
+
+    case actions.EDIT_REPORT.REQUEST:
+      return { ...state, formSaving: true };
+
+    case actions.EDIT_REPORT.SUCCESS:
+      return { ...state, formSaving: false, listStale: true };
+
+    case actions.EDIT_REPORT.FAILURE:
+      return { ...state, formSaving: false };
 
     case actions.MARK_AS_ERROR.REQUEST:
       return { ...state, markingAsError: true };

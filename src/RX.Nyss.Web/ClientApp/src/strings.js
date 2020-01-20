@@ -436,6 +436,20 @@ export const stringKeys = {
       markAsErrorConfirmation: "reports.list.markAsErrorConfirmation",
       markAsErrorConfirmationText: "reports.list.markAsErrorConfirmationText",
       markedAsError: "reports.list.markedAsError",
+      editReport: "reports.list.editReport"
+    },
+    form: {
+      title: "reports.form.editionTitle",
+      date: "reports.form.date",
+      healthRisk: "reports.form.healthRisk",
+      malesBelowFive: "reports.form.malesBelowFive",
+      malesAtLeastFive: "reports.form.malesAtLeastFive",
+      femalesBelowFive: "reports.form.femalesBelowFive",
+      femalesAtLeastFive: "reports.form.femalesAtLeastFive",
+      referredCount: "reports.form.referredCount",
+      deathCount: "reports.form.deathCount",
+      fromOtherVillagesCount: "reports.form.fromOtherVillagesCount",
+      update: "reports.form.update"
     },
     title: "reports.title"
   },

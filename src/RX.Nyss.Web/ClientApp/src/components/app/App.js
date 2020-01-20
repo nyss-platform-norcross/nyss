@@ -40,6 +40,7 @@ import { DataCollectorsCreatePage } from '../dataCollectors/DataCollectorsCreate
 import { DataCollectorsEditPage } from '../dataCollectors/DataCollectorsEditPage';
 import { NationalSocietyStructurePage } from '../nationalSocietyStructure/NationalSocietyStructurePage';
 import { ReportsListPage } from '../reports/ReportsListPage';
+import { ReportsEditPage } from '../reports/ReportsEditPage';
 import { ProjectDashboardPage } from '../projectDashboard/ProjectsDashboardPage';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DayJsUtils from '@date-io/dayjs';
@@ -107,6 +108,7 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
 
           <AuthRoute exact path='/projects/:projectId/reports' component={ReportsListPage} roles={accessMap.reports.list} />
+          <AuthRoute exact path='/projects/:projectId/reports/:reportId/edit' component={ReportsEditPage} roles={accessMap.reports.edit} />
 
           <AuthRoute exact path='/projects/:projectId/alerts' component={AlertsListPage} roles={accessMap.alerts.list} />
           <AuthRoute exact path='/projects/:projectId/alerts/:alertId/assess' component={AlertsAssessmentPage} roles={accessMap.alerts.assess} />

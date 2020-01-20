@@ -2,13 +2,15 @@ import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from "prop-types";
 
-export const useAccessRestriction = (Component) => ({ roles, ...props }) =>
-  roles
-    ? <HasAccess roles={roles}><Component {...props} /></HasAccess>
+export const useAccessRestriction = (Component) => ({ roles, condition, ...props }) =>
+  (roles || condition !== undefined)
+    ? <HasAccess roles={roles} condition={condition}><Component {...props} /></HasAccess>
     : <Component {...props} />;
 
-export const HasAccessComponent = ({ user, roles, children }) =>
-  user.roles.some(role => roles.indexOf(role) > -1) && children;
+export const HasAccessComponent = ({ user, roles, condition, children }) =>
+  (!roles || user.roles.some(role => roles.indexOf(role) > -1))
+  && (condition === undefined || condition === true)
+  && children;
 
 const mapStateToProps = state => ({
   user: state.appData.user

@@ -120,7 +120,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             await _nyssContext.AddAsync(healthRisk);
             await _nyssContext.SaveChangesAsync();
 
-            return SuccessMessage(ResultKey.HealthRisk.CreationSuccess);
+            return SuccessMessage(ResultKey.HealthRisk.Create.CreationSuccess);
         }
 
         public async Task<Result> EditHealthRisk(int id, HealthRiskRequestDto healthRiskRequestDto)
@@ -178,7 +178,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
 
             await _nyssContext.SaveChangesAsync();
 
-            return SuccessMessage(ResultKey.HealthRisk.EditSuccess);
+            return SuccessMessage(ResultKey.HealthRisk.Edit.EditSuccess);
         }
 
         public async Task<Result> RemoveHealthRisk(int id)
@@ -206,7 +206,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             _nyssContext.HealthRisks.Remove(healthRisk);
             await _nyssContext.SaveChangesAsync();
 
-            return SuccessMessage(ResultKey.HealthRisk.RemoveSuccess);
+            return SuccessMessage(ResultKey.HealthRisk.Remove.RemoveSuccess);
         }
 
         private static bool CodeOrNameWasChanged(HealthRiskRequestDto healthRiskRequestDto, HealthRisk healthRisk) =>

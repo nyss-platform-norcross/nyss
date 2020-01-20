@@ -356,7 +356,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.HealthRisk.EditSuccess);
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.Edit.EditSuccess);
         }
 
         [Fact]
@@ -438,7 +438,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.HealthRisk.EditSuccess);
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.Edit.EditSuccess);
         }
 
         [Fact]
@@ -473,7 +473,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.HealthRisk.EditSuccess);
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.Edit.EditSuccess);
         }
 
         [Fact]
@@ -489,7 +489,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.HealthRisk.RemoveSuccess);
+            result.Message.Key.ShouldBe(ResultKey.HealthRisk.Remove.RemoveSuccess);
         }
 
         [Fact]

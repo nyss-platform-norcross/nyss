@@ -20,6 +20,16 @@ namespace RX.Nyss.Web.Features.Reports
         }
 
         /// <summary>
+        /// Gets a report.
+        /// </summary>
+        /// <param name="reportId">An identifier of a report</param>
+        /// <returns>A report</returns>
+        [HttpGet("{reportId:int}/get")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
+        public Task<Result<ReportResponseDto>> GetReport(int reportId) =>
+            _reportService.GetReport(reportId);
+
+        /// <summary>
         /// Gets a list of reports in a project.
         /// </summary>
         [HttpPost("list")]
@@ -37,7 +47,7 @@ namespace RX.Nyss.Web.Features.Reports
             await _reportService.GetReportFilters(projectId);
 
         /// <summary>
-        /// Export the list of reports in a project to a csv file
+        /// Export the list of reports in a project to a csv file.
         /// </summary>
         /// <param name="projectId">The ID of the project to export the reports from</param>
         /// <param name="filterRequest">The filters object</param>
@@ -50,12 +60,31 @@ namespace RX.Nyss.Web.Features.Reports
         }
 
         /// <summary>
-        /// Mark the selected report as error
+        /// Mark the selected report as error.
         /// </summary>
         /// <param name="reportId">The ID of the report to be marked as error</param>
-        [HttpPost("{reportId}/markAsError")]
+        [HttpPost("{reportId:int}/markAsError")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ReportAccess)]
         public async Task<Result> MarkAsError(int reportId) =>
             await _reportService.MarkAsError(reportId);
+
+        /// <summary>
+        /// Gets human health risks for the project.
+        /// </summary>
+        /// <param name="projectId">An identifier of a project</param>
+        [HttpGet("humanHealthRisksForProject/{projectId:int}/get")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId) =>
+            await _reportService.GetHumanHealthRisksForProject(projectId);
+
+        /// <summary>
+        /// Edits a report.
+        /// </summary>
+        /// <param name="reportId">An identifier of a report</param>
+        /// <param name="reportRequestDto">A report</param>
+        [HttpPost("{reportId:int}/edit")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
+        public async Task<Result> Edit(int reportId, [FromBody]ReportRequestDto reportRequestDto) =>
+            await _reportService.Edit(reportId, reportRequestDto);
     }
 }

@@ -1,6 +1,6 @@
 import styles from "./NationalSocietyReportsListPage.module.scss";
 
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsActions';

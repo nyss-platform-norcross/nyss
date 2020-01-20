@@ -11,5 +11,11 @@ export const reportsSiteMap = [
     placeholder: placeholders.leftMenu,
     access: accessMap.reports.list,
     placeholderIndex: projectLeftMenuOrder.reports
+  },
+  {
+    parentPath: "/projects/:projectId/reports",
+    path: "/projects/:projectId/reports/:reportId/edit",
+    title: () => strings(stringKeys.reports.form.title),
+    access: accessMap.reports.edit
   }
 ];

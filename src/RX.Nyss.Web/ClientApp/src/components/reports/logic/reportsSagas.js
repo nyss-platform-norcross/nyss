@@ -12,6 +12,8 @@ import { DateColumnName } from './reportsConstants'
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
   takeEvery(consts.GET_REPORTS.INVOKE, getReports),
+  takeEvery(consts.OPEN_REPORT_EDITION.INVOKE, openReportEdition),
+  takeEvery(consts.EDIT_REPORT.INVOKE, editReport),
   takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExportData),
   takeEvery(consts.MARK_AS_ERROR.INVOKE, markAsError)
 ];
@@ -28,7 +30,7 @@ function* openReportsList({ projectId }) {
     if (listStale) {
       yield call(getReports, { projectId });
     }
-    
+
     yield put(actions.openList.success(projectId, filtersData.value));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
@@ -44,6 +46,7 @@ function* getReports({ projectId, pageNumber, filters, sorting }) {
     status: true,
     isTraining: false
   };
+
   const requestSorting = sorting || (yield select(state => state.reports.sorting)) ||
   {
     orderBy: DateColumnName,
@@ -59,6 +62,29 @@ function* getReports({ projectId, pageNumber, filters, sorting }) {
     yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, requestFilters, requestSorting));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
+  }
+};
+
+function* openReportEdition({ projectId, reportId }) {
+  yield put(actions.openEdition.request());
+  try {
+    const humanHealthRisksforProject = yield call(http.get, `/api/report/humanHealthRisksForProject/${projectId}/get`);
+    const response = yield call(http.get, `/api/report/${reportId}/get`);
+    yield openReportsModule(projectId);
+    yield put(actions.openEdition.success(response.value, humanHealthRisksforProject.value.healthRisks));
+  } catch (error) {
+    yield put(actions.openEdition.failure(error.message));
+  }
+};
+
+function* editReport({ projectId, reportId, data }) {
+  yield put(actions.edit.request());
+  try {
+    const response = yield call(http.post, `/api/report/${reportId}/edit`, data);
+    yield put(actions.edit.success(response.value));
+    yield put(actions.goToList(projectId));
+  } catch (error) {
+    yield put(actions.edit.failure(error.message));
   }
 };
 
@@ -100,9 +126,7 @@ function* markAsError({ reportId }) {
     yield call(http.post, `/api/report/${reportId}/markAsError`);
     yield put(actions.markAsError.success());
     yield put(appActions.showMessage(stringKeys.reports.list.successfulyMarkedAsError));
-
     yield call(getReports, { projectId });
-    
   } catch (error) {
     yield put(actions.markAsError.failure());
   }

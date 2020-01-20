@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Projects.Dto;
@@ -31,11 +32,12 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<Result<ProjectDashboardFiltersResponseDto>> GetDashboardFiltersData(int projectId)
         {
-            var projectHealthRiskNames = await _projectService.GetProjectHealthRiskNames(projectId);
+            var healthRiskTypesWithoutActivity = new List<HealthRiskType> { HealthRiskType.Human, HealthRiskType.NonHuman, HealthRiskType.UnusualEvent };
+            var projectHealthRisks = await _projectService.GetProjectHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
 
             var dto = new ProjectDashboardFiltersResponseDto
             {
-                HealthRisks = projectHealthRiskNames
+                HealthRisks = projectHealthRisks
             };
 
             return Success(dto);

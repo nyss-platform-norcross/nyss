@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.Common.Dto
+﻿using FluentValidation;
+
+namespace RX.Nyss.Web.Features.Common.Dto
 {
     public class AreaDto
     {
@@ -12,6 +14,15 @@
             District,
             Village,
             Zone
+        }
+
+        public class Validator : AbstractValidator<AreaDto>
+        {
+            public Validator()
+            {
+                RuleFor(a => a.Id).GreaterThan(0);
+                RuleFor(a => a.Type).IsInEnum();
+            }
         }
     }
 }

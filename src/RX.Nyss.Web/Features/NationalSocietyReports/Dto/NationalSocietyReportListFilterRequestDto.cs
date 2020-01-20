@@ -1,4 +1,5 @@
-﻿using RX.Nyss.Web.Features.Common.Dto;
+﻿using FluentValidation;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
 {
@@ -12,5 +13,16 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
         public bool SortAscending { get; set; }
 
         public static readonly string DateColumnName = "date";
+
+        public class Validator : AbstractValidator<NationalSocietyReportListFilterRequestDto>
+        {
+            public Validator()
+            {
+                RuleFor(f => f.ReportsType).IsInEnum();
+                RuleFor(f => f.HealthRiskId).GreaterThan(0).When(f => f.HealthRiskId.HasValue);
+                RuleFor(f => f.OrderBy).Equal(DateColumnName);
+                RuleFor(f => f.Area).SetValidator(new AreaDto.Validator());
+            }
+        }
     }
 }

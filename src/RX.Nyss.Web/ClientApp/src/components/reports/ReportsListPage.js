@@ -68,6 +68,8 @@ const ReportsListPageComponent = (props) => {
           reportsType={props.filters.reportsType}
           sorting={props.sorting}
           onSort={handleSortChange}
+          projectId={props.projectId}
+          goToEdition={props.goToEdition}
           markAsError={handleMarkAsError}
           isMarkingAsError={props.isMarkingAsError}
           user={props.user}
@@ -100,7 +102,8 @@ const mapDispatchToProps = {
   openReportsList: reportsActions.openList.invoke,
   getList: reportsActions.getList.invoke,
   exportToExcel: reportsActions.exportToExcel.invoke,
-  markAsError: reportsActions.markAsError.invoke
+  markAsError: reportsActions.markAsError.invoke,
+  goToEdition: reportsActions.goToEdition
 };
 
 export const ReportsListPage = useLayout(

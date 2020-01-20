@@ -1,5 +1,6 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
+import dayjs from "dayjs";
 
 class FieldBase extends PureComponent {
     constructor(props) {
@@ -19,8 +20,8 @@ class FieldBase extends PureComponent {
     };
 
     handleChange = (e) => {
-        const type = this.getElementType(e.nativeEvent.target);
-        const value = type === "checkbox" ? e.target.checked : e.target.value;
+        const type = this.getElementType((e.nativeEvent && e.nativeEvent.target) || e);
+        const value = type === "checkbox" ? e.target.checked : type === "date" ? dayjs(e) : e.target.value;
         this.setState({ value: value });
         this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
     }
@@ -31,7 +32,11 @@ class FieldBase extends PureComponent {
     }
 
     getElementType = (element) => {
-        if (element.type) {
+        if (typeof element.toISOString === "function") {
+            return "date";
+        }
+
+        if (element && element.type) {
             switch (element.type.toLowerCase()) {
                 case "checkbox": return "checkbox";
                 case "text": return "textbox";

@@ -11,8 +11,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
+import { useAccessRestriction } from "../hasAccess/HasAccess";
 
-export const ConfirmationDialog = ({ isOpened, isFetching, close, submit, titlteText, contentText }) => {
+export const ConfirmationDialogComponent = ({ isOpened, isFetching, close, submit, titlteText, contentText }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
@@ -23,7 +24,7 @@ export const ConfirmationDialog = ({ isOpened, isFetching, close, submit, titlte
       </DialogTitle>
       <DialogContent className={styles.content}>
         <Typography variant="body1">
-        {contentText }
+          {contentText}
         </Typography>
 
         <FormActions>
@@ -31,10 +32,12 @@ export const ConfirmationDialog = ({ isOpened, isFetching, close, submit, titlte
             {strings(stringKeys.form.cancel)}
           </Button>
           <SubmitButton isFetching={isFetching} onClick={submit}>
-          {strings(stringKeys.form.confirm)}
+            {strings(stringKeys.form.confirm)}
           </SubmitButton>
         </FormActions>
       </DialogContent>
     </Dialog>
   );
 }
+
+export const ConfirmationDialog = useAccessRestriction(ConfirmationDialogComponent)

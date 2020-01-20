@@ -1,4 +1,5 @@
 ﻿using System;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Reports.Dto
 {
@@ -30,5 +31,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public bool UserHasAccessToReportDataCollector { get; set; }
         public bool IsInAlert { get; set; }
         public int? ReportId { get; set; }
+        public ReportType? ReportType { get; set; }
     }
 }
