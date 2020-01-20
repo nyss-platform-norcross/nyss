@@ -30,14 +30,6 @@ export const nationalSocietiesSiteMap = [
     access: accessMap.nationalSocieties.get
   },
   {
-    parentPath: "/nationalsocieties/:nationalSocietyId",
-    path: "/nationalsocieties/:nationalSocietyId/dashboard",
-    title: () => strings(stringKeys.nationalSociety.dashboard.title),
-    access: accessMap.nationalSocieties.get,
-    placeholder: placeholders.leftMenu,
-    placeholderIndex: nationalSocietyLeftMenuOrder.dashboard,
-  },
-  {
     parentPath: "/nationalsocieties/:nationalSocietyId/overview",
     path: "/nationalsocieties/:nationalSocietyId/edit",
     title: () => strings(stringKeys.nationalSociety.form.editionTitle),

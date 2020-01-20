@@ -12,7 +12,6 @@ import { accessMap } from '../../authentication/accessMap';
 import { NationalSocietiesListPage } from '../nationalSocieties/NationalSocietiesListPage';
 import { NationalSocietiesCreatePage } from '../nationalSocieties/NationalSocietiesCreatePage';
 import { NationalSocietiesEditPage } from '../nationalSocieties/NationalSocietiesEditPage';
-import { NationalSocietiesDashboardPage } from '../nationalSocieties/NationalSocietiesDashboardPage';
 import { NationalSocietiesOverviewPage } from '../nationalSocieties/NationalSocietiesOverviewPage';
 import { SmsGatewaysListPage } from '../smsGateways/SmsGatewaysListPage';
 import { SmsGatewaysCreatePage } from '../smsGateways/SmsGatewaysCreatePage';
@@ -50,6 +49,7 @@ import { NationalSocietyReportsListPage } from '../nationalSocietyReports/Nation
 import { ProjectsOverviewPage } from '../projects/ProjectsOverviewPage';
 import { DataCollectorsPerformancePage } from '../dataCollectors/DataCollectorsPerformancePage';
 import { AlertsLogsPage } from '../alerts/AlertsLogsPage';
+import { NationalSocietyDashboardPage } from '../nationalSocietyDashboard/NationalSocietyDashboardPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -64,7 +64,7 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/' component={Home} />
           <AuthRoute exact path='/headManagerConsents' component={HeadManagerConsentsPage} />
 
-          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/dashboard' component={NationalSocietiesDashboardPage} roles={accessMap.nationalSocieties.get} />
+          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/dashboard' component={NationalSocietyDashboardPage} roles={accessMap.nationalSocieties.showDashboard} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/overview' component={NationalSocietiesOverviewPage} roles={accessMap.nationalSocieties.edit} />
           <AuthRoute exact path='/nationalsocieties' component={NationalSocietiesListPage} roles={accessMap.nationalSocieties.list} />
           <AuthRoute exact path='/nationalsocieties/add' component={NationalSocietiesCreatePage} roles={accessMap.nationalSocieties.add} />

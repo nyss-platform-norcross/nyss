@@ -11,6 +11,7 @@ import TableActions from '../common/tableActions/TableActions';
 import NationalSocietiesTable from './NationalSocietiesTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
+import * as nationalSocietyDashboardActions from '../nationalSocietyDashboard/logic/nationalSocietyDashboardActions';
 
 const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule, getList, ...props }) => {
   useMount(() => {
@@ -57,7 +58,7 @@ const mapDispatchToProps = {
   getList: nationalSocietiesActions.getList.invoke,
   goToCreation: nationalSocietiesActions.goToCreation,
   goToEdition: nationalSocietiesActions.goToEdition,
-  goToDashboard: nationalSocietiesActions.goToDashboard,
+  goToDashboard: nationalSocietyDashboardActions.goToDashboard,
   remove: nationalSocietiesActions.remove.invoke,
   openModule: appActions.openModule.invoke
 };

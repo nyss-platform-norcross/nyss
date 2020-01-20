@@ -1,9 +1,7 @@
 import jsPDF from "jspdf";
 import domtoimage from "dom-to-image";
 
-export const generatePdfDocument = async (title, containerElement) => {
-  const reportFileName = "Report";
-
+export const generatePdfDocument = async (title, containerElement, reportFileName) => {
   const pageWidth = 210; // mm
   const pageHeight = 295; // mm
   const margin = 10; // mm

@@ -11,9 +11,11 @@ import { nationalSocietyStructureSiteMap } from "./components/nationalSocietyStr
 import { projectDashboardSiteMap } from "./components/projectDashboard/logic/projectDashboardSiteMap";
 import { headManagerConsentsSiteMap } from "./components/headManagerConsents/logic/headManagerConsentsSiteMap";
 import { alertsSiteMap } from "./components/alerts/logic/alertsSiteMap";
+import { nationalSocietyDashboardSiteMap } from "./components/nationalSocietyDashboard/logic/nationalSocietyDashboardSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
+  ...nationalSocietyDashboardSiteMap,
   ...nationalSocietyStructureSiteMap,
   ...nationalSocietyUsersSiteMap,
   ...smsGatewaysSiteMap,

@@ -44,6 +44,18 @@ export const initialState = {
       isFetching: false
     }
   },
+  nationalSocietyDashboard: {
+    name: null,
+    summary: null,
+    isFetching: true,
+    isGeneratingPdf: false,
+    filtersData: {
+      healthRisks: []
+    },
+    filters: null,
+    reportsGroupedByLocationDetails: null,
+    reportsGroupedByLocationDetailsFetching: false
+  },
   nationalSocietyStructure: {
     regions: [],
     isFetching: false,

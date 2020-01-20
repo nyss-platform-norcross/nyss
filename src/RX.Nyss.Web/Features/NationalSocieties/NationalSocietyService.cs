@@ -262,7 +262,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         public async Task<IEnumerable<HealthRiskDto>> GetNationalSocietyHealthRiskNames(int nationalSocietyId) =>
             await _nyssContext.ProjectHealthRisks
-                .Where(ph => ph.Project.NationalSocietyId == nationalSocietyId && ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                .Where(ph => ph.Project.NationalSocietyId == nationalSocietyId)
+                .Where(ph => ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                 .Select(ph => new HealthRiskDto
                 {
                     Id = ph.HealthRiskId,

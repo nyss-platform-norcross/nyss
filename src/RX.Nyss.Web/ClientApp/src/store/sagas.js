@@ -15,6 +15,7 @@ import { nationalSocietyReportsSagas } from "../components/nationalSocietyReport
 import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
 import { projectDashboardSagas } from "../components/projectDashboard/logic/projectDashboardSagas";
 import { alertsSagas } from "../components/alerts/logic/alertsSagas";
+import { nationalSocietyDashboardSagas } from "../components/nationalSocietyDashboard/logic/nationalSocietyDashboardSagas";
 
 function* rootSaga() {
   yield all([
@@ -32,6 +33,7 @@ function* rootSaga() {
     ...headManagerConsentsSagas(),
     ...reportsSagas(),
     ...nationalSocietyReportsSagas(),
+    ...nationalSocietyDashboardSagas(),
     ...alertsSagas()
   ]);
 }
