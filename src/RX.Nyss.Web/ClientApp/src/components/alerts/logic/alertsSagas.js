@@ -165,6 +165,7 @@ function* openAlertsModule(projectId, title) {
     nationalSocietyCountry: project.value.nationalSociety.countryName,
     projectId: project.value.id,
     projectName: project.value.name,
-    title: title
+    title: title,
+    projectIsClosed: project.value.isClosed
   }));
 }

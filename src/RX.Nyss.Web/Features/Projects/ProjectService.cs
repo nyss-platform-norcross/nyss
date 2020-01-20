@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
@@ -11,6 +12,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.DataCollectors;
 using RX.Nyss.Web.Features.Projects.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -23,7 +25,7 @@ namespace RX.Nyss.Web.Features.Projects
         Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId);
         Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
         Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
-        Task<Result> DeleteProject(int projectId);
+        Task<Result> CloseProject(int projectId);
         Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
         Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
@@ -37,16 +39,19 @@ namespace RX.Nyss.Web.Features.Projects
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IDataCollectorService _dataCollectorService;
 
         public ProjectService(
             INyssContext nyssContext,
             ILoggerAdapter loggerAdapter,
-            IDateTimeProvider dateTimeProvider, IAuthorizationService authorizationService)
+            IDateTimeProvider dateTimeProvider, IAuthorizationService authorizationService,
+            IDataCollectorService dataCollectorService)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
             _authorizationService = authorizationService;
+            _dataCollectorService = dataCollectorService;
         }
 
         public async Task<Result<ProjectResponseDto>> GetProject(int projectId)
@@ -140,6 +145,7 @@ namespace RX.Nyss.Web.Features.Projects
                     Name = p.Name,
                     StartDate = p.StartDate,
                     EndDate = p.EndDate,
+                    IsClosed = p.State == ProjectState.Closed,
                     TotalReportCount = p.ProjectHealthRisks
                         .SelectMany(phr => phr.Reports)
                         .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity && !r.IsTraining && !r.MarkedAsError)
@@ -363,21 +369,47 @@ namespace RX.Nyss.Web.Features.Projects
             }
         }
 
-        public async Task<Result> DeleteProject(int projectId)
+        public async Task<Result> CloseProject(int projectId)
         {
             try
             {
-                var projectToDelete = await _nyssContext.Projects.FindAsync(projectId);
-
-                if (projectToDelete == null)
+                var projectToClose = await _nyssContext.Projects
+                    .Select(p => new
+                    {
+                        p,
+                        AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
+                    })
+                    .SingleOrDefaultAsync(x => x.p.Id == projectId);
+                
+                if (projectToClose == null)
                 {
                     return Error(ResultKey.Project.ProjectDoesNotExist);
                 }
 
-                _nyssContext.Projects.Remove(projectToDelete);
-                await _nyssContext.SaveChangesAsync();
+                if (projectToClose.p.State == ProjectState.Closed)
+                {
+                    return Error(ResultKey.Project.ProjectAlreadyClosed);
+                }
+                
+                if (projectToClose.AnyOpenAlerts)
+                {
+                    return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
+                }
+                
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    projectToClose.p.State = ProjectState.Closed;
+                    projectToClose.p.EndDate = _dateTimeProvider.UtcNow;
+                    var dataCollectorsToRemove = _nyssContext.DataCollectors.Where(dc => dc.Project.Id == projectId && !dc.RawReports.Any());
 
-                return SuccessMessage(ResultKey.Project.SuccessfullyDeleted);
+                    await _dataCollectorService.AnonymizeDataCollectorsWithReports(projectId);
+                    _nyssContext.DataCollectors.RemoveRange(dataCollectorsToRemove);
+                    
+                    await _nyssContext.SaveChangesAsync();
+                    transactionScope.Complete();
+                }
+
+                return SuccessMessage(ResultKey.Project.SuccessfullyClosed);
             }
             catch (ResultException exception)
             {
@@ -393,6 +425,7 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     Id = dc.Id,
                     Name = dc.Name,
+                    IsClosed = dc.State == ProjectState.Closed,
                     NationalSociety = new ProjectBasicDataResponseDto.NationalSocietyIdDto
                     {
                         Id = dc.NationalSociety.Id,

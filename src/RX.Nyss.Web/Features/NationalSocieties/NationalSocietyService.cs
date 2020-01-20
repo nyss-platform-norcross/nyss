@@ -81,7 +81,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     ContentLanguageName = n.ContentLanguage.DisplayName,
                     Name = n.Name,
                     CountryId = n.Country.Id,
-                    CountryName = n.Country.Name
+                    CountryName = n.Country.Name,
+                    HeadManagerId = n.HeadManager.Id
                 })
                 .FirstOrDefaultAsync(n => n.Id == id);
 

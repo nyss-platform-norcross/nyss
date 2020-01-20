@@ -64,7 +64,8 @@ export const initialState = {
   },
   projects: {
     listFetching: false,
-    listRemoving: {},
+    isClosing: {},
+    isClosed: {},
     listStale: true,
     listData: [],
     formFetching: false,

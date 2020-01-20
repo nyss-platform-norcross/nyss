@@ -13,7 +13,7 @@ import { useTheme } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import { useAccessRestriction } from "../hasAccess/HasAccess";
 
-export const ConfirmationDialogComponent = ({ isOpened, isFetching, close, submit, titlteText, contentText }) => {
+export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, close, submit, titlteText, contentText }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
@@ -26,7 +26,13 @@ export const ConfirmationDialogComponent = ({ isOpened, isFetching, close, submi
         <Typography variant="body1">
           {contentText}
         </Typography>
+        {children}
 
+        {contentText &&
+          <Typography variant="body1">
+            {contentText}
+          </Typography>
+        }
         <FormActions>
           <Button onClick={close}>
             {strings(stringKeys.form.cancel)}

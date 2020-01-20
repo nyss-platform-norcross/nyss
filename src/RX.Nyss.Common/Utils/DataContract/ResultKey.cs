@@ -34,6 +34,7 @@
             public static class Supervisor
             {
                 public const string ProjectDoesNotExistOrNoAccess = "user.registration.projectDoesNotExistOrSupervisorDoesntHaveAccess";
+                public const string CannotChangeProjectSupervisorHasDataCollectors = "user.registration.cannotChangeProjectSupervisorHasDataCollectors";
             }
 
             public static class ResetPassword
@@ -155,11 +156,18 @@
             public const string NotFound = "project.notFound";
             public const string SuccessfullyAdded = "project.successfullyAdded";
             public const string SuccessfullyUpdated = "project.successfullyUpdated";
-            public const string SuccessfullyDeleted = "project.successfullyDeleted";
+            public const string SuccessfullyClosed = "project.successfullyClosed";
             public const string ProjectDoesNotExist = "project.projectDoesNotExist";
+            public const string ProjectAlreadyClosed = "project.projectAlreadyClosed";
             public const string NationalSocietyDoesNotExist = "project.nationalSocietyDoesNotExist";
             public const string HealthRiskDoesNotExist = "project.healthRiskDoesNotExist";
             public const string HealthRiskContainsReports = "project.healthRiskContainsReports";
+            public const string ProjectHasOpenOrEscalatedAlerts = "project.projectHasOpenOrEscalatedAlerts";
+        }
+
+        public static class Report
+        {
+            public const string ProjectIsClosed = "report.projectIsClosed";
         }
 
         public const string UnexpectedError = "error.unexpected";
@@ -184,6 +192,7 @@
             public const string RemoveError = "dataCollector.remove.error";
             public const string SetInTrainingSuccess = "dataCollector.setInTraining.success";
             public const string SetOutOfTrainingSuccess = "dataCollector.setOutOfTraining.success";
+            public const string ProjectIsClosed = "dataCollector.projectIsClosed";
         }
 
         public static class Geolocation

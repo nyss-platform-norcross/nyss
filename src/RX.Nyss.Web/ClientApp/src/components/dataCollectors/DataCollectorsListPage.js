@@ -18,11 +18,13 @@ const DataCollectorsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <TableActions>
-        <Button onClick={() => props.goToCreation(props.projectId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          {strings(stringKeys.dataCollector.addNew)}
-       </Button>
-      </TableActions>
+      {!props.isClosed &&
+        <TableActions>
+          <Button onClick={() => props.goToCreation(props.projectId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+            {strings(stringKeys.dataCollector.addNew)}
+          </Button>
+        </TableActions>
+      }
 
       <DataCollectorsTable
         list={props.list}
@@ -45,11 +47,13 @@ DataCollectorsListPageComponent.propTypes = {
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
   isFetching: PropTypes.bool,
-  list: PropTypes.array
+  list: PropTypes.array,
+  isClosed: PropTypes.bool
 };
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
+  isClosed: state.appData.siteMap.parameters.projectIsClosed,
   list: state.dataCollectors.listData,
   isListFetching: state.dataCollectors.listFetching,
   isRemoving: state.dataCollectors.listRemoving,

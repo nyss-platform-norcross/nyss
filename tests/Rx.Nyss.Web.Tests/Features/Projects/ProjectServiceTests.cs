@@ -12,6 +12,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.DataCollectors;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Projects.Dto;
 using RX.Nyss.Web.Services.Authorization;
@@ -25,6 +26,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
         private readonly IProjectService _projectService;
         private readonly INyssContext _nyssContextMock;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IDataCollectorService _dataCollectorService;
 
         public ProjectServiceTests()
         {
@@ -32,7 +34,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             var authorizationService = Substitute.For<IAuthorizationService>();
-            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, authorizationService);
+            _dataCollectorService = Substitute.For<IDataCollectorService>();
+            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, authorizationService, _dataCollectorService);
         }
 
         [Fact]
@@ -776,7 +779,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
         }
 
         [Fact]
-        public async Task DeleteProject_WhenProjectExists_ShouldReturnSuccess()
+        public async Task CloseProject_WhenProjectExists_ShouldReturnSuccess()
         {
             // Arrange
             const int existingProjectId = 1;
@@ -789,27 +792,162 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     Name = "Name",
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
-                    State = ProjectState.Open
+                    State = ProjectState.Open,
+                    ProjectHealthRisks = new List<ProjectHealthRisk>()
                 }
             };
 
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
-            _nyssContextMock.Projects.FindAsync(existingProjectId).Returns(project[0]);
+            var dcMockDbSet = new List<DataCollector>().AsQueryable().BuildMockDbSet();
+            _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
 
             // Act
-            var result = await _projectService.DeleteProject(existingProjectId);
+            var result = await _projectService.CloseProject(existingProjectId);
 
             // Assert
-            _nyssContextMock.Projects.Received(1)
-                .Remove(Arg.Is<Project>(p => p.Id == existingProjectId));
+            _nyssContextMock.Projects.First().State.ShouldBe(ProjectState.Closed);
+            await _dataCollectorService.Received(1).AnonymizeDataCollectorsWithReports(existingProjectId);
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
-            result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyDeleted);
+            result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyClosed);
+        }
+
+
+        [Fact]
+        public async Task CloseProject_WhenAlreadyClosed_ShouldReturnError()
+        {
+            // Arrange
+            const int existingProjectId = 1;
+
+            var project = new[]
+            {
+                new Project
+                {
+                    Id = existingProjectId,
+                    Name = "Name",
+                    TimeZone = "Time Zone",
+                    NationalSocietyId = 1,
+                    State = ProjectState.Closed,
+                    ProjectHealthRisks = new List<ProjectHealthRisk>()
+                }
+            };
+
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
+            var dcMockDbSet = new List<DataCollector>().AsQueryable().BuildMockDbSet();
+            _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
+
+            // Act
+            var result = await _projectService.CloseProject(existingProjectId);
+
+            // Assert
+            await _dataCollectorService.DidNotReceive().AnonymizeDataCollectorsWithReports(existingProjectId);
+            await _nyssContextMock.DidNotReceive().SaveChangesAsync();
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Project.ProjectAlreadyClosed);
+        }
+
+
+        [Theory]
+        [InlineData(AlertStatus.Escalated)]
+        [InlineData(AlertStatus.Pending)]
+        public async Task CloseProject_WhenOpenOrPendingAlerts_ShouldReturnError(AlertStatus alertStatus)
+        {
+            // Arrange
+            const int existingProjectId = 1;
+
+            var project = new[]
+            {
+                new Project
+                {
+                    Id = existingProjectId,
+                    Name = "Name",
+                    TimeZone = "Time Zone",
+                    NationalSocietyId = 1,
+                    State = ProjectState.Open,
+                    ProjectHealthRisks = new[]
+                    {
+                        new ProjectHealthRisk
+                        {
+                            Alerts = new[]
+                            {
+                                new Alert
+                                {
+                                    Status = alertStatus
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
+            var dcMockDbSet = new List<DataCollector>().AsQueryable().BuildMockDbSet();
+            _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
+
+            // Act
+            var result = await _projectService.CloseProject(existingProjectId);
+
+            // Assert
+            await _dataCollectorService.DidNotReceive().AnonymizeDataCollectorsWithReports(existingProjectId);
+            await _nyssContextMock.DidNotReceive().SaveChangesAsync();
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
         }
 
         [Fact]
-        public async Task DeleteProject_WhenProjectDoesNotExist_ShouldReturnError()
+        public async Task CloseProject_WhenDataCollectorsWithReports_ShouldAnonymize()
+        {
+            // Arrange
+            const int existingProjectId = 1;
+
+            var project = new[]
+            {
+                new Project
+                {
+                    Id = existingProjectId,
+                    Name = "Name",
+                    TimeZone = "Time Zone",
+                    NationalSocietyId = 1,
+                    State = ProjectState.Open,
+                    ProjectHealthRisks = new List<ProjectHealthRisk>()
+                }
+            };
+            var dataCollectorsToAnonymize = new List<DataCollector>
+            {
+                new DataCollector
+                {
+                    Project = project[0],
+                    RawReports = new[]{new RawReport()}
+                },
+                new DataCollector
+                {
+                    Project = project[0],
+                    RawReports = new[]{new RawReport()}
+                }
+            };
+            var dataCollectorsToDelete = new List<DataCollector> { new DataCollector { Id = 123, Project = project[0] } };
+
+            var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Projects.Returns(projectsMockDbSet);
+            var dcMockDbSet = dataCollectorsToAnonymize.Union(dataCollectorsToDelete).AsQueryable().BuildMockDbSet();
+            _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
+
+            // Act
+            var result = await _projectService.CloseProject(existingProjectId);
+
+            // Assert
+            await _dataCollectorService.Received(1).AnonymizeDataCollectorsWithReports(existingProjectId);
+            _nyssContextMock.DataCollectors.Received(1).RemoveRange(Arg.Any<IQueryable<DataCollector>>());
+            await _nyssContextMock.Received(1).SaveChangesAsync();
+            result.IsSuccess.ShouldBeTrue();
+            result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyClosed);
+        }
+
+        [Fact]
+        public async Task CloseProject_WhenProjectDoesNotExist_ShouldReturnError()
         {
             // Arrange
             const int nonExistentProjectId = 0;
@@ -822,7 +960,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     Name = "Name",
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
-                    State = ProjectState.Open
+                    State = ProjectState.Open,
+                    ProjectHealthRisks = new List<ProjectHealthRisk>()
                 }
             };
 
@@ -831,7 +970,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.FindAsync(nonExistentProjectId).ReturnsNull();
 
             // Act
-            var result = await _projectService.DeleteProject(nonExistentProjectId);
+            var result = await _projectService.CloseProject(nonExistentProjectId);
 
             // Assert
             _nyssContextMock.Projects.DidNotReceive().Remove(Arg.Any<Project>());
@@ -840,8 +979,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             result.Message.Key.ShouldBe(ResultKey.Project.ProjectDoesNotExist);
         }
 
-        [Fact(Skip = "Currently, DeleteProject does not throw ResultException")]
-        public async Task DeleteProject_WhenExceptionIsThrown_ShouldReturnError()
+        [Fact(Skip = "Currently, CloseProject does not throw ResultException")]
+        public async Task CloseProject_WhenExceptionIsThrown_ShouldReturnError()
         {
             // Arrange
             const int projectId = 1;
@@ -863,7 +1002,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
 
             // Act
-            var result = await _projectService.DeleteProject(projectId);
+            var result = await _projectService.CloseProject(projectId);
 
             // Assert
             _nyssContextMock.Projects.DidNotReceive()

@@ -123,6 +123,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         private async Task AttachSupervisorToProject(SupervisorUser user, Project project)
         {
             var newSupervisorUserProject = CreateSupervisorUserProjectReference(project, user);
+            user.CurrentProject = project;
             await _dataContext.AddAsync(newSupervisorUserProject);
         }
 
@@ -142,7 +143,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
         public async Task<Result<GetSupervisorResponseDto>> Get(int supervisorId)
         {
-            var supervisor = await _dataContext.Users
+           var supervisor = await _dataContext.Users
                 .OfType<SupervisorUser>()
                 .Where(u => u.Id == supervisorId)
                 .Select(u => new GetSupervisorResponseDto
@@ -155,11 +156,28 @@ namespace RX.Nyss.Web.Features.Supervisors
                     AdditionalPhoneNumber = u.AdditionalPhoneNumber,
                     Sex = u.Sex,
                     DecadeOfBirth = u.DecadeOfBirth,
-                    ProjectId = u.SupervisorUserProjects
-                        .Where(sup => sup.Project.State == ProjectState.Open)
-                        .Select(sup => sup.ProjectId)
-                        .SingleOrDefault(),
+                    ProjectId = u.CurrentProject.Id,
                     Organization = u.Organization,
+                    NationalSocietyId = u.UserNationalSocieties.Select(uns => uns.NationalSocietyId).Single(),
+                    CurrentProject = new EditSupervisorFormDataDto.ListProjectsResponseDto
+                    {
+                        Id = u.CurrentProject.Id,
+                        Name = u.CurrentProject.Name,
+                        IsClosed = u.CurrentProject.State == ProjectState.Closed
+                    },
+                    EditSupervisorFormData = new EditSupervisorFormDataDto
+                    {
+                        AvailableProjects = _dataContext.Projects
+                            .Where(p => p.NationalSociety.Id == u.UserNationalSocieties.Select(uns => uns.NationalSocietyId).Single())
+                            .Where(p => p.State == ProjectState.Open)
+                            .Select(p => new EditSupervisorFormDataDto.ListProjectsResponseDto
+                            {
+                                Id = p.Id,
+                                Name = p.Name,
+                                IsClosed = p.State == ProjectState.Closed
+                            })
+                            .ToList()
+                    }
                 })
                 .SingleOrDefaultAsync();
 
@@ -167,6 +185,16 @@ namespace RX.Nyss.Web.Features.Supervisors
             {
                 _loggerAdapter.Debug($"Data manager with id {supervisorId} was not found");
                 return Error<GetSupervisorResponseDto>(ResultKey.User.Common.UserNotFound);
+            }
+
+            if (supervisor.CurrentProject != null && supervisor.CurrentProject.IsClosed)
+            {
+                supervisor.EditSupervisorFormData.AvailableProjects.Add(new EditSupervisorFormDataDto.ListProjectsResponseDto
+                {
+                    Id = supervisor.CurrentProject.Id,
+                    Name = supervisor.CurrentProject.Name,
+                    IsClosed = supervisor.CurrentProject.IsClosed
+                });
             }
 
             return new Result<GetSupervisorResponseDto>(supervisor, true);
@@ -225,6 +253,14 @@ namespace RX.Nyss.Web.Features.Supervisors
 
             if (selectedProjectId.HasValue)
             {
+                var supervisorHasNotDeletedDataCollectors = await _dataContext.DataCollectors.Where(dc => dc.Supervisor == user)
+                    .AnyAsync(dc => dc.Project == dc.Supervisor.CurrentProject && !dc.DeletedAt.HasValue);
+
+                if (supervisorHasNotDeletedDataCollectors)
+                {
+                    throw new ResultException(ResultKey.User.Supervisor.CannotChangeProjectSupervisorHasDataCollectors);
+                }
+
                 var project = await _dataContext.Projects
                     .Where(p => p.State == ProjectState.Open)
                     .Where(p => user.UserNationalSocieties.Select(uns => uns.NationalSocietyId).Contains(p.NationalSociety.Id))

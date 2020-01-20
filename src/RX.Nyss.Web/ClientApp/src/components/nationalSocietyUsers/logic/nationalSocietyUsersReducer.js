@@ -60,7 +60,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formSaving: false, listStale: true };
 
     case actions.EDIT_NATIONAL_SOCIETY_USER.FAILURE:
-      return { ...state, formSaving: false };
+      return { ...state, formSaving: false, formError: action.message };
 
     case actions.REMOVE_NATIONAL_SOCIETY_USER.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };

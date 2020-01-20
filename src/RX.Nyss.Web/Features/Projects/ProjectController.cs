@@ -62,14 +62,15 @@ namespace RX.Nyss.Web.Features.Projects
             _projectService.UpdateProject(projectId, projectRequestDto);
 
         /// <summary>
-        /// Removes a specified project.
+        /// Closes a specified project.
         /// </summary>
         /// <param name="projectId">An identifier of project to be removed</param>
+        /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns></returns>
-        [HttpPost("{projectId:int}/remove")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result> UpdateProject(int projectId) =>
-            _projectService.DeleteProject(projectId);
+        [HttpPost("{projectId:int}/close")]
+        [NeedsRole(Role.Administrator, Role.Manager), NeedsPolicy(Policy.ProjectAccess), NeedsPolicy(Policy.HeadManagerAccess)]
+        public Task<Result> CloseProject(int projectId, int nationalSocietyId) =>
+            _projectService.CloseProject(projectId);
 
         /// <summary>
         /// Gets basic information about a specified project.

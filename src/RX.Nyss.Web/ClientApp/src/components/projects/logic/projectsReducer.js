@@ -43,13 +43,13 @@ export function projectsReducer(state = initialState.projects, action) {
 
     case actions.OPEN_PROJECT_OVERVIEW.INVOKE:
       return { ...state, formFetching: true, overviewData: null, overviewHealthRisks: [], overviewTimeZones: [] };
-      
+
     case actions.OPEN_PROJECT_OVERVIEW.REQUEST:
         return { ...state, formFetching: true, overviewData: null, overviewHealthRisks: [], overviewTimeZones: [] };
-  
+
     case actions.OPEN_PROJECT_OVERVIEW.SUCCESS:
         return { ...state, formFetching: false, overviewData: action.data, overviewHealthRisks: action.healthRisks, overviewTimeZones: action.timeZones };
-  
+
     case actions.OPEN_PROJECT_OVERVIEW.FAILURE:
         return { ...state, formFetching: false };
 
@@ -71,14 +71,14 @@ export function projectsReducer(state = initialState.projects, action) {
     case actions.EDIT_PROJECT.FAILURE:
       return { ...state, formSaving: false, formError: action.message };
 
-    case actions.REMOVE_PROJECT.REQUEST:
-      return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };
+    case actions.CLOSE_PROJECT.REQUEST:
+      return { ...state, isClosing: setProperty(state.isClosing, action.id, true) };
 
-    case actions.REMOVE_PROJECT.SUCCESS:
-      return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined), listStale: true };
+    case actions.CLOSE_PROJECT.SUCCESS:
+      return { ...state, isClosing: setProperty(state.isClosing, action.id, undefined), listStale: true };
 
-    case actions.REMOVE_PROJECT.FAILURE:
-      return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
+    case actions.CLOSE_PROJECT.FAILURE:
+      return { ...state, isClosing: setProperty(state.isClosing, action.id, undefined) };
 
     default:
       return state;

@@ -14,5 +14,8 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
         public int? ProjectId { get; set; }
         public Role Role { get; set; }
         public string Organization { get; set; }
+        public int NationalSocietyId { get; set; }
+        public EditSupervisorFormDataDto.ListProjectsResponseDto CurrentProject { get; set; }
+        public EditSupervisorFormDataDto EditSupervisorFormData { get; set; }
     }
 }

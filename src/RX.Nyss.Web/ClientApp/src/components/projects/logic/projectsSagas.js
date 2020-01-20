@@ -13,7 +13,7 @@ export const projectsSagas = () => [
   takeEvery(consts.OPEN_PROJECT_OVERVIEW.INVOKE, openProjectOverview),
   takeEvery(consts.CREATE_PROJECT.INVOKE, createProject),
   takeEvery(consts.EDIT_PROJECT.INVOKE, editProject),
-  takeEvery(consts.REMOVE_PROJECT.INVOKE, removeProject)
+  takeEvery(consts.CLOSE_PROJECT.INVOKE, closeProject)
 ];
 
 function* openProjectsList({ nationalSocietyId }) {
@@ -88,14 +88,15 @@ function* editProject({ nationalSocietyId, projectId, data }) {
   }
 };
 
-function* removeProject({ nationalSocietyId, projectId }) {
-  yield put(actions.remove.request(projectId));
+function* closeProject({ nationalSocietyId, projectId }) {
+  yield put(actions.close.request(projectId));
   try {
-    yield call(http.post, `/api/project/${projectId}/remove`);
-    yield put(actions.remove.success(projectId));
+    yield call(http.post, `/api/project/${projectId}/close?nationalSocietyId=${nationalSocietyId}`);
+    yield put(actions.close.success(projectId));
     yield call(getProjects, nationalSocietyId);
+    yield put(appActions.entityUpdated(entityTypes.project(projectId)));
   } catch (error) {
-    yield put(actions.remove.failure(projectId, error.message));
+    yield put(actions.close.failure(projectId, error.message));
   }
 };
 
@@ -119,6 +120,7 @@ function* openProjectsModule(nationalSocietyId) {
     nationalSocietyId: nationalSociety.value.id,
     nationalSocietyName: nationalSociety.value.name,
     nationalSocietyCountry: nationalSociety.value.countryName,
+    nationalSocietyHeadManagerId: nationalSociety.value.headManagerId
   }));
 }
 
@@ -133,7 +135,8 @@ function* openProjectDashboardModule(projectId) {
     nationalSocietyName: project.value.nationalSociety.name,
     nationalSocietyCountry: project.value.nationalSociety.countryName,
     projectId: project.value.id,
-    projectName: project.value.name
+    projectName: project.value.name,
+    projectIsClosed: project.value.isClosed
   }));
 
   return project.value;
