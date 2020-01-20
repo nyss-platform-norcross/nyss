@@ -14,8 +14,8 @@ namespace RX.Nyss.Web.Services
     {
         private readonly INyssWebConfig _config;
 
-        private readonly char[] CHARS_TO_ESCAPE = new char[] { ',', ';' };
-        private readonly string QUOTE = "\"";
+        private readonly char[] CharsToEscape = new char[] { ',', ';' };
+        private readonly string Quote = "\"";
 
         public ExcelExportService(INyssWebConfig config)
         {
@@ -51,9 +51,9 @@ namespace RX.Nyss.Web.Services
 
             var value = data.ToString();
 
-            if (value.IndexOfAny(CHARS_TO_ESCAPE) > - 1)
+            if (value.IndexOfAny(CharsToEscape) > - 1)
             {
-                return QUOTE + value + QUOTE;
+                return Quote + value + Quote;
             }
             return value;
         }
