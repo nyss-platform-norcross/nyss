@@ -27,8 +27,6 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
           <CardHeader title={strings(stringKeys.project.dashboard.numbers.totalReportCountTitle)} />
           <CardContent>
             {renderNumber(strings(stringKeys.project.dashboard.numbers.totalReportCount), projectSummary.reportCount)}
-          </CardContent>
-          <CardContent>
             {renderNumber(strings(stringKeys.project.dashboard.numbers.totalErrorReportCount), projectSummary.errorReportCount)}
           </CardContent>
         </Card>
@@ -52,6 +50,19 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
             {renderNumber(strings(stringKeys.project.dashboard.referredToHospitalCount), projectSummary.dataCollectionPointSummary.referredToHospitalCount)}
             {renderNumber(strings(stringKeys.project.dashboard.fromOtherVillagesCount), projectSummary.dataCollectionPointSummary.fromOtherVillagesCount)}
             {renderNumber(strings(stringKeys.project.dashboard.deathCount), projectSummary.dataCollectionPointSummary.deathCount)}
+          </CardContent>
+        </Card>
+      </Grid>
+      }
+
+      {reportsType !== "dataCollectionPoint" &&
+      <Grid item sm={3} xs={12} className={styles.numberBox}>
+        <Card className={styles.card}>
+          <CardHeader title={strings(stringKeys.project.dashboard.alertsSummary)} />
+          <CardContent>
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.dismissedAlerts), projectSummary.alertsSummary.dismissed)}
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.escalatedAlerts), projectSummary.alertsSummary.escalated)}
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.closedAlerts), projectSummary.alertsSummary.closed)}
           </CardContent>
         </Card>
       </Grid>
