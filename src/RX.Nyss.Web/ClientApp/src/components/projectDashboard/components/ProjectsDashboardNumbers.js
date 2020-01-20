@@ -28,6 +28,9 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
           <CardContent>
             {renderNumber(strings(stringKeys.project.dashboard.numbers.totalReportCount), projectSummary.reportCount)}
           </CardContent>
+          <CardContent>
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.totalErrorReportCount), projectSummary.errorReportCount)}
+          </CardContent>
         </Card>
       </Grid>
 

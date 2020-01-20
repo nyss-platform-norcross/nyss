@@ -4,9 +4,9 @@ namespace RX.Nyss.Web.Features.Project.Dto
 {
     public class ReportByVillageAndDateResponseDto
     {
-        public IEnumerable<VillageDto> Villages { get; set; }
+        public IEnumerable<VillageDto> Villages { get; set; } = new List<VillageDto>();
 
-        public IEnumerable<string> AllPeriods { get; set; }
+        public IEnumerable<string> AllPeriods { get; set; } = new List<string>();
 
         public class VillageDto
         {
