@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
 using RX.Nyss.Common.Configuration;
+using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -32,7 +33,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var config = Substitute.For<INyssReportApiConfig>();
             _nyssContextMock = Substitute.For<INyssContext>();
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _alertService = new AlertService(_nyssContextMock, reportLabelingServiceMock, _loggerAdapterMock, emailToSmsPublisherService, config);
+            var stringsResourcesService = Substitute.For<IStringsResourcesService>();
+            _alertService = new AlertService(_nyssContextMock, reportLabelingServiceMock, _loggerAdapterMock, emailToSmsPublisherService, config, stringsResourcesService);
 
             _testData = new AlertServiceTestData(_nyssContextMock);
         }
