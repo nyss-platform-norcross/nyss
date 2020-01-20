@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Features.Project.Access;
+using RX.Nyss.Web.Features.Projects.Access;
 
 namespace RX.Nyss.Web.Features.Alerts.Access
 {

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Features.NationalSociety.Access;
+using RX.Nyss.Web.Features.NationalSocieties.Access;
 
 namespace RX.Nyss.Web.Features.NationalSocietyStructure.Access
 {

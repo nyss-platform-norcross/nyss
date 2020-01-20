@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using RX.Nyss.Web.Features.Project.Dto;
+using RX.Nyss.Web.Features.Projects.Dto;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {

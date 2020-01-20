@@ -22,17 +22,17 @@ using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.Alerts.Access;
 using RX.Nyss.Web.Features.Common;
-using RX.Nyss.Web.Features.DataCollector.Access;
-using RX.Nyss.Web.Features.DataConsumer.Access;
-using RX.Nyss.Web.Features.Manager.Access;
-using RX.Nyss.Web.Features.NationalSociety.Access;
+using RX.Nyss.Web.Features.DataCollectors.Access;
+using RX.Nyss.Web.Features.DataConsumers.Access;
+using RX.Nyss.Web.Features.Managers.Access;
+using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Access;
-using RX.Nyss.Web.Features.Project.Access;
-using RX.Nyss.Web.Features.Report.Access;
-using RX.Nyss.Web.Features.SmsGateway.Access;
-using RX.Nyss.Web.Features.Supervisor.Access;
-using RX.Nyss.Web.Features.TechnicalAdvisor.Access;
-using RX.Nyss.Web.Features.User.Access;
+using RX.Nyss.Web.Features.Projects.Access;
+using RX.Nyss.Web.Features.Reports.Access;
+using RX.Nyss.Web.Features.SmsGateways.Access;
+using RX.Nyss.Web.Features.Supervisors.Access;
+using RX.Nyss.Web.Features.TechnicalAdvisors.Access;
+using RX.Nyss.Web.Features.Users.Access;
 using Serilog;
 
 namespace RX.Nyss.Web.Configuration

@@ -100,7 +100,7 @@ namespace RX.Nyss.Web.Features.Authentication
             return Success();
         }
 
-        private async Task<StatusResponseDto.HomePageDto> GetHomePageData(Nyss.Data.Models.User userEntity) =>
+        private async Task<StatusResponseDto.HomePageDto> GetHomePageData(User userEntity) =>
             userEntity switch
             {
                 SupervisorUser user => await GetProjectHomePage(user),
@@ -112,7 +112,7 @@ namespace RX.Nyss.Web.Features.Authentication
                 _ => GetRootHomePage()
             };
 
-        private async Task<StatusResponseDto.HomePageDto> GetNationalSocietyHomePage<T>(T user) where T : Nyss.Data.Models.User
+        private async Task<StatusResponseDto.HomePageDto> GetNationalSocietyHomePage<T>(T user) where T : User
         {
             var nationalSocietyIds = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == user.Id)
