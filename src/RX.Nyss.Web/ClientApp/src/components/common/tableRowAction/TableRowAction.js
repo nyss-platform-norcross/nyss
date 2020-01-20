@@ -20,7 +20,7 @@ const TableRowActionComponent = ({ icon, onClick, title, isFetching, confirmatio
           </div>
         </ConfirmationAction>
       </div>
-      );
+    );
   }
 
   return (

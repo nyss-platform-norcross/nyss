@@ -13,6 +13,8 @@ import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
+import { TableRowAction } from '../common/tableRowAction/TableRowAction';
+import EditIcon from '@material-ui/icons/Edit';
 import { accessMap } from '../../authentication/accessMap';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -21,7 +23,7 @@ import { ReportListType } from '../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './logic/reportsConstants'
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
-export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, user, list, page, onChangePage, rowsPerPage, totalRows, reportsType, sorting, onSort }) => {
+export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId, user, list, page, onChangePage, rowsPerPage, totalRows, reportsType, sorting, onSort }) => {
 
   const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });
   const [value, setValue] = useState(sorting);
@@ -57,8 +59,6 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, us
     markAsError(markErrorConfirmationDialog.reportId);
     setMarkErrorConfirmationDialog({ isOpen: false })
   }
-
-  const hasMarkAsErrorAccess = user.roles.filter((r) => { return accessMap.reports.markAsError.indexOf(r) !== -1; }).length > 0;
 
   return (
     <Fragment>
@@ -121,19 +121,21 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, us
                 }
                 <TableCell>
                   <TableRowActions>
-                    {hasMarkAsErrorAccess && row.isValid && !row.isInAlert && !row.isMarkedAsError && row.userHasAccessToReportDataCollector && (
-                      <TableRowMenu
-                        id={row.id}
-                        icon={<MoreVertIcon />}
-                        isFetching={isMarkingAsError[row.id]}
-                        items={[
-                          {
-                            title: strings(stringKeys.reports.list.markAsError),
-                            action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
-                          }
-                        ]}
-                      />
-                    )}
+                    <TableRowMenu
+                      id={row.id}
+                      icon={<MoreVertIcon />}
+                      isFetching={isMarkingAsError[row.id]}
+                      items={[
+                        {
+                          title: strings(stringKeys.reports.list.markAsError),
+                          roles: accessMap.reports.markAsError,
+                          condition: row.isValid && !row.isInAlert && !row.isMarkedAsError && row.userHasAccessToReportDataCollector,
+                          action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
+                        }
+                      ]}
+                    />
+                    <TableRowAction onClick={() => goToEdition(projectId, row.reportId)} icon={<EditIcon />} title={strings(stringKeys.reports.list.editReport)}
+                      roles={accessMap.reports.edit} condition={row.reportType === "Aggregate" || row.reportType === "DataCollectionPoint"} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
@@ -143,16 +145,15 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, us
         <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
       </TableContainer>
 
-      {hasMarkAsErrorAccess && (
-        <ConfirmationDialog
-          isOpened={markErrorConfirmationDialog.isOpen}
-          isFetching={isMarkingAsError}
-          titlteText={strings(stringKeys.reports.list.markAsErrorConfirmation)}
-          contentText={strings(stringKeys.reports.list.markAsErrorConfirmationText)}
-          submit={() => markAsErrorConfirmed()}
-          close={() => setMarkErrorConfirmationDialog({ isOpen: false })}
-        />
-      )}
+      <ConfirmationDialog
+        isOpened={markErrorConfirmationDialog.isOpen}
+        isFetching={isMarkingAsError}
+        titlteText={strings(stringKeys.reports.list.markAsErrorConfirmation)}
+        contentText={strings(stringKeys.reports.list.markAsErrorConfirmationText)}
+        submit={() => markAsErrorConfirmed()}
+        close={() => setMarkErrorConfirmationDialog({ isOpen: false })}
+        roles={accessMap.reports.markAsError}
+      />
     </Fragment>
   );
 }

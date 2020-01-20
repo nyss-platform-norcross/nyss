@@ -1,6 +1,3 @@
-import { ReportListType as ProjectReportListType } from './components/reports/logic/reportsConstants'
-import { ReportListType as NationalSocietyReportListType } from './components/nationalSocietyReports/logic/nationalSocietyReportsConstants'
-
 export const initialState = {
   appData: {
     appReady: false,
@@ -158,7 +155,8 @@ export const initialState = {
       healthRisks: []
     },
     filters: null,
-    sorting: null
+    sorting: null,
+    formHealthRisks: []
   },
   nationalSocietyReports: {
     listFetching: false,

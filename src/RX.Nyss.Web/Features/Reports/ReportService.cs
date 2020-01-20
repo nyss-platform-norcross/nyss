@@ -24,8 +24,11 @@ namespace RX.Nyss.Web.Features.Reports
 {
     public interface IReportService
     {
+        Task<Result<ReportResponseDto>> GetReport(int reportId);
         Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter);
         Task<Result<ReportListFilterResponseDto>> GetReportFilters(int nationalSocietyId);
+        Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId);
+        Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto);
         Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter);
         Task<Result> MarkAsError(int reportId);
     }
@@ -39,6 +42,7 @@ namespace RX.Nyss.Web.Features.Reports
         private readonly IAuthorizationService _authorizationService;
         private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public ReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INyssWebConfig config, IAuthorizationService authorizationService, IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
         {
@@ -49,6 +53,36 @@ namespace RX.Nyss.Web.Features.Reports
             _authorizationService = authorizationService;
             _excelExportService = excelExportService;
             _stringsResourcesService = stringsResourcesService;
+            _dateTimeProvider = dateTimeProvider;
+        }
+
+        public async Task<Result<ReportResponseDto>> GetReport(int reportId)
+        {
+            var report = await _nyssContext.Reports
+                .Select(r => new ReportResponseDto
+                {
+                    Id = r.Id,
+                    ReportType = r.ReportType,
+                    Date = r.ReceivedAt.Date,
+                    HealthRiskId = r.ProjectHealthRisk.HealthRiskId,
+                    CountMalesBelowFive = r.ReportedCase.CountMalesBelowFive.Value,
+                    CountMalesAtLeastFive = r.ReportedCase.CountMalesAtLeastFive.Value,
+                    CountFemalesBelowFive = r.ReportedCase.CountFemalesBelowFive.Value,
+                    CountFemalesAtLeastFive = r.ReportedCase.CountFemalesAtLeastFive.Value,
+                    ReferredCount = r.DataCollectionPointCase.ReferredCount.Value,
+                    DeathCount = r.DataCollectionPointCase.DeathCount.Value,
+                    FromOtherVillagesCount = r.DataCollectionPointCase.FromOtherVillagesCount.Value
+                })
+                .FirstOrDefaultAsync(r => r.Id == reportId);
+
+            if (report == null)
+            {
+                return Error<ReportResponseDto>(ResultKey.Report.ReportNotFound);
+            }
+
+            var result = Success(report);
+
+            return result;
         }
 
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter)
@@ -67,17 +101,29 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result<ReportListFilterResponseDto>> GetReportFilters(int projectId)
         {
-            var projectHealthRiskNames = await _projectService.GetProjectHealthRiskNames(projectId);
+            var healthRiskTypesWithoutActivity = new List<HealthRiskType> { HealthRiskType.Human, HealthRiskType.NonHuman, HealthRiskType.UnusualEvent };
+            var projectHealthRiskNames = await _projectService.GetProjectHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
 
             var dto = new ReportListFilterResponseDto
             {
                 HealthRisks = projectHealthRiskNames
-                    .Select(p => new HealthRiskDto { Id = p.Id, Name = p.Name })
             };
 
             return Success(dto);
         }
 
+        public async Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId)
+        {
+            var humanHealthRiskType = new List<HealthRiskType> { HealthRiskType.Human };
+            var projectHealthRisks = await _projectService.GetProjectHealthRiskNames(projectId, humanHealthRiskType);
+
+            var dto = new HumanHealthRiskResponseDto
+            {
+                HealthRisks = projectHealthRisks
+            };
+
+            return Success(dto);
+        }
 
         public async Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter)
         {
@@ -137,10 +183,68 @@ namespace RX.Nyss.Web.Features.Reports
                 .OrderBy(r => r.DateTime, filter.SortAscending);
 
             var reports = await reportsQuery.ToListAsync<IReportListResponseDto>();
+        
             await UpdateTimeZoneInReports(projectId, reports);
 
             var excelSheet = await GetExcelData(reports);
             return excelSheet;
+        }
+
+        public async Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto)
+        {
+            var report = await _nyssContext.Reports
+                .Include(r => r.ProjectHealthRisk)
+                    .ThenInclude(phr => phr.Project)
+                .SingleOrDefaultAsync(r => r.Id == reportId);
+
+            if (report == null)
+            {
+                return Error<ReportResponseDto>(ResultKey.Report.ReportNotFound);
+            }
+
+            if (report.ReportType != ReportType.Aggregate &&
+                report.ReportType != ReportType.DataCollectionPoint)
+            {
+                return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskCannotBeEdited);
+            }
+
+            var projectHealthRisk = await _nyssContext.ProjectHealthRisks
+                .Include(phr => phr.HealthRisk)
+                .SingleOrDefaultAsync(phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&
+                                             phr.HealthRisk.HealthRiskType == HealthRiskType.Human &&
+                                             phr.Project.Id == report.ProjectHealthRisk.Project.Id);
+
+            if (projectHealthRisk == null)
+            {
+                return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskNotAssignedToProject);
+            }
+
+            report.ReceivedAt = new DateTime(reportRequestDto.Date.Year, reportRequestDto.Date.Month, reportRequestDto.Date.Day,
+                report.ReceivedAt.Hour, report.ReceivedAt.Minute, report.ReceivedAt.Second);
+            report.ProjectHealthRisk = projectHealthRisk;
+            report.ReportedCase.CountMalesBelowFive = reportRequestDto.CountMalesBelowFive;
+            report.ReportedCase.CountMalesAtLeastFive = reportRequestDto.CountMalesAtLeastFive;
+            report.ReportedCase.CountFemalesBelowFive = reportRequestDto.CountFemalesBelowFive;
+            report.ReportedCase.CountFemalesAtLeastFive = reportRequestDto.CountFemalesAtLeastFive;
+
+            report.ReportedCaseCount = reportRequestDto.CountMalesBelowFive +
+                                       reportRequestDto.CountMalesAtLeastFive +
+                                       reportRequestDto.CountFemalesBelowFive +
+                                       reportRequestDto.CountFemalesAtLeastFive;
+
+            if (report.ReportType == ReportType.DataCollectionPoint)
+            {
+                report.DataCollectionPointCase.ReferredCount = reportRequestDto.ReferredCount;
+                report.DataCollectionPointCase.DeathCount = reportRequestDto.DeathCount;
+                report.DataCollectionPointCase.FromOtherVillagesCount = reportRequestDto.FromOtherVillagesCount;
+            }
+
+            report.ModifiedAt = _dateTimeProvider.UtcNow;
+            report.ModifiedBy = _authorizationService.GetCurrentUserName();
+
+            await _nyssContext.SaveChangesAsync();
+
+            return SuccessMessage(ResultKey.Report.Edit.EditSuccess);
         }
 
         public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports)
@@ -281,6 +385,7 @@ namespace RX.Nyss.Web.Features.Reports
                     UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
                     IsInAlert = r.Report.ReportAlerts.Any(),
                     ReportId = r.ReportId,
+                    ReportType = r.Report.ReportType,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,

@@ -4,7 +4,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import TextField from '@material-ui/core/TextField';
 
-const ReadOnlyField = ({ name, label, value, }) => {
+const ReadOnlyField = ({ name, label, value }) => {
   return (
     <TextField
       className={styles.readOnlyField}
@@ -22,10 +22,8 @@ const ReadOnlyField = ({ name, label, value, }) => {
 
 ReadOnlyField.propTypes = {
   label: PropTypes.string,
-  controlProps: PropTypes.object,
   value: PropTypes.string,
-  name: PropTypes.string,
-  error: PropTypes.string
+  name: PropTypes.string
 };
 
 export default ReadOnlyField;

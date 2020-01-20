@@ -1,10 +1,12 @@
 import { push } from "connected-react-router";
 import {
   OPEN_REPORTS_LIST, GET_REPORTS,
+  OPEN_REPORT_EDITION, EDIT_REPORT,
   EXPORT_TO_EXCEL, MARK_AS_ERROR
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
+export const goToEdition = (projectId, reportId) => push(`/projects/${projectId}/reports/${reportId}/edit`);
 
 export const openList = {
   invoke: (projectId) => ({ type: OPEN_REPORTS_LIST.INVOKE, projectId }),
@@ -18,6 +20,20 @@ export const getList = {
   request: () => ({ type: GET_REPORTS.REQUEST }),
   success: (data, page, rowsPerPage, totalRows, filters, sorting) => ({ type: GET_REPORTS.SUCCESS, data, page, rowsPerPage, totalRows, filters, sorting }),
   failure: (message) => ({ type: GET_REPORTS.FAILURE, message })
+};
+
+export const openEdition = {
+  invoke: (projectId, reportId) => ({ type: OPEN_REPORT_EDITION.INVOKE, projectId, reportId }),
+  request: () => ({ type: OPEN_REPORT_EDITION.REQUEST }),
+  success: (data, healthRisks) => ({ type: OPEN_REPORT_EDITION.SUCCESS, data, healthRisks }),
+  failure: (message) => ({ type: OPEN_REPORT_EDITION.FAILURE, message })
+};
+
+export const edit = {
+  invoke: (projectId, reportId, data) => ({ type: EDIT_REPORT.INVOKE, projectId, reportId, data }),
+  request: () => ({ type: EDIT_REPORT.REQUEST }),
+  success: () => ({ type: EDIT_REPORT.SUCCESS }),
+  failure: (message) => ({ type: EDIT_REPORT.FAILURE, message, suppressPopup: true })
 };
 
 export const exportToExcel = {

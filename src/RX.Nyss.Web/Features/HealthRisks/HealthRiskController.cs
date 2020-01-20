@@ -50,7 +50,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
         /// Edits a health risk.
         /// </summary>
         /// <param name="id">An identifier of a health risk</param>
-        /// <param name="healthRiskRequestDto"></param>
+        /// <param name="healthRiskRequestDto">A health risk</param>
         /// <returns></returns>
         [HttpPost, Route("{id:int}/edit"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result> Edit(int id, [FromBody]HealthRiskRequestDto healthRiskRequestDto) =>

@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Features.Projects
         Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
         Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
-        Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId);
+        Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId, List<HealthRiskType> healthRiskTypes);
         Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
     }
 
@@ -100,9 +100,12 @@ namespace RX.Nyss.Web.Features.Projects
             return result;
         }
 
-        public async Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId) =>
-            await _nyssContext.ProjectHealthRisks
-                .Where(ph => ph.Project.Id == projectId && ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+        public async Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId, List<HealthRiskType> healthRiskTypes)
+        {
+            healthRiskTypes ??= new List<HealthRiskType>();
+
+            return await _nyssContext.ProjectHealthRisks
+                .Where(ph => ph.Project.Id == projectId && healthRiskTypes.Contains(ph.HealthRisk.HealthRiskType))
                 .Select(ph => new HealthRiskDto
                 {
                     Id = ph.HealthRiskId,
@@ -111,7 +114,9 @@ namespace RX.Nyss.Web.Features.Projects
                         .Select(lc => lc.Name)
                         .FirstOrDefault()
                 })
+                .OrderBy(x => x.Name)
                 .ToListAsync();
+        }
 
         public async Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId)
         {
@@ -444,7 +449,7 @@ namespace RX.Nyss.Web.Features.Projects
                 .Where(u => u.EmailAddress == supervisorIdentityName)
                 .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
                 .ToListAsync();
-        
+
         private async Task<ProjectFormDataResponseDto> GetFormDataDto(int contentLanguageId)
         {
             var projectHealthRisks = await _nyssContext.HealthRisks
