@@ -10,6 +10,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasBaseType<User>();
             builder.Property(u => u.Sex).HasConversion<string>().HasMaxLength(10).IsRequired();
             builder.Property(u => u.DecadeOfBirth).IsRequired();
+            builder.HasOne(u => u.CurrentProject).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

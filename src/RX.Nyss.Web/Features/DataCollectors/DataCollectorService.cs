@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
@@ -33,6 +34,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng);
         Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId);
         Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
+        Task AnonymizeDataCollectorsWithReports(int projectId);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -193,6 +195,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Include(p => p.NationalSociety)
                 .SingleAsync(p => p.Id == projectId);
 
+            if (project.State != ProjectState.Open)
+            {
+                return Error(ResultKey.DataCollector.ProjectIsClosed);
+            }
+
             var nationalSocietyId = project.NationalSociety.Id;
 
             var supervisor = await _nyssContext.UserNationalSocieties
@@ -250,6 +257,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Include(dc => dc.Zone)
                 .SingleAsync(dc => dc.Id == editDto.Id);
 
+            if (dataCollector.Project.State != ProjectState.Open)
+            {
+                return Error(ResultKey.DataCollector.ProjectIsClosed);
+            }
+
             var nationalSocietyId = dataCollector.Project.NationalSociety.Id;
 
             var supervisor = await _nyssContext.UserNationalSocieties
@@ -282,7 +294,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
         public async Task<Result> RemoveDataCollector(int dataCollectorId)
         {
             var dataCollector = await _nyssContext.DataCollectors
-                .Select(dc => new { dc, HasReports = dc.RawReports.Any() })
+                .Select(dc => new
+                {
+                    dc,
+                    HasReports = dc.RawReports.Any(),
+                    ProjectIsOpen = dc.Project.State == ProjectState.Open
+                })
                 .SingleOrDefaultAsync(dc => dc.dc.Id == dataCollectorId);
 
             if (dataCollector == null)
@@ -290,11 +307,16 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 return Error(ResultKey.DataCollector.DataCollectorNotFound);
             }
 
+            if (!dataCollector.ProjectIsOpen)
+            {
+                return Error(ResultKey.DataCollector.ProjectIsClosed);
+            }
+
             using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
             {
                 if (dataCollector.HasReports)
                 {
-                    await AnonymizeDataCollector(dataCollector.dc);
+                    await AnonymizeDataCollector(dataCollectorId);
                 }
                 else
                 {
@@ -308,19 +330,60 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return SuccessMessage(ResultKey.DataCollector.RemoveSuccess);
         }
 
-        private async Task AnonymizeDataCollector(DataCollector dataCollector)
+        private async Task AnonymizeDataCollector(int dataCollectorId)
         {
-            dataCollector.Name = Anonymization.Text;
-            dataCollector.DisplayName = Anonymization.Text;
-            dataCollector.PhoneNumber = Anonymization.Text;
-            dataCollector.AdditionalPhoneNumber = Anonymization.Text;
-            dataCollector.DeletedAt = DateTime.UtcNow;
+            await _nyssContext.DataCollectors
+                .Where(x => x.Id == dataCollectorId)
+                .BatchUpdateAsync(x => new Nyss.Data.Models.DataCollector
+                {
+                    Name = Anonymization.Text,
+                    DisplayName = Anonymization.Text,
+                    PhoneNumber = Anonymization.Text,
+                    AdditionalPhoneNumber = Anonymization.Text,
+                    DeletedAt = DateTime.UtcNow
+                });
 
-            FormattableString updateRawReportsCommand = $"UPDATE Nyss.RawReports SET Sender = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
-            await _nyssContext.ExecuteSqlInterpolatedAsync(updateRawReportsCommand);
+            await _nyssContext.RawReports
+                .Where(rawReport => rawReport.DataCollector.Id == dataCollectorId)
+                .BatchUpdateAsync(x => new RawReport
+                {
+                    Sender = Anonymization.Text
+                });
 
-            FormattableString updateReportsCommand = $"UPDATE Nyss.Reports SET PhoneNumber = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
-            await _nyssContext.ExecuteSqlInterpolatedAsync(updateReportsCommand);
+            await _nyssContext.Reports
+                .Where(report => report.DataCollector.Id == dataCollectorId)
+                .BatchUpdateAsync(x => new Nyss.Data.Models.Report
+                {
+                    PhoneNumber = Anonymization.Text
+                });
+        }
+
+        public async Task AnonymizeDataCollectorsWithReports(int projectId)
+        {
+            await _nyssContext.DataCollectors
+                .Where(x => x.Project.Id == projectId && x.RawReports.Any())
+                .BatchUpdateAsync(x => new Nyss.Data.Models.DataCollector
+                {
+                    Name = Anonymization.Text,
+                    DisplayName = Anonymization.Text,
+                    PhoneNumber = Anonymization.Text,
+                    AdditionalPhoneNumber = Anonymization.Text,
+                    DeletedAt = DateTime.UtcNow
+                });
+
+            await _nyssContext.RawReports
+                .Where(rawReport => rawReport.DataCollector.Project.Id == projectId)
+                .BatchUpdateAsync(x => new RawReport
+                {
+                    Sender = Anonymization.Text
+                });
+
+            await _nyssContext.Reports
+                .Where(report => report.ProjectHealthRisk.Project.Id == projectId)
+                .BatchUpdateAsync(x => new Nyss.Data.Models.Report
+                {
+                    PhoneNumber = Anonymization.Text
+                });
         }
 
         private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>

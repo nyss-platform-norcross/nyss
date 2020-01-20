@@ -176,8 +176,10 @@ export const stringKeys = {
       ongoing: "project.list.ongoing",
       open: "project.list.open",
       edit: "project.list.edit",
-      remove: "project.list.remove",
-      removalConfirmation: "project.list.removalConfirmation"
+      close: "project.list.close",
+      removalConfirmation: "project.list.removalConfirmation",
+      removalConfirmationText: "project.list.removalConfirmationText",
+      removalConfirmationTextTwo: "project.list.removalConfirmationTextTwo"
     },
     dashboard: {
       title: "project.dashboard.title",
@@ -305,6 +307,7 @@ export const stringKeys = {
       organization: "nationalSocietyUser.form.organization",
       create: "nationalSocietyUser.form.create",
       addExisting: "nationalSocietyUser.form.addExisting",
+      projectIsClosed: "nationalSocietyUser.form.projectIsClosed",
       update: "nationalSocietyUser.form.update"
     },
     create: {

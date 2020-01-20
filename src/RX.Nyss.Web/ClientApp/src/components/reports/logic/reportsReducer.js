@@ -1,9 +1,13 @@
 import * as actions from "./reportsConstants";
+import * as projectsActions from "../../projects/logic/projectsConstants";
 import { initialState } from "../../../initialState";
 import { LOCATION_CHANGE } from "connected-react-router";
 
 export function reportsReducer(state = initialState.reports, action) {
   switch (action.type) {
+    case projectsActions.CLOSE_PROJECT.SUCCESS:
+      return { ...state, listStale: true, listProjectId: null };
+
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null }
 

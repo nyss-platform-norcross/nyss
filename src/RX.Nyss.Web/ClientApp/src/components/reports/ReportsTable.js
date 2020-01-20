@@ -23,7 +23,7 @@ import { ReportListType } from '../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './logic/reportsConstants'
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 
-export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId, user, list, page, onChangePage, rowsPerPage, totalRows, reportsType, sorting, onSort }) => {
+export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId, user, list, page, onChangePage, rowsPerPage, totalRows, reportsType, sorting, onSort, projectIsClosed  }) => {
 
   const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });
   const [value, setValue] = useState(sorting);
@@ -129,7 +129,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
                         {
                           title: strings(stringKeys.reports.list.markAsError),
                           roles: accessMap.reports.markAsError,
-                          condition: row.isValid && !row.isInAlert && !row.isMarkedAsError && row.userHasAccessToReportDataCollector,
+                          condition: !projectIsClosed && row.isValid && !row.isInAlert && !row.isMarkedAsError && row.userHasAccessToReportDataCollector,
                           action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
                         }
                       ]}

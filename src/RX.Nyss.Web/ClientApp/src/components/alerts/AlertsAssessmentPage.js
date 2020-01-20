@@ -82,6 +82,7 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
                 assessmentStatus={data.assessmentStatus}
                 acceptReport={props.acceptReport}
                 dismissReport={props.dismissReport}
+                projectIsClosed={props.projectIsClosed}
               />
             </Grid>
           ))}
@@ -122,7 +123,8 @@ const mapStateToProps = (state, ownProps) => ({
   isEscalating: state.alerts.formEscalating,
   isClosing: state.alerts.formClosing,
   isDismissing: state.alerts.formDismissing,
-  data: state.alerts.formData
+  data: state.alerts.formData,
+  projectIsClosed: state.appData.siteMap.parameters.projectIsClosed,
 });
 
 const mapDispatchToProps = {

@@ -14,3 +14,10 @@
   display: flex;
   color: #a2a2a2;
 }
+
+.inactiveRow {
+  @extend .clickableRow;
+  >td{
+    color: #a2a2a2;
+  }
+}

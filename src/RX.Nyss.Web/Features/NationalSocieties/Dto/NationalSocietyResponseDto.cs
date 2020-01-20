@@ -13,5 +13,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
         public int ContentLanguageId { get; set; }
 
         public string ContentLanguageName { get; set; }
+
+        public int HeadManagerId { get; set; }
     }
 }

@@ -326,11 +326,7 @@ namespace RX.Nyss.Web.Features.Reports
                     : GetStringResource(stringResources, "reports.list.error")
             };
 
-        public async Task<Result> MarkAsError(int reportId)
-        {
-            await SetMarkedAsError(reportId, true);
-            return Success();
-        }
+        public async Task<Result> MarkAsError(int reportId) => await SetMarkedAsError(reportId, true);
 
         private  async Task<(IQueryable<RawReport> baseQuery, IQueryable<IReportListResponseDto> result)> GetReportQueries(int projectId, ReportListFilterRequestDto filter)
         {
@@ -403,14 +399,21 @@ namespace RX.Nyss.Web.Features.Reports
         private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
             stringResources.Keys.Contains(key) ? stringResources[key] : key;
 
-        private async Task SetMarkedAsError(int reportId, bool markedAsError)
+        private async Task<Result> SetMarkedAsError(int reportId, bool markedAsError)
         {
             var report = await _nyssContext.Reports
                 .Where(r => !r.ReportAlerts.Any())
                 .FirstOrDefaultAsync(r => r.Id == reportId);
 
+            if (report.ProjectHealthRisk.Project.State != ProjectState.Open)
+            {
+                return Error(ResultKey.Report.ProjectIsClosed);
+            }
+
             report.MarkedAsError = markedAsError;
             await _nyssContext.SaveChangesAsync();
+
+            return Success();
         }
 
         private static IQueryable<RawReport> FilterReportsByArea(IQueryable<RawReport> rawReports, AreaDto area) =>

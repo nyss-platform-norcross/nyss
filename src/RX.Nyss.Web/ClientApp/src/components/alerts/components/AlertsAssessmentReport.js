@@ -29,7 +29,7 @@ const getReportIcon = (status) => {
   }
 }
 
-export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, assessmentStatus }) => {
+export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, assessmentStatus, projectIsClosed }) => {
   const showActions = assessmentStatus !== "Closed" && report.status === "Pending";
 
   return (
@@ -70,27 +70,28 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
           value={report.id}
         />
       </ExpansionPanelDetails>
+      {!projectIsClosed && (
+        <Fragment>
+          <Divider />
+          <ExpansionPanelActions>
+            {showActions && (
+              <Fragment>
+                <SubmitButton onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing} regular>
+                  {strings(stringKeys.alerts.assess.report.dismiss)}
+                </SubmitButton>
 
-      <Fragment>
-        <Divider />
-        <ExpansionPanelActions>
-          {showActions && (
-            <Fragment>
-              <SubmitButton onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing} regular>
-                {strings(stringKeys.alerts.assess.report.dismiss)}
-              </SubmitButton>
+                <SubmitButton onClick={() => acceptReport(alertId, report.id)} isFetching={report.isAccepting}>
+                  {strings(stringKeys.alerts.assess.report.accept)}
+                </SubmitButton>
+              </Fragment>
+            )}
 
-              <SubmitButton onClick={() => acceptReport(alertId, report.id)} isFetching={report.isAccepting}>
-                {strings(stringKeys.alerts.assess.report.accept)}
-              </SubmitButton>
-            </Fragment>
-          )}
-
-          {!showActions && (
-            <div className={styles.reportStatus}>{strings(stringKeys.alerts.constants.reportStatus[report.status])}</div>
-          )}
-        </ExpansionPanelActions>
-      </Fragment>
+            {!showActions && (
+              <div className={styles.reportStatus}>{strings(stringKeys.alerts.constants.reportStatus[report.status])}</div>
+            )}
+          </ExpansionPanelActions>
+        </Fragment>
+      )}
     </ExpansionPanel>
   );
 }

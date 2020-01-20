@@ -7,6 +7,7 @@ namespace RX.Nyss.Web.Features.Projects.Dto
         public string Name { get; set; }
 
         public NationalSocietyIdDto NationalSociety { get; set; }
+        public bool IsClosed { get; set; }
 
         public class NationalSocietyIdDto
         {

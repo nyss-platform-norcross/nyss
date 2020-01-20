@@ -14,7 +14,7 @@ import { useMount } from '../../utils/lifecycle';
 import SelectField from '../forms/SelectField';
 import Grid from '@material-ui/core/Grid';
 import * as roles from '../../authentication/roles';
-import { stringKeys, strings } from '../../strings';
+import { stringKeys, strings, stringsFormat } from '../../strings';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import MenuItem from "@material-ui/core/MenuItem";
 import { sexValues } from './logic/nationalSocietyUsersConstants';
@@ -60,6 +60,10 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
     setForm(createForm(fields, validation));
   }, [props.data, props.match]);
+
+  if (!props.data) {
+    return null;
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -159,9 +163,11 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                 field={form.fields.projectId}
                 name="projectId"
               >
-                {props.projects.map(project => (
+                {props.data.editSupervisorFormData.availableProjects.map(project => (
                   <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
-                    {project.name}
+                    { project.isClosed
+                      ? stringsFormat(stringKeys.nationalSocietyUser.form.projectIsClosed, {projectName: project.name})
+                      : project.name }                     
                   </MenuItem>
                 ))}
               </SelectField>
@@ -185,7 +191,6 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyUserId: ownProps.match.params.nationalSocietyUserId,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isFetching: state.nationalSocietyUsers.formFetching,
-  projects: state.nationalSocietyUsers.formProjects,
   isSaving: state.nationalSocietyUsers.formSaving,
   data: state.nationalSocietyUsers.formData,
   error: state.nationalSocietyUsers.formError

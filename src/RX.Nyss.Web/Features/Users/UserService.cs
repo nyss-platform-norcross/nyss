@@ -47,10 +47,9 @@ namespace RX.Nyss.Web.Features.Users
                     PhoneNumber = uns.User.PhoneNumber,
                     Role = uns.User.Role.ToString(),
                     Project = (uns.User is SupervisorUser)
-                        ? ((SupervisorUser)uns.User).SupervisorUserProjects
-                        .Where(sup => sup.Project.State == ProjectState.Open)
-                        .Select(sup => sup.Project.Name)
-                        .SingleOrDefault()
+                        ? ((SupervisorUser)uns.User).CurrentProject != null
+                            ? ((SupervisorUser)uns.User).CurrentProject.Name
+                            : null
                         : null,
                     IsHeadManager = uns.NationalSociety.HeadManager != null && uns.NationalSociety.HeadManager.Id == uns.User.Id,
                     IsPendingHeadManager = uns.NationalSociety.PendingHeadManager != null && uns.NationalSociety.PendingHeadManager.Id == uns.User.Id

@@ -73,6 +73,7 @@ const ReportsListPageComponent = (props) => {
           markAsError={handleMarkAsError}
           isMarkingAsError={props.isMarkingAsError}
           user={props.user}
+          projectIsClosed = {props.projectIsClosed}
         />
       </Grid>
     </Grid>
@@ -95,7 +96,8 @@ const mapStateToProps = (state, ownProps) => ({
   sorting: state.reports.sorting,
   healthRisks: state.reports.filtersData.healthRisks,
   user: state.appData.user,
-  isMarkingAsError: state.reports.markingAsError
+  isMarkingAsError: state.reports.markingAsError,
+  projectIsClosed: state.appData.siteMap.parameters.projectIsClosed,
 });
 
 const mapDispatchToProps = {

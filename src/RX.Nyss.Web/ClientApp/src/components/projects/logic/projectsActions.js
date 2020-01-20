@@ -3,7 +3,7 @@ import {
   OPEN_PROJECTS_LIST, GET_PROJECTS,
   OPEN_PROJECT_CREATION, CREATE_PROJECT,
   OPEN_PROJECT_EDITION, EDIT_PROJECT,
-  REMOVE_PROJECT,
+  CLOSE_PROJECT,
   OPEN_PROJECT_OVERVIEW
 } from "./projectsConstants";
 
@@ -62,9 +62,9 @@ export const edit = {
   failure: (message) => ({ type: EDIT_PROJECT.FAILURE, message, suppressPopup: true })
 };
 
-export const remove = {
-  invoke: (nationalSocietyId, projectId) => ({ type: REMOVE_PROJECT.INVOKE, nationalSocietyId, projectId }),
-  request: (id) => ({ type: REMOVE_PROJECT.REQUEST, id }),
-  success: (id) => ({ type: REMOVE_PROJECT.SUCCESS, id }),
-  failure: (id, message) => ({ type: REMOVE_PROJECT.FAILURE, id, message })
+export const close = {
+  invoke: (nationalSocietyId, projectId) => ({ type: CLOSE_PROJECT.INVOKE, nationalSocietyId, projectId }),
+  request: (id) => ({ type: CLOSE_PROJECT.REQUEST, id }),
+  success: (id) => ({ type: CLOSE_PROJECT.SUCCESS, id }),
+  failure: (id, message) => ({ type: CLOSE_PROJECT.FAILURE, id, message })
 };

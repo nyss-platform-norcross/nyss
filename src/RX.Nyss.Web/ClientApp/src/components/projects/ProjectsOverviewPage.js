@@ -91,11 +91,13 @@ const ProjectsOverviewPageComponent = (props) => {
         </Grid>
       </Grid>
 
-      <FormActions>
-        <TableActionsButton variant="outlined" color="primary" onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)} roles={accessMap.projects.edit}>
-          {strings(stringKeys.project.edit)}
-        </TableActionsButton>
-      </FormActions>
+      {!props.isClosed &&
+        <FormActions>
+          <TableActionsButton variant="outlined" color="primary" onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)} roles={accessMap.projects.edit}>
+            {strings(stringKeys.project.edit)}
+          </TableActionsButton>
+        </FormActions>
+      }
     </Fragment>
   );
 }
@@ -110,6 +112,7 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isFetching: state.projects.formFetching,
   data: state.projects.overviewData,
+  isClosed: state.appData.siteMap.parameters.projectIsClosed,
 });
 
 const mapDispatchToProps = {

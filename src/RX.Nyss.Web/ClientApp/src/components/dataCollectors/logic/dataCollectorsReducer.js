@@ -1,10 +1,14 @@
 import * as actions from "./dataCollectorsConstants";
+import * as projectsActions from "../../projects/logic/projectsConstants";
 import { initialState } from "../../../initialState";
 import { setProperty, removeProperty } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";
 
 export function dataCollectorsReducer(state = initialState.dataCollectors, action) {
   switch (action.type) {
+    case projectsActions.CLOSE_PROJECT.SUCCESS:
+      return { ...state, listStale: true };
+
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null, formError: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null }
 

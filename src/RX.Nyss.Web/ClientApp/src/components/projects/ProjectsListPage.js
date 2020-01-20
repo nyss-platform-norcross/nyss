@@ -29,6 +29,10 @@ const ProjectsListPageComponent = (props) => {
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
         nationalSocietyId={props.nationalSocietyId}
+        close={props.close}
+        isClosing={props.isClosing}
+        callingUserRoles={props.callingUserRoles}
+        isHeadManager={props.isHeadManager}
       />
     </Fragment>
   );
@@ -39,8 +43,8 @@ ProjectsListPageComponent.propTypes = {
   goToDashboard: PropTypes.func,
   goToCreation: PropTypes.func,
   goToEdition: PropTypes.func,
-  remove: PropTypes.func,
-  isFetching: PropTypes.bool,
+  close: PropTypes.func,
+  isListFetching: PropTypes.bool,
   list: PropTypes.array
 };
 
@@ -48,7 +52,9 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   list: state.projects.listData,
   isListFetching: state.projects.listFetching,
-  isRemoving: state.projects.listRemoving
+  isClosing: state.projects.isClosing,
+  callingUserRoles: state.appData.user.roles,
+  isHeadManager: state.appData.siteMap.parameters.nationalSocietyHeadManagerId === state.appData.user.id,
 });
 
 const mapDispatchToProps = {
@@ -56,7 +62,7 @@ const mapDispatchToProps = {
   goToDashboard: projectsActions.goToDashboard,
   goToCreation: projectsActions.goToCreation,
   goToEdition: projectsActions.goToEdition,
-  remove: projectsActions.remove.invoke
+  close: projectsActions.close.invoke
 };
 
 export const ProjectsListPage = useLayout(

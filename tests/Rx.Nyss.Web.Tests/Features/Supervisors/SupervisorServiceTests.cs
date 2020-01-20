@@ -103,7 +103,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                     PhoneNumber = "123",
                     AdditionalPhoneNumber = "321",
                     Sex = Sex.Male,
-                    DecadeOfBirth = 1990
+                    DecadeOfBirth = 1990,
                 },
                 new SupervisorUser
                 {
@@ -136,12 +136,16 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 new SupervisorUserProject { Project = projects[0], ProjectId = _projectId1, SupervisorUser = supervisorWithDataCollectors, SupervisorUserId = _supervisorWithDataCollectorsId },
                 new SupervisorUserProject { Project = projects[2], ProjectId = _projectId3, SupervisorUser = supervisorWithDataCollectors, SupervisorUserId = _supervisorWithDataCollectorsId },
-                new SupervisorUserProject { Project = projects[2], ProjectId = _projectId3, SupervisorUser = supervisorWithoutDataCollectors, SupervisorUserId = _supervisorWithoutDataCollectorsId },
+                new SupervisorUserProject { Project = projects[1], ProjectId = _projectId3, SupervisorUser = supervisorWithoutDataCollectors, SupervisorUserId = _supervisorWithoutDataCollectorsId },
                 new SupervisorUserProject { Project = projects[0], ProjectId = _projectId1, SupervisorUser = supervisorWithDeletedDataCollectors, SupervisorUserId = _supervisorWithDeletedDataCollectorsId }
             };
             supervisorWithDataCollectors.SupervisorUserProjects = new List<SupervisorUserProject> { supervisorUserProjects[0], supervisorUserProjects[1] };
             supervisorWithoutDataCollectors.SupervisorUserProjects = new List<SupervisorUserProject> { supervisorUserProjects[2] };
             supervisorWithDeletedDataCollectors.SupervisorUserProjects = new List<SupervisorUserProject> { supervisorUserProjects[3] };
+
+            supervisorWithDataCollectors.CurrentProject = supervisorWithDataCollectors.SupervisorUserProjects.Single(p => p.Project.State == ProjectState.Open).Project;
+            supervisorWithoutDataCollectors.CurrentProject = supervisorWithoutDataCollectors.SupervisorUserProjects.Single(p => p.Project.State == ProjectState.Open).Project;
+            supervisorWithDeletedDataCollectors.CurrentProject = supervisorWithDeletedDataCollectors.SupervisorUserProjects.Single(p => p.Project.State == ProjectState.Open).Project;
 
             var userNationalSocieties = new List<UserNationalSociety>
             {
