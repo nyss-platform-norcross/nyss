@@ -370,6 +370,7 @@ export const stringKeys = {
   dataCollector: {
     title: "dataCollectors.title",
     addNew: "dataCollectors.addNew",
+    export: "dataCollectors.export",
     form: {
       creationTitle: "dataCollectors.form.creationTitle",
       editionTitle: "dataCollectors.form.editionTitle",

@@ -72,7 +72,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId) =>
             await _dataCollectorService.GetDataCollectorPerformance(projectId);
 
-        [HttpGet, Route("export")]
+        [HttpPost, Route("export")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> Export(int projectId) =>
             File(await _dataCollectorExportService.Export(projectId), "text/csv");
