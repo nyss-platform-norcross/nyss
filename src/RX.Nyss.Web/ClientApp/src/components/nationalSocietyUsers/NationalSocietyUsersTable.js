@@ -30,6 +30,11 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
   const hasSimilarAccess = user.roles.filter((r) => { return accessMap.nationalSocietyUsers.headManagerAccess.indexOf(r) !== -1; }).length > 0;
   const hasHeadManagerAccess = hasSimilarAccess || user.email === (headManagers.length > 0 && headManagers[0].email)
 
+  const canBeSetAsHeadManager = (row) => {
+    return (hasHeadManagerAccess && !row.isHeadManager &&
+      (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() || Roles.Manager.toLowerCase() === row.role.toLowerCase())) || false;
+  }
+
   return (
     <TableContainer>
       <Table>
@@ -59,14 +64,13 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               </TableCell>
               <TableCell>
                 <TableRowActions>
-                  {
-                    hasHeadManagerAccess &&
-                    !row.isHeadManager &&
-                    (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() || Roles.Manager.toLowerCase() === row.role.toLowerCase()) &&
-                    <TableRowMenu id={row.id} items={[
-                      { title: strings(stringKeys.headManagerConsents.setAsHeadManager), action: () => setAsHeadManager(nationalSocietyId, row.id) }
-                    ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
-                  }
+                  <TableRowMenu id={row.id} items={[
+                    {
+                      condition: canBeSetAsHeadManager(row),
+                      title: strings(stringKeys.headManagerConsents.setAsHeadManager),
+                      action: () => setAsHeadManager(nationalSocietyId, row.id)
+                    }
+                  ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
                   <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
                   <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>

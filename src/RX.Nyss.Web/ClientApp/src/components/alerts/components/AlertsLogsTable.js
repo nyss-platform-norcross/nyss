@@ -23,7 +23,7 @@ export const AlertsLogsTable = ({ list }) => {
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={row.id} hover>
+            <TableRow key={`log_item_${row.id}`} hover>
               <TableCell>{dayjs(row.date).format("YYYY-MM-DD HH:mm")}</TableCell>
               <TableCell>{stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata)}</TableCell>
               <TableCell>{row.userName}</TableCell>
