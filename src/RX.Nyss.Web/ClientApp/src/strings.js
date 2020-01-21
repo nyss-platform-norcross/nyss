@@ -89,9 +89,9 @@ export const stringKeys = {
         report: "nationalsociety.dashboard.map.report",
       },
       reportsPerVillageAndDate: {
-        title: "nationalsociety.dashboard.reportsPerVillageAndDate.title",
-        rest: "nationalsociety.dashboard.reportsPerVillageAndDate.rest",
-        numberOfReports: "nationalsociety.dashboard.reportsPerVillageAndDate.numberOfReports"
+        title: "nationalSociety.dashboard.reportsPerVillageAndDate.title",
+        rest: "nationalSociety.dashboard.reportsPerVillageAndDate.rest",
+        numberOfReports: "nationalSociety.dashboard.reportsPerVillageAndDate.numberOfReports"
       },
     },
     overview: {

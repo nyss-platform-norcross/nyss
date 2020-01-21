@@ -47,7 +47,7 @@ const getOptions = (valuesLabel, series, categories) => ({
 });
 
 export const NationalSocietyDashboardReportVillageChart = ({ data }) => {
-  const moduleStrings = stringKeys.project.dashboard.reportsPerVillageAndDate;
+  const moduleStrings = stringKeys.nationalSociety.dashboard.reportsPerVillageAndDate;
   const categories = data.allPeriods;
   const villages = data.villages.length ? data.villages : [{ name: "", periods: [] } ]
 
