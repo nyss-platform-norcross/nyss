@@ -1,0 +1,8 @@
+.button {
+  margin-left: 8px !important;
+
+  @media screen and (max-width: 600px) {
+    margin-left: unset;
+    margin-bottom: 8px;
+  }
+}
