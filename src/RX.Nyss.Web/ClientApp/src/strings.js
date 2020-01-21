@@ -53,7 +53,12 @@ export const stringKeys = {
     dashboard: {
       title: "nationalSociety.dashboard.title",
       numbers: {
+        alertsSummaryTitle: "nationalsociety.dashboard.numbers.alertsSummaryTitle",
+        dismissedAlerts: "nationalsociety.dashboard.numbers.dismissedAlerts",
+        escalatedAlerts: "nationalsociety.dashboard.numbers.escalatedAlerts",
+        closedAlerts: "nationalsociety.dashboard.numbers.closedAlerts",
         totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",
+        totalErrorReportCount: "nationalsociety.dashboard.numbers.totalErrorReportCount",
         totalReportCountTitle: "nationalsociety.dashboard.numbers.totalReportCountTitle"
       },
       filters: {
