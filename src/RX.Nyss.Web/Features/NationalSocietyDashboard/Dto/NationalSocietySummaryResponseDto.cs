@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
+﻿using RX.Nyss.Web.Features.ReportsDashboard.Dto;
+
+namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 {
     public class NationalSocietySummaryResponseDto
     {
@@ -6,6 +8,10 @@
 
         public int ReportCount { get; set; }
 
-        public NationalSocietyDataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; }
+        public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; }
+
+        public int ErrorReportCount { get; set; }
+
+        public AlertsSummaryResponseDto AlertsSummary { get; set; }
     }
 }

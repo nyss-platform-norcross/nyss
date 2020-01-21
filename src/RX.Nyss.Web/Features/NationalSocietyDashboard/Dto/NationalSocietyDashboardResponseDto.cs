@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RX.Nyss.Web.Features.ReportsDashboard.Dto;
 
 namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 {
@@ -6,6 +7,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
     {
         public NationalSocietySummaryResponseDto Summary { get; set; }
 
-        public IEnumerable<NationalSocietySummaryMapResponseDto> ReportsGroupedByLocation { get; set; }
+        public IEnumerable<ReportsSummaryMapResponseDto> ReportsGroupedByLocation { get; set; }
     }
 }

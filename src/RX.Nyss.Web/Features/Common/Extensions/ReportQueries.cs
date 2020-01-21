@@ -35,16 +35,16 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<Nyss.Data.Models.Report> FilterByArea(this IQueryable<Nyss.Data.Models.Report> reports, AreaDto area) =>
             area?.Type switch
             {
-                AreaDto.AreaType.Region =>
+                AreaType.Region =>
                 reports.Where(r => r.Village.District.Region.Id == area.Id),
 
-                AreaDto.AreaType.District =>
+                AreaType.District =>
                 reports.Where(r => r.Village.District.Id == area.Id),
 
-                AreaDto.AreaType.Village =>
+                AreaType.Village =>
                 reports.Where(r => r.Village.Id == area.Id),
 
-                AreaDto.AreaType.Zone =>
+                AreaType.Zone =>
                 reports.Where(r => r.Zone.Id == area.Id),
 
                 _ =>

@@ -10,6 +10,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Projects;
@@ -32,6 +33,8 @@ namespace RX.Nyss.Web.Features.Reports
         Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto);
         Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter);
         Task<Result> MarkAsError(int reportId);
+        IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
+        IQueryable<Report> GetValidReportsQuery(ReportsFilter filters);
     }
 
     public class ReportService : IReportService
@@ -321,6 +324,24 @@ namespace RX.Nyss.Web.Features.Reports
 
             return _excelExportService.ToCsv(reportData, columnLabels);
         }
+
+        public IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters) =>
+            _nyssContext.RawReports
+                .FilterByTrainingMode(filters.IsTraining)
+                .FromKnownDataCollector()
+                .FilterByArea(filters.Area)
+                .FilterByDataCollectorType(filters.DataCollectorType)
+                .FilterByProject(filters.ProjectId)
+                .FilterReportsByNationalSociety(filters.NationalSocietyId)
+                .FilterByDate(filters.StartDate.Date, filters.EndDate.Date)
+                .FilterByHealthRisk(filters.HealthRiskId);
+
+        public IQueryable<Report> GetValidReportsQuery(ReportsFilter filters) =>
+            GetRawReportsWithDataCollectorQuery(filters)
+                .AllSuccessfulReports()
+                .Select(r => r.Report)
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                .Where(r => !r.MarkedAsError);
 
         private string GetReportStatus(ExportReportListResponseDto report, IDictionary<string, string> stringResources) =>
             report.MarkedAsError switch

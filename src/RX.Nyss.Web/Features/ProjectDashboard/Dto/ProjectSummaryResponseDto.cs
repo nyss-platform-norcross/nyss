@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
+﻿using RX.Nyss.Web.Features.ReportsDashboard.Dto;
+
+namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
     public class ProjectSummaryResponseDto
     {
@@ -11,14 +13,5 @@
         public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; }
 
         public int ErrorReportCount { get; set; }
-    }
-
-    public class AlertsSummaryResponseDto
-    {
-        public int Escalated { get; set; }
-
-        public int Dismissed { get; set; }
-
-        public int Closed { get; set; }
     }
 }

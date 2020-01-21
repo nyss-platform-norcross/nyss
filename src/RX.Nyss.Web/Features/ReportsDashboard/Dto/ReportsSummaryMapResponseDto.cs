@@ -1,6 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
+﻿namespace RX.Nyss.Web.Features.ReportsDashboard.Dto
 {
-    public class NationalSocietySummaryMapResponseDto
+    public class ReportsSummaryMapResponseDto
     {
         public MapReportLocation Location { get; set; }
 
