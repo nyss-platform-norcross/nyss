@@ -14,10 +14,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
     public class DataCollectorController : BaseController
     {
         private readonly IDataCollectorService _dataCollectorService;
+        private readonly IDataCollectorExportService _dataCollectorExportService;
 
-        public DataCollectorController(IDataCollectorService dataCollectorService)
+        public DataCollectorController(IDataCollectorService dataCollectorService, IDataCollectorExportService dataCollectorExportService)
         {
             _dataCollectorService = dataCollectorService;
+            _dataCollectorExportService = dataCollectorExportService;
         }
 
         [HttpGet, Route("{dataCollectorId:int}/get")]
@@ -69,5 +71,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId) =>
             await _dataCollectorService.GetDataCollectorPerformance(projectId);
+
+        [HttpGet, Route("export")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<IActionResult> Export(int projectId) =>
+            File(await _dataCollectorExportService.Export(projectId), "text/csv");
     }
 }

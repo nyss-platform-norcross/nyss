@@ -15,6 +15,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
@@ -47,11 +48,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private readonly IGeolocationService _geolocationService;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IExcelExportService _excelExportService;
 
         public DataCollectorService(
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService,
             IGeolocationService geolocationService,
+            IExcelExportService excelExportService,
             IDateTimeProvider dateTimeProvider, IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
@@ -59,6 +62,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             _geolocationService = geolocationService;
             _dateTimeProvider = dateTimeProvider;
             _authorizationService = authorizationService;
+            _excelExportService = excelExportService;
         }
 
         public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId)
