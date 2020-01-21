@@ -12,6 +12,7 @@ namespace RX.Nyss.Common.Utils.DataContract
         public static class Alerts
         {
             public const string AlertEscalated = "sms.alertEscalated";
+            public const string AlertTriggered = "sms.alertTriggered";
         }
     }
 }
