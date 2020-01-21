@@ -5,3 +5,10 @@
     z-index: 1001;
   }
 }
+
+.message {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

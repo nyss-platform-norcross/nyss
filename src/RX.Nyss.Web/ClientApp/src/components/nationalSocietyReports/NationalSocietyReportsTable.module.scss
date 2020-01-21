@@ -3,3 +3,10 @@
         top: 110px !important;
     }
 }
+
+.message {
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

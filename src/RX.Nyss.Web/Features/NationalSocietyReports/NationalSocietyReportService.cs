@@ -8,6 +8,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyReports.Dto;
 using RX.Nyss.Web.Features.Projects;
@@ -50,7 +51,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(_authorizationService.GetCurrentUserName());
             var rowsPerPage = _config.PaginationRowsPerPage;
 
-            var baseQuery = FilterReportsByArea(_nyssContext.RawReports, filter.Area)
+            var baseQuery = _nyssContext.RawReports
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
                 .Where(r =>
@@ -58,7 +59,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     filter.ReportsType == NationalSocietyReportListType.Main ? r.DataCollector.DataCollectorType == DataCollectorType.Human :
                     r.DataCollector == null)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || (r.Report != null && r.Report.MarkedAsError));
+                .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
+                .FilterByArea(filter.Area);
 
             if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
             {
@@ -81,6 +83,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     Zone = r.Report != null ? r.Report.Zone.Name : r.DataCollector.Zone.Name,
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
+                    Message = r.Text,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
@@ -114,25 +117,5 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 
             return Success(dto);
         }
-
-        //ToDo: use common logic with the project dashboard
-        private static IQueryable<RawReport> FilterReportsByArea(IQueryable<RawReport> rawReports, AreaDto area) =>
-            area?.Type switch
-            {
-                AreaDto.AreaType.Region =>
-                rawReports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.Id : r.DataCollector.Village.District.Region.Id == area.Id),
-
-                AreaDto.AreaType.District =>
-                rawReports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.Id : r.DataCollector.Village.District.Id == area.Id),
-
-                AreaDto.AreaType.Village =>
-                rawReports.Where(r => r.Report != null ? r.Report.Village.Id == area.Id : r.DataCollector.Village.Id == area.Id),
-
-                AreaDto.AreaType.Zone =>
-                rawReports.Where(r => r.Report != null ? r.Report.Zone.Id == area.Id : r.DataCollector.Zone.Id == area.Id),
-
-                _ =>
-                rawReports
-            };
     }
 }

@@ -16,8 +16,9 @@ import TablePager from '../common/tablePagination/TablePager';
 import { ReportListType } from '../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './logic/nationalSocietyReportsConstants'
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import { Typography } from "@material-ui/core";
 
-export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, reportsType, sorting, onSort }) => {
+export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort }) => {
 
   const [value, setValue] = useState(sorting);
 
@@ -54,7 +55,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
       <Table stickyHeader>
         <TableHead>
           <TableRow>
-            <TableCell style={{ width: "9%", minWidth: "115px" }} className={styles.tableHeader}>
+            <TableCell style={{ width: "6%", minWidth: "80px" }} className={styles.tableHeader}>
               <TableSortLabel
                 active={sorting.orderBy === DateColumnName}
                 direction={sorting.sortAscending ? 'asc' : 'desc'}
@@ -66,18 +67,20 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
             <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.status)}</TableCell>
             <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.project)}</TableCell>
             <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorDisplayName)}</TableCell>
-            <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorPhoneNumber)}</TableCell>
-            <TableCell style={{ width: "18%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.location)}</TableCell>
+            <TableCell style={{ width: "14%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.location)}</TableCell>
             <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.healthRisk)}</TableCell>
-            <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.malesBelowFive)}</TableCell>
-            <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.malesAtLeastFive)}</TableCell>
-            <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.femalesBelowFive)}</TableCell>
-            <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
+            {!filters.status &&
+              <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.message)}</TableCell>
+            }
+            <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.malesBelowFive)}</TableCell>
+            <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.malesAtLeastFive)}</TableCell>
+            <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.femalesBelowFive)}</TableCell>
+            <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
             {reportsType === ReportListType.fromDcp &&
               <Fragment>
-                <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.referredCount)}</TableCell>
-                <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.deathCount)}</TableCell>
-                <TableCell style={{ width: "9%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.fromOtherVillagesCount)}</TableCell>
+                <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.referredCount)}</TableCell>
+                <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.deathCount)}</TableCell>
+                <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.fromOtherVillagesCount)}</TableCell>
               </Fragment>
             }
           </TableRow>
@@ -96,10 +99,18 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
                   : row.isValid ? strings(stringKeys.nationalSocietyReports.list.success) : strings(stringKeys.nationalSocietyReports.list.error)}
               </TableCell>
               <TableCell>{dashIfEmpty(row.projectName)}</TableCell>
-              <TableCell>{dashIfEmpty(row.dataCollectorDisplayName)}</TableCell>
-              <TableCell>{row.phoneNumber}</TableCell>
+              <TableCell>
+                {row.dataCollectorDisplayName}
+                {row.dataCollectorDisplayName ? <br /> : ""}
+                {row.phoneNumber}
+              </TableCell>
               <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
               <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
+              {!filters.status &&
+                <TableCell>
+                  <Typography className={styles.message} title={row.message}>{dashIfEmpty(row.message)}</Typography>
+                </TableCell>
+              }
               <TableCell>{dashIfEmpty(row.countMalesBelowFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countMalesAtLeastFive)}</TableCell>
               <TableCell>{dashIfEmpty(row.countFemalesBelowFive)}</TableCell>

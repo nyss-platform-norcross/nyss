@@ -20,6 +20,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public string Zone { get; set; }
         public string DataCollectorDisplayName { get; set; }
         public string PhoneNumber { get; set; }
+        public string Message { get; set; }
         public int? CountMalesBelowFive { get; set; }
         public int? CountFemalesBelowFive { get; set; }
         public int? CountMalesAtLeastFive { get; set; }

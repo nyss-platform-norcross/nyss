@@ -11,6 +11,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Users;
@@ -129,7 +130,7 @@ namespace RX.Nyss.Web.Features.Reports
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
 
-            var reportsQuery = FilterReportsByArea(_nyssContext.RawReports, filter.Area)
+            var reportsQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
                 .Where(r => filter.ReportsType == ReportListType.FromDcp ?
                     r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
@@ -139,6 +140,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Where(r => filter.IsTraining ?
                     r.IsTraining.HasValue && r.IsTraining.Value :
                     r.IsTraining.HasValue && !r.IsTraining.Value)
+                .FilterByArea(filter.Area)
                 .Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,
@@ -339,7 +341,7 @@ namespace RX.Nyss.Web.Features.Reports
 
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
 
-            var baseQuery = FilterReportsByArea(_nyssContext.RawReports, filter.Area)
+            var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
                 .Where(r => filter.ReportsType== ReportListType.FromDcp ?
                     r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
@@ -348,7 +350,8 @@ namespace RX.Nyss.Web.Features.Reports
                 .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || r.Report.MarkedAsError)
                 .Where(r => filter.IsTraining ?
                     r.IsTraining.HasValue && r.IsTraining.Value :
-                    r.IsTraining.HasValue && !r.IsTraining.Value);
+                    r.IsTraining.HasValue && !r.IsTraining.Value)
+                .FilterByArea(filter.Area);
 
             var result = baseQuery.Select(r => new ReportListResponseDto
                 {
@@ -382,6 +385,7 @@ namespace RX.Nyss.Web.Features.Reports
                     IsInAlert = r.Report.ReportAlerts.Any(),
                     ReportId = r.ReportId,
                     ReportType = r.Report.ReportType,
+                    Message = r.Text,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
                     CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
                     CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
@@ -415,26 +419,7 @@ namespace RX.Nyss.Web.Features.Reports
 
             return Success();
         }
-
-        private static IQueryable<RawReport> FilterReportsByArea(IQueryable<RawReport> rawReports, AreaDto area) =>
-            area?.Type switch
-            {
-                AreaDto.AreaType.Region =>
-                rawReports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.Id : r.DataCollector.Village.District.Region.Id == area.Id),
-
-                AreaDto.AreaType.District =>
-                rawReports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.Id : r.DataCollector.Village.District.Id == area.Id),
-
-                AreaDto.AreaType.Village =>
-                rawReports.Where(r => r.Report != null ? r.Report.Village.Id == area.Id : r.DataCollector.Village.Id == area.Id),
-
-                AreaDto.AreaType.Zone =>
-                rawReports.Where(r => r.Report != null ? r.Report.Zone.Id == area.Id : r.DataCollector.Zone.Id == area.Id),
-
-                _ =>
-                rawReports
-            };
-
+        
         private async Task UpdateTimeZoneInReports(int projectId, List<IReportListResponseDto> reports)
         {
             var project = await _nyssContext.Projects.FindAsync(projectId);
