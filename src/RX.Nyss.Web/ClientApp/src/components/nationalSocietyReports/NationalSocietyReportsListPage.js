@@ -51,6 +51,7 @@ const NationalSocietyReportsListPageComponent = (props) => {
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
           reportsType={props.filters.reportsType}
+          filters={props.filters}
           sorting={props.sorting}
           onSort={handleSortChange}
         />

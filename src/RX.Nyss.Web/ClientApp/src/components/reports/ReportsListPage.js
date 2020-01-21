@@ -66,6 +66,7 @@ const ReportsListPageComponent = (props) => {
           totalRows={props.data.totalRows}
           rowsPerPage={props.data.rowsPerPage}
           reportsType={props.filters.reportsType}
+          filters={props.filters}
           sorting={props.sorting}
           onSort={handleSortChange}
           projectId={props.projectId}
@@ -73,7 +74,7 @@ const ReportsListPageComponent = (props) => {
           markAsError={handleMarkAsError}
           isMarkingAsError={props.isMarkingAsError}
           user={props.user}
-          projectIsClosed = {props.projectIsClosed}
+          projectIsClosed={props.projectIsClosed}
         />
       </Grid>
     </Grid>
