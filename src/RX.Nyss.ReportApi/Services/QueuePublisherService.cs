@@ -14,6 +14,7 @@ namespace RX.Nyss.ReportApi.Services
         Task SendSMSesViaEagle(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
 
         Task QueueAlertCheck(int alertId);
+        Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody);
     }
 
     public class QueuePublisherService : IQueuePublisherService
@@ -51,6 +52,20 @@ namespace RX.Nyss.ReportApi.Services
             };
 
             await _checkAlertQueueClient.SendAsync(message);
+        }
+
+        public Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody)
+        {
+            var sendEmail = new SendEmailMessage
+            {
+                To = new Contact { Email = to.EmailAddress, Name = to.Name},
+                Body = emailBody,
+                Subject = emailSubject
+            };
+
+            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail))) { Label = "RX.Nyss.ReportApi", };
+
+            return _sendEmailQueueClient.SendAsync(message);
         }
     }
 
