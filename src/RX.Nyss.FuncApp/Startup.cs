@@ -34,10 +34,10 @@ namespace RX.Nyss.FuncApp
             var configuration = provider.GetService<IConfiguration>();
 
             var configurationBuilder = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
                 .AddJsonFile(localSettingsFile, true, true)
-                .AddUserSecrets(Assembly.GetExecutingAssembly(), false)
-                .AddConfiguration(configuration);
+                .AddEnvironmentVariables()
+                .AddConfiguration(configuration)
+                .AddUserSecrets(Assembly.GetExecutingAssembly(), false);
 
             var newConfiguration = configurationBuilder.Build();
             var nyssFuncAppConfig = newConfiguration.Get<NyssFuncAppConfig>();
