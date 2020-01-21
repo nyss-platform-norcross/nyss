@@ -22,7 +22,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             Reports = new List<Report>();
         }
 
-        public LabeledReportGroup AddReport(ReportStatus status, ProjectHealthRisk projectHealthRisk, DataCollector dataCollector, bool isTraining = false, Point location = null, DateTime? receivedAt = null)
+        public LabeledReportGroup AddReport(ReportStatus status, ProjectHealthRisk projectHealthRisk, DataCollector dataCollector, bool isTraining = false, Point location = null, DateTime? receivedAt = null, Village? village = null)
         {
             Reports.Add(new Report
             {
@@ -33,14 +33,15 @@ namespace RX.Nyss.TestData.TestDataGeneration
                 DataCollector = dataCollector,
                 IsTraining = isTraining,
                 ReceivedAt = receivedAt ?? default,
-                Location = location
+                Location = location,
+                Village = village ?? default
             });
             return this;
         }
 
-        public LabeledReportGroup AddNReports(int numberOfReports, ReportStatus status, ProjectHealthRisk projectHealthRisk, DataCollector dataCollector, bool isTraining = false, Point location = null, DateTime ? receivedAt = null)
+        public LabeledReportGroup AddNReports(int numberOfReports, ReportStatus status, ProjectHealthRisk projectHealthRisk, DataCollector dataCollector, bool isTraining = false, Point location = null, DateTime ? receivedAt = null, Village? village = null)
         {
-            Enumerable.Range(0,numberOfReports).ToList().ForEach(x => AddReport(status, projectHealthRisk, dataCollector, isTraining, location, receivedAt));
+            Enumerable.Range(0,numberOfReports).ToList().ForEach(x => AddReport(status, projectHealthRisk, dataCollector, isTraining, location, receivedAt, village));
             return this;
         }
     }

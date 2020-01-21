@@ -157,8 +157,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 _loggerAdapter.WarnFormat("Alert {0} haven not been assessed since it was triggered {1}, sending email to head manager", alertId, alert.CreatedAt.ToString("O"));
 
                 var timeSinceTriggered = (DateTime.UtcNow - alert.CreatedAt).TotalHours;
-                var emailSubject = await GetEmailMessageContent("email.alertHaveNotBeenHandled.subject", alert.LanguageCode);
-                var emailBody = await GetEmailMessageContent("email.alertHaveNotBeenHandled.body", alert.LanguageCode);
+                var emailSubject = await GetEmailMessageContent(EmailContentKey.AlertHaveNotBeenHandled.Subject, alert.LanguageCode);
+                var emailBody = await GetEmailMessageContent(EmailContentKey.AlertHaveNotBeenHandled.Body, alert.LanguageCode);
                 
                 emailBody = emailBody
                     .Replace("{{healthRiskName}}", alert.HealthRiskName)

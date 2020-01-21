@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -25,16 +27,19 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private readonly ILoggerAdapter _loggerAdapterMock;
 
         private readonly AlertServiceTestData _testData;
+        private readonly IQueuePublisherService _queuePublisherServiceMock;
+        private readonly IStringsResourcesService _stringsResourcesServiceMock;
+        private readonly INyssReportApiConfig _nyssReportApiConfigMock;
 
         public AlertServiceTests()
         {
             var reportLabelingServiceMock = Substitute.For<IReportLabelingService>();
-            var emailToSmsPublisherService = Substitute.For<IQueuePublisherService>();
-            var config = Substitute.For<INyssReportApiConfig>();
+            _queuePublisherServiceMock = Substitute.For<IQueuePublisherService>();
+            _nyssReportApiConfigMock = Substitute.For<INyssReportApiConfig>();
             _nyssContextMock = Substitute.For<INyssContext>();
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            var stringsResourcesService = Substitute.For<IStringsResourcesService>();
-            _alertService = new AlertService(_nyssContextMock, reportLabelingServiceMock, _loggerAdapterMock, emailToSmsPublisherService, config, stringsResourcesService);
+            _stringsResourcesServiceMock = Substitute.For<IStringsResourcesService>();
+            _alertService = new AlertService(_nyssContextMock, reportLabelingServiceMock, _loggerAdapterMock, _queuePublisherServiceMock, _nyssReportApiConfigMock, _stringsResourcesServiceMock);
 
             _testData = new AlertServiceTestData(_nyssContextMock);
         }
@@ -194,7 +199,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             result.Status.ShouldBe(AlertStatus.Pending);
             existingAlerts.ShouldNotContain(result);
         }
-
+        
         [Fact]
         public async Task ReportAdded_WhenAddingToGroupWithNoAlertAndMeetingThreshold_ShouldAddAlertReportEntities()
         {
@@ -486,6 +491,97 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
             //assert
             acceptedMovedReport.Status.ShouldBe(ReportStatus.Accepted);;
+        }
+
+        [Fact]
+        public async Task CheckAlert_WhenAlertIsStillPending_ShouldSendAlert()
+        {
+            // arrange
+            _testData.SimpleCasesData.GenerateData();
+
+            // act
+            await _alertService.CheckIfAlertHaveBeenHandled(1);
+
+            // assert
+            await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
+        }
+
+        [Fact]
+        public async Task CheckAlert_WhenAlertNotFound_ShouldDoNothing()
+        {
+            // arrange
+            _testData.SimpleCasesData.GenerateData();
+
+            // act
+            await _alertService.CheckIfAlertHaveBeenHandled(1);
+
+            // assert
+            await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
+        }
+
+        [Fact]
+        public async Task SendNotificationsForNewAlert_ShouldSendSmsToAllSupervisorsAndQueueCheckBack()
+        {
+            // arrange
+            _testData.WhenAnAlertAreTriggered.GenerateData();
+            var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
+            var stringResourceResult = new Dictionary<string, string> { { SmsContentKey.Alerts.AlertTriggered, "Alert triggered!" }};
+            _stringsResourcesServiceMock.GetSmsContentResources(Arg.Any<string>())
+                .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
+            _nyssReportApiConfigMock.BaseUrl = "http://example.com";
+
+            // act
+            await _alertService.SendNotificationsForNewAlert(alert, new GatewaySetting{ApiKey = "123"});
+
+            // assert
+            await _queuePublisherServiceMock.Received(1).QueueAlertCheck(alert.Id);
+        }
+
+        [Fact]
+        public async Task CheckAlert_WhenAlertIsStillPending_ShouldNotifyHeadManager()
+        {
+            // arrange
+            _testData.WhenAnAlertAreTriggered.GenerateData();
+            var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
+            var stringResourceResult = new Dictionary<string, string> {
+                { EmailContentKey.AlertHaveNotBeenHandled.Subject, "Alert escalated subject" },
+                { EmailContentKey.AlertHaveNotBeenHandled.Body, "Alert escalated body" }
+            };
+            _stringsResourcesServiceMock.GetEmailContentResources(Arg.Any<string>())
+                .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
+            _nyssReportApiConfigMock.BaseUrl = "http://example.com";
+
+            // act
+            await _alertService.CheckIfAlertHaveBeenHandled(alert.Id);
+
+            // assert
+            await _queuePublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
+        }
+
+        [Theory]
+        [InlineData(AlertStatus.Closed)]
+        [InlineData(AlertStatus.Dismissed)]
+        [InlineData(AlertStatus.Escalated)]
+        [InlineData(AlertStatus.Rejected)]
+        public async Task CheckAlert_WhenAlertIsNoLongerPending_ShouldNotNotifyHeadManager(AlertStatus alertStatus)
+        {
+            // arrange
+            _testData.WhenAnAlertAreTriggered.GenerateData();
+            var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
+            alert.Status = alertStatus;
+            var stringResourceResult = new Dictionary<string, string> {
+                { EmailContentKey.AlertHaveNotBeenHandled.Subject, "Alert escalated subject" },
+                { EmailContentKey.AlertHaveNotBeenHandled.Body, "Alert escalated body" }
+            };
+            _stringsResourcesServiceMock.GetEmailContentResources(Arg.Any<string>())
+                .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
+            _nyssReportApiConfigMock.BaseUrl = "http://example.com";
+
+            // act
+            await _alertService.CheckIfAlertHaveBeenHandled(alert.Id);
+
+            // assert
+            await _queuePublisherServiceMock.DidNotReceive().SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
         }
     }
 }
