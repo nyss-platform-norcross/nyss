@@ -24,13 +24,10 @@ const DataCollectorsListPageComponent = (props) => {
     <Fragment>
       {!props.isClosed &&
         <TableActions>
-          {/* <Button onClick={() => props.goToCreation(props.projectId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-            {strings(stringKeys.dataCollector.addNew)}
-          </Button> */}
-          <TableActionsButton onClick={() => props.goToCreation(props.projectId)} startIcon={<AddIcon />}>
+          <TableActionsButton className onClick={() => props.goToCreation(props.projectId)} startIcon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton className={styles.actions} onClick={() => props.exportDataCollectors(props.projectId)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportDataCollectors(props.projectId)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.export)}
           </TableActionsButton>
         </TableActions>
