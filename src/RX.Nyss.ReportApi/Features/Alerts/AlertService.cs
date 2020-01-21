@@ -257,7 +257,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 })
                 .FirstOrDefaultAsync();
 
-            var message = await GetNotificationMessageContent(SmsContentKey.Alerts.AlertEscalated, alertData.LanguageCode.ToLower());
+            var message = await GetNotificationMessageContent(SmsContentKey.Alerts.AlertTriggered, alertData.LanguageCode.ToLower());
 
             var baseUrl = new Uri(_config.BaseUrl);
             var relativeUrl = $"projects/{alertData.ProjectId}/alerts/{alert.Id}/assess";
