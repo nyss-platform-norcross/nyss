@@ -156,7 +156,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             {
                 _loggerAdapter.WarnFormat("Alert {0} haven not been assessed since it was triggered {1}, sending email to head manager", alertId, alert.CreatedAt.ToString("O"));
 
-                var timeSinceTriggered = (alert.CreatedAt - DateTime.UtcNow).TotalHours;
+                var timeSinceTriggered = (DateTime.UtcNow - alert.CreatedAt).TotalHours;
                 var emailSubject = await GetEmailMessageContent("email.alertHaveNotBeenHandled.subject", alert.LanguageCode);
                 var emailBody = await GetEmailMessageContent("email.alertHaveNotBeenHandled.body", alert.LanguageCode);
                 
@@ -164,7 +164,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     .Replace("{{healthRiskName}}", alert.HealthRiskName)
                     .Replace("{{lastReportVillage}}", alert.VillageOfLastReport)
                     .Replace("{{supervisors}}", string.Join(", ", alert.Supervisors.Distinct()))
-                    .Replace("{{timeSinceAlertWasTriggeredInHours}}", timeSinceTriggered.ToString("N"));
+                    .Replace("{{timeSinceAlertWasTriggeredInHours}}", timeSinceTriggered.ToString("0.##"));
 
                 await _queuePublisherService.SendEmail((alert.HeadManager.Name, alert.HeadManager.EmailAddress), emailSubject, emailBody);
             }
@@ -317,12 +317,12 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         private async Task<string> GetSmsMessageContent(string key, string languageCode)
         {
-            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "EN");
+            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "en");
             smsContents.Value.TryGetValue(key, out var message);
 
             if (message == null)
             {
-                _loggerAdapter.Warn($"No sms content resource found for key '{key}'");
+                throw new ArgumentException($"No sms content resource found for key '{key}' (languageCode: {languageCode})");
             }
 
             if (message?.Length > 160)
@@ -334,12 +334,11 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         }
         private async Task<string> GetEmailMessageContent(string key, string languageCode)
         {
-            var contents = await _stringsResourcesService.GetEmailContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "EN");
-            contents.Value.TryGetValue(key, out var message);
+            var contents = await _stringsResourcesService.GetEmailContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "en");
 
-            if (message == null)
+            if (!contents.Value.TryGetValue(key, out var message))
             {
-                _loggerAdapter.Warn($"No email content resource found for key '{key}'");
+                throw new ArgumentException($"No email content resource found for key '{key}' (languageCode: {languageCode})");
             }
 
             return message;
