@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
@@ -20,6 +21,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task<Alert> ReportAdded(Report report);
         Task ReportDismissed(int reportId);
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
+
     }
 
     public class AlertService: IAlertService
@@ -27,17 +29,17 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         private readonly INyssContext _nyssContext;
         private readonly IReportLabelingService _reportLabelingService;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
+        private readonly IQueuePublisherService _queuePublisherService;
         private readonly INyssReportApiConfig _config;
         private readonly IStringsResourcesService _stringsResourcesService;
 
-        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IEmailToSmsPublisherService emailToSmsPublisherService,
+        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IQueuePublisherService queuePublisherService,
             INyssReportApiConfig config, IStringsResourcesService stringsResourcesService)
         {
             _nyssContext = nyssContext;
             _reportLabelingService = reportLabelingService;
             _loggerAdapter = loggerAdapter;
-            _emailToSmsPublisherService = emailToSmsPublisherService;
+            _queuePublisherService = queuePublisherService;
             _config = config;
             _stringsResourcesService = stringsResourcesService;
         }
@@ -122,7 +124,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var message = await CreateNotificationMessageForNewAlert(alert);
 
-            await _emailToSmsPublisherService.SendMessages(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
+            await _queuePublisherService.SendSMSesViaEagle(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
+            await _queuePublisherService.QueueAlertCheck(alert.Id);
         }
 
         private async Task<Alert> HandleAlerts(Report report)

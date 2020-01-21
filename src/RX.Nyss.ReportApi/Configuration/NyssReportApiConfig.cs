@@ -5,11 +5,15 @@ namespace RX.Nyss.ReportApi.Configuration
     public interface INyssReportApiConfig : IConfig
     {
         string BaseUrl { get; set; }
+
+        int CheckAlertTimeoutInMinutes { get; set; }
     }
 
     public class ConfigSingleton : INyssReportApiConfig
     {
         public string BaseUrl { get; set; }
+
+        public int CheckAlertTimeoutInMinutes { get; set; }
 
         public LoggingOptions Logging { get; set; }
 

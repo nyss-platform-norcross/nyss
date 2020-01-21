@@ -1,0 +1,74 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Azure.ServiceBus;
+using Newtonsoft.Json;
+using RX.Nyss.ReportApi.Configuration;
+
+namespace RX.Nyss.ReportApi.Services
+{
+    public interface IQueuePublisherService
+    {
+        Task SendSMSesViaEagle(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
+
+        Task QueueAlertCheck(int alertId);
+    }
+
+    public class QueuePublisherService : IQueuePublisherService
+    {
+        private readonly IQueueClient _sendEmailQueueClient;
+        private readonly QueueClient _checkAlertQueueClient;
+        private readonly INyssReportApiConfig _config;
+
+        public QueuePublisherService(INyssReportApiConfig config)
+        {
+            _config = config;
+            _sendEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
+            _checkAlertQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.CheckAlertQueue);
+        }
+
+        public async Task SendSMSesViaEagle(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body) =>
+            await Task.WhenAll(recipientPhoneNumbers.Select(recipientPhoneNumber =>
+            {
+                var sendEmail = new SendEmailMessage
+                {
+                    To = new Contact { Email = smsEagleEmailAddress, Name = smsEagleName }, Body = body, Subject = recipientPhoneNumber, SendAsTextOnly = true
+                };
+
+                var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail))) { Label = "RX.Nyss.ReportApi", };
+
+                return _sendEmailQueueClient.SendAsync(message);
+            }));
+
+        public async Task QueueAlertCheck(int alertId)
+        {
+            var message = new Message(Encoding.UTF8.GetBytes(alertId.ToString()))
+            {
+                Label = "RX.Nyss.ReportApi",
+                ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddMinutes(_config.CheckAlertTimeoutInMinutes)
+            };
+
+            await _checkAlertQueueClient.SendAsync(message);
+        }
+    }
+
+    public class SendEmailMessage
+    {
+        public Contact To { get; set; }
+
+        public string Subject { get; set; }
+
+        public string Body { get; set; }
+
+        public bool SendAsTextOnly { get; set; }
+    }
+
+    public class Contact
+    {
+        public string Name { get; set; }
+
+        public string Email { get; set; }
+    }
+}

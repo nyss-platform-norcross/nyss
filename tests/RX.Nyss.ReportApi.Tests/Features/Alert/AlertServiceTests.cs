@@ -29,7 +29,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public AlertServiceTests()
         {
             var reportLabelingServiceMock = Substitute.For<IReportLabelingService>();
-            var emailToSmsPublisherService = Substitute.For<IEmailToSmsPublisherService>();
+            var emailToSmsPublisherService = Substitute.For<IQueuePublisherService>();
             var config = Substitute.For<INyssReportApiConfig>();
             _nyssContextMock = Substitute.For<INyssContext>();
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
