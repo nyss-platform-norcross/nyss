@@ -13,6 +13,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { Grid } from '@material-ui/core';
 import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { accessMap } from '../../authentication/accessMap';
 
 const DataCollectorsListPageComponent = (props) => {
   useMount(() => {
@@ -29,7 +30,7 @@ const DataCollectorsListPageComponent = (props) => {
           <TableActionsButton onClick={() => props.goToCreation(props.projectId)} startIcon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton className={styles.actions} onClick={() => props.exportDataCollectors(props.projectId)}>
+          <TableActionsButton className={styles.actions} onClick={() => props.exportDataCollectors(props.projectId)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.export)}
           </TableActionsButton>
         </TableActions>

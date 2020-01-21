@@ -37,14 +37,15 @@ namespace RX.Nyss.Web.Features.DataCollectors
         public async Task<byte[]> Export(int projectId)
         {
             var dataCollectors = await _nyssContext.DataCollectors
+                .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new ExportDataCollectorsResponseDto
                 {
+                    DataCollectorType = dc.DataCollectorType,
                     Name = dc.Name,
                     DisplayName = dc.DisplayName,
-                    DataCollectorType = dc.DataCollectorType,
-                    Sex = dc.Sex,
                     PhoneNumber = dc.PhoneNumber,
                     AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
+                    Sex = dc.Sex,
                     BirthGroupDecade = dc.BirthGroupDecade,
                     Region = dc.Village.District.Region.Name,
                     District = dc.Village.District.Name,
@@ -70,23 +71,42 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var columnLabels = new List<string>()
             {
+                GetStringResource(stringResources,"dataCollectors.export.dataCollectorType"),
                 GetStringResource(stringResources,"dataCollectors.export.name"),
                 GetStringResource(stringResources,"dataCollectors.export.displayName"),
-                GetStringResource(stringResources,"dataCollectors.export.dataCollectorType"),
                 GetStringResource(stringResources,"dataCollectors.export.phoneNumber"),
                 GetStringResource(stringResources,"dataCollectors.export.additionalPhoneNumber"),
+                GetStringResource(stringResources,"dataCollectors.export.sex"),
+                GetStringResource(stringResources,"dataCollectors.export.birthGroupDecade"),
                 GetStringResource(stringResources,"dataCollectors.export.region"),
                 GetStringResource(stringResources,"dataCollectors.export.district"),
                 GetStringResource(stringResources,"dataCollectors.export.village"),
                 GetStringResource(stringResources,"dataCollectors.export.zone"),
-                GetStringResource(stringResources,"dataCollectors.export.sex"),
-                GetStringResource(stringResources,"dataCollectors.export.birthGroupDecade"),
                 GetStringResource(stringResources,"dataCollectors.export.latitude"),
                 GetStringResource(stringResources,"dataCollectors.export.longitude"),
                 GetStringResource(stringResources,"dataCollectors.export.supervisor")
             };
 
-            return _excelExportService.ToCsv(dataCollectors, columnLabels);
+            var dataCollectorsData = dataCollectors
+                .Select(dc => new
+                {
+                    dc.DataCollectorType,
+                    dc.Name,
+                    dc.DisplayName,
+                    dc.PhoneNumber,
+                    dc.AdditionalPhoneNumber,
+                    dc.Sex,
+                    dc.BirthGroupDecade,
+                    dc.Region,
+                    dc.District,
+                    dc.Village,
+                    dc.Zone,
+                    dc.Latitude,
+                    dc.Longitude,
+                    dc.Supervisor
+                });
+
+            return _excelExportService.ToCsv(dataCollectorsData, columnLabels);
         }
 
         private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
