@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Data;
+using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
@@ -36,7 +37,16 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<byte[]> Export(int projectId)
         {
+            var userName = _authorizationService.GetCurrentUserName();
+            var userApplicationLanguage = _nyssContext.Users
+                .Where(u => u.EmailAddress == userName)
+                .Select(u => u.ApplicationLanguage.LanguageCode)
+                .Single();
+
+            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
+
             var dataCollectors = await _nyssContext.DataCollectors
+                .FilterByProject(projectId)
                 .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new ExportDataCollectorsResponseDto
                 {
@@ -53,22 +63,15 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Zone = dc.Zone.Name,
                     Latitude = dc.Location.Y,
                     Longitude = dc.Location.X,
-                    Supervisor = dc.Supervisor.Name
+                    Supervisor = dc.Supervisor.Name,
+                    TrainingStatus = dc.IsInTrainingMode ? GetStringResource(stringResources, "dataCollectors.export.isInTraining") : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining")
                 }).ToListAsync();
 
-            return await GetExcelData(dataCollectors);
+            return GetExcelData(dataCollectors, stringResources);
         }
 
-        public async Task<byte[]> GetExcelData(List<ExportDataCollectorsResponseDto> dataCollectors)
+        public byte[] GetExcelData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
         {
-            var userName = _authorizationService.GetCurrentUserName();
-            var userApplicationLanguage = _nyssContext.Users
-                .Where(u => u.EmailAddress == userName)
-                .Select(u => u.ApplicationLanguage.LanguageCode)
-                .Single();
-
-            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
-
             var columnLabels = new List<string>()
             {
                 GetStringResource(stringResources,"dataCollectors.export.dataCollectorType"),
@@ -84,7 +87,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 GetStringResource(stringResources,"dataCollectors.export.zone"),
                 GetStringResource(stringResources,"dataCollectors.export.latitude"),
                 GetStringResource(stringResources,"dataCollectors.export.longitude"),
-                GetStringResource(stringResources,"dataCollectors.export.supervisor")
+                GetStringResource(stringResources,"dataCollectors.export.supervisor"),
+                GetStringResource(stringResources,"dataCollectors.export.trainingStatus")
             };
 
             var dataCollectorsData = dataCollectors
@@ -103,7 +107,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     dc.Zone,
                     dc.Latitude,
                     dc.Longitude,
-                    dc.Supervisor
+                    dc.Supervisor,
+                    dc.TrainingStatus
                 });
 
             return _excelExportService.ToCsv(dataCollectorsData, columnLabels);
