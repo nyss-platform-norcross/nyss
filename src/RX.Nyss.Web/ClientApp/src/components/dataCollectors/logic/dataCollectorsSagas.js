@@ -207,7 +207,6 @@ function* getExportData({ projectId }) {
     yield downloadFile({
       url: `/api/dataCollector/export?projectId=${projectId}`,
       fileName: `dataCollectors.csv`
-      //data: { ...filters, ...sorting }
     });
 
     yield put(actions.exportToExcel.success());
