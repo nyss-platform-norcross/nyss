@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
@@ -11,6 +12,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Services;
 using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
@@ -20,6 +22,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task<Alert> ReportAdded(Report report);
         Task ReportDismissed(int reportId);
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
+        Task CheckIfAlertHasBeenHandled(int alertId);
     }
 
     public class AlertService: IAlertService
@@ -27,19 +30,21 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         private readonly INyssContext _nyssContext;
         private readonly IReportLabelingService _reportLabelingService;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
+        private readonly IQueuePublisherService _queuePublisherService;
         private readonly INyssReportApiConfig _config;
         private readonly IStringsResourcesService _stringsResourcesService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IEmailToSmsPublisherService emailToSmsPublisherService,
-            INyssReportApiConfig config, IStringsResourcesService stringsResourcesService)
+        public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IQueuePublisherService queuePublisherService,
+            INyssReportApiConfig config, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _reportLabelingService = reportLabelingService;
             _loggerAdapter = loggerAdapter;
-            _emailToSmsPublisherService = emailToSmsPublisherService;
+            _queuePublisherService = queuePublisherService;
             _config = config;
             _stringsResourcesService = stringsResourcesService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<Alert> ReportAdded(Report report)
@@ -122,7 +127,49 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var message = await CreateNotificationMessageForNewAlert(alert);
 
-            await _emailToSmsPublisherService.SendMessages(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
+            await _queuePublisherService.SendSMSesViaEagle(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
+            await _queuePublisherService.QueueAlertCheck(alert.Id);
+        }
+
+        public async Task CheckIfAlertHasBeenHandled(int alertId)
+        {
+            var alert = await _nyssContext.Alerts.Where(a => a.Id == alertId)
+                .Select(a =>
+                new {
+                    a.Status,
+                    a.CreatedAt,
+                    a.ProjectHealthRisk.Project.NationalSociety.HeadManager,
+                    Supervisors = a.AlertReports.Select(x => x.Report.DataCollector.Supervisor.Name),
+                    HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents.First().Name,
+                    VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
+                        .Select(ar => ar.Report.Village.Name)
+                        .FirstOrDefault(),
+                    LanguageCode =a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode.ToLower()
+                })
+                .FirstOrDefaultAsync();
+
+            if (alert == null)
+            {
+                _loggerAdapter.WarnFormat("Alert {0} not found", alertId);
+                return;
+            }
+
+            if (alert.Status == AlertStatus.Pending)
+            {
+                _loggerAdapter.WarnFormat("Alert {0} has not been assessed since it was triggered {1}, sending email to head manager", alertId, alert.CreatedAt.ToString("O"));
+
+                var timeSinceTriggered = (_dateTimeProvider.UtcNow - alert.CreatedAt).TotalHours;
+                var emailSubject = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Subject, alert.LanguageCode);
+                var emailBody = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Body, alert.LanguageCode);
+                
+                emailBody = emailBody
+                    .Replace("{{healthRiskName}}", alert.HealthRiskName)
+                    .Replace("{{lastReportVillage}}", alert.VillageOfLastReport)
+                    .Replace("{{supervisors}}", string.Join(", ", alert.Supervisors.Distinct()))
+                    .Replace("{{timeSinceAlertWasTriggeredInHours}}", timeSinceTriggered.ToString("0.##"));
+
+                await _queuePublisherService.SendEmail((alert.HeadManager.Name, alert.HeadManager.EmailAddress), emailSubject, emailBody);
+            }
         }
 
         private async Task<Alert> HandleAlerts(Report report)
@@ -257,7 +304,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 })
                 .FirstOrDefaultAsync();
 
-            var message = await GetNotificationMessageContent(SmsContentKey.Alerts.AlertTriggered, alertData.LanguageCode.ToLower());
+            var message = await GetSmsMessageContent(SmsContentKey.Alerts.AlertTriggered, alertData.LanguageCode.ToLower());
 
             var baseUrl = new Uri(_config.BaseUrl);
             var relativeUrl = $"projects/{alertData.ProjectId}/alerts/{alert.Id}/assess";
@@ -270,14 +317,30 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return message;
         }
 
-        private async Task<string> GetNotificationMessageContent(string key, string languageCode)
+        private async Task<string> GetSmsMessageContent(string key, string languageCode)
         {
-            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "EN");
+            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "en");
             smsContents.Value.TryGetValue(key, out var message);
 
             if (message == null)
             {
-                _loggerAdapter.Warn($"No sms content resource found for key '{key}'");
+                throw new ArgumentException($"No sms content resource found for key '{key}' (languageCode: {languageCode})");
+            }
+
+            if (message?.Length > 160)
+            {
+                _loggerAdapter.Warn($"SMS content with key '{key}' ({languageCode}) is longer than 160 characters.");
+            }
+
+            return message;
+        }
+        private async Task<string> GetEmailMessageContent(string key, string languageCode)
+        {
+            var contents = await _stringsResourcesService.GetEmailContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "en");
+
+            if (!contents.Value.TryGetValue(key, out var message))
+            {
+                throw new ArgumentException($"No email content resource found for key '{key}' (languageCode: {languageCode})");
             }
 
             return message;

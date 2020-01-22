@@ -31,7 +31,10 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
         private readonly LabeledReportGroupGenerator _reportGroupGenerator = new LabeledReportGroupGenerator();
         private readonly AlertGenerator _alertGenerator = new AlertGenerator();
-        private readonly DataCollector _dataCollector = new DataCollector { DataCollectorType = DataCollectorType.Human };
+        private readonly DataCollector _dataCollector = new DataCollector {
+            DataCollectorType = DataCollectorType.Human,
+            Supervisor = new SupervisorUser{Name = "TestSupervisor", PhoneNumber = "+12345678"}
+        };
         private readonly TestCaseDataProvider _testCaseDataProvider;
 
         public AlertServiceTestData(INyssContext nyssContextMock)
@@ -119,7 +122,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                 return data;
             });
-
+        
         public TestCaseData WhenDismissingReportInAlertWithCountThreshold1 =>
             _testCaseDataProvider.GetOrCreate(nameof(WhenDismissingReportInAlertWithCountThreshold1),() =>
             {
@@ -256,5 +259,37 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 return data;
             });
 
+       public TestCaseData WhenAnAlertAreTriggered =>
+           _testCaseDataProvider.GetOrCreate(nameof(WhenAddingToGroupWithAnExistingAlert), () =>
+           {
+               var data = new EntityData();
+
+               (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
+               var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
+               var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
+               projectHealthRiskWithCountThresholdOf3.Project = new Project
+               {
+                   NationalSociety = new NationalSociety
+                   {
+                       ContentLanguage = contentLanguage,
+                       HeadManager = new ManagerUser { EmailAddress = "test@example.com", Name = "HeadManager Name"}
+                   }
+               };
+
+               projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent>
+               {
+                   new HealthRiskLanguageContent{ ContentLanguage = contentLanguage}
+               };
+
+               var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
+                   .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village{ Name = "VillageName" })
+                   .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+               data.Reports = reportGroup.Reports;
+
+               var reportsToCreateAlertFor = data.Reports.Where(r => r.Status == ReportStatus.Pending).ToList();
+               (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(reportsToCreateAlertFor);
+
+               return data;
+           });
     }
 }

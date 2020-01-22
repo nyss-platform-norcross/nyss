@@ -13,10 +13,14 @@ namespace RX.Nyss.TestData.TestDataGeneration
         {
             var projectHealthRisk = reports.First().ProjectHealthRisk;
 
-            var newAlert = new RX.Nyss.Data.Models.Alert { Id = _numerator.Next, Status = AlertStatus.Pending, ProjectHealthRisk = projectHealthRisk };
+            var newAlert = new RX.Nyss.Data.Models.Alert { Id = _numerator.Next, Status = AlertStatus.Pending, ProjectHealthRisk = projectHealthRisk, AlertReports = new List<AlertReport>()};
             var alertReports = reports.Select(r => new AlertReport { Report = r, ReportId = r.Id, Alert = newAlert, AlertId = newAlert.Id }).ToList();
-            alertReports.ForEach(ar => ar.Report.ReportAlerts.Add(ar));
-
+            alertReports.ForEach(ar =>
+            {
+                newAlert.AlertReports.Add(ar);
+                ar.Report.ReportAlerts.Add(ar);
+            });
+            
             return (new List<RX.Nyss.Data.Models.Alert> { newAlert }, alertReports);
         }
     }

@@ -23,16 +23,12 @@ export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, cl
         {titlteText}
       </DialogTitle>
       <DialogContent className={styles.content}>
-        <Typography variant="body1">
-          {contentText}
-        </Typography>
-        {children}
-
         {contentText &&
           <Typography variant="body1">
             {contentText}
           </Typography>
         }
+        {children}
         <FormActions>
           <Button onClick={close}>
             {strings(stringKeys.form.cancel)}

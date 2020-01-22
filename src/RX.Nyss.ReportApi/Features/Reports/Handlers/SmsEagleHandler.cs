@@ -41,7 +41,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly IEmailToSmsPublisherService _emailToSmsPublisherService;
+        private readonly IQueuePublisherService _queuePublisherService;
         private readonly IAlertService _alertService;
         private readonly IStringsResourcesService _stringsResourcesService;
 
@@ -51,13 +51,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,
             IStringsResourcesService stringsResourcesService,
-            IEmailToSmsPublisherService emailToSmsPublisherService, IAlertService alertService)
+            IQueuePublisherService queuePublisherService, IAlertService alertService)
         {
             _reportMessageService = reportMessageService;
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
-            _emailToSmsPublisherService = emailToSmsPublisherService;
+            _queuePublisherService = queuePublisherService;
             _alertService = alertService;
             _stringsResourcesService = stringsResourcesService;
         }
@@ -155,7 +155,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
                     {
                         var recipients = new List<string>{ sender };
-                        await _emailToSmsPublisherService.SendMessages(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
+                        await _queuePublisherService.SendSMSesViaEagle(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
                     }
 
                     if (triggeredAlert != null)
@@ -434,7 +434,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 }
 
                 var senderList = new List<string>(new string[] { errorReport.Sender });
-                await _emailToSmsPublisherService.SendMessages(gatewaySetting.EmailAddress, gatewaySetting.Name, senderList, feedbackMessage);
+                await _queuePublisherService.SendSMSesViaEagle(gatewaySetting.EmailAddress, gatewaySetting.Name, senderList, feedbackMessage);
             }
         }
 
