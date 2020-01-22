@@ -22,7 +22,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
 
   return (
     <Grid container spacing={3} data-printable={true}>
-      <Grid item md={4} xs={12} className={styles.numberBox}>
+      <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.numbers.totalReportCountTitle)} />
           <CardContent>
@@ -32,7 +32,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
         </Card>
       </Grid>
 
-      <Grid item md={4} xs={12} className={styles.numberBox}>
+      <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.dataCollectors)} />
           <CardContent>
@@ -43,26 +43,26 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
       </Grid>
 
       {reportsType === "dataCollectionPoint" && (
-        <Grid item md={4} xs={12} className={styles.numberBox}>
+        <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
           <Card className={styles.card}>
             <CardHeader title={strings(stringKeys.project.dashboard.dataCollectionPoints)} />
             <CardContent>
               {renderNumber(strings(stringKeys.project.dashboard.referredToHospitalCount), projectSummary.dataCollectionPointSummary.referredToHospitalCount)}
               {renderNumber(strings(stringKeys.project.dashboard.fromOtherVillagesCount), projectSummary.dataCollectionPointSummary.fromOtherVillagesCount)}
               {renderNumber(strings(stringKeys.project.dashboard.deathCount), projectSummary.dataCollectionPointSummary.deathCount)}
-          </CardContent>
-        </Card>
-      </Grid>
-      }
+            </CardContent>
+          </Card>
+        </Grid>
+      )}
 
-      {reportsType !== "dataCollectionPoint" &&
-      <Grid item sm={3} xs={12} className={styles.numberBox}>
-        <Card className={styles.card}>
-          <CardHeader title={strings(stringKeys.project.dashboard.alertsSummary)} />
-          <CardContent>
-            {renderNumber(strings(stringKeys.project.dashboard.numbers.dismissedAlerts), projectSummary.alertsSummary.dismissed)}
-            {renderNumber(strings(stringKeys.project.dashboard.numbers.escalatedAlerts), projectSummary.alertsSummary.escalated)}
-            {renderNumber(strings(stringKeys.project.dashboard.numbers.closedAlerts), projectSummary.alertsSummary.closed)}
+      {reportsType !== "dataCollectionPoint" && (
+        <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
+          <Card className={styles.card}>
+            <CardHeader title={strings(stringKeys.project.dashboard.alertsSummary)} />
+            <CardContent>
+              {renderNumber(strings(stringKeys.project.dashboard.numbers.dismissedAlerts), projectSummary.alertsSummary.dismissed)}
+              {renderNumber(strings(stringKeys.project.dashboard.numbers.escalatedAlerts), projectSummary.alertsSummary.escalated)}
+              {renderNumber(strings(stringKeys.project.dashboard.numbers.closedAlerts), projectSummary.alertsSummary.closed)}
             </CardContent>
           </Card>
         </Grid>

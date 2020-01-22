@@ -22,7 +22,7 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
 
   return (
     <Grid container spacing={3}>
-      <Grid item sm={3} xs={12} className={styles.numberBox}>
+      <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.nationalSociety.dashboard.numbers.totalReportCountTitle)} />
           <CardContent>
@@ -31,7 +31,7 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
         </Card>
       </Grid>
 
-      <Grid item sm={3} xs={12} className={styles.numberBox}>
+      <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.nationalSociety.dashboard.dataCollectors)} />
           <CardContent>
@@ -41,18 +41,18 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
         </Card>
       </Grid>
 
-      {reportsType === "dataCollectionPoint" &&
-       <Grid item sm={3} xs={12} className={styles.numberBox}>
-        <Card className={styles.card}>
-          <CardHeader title={strings(stringKeys.nationalSociety.dashboard.dataCollectionPoints)} />
-          <CardContent>
-            {renderNumber(strings(stringKeys.nationalSociety.dashboard.referredToHospitalCount), summary.dataCollectionPointSummary.referredToHospitalCount)}
-            {renderNumber(strings(stringKeys.nationalSociety.dashboard.fromOtherVillagesCount), summary.dataCollectionPointSummary.fromOtherVillagesCount)}
-            {renderNumber(strings(stringKeys.nationalSociety.dashboard.deathCount), summary.dataCollectionPointSummary.deathCount)}
-          </CardContent>
-        </Card>
-      </Grid>
-      }
+      {reportsType === "dataCollectionPoint" && (
+        <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
+          <Card className={styles.card}>
+            <CardHeader title={strings(stringKeys.nationalSociety.dashboard.dataCollectionPoints)} />
+            <CardContent>
+              {renderNumber(strings(stringKeys.nationalSociety.dashboard.referredToHospitalCount), summary.dataCollectionPointSummary.referredToHospitalCount)}
+              {renderNumber(strings(stringKeys.nationalSociety.dashboard.fromOtherVillagesCount), summary.dataCollectionPointSummary.fromOtherVillagesCount)}
+              {renderNumber(strings(stringKeys.nationalSociety.dashboard.deathCount), summary.dataCollectionPointSummary.deathCount)}
+            </CardContent>
+          </Card>
+        </Grid>
+      )}
     </Grid>
   );
 }
