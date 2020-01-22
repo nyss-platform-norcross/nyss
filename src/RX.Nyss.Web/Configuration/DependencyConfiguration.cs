@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -81,10 +82,15 @@ namespace RX.Nyss.Web.Configuration
 
         private static void RegisterAuth(IServiceCollection serviceCollection, ConfigSingleton.AuthenticationOptions authenticationOptions)
         {
-            serviceCollection.AddIdentity<IdentityUser, IdentityRole>()
+            serviceCollection
+                .AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            serviceCollection
+                .AddDataProtection()
+                .PersistKeysToDbContext<ApplicationDbContext>();
+                
             // ToDo: The expiration should be this long only for verification, but shorter for password reset.
             serviceCollection.Configure<DataProtectionTokenProviderOptions>(o => o.TokenLifespan = TimeSpan.FromDays(10));
 
