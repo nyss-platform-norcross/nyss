@@ -14,12 +14,5 @@ namespace RX.Nyss.Web.Services.ReportsDashboard.Dto
 
             public IEnumerable<PeriodDto> Periods { get; set; }
         }
-
-        public class PeriodDto
-        {
-            public string Period { get; set; }
-
-            public int Count { get; set; }
-        }
     }
 }

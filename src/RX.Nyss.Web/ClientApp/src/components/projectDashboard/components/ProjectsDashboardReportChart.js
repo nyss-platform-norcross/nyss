@@ -28,44 +28,43 @@ const getOptions = (valuesLabel, series, categories) => ({
     allowDecimals: false
   },
   legend: {
-    enabled: false,
+    enabled: true,
     style: { fontWeight: "regular" }
   },
   credits: {
     enabled: false
   },
   plotOptions: {
-    series: {
-      groupPadding: 0,
-      pointPadding: 0,
-      borderWidth: 1
+    column: {
+      stacking: 'normal',
     }
   },
   tooltip: {
     headerFormat: '',
     pointFormat: '{point.name}: <b>{point.y}</b>'
   },
+  colors: ["#00a0dc", "#a175ca", "#47c79a", "#72d5fb", "#c37f8d", "#c3bb7f", "#e4d144", "#078e5e", "#ceb5ba", "#c2b5ce", "#e0c8af"],
   series
 });
 
 export const ProjectsDashboardReportChart = ({ data }) => {
   const resizeChart = element => { element && element.chart.reflow() };
 
-  const series = [
-    {
-      name: strings(stringKeys.project.dashboard.allReportsChart.periods, true),
-      data: data.map(d => ({ name: d.period, y: d.count })),
-      color: "#72d5fb"
-    }
-  ];
+  const moduleStrings = stringKeys.project.dashboard.reportsPerHealthRisk;
 
-  const categories = data.map(d => d.period);
+  const categories = data.allPeriods;
+  const healthRisks = data.healthRisks.length ? data.healthRisks : [{ name: "", periods: [] } ]
 
-  const chartData = getOptions(strings(stringKeys.project.dashboard.allReportsChart.numberOfReports, true), series, categories)
+  const series = healthRisks.map(healthRisk => ({
+    name: healthRisk.healthRiskName === "(rest)" ? strings(moduleStrings.rest, true) : healthRisk.healthRiskName,
+    data: data.allPeriods.map(period => healthRisk.periods.filter(p => p.period === period).map(p => p.count).find(_ => true) || 0),
+  }));
+
+  const chartData = getOptions(strings(stringKeys.project.dashboard.reportsPerHealthRisk.numberOfReports, true), series, categories)
 
   return (
     <Card data-printable={true}>
-      <CardHeader title={strings(stringKeys.project.dashboard.allReportsChart.title)} />
+      <CardHeader title={strings(stringKeys.project.dashboard.reportsPerHealthRisk.title)} />
       <CardContent>
         <HighchartsReact
           highcharts={Highcharts}

@@ -78,6 +78,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var dashboardDataDto = new ProjectDashboardResponseDto
             {
                 Summary = await _projectDashboardSummaryService.GetSummaryData(filters),
+                ReportsGroupedByHealthRiskAndDate = await _projectDashboardDataService.GetReportsGroupedByHealthRiskAndDate(projectId, filtersDto),
                 ReportsGroupedByDate = await _reportsDashboardByDateService.GetReportsGroupedByDate(filters, filtersDto.GroupingType),
                 ReportsGroupedByFeaturesAndDate = reportsByFeaturesAndDate,
                 ReportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType),

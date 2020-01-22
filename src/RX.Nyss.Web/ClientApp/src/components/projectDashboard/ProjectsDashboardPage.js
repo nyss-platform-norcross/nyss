@@ -65,7 +65,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
               />
             </Grid>
             <Grid item xs={12}>
-              <ProjectsDashboardReportChart data={props.reportsGroupedByDate} />
+              <ProjectsDashboardReportChart data={props.reportsGroupedByHealthRiskAndDate} />
             </Grid>
             <Grid item xs={12}>
               <ProjectsDashboardReportVillageChart data={props.reportsGroupedByVillageAndDate} />
@@ -107,7 +107,7 @@ const mapStateToProps = state => ({
   healthRisks: state.projectDashboard.filtersData.healthRisks,
   projectSummary: state.projectDashboard.projectSummary,
   filters: state.projectDashboard.filters,
-  reportsGroupedByDate: state.projectDashboard.reportsGroupedByDate,
+  reportsGroupedByHealthRiskAndDate: state.projectDashboard.reportsGroupedByHealthRiskAndDate,
   reportsGroupedByFeaturesAndDate: state.projectDashboard.reportsGroupedByFeaturesAndDate,
   reportsGroupedByVillageAndDate: state.projectDashboard.reportsGroupedByVillageAndDate,
   reportsGroupedByFeatures: state.projectDashboard.reportsGroupedByFeatures,

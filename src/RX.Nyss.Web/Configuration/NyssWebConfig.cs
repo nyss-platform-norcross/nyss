@@ -62,6 +62,7 @@ namespace RX.Nyss.Web.Configuration
         public class ViewOptions
         {
             public int NumberOfGroupedVillagesInProjectDashboard { get; set; }
+            public int NumberOfGroupedHealthRisksInDashboard { get; set; }
         }
     }
 }

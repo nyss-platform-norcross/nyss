@@ -47,7 +47,7 @@ function* getProjectDashboardData({ projectId, filters }) {
     yield put(actions.getDashboardData.success(
       filters,
       response.value.summary,
-      response.value.reportsGroupedByDate,
+      response.value.reportsGroupedByHealthRiskAndDate,
       response.value.reportsGroupedByFeaturesAndDate,
       response.value.reportsGroupedByVillageAndDate,
       response.value.reportsGroupedByFeatures,
