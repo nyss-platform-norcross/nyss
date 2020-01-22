@@ -10,9 +10,10 @@ import Layout from '../layout/Layout';
 import ReportsTable from './ReportsTable';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import { ReportFilters } from '../common/filters/ReportFilters';
 import { strings, stringKeys } from "../../strings";
+import Icon from "@material-ui/core/Icon";
+import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {
@@ -22,6 +23,9 @@ const ReportsListPageComponent = (props) => {
   if (!props.data || !props.filters || !props.sorting) {
     return null;
   }
+
+  const handleRefresh = () =>
+    props.getList(props.projectId, 1);
 
   const handleFiltersChange = (filters) =>
     props.getList(props.projectId, 1, filters, props.sorting);
@@ -40,9 +44,13 @@ const ReportsListPageComponent = (props) => {
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <TableActions>
-          <Button onClick={() => props.exportToExcel(props.projectId, props.filters, props.sorting)} variant="outlined" color="primary">
+          <TableActionsButton onClick={handleRefresh} isFetching={props.isListFetching}>
+            <Icon>refresh</Icon>
+          </TableActionsButton>
+
+          <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters, props.sorting)}>
             {strings(stringKeys.reports.list.exportToExcel)}
-          </Button>
+          </TableActionsButton>
         </TableActions>
       </Grid>
 
