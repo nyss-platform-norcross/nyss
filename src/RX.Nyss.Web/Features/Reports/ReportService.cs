@@ -410,6 +410,7 @@ namespace RX.Nyss.Web.Features.Reports
         {
             var report = await _nyssContext.Reports
                 .Where(r => !r.ReportAlerts.Any())
+                .Include(r => r.ProjectHealthRisk.Project)
                 .FirstOrDefaultAsync(r => r.Id == reportId);
 
             if (report.ProjectHealthRisk.Project.State != ProjectState.Open)
