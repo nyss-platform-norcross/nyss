@@ -65,7 +65,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Longitude = dc.Location.X,
                     Supervisor = dc.Supervisor.Name,
                     TrainingStatus = dc.IsInTrainingMode ? GetStringResource(stringResources, "dataCollectors.export.isInTraining") : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining")
-                }).ToListAsync();
+                })
+                .OrderBy(dc => dc.Name)
+                    .ThenBy(dc => dc.DisplayName)
+                .ToListAsync();
 
             return GetExcelData(dataCollectors, stringResources);
         }

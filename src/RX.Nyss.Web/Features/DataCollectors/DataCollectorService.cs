@@ -48,21 +48,19 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private readonly IGeolocationService _geolocationService;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IExcelExportService _excelExportService;
 
         public DataCollectorService(
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService,
             IGeolocationService geolocationService,
-            IExcelExportService excelExportService,
-            IDateTimeProvider dateTimeProvider, IAuthorizationService authorizationService)
+            IDateTimeProvider dateTimeProvider,
+            IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _nationalSocietyStructureService = nationalSocietyStructureService;
             _geolocationService = geolocationService;
             _dateTimeProvider = dateTimeProvider;
             _authorizationService = authorizationService;
-            _excelExportService = excelExportService;
         }
 
         public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId)
@@ -165,7 +163,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = await dataCollectorsQuery
                 .Where(dc => dc.DeletedAt == null)
                 .Where(dc => dc.Project.Id == projectId)
-                .OrderBy(dc => dc.Name)
                 .Select(dc => new DataCollectorResponseDto
                 {
                     Id = dc.Id,
@@ -179,6 +176,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Sex = dc.Sex,
                     IsInTrainingMode = dc.IsInTrainingMode
                 })
+                .OrderBy(dc => dc.Name)
+                    .ThenBy(dc => dc.DisplayName)
                 .ToListAsync();
 
             return Success((IEnumerable<DataCollectorResponseDto>)dataCollectors);
@@ -569,7 +568,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 StatusSixWeeksAgo = GetDataCollectorStatus(5, dc.ReportsGroupedByWeek),
                 StatusSevenWeeksAgo = GetDataCollectorStatus(6, dc.ReportsGroupedByWeek),
                 StatusEightWeeksAgo = GetDataCollectorStatus(7, dc.ReportsGroupedByWeek)
-            }).ToList();
+            })
+            .ToList();
 
             return Success(dataCollectorPerformances);
         }
