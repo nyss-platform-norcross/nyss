@@ -195,6 +195,7 @@ namespace RX.Nyss.Web.Features.Reports
         public async Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto)
         {
             var report = await _nyssContext.Reports
+                .Include(r => r.RawReport)
                 .Include(r => r.ProjectHealthRisk)
                     .ThenInclude(phr => phr.Project)
                 .SingleOrDefaultAsync(r => r.Id == reportId);
@@ -221,8 +222,10 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskNotAssignedToProject);
             }
 
-            report.ReceivedAt = new DateTime(reportRequestDto.Date.Year, reportRequestDto.Date.Month, reportRequestDto.Date.Day,
+            var updatedReceivedAt = new DateTime(reportRequestDto.Date.Year, reportRequestDto.Date.Month, reportRequestDto.Date.Day,
                 report.ReceivedAt.Hour, report.ReceivedAt.Minute, report.ReceivedAt.Second);
+            report.RawReport.ReceivedAt = updatedReceivedAt;
+            report.ReceivedAt = updatedReceivedAt;
             report.ProjectHealthRisk = projectHealthRisk;
             report.ReportedCase.CountMalesBelowFive = reportRequestDto.CountMalesBelowFive;
             report.ReportedCase.CountMalesAtLeastFive = reportRequestDto.CountMalesAtLeastFive;
