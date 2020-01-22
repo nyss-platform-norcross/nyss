@@ -41,7 +41,7 @@ const getOptions = (valuesLabel, series, categories) => ({
   },
   tooltip: {
     headerFormat: '',
-    pointFormat: '{point.name}: <b>{point.y}</b>'
+    pointFormat: '{series.name}: <b>{point.y}</b>'
   },
   colors: ["#00a0dc", "#a175ca", "#47c79a", "#72d5fb", "#c37f8d", "#c3bb7f", "#e4d144", "#078e5e", "#ceb5ba", "#c2b5ce", "#e0c8af"],
   series
@@ -53,7 +53,7 @@ export const ProjectsDashboardReportChart = ({ data }) => {
   const moduleStrings = stringKeys.project.dashboard.reportsPerHealthRisk;
 
   const categories = data.allPeriods;
-  const healthRisks = data.healthRisks.length ? data.healthRisks : [{ name: "", periods: [] } ]
+  const healthRisks = data.healthRisks.length ? data.healthRisks : [{ name: "", periods: [] } ];
 
   const series = healthRisks.map(healthRisk => ({
     name: healthRisk.healthRiskName === "(rest)" ? strings(moduleStrings.rest, true) : healthRisk.healthRiskName,
