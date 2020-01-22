@@ -143,7 +143,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Where(r => filter.IsTraining ?
                     r.IsTraining.HasValue && r.IsTraining.Value :
                     r.IsTraining.HasValue && !r.IsTraining.Value)
-                .FilterByArea(filter.Area)
+                .FilterByArea(MapToArea(filter.Area))
                 .Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,
@@ -375,7 +375,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Where(r => filter.IsTraining ?
                     r.IsTraining.HasValue && r.IsTraining.Value :
                     r.IsTraining.HasValue && !r.IsTraining.Value)
-                .FilterByArea(filter.Area);
+                .FilterByArea(MapToArea(filter.Area));
 
             var result = baseQuery.Select(r => new ReportListResponseDto
                 {
@@ -451,5 +451,10 @@ namespace RX.Nyss.Web.Features.Reports
             var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
             reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
         }
+
+        private static Area MapToArea(AreaDto area) =>
+            area == null
+                ? null
+                : new Area { AreaType = area.Type, AreaId = area.Id };
     }
 }
