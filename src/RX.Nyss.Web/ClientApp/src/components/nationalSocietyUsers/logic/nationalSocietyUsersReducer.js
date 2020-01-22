@@ -1,4 +1,5 @@
 import * as actions from "./nationalSocietyUsersConstants";
+import * as nationalSocietyActions from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { initialState } from "../../../initialState";
 import { setProperty } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";
@@ -79,6 +80,9 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
 
     case actions.SET_AS_HEAD_MANAGER.FAILURE:
       return { ...state, settingAsHead: setProperty(state.settingAsHead, action.id, undefined), message: action.message };
+
+    case nationalSocietyActions.ARCHIVE_NATIONAL_SOCIETY.SUCCESS:
+      return { ...state, listStale: true };
 
     default:
       return state;

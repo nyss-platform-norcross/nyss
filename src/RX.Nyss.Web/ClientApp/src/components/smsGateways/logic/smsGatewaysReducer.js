@@ -1,4 +1,5 @@
 import * as actions from "./smsGatewaysConstants";
+import * as nationalSocietyActions from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { initialState } from "../../../initialState";
 import { setProperty } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";
@@ -62,6 +63,10 @@ export function smsGatewaysReducer(state = initialState.smsGateways, action) {
     case actions.REMOVE_SMS_GATEWAY.FAILURE:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
 
+    case nationalSocietyActions.ARCHIVE_NATIONAL_SOCIETY.SUCCESS:
+        return { ...state, listStale: true };
+
+        
     default:
       return state;
   }
