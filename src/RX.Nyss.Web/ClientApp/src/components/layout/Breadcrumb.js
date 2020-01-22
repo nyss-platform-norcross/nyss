@@ -33,10 +33,10 @@ const BreadcrumbComponent = ({ breadcrumb, push }) => {
 
   return (
     <Fragment>
-      <Hidden xsDown>
+      <Hidden smDown> {/* full view */}
         {renderBreadcrumb(breadcrumbVisibleItems, true)}
       </Hidden>
-      <Hidden smUp>
+      <Hidden mdUp> {/* smaller view */}
         {renderBreadcrumb(breadcrumbVisibleItems.slice(breadcrumbVisibleItems.length - 3, breadcrumbVisibleItems.length - 1), false)}
       </Hidden>
     </Fragment>
