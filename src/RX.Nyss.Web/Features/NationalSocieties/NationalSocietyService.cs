@@ -356,11 +356,11 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             foreach (var gateway in gatewaysResult.Value)
             {
                 var deleteResult = await _smsGatewayService.DeleteSmsGateway(gateway.Id);
-                ThrowIfErrorResult(gatewaysResult);
+                ThrowIfErrorResult(deleteResult);
             }
         }
 
-        private void ThrowIfErrorResult<T>(Result<T> result)
+        private void ThrowIfErrorResult(Result result)
         {
             if (!result.IsSuccess)
             {
