@@ -59,7 +59,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
             summaryData.DataCollectionPointSummary.FromOtherVillagesCount.ShouldBe(expectedFromOtherVillagesCount);
             summaryData.DataCollectionPointSummary.ReferredToHospitalCount.ShouldBe(expectedReferredToHospitalCount);
             summaryData.DataCollectionPointSummary.DeathCount.ShouldBe(expectedDeathCount);
@@ -100,7 +99,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
             summaryData.DataCollectionPointSummary.FromOtherVillagesCount.ShouldBe(expectedFromOtherVillagesCount);
             summaryData.DataCollectionPointSummary.ReferredToHospitalCount.ShouldBe(expectedReferredToHospitalCount);
             summaryData.DataCollectionPointSummary.DeathCount.ShouldBe(expectedDeathCount);
@@ -139,7 +137,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
             summaryData.DataCollectionPointSummary.FromOtherVillagesCount.ShouldBe(expectedFromOtherVillagesCount);
             summaryData.DataCollectionPointSummary.ReferredToHospitalCount.ShouldBe(expectedReferredToHospitalCount);
             summaryData.DataCollectionPointSummary.DeathCount.ShouldBe(expectedDeathCount);
@@ -178,7 +175,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
             summaryData.DataCollectionPointSummary.FromOtherVillagesCount.ShouldBe(expectedFromOtherVillagesCount);
             summaryData.DataCollectionPointSummary.ReferredToHospitalCount.ShouldBe(expectedReferredToHospitalCount);
             summaryData.DataCollectionPointSummary.DeathCount.ShouldBe(expectedDeathCount);
@@ -213,7 +209,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
 
@@ -246,7 +241,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
 
@@ -287,7 +281,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
 
@@ -328,7 +321,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
 
@@ -356,7 +348,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
         [Theory]
@@ -383,7 +374,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             //assert
             summaryData.ReportCount.ShouldBe(expectedReportsCount);
             summaryData.ActiveDataCollectorCount.ShouldBe(expectedActiveCollectorsCount);
-            summaryData.InactiveDataCollectorCount.ShouldBe(expectedInactiveCollectorsCount);
         }
 
         [Theory]

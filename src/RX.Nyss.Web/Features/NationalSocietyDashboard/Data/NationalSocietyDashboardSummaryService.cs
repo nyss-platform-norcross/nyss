@@ -38,7 +38,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Data
                 {
                     ReportCount = validReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
-                    InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     DataCollectionPointSummary = new NationalSocietyDataCollectionPointsSummaryResponse
                     {
                         FromOtherVillagesCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.FromOtherVillagesCount ?? 0),

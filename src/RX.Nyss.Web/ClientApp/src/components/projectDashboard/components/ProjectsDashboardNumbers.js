@@ -37,7 +37,6 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
           <CardHeader title={strings(stringKeys.project.dashboard.dataCollectors)} />
           <CardContent>
             {renderNumber(strings(stringKeys.project.dashboard.activeDataCollectorCount), projectSummary.activeDataCollectorCount)}
-            {renderNumber(strings(stringKeys.project.dashboard.inactiveDataCollectorCount), projectSummary.inactiveDataCollectorCount)}
           </CardContent>
         </Card>
       </Grid>
