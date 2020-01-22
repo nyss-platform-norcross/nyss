@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using Newtonsoft.Json;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.ReportApi.Configuration;
 
 namespace RX.Nyss.ReportApi.Services
@@ -12,7 +13,6 @@ namespace RX.Nyss.ReportApi.Services
     public interface IQueuePublisherService
     {
         Task SendSMSesViaEagle(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
-
         Task QueueAlertCheck(int alertId);
         Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody);
     }
@@ -22,10 +22,12 @@ namespace RX.Nyss.ReportApi.Services
         private readonly IQueueClient _sendEmailQueueClient;
         private readonly QueueClient _checkAlertQueueClient;
         private readonly INyssReportApiConfig _config;
-
-        public QueuePublisherService(INyssReportApiConfig config)
+        private readonly IDateTimeProvider _dateTimeProvider;
+        
+        public QueuePublisherService(INyssReportApiConfig config, IDateTimeProvider dateTimeProvider)
         {
             _config = config;
+            _dateTimeProvider = dateTimeProvider;
             _sendEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
             _checkAlertQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.CheckAlertQueue);
         }
@@ -48,7 +50,7 @@ namespace RX.Nyss.ReportApi.Services
             var message = new Message(Encoding.UTF8.GetBytes(alertId.ToString()))
             {
                 Label = "RX.Nyss.ReportApi",
-                ScheduledEnqueueTimeUtc = DateTime.UtcNow.AddMinutes(_config.CheckAlertTimeoutInMinutes)
+                ScheduledEnqueueTimeUtc = _dateTimeProvider.UtcNow.AddMinutes(_config.CheckAlertTimeoutInMinutes)
             };
 
             await _checkAlertQueueClient.SendAsync(message);

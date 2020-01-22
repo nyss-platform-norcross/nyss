@@ -12,6 +12,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Services;
 using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
@@ -21,8 +22,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task<Alert> ReportAdded(Report report);
         Task ReportDismissed(int reportId);
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
-
-        Task CheckIfAlertHaveBeenHandled(int alertId);
+        Task CheckIfAlertHasBeenHandled(int alertId);
     }
 
     public class AlertService: IAlertService
@@ -33,9 +33,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         private readonly IQueuePublisherService _queuePublisherService;
         private readonly INyssReportApiConfig _config;
         private readonly IStringsResourcesService _stringsResourcesService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public AlertService(INyssContext nyssContext, IReportLabelingService reportLabelingService, ILoggerAdapter loggerAdapter, IQueuePublisherService queuePublisherService,
-            INyssReportApiConfig config, IStringsResourcesService stringsResourcesService)
+            INyssReportApiConfig config, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _reportLabelingService = reportLabelingService;
@@ -43,6 +44,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             _queuePublisherService = queuePublisherService;
             _config = config;
             _stringsResourcesService = stringsResourcesService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<Alert> ReportAdded(Report report)
@@ -129,7 +131,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             await _queuePublisherService.QueueAlertCheck(alert.Id);
         }
 
-        public async Task CheckIfAlertHaveBeenHandled(int alertId)
+        public async Task CheckIfAlertHasBeenHandled(int alertId)
         {
             var alert = await _nyssContext.Alerts.Where(a => a.Id == alertId)
                 .Select(a =>
@@ -154,11 +156,11 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             if (alert.Status == AlertStatus.Pending)
             {
-                _loggerAdapter.WarnFormat("Alert {0} haven not been assessed since it was triggered {1}, sending email to head manager", alertId, alert.CreatedAt.ToString("O"));
+                _loggerAdapter.WarnFormat("Alert {0} has not been assessed since it was triggered {1}, sending email to head manager", alertId, alert.CreatedAt.ToString("O"));
 
-                var timeSinceTriggered = (DateTime.UtcNow - alert.CreatedAt).TotalHours;
-                var emailSubject = await GetEmailMessageContent(EmailContentKey.AlertHaveNotBeenHandled.Subject, alert.LanguageCode);
-                var emailBody = await GetEmailMessageContent(EmailContentKey.AlertHaveNotBeenHandled.Body, alert.LanguageCode);
+                var timeSinceTriggered = (_dateTimeProvider.UtcNow - alert.CreatedAt).TotalHours;
+                var emailSubject = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Subject, alert.LanguageCode);
+                var emailBody = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Body, alert.LanguageCode);
                 
                 emailBody = emailBody
                     .Replace("{{healthRiskName}}", alert.HealthRiskName)

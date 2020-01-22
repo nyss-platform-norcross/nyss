@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using NSubstitute;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
@@ -30,7 +31,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private readonly IQueuePublisherService _queuePublisherServiceMock;
         private readonly IStringsResourcesService _stringsResourcesServiceMock;
         private readonly INyssReportApiConfig _nyssReportApiConfigMock;
-
+        private readonly IDateTimeProvider _dateTimeProviderMock;
         public AlertServiceTests()
         {
             var reportLabelingServiceMock = Substitute.For<IReportLabelingService>();
@@ -39,7 +40,16 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _nyssContextMock = Substitute.For<INyssContext>();
             _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _stringsResourcesServiceMock = Substitute.For<IStringsResourcesService>();
-            _alertService = new AlertService(_nyssContextMock, reportLabelingServiceMock, _loggerAdapterMock, _queuePublisherServiceMock, _nyssReportApiConfigMock, _stringsResourcesServiceMock);
+            _dateTimeProviderMock = Substitute.For<IDateTimeProvider>();
+            _alertService = new AlertService(
+                _nyssContextMock,
+                reportLabelingServiceMock,
+                _loggerAdapterMock,
+                _queuePublisherServiceMock,
+                _nyssReportApiConfigMock,
+                _stringsResourcesServiceMock,
+                _dateTimeProviderMock
+            );
 
             _testData = new AlertServiceTestData(_nyssContextMock);
         }
@@ -500,7 +510,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _testData.SimpleCasesData.GenerateData();
 
             // act
-            await _alertService.CheckIfAlertHaveBeenHandled(1);
+            await _alertService.CheckIfAlertHasBeenHandled(1);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
@@ -513,7 +523,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _testData.SimpleCasesData.GenerateData();
 
             // act
-            await _alertService.CheckIfAlertHaveBeenHandled(1);
+            await _alertService.CheckIfAlertHasBeenHandled(1);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
@@ -544,15 +554,15 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _testData.WhenAnAlertAreTriggered.GenerateData();
             var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
             var stringResourceResult = new Dictionary<string, string> {
-                { EmailContentKey.AlertHaveNotBeenHandled.Subject, "Alert escalated subject" },
-                { EmailContentKey.AlertHaveNotBeenHandled.Body, "Alert escalated body" }
+                { EmailContentKey.AlertHasNotBeenHandled.Subject, "Alert escalated subject" },
+                { EmailContentKey.AlertHasNotBeenHandled.Body, "Alert escalated body" }
             };
             _stringsResourcesServiceMock.GetEmailContentResources(Arg.Any<string>())
                 .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
             _nyssReportApiConfigMock.BaseUrl = "http://example.com";
 
             // act
-            await _alertService.CheckIfAlertHaveBeenHandled(alert.Id);
+            await _alertService.CheckIfAlertHasBeenHandled(alert.Id);
 
             // assert
             await _queuePublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
@@ -570,15 +580,15 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
             alert.Status = alertStatus;
             var stringResourceResult = new Dictionary<string, string> {
-                { EmailContentKey.AlertHaveNotBeenHandled.Subject, "Alert escalated subject" },
-                { EmailContentKey.AlertHaveNotBeenHandled.Body, "Alert escalated body" }
+                { EmailContentKey.AlertHasNotBeenHandled.Subject, "Alert escalated subject" },
+                { EmailContentKey.AlertHasNotBeenHandled.Body, "Alert escalated body" }
             };
             _stringsResourcesServiceMock.GetEmailContentResources(Arg.Any<string>())
                 .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
             _nyssReportApiConfigMock.BaseUrl = "http://example.com";
 
             // act
-            await _alertService.CheckIfAlertHaveBeenHandled(alert.Id);
+            await _alertService.CheckIfAlertHasBeenHandled(alert.Id);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceive().SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
