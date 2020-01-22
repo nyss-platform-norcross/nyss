@@ -70,7 +70,6 @@ export const stringKeys = {
         dataCollectionPointReportsType: "nationalsociety.dashboard.filters.dataCollectionPointReportsType"
       },
       activeDataCollectorCount: "nationalsociety.dashboard.activeDataCollectorCount",
-      inactiveDataCollectorCount: "nationalsociety.dashboard.inactiveDataCollectorCount",
       referredToHospitalCount: "nationalsociety.dashboard.referredToHospitalCount",
       fromOtherVillagesCount: "nationalsociety.dashboard.fromOtherVillagesCount",
       deathCount: "nationalsociety.dashboard.deathCount",
@@ -278,7 +277,6 @@ export const stringKeys = {
         title: "project.dashboard.dataCollectionPointReportsByDate.title"
       },
       activeDataCollectorCount: "project.dashboard.activeDataCollectorCount",
-      inactiveDataCollectorCount: "project.dashboard.inactiveDataCollectorCount",
       referredToHospitalCount: "project.dashboard.referredToHospitalCount",
       fromOtherVillagesCount: "project.dashboard.fromOtherVillagesCount",
       deathCount: "project.dashboard.deathCount",

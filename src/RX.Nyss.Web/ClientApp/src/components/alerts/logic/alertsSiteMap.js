@@ -19,7 +19,7 @@ export const alertsSiteMap = [
     access: accessMap.alerts.assess
   },
   {
-    parentPath: "/projects/:projectId/alerts",
+    parentPath: "/projects/:projectId/alerts/:alertId/details",
     path: "/projects/:projectId/alerts/:alertId/assess",
     title: () => strings(stringKeys.alerts.assess.title),
     placeholder: placeholders.tabMenu,
@@ -27,7 +27,7 @@ export const alertsSiteMap = [
     middleStepOnly: true
   },
   {
-    parentPath: "/projects/:projectId/alerts",
+    parentPath: "/projects/:projectId/alerts/:alertId/details",
     path: "/projects/:projectId/alerts/:alertId/logs",
     title: () => strings(stringKeys.alerts.logs.title),
     placeholder: placeholders.tabMenu,

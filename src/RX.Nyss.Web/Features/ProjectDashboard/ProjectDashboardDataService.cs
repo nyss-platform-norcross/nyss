@@ -60,7 +60,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 {
                     ReportCount = validReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
-                    InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     ErrorReportCount = assignedRawReports.Count() - validReports.Count(),
                     DataCollectionPointSummary = new DataCollectionPointsSummaryResponse
                     {

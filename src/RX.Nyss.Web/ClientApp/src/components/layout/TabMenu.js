@@ -26,7 +26,12 @@ const TabMenuComponent = ({ tabMenu, breadcrumb, push, currentUrl, title }) => {
       <div className={styles.header}>{title || currentBreadcrumbItem.title}</div>
 
       {showTabMenu && (
-        <Tabs value={tabMenu.indexOf(tabMenu.find(t => t.isActive))} className={styles.tabs}>
+        <Tabs
+          value={tabMenu.indexOf(tabMenu.find(t => t.isActive))}
+          className={styles.tabs}
+          scrollButtons="auto"
+          indicatorColor="primary"
+          variant="scrollable">
           {tabMenu.map(item => (
             <Tab key={`tabMenu_${item.url}`} label={item.title} onClick={() => onItemClick(item)} />
           ))}

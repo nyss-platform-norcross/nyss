@@ -36,7 +36,6 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
           <CardHeader title={strings(stringKeys.nationalSociety.dashboard.dataCollectors)} />
           <CardContent>
             {renderNumber(strings(stringKeys.nationalSociety.dashboard.activeDataCollectorCount), summary.activeDataCollectorCount)}
-            {renderNumber(strings(stringKeys.nationalSociety.dashboard.inactiveDataCollectorCount), summary.inactiveDataCollectorCount)}
           </CardContent>
         </Card>
       </Grid>
