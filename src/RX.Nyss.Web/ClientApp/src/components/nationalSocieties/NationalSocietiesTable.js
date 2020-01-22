@@ -61,9 +61,7 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
                 <TableCell>{row.headManagerName}</TableCell>
                 <TableCell>{row.technicalAdvisor}</TableCell>
                 <TableCell>
-                  <TableRowActions>
-                    <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
-                    <TableRowAction roles={accessMap.nationalSocieties.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                  <TableRowActions>                    
                     <TableRowMenu
                       id={row.id}                      
                       items={[{
@@ -84,6 +82,8 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
                       icon={<MoreVertIcon />}
                       isFetching={isArchiving[row.id] || isReopening[row.id]}
                     />
+                    <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
+                    <TableRowAction roles={accessMap.nationalSocieties.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
