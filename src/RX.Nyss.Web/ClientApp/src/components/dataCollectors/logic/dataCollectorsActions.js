@@ -8,7 +8,8 @@ import {
   GET_DATA_COLLECTORS_MAP_DETAILS,
   SET_DATA_COLLECTORS_TRAINING_STATE,
   OPEN_DATA_COLLECTORS_PERFORMANCE_LIST,
-  GET_DATA_COLLECTORS_PERFORMANCE
+  GET_DATA_COLLECTORS_PERFORMANCE,
+  EXPORT_TO_EXCEL
 } from "./dataCollectorsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors/list`);
@@ -106,3 +107,10 @@ export const getDataCollectorsPerformanceList = {
   success: (list) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS, list }),
   failure: (message) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.FAILURE, message })
 }
+
+export const exportToExcel = {
+  invoke: (projectId) => ({ type: EXPORT_TO_EXCEL.INVOKE, projectId }),
+  request: () => ({ type: EXPORT_TO_EXCEL.REQUEST }),
+  success: () => ({ type: EXPORT_TO_EXCEL.SUCCESS }),
+  failure: (message) => ({ type: EXPORT_TO_EXCEL.FAILURE, message })
+};

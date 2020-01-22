@@ -15,6 +15,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
@@ -52,7 +53,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService,
             IGeolocationService geolocationService,
-            IDateTimeProvider dateTimeProvider, IAuthorizationService authorizationService)
+            IDateTimeProvider dateTimeProvider,
+            IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _nationalSocietyStructureService = nationalSocietyStructureService;
@@ -161,7 +163,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = await dataCollectorsQuery
                 .Where(dc => dc.DeletedAt == null)
                 .Where(dc => dc.Project.Id == projectId)
-                .OrderBy(dc => dc.Name)
                 .Select(dc => new DataCollectorResponseDto
                 {
                     Id = dc.Id,
@@ -175,6 +176,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Sex = dc.Sex,
                     IsInTrainingMode = dc.IsInTrainingMode
                 })
+                .OrderBy(dc => dc.Name)
+                    .ThenBy(dc => dc.DisplayName)
                 .ToListAsync();
 
             return Success((IEnumerable<DataCollectorResponseDto>)dataCollectors);
@@ -565,7 +568,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 StatusSixWeeksAgo = GetDataCollectorStatus(5, dc.ReportsGroupedByWeek),
                 StatusSevenWeeksAgo = GetDataCollectorStatus(6, dc.ReportsGroupedByWeek),
                 StatusEightWeeksAgo = GetDataCollectorStatus(7, dc.ReportsGroupedByWeek)
-            }).ToList();
+            })
+            .ToList();
 
             return Success(dataCollectorPerformances);
         }

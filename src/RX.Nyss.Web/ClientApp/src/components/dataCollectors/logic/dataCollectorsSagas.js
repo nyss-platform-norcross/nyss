@@ -6,6 +6,7 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { stringKeys } from "../../../strings";
 import dayjs from "dayjs";
+import { downloadFile } from "../../../utils/downloadFile";
 
 export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
@@ -18,7 +19,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.REMOVE_DATA_COLLECTOR.INVOKE, removeDataCollector),
   takeEvery(consts.GET_DATA_COLLECTORS_MAP_DETAILS.INVOKE, getMapDetails),
   takeEvery(consts.SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, setTrainingState),
-  takeEvery(consts.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, openDataCollectorsPerformanceList)
+  takeEvery(consts.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, openDataCollectorsPerformanceList),
+  takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExportData)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -196,6 +198,20 @@ function* getDataCollectorsPerformance(projectId) {
     yield put(actions.getDataCollectorsPerformanceList.success(response.value));
   } catch (error) {
     yield put(actions.getDataCollectorsPerformanceList.failure(error.message));
+  }
+};
+
+function* getExportData({ projectId }) {
+  yield put(actions.exportToExcel.request());
+  try {
+    yield downloadFile({
+      url: `/api/dataCollector/export?projectId=${projectId}`,
+      fileName: `dataCollectors.csv`
+    });
+
+    yield put(actions.exportToExcel.success());
+  } catch (error) {
+    yield put(actions.exportToExcel.failure(error.message));
   }
 };
 

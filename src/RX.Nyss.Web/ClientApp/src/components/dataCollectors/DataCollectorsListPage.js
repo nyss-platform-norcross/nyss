@@ -1,3 +1,4 @@
+import styles from './DataCollectorsListPage.module.scss';
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
@@ -10,6 +11,9 @@ import TableActions from '../common/tableActions/TableActions';
 import DataCollectorsTable from './DataCollectorsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
+import { Grid } from '@material-ui/core';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { accessMap } from '../../authentication/accessMap';
 
 const DataCollectorsListPageComponent = (props) => {
   useMount(() => {
@@ -20,9 +24,12 @@ const DataCollectorsListPageComponent = (props) => {
     <Fragment>
       {!props.isClosed &&
         <TableActions>
-          <Button onClick={() => props.goToCreation(props.projectId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+          <TableActionsButton onClick={() => props.goToCreation(props.projectId)} startIcon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
-          </Button>
+          </TableActionsButton>
+          <TableActionsButton onClick={() => props.exportDataCollectors(props.projectId)} roles={accessMap.dataCollectors.export}>
+            {strings(stringKeys.dataCollector.export)}
+          </TableActionsButton>
         </TableActions>
       }
 
@@ -66,6 +73,7 @@ const mapDispatchToProps = {
   goToEdition: dataCollectorsActions.goToEdition,
   remove: dataCollectorsActions.remove.invoke,
   setTrainingState: dataCollectorsActions.setTrainingState.invoke,
+  exportDataCollectors: dataCollectorsActions.exportToExcel.invoke
 };
 
 export const DataCollectorsListPage = useLayout(

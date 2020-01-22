@@ -51,7 +51,8 @@ export const accessMap = {
     performanceList: [Administrator, Manager, TechnicalAdvisor, Supervisor],
     add: [Administrator, Manager, TechnicalAdvisor, Supervisor],
     edit: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    delete: [Administrator, Manager, TechnicalAdvisor, Supervisor]
+    delete: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    export: [Administrator, Manager, TechnicalAdvisor]
   },
   reports: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
