@@ -27,8 +27,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Data
             var validReports = NationalSocietyDashboardQueries.GetValidReports(_nyssContext.RawReports, nationalSocietyId, filtersDto);
             var dataCollectionPointReports = validReports.Where(r => r.DataCollectionPointCase != null);
 
-            return _nyssContext.Projects
-                .Where(ph => ph.NationalSocietyId == nationalSocietyId)
+            return _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ph => new
                 {
                     allDataCollectorCount = AllDataCollectorCount(filtersDto, nationalSocietyId),
