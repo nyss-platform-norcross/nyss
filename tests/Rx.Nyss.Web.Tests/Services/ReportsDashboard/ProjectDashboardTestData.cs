@@ -8,7 +8,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 
-namespace RX.Nyss.Web.Tests.Features.ReportsDashboard
+namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
 {
     public class ReportsDashboardTestData
     {

@@ -8,11 +8,11 @@ using RX.Nyss.Common.Utils;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Reports;
-using RX.Nyss.Web.Features.ReportsDashboard;
+using RX.Nyss.Web.Services.ReportsDashboard;
 using Shouldly;
 using Xunit;
 
-namespace RX.Nyss.Web.Tests.Features.ReportsDashboard
+namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
 {
     public class ReportsDashboardByDataCollectionPointServiceTests
     {

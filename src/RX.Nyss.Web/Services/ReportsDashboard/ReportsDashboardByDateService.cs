@@ -9,7 +9,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Projects.Dto;
 using RX.Nyss.Web.Features.Reports;
 
-namespace RX.Nyss.Web.Features.ReportsDashboard
+namespace RX.Nyss.Web.Services.ReportsDashboard
 {
     public interface IReportsDashboardByDateService
     {

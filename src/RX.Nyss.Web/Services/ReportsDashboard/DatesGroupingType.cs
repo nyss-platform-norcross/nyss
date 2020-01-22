@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.ReportsDashboard
+﻿namespace RX.Nyss.Web.Services.ReportsDashboard
 {
     public enum DatesGroupingType
     {

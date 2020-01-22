@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Features.Reports;
-using RX.Nyss.Web.Features.ReportsDashboard.Dto;
+using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 
-namespace RX.Nyss.Web.Features.ReportsDashboard
+namespace RX.Nyss.Web.Services.ReportsDashboard
 {
     public interface IReportsDashboardMapService
     {

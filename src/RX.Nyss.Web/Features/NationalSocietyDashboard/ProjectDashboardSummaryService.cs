@@ -7,7 +7,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
-using RX.Nyss.Web.Features.ReportsDashboard;
+using RX.Nyss.Web.Services.ReportsDashboard;
 
 namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 {

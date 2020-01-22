@@ -6,8 +6,8 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
-using RX.Nyss.Web.Features.ReportsDashboard;
-using RX.Nyss.Web.Features.ReportsDashboard.Dto;
+using RX.Nyss.Web.Services.ReportsDashboard;
+using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.NationalSocietyDashboard

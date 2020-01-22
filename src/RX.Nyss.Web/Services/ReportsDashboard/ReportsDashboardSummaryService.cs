@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.ReportsDashboard.Dto;
+using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 
-namespace RX.Nyss.Web.Features.ReportsDashboard
+namespace RX.Nyss.Web.Services.ReportsDashboard
 {
     public interface IReportsDashboardSummaryService
     {

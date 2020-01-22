@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using RX.Nyss.Web.Features.Projects.Dto;
-using RX.Nyss.Web.Features.ReportsDashboard.Dto;
+using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {

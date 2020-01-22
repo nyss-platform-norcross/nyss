@@ -5,7 +5,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
-using RX.Nyss.Web.Features.ReportsDashboard.Dto;
+using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.NationalSocietyDashboard

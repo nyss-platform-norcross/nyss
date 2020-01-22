@@ -7,7 +7,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.ProjectDashboard;
 using RX.Nyss.Web.Features.Reports;
-using RX.Nyss.Web.Features.ReportsDashboard;
+using RX.Nyss.Web.Services.ReportsDashboard;
 using Shouldly;
 using Xunit;
 

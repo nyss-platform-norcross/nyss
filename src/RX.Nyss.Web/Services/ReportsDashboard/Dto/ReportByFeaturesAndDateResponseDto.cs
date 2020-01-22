@@ -1,4 +1,4 @@
-﻿namespace RX.Nyss.Web.Features.ReportsDashboard.Dto
+﻿namespace RX.Nyss.Web.Services.ReportsDashboard.Dto
 {
     public class ReportByFeaturesAndDateResponseDto
     {
