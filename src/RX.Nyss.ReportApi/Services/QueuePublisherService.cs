@@ -20,7 +20,7 @@ namespace RX.Nyss.ReportApi.Services
     public class QueuePublisherService : IQueuePublisherService
     {
         private readonly IQueueClient _sendEmailQueueClient;
-        private readonly QueueClient _checkAlertQueueClient;
+        private readonly IQueueClient _checkAlertQueueClient;
         private readonly INyssReportApiConfig _config;
         private readonly IDateTimeProvider _dateTimeProvider;
         

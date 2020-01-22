@@ -39,7 +39,7 @@ namespace RX.Nyss.ReportApi.Configuration
             serviceCollection.AddSingleton(x => Log.Logger); // must be func, as the static logger is configured (changed reference) after DI registering
             serviceCollection.AddSingleton<ILoggerAdapter, SerilogLoggerAdapter>();
 
-            if (!string.IsNullOrEmpty(applicationInsightsEnvironmentVariable))
+            if (!string.IsNullOrEmpty(appInsightsInstrumentationKey))
             {
                 serviceCollection.AddApplicationInsightsTelemetry();
             }
