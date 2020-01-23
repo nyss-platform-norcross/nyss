@@ -56,6 +56,13 @@
     "storageKind": {
       "type": "string",
       "defaultValue": "StorageV2"
+    },
+    "specificResource": {
+      "defaultValue": null,
+      "type": "string",
+      "metadata": {
+        "description": "Only the specified resource will get provisioned, NB! If used in complete mode, the other resource will get deleted"
+      }
     }
   },
   "variables": {
@@ -95,6 +102,7 @@
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
       "name": "[variables('standardPlanName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('standardPlanName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "sku": {
@@ -114,6 +122,7 @@
       "apiVersion": "2018-02-01",
       "tags": "[parameters('tagValues')]",
       "name": "[variables('consumptionPlanName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('consumptionPlanName')))]",
       "location": "[variables('location')]",
       "sku": {
         "name": "Y1",
@@ -128,6 +137,7 @@
       "apiVersion": "2018-11-01",
       "type": "Microsoft.Web/sites",
       "name": "[variables('funcAppName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('funcAppName')))]",
       "location": "[variables('location')]",
       "dependsOn": [
         "[concat('microsoft.insights/components/', variables('funcAppName'))]",
@@ -239,6 +249,7 @@
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
       "name": "[variables('webAppName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('webAppName')))]",
       "location": "[variables('location')]",
       "dependsOn": [
         "[concat('microsoft.insights/components/', variables('webAppName'))]",
@@ -310,6 +321,7 @@
     },
     {
       "name": "[variables('reportApiWebAppName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('reportApiWebAppName')))]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
       "location": "[variables('location')]",
@@ -358,6 +370,7 @@
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
       "name": "[variables('reportFuncAppName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('reportFuncAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "dependsOn": [
@@ -419,6 +432,7 @@
       "type": "Microsoft.ServiceBus/namespaces",
       "apiVersion": "2017-04-01",
       "name": "[variables('serviceBusNamespaceName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('serviceBusNamespaceName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "sku": {
@@ -517,6 +531,7 @@
       "type": "Microsoft.ServiceBus/namespaces",
       "apiVersion": "2017-04-01",
       "name": "[variables('serviceBusNamespaceNameStaging')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "sku": {
@@ -614,6 +629,7 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('funcStorageAccountName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('funcStorageAccountName')))]",
       "apiVersion": "2018-07-01",
       "location": "[variables('location')]",
       "kind": "[parameters('storageKind')]",
@@ -659,6 +675,7 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('generalStorageAccountName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('generalStorageAccountName')))]",
       "apiVersion": "2018-07-01",
       "location": "[variables('location')]",
       "kind": "[parameters('storageKind')]",
@@ -705,6 +722,7 @@
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
       "name": "[variables('funcAppName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('funcAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "funcapp",
@@ -718,6 +736,7 @@
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
       "name": "[variables('reportFuncAppName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('reportFuncAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "funcapp",
@@ -731,6 +750,7 @@
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
       "name": "[variables('reportApiWebAppName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('reportApiWebAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "api",
@@ -744,6 +764,7 @@
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
       "name": "[variables('webAppName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('webAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "web",
@@ -757,6 +778,7 @@
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('vnetName')]",
+      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('vnetName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "properties": {

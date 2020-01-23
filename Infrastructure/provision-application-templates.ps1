@@ -9,7 +9,7 @@
     Optional. The subscription id where the template will be deployed.
 
  .PARAMETER complete
-    Optional. Indicates if you want the resource deployment to wipe all resources in the resource group and create them again or incrementally, only creating the new resources. Incremental is default. 
+    Optional. Indicates if you want the resource deployment to wipe all resources in the resource group and create them again or incrementally, only creating the new resources. Incremental is default.
 
  .PARAMETER environment
     The environment name.
@@ -25,18 +25,18 @@ $ErrorActionPreference = "Stop"
 $resourceGroupName = "nrx-cbs-$environment-rg"
 $AzModuleVersion = "2.0.0"
 
-# Verify that the Az module is installed 
+# Verify that the Az module is installed
 if (!(Get-InstalledModule -Name Az -MinimumVersion $AzModuleVersion -ErrorAction SilentlyContinue)) {
   Write-Host "This script requires to have Az Module version $AzModuleVersion installed..
 It was not found, please install from: https://docs.microsoft.com/en-us/powershell/azure/install-az-ps"
   exit
-} 
+}
 
 if ($subscriptionId) {
   # sign in
   Write-Host "Logging in...";
-  Connect-AzAccount; 
-    
+  Connect-AzAccount;
+
   # select subscription
   Write-Host "Selecting subscription '$subscriptionId'";
   Select-AzSubscription -SubscriptionId $subscriptionId;
