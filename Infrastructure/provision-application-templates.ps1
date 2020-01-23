@@ -18,7 +18,9 @@
 param(
   [string] $subscriptionId,
   [Parameter(Mandatory = $true)][string] $environment,
-  [switch] $complete
+  [Parameter(Mandatory = $false)][string] $specificResource = "all",
+  [switch] $complete,
+  [switch] $test
 )
 
 $ErrorActionPreference = "Stop"
@@ -49,20 +51,45 @@ if (!$resourceGroup) {
   Write-Error "Resource group $resourceGroupName not found!"serviceBusNamespaceName
 }
 
-
 if ($complete) {
-  Write-Host "Deploying all resources (Complete mode)"
-  New-AzResourceGroupDeployment `
+  if ($test){
+    Write-Host "Test deploying all resources (Complete mode)"
+    Test-AzResourceGroupDeployment `
+    -Name "Complete-$specificResource" `
     -Mode "Complete" `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
+    -SpecificResource "$specificResource" `
     -TemplateParameterFile "$PSScriptRoot\Application-templates\createApplication.parameters.$environment.json";
-}
-else {
-  Write-Host "Deploying new resources (Incremental mode)"
-  New-AzResourceGroupDeployment `
-    -Mode "Incremental" `
+  } else {
+    Write-Host "Deploying all resources (Complete mode)"
+    New-AzResourceGroupDeployment `
+    -Name "Complete-$specificResource" `
+    -Mode "Complete" `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
+    -SpecificResource "$specificResource" `
     -TemplateParameterFile "$PSScriptRoot\Application-templates\createApplication.parameters.$environment.json";
+  }
+}
+else {
+  if ($test){
+    Write-Host "Test deploying new resources (Incremental mode)"
+    Test-AzResourceGroupDeployment `
+    -Mode "Incremental" `
+    -Name "Incremental-$specificResource" `
+    -ResourceGroupName $resourceGroupName `
+    -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
+    -SpecificResource "$specificResource" `
+    -TemplateParameterFile "$PSScriptRoot\Application-templates\createApplication.parameters.$environment.json";
+  }else{
+    Write-Host "Deploying new resources (Incremental mode)"
+    New-AzResourceGroupDeployment `
+    -Mode "Incremental" `
+    -Name "Incremental-$specificResource" `
+    -ResourceGroupName $resourceGroupName `
+    -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
+    -SpecificResource "$specificResource" `
+    -TemplateParameterFile "$PSScriptRoot\Application-templates\createApplication.parameters.$environment.json";
+  }
 }

@@ -66,6 +66,7 @@
     }
   },
   "variables": {
+    "specificResource": "[if(equals('all', parameters('specificResource')),'', parameters('specificResource'))]",
     "location": "[resourceGroup().location]",
     "subscriptionId": "[subscription().subscriptionId]",
     "webAppName": "[concat('nrx-cbs-nyss-webapp-', parameters('env'))]",
@@ -102,7 +103,7 @@
       "type": "Microsoft.Web/serverfarms",
       "apiVersion": "2018-02-01",
       "name": "[variables('standardPlanName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('standardPlanName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('standardPlanName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "sku": {
@@ -122,7 +123,7 @@
       "apiVersion": "2018-02-01",
       "tags": "[parameters('tagValues')]",
       "name": "[variables('consumptionPlanName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('consumptionPlanName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('consumptionPlanName')))]",
       "location": "[variables('location')]",
       "sku": {
         "name": "Y1",
@@ -137,7 +138,7 @@
       "apiVersion": "2018-11-01",
       "type": "Microsoft.Web/sites",
       "name": "[variables('funcAppName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('funcAppName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcAppName')))]",
       "location": "[variables('location')]",
       "dependsOn": [
         "[concat('microsoft.insights/components/', variables('funcAppName'))]",
@@ -249,7 +250,7 @@
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
       "name": "[variables('webAppName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('webAppName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('webAppName')))]",
       "location": "[variables('location')]",
       "dependsOn": [
         "[concat('microsoft.insights/components/', variables('webAppName'))]",
@@ -290,7 +291,21 @@
             "APPINSIGHTS_SNAPSHOTFEATURE_VERSION": "disabled",
             "InstrumentationEngine_EXTENSION_VERSION": "disabled",
             "SnapshotDebugger_EXTENSION_VERSION": "disabled",
-            "XDT_MicrosoftApplicationInsights_BaseExtensions": "disabled"
+            "XDT_MicrosoftApplicationInsights_BaseExtensions": "disabled",
+            "SlotName": "production"
+          }
+        },
+        {
+          "apiVersion": "2018-11-01",
+          "type": "config",
+          "name": "slotConfigNames",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
+          ],
+          "properties": {
+            "appSettingNames": [
+              "SlotName"
+            ]
           }
         },
         {
@@ -313,15 +328,38 @@
                   "value": "[parameters('currentStack')]"
                 }
               ],
-              "alwaysOn": "[parameters('alwaysOn')]"
+              "alwaysOn": "[parameters('alwaysOn')]",
+              "httpsOnly": true
             }
-          }
+          },
+          "resources": [
+            {
+              "apiVersion": "2018-11-01",
+              "name": "appsettings",
+              "type": "config",
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/slots', variables('webAppName'), 'staging')]"
+              ],
+              "properties": {
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('webAppName')), '2015-05-01').InstrumentationKey]",
+                "ApplicationInsightsAgent_EXTENSION_VERSION": "~2",
+                "XDT_MicrosoftApplicationInsights_Mode": "default",
+                "DiagnosticServices_EXTENSION_VERSION": "disabled",
+                "APPINSIGHTS_PROFILERFEATURE_VERSION": "disabled",
+                "APPINSIGHTS_SNAPSHOTFEATURE_VERSION": "disabled",
+                "InstrumentationEngine_EXTENSION_VERSION": "disabled",
+                "SnapshotDebugger_EXTENSION_VERSION": "disabled",
+                "XDT_MicrosoftApplicationInsights_BaseExtensions": "disabled",
+                "SlotName": "staging"
+              }
+            }
+          ]
         }
       ]
     },
     {
       "name": "[variables('reportApiWebAppName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('reportApiWebAppName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('reportApiWebAppName')))]",
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
       "location": "[variables('location')]",
@@ -370,7 +408,7 @@
       "type": "Microsoft.Web/sites",
       "apiVersion": "2018-11-01",
       "name": "[variables('reportFuncAppName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('reportFuncAppName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('reportFuncAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "dependsOn": [
@@ -432,7 +470,7 @@
       "type": "Microsoft.ServiceBus/namespaces",
       "apiVersion": "2017-04-01",
       "name": "[variables('serviceBusNamespaceName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('serviceBusNamespaceName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "sku": {
@@ -531,7 +569,7 @@
       "type": "Microsoft.ServiceBus/namespaces",
       "apiVersion": "2017-04-01",
       "name": "[variables('serviceBusNamespaceNameStaging')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "sku": {
@@ -629,7 +667,7 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('funcStorageAccountName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('funcStorageAccountName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcStorageAccountName')))]",
       "apiVersion": "2018-07-01",
       "location": "[variables('location')]",
       "kind": "[parameters('storageKind')]",
@@ -675,7 +713,7 @@
     {
       "type": "Microsoft.Storage/storageAccounts",
       "name": "[variables('generalStorageAccountName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('generalStorageAccountName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('generalStorageAccountName')))]",
       "apiVersion": "2018-07-01",
       "location": "[variables('location')]",
       "kind": "[parameters('storageKind')]",
@@ -722,7 +760,7 @@
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
       "name": "[variables('funcAppName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('funcAppName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "funcapp",
@@ -736,7 +774,7 @@
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
       "name": "[variables('reportFuncAppName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('reportFuncAppName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('reportFuncAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "funcapp",
@@ -750,7 +788,7 @@
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
       "name": "[variables('reportApiWebAppName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('reportApiWebAppName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('reportApiWebAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "api",
@@ -764,7 +802,7 @@
       "type": "microsoft.insights/components",
       "apiVersion": "2015-05-01",
       "name": "[variables('webAppName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('webAppName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('webAppName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "kind": "web",
@@ -778,7 +816,7 @@
       "apiVersion": "2019-04-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('vnetName')]",
-      "condition": "[or(empty(parameters('specificResource')),equals(parameters('specificResource'),variables('vnetName')))]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('vnetName')))]",
       "location": "[variables('location')]",
       "tags": "[parameters('tagValues')]",
       "properties": {
