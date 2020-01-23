@@ -226,10 +226,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             });
 
        public TestCaseData WhenAnAlertAreTriggered =>
-           _testCaseDataProvider.GetOrCreate(nameof(WhenAddingToGroupWithAnExistingAlert), () =>
+           _testCaseDataProvider.GetOrCreate(nameof(WhenAddingToGroupWithAnExistingAlert), (data) =>
            {
-               var data = new EntityData();
-
                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
                var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
@@ -254,8 +252,6 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                var reportsToCreateAlertFor = data.Reports.Where(r => r.Status == ReportStatus.Pending).ToList();
                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(reportsToCreateAlertFor);
-
-               return data;
            });
     }
 }

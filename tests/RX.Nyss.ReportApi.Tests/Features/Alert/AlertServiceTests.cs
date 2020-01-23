@@ -507,7 +507,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task CheckAlert_WhenAlertIsStillPending_ShouldSendAlert()
         {
             // arrange
-            _testData.SimpleCasesData.GenerateData();
+            _testData.SimpleCasesData.GenerateData().AddToDbContext();
 
             // act
             await _alertService.CheckIfAlertHasBeenHandled(1);
@@ -520,7 +520,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task CheckAlert_WhenAlertNotFound_ShouldDoNothing()
         {
             // arrange
-            _testData.SimpleCasesData.GenerateData();
+            _testData.SimpleCasesData.GenerateData().AddToDbContext();
 
             // act
             await _alertService.CheckIfAlertHasBeenHandled(1);
@@ -533,7 +533,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task SendNotificationsForNewAlert_ShouldSendSmsToAllSupervisorsAndQueueCheckBack()
         {
             // arrange
-            _testData.WhenAnAlertAreTriggered.GenerateData();
+            _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
             var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
             var stringResourceResult = new Dictionary<string, string> { { SmsContentKey.Alerts.AlertTriggered, "Alert triggered!" }};
             _stringsResourcesServiceMock.GetSmsContentResources(Arg.Any<string>())
@@ -551,7 +551,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task CheckAlert_WhenAlertIsStillPending_ShouldNotifyHeadManager()
         {
             // arrange
-            _testData.WhenAnAlertAreTriggered.GenerateData();
+            _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
             var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
             var stringResourceResult = new Dictionary<string, string> {
                 { EmailContentKey.AlertHasNotBeenHandled.Subject, "Alert escalated subject" },
@@ -576,7 +576,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task CheckAlert_WhenAlertIsNoLongerPending_ShouldNotNotifyHeadManager(AlertStatus alertStatus)
         {
             // arrange
-            _testData.WhenAnAlertAreTriggered.GenerateData();
+            _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
             var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
             alert.Status = alertStatus;
             var stringResourceResult = new Dictionary<string, string> {
