@@ -26,8 +26,8 @@ namespace RX.Nyss.Web.Features.Managers
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> CreateManager(int nationalSocietyId, [FromBody]CreateManagerRequestDto createManagerRequestDto) =>
-            await _managerService.CreateManager(nationalSocietyId, createManagerRequestDto);
+        public async Task<Result> Create(int nationalSocietyId, [FromBody]CreateManagerRequestDto createManagerRequestDto) =>
+            await _managerService.Create(nationalSocietyId, createManagerRequestDto);
 
         /// <summary>
         /// Get a manager.
@@ -37,7 +37,7 @@ namespace RX.Nyss.Web.Features.Managers
         [HttpGet("{managerId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Get(int managerId) =>
-            await _managerService.GetManager(managerId);
+            await _managerService.Get(managerId);
 
         /// <summary>
         /// Update a manager.
@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Features.Managers
         [HttpPost("{managerId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Edit(int managerId, [FromBody]EditManagerRequestDto editManagerRequestDto) =>
-            await _managerService.UpdateManager(managerId, editManagerRequestDto);
+            await _managerService.Edit(managerId, editManagerRequestDto);
 
         /// <summary>
         /// Delete a manager.
@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Features.Managers
         [HttpPost("{managerId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Delete(int managerId) =>
-            await _managerService.DeleteManager(managerId);
+            await _managerService.Delete(managerId);
     }
 }
 

@@ -40,7 +40,7 @@ namespace RX.Nyss.Web.Features.Supervisors
             await _supervisorService.Get(supervisorId);
 
         /// <summary>
-        /// Update a supervisor.
+        /// Edit a supervisor.
         /// </summary>
         /// <param name="supervisorId">The id of the supervisor to be edited</param>
         /// <param name="editSupervisorRequestDto">The data used to update the specified supervisor</param>
@@ -55,10 +55,10 @@ namespace RX.Nyss.Web.Features.Supervisors
         /// </summary>
         /// <param name="supervisorId">The ID of the supervisor to be deleted</param>
         /// <returns></returns>
-        [HttpPost("{supervisorId:int}/remove")]
+        [HttpPost("{supervisorId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]
-        public async Task<Result> Remove(int supervisorId) =>
-            await _supervisorService.Remove(supervisorId);
+        public async Task<Result> Delete(int supervisorId) =>
+            await _supervisorService.Delete(supervisorId);
     }
 }
 

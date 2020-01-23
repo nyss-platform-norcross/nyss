@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
         /// <returns></returns>
         [HttpPost("create"), NeedsRole(Role.Administrator)]
         public async Task<Result> Create([FromBody]CreateGlobalCoordinatorRequestDto dto) =>
-            await _globalCoordinatorService.RegisterGlobalCoordinator(dto);
+            await _globalCoordinatorService.Create(dto);
 
         /// <summary>
         /// Get the data of a global coordinator user
@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
         /// <returns></returns>
         [HttpGet("{id:int}/get"), NeedsRole(Role.Administrator)]
         public async Task<Result> Get(int id) =>
-            await _globalCoordinatorService.GetGlobalCoordinator(id);
+            await _globalCoordinatorService.Get(id);
 
         /// <summary>
         /// Edit a global coordinator user
@@ -42,7 +42,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
         /// <returns></returns>
         [HttpPost("{id:int}/edit"), NeedsRole(Role.Administrator)]
         public async Task<Result> Edit([FromBody]EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto) =>
-            await _globalCoordinatorService.UpdateGlobalCoordinator(editGlobalCoordinatorRequestDto);
+            await _globalCoordinatorService.Edit(editGlobalCoordinatorRequestDto);
 
         /// <summary>
         /// Remove a global coordinator user
@@ -51,7 +51,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
         /// <returns></returns>
         [HttpPost("{id:int}/remove"), NeedsRole(Role.Administrator)]
         public async Task<Result> Remove(int id) =>
-            await _globalCoordinatorService.RemoveGlobalCoordinator(id);
+            await _globalCoordinatorService.Remove(id);
 
         /// <summary>
         /// Lists all global coordinators available in the system.
@@ -59,6 +59,6 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
         /// <returns></returns>
         [HttpGet("list"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result> List() =>
-            await _globalCoordinatorService.GetGlobalCoordinators();
+            await _globalCoordinatorService.List();
     }
 }

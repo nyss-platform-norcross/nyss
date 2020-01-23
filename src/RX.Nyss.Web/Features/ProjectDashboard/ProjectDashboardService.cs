@@ -15,8 +15,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 {
     public interface IProjectDashboardService
     {
-        Task<Result<ProjectDashboardFiltersResponseDto>> GetDashboardFiltersData(int projectId);
-        Task<Result<ProjectDashboardResponseDto>> GetDashboardData(int projectId, FiltersRequestDto filtersDto);
+        Task<Result<ProjectDashboardFiltersResponseDto>> GetFiltersData(int projectId);
+        Task<Result<ProjectDashboardResponseDto>> GetData(int projectId, FiltersRequestDto filtersDto);
         Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetProjectReportHealthRisks(int projectId, double latitude, double longitude,
             FiltersRequestDto filtersDto);
     }
@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         private readonly IReportService _reportService;
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByFeatureService _reportsDashboardByFeatureService;
-        private readonly IReportsDashboardByHealthRiskService reportsDashboardByHealthRiskService;
+        private readonly IReportsDashboardByHealthRiskService _reportsDashboardByHealthRiskService;
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
         private readonly IReportsDashboardByDataCollectionPointService _reportsDashboardByDataCollectionPointService;
         private readonly IProjectDashboardSummaryService _projectDashboardSummaryService;
@@ -46,16 +46,16 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             _reportService = reportService;
             _reportsDashboardMapService = reportsDashboardMapService;
             _reportsDashboardByFeatureService = reportsDashboardByFeatureService;
-            this.reportsDashboardByHealthRiskService = reportsDashboardByHealthRiskService;
+            _reportsDashboardByHealthRiskService = reportsDashboardByHealthRiskService;
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
             _reportsDashboardByDataCollectionPointService = reportsDashboardByDataCollectionPointService;
             _projectDashboardSummaryService = projectDashboardSummaryService;
         }
 
-        public async Task<Result<ProjectDashboardFiltersResponseDto>> GetDashboardFiltersData(int projectId)
+        public async Task<Result<ProjectDashboardFiltersResponseDto>> GetFiltersData(int projectId)
         {
             var healthRiskTypesWithoutActivity = new List<HealthRiskType> { HealthRiskType.Human, HealthRiskType.NonHuman, HealthRiskType.UnusualEvent };
-            var projectHealthRisks = await _projectService.GetProjectHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
+            var projectHealthRisks = await _projectService.GetHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
 
             var dto = new ProjectDashboardFiltersResponseDto
             {
@@ -65,7 +65,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             return Success(dto);
         }
 
-        public async Task<Result<ProjectDashboardResponseDto>> GetDashboardData(int projectId, FiltersRequestDto filtersDto)
+        public async Task<Result<ProjectDashboardResponseDto>> GetData(int projectId, FiltersRequestDto filtersDto)
         {
             if (filtersDto.EndDate < filtersDto.StartDate)
             {
@@ -78,7 +78,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var dashboardDataDto = new ProjectDashboardResponseDto
             {
                 Summary = await _projectDashboardSummaryService.GetSummaryData(filters),
-                ReportsGroupedByHealthRiskAndDate = await reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType),
+                ReportsGroupedByHealthRiskAndDate = await _reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType),
                 ReportsGroupedByFeaturesAndDate = reportsByFeaturesAndDate,
                 ReportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType),
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),

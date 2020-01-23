@@ -24,12 +24,12 @@ namespace RX.Nyss.Web.Features.Alerts
     public interface IAlertService
     {
         Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber);
-        Task<Result<AlertAssessmentResponseDto>> GetAlert(int alertId);
-        Task<Result> EscalateAlert(int alertId);
-        Task<Result> DismissAlert(int alertId);
-        Task<Result> CloseAlert(int alertId, string comments);
-        Task<AlertAssessmentStatus> GetAlertAssessmentStatus(int alertId);
-        Task<Result<AlertLogResponseDto>> GetAlertLogs(int alertId);
+        Task<Result<AlertAssessmentResponseDto>> Get(int alertId);
+        Task<Result> Escalate(int alertId);
+        Task<Result> Dismiss(int alertId);
+        Task<Result> Close(int alertId, string comments);
+        Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
+        Task<Result<AlertLogResponseDto>> GetLogs(int alertId);
     }
 
     public class AlertService : IAlertService
@@ -112,7 +112,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(dtos);
         }
 
-        public async Task<Result<AlertAssessmentResponseDto>> GetAlert(int alertId)
+        public async Task<Result<AlertAssessmentResponseDto>> Get(int alertId)
         {
             var alert = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
@@ -157,7 +157,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 CaseDefinition = alert.CaseDefinition,
                 NotificationEmails = alert.NotificationEmails,
                 NotificationPhoneNumbers = alert.NotificationPhoneNumbers,
-                AssessmentStatus = GetAlertAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
+                AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 Reports = alert.Reports.Select(ar => new AlertAssessmentResponseDto.ReportDto
                 {
                     Id = ar.Id,
@@ -174,7 +174,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(dto);
         }
 
-        public async Task<Result> EscalateAlert(int alertId)
+        public async Task<Result> Escalate(int alertId)
         {
             var alertData = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
@@ -225,7 +225,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(ResultKey.Alert.EscalateAlert.Success);
         }
 
-        public async Task<Result> DismissAlert(int alertId)
+        public async Task<Result> Dismiss(int alertId)
         {
             var alertData = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
@@ -257,7 +257,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success();
         }
 
-        public async Task<Result> CloseAlert(int alertId, string comments)
+        public async Task<Result> Close(int alertId, string comments)
         {
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
@@ -294,7 +294,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success();
         }
 
-        public async Task<AlertAssessmentStatus> GetAlertAssessmentStatus(int alertId)
+        public async Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId)
         {
             var alertData = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
@@ -307,10 +307,10 @@ namespace RX.Nyss.Web.Features.Alerts
                 })
                 .SingleAsync();
 
-            return GetAlertAssessmentStatus(alertData.Status, alertData.AcceptedReports, alertData.PendingReports, alertData.CountThreshold);
+            return GetAssessmentStatus(alertData.Status, alertData.AcceptedReports, alertData.PendingReports, alertData.CountThreshold);
         }
 
-        public async Task<Result<AlertLogResponseDto>> GetAlertLogs(int alertId)
+        public async Task<Result<AlertLogResponseDto>> GetLogs(int alertId)
         {
             var alert = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
@@ -385,7 +385,7 @@ namespace RX.Nyss.Web.Features.Alerts
             });
         }
 
-        private static AlertAssessmentStatus GetAlertAssessmentStatus(AlertStatus alertStatus, int acceptedReports, int pendingReports, int countThreshold) =>
+        private static AlertAssessmentStatus GetAssessmentStatus(AlertStatus alertStatus, int acceptedReports, int pendingReports, int countThreshold) =>
             alertStatus switch
             {
                 AlertStatus.Escalated =>

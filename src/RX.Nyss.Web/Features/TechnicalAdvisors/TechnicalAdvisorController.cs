@@ -26,8 +26,8 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, [FromBody]CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto) =>
-            await _technicalAdvisorService.CreateTechnicalAdvisor(nationalSocietyId, createTechnicalAdvisorRequestDto);
+        public async Task<Result> Create(int nationalSocietyId, [FromBody]CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto) =>
+            await _technicalAdvisorService.Create(nationalSocietyId, createTechnicalAdvisorRequestDto);
 
         /// <summary>
         /// Get a technical advisor.
@@ -37,7 +37,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         [HttpGet("{technicalAdvisorId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
         public async Task<Result> Get(int technicalAdvisorId) =>
-            await _technicalAdvisorService.GetTechnicalAdvisor(technicalAdvisorId);
+            await _technicalAdvisorService.Get(technicalAdvisorId);
 
         /// <summary>
         /// Update a technical advisor.
@@ -49,7 +49,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         [HttpPost("{technicalAdvisorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
         public async Task<Result> Edit(int technicalAdvisorId, [FromBody]EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto) =>
-            await _technicalAdvisorService.UpdateTechnicalAdvisor(technicalAdvisorId, editTechnicalAdvisorRequestDto);
+            await _technicalAdvisorService.Edit(technicalAdvisorId, editTechnicalAdvisorRequestDto);
 
         /// <summary>
         /// Remove a technical advisor from a national society.
@@ -62,6 +62,6 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         [HttpPost("{technicalAdvisorId:int}/remove")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.TechnicalAdvisorAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId) =>
-            await _technicalAdvisorService.DeleteTechnicalAdvisor(nationalSocietyId, technicalAdvisorId);
+            await _technicalAdvisorService.Delete(nationalSocietyId, technicalAdvisorId);
     }
 }

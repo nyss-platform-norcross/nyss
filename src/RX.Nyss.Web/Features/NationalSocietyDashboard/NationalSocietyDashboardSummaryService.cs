@@ -13,7 +13,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 {
     public interface INationalSocietyDashboardSummaryService
     {
-        Task<NationalSocietySummaryResponseDto> GetSummaryData(ReportsFilter filters);
+        Task<NationalSocietySummaryResponseDto> GetData(ReportsFilter filters);
     }
 
     public class NationalSocietyDashboardSummaryService : INationalSocietyDashboardSummaryService
@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             _reportsDashboardSummaryService = reportsDashboardSummaryService;
         }
 
-        public async Task<NationalSocietySummaryResponseDto> GetSummaryData(ReportsFilter filters)
+        public async Task<NationalSocietySummaryResponseDto> GetData(ReportsFilter filters)
         {
             if (!filters.NationalSocietyId.HasValue)
             {

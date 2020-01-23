@@ -26,8 +26,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// <param name="projectId">An identifier of a project</param>
         [HttpGet("filters")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<ProjectDashboardFiltersResponseDto>> GetFilters(int projectId) =>
-            _projectDashboardService.GetDashboardFiltersData(projectId);
+        public Task<Result<ProjectDashboardFiltersResponseDto>> Filters(int projectId) =>
+            _projectDashboardService.GetFiltersData(projectId);
 
         /// <summary>
         /// Gets a summary of specified project displayed on the dashboard page.
@@ -36,8 +36,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// <returns>A summary of specified project</returns>
         [HttpPost("data")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<ProjectDashboardResponseDto>> GetData(int projectId, [FromBody]FiltersRequestDto dto) =>
-            _projectDashboardService.GetDashboardData(projectId, dto);
+        public Task<Result<ProjectDashboardResponseDto>> Data(int projectId, [FromBody]FiltersRequestDto dto) =>
+            _projectDashboardService.GetData(projectId, dto);
 
         /// <summary>
         /// Gets health risk summary basing on a location and filters

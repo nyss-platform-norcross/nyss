@@ -14,11 +14,11 @@ namespace RX.Nyss.Web.Features.HealthRisks
 {
     public interface IHealthRiskService
     {
-        Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks();
-        Task<Result<HealthRiskResponseDto>> GetHealthRisk(int id);
-        Task<Result> CreateHealthRisk(HealthRiskRequestDto healthRiskRequestDto);
-        Task<Result> EditHealthRisk(int id, HealthRiskRequestDto healthRiskRequestDto);
-        Task<Result> RemoveHealthRisk(int id);
+        Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> List();
+        Task<Result<HealthRiskResponseDto>> Get(int id);
+        Task<Result> Create(HealthRiskRequestDto healthRiskRequestDto);
+        Task<Result> Edit(int id, HealthRiskRequestDto healthRiskRequestDto);
+        Task<Result> Remove(int id);
     }
 
     public class HealthRiskService : IHealthRiskService
@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             _authorizationService = authorizationService;
         }
 
-        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks()
+        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> List()
         {
             var userName = _authorizationService.GetCurrentUserName();
 
@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             return Success<IEnumerable<HealthRiskListItemResponseDto>>(healthRisks);
         }
 
-        public async Task<Result<HealthRiskResponseDto>> GetHealthRisk(int id)
+        public async Task<Result<HealthRiskResponseDto>> Get(int id)
         {
             var healthRiskResponse = await _nyssContext.HealthRisks
                 .Where(healthRisk => healthRisk.Id == id)
@@ -87,7 +87,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             return Success(healthRiskResponse);
         }
 
-        public async Task<Result> CreateHealthRisk(HealthRiskRequestDto healthRiskRequestDto)
+        public async Task<Result> Create(HealthRiskRequestDto healthRiskRequestDto)
         {
             if (await _nyssContext.HealthRisks.AnyAsync(hr => hr.HealthRiskCode == healthRiskRequestDto.HealthRiskCode))
             {
@@ -124,7 +124,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             return SuccessMessage(ResultKey.HealthRisk.Create.CreationSuccess);
         }
 
-        public async Task<Result> EditHealthRisk(int id, HealthRiskRequestDto healthRiskRequestDto)
+        public async Task<Result> Edit(int id, HealthRiskRequestDto healthRiskRequestDto)
         {
             var healthRisk = await _nyssContext.HealthRisks
                 .Include(hr => hr.AlertRule)
@@ -182,7 +182,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             return SuccessMessage(ResultKey.HealthRisk.Edit.EditSuccess);
         }
 
-        public async Task<Result> RemoveHealthRisk(int id)
+        public async Task<Result> Remove(int id)
         {
             var healthRisk = await _nyssContext.HealthRisks
                 .Include(hr => hr.AlertRule)

@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [HttpGet("{nationalSocietyId}/get")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<NationalSocietyResponseDto>> Get(int nationalSocietyId) =>
-            await _nationalSocietyService.GetNationalSociety(nationalSocietyId);
+            await _nationalSocietyService.Get(nationalSocietyId);
 
         /// <summary>
         /// Gets all countries with country codes.
@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [HttpGet("list")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.TechnicalAdvisor, Role.DataConsumer)]
         public async Task<Result<List<NationalSocietyListResponseDto>>> List() =>
-            await _nationalSocietyService.GetNationalSocieties();
+            await _nationalSocietyService.List();
 
         /// <summary>
         /// Creates a new National Society.
@@ -44,8 +44,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
-        public async Task<Result> Create([FromBody]CreateNationalSocietyRequestDto nationalSociety) => 
-            await _nationalSocietyService.CreateNationalSociety(nationalSociety);
+        public async Task<Result> Create([FromBody]CreateNationalSocietyRequestDto nationalSociety) =>
+            await _nationalSocietyService.Create(nationalSociety);
 
         /// <summary>
         /// Edits an existing National Society.
@@ -55,18 +55,18 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// <returns></returns>
         [HttpPost("{nationalSocietyId}/edit")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Edit(int nationalSocietyId, [FromBody]EditNationalSocietyRequestDto nationalSociety) => 
-            await _nationalSocietyService.EditNationalSociety(nationalSocietyId, nationalSociety);
+        public async Task<Result> Edit(int nationalSocietyId, [FromBody]EditNationalSocietyRequestDto nationalSociety) =>
+            await _nationalSocietyService.Edit(nationalSocietyId, nationalSociety);
 
         /// <summary>
         /// Removes an existing National Society.
         /// </summary>
         /// <param name="nationalSocietyId"></param>
         /// <returns></returns>
-        [HttpPost("{nationalSocietyId}/remove")]
+        [HttpPost("{nationalSocietyId}/delete")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Remove(int nationalSocietyId) =>
-            await _nationalSocietyService.RemoveNationalSociety(nationalSocietyId);
+        public async Task<Result> Delete(int nationalSocietyId) =>
+            await _nationalSocietyService.Delete(nationalSocietyId);
 
         /// <summary>
         /// Sets a user as the pending Head Manager for the National Society. Next time this user logs in, the person will get a consent form, and if the user consents the user
@@ -108,7 +108,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [HttpPost("{nationalSocietyId}/archive")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Archive(int nationalSocietyId) =>
-            await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyId);
+            await _nationalSocietyService.Archive(nationalSocietyId);
 
         /// <summary>
         /// Reopens an archived National Society.
@@ -118,6 +118,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [HttpPost("{nationalSocietyId}/reopen")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Reopen(int nationalSocietyId) =>
-            await _nationalSocietyService.ReopenNationalSociety(nationalSocietyId);
+            await _nationalSocietyService.Reopen(nationalSocietyId);
     }
 }

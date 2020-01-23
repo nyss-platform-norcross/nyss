@@ -13,7 +13,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 {
     public interface IProjectDashboardSummaryService
     {
-        Task<ProjectSummaryResponseDto> GetSummaryData(ReportsFilter filters);
+        Task<ProjectSummaryResponseDto> GetData(ReportsFilter filters);
     }
 
     public class ProjectDashboardSummaryService : IProjectDashboardSummaryService
@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             _reportsDashboardSummaryService = reportsDashboardSummaryService;
         }
 
-        public async Task<ProjectSummaryResponseDto> GetSummaryData(ReportsFilter filters)
+        public async Task<ProjectSummaryResponseDto> GetData(ReportsFilter filters)
         {
             if (!filters.ProjectId.HasValue)
             {

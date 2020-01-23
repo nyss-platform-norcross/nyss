@@ -24,8 +24,8 @@ namespace RX.Nyss.Web.Features.HealthRisks
         /// <returns>A list of basic information of health risks</returns>
         [HttpGet, Route("list")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> ListHealthRisks() => 
-            await _healthRiskService.ListHealthRisks();
+        public async Task<Result<IEnumerable<HealthRiskListItemResponseDto>>> List() =>
+            await _healthRiskService.List();
 
         /// <summary>
         /// Gets a health risk with all values for editing.
@@ -34,8 +34,8 @@ namespace RX.Nyss.Web.Features.HealthRisks
         /// <returns>A health risk</returns>
         [HttpGet, Route("{id:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result<HealthRiskResponseDto>> GetHealthRisk(int id) => 
-            await _healthRiskService.GetHealthRisk(id);
+        public async Task<Result<HealthRiskResponseDto>> Get(int id) =>
+            await _healthRiskService.Get(id);
 
         /// <summary>
         /// Creates a new health risk.
@@ -43,8 +43,8 @@ namespace RX.Nyss.Web.Features.HealthRisks
         /// <param name="healthRiskRequestDto"></param>
         /// <returns>An identifier of the created health risk</returns>
         [HttpPost, Route("create"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result> Create([FromBody]HealthRiskRequestDto healthRiskRequestDto) => 
-            await _healthRiskService.CreateHealthRisk(healthRiskRequestDto);
+        public async Task<Result> Create([FromBody]HealthRiskRequestDto healthRiskRequestDto) =>
+            await _healthRiskService.Create(healthRiskRequestDto);
 
         /// <summary>
         /// Edits a health risk.
@@ -54,7 +54,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
         /// <returns></returns>
         [HttpPost, Route("{id:int}/edit"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result> Edit(int id, [FromBody]HealthRiskRequestDto healthRiskRequestDto) =>
-            await _healthRiskService.EditHealthRisk(id, healthRiskRequestDto);
+            await _healthRiskService.Edit(id, healthRiskRequestDto);
 
         /// <summary>
         /// Removes a health risk.
@@ -63,6 +63,6 @@ namespace RX.Nyss.Web.Features.HealthRisks
         /// <returns></returns>
         [HttpPost, Route("{id:int}/remove"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
         public async Task<Result> Remove(int id) =>
-            await _healthRiskService.RemoveHealthRisk(id);
+            await _healthRiskService.Remove(id);
     }
 }

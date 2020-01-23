@@ -70,7 +70,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             var response = new AcceptReportResponseDto
             {
-                AssessmentStatus = await _alertService.GetAlertAssessmentStatus(alertId)
+                AssessmentStatus = await _alertService.GetAssessmentStatus(alertId)
             };
 
             return Success(response);
@@ -107,7 +107,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             var response = new DismissReportResponseDto
             {
-                AssessmentStatus = await _alertService.GetAlertAssessmentStatus(alertId)
+                AssessmentStatus = await _alertService.GetAssessmentStatus(alertId)
             };
 
             return Success(response);

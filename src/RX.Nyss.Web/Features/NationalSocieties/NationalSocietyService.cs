@@ -24,17 +24,17 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 {
     public interface INationalSocietyService
     {
-        Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties();
-        Task<Result<NationalSocietyResponseDto>> GetNationalSociety(int id);
-        Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto nationalSociety);
-        Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
-        Task<Result> RemoveNationalSociety(int id);
-        Task<Result> ArchiveNationalSociety(int nationalSocietyId);
+        Task<Result<List<NationalSocietyListResponseDto>>> List();
+        Task<Result<NationalSocietyResponseDto>> Get(int id);
+        Task<Result> Create(CreateNationalSocietyRequestDto nationalSociety);
+        Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
+        Task<Result> Delete(int id);
+        Task<Result> Archive(int nationalSocietyId);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
         Task<Result> SetAsHeadManager();
         Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents();
-        Task<IEnumerable<HealthRiskDto>> GetNationalSocietyHealthRiskNames(int nationalSocietyId);
-        Task<Result> ReopenNationalSociety(int nationalSocietyId);
+        Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId);
+        Task<Result> Reopen(int nationalSocietyId);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -63,7 +63,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             _smsGatewayService = smsGatewayService;
         }
 
-        public async Task<Result<List<NationalSocietyListResponseDto>>> GetNationalSocieties()
+        public async Task<Result<List<NationalSocietyListResponseDto>>> List()
         {
             var nationalSocietiesQuery = await GetNationalSocietiesQuery();
 
@@ -92,7 +92,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success(list);
         }
 
-        public async Task<Result<NationalSocietyResponseDto>> GetNationalSociety(int id)
+        public async Task<Result<NationalSocietyResponseDto>> Get(int id)
         {
             var nationalSociety = await _nyssContext.NationalSocieties
                 .Select(n => new NationalSocietyResponseDto
@@ -116,7 +116,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success(nationalSociety);
         }
 
-        public async Task<Result> CreateNationalSociety(CreateNationalSocietyRequestDto dto)
+        public async Task<Result> Create(CreateNationalSocietyRequestDto dto)
         {
             if (_nyssContext.NationalSocieties.Any(ns => ns.Name.ToLower() == dto.Name.ToLower()))
             {
@@ -148,7 +148,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success(nationalSociety.Id);
         }
 
-        public async Task<Result> EditNationalSociety(int nationalSocietyId, EditNationalSocietyRequestDto dto)
+        public async Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto dto)
         {
             if (_nyssContext.NationalSocieties.Any(ns => ns.Id != nationalSocietyId && ns.Name.ToLower() == dto.Name.ToLower()))
             {
@@ -171,7 +171,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return SuccessMessage(ResultKey.NationalSociety.Edit.Success);
         }
 
-        public async Task<Result> RemoveNationalSociety(int id)
+        public async Task<Result> Delete(int id)
         {
             var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(id);
             _nyssContext.NationalSocieties.Remove(nationalSociety);
@@ -288,7 +288,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return _nyssContext.NationalSocieties.Where(ns => availableNationalSocieties.Contains(ns.Id));
         }
 
-        public async Task<IEnumerable<HealthRiskDto>> GetNationalSocietyHealthRiskNames(int nationalSocietyId) =>
+        public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId) =>
             await _nyssContext.ProjectHealthRisks
                 .Where(ph => ph.Project.NationalSocietyId == nationalSocietyId)
                 .Where(ph => ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
@@ -304,7 +304,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 .OrderBy(x => x.Name)
                 .ToListAsync();
 
-        public async Task<Result> ArchiveNationalSociety(int nationalSocietyId)
+        public async Task<Result> Archive(int nationalSocietyId)
         {
             var openedProjectsQuery = _nyssContext.Projects.Where(p => p.State == ProjectState.Open);
             var nationalSocietyData = await _nyssContext.NationalSocieties
@@ -358,12 +358,12 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         private async Task RemoveApiKeys(int nationalSocietyId)
         {
-            var gatewaysResult = await _smsGatewayService.GetSmsGateways(nationalSocietyId);
+            var gatewaysResult = await _smsGatewayService.List(nationalSocietyId);
             ThrowIfErrorResult(gatewaysResult);
 
             foreach (var gateway in gatewaysResult.Value)
             {
-                var deleteResult = await _smsGatewayService.DeleteSmsGateway(gateway.Id);
+                var deleteResult = await _smsGatewayService.Delete(gateway.Id);
                 ThrowIfErrorResult(deleteResult);
             }
         }
@@ -380,15 +380,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         {
             if (headManagerRole == Role.Manager)
             {
-                await _managerService.RemoveManagerIncludingHeadManagerFlag(headManagerId);
+                await _managerService.DeleteIncludingHeadManagerFlag(headManagerId);
             }
             else if (headManagerRole == Role.TechnicalAdvisor)
             {
-                await _technicalAdvisorService.RemoveTechnicalAdvisorIncludingHeadManagerFlag(nationalSocietyId, headManagerId);
+                await _technicalAdvisorService.DeleteIncludingHeadManagerFlag(nationalSocietyId, headManagerId);
             }
         }
 
-        public async Task<Result> ReopenNationalSociety(int nationalSocietyId)
+        public async Task<Result> Reopen(int nationalSocietyId)
         {
             var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
             if (nationalSociety == null)

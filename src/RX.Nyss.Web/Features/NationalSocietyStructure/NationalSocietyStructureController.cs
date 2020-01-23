@@ -24,8 +24,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("get"), HttpGet]
         [NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result<StructureResponseDto>> GetStructure(int nationalSocietyId) =>
-            await _nationalSocietyStructureService.GetStructure(nationalSocietyId);
+        public async Task<Result<StructureResponseDto>> Get(int nationalSocietyId) =>
+            await _nationalSocietyStructureService.Get(nationalSocietyId);
 
         /// <summary>
         /// Create a region to National Society's structure
@@ -45,12 +45,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             await _nationalSocietyStructureService.EditRegion(regionId, dto.Name);
 
         /// <summary>
-        /// Removes a region from the National Society's structure
+        /// Deletes a region from the National Society's structure
         /// </summary>
-        [Route("region/{regionId}/remove"), HttpPost]
+        [Route("region/{regionId}/delete"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.RegionAccess)]
-        public async Task<Result> RemoveRegion(int regionId) =>
-            await _nationalSocietyStructureService.RemoveRegion(regionId);
+        public async Task<Result> DeleteRegion(int regionId) =>
+            await _nationalSocietyStructureService.DeleteRegion(regionId);
 
         /// <summary>
         /// Create a district to National Society's structure
@@ -70,12 +70,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             await _nationalSocietyStructureService.EditDistrict(districtId, dto.Name);
 
         /// <summary>
-        /// Removes a district from the National Society's structure
+        /// Deletes a district from the National Society's structure
         /// </summary>
-        [Route("district/{districtId}/remove"), HttpPost]
+        [Route("district/{districtId}/delete"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DistrictAccess)]
-        public async Task<Result> RemoveDistrict(int districtId) =>
-            await _nationalSocietyStructureService.RemoveDistrict(districtId);
+        public async Task<Result> DeleteDistrict(int districtId) =>
+            await _nationalSocietyStructureService.DeleteDistrict(districtId);
 
         /// <summary>
         /// Create a village to National Society's structure
@@ -95,12 +95,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             await _nationalSocietyStructureService.EditVillage(villageId, dto.Name);
 
         /// <summary>
-        /// Removes a village from the National Society's structure
+        /// Deletes a village from the National Society's structure
         /// </summary>
-        [Route("village/{villageId}/remove"), HttpPost]
+        [Route("village/{villageId}/delete"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.VillageAccess)]
-        public async Task<Result> RemoveVillage(int villageId) =>
-            await _nationalSocietyStructureService.RemoveVillage(villageId);
+        public async Task<Result> DeleteVillage(int villageId) =>
+            await _nationalSocietyStructureService.DeleteVillage(villageId);
 
 
         /// <summary>
@@ -121,12 +121,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             await _nationalSocietyStructureService.EditZone(zoneId, dto.Name);
 
         /// <summary>
-        /// Removes a zone from the National Society's structure
+        /// Deletes a zone from the National Society's structure
         /// </summary>
-        [Route("zone/{zoneId}/remove"), HttpPost]
+        [Route("zone/{zoneId}/delete"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ZoneAccess)]
-        public async Task<Result> RemoveZone(int zoneId) =>
-            await _nationalSocietyStructureService.RemoveZone(zoneId);
+        public async Task<Result> DeleteZone(int zoneId) =>
+            await _nationalSocietyStructureService.DeleteZone(zoneId);
 
 
         /// <summary>
@@ -134,31 +134,31 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("region/list"), HttpGet]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result<List<RegionResponseDto>>> GetRegions(int nationalSocietyId) =>
-            await _nationalSocietyStructureService.GetRegions(nationalSocietyId);
+        public async Task<Result<List<RegionResponseDto>>> ListRegions(int nationalSocietyId) =>
+            await _nationalSocietyStructureService.ListRegions(nationalSocietyId);
 
         /// <summary>
         /// Gets all districts in a region
         /// </summary>
         [Route("district/list"), HttpGet]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.RegionAccess)]
-        public async Task<Result<List<DistrictResponseDto>>> GetDistricts(int regionId) =>
-            await _nationalSocietyStructureService.GetDistricts(regionId);
+        public async Task<Result<List<DistrictResponseDto>>> ListDistricts(int regionId) =>
+            await _nationalSocietyStructureService.ListDistricts(regionId);
 
         /// <summary>
         /// Gets all villages in a district
         /// </summary>
         [Route("village/list"), HttpGet]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DistrictAccess)]
-        public async Task<Result<List<VillageResponseDto>>> GetVillages(int districtId) =>
-            await _nationalSocietyStructureService.GetVillages(districtId);
+        public async Task<Result<List<VillageResponseDto>>> ListVillages(int districtId) =>
+            await _nationalSocietyStructureService.ListVillages(districtId);
 
         /// <summary>
         /// Gets all zones in a village
         /// </summary>
         [Route("zone/list"), HttpGet]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.VillageAccess)]
-        public async Task<Result<List<ZoneResponseDto>>> GetZones(int villageId) =>
-            await _nationalSocietyStructureService.GetZones(villageId);
+        public async Task<Result<List<ZoneResponseDto>>> ListZones(int villageId) =>
+            await _nationalSocietyStructureService.ListZones(villageId);
     }
 }

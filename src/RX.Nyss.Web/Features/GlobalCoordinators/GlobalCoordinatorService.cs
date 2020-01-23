@@ -17,11 +17,11 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
 {
     public interface IGlobalCoordinatorService
     {
-        Task<Result> RegisterGlobalCoordinator(CreateGlobalCoordinatorRequestDto dto);
-        Task<Result> UpdateGlobalCoordinator(EditGlobalCoordinatorRequestDto dto);
-        Task<Result<GetGlobalCoordinatorResponseDto>> GetGlobalCoordinator(int id);
-        Task<Result<List<GetGlobalCoordinatorResponseDto>>> GetGlobalCoordinators();
-        Task<Result> RemoveGlobalCoordinator(int id);
+        Task<Result> Create(CreateGlobalCoordinatorRequestDto dto);
+        Task<Result> Edit(EditGlobalCoordinatorRequestDto dto);
+        Task<Result<GetGlobalCoordinatorResponseDto>> Get(int id);
+        Task<Result<List<GetGlobalCoordinatorResponseDto>>> List();
+        Task<Result> Remove(int id);
     }
 
     public class GlobalCoordinatorService : IGlobalCoordinatorService
@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
             _deleteUserService = deleteUserService;
         }
 
-        public async Task<Result> RegisterGlobalCoordinator(CreateGlobalCoordinatorRequestDto dto)
+        public async Task<Result> Create(CreateGlobalCoordinatorRequestDto dto)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
             }
         }
 
-        public async Task<Result> UpdateGlobalCoordinator(EditGlobalCoordinatorRequestDto dto)
+        public async Task<Result> Edit(EditGlobalCoordinatorRequestDto dto)
         {
             var globalCoordinator = await _dataContext.Users.FilterAvailable()
                 .SingleOrDefaultAsync(u => u.Id == dto.Id && u.Role == Role.GlobalCoordinator);
@@ -107,7 +107,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
             return Success();
         }
 
-        public async Task<Result<GetGlobalCoordinatorResponseDto>> GetGlobalCoordinator(int id)
+        public async Task<Result<GetGlobalCoordinatorResponseDto>> Get(int id)
         {
             var globalCoordinator = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.Id == id && u.Role == Role.GlobalCoordinator)
@@ -131,7 +131,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
             return Success(globalCoordinator);
         }
 
-        public async Task<Result<List<GetGlobalCoordinatorResponseDto>>> GetGlobalCoordinators()
+        public async Task<Result<List<GetGlobalCoordinatorResponseDto>>> List()
         {
             var globalCoordinators = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.Role == Role.GlobalCoordinator)
@@ -150,7 +150,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
             return Success(globalCoordinators);
         }
 
-        public async Task<Result> RemoveGlobalCoordinator(int id)
+        public async Task<Result> Remove(int id)
         {
             try
             {
@@ -182,7 +182,5 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
                 return e.Result;
             }
         }
-
-
     }
 }
