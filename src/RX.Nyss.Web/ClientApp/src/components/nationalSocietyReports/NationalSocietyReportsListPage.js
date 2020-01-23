@@ -1,6 +1,6 @@
 import styles from "./NationalSocietyReportsListPage.module.scss";
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsActions';
@@ -30,8 +30,8 @@ const NationalSocietyReportsListPageComponent = (props) => {
     props.getList(props.nationalSocietyId, props.page, props.filters, sorting);
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12} className={styles.filtersGrid}>
+    <Fragment>
+      <div className={styles.filtersGrid}>
         <ReportFilters
           healthRisks={props.healthRisks}
           nationalSocietyId={props.nationalSocietyId}
@@ -40,9 +40,8 @@ const NationalSocietyReportsListPageComponent = (props) => {
           showUnknownSenderOption={true}
           showTrainingFilter={false}
         />
-      </Grid>
+      </div>
 
-      <Grid item xs={12}>
         <NationalSocietyReportsTable
           list={props.data.data}
           isListFetching={props.isListFetching}
@@ -55,8 +54,7 @@ const NationalSocietyReportsListPageComponent = (props) => {
           sorting={props.sorting}
           onSort={handleSortChange}
         />
-      </Grid>
-    </Grid>
+    </Fragment>
   );
 }
 

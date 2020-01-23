@@ -1,4 +1,4 @@
-import styles from "./ReportsTable.module.scss";
+import styles from '../common/table/Table.module.scss';
 
 import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
@@ -63,12 +63,12 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
 
   return (
     <Fragment>
-      <TableContainer>
+      <TableContainer sticky>
         {isListFetching && <Loading absolute />}
-        <Table stickyHeader>
+        <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ width: "6%", minWidth: "80px" }} className={styles.tableHeader}>
+              <TableCell style={{ width: "6%", minWidth: "80px" }}>
                 <TableSortLabel
                   active={sorting.orderBy === DateColumnName}
                   direction={sorting.sortAscending ? 'asc' : 'desc'}
@@ -77,25 +77,25 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
                   {strings(stringKeys.reports.list.date)}
                 </TableSortLabel>
               </TableCell>
-              <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.status)}</TableCell>
-              <TableCell style={{ width: "12%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
-              <TableCell style={{ width: "20%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.location)}</TableCell>
-              <TableCell style={{ width: "14%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
+              <TableCell style={{ width: "6%" }}>{strings(stringKeys.reports.list.status)}</TableCell>
+              <TableCell style={{ width: "12%" }}>{strings(stringKeys.reports.list.dataCollectorDisplayName)}</TableCell>
+              <TableCell style={{ width: "20%" }}>{strings(stringKeys.reports.list.location)}</TableCell>
+              <TableCell style={{ width: "14%" }}>{strings(stringKeys.reports.list.healthRisk)}</TableCell>
               {!filters.status &&
-                <TableCell style={{ width: "12%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.message)}</TableCell>
+                <TableCell style={{ width: "12%" }}>{strings(stringKeys.reports.list.message)}</TableCell>
               }
-              <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
-              <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
-              <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
-              <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
+              <TableCell style={{ width: "7%" }}>{strings(stringKeys.reports.list.malesBelowFive)}</TableCell>
+              <TableCell style={{ width: "8%" }}>{strings(stringKeys.reports.list.malesAtLeastFive)}</TableCell>
+              <TableCell style={{ width: "7%" }}>{strings(stringKeys.reports.list.femalesBelowFive)}</TableCell>
+              <TableCell style={{ width: "8%" }}>{strings(stringKeys.reports.list.femalesAtLeastFive)}</TableCell>
               {reportsType === ReportListType.fromDcp &&
                 <Fragment>
-                  <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
-                  <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
-                  <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
+                  <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.reports.list.referredCount)}</TableCell>
+                  <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.reports.list.deathCount)}</TableCell>
+                  <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.reports.list.fromOtherVillagesCount)}</TableCell>
                 </Fragment>
               }
-              <TableCell style={{ width: "3%" }} className={styles.tableHeader} />
+              <TableCell style={{ width: "3%" }} />
             </TableRow>
           </TableHead>
           <TableBody>

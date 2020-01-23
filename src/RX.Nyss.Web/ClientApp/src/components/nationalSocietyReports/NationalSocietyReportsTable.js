@@ -50,12 +50,12 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
   }
 
   return (
-    <TableContainer>
+    <TableContainer sticky>
       {isListFetching && <Loading absolute />}
-      <Table stickyHeader>
+      <Table>
         <TableHead>
           <TableRow>
-            <TableCell style={{ width: "6%", minWidth: "80px" }} className={styles.tableHeader}>
+            <TableCell style={{ width: "6%", minWidth: "80px" }}>
               <TableSortLabel
                 active={sorting.orderBy === DateColumnName}
                 direction={sorting.sortAscending ? 'asc' : 'desc'}
@@ -64,23 +64,23 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
                 {strings(stringKeys.nationalSocietyReports.list.date)}
               </TableSortLabel>
             </TableCell>
-            <TableCell style={{ width: "6%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.status)}</TableCell>
-            <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.project)}</TableCell>
-            <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorDisplayName)}</TableCell>
-            <TableCell style={{ width: "14%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.location)}</TableCell>
-            <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.healthRisk)}</TableCell>
+            <TableCell style={{ width: "6%" }}>{strings(stringKeys.nationalSocietyReports.list.status)}</TableCell>
+            <TableCell style={{ width: "11%" }}>{strings(stringKeys.nationalSocietyReports.list.project)}</TableCell>
+            <TableCell style={{ width: "11%" }}>{strings(stringKeys.nationalSocietyReports.list.dataCollectorDisplayName)}</TableCell>
+            <TableCell style={{ width: "14%" }}>{strings(stringKeys.nationalSocietyReports.list.location)}</TableCell>
+            <TableCell style={{ width: "11%" }}>{strings(stringKeys.nationalSocietyReports.list.healthRisk)}</TableCell>
             {!filters.status &&
-              <TableCell style={{ width: "11%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.message)}</TableCell>
+              <TableCell style={{ width: "11%" }}>{strings(stringKeys.nationalSocietyReports.list.message)}</TableCell>
             }
-            <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.malesBelowFive)}</TableCell>
-            <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.malesAtLeastFive)}</TableCell>
-            <TableCell style={{ width: "7%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.femalesBelowFive)}</TableCell>
-            <TableCell style={{ width: "8%" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
+            <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.malesBelowFive)}</TableCell>
+            <TableCell style={{ width: "8%" }}>{strings(stringKeys.nationalSocietyReports.list.malesAtLeastFive)}</TableCell>
+            <TableCell style={{ width: "7%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesBelowFive)}</TableCell>
+            <TableCell style={{ width: "8%" }}>{strings(stringKeys.nationalSocietyReports.list.femalesAtLeastFive)}</TableCell>
             {reportsType === ReportListType.fromDcp &&
               <Fragment>
-                <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.referredCount)}</TableCell>
-                <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.deathCount)}</TableCell>
-                <TableCell style={{ width: "10%", minWidth: "50px" }} className={styles.tableHeader}>{strings(stringKeys.nationalSocietyReports.list.fromOtherVillagesCount)}</TableCell>
+                <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.referredCount)}</TableCell>
+                <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.deathCount)}</TableCell>
+                <TableCell style={{ width: "10%", minWidth: "50px" }}>{strings(stringKeys.nationalSocietyReports.list.fromOtherVillagesCount)}</TableCell>
               </Fragment>
             }
           </TableRow>

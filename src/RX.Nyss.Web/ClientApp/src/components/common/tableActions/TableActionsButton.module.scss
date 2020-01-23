@@ -3,6 +3,10 @@
 
   @media screen and (max-width: 600px) {
     margin-left: unset;
-    margin-bottom: 8px;
+    margin-bottom: 8px !important;
   }
+}
+
+.progressIcon {
+    position: absolute
 }
