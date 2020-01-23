@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             await _nationalSocietyService.Edit(nationalSocietyId, nationalSociety);
 
         /// <summary>
-        /// Removes an existing National Society.
+        /// Deletes an existing National Society.
         /// </summary>
         /// <param name="nationalSocietyId"></param>
         /// <returns></returns>

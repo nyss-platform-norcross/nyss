@@ -121,7 +121,7 @@ function* editDataCollector({ projectId, data }) {
 function* removeDataCollector({ dataCollectorId }) {
   yield put(actions.remove.request(dataCollectorId));
   try {
-    yield call(http.post, `/api/dataCollector/${dataCollectorId}/remove`);
+    yield call(http.post, `/api/dataCollector/${dataCollectorId}/delete`);
     yield put(actions.remove.success(dataCollectorId));
     const projectId = yield select(state => state.appData.route.params.projectId);
     yield call(getDataCollectors, projectId);

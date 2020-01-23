@@ -189,13 +189,13 @@ function getSpecificRoleUserRetrievalUrl(userId, role) {
 function getSpecificRoleUserRemovalUrl(userId, role, nationalSocietyId) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/technicalAdvisor/${userId}/remove?nationalSocietyId=${nationalSocietyId}`;
+      return `/api/technicalAdvisor/${userId}/delete?nationalSocietyId=${nationalSocietyId}`;
     case roles.Manager:
-      return `/api/manager/${userId}/remove`;
+      return `/api/manager/${userId}/delete`;
     case roles.DataConsumer:
-      return `/api/dataConsumer/${userId}/remove?nationalSocietyId=${nationalSocietyId}`;
+      return `/api/dataConsumer/${userId}/delete?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
-      return `/api/supervisor/${userId}/remove`;
+      return `/api/supervisor/${userId}/delete`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }

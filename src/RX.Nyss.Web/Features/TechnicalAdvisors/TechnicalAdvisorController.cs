@@ -52,14 +52,14 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             await _technicalAdvisorService.Edit(technicalAdvisorId, editTechnicalAdvisorRequestDto);
 
         /// <summary>
-        /// Remove a technical advisor from a national society.
-        /// If the technical advisor is also in other national societies, he/she will be removed from the provided national society, but the user will not be deleted.
+        /// Delete a technical advisor from a national society.
+        /// If the technical advisor is also in other national societies, he/she will be deleted from the provided national society, but the user will not be deleted.
         /// If this is the only national society of the technical advisor, the technical advisor will be deleted.
         /// </summary>
-        /// <param name="nationalSocietyId">The ID of the national society the technical advisor should be removed from</param>
-        /// <param name="technicalAdvisorId">The ID of the technical advisor to be removed</param>
+        /// <param name="nationalSocietyId">The ID of the national society the technical advisor should be deleted from</param>
+        /// <param name="technicalAdvisorId">The ID of the technical advisor to be deleted</param>
         /// <returns></returns>
-        [HttpPost("{technicalAdvisorId:int}/remove")]
+        [HttpPost("{technicalAdvisorId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.TechnicalAdvisorAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId) =>
             await _technicalAdvisorService.Delete(nationalSocietyId, technicalAdvisorId);

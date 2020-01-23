@@ -78,7 +78,7 @@ function* editRegion({ id, name }) {
 function* removeRegion({ id }) {
   yield put(actions.removeRegion.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/region/${id}/remove`);
+    yield call(http.post, `/api/nationalSocietyStructure/region/${id}/delete`);
     yield put(actions.removeRegion.success(id));
   } catch (error) {
     yield put(actions.removeRegion.failure(id, error.message));
@@ -108,7 +108,7 @@ function* editDistrict({ id, name }) {
 function* removeDistrict({ id }) {
   yield put(actions.removeDistrict.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/district/${id}/remove`);
+    yield call(http.post, `/api/nationalSocietyStructure/district/${id}/delete`);
     yield put(actions.removeDistrict.success(id));
   } catch (error) {
     yield put(actions.removeDistrict.failure(id, error.message));
@@ -138,7 +138,7 @@ function* editVillage({ id, name }) {
 function* removeVillage({ id }) {
   yield put(actions.removeVillage.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/village/${id}/remove`);
+    yield call(http.post, `/api/nationalSocietyStructure/village/${id}/delete`);
     yield put(actions.removeVillage.success(id));
   } catch (error) {
     yield put(actions.removeVillage.failure(id, error.message));
@@ -168,7 +168,7 @@ function* editZone({ id, name }) {
 function* removeZone({ id }) {
   yield put(actions.removeZone.request());
   try {
-    yield call(http.post, `/api/nationalSocietyStructure/zone/${id}/remove`);
+    yield call(http.post, `/api/nationalSocietyStructure/zone/${id}/delete`);
     yield put(actions.removeZone.success(id));
   } catch (error) {
     yield put(actions.removeZone.failure(id, error.message));

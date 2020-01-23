@@ -75,7 +75,7 @@ function* editGlobalCoordinator({ data }) {
 function* removeGlobalCoordinator({ id }) {
   yield put(actions.remove.request(id));
   try {
-    yield call(http.post, `/api/globalcoordinator/${id}/remove`);
+    yield call(http.post, `/api/globalcoordinator/${id}/delete`);
     yield put(actions.remove.success(id));
     yield call(getGlobalCoordinators, true);
     yield put(appActions.showMessage(stringKeys.globalCoordinator.delete.success));

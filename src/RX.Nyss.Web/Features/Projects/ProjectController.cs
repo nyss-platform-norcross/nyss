@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <summary>
         /// Closes a specified project.
         /// </summary>
-        /// <param name="projectId">An identifier of project to be removed</param>
+        /// <param name="projectId">An identifier of project to be closed</param>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns></returns>
         [HttpPost("{projectId:int}/close")]

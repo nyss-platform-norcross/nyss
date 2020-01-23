@@ -57,12 +57,12 @@ namespace RX.Nyss.Web.Features.HealthRisks
             await _healthRiskService.Edit(id, healthRiskRequestDto);
 
         /// <summary>
-        /// Removes a health risk.
+        /// Deletes a health risk.
         /// </summary>
         /// <param name="id">An identifier of a health risk</param>
         /// <returns></returns>
-        [HttpPost, Route("{id:int}/remove"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result> Remove(int id) =>
-            await _healthRiskService.Remove(id);
+        [HttpPost, Route("{id:int}/delete"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
+        public async Task<Result> Delete(int id) =>
+            await _healthRiskService.Delete(id);
     }
 }

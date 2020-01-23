@@ -18,7 +18,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
         Task<Result<HealthRiskResponseDto>> Get(int id);
         Task<Result> Create(HealthRiskRequestDto healthRiskRequestDto);
         Task<Result> Edit(int id, HealthRiskRequestDto healthRiskRequestDto);
-        Task<Result> Remove(int id);
+        Task<Result> Delete(int id);
     }
 
     public class HealthRiskService : IHealthRiskService
@@ -182,7 +182,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             return SuccessMessage(ResultKey.HealthRisk.Edit.EditSuccess);
         }
 
-        public async Task<Result> Remove(int id)
+        public async Task<Result> Delete(int id)
         {
             var healthRisk = await _nyssContext.HealthRisks
                 .Include(hr => hr.AlertRule)

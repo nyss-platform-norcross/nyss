@@ -21,7 +21,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
         Task<Result> Edit(EditGlobalCoordinatorRequestDto dto);
         Task<Result<GetGlobalCoordinatorResponseDto>> Get(int id);
         Task<Result<List<GetGlobalCoordinatorResponseDto>>> List();
-        Task<Result> Remove(int id);
+        Task<Result> Delete(int id);
     }
 
     public class GlobalCoordinatorService : IGlobalCoordinatorService
@@ -150,7 +150,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
             return Success(globalCoordinators);
         }
 
-        public async Task<Result> Remove(int id)
+        public async Task<Result> Delete(int id)
         {
             try
             {

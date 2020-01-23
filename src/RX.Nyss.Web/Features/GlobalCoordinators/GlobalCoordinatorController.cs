@@ -45,13 +45,13 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
             await _globalCoordinatorService.Edit(editGlobalCoordinatorRequestDto);
 
         /// <summary>
-        /// Remove a global coordinator user
+        /// Delete a global coordinator user
         /// </summary>
-        /// <param name="id">The global coordinator user's ID to be removed</param>
+        /// <param name="id">The global coordinator user's ID to be deleted</param>
         /// <returns></returns>
-        [HttpPost("{id:int}/remove"), NeedsRole(Role.Administrator)]
-        public async Task<Result> Remove(int id) =>
-            await _globalCoordinatorService.Remove(id);
+        [HttpPost("{id:int}/delete"), NeedsRole(Role.Administrator)]
+        public async Task<Result> Delete(int id) =>
+            await _globalCoordinatorService.Delete(id);
 
         /// <summary>
         /// Lists all global coordinators available in the system.

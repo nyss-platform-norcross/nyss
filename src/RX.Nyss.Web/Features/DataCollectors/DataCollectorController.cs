@@ -47,15 +47,15 @@ namespace RX.Nyss.Web.Features.DataCollectors
         public async Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining) =>
             await _dataCollectorService.SetTrainingState(dataCollectorId, isInTraining);
 
-        [HttpPost, Route("{dataCollectorId:int}/remove")]
+        [HttpPost, Route("{dataCollectorId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
-        public async Task<Result> Remove(int dataCollectorId) =>
-            await _dataCollectorService.Remove(dataCollectorId);
+        public async Task<Result> Delete(int dataCollectorId) =>
+            await _dataCollectorService.Delete(dataCollectorId);
 
         [HttpGet, Route("formData")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
         public async Task<Result<DataCollectorFormDataResponse>> FormData(int projectId) =>
-            await _dataCollectorService.FormData(projectId);
+            await _dataCollectorService.GetFormData(projectId);
 
         [HttpGet, Route("mapOverview")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]

@@ -74,7 +74,7 @@ function* editHealthRisk({ id, data }) {
 function* removeHealthRisk({ id }) {
   yield put(actions.remove.request(id));
   try {
-    yield call(http.post, `/api/healthrisk/${id}/remove`);
+    yield call(http.post, `/api/healthrisk/${id}/delete`);
     yield put(actions.remove.success(id));
     yield call(getHealthRisks, true);
     yield put(appActions.showMessage(stringKeys.healthRisk.delete.success));

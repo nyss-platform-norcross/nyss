@@ -28,10 +28,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
     {
         Task<Result> Create(int projectId, CreateDataCollectorRequestDto createDto);
         Task<Result> Edit(EditDataCollectorRequestDto editDto);
-        Task<Result> Remove(int dataCollectorId);
+        Task<Result> Delete(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
         Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId);
-        Task<Result<DataCollectorFormDataResponse>> FormData(int projectId);
+        Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng);
         Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId);
@@ -113,7 +113,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success(dto);
         }
 
-        public async Task<Result<DataCollectorFormDataResponse>> FormData(int projectId)
+        public async Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId)
         {
             var identityName = _authorizationService.GetCurrentUserName();
             var projectData = await _nyssContext.Projects
@@ -297,7 +297,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return SuccessMessage(ResultKey.DataCollector.EditSuccess);
         }
 
-        public async Task<Result> Remove(int dataCollectorId)
+        public async Task<Result> Delete(int dataCollectorId)
         {
             var dataCollector = await _nyssContext.DataCollectors
                 .Select(dc => new
