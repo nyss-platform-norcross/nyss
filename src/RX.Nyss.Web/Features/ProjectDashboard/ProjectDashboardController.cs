@@ -5,8 +5,8 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
+using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 using RX.Nyss.Web.Utils;
-using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard
 {
@@ -14,14 +14,10 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     public class ProjectDashboardController : BaseController
     {
         private readonly IProjectDashboardService _projectDashboardService;
-        private readonly IProjectDashboardDataService _projectDashboardDataService;
 
-        public ProjectDashboardController(
-            IProjectDashboardService projectDashboardService,
-            IProjectDashboardDataService projectDashboardDataService)
+        public ProjectDashboardController(IProjectDashboardService projectDashboardService)
         {
             _projectDashboardService = projectDashboardService;
-            _projectDashboardDataService = projectDashboardDataService;
         }
 
         /// <summary>
@@ -52,7 +48,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// <param name="filters">Filters</param>
         [HttpPost("reportHealthRisks")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result<IEnumerable<ProjectSummaryReportHealthRiskResponseDto>>> GetReportHealthRisks(int projectId, double latitude, double longitude, [FromBody]FiltersRequestDto filters) =>
-            Success(await _projectDashboardDataService.GetProjectReportHealthRisks(projectId, latitude, longitude, filters));
+        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int projectId, double latitude, double longitude, [FromBody]FiltersRequestDto filters) =>
+            await _projectDashboardService.GetProjectReportHealthRisks(projectId, latitude, longitude, filters);
     }
 }

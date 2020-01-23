@@ -8,14 +8,6 @@ namespace RX.Nyss.Web.Features.Common.Dto
 
         public AreaType Type { get; set; }
         
-        public enum AreaType
-        {
-            Region,
-            District,
-            Village,
-            Zone
-        }
-
         public class Validator : AbstractValidator<AreaDto>
         {
             public Validator()

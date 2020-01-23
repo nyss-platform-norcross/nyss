@@ -8,9 +8,9 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 
-namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
+namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
 {
-    public class ProjectDashboardTestData
+    public class ReportsDashboardTestData
     {
         private readonly IDateTimeProvider _dateTimeProvider;
         public int ProjectId { get; set; } = 1;
@@ -75,7 +75,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             return nyssContextMock;
         }
 
-        public ProjectDashboardTestData(IDateTimeProvider dateTimeProvider)
+        public ReportsDashboardTestData(IDateTimeProvider dateTimeProvider)
         {
             _dateTimeProvider = dateTimeProvider;
 

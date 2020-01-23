@@ -1,5 +1,6 @@
 ﻿using System;
 using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Services.ReportsDashboard;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
@@ -13,17 +14,11 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 
         public AreaDto Area { get; set; }
 
-        public GroupingTypeDto GroupingType { get; set; }
+        public DatesGroupingType GroupingType { get; set; }
 
         public ReportsTypeDto ReportsType { get; set; }
 
         public bool IsTraining { get; set; }
-
-        public enum GroupingTypeDto
-        {
-            Day,
-            Week
-        }
 
         public enum ReportsTypeDto
         {

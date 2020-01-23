@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Components.Forms;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -21,8 +22,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                reports
            };
 
-        public static IQueryable<RawReport> FilterReportsByNationalSociety(this IQueryable<RawReport> reports, int nationalSocietyId) =>
-            reports.Where(r => r.Report.DataCollector.Project.NationalSocietyId == nationalSocietyId);
+        public static IQueryable<RawReport> FilterReportsByNationalSociety(this IQueryable<RawReport> reports, int? nationalSocietyId) =>
+            reports.Where(r => !nationalSocietyId.HasValue || r.Report.DataCollector.Project.NationalSocietyId == nationalSocietyId.Value);
 
         public static IQueryable<RawReport> AllSuccessfulReports(this IQueryable<RawReport> reports) =>
             reports.Where(r => r.Report != null);
@@ -33,26 +34,26 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<RawReport> FilterByHealthRisk(this IQueryable<RawReport> reports, int? healthRiskId) =>
             reports.Where(r => !healthRiskId.HasValue || (r.Report != null && r.Report.ProjectHealthRisk.HealthRiskId == healthRiskId.Value));
 
-        public static IQueryable<RawReport> FilterByProject(this IQueryable<RawReport> reports, int projectId) =>
-            reports.Where(r => r.DataCollector.Project.Id == projectId);
+        public static IQueryable<RawReport> FilterByProject(this IQueryable<RawReport> reports, int? projectId) =>
+            reports.Where(r => !projectId.HasValue || r.DataCollector.Project.Id == projectId.Value);
 
         public static IQueryable<RawReport> FromKnownDataCollector(this IQueryable<RawReport> reports) =>
             reports.Where(r => r.DataCollector != null);
 
-        public static IQueryable<RawReport> FilterByArea(this IQueryable<RawReport> reports, AreaDto area) =>
-            area?.Type switch
+        public static IQueryable<RawReport> FilterByArea(this IQueryable<RawReport> reports, Area area) =>
+            area?.AreaType switch
             {
-                AreaDto.AreaType.Region =>
-                reports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.Id : r.DataCollector.Village.District.Region.Id == area.Id),
+                AreaType.Region =>
+                reports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.AreaId : r.DataCollector.Village.District.Region.Id == area.AreaId),
 
-                AreaDto.AreaType.District =>
-                reports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.Id : r.DataCollector.Village.District.Id == area.Id),
+                AreaType.District =>
+                reports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.AreaId : r.DataCollector.Village.District.Id == area.AreaId),
 
-                AreaDto.AreaType.Village =>
-                reports.Where(r => r.Report != null ? r.Report.Village.Id == area.Id : r.DataCollector.Village.Id == area.Id),
+                AreaType.Village =>
+                reports.Where(r => r.Report != null ? r.Report.Village.Id == area.AreaId : r.DataCollector.Village.Id == area.AreaId),
 
-                AreaDto.AreaType.Zone =>
-                reports.Where(r => r.Report != null ? r.Report.Zone.Id == area.Id : r.DataCollector.Zone.Id == area.Id),
+                AreaType.Zone =>
+                reports.Where(r => r.Report != null ? r.Report.Zone.Id == area.AreaId : r.DataCollector.Zone.Id == area.AreaId),
 
                 _ =>
                 reports

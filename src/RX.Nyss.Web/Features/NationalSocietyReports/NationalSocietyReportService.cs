@@ -7,6 +7,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocieties;
@@ -60,7 +61,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     r.DataCollector == null)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
                 .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
-                .FilterByArea(filter.Area);
+                .FilterByArea(MapToArea(filter.Area));
 
             if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
             {
@@ -117,5 +118,10 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 
             return Success(dto);
         }
+
+        private static Area MapToArea(AreaDto area) =>
+            area == null
+                ? null
+                : new Area { AreaType = area.Type, AreaId = area.Id };
     }
 }

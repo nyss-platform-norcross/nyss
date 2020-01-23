@@ -10,6 +10,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports;
@@ -397,7 +398,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenListFilterIsArea_ShouldReturnOnlyReportsFromArea()
         {
             //act
-            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true, Area = new AreaDto {Id = 2, Type = AreaDto.AreaType.Zone}});
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true, Area = new AreaDto {Id = 2, Type = AreaType.Zone}});
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(13, _rowsPerPage));

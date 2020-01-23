@@ -1,8 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
-using RX.Nyss.Web.Features.NationalSocietyDashboard.Data;
+using RX.Nyss.Web.Features.Reports;
+using RX.Nyss.Web.Services.ReportsDashboard;
+using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.NationalSocietyDashboard
@@ -12,22 +17,24 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetDashboardFiltersData(int nationalSocietyId);
         
         Task<Result<NationalSocietyDashboardResponseDto>> GetDashboardData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto);
+
+        Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportsHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto);
     }
 
     public class NationalSocietyDashboardService : INationalSocietyDashboardService
     {
         private readonly INationalSocietyService _nationalSocietyService;
-        private readonly INationalSocietyDashboardReportsMapService _nationalSocietyDashboardReportsMapService;
         private readonly INationalSocietyDashboardSummaryService _nationalSocietyDashboardSummaryService;
+        private readonly IReportsDashboardMapService _reportsDashboardMapService;
 
         public NationalSocietyDashboardService(
             INationalSocietyService nationalSocietyService,
-            INationalSocietyDashboardReportsMapService nationalSocietyDashboardReportsMapService,
-            INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService)
+            INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
+            IReportsDashboardMapService reportsDashboardMapService)
         {
             _nationalSocietyService = nationalSocietyService;
-            _nationalSocietyDashboardReportsMapService = nationalSocietyDashboardReportsMapService;
             _nationalSocietyDashboardSummaryService = nationalSocietyDashboardSummaryService;
+            _reportsDashboardMapService = reportsDashboardMapService;
         }
 
         public async Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetDashboardFiltersData(int nationalSocietyId)
@@ -44,16 +51,44 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
         public async Task<Result<NationalSocietyDashboardResponseDto>> GetDashboardData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
-            var projectSummary = await _nationalSocietyDashboardSummaryService.GetSummaryData(nationalSocietyId, filtersDto);
-            var reportsGroupedByLocation = await _nationalSocietyDashboardReportsMapService.GetSummaryMap(nationalSocietyId, filtersDto);
+            var filters = MapToReportFilters(nationalSocietyId, filtersDto);
 
             var dashboardDataDto = new NationalSocietyDashboardResponseDto
             {
-                Summary = projectSummary,
-                ReportsGroupedByLocation = reportsGroupedByLocation,
+                Summary = await _nationalSocietyDashboardSummaryService.GetSummaryData(filters),
+                ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),
             };
 
             return Success(dashboardDataDto);
         }
+
+        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportsHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto)
+        {
+            var filters = MapToReportFilters(nationalSocietyId, filtersDto);
+            var data = await _reportsDashboardMapService.GetProjectReportHealthRisks(filters, latitude, longitude);
+            return Success(data);
+        }
+
+        private ReportsFilter MapToReportFilters(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto) =>
+            new ReportsFilter
+            {
+                StartDate = filtersDto.StartDate,
+                EndDate = filtersDto.EndDate.AddDays(1),
+                HealthRiskId = filtersDto.HealthRiskId,
+                NationalSocietyId = nationalSocietyId,
+                Area = filtersDto.Area == null
+                    ? null
+                    : new Area { AreaType = filtersDto.Area.Type, AreaId = filtersDto.Area.Id },
+                DataCollectorType = MapToDataCollectorType(filtersDto.ReportsType),
+                IsTraining = filtersDto.IsTraining
+            };
+
+        private static DataCollectorType? MapToDataCollectorType(NationalSocietyDashboardFiltersRequestDto.ReportsTypeDto reportsType) =>
+            reportsType switch
+            {
+                NationalSocietyDashboardFiltersRequestDto.ReportsTypeDto.DataCollector => DataCollectorType.Human,
+                NationalSocietyDashboardFiltersRequestDto.ReportsTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
+                _ => null as DataCollectorType?
+            };
     }
 }
