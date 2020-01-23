@@ -5,13 +5,13 @@ import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import * as appActions from '../app/logic/appActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietiesTable from './NationalSocietiesTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import * as nationalSocietyDashboardActions from '../nationalSocietyDashboard/logic/nationalSocietyDashboardActions';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 
 const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule, getList, ...props }) => {
   useMount(() => {
@@ -22,9 +22,9 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
   return (
     <Fragment>
       <TableActions>
-        <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
+        <TableActionsButton onClick={props.goToCreation} icon={<AddIcon />}>
           {strings(stringKeys.nationalSociety.addNew)}
-       </Button>
+        </TableActionsButton>
       </TableActions>
 
       <NationalSocietiesTable
@@ -37,7 +37,7 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
         archive = {props.archive}
         reopen = {props.reopen}
         isArchiving = {props.isArchiving}
-        isReopening = {props.isReopening}       
+        isReopening = {props.isReopening}
       />
     </Fragment>
   );

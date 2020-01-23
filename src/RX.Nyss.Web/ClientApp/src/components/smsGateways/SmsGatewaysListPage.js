@@ -4,12 +4,12 @@ import { connect } from "react-redux";
 import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import SmsGatewaysTable from './SmsGatewaysTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 
 const SmsGatewaysListPageComponent = (props) => {
   useMount(() => {
@@ -20,9 +20,9 @@ const SmsGatewaysListPageComponent = (props) => {
     <Fragment>
       {!props.nationalSocietyIsArchived &&
       <TableActions>
-        <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+        <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
           {strings(stringKeys.smsGateway.addNew)}
-       </Button>
+        </TableActionsButton>
       </TableActions>}
 
       <SmsGatewaysTable

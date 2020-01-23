@@ -4,12 +4,12 @@ import { connect } from "react-redux";
 import * as projectsActions from './logic/projectsActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import ProjectsTable from './ProjectsTable';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 
 const ProjectsListPageComponent = (props) => {
   useMount(() => {
@@ -18,12 +18,13 @@ const ProjectsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      {!props.nationalSocietyIsArchived &&
-      <TableActions>        
-        <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-          {strings(stringKeys.project.addNew)}
-        </Button>
-      </TableActions>}      
+      {!props.nationalSocietyIsArchived && (
+        <TableActions>
+          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
+            {strings(stringKeys.project.addNew)}
+          </TableActionsButton>
+        </TableActions>
+      )}
 
       <ProjectsTable
         list={props.list}

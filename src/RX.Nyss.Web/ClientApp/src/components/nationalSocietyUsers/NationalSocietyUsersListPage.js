@@ -4,13 +4,12 @@ import { connect } from "react-redux";
 import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import NationalSocietyUsersTable from './NationalSocietyUsersTable';
 import { useMount } from '../../utils/lifecycle';
 import { stringKeys, strings } from '../../strings';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 
 const NationalSocietyUsersListPageComponent = (props) => {
   useMount(() => {
@@ -20,17 +19,15 @@ const NationalSocietyUsersListPageComponent = (props) => {
   return (
     <Fragment>
       {!props.nationalSocietyIsArchived &&
-      <TableActions>
-          <Box mr={2}>
-            <Button onClick={() => props.goToAddExisting(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
-                {strings(stringKeys.nationalSocietyUser.addExisting)}
-            </Button>
-          </Box>
+        <TableActions>
+          <TableActionsButton onClick={() => props.goToAddExisting(props.nationalSocietyId)} icon={<AddIcon />}>
+            {strings(stringKeys.nationalSocietyUser.addExisting)}
+          </TableActionsButton>
 
-          <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
+          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
             {strings(stringKeys.nationalSocietyUser.addNew)}
-          </Button>
-      </TableActions>}
+          </TableActionsButton>
+        </TableActions>}
 
       <NationalSocietyUsersTable
         list={props.list}

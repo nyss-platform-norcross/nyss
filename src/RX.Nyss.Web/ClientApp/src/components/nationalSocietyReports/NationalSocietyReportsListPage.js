@@ -9,7 +9,6 @@ import Layout from '../layout/Layout';
 import NationalSocietyReportsTable from './NationalSocietyReportsTable';
 import { ReportFilters } from '../common/filters/ReportFilters';
 import { useMount } from '../../utils/lifecycle';
-import Grid from '@material-ui/core/Grid';
 
 const NationalSocietyReportsListPageComponent = (props) => {
   useMount(() => {

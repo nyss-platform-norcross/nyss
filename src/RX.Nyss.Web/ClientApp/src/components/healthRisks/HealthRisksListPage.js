@@ -5,12 +5,12 @@ import * as healthRisksActions from './logic/healthRisksActions';
 import * as appActions from '../app/logic/appActions';
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Button from '@material-ui/core/Button';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import HealthRisksTable from './HealthRisksTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 
 const HealthRisksListPageComponent = (props) => {
   useMount(() => {
@@ -21,9 +21,9 @@ const HealthRisksListPageComponent = (props) => {
   return (
     <Fragment>
       <TableActions>
-        <Button onClick={props.goToCreation} variant="outlined" color="primary" startIcon={<AddIcon />}>
+        <TableActionsButton onClick={props.goToCreation} icon={<AddIcon />}>
           {strings(stringKeys.healthRisk.addNew)}
-       </Button>
+        </TableActionsButton>
       </TableActions>
 
       <HealthRisksTable

@@ -21,7 +21,7 @@ const DataCollectorsListPageComponent = (props) => {
     <Fragment>
       {!props.isClosed &&
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(props.projectId)} startIcon={<AddIcon />}>
+          <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
           <TableActionsButton onClick={() => props.exportDataCollectors(props.projectId)} roles={accessMap.dataCollectors.export}>
