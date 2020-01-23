@@ -55,7 +55,6 @@ if ($complete) {
   if ($test){
     Write-Host "Test deploying all resources (Complete mode)"
     Test-AzResourceGroupDeployment `
-    -Name "Complete-$specificResource" `
     -Mode "Complete" `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
@@ -64,8 +63,8 @@ if ($complete) {
   } else {
     Write-Host "Deploying all resources (Complete mode)"
     New-AzResourceGroupDeployment `
-    -Name "Complete-$specificResource" `
     -Mode "Complete" `
+    -Name "Complete-$specificResource" `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
     -SpecificResource "$specificResource" `
@@ -77,7 +76,6 @@ else {
     Write-Host "Test deploying new resources (Incremental mode)"
     Test-AzResourceGroupDeployment `
     -Mode "Incremental" `
-    -Name "Incremental-$specificResource" `
     -ResourceGroupName $resourceGroupName `
     -TemplateFile "$PSScriptRoot\Application-templates\createApplication.json" `
     -SpecificResource "$specificResource" `

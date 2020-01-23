@@ -167,6 +167,7 @@
         {
           "apiVersion": "2018-11-01",
           "name": "appsettings",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcAppName')))]",
           "type": "config",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('funcAppName'))]"
@@ -189,6 +190,7 @@
           "apiVersion": "2018-11-01",
           "type": "config",
           "name": "slotConfigNames",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcAppName')))]",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites/', variables('funcAppName'))]"
           ],
@@ -202,6 +204,7 @@
         {
           "type": "slots",
           "name": "staging",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcAppName')))]",
           "apiVersion": "2018-11-01",
           "location": "[variables('location')]",
           "dependsOn": [
@@ -223,6 +226,7 @@
             {
               "apiVersion": "2018-11-01",
               "name": "appsettings",
+              "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcAppName')))]",
               "type": "config",
               "dependsOn": [
                 "[resourceId('Microsoft.Web/sites/', variables('funcAppName'))]",
@@ -278,6 +282,7 @@
         {
           "apiVersion": "2018-11-01",
           "name": "appsettings",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('webAppName')))]",
           "type": "config",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
@@ -299,6 +304,7 @@
           "apiVersion": "2018-11-01",
           "type": "config",
           "name": "slotConfigNames",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('webAppName')))]",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
           ],
@@ -311,6 +317,7 @@
         {
           "type": "slots",
           "name": "staging",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('webAppName')))]",
           "apiVersion": "2018-11-01",
           "kind": "app",
           "dependsOn": [
@@ -336,6 +343,7 @@
             {
               "apiVersion": "2018-11-01",
               "name": "appsettings",
+              "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('webAppName')))]",
               "type": "config",
               "dependsOn": [
                 "[resourceId('Microsoft.Web/sites/slots', variables('webAppName'), 'staging')]"
@@ -393,6 +401,7 @@
         {
           "apiVersion": "2018-11-01",
           "name": "appsettings",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('reportApiWebAppName')))]",
           "type": "config",
           "dependsOn": [
             "[resourceId('Microsoft.Web/Sites', variables('reportApiWebAppName'))]"
@@ -432,6 +441,7 @@
           "type": "config",
           "apiVersion": "2018-11-01",
           "name": "appsettings",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('reportFuncAppName')))]",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('reportFuncAppName'))]"
           ],
@@ -455,6 +465,7 @@
           "type": "networkConfig",
           "apiVersion": "2018-11-01",
           "name": "virtualNetwork",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('reportFuncAppName')))]",
           "location": "[variables('location')]",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('reportFuncAppName'))]"
@@ -482,6 +493,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('reportQueueName')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceName')))]",
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
@@ -503,6 +515,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('sendEmailQueueName')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceName')))]",
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
@@ -524,6 +537,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('reportDismissalQueue')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceName')))]",
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
@@ -545,6 +559,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('checkAlertQueue')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceName')))]",
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
@@ -581,6 +596,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('reportQueueName')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceNameStaging'))]"
@@ -602,6 +618,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('sendEmailQueueName')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceNameStaging'))]"
@@ -623,6 +640,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('reportDismissalQueue')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceNameStaging'))]"
@@ -644,6 +662,7 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('checkAlertQueue')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
           "type": "queues",
           "dependsOn": [
             "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceNameStaging'))]"
@@ -686,6 +705,7 @@
       "resources": [
         {
           "name": "default",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcStorageAccountName')))]",
           "type": "blobServices",
           "apiVersion": "2018-07-01",
           "properties": {
@@ -700,6 +720,7 @@
           "resources": [
             {
               "name": "[variables('smsGatewayBlobContainerName')]",
+              "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcStorageAccountName')))]",
               "type": "containers",
               "apiVersion": "2018-07-01",
               "dependsOn": [
@@ -732,6 +753,7 @@
       "resources": [
         {
           "name": "default",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('generalStorageAccountName')))]",
           "type": "blobServices",
           "apiVersion": "2018-07-01",
           "properties": {
@@ -746,6 +768,7 @@
           "resources": [
             {
               "name": "[variables('generalBlobContainerName')]",
+              "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('generalStorageAccountName')))]",
               "type": "containers",
               "apiVersion": "2018-07-01",
               "dependsOn": [
