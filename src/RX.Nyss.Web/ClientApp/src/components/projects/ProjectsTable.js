@@ -32,6 +32,14 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
     return <Loading />;
   }
 
+  const getRowMenu = (project) => [
+    {
+      title: strings(stringKeys.project.list.close),
+      condition: !project.isClosed && userCanCloseProject,
+      action: () => setRemoveConfirmationDialog({ isOpen: true, projectId: project.id })
+    }
+  ];
+
   return (
     <Fragment>
       <TableContainer>
@@ -64,17 +72,7 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
                 <TableCell>{project.escalatedAlertCount}</TableCell>
                 <TableCell>
                   <TableRowActions>
-                      <TableRowMenu
-                        id={project.id}
-                        items={[{
-                          id: `menuItem_${project.id}_1`,
-                          title: strings(stringKeys.project.list.close),
-                          condition: !project.isClosed && userCanCloseProject,
-                          action: () => setRemoveConfirmationDialog({ isOpen: true, projectId: project.id })
-                        }]}
-                        icon={<MoreVertIcon />}
-                        isFetching={isClosing[project.id]}
-                      />
+                    <TableRowMenu id={project.id} items={getRowMenu(project)} icon={<MoreVertIcon />} isFetching={isClosing[project.id]} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
@@ -91,8 +89,8 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
         <Grid container spacing={3} alignItems="center">
           <Grid item>
             <Grid container direction="row" spacing={3} alignItems="center">
-              <Grid item xs={2} style={{textAlign: "center"}}>
-                <WarningIcon color="error" style={{fontSize: "45px", verticalAlign: "bottom"}} />
+              <Grid item xs={2} style={{ textAlign: "center" }}>
+                <WarningIcon color="error" style={{ fontSize: "45px", verticalAlign: "bottom" }} />
               </Grid>
               <Grid item xs={10}>
                 <Typography variant="body1">{strings(stringKeys.project.list.removalConfirmationText)}</Typography>

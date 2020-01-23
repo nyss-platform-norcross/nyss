@@ -33,10 +33,25 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
     reopen(reopenConfirmationDialog.nationalSocietyId);
     setReopenConfirmationDialog({ isOpen: false })
   }
- 
+
   if (isListFetching) {
     return <Loading />
   }
+
+  const getRowMenu = (row) => [
+    {
+      title: strings(stringKeys.nationalSociety.list.archive),
+      condition: !row.isArchived,
+      roles: accessMap.nationalSocieties.archive,
+      action: () => setArchiveConfirmationDialog({ isOpen: true, nationalSocietyId: row.id })
+    },
+    {
+      title: strings(stringKeys.nationalSociety.list.reopen),
+      condition: row.isArchived,
+      roles: accessMap.nationalSocieties.archive,
+      action: () => setReopenConfirmationDialog({ isOpen: true, nationalSocietyId: row.id })
+    }
+  ];
 
   return (
     <Fragment>
@@ -61,27 +76,8 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
                 <TableCell>{row.headManagerName}</TableCell>
                 <TableCell>{row.technicalAdvisor}</TableCell>
                 <TableCell>
-                  <TableRowActions>                    
-                    <TableRowMenu
-                      id={row.id}                      
-                      items={[{
-                        id: `menuItem_${row.id}_1`,
-                        title: strings(stringKeys.nationalSociety.list.archive),
-                        condition: !row.isArchived,
-                        roles: accessMap.nationalSocieties.archive,
-                        action: () => setArchiveConfirmationDialog({ isOpen: true, nationalSocietyId: row.id })
-                      },
-                      {
-                        id: `menuItem_${row.id}_2`,
-                        title: strings(stringKeys.nationalSociety.list.reopen),
-                        condition: row.isArchived,
-                        roles: accessMap.nationalSocieties.archive,
-                        action: () => setReopenConfirmationDialog({ isOpen: true, nationalSocietyId: row.id })
-                      }
-                      ]}
-                      icon={<MoreVertIcon />}
-                      isFetching={isArchiving[row.id] || isReopening[row.id]}
-                    />
+                  <TableRowActions>
+                    <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isArchiving[row.id] || isReopening[row.id]} />
                     <TableRowAction roles={accessMap.nationalSocieties.edit} onClick={() => goToEdition(row.id)} icon={<EditIcon />} title={"Edit"} />
                     <TableRowAction roles={accessMap.nationalSocieties.delete} onClick={() => remove(row.id)} confirmationText={strings(stringKeys.nationalSociety.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                   </TableRowActions>
@@ -97,16 +93,16 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
         titlteText={strings(stringKeys.nationalSociety.archive.title)}
         submit={() => archiveConfirmed()}
         close={() => setArchiveConfirmationDialog({ isOpen: false })}
-        contentText = {strings(stringKeys.nationalSociety.archive.content)}
+        contentText={strings(stringKeys.nationalSociety.archive.content)}
       />
-      
+
       <ConfirmationDialog
         isOpened={reopenConfirmationDialog.isOpen}
         titlteText={strings(stringKeys.nationalSociety.reopen.title)}
         submit={() => reopenConfirmed()}
         close={() => setReopenConfirmationDialog({ isOpen: false })}
         contentText={strings(stringKeys.nationalSociety.reopen.content)}
-      />     
+      />
     </Fragment>
   );
 }

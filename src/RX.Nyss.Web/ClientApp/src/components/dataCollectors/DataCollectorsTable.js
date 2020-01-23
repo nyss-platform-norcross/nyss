@@ -21,6 +21,19 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
     return <Loading />;
   }
 
+  const getRowMenu = (row) => [
+    {
+      title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
+      action: () => setTrainingState(row.id, false),
+      condition: row.isInTrainingMode
+    },
+    {
+      title: strings(stringKeys.dataCollector.list.setToInTraining),
+      action: () => setTrainingState(row.id, true),
+      condition: !row.isInTrainingMode
+    }
+  ];
+
   return (
     <TableContainer>
       <Table>
@@ -48,17 +61,7 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
               <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.list.isInTrainingMode) : strings(stringKeys.dataCollector.list.isNotInTrainingMode)}</TableCell>
               <TableCell>
                 <TableRowActions>
-                  <TableRowMenu id={row.id} items={[
-                    row.isInTrainingMode ?
-                      {
-                        title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
-                        action: () => setTrainingState(row.id, false)
-                      } :
-                      {
-                        title: strings(stringKeys.dataCollector.list.setToInTraining),
-                        action: () => setTrainingState(row.id, true)
-                      }
-                  ]} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />
+                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />
                   <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
                   <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>
