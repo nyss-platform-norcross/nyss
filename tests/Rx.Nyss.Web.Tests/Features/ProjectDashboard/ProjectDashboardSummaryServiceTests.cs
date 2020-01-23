@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 new Report { ReportedCaseCount = 3 },
             };
 
-            _reportService.GetValidReportsQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetHealthRiskEventReportsQuery(filters).Returns(reports.AsQueryable());
 
             var summaryData = await _projectDashboardDataService.GetSummaryData(filters);
 
@@ -124,7 +124,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             var reports = Enumerable.Range(0, validReportsCount).Select(i => new Report());
             var rawReports = Enumerable.Range(0, allReportsCount).Select(i => new RawReport { DataCollector = new DataCollector() });
 
-            _reportService.GetValidReportsQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetSuccessReportsQuery(filters).Returns(reports.AsQueryable());
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
 
             var summaryData = await _projectDashboardDataService.GetSummaryData(filters);

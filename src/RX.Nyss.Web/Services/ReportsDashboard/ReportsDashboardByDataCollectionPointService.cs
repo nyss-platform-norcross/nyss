@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 
         public async Task<IEnumerable<DataCollectionPointsReportsByDateDto>> GetDataCollectionPointReports(ReportsFilter filters, DatesGroupingType groupingType)
         {
-            var dataCollectionPointReports = _reportService.GetValidReportsQuery(filters)
+            var dataCollectionPointReports = _reportService.GetHealthRiskEventReportsQuery(filters)
                 .Where(r => r.ReportType == ReportType.DataCollectionPoint);
 
             return groupingType switch

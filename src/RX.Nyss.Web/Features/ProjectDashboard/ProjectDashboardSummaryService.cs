@@ -39,7 +39,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 throw new InvalidOperationException("ProjectId was not supplied");
             }
 
-            var validReports = _reportService.GetValidReportsQuery(filters);
+            var healthRiskEventReportsQuery = _reportService.GetHealthRiskEventReportsQuery(filters);
+            var validReports = _reportService.GetSuccessReportsQuery(filters);
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
             var alerts = GetAlerts(filters);
 
@@ -52,11 +53,11 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 })
                 .Select(data => new ProjectSummaryResponseDto
                 {
-                    ReportCount = validReports.Sum(r => r.ReportedCaseCount),
+                    ReportCount = healthRiskEventReportsQuery.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     ErrorReportCount = rawReportsWithDataCollector.Count() - validReports.Count(),
-                    DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(validReports),
+                    DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(alerts)
                 })
                 .FirstOrDefaultAsync();

@@ -41,8 +41,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
             var nationalSocietyId = filters.NationalSocietyId.Value;
 
-            var assignedRawReports = _reportService.GetRawReportsWithDataCollectorQuery(filters);
-            var validReports = _reportService.GetValidReportsQuery(filters);
+            var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
+            var successReports = _reportService.GetSuccessReportsQuery(filters);
+            var healthRiskEventReportsQuery = _reportService.GetHealthRiskEventReportsQuery(filters);
             var alerts = GetAlerts(nationalSocietyId, filters);
 
             return await _nyssContext.Projects
@@ -50,15 +51,15 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 .Select(ph => new
                 {
                     allDataCollectorCount = AllDataCollectorCount(filters, nationalSocietyId),
-                    activeDataCollectorCount = assignedRawReports.Select(r => r.DataCollector.Id).Distinct().Count()
+                    activeDataCollectorCount = rawReportsWithDataCollector.Select(r => r.DataCollector.Id).Distinct().Count()
                 })
                 .Select(data => new NationalSocietySummaryResponseDto
                 {
-                    ReportCount = validReports.Sum(r => r.ReportedCaseCount),
+                    ReportCount = healthRiskEventReportsQuery.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
-                    ErrorReportCount = assignedRawReports.Count() - validReports.Count(),
-                    DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(validReports),
+                    ErrorReportCount = rawReportsWithDataCollector.Count() - successReports.Count(),
+                    DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(alerts)
                 })
                 .FirstOrDefaultAsync();
