@@ -91,7 +91,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 {
                     Name = x.Village.VillageName,
                     Periods = x.Data.GroupBy(v => v.Period).OrderBy(v => v.Key)
-                        .Select(g => new ReportByVillageAndDateResponseDto.PeriodDto
+                        .Select(g => new PeriodDto
                         {
                             Period = g.Key.ToString("dd/MM", CultureInfo.InvariantCulture),
                             Count = g.Sum(w => w.Count)
@@ -158,7 +158,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 {
                     Name = x.Village.VillageName,
                     Periods = x.Data.GroupBy(v => v.Period).OrderBy(g => g.Key.Year).ThenBy(g => g.Key.EpiWeek)
-                        .Select(g => new ReportByVillageAndDateResponseDto.PeriodDto
+                        .Select(g => new PeriodDto
                         {
                             Period = g.Key.EpiWeek.ToString(),
                             Count = g.Sum(w => w.Count)
