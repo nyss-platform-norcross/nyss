@@ -1,6 +1,6 @@
 import styles from "./ReportsListPage.module.scss";
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as reportsActions from './logic/reportsActions';
@@ -9,11 +9,11 @@ import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import ReportsTable from './ReportsTable';
 import { useMount } from '../../utils/lifecycle';
-import Grid from '@material-ui/core/Grid';
 import { ReportFilters } from '../common/filters/ReportFilters';
 import { strings, stringKeys } from "../../strings";
 import Icon from "@material-ui/core/Icon";
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import Hidden from "@material-ui/core/Hidden";
 
 const ReportsListPageComponent = (props) => {
   useMount(() => {
@@ -41,20 +41,20 @@ const ReportsListPageComponent = (props) => {
   }
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <TableActions>
+    <Fragment>
+      <TableActions>
+        <Hidden xsDown>
           <TableActionsButton onClick={handleRefresh} isFetching={props.isListFetching}>
             <Icon>refresh</Icon>
           </TableActionsButton>
+        </Hidden>
 
-          <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters, props.sorting)}>
-            {strings(stringKeys.reports.list.exportToExcel)}
-          </TableActionsButton>
-        </TableActions>
-      </Grid>
+        <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters, props.sorting)}>
+          {strings(stringKeys.reports.list.exportToExcel)}
+        </TableActionsButton>
+      </TableActions>
 
-      <Grid item xs={12} className={styles.filtersGrid}>
+      <div className={styles.filtersGrid}>
         <ReportFilters
           healthRisks={props.healthRisks}
           nationalSocietyId={props.nationalSocietyId}
@@ -63,29 +63,27 @@ const ReportsListPageComponent = (props) => {
           showUnknownSenderOption={false}
           showTrainingFilter={true}
         />
-      </Grid>
+      </div>
 
-      <Grid item xs={12}>
-        <ReportsTable
-          list={props.data.data}
-          isListFetching={props.isListFetching}
-          page={props.data.page}
-          onChangePage={handlePageChange}
-          totalRows={props.data.totalRows}
-          rowsPerPage={props.data.rowsPerPage}
-          reportsType={props.filters.reportsType}
-          filters={props.filters}
-          sorting={props.sorting}
-          onSort={handleSortChange}
-          projectId={props.projectId}
-          goToEdition={props.goToEdition}
-          markAsError={handleMarkAsError}
-          isMarkingAsError={props.isMarkingAsError}
-          user={props.user}
-          projectIsClosed={props.projectIsClosed}
-        />
-      </Grid>
-    </Grid>
+      <ReportsTable
+        list={props.data.data}
+        isListFetching={props.isListFetching}
+        page={props.data.page}
+        onChangePage={handlePageChange}
+        totalRows={props.data.totalRows}
+        rowsPerPage={props.data.rowsPerPage}
+        reportsType={props.filters.reportsType}
+        filters={props.filters}
+        sorting={props.sorting}
+        onSort={handleSortChange}
+        projectId={props.projectId}
+        goToEdition={props.goToEdition}
+        markAsError={handleMarkAsError}
+        isMarkingAsError={props.isMarkingAsError}
+        user={props.user}
+        projectIsClosed={props.projectIsClosed}
+      />
+    </Fragment>
   );
 }
 
