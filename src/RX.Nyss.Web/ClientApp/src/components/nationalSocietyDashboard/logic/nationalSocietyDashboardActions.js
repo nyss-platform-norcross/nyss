@@ -1,7 +1,7 @@
 import { push } from "connected-react-router";
 import {
   OPEN_NATIONAL_SOCIETY_DASHBOARD, GET_NATIONAL_SOCIETY_DASHBOARD_DATA,
-  GET_NATIONAL_SOCIETY_DASHBOARD_REPORT_HEALTH_RISKS, GENERATE_PDF
+  GET_NATIONAL_SOCIETY_DASHBOARD_REPORT_HEALTH_RISKS
 } from "./nationalSocietyDashboardConstants";
 
 export const goToDashboard = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/dashboard`);

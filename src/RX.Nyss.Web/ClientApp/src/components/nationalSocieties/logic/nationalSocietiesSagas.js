@@ -101,16 +101,3 @@ function* removeNationalSociety({ id }) {
     yield put(actions.remove.failure(id, error.message));
   }
 };
-
-function* openNationalSocietyModule(nationalSocietyId) {
-  const nationalSociety = yield call(http.getCached, {
-    path: `/api/nationalSociety/${nationalSocietyId}/get`,
-    dependencies: [entityTypes.nationalSociety(nationalSocietyId)]
-  });
-
-  yield put(appActions.openModule.invoke(null, {
-    nationalSocietyId: nationalSociety.value.id,
-    nationalSocietyName: nationalSociety.value.name,
-    nationalSocietyCountry: nationalSociety.value.countryName
-  }));
-}

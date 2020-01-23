@@ -26,19 +26,18 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly INationalSocietyService _nationalSocietyService;
         private readonly INationalSocietyDashboardSummaryService _nationalSocietyDashboardSummaryService;
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
-        private readonly INationalSocietyDashboardReportsByVillageService _nationalSocietyDashboardReportsByVillageService;
+        private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
 
         public NationalSocietyDashboardService(
             INationalSocietyService nationalSocietyService,
             INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
-            IReportsDashboardMapService reportsDashboardMapService)
-            INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
-            INationalSocietyDashboardReportsByVillageService nationalSocietyDashboardReportsByVillageService)
+            IReportsDashboardMapService reportsDashboardMapService,
+            IReportsDashboardByVillageService reportsDashboardByVillageService)
         {
             _nationalSocietyService = nationalSocietyService;
             _nationalSocietyDashboardSummaryService = nationalSocietyDashboardSummaryService;
             _reportsDashboardMapService = reportsDashboardMapService;
-            _nationalSocietyDashboardReportsByVillageService = nationalSocietyDashboardReportsByVillageService;
+            _reportsDashboardByVillageService = reportsDashboardByVillageService;
         }
 
         public async Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetDashboardFiltersData(int nationalSocietyId)
@@ -56,7 +55,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         public async Task<Result<NationalSocietyDashboardResponseDto>> GetDashboardData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
             var filters = MapToReportFilters(nationalSocietyId, filtersDto);
-            var reportsGroupedByVillageAndDate = await _nationalSocietyDashboardReportsByVillageService.GetReportsGroupedByVillageAndDate(nationalSocietyId, filtersDto);
+            var reportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType);
 
             var dashboardDataDto = new NationalSocietyDashboardResponseDto
             {

@@ -8,6 +8,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
         public NationalSocietySummaryResponseDto Summary { get; set; }
 
         public IEnumerable<ReportsSummaryMapResponseDto> ReportsGroupedByLocation { get; set; }
+
         public ReportByVillageAndDateResponseDto ReportsGroupedByVillageAndDate { get; set; }
     }
 }

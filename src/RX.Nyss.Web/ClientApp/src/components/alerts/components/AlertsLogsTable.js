@@ -1,5 +1,3 @@
-import styles from "./AlertsAssessmentReport.module.scss";
-
 import React from 'react';
 import dayjs from "dayjs";
 import Table from '@material-ui/core/Table';
