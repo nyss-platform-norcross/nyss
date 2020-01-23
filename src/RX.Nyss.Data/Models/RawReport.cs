@@ -26,6 +26,10 @@ namespace RX.Nyss.Data.Models
         
         public bool? IsTraining { get; set; }
 
+        public virtual Village Village { get; set; }
+
+        public virtual Zone Zone { get; set; }
+
         public virtual Report Report { get; set; }
 
         public virtual DataCollector DataCollector { get; set; }
