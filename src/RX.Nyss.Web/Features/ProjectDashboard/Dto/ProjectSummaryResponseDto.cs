@@ -6,6 +6,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
     {
         public int ActiveDataCollectorCount { get; set; }
 
+        public int InactiveDataCollectorCount { get; set; }
+
         public int ReportCount { get; set; }
 
         public AlertsSummaryResponseDto AlertsSummary { get; set; }
