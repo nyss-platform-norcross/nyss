@@ -142,10 +142,10 @@ namespace RX.Nyss.Web.Configuration
                 };
             });
 
-            bool IsApiRequest(HttpRequest request) =>
+            static bool IsApiRequest(HttpRequest request) =>
                 request.Path.StartsWithSegments("/api");
 
-            bool IsAjaxRequest(HttpRequest request) =>
+            static bool IsAjaxRequest(HttpRequest request) =>
                 string.Equals(request.Query["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal) ||
                 string.Equals(request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.Ordinal);
         }
@@ -245,7 +245,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddHttpClient();
 
             // In production, the React files will be served from this directory
-            serviceCollection.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/build"; });
+            serviceCollection.AddSpaStaticFiles(configuration => configuration.RootPath = "ClientApp/build");
         }
 
         private static void RegisterSwagger(IServiceCollection serviceCollection) =>

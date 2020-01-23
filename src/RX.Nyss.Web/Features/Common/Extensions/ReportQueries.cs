@@ -36,16 +36,16 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             area?.Type switch
             {
                 AreaType.Region =>
-                reports.Where(r => r.Village.District.Region.Id == area.Id),
+                reports.Where(r => r.RawReport.Village.District.Region.Id == area.Id),
 
                 AreaType.District =>
-                reports.Where(r => r.Village.District.Id == area.Id),
+                reports.Where(r => r.RawReport.Village.District.Id == area.Id),
 
                 AreaType.Village =>
-                reports.Where(r => r.Village.Id == area.Id),
+                reports.Where(r => r.RawReport.Village.Id == area.Id),
 
                 AreaType.Zone =>
-                reports.Where(r => r.Zone.Id == area.Id),
+                reports.Where(r => r.RawReport.Zone.Id == area.Id),
 
                 _ =>
                 reports

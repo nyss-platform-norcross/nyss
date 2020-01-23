@@ -126,8 +126,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                             },
                             DataCollectionPointCase = reportValidationResult.ReportData.ParsedReport.DataCollectionPointCase,
                             ProjectHealthRisk = projectHealthRisk,
-                            Village = reportValidationResult.ReportData.DataCollector.Village,
-                            Zone = reportValidationResult.ReportData.DataCollector.Zone,
                             ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
                                 ? (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0)
                                     + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountFemalesBelowFive ?? 0)

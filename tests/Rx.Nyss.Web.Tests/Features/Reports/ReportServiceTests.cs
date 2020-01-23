@@ -237,17 +237,17 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 }
             };
 
-            var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[1]);
-            var rawReports1 = BuildRawReports(reports1);
+            var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
+            var rawReports1 = BuildRawReports(reports1, villages[0], zones[1]);
 
-            var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0]);
-            var rawReports2 = BuildRawReports(reports2);
+            var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0]);
+            var rawReports2 = BuildRawReports(reports2, villages[0], zones[0]);
 
-            var trainingReports = BuildReports(dataCollectors[0], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0], isTraining: true);
-            var trainingRawReports = BuildRawReports(trainingReports);
+            var trainingReports = BuildReports(dataCollectors[0], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], isTraining: true);
+            var trainingRawReports = BuildRawReports(trainingReports, villages[0], zones[0]);
 
-            var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0], villages[0], zones[0]);
-            var dcpRawReports = BuildRawReports(dcpReports);
+            var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0]);
+            var dcpRawReports = BuildRawReports(dcpReports, villages[0], zones[0]);
 
             var reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
             var rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).ToList();
@@ -290,8 +290,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _nyssContextMock.Projects.FindAsync(2).Returns(projects.Single(x => x.Id == 2));
         }
 
-        private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk, Village village, Zone zone,
-            bool? isTraining = false)
+        private static List<Report> BuildReports(DataCollector dataCollector, List<int> ids, ProjectHealthRisk projectHealthRisk, bool? isTraining = false)
         {
             var reports = ids
                 .Select(i => new Report
@@ -304,15 +303,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     DataCollectionPointCase = new DataCollectionPointCase(),
                     CreatedAt = new DateTime(2020,1,1),
                     IsTraining = isTraining ?? false,
-                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? ReportType.DataCollectionPoint : ReportType.Single,
-                    Village = village,
-                    Zone = zone
+                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? ReportType.DataCollectionPoint : ReportType.Single
                 })
                 .ToList();
             return reports;
         }
 
-        private static List<RawReport> BuildRawReports(List<Report> reports) =>
+        private static List<RawReport> BuildRawReports(List<Report> reports, Village village, Zone zone) =>
             reports.Select(r => new RawReport
                 {
                     Id = r.Id,
@@ -321,7 +318,9 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Sender = r.PhoneNumber,
                     DataCollector = r.DataCollector,
                     ReceivedAt = r.ReceivedAt,
-                    IsTraining = r.IsTraining
+                    IsTraining = r.IsTraining,
+                    Village = village,
+                    Zone = zone
                 })
                 .ToList();
 

@@ -86,7 +86,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.CreatedAt,
                     a.Status,
                     ReportCount = a.AlertReports.Count,
-                    LastReportVillage = a.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.Village.Name,
+                    LastReportVillage = a.AlertReports.OrderByDescending(ar => ar.Report.Id).First().Report.RawReport.Village.Name,
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
@@ -134,7 +134,7 @@ namespace RX.Nyss.Web.Features.Alerts
                         DataCollector = ar.Report.DataCollector.DisplayName,
                         ReceivedAt = ar.Report.ReceivedAt,
                         PhoneNumber = ar.Report.PhoneNumber,
-                        Village = ar.Report.Village.Name,
+                        Village = ar.Report.RawReport.Village.Name,
                         ReportedCase = ar.Report.ReportedCase,
                         Status = ar.Report.Status
                     }),
@@ -181,7 +181,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(alert => new
                 {
                     Alert = alert,
-                    LastReportVillage = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.Village.Name,
+                    LastReportVillage = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.RawReport.Village.Name,
                     LastReportGateway = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.RawReport.ApiKey,
                     HealthRisk = alert.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)

@@ -142,7 +142,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     Supervisors = a.AlertReports.Select(x => x.Report.DataCollector.Supervisor.Name),
                     HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents.First().Name,
                     VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
-                        .Select(ar => ar.Report.Village.Name)
+                        .Select(ar => ar.Report.RawReport.Village.Name)
                         .FirstOrDefault(),
                     LanguageCode =a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode.ToLower()
                 })
@@ -299,7 +299,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
 
                     VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
-                        .Select(ar => ar.Report.Village.Name)
+                        .Select(ar => ar.Report.RawReport.Village.Name)
                         .FirstOrDefault()
                 })
                 .FirstOrDefaultAsync();

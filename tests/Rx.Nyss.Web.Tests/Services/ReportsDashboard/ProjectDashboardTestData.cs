@@ -237,20 +237,24 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
             Reports.ForEach(r =>
             {
                 r.IsTraining = r.DataCollector.IsInTrainingMode;
-                r.Zone = r.DataCollector.Zone;
-                r.Village = r.DataCollector.Village;
                 r.CreatedAt = BaseDate.AddDays(r.Id - 1);
                 r.ReceivedAt = r.CreatedAt;
                 r.EpiWeek = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiWeek;
                 r.EpiYear = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiYear;
                 r.ProjectHealthRisk = ProjectHealthRisks[ (((r.Id-1) % 3) == 0) ? 0 : 1];
-                r.RawReport = new RawReport { Id = r.Id, DataCollector = r.DataCollector, NationalSociety = NationalSocieties[0], IsTraining = r.IsTraining, Report = r };
+                r.RawReport = new RawReport
+                {
+                    Id = r.Id,
+                    DataCollector = r.DataCollector,
+                    NationalSociety = NationalSocieties[0],
+                    IsTraining = r.IsTraining,
+                    Village = r.DataCollector.Village,
+                    Zone = r.DataCollector.Zone,
+                    Report = r
+                };
 
                 r.DataCollector.Reports.Add(r);
                 r.ProjectHealthRisk.Reports.Add(r);
-
-                r.Zone = r.DataCollector.Zone;
-                r.Village = r.DataCollector.Village;
             });
 
             Reports.Where( r => r.DataCollector.DataCollectorType == DataCollectorType.Human).ToList()

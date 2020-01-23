@@ -44,16 +44,16 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             area?.AreaType switch
             {
                 AreaType.Region =>
-                reports.Where(r => r.Report != null ? r.Report.Village.District.Region.Id == area.AreaId : r.DataCollector.Village.District.Region.Id == area.AreaId),
+                reports.Where(r => r.Village.District.Region.Id == area.AreaId),
 
                 AreaType.District =>
-                reports.Where(r => r.Report != null ? r.Report.Village.District.Id == area.AreaId : r.DataCollector.Village.District.Id == area.AreaId),
+                reports.Where(r => r.Village.District.Id == area.AreaId),
 
                 AreaType.Village =>
-                reports.Where(r => r.Report != null ? r.Report.Village.Id == area.AreaId : r.DataCollector.Village.Id == area.AreaId),
+                reports.Where(r => r.Village.Id == area.AreaId),
 
                 AreaType.Zone =>
-                reports.Where(r => r.Report != null ? r.Report.Zone.Id == area.AreaId : r.DataCollector.Zone.Id == area.AreaId),
+                reports.Where(r => r.Zone.Id == area.AreaId),
 
                 _ =>
                 reports
