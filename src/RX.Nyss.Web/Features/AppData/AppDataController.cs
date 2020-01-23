@@ -49,7 +49,7 @@ namespace RX.Nyss.Web.Features.AppData
                 () => _stringsResourcesService.GetStringsResources(languageCode));
 
         [HttpGet("version")]
-        public async Task<ActionResult> GetVersion()
+        public ActionResult GetVersion()
         {
             var assemblyName = Assembly.GetExecutingAssembly().GetName();
             var version = assemblyName.Version;

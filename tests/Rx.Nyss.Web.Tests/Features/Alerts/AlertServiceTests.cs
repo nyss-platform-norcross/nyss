@@ -86,17 +86,14 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             {
                 new AlertReport { Report = new Report {
                     Status = ReportStatus.Accepted,
-                    Village = new Village(),
-                    RawReport = new RawReport { ApiKey = TestData.ApiKey } } },
+                    RawReport = new RawReport { ApiKey = TestData.ApiKey, Village = new Village() } } },
                 new AlertReport {
                     Report = new Report {
                     Status = ReportStatus.Accepted,
-                    Village = new Village(),
-                    RawReport = new RawReport { ApiKey = TestData.ApiKey } } },
+                    RawReport = new RawReport { ApiKey = TestData.ApiKey, Village = new Village() } } },
                 new AlertReport { Report = new Report {
                     Status = ReportStatus.Rejected,
-                    Village = new Village(),
-                    RawReport = new RawReport { ApiKey = TestData.ApiKey } } }
+                    RawReport = new RawReport { ApiKey = TestData.ApiKey, Village = new Village() } } }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
@@ -122,9 +119,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             {
                 new AlertReport { Report = new Report {
                     Status = ReportStatus.Accepted,
-                    Village = new Village(),
                     RawReport = new RawReport {
-                        ApiKey = TestData.ApiKey
+                        ApiKey = TestData.ApiKey,
+                        Village = new Village()
                     } } }
             };
 
@@ -149,6 +146,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             await _emailPublisherService.Received(1)
                 .SendEmail((TestData.GatewayEmail, TestData.GatewayEmail), phonenumber, smsText, true);
         }
+
         [Fact]
         public async Task EscalateAlert_WhenLastReportGatewayNotExists_ShouldSendSmsThroughFirstInSociety()
         {
@@ -162,9 +160,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             {
                 new AlertReport { Report = new Report {
                     Status = ReportStatus.Accepted,
-                    Village = new Village(),
                     RawReport = new RawReport {
-                        ApiKey = "Some_missing_key"
+                        ApiKey = "Some_missing_key",
+                        Village = new Village()
                     } } }
             };
 
@@ -190,9 +188,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 new AlertReport {
                     Report = new Report {
                         Status = ReportStatus.Accepted,
-                        Village = new Village(),
                         RawReport = new RawReport {
-                            ApiKey = TestData.ApiKey
+                            ApiKey = TestData.ApiKey,
+                            Village = new Village()
                         }
                     }
                 }
@@ -227,13 +225,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Pending, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } }
+                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, RawReport = new RawReport { Village = new Village() } } },
+                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, RawReport = new RawReport { Village = new Village() } } },
+                new AlertReport { Report = new Report { Status = ReportStatus.Pending, RawReport = new RawReport { Village = new Village() } } },
+                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, RawReport = new RawReport { Village = new Village() } } },
+                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, RawReport = new RawReport { Village = new Village() } } },
+                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, RawReport = new RawReport { Village = new Village() } } },
+                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, RawReport = new RawReport { Village = new Village() } } }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
@@ -251,7 +249,17 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, Village = new Village() } }
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Rejected,
+                        RawReport = new RawReport
+                        {
+                            Village = new Village()
+                        } 
+                    }
+                }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
@@ -468,10 +476,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                     Status = ReportStatus.Pending,
                                     AcceptedBy = DefaultUser,
                                     RejectedBy = DefaultUser,
-                                    Village = new Village(),
                                     RawReport = new RawReport
                                     {
-                                        ApiKey = ApiKey
+                                        ApiKey = ApiKey,
+                                        Village = new Village()
                                     }
                                 }
                             }

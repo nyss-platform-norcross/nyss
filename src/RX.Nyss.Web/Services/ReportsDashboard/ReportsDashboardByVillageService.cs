@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
         private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
-                .GroupBy(r => new { r.ReceivedAt.Date, VillageId = r.Village.Id, VillageName = r.Village.Name })
+                .GroupBy(r => new { r.ReceivedAt.Date, VillageId = r.RawReport.Village.Id, VillageName = r.RawReport.Village.Name })
                 .Select(grouping => new
                 {
                     Period = grouping.Key.Date,
@@ -115,7 +115,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
         private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
-                .GroupBy(r => new { r.EpiWeek, ReceivedAt = r.ReceivedAt.Date, VillageId = r.Village.Id, VillageName = r.Village.Name })
+                .GroupBy(r => new { r.EpiWeek, ReceivedAt = r.ReceivedAt.Date, VillageId = r.RawReport.Village.Id, VillageName = r.RawReport.Village.Name })
                 .Select(grouping => new
                 {
                     Period = new

@@ -39,8 +39,6 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasOne(x => x.RawReport).WithOne(x => x.Report).HasForeignKey<RawReport>(x => x.ReportId).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.DataCollector).WithMany(x => x.Reports).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.ProjectHealthRisk).WithMany(x => x.Reports).IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.Village).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.Zone).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.AcceptedBy).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.RejectedBy).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasIndex(x => x.CreatedAt);

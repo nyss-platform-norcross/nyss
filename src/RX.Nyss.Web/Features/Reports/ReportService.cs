@@ -155,22 +155,10 @@ namespace RX.Nyss.Web.Features.Reports
                         .Single(),
                     IsValid = r.Report != null,
                     MarkedAsError = r.Report.MarkedAsError,
-                    Region = r.Report != null
-                        ? r.Report.Village.District.Region.Name
-                        : r.DataCollector.Village.District.Region.Name,
-                    District = r.Report != null
-                        ? r.Report.Village.District.Name
-                        : r.DataCollector.Village.District.Name,
-                    Village = r.Report != null
-                        ? r.Report.Village.Name
-                        : r.DataCollector.Village.Name,
-                    Zone = r.Report != null
-                        ? r.Report.Zone != null
-                            ? r.Report.Zone.Name
-                            : null
-                        : r.DataCollector.Zone != null
-                            ? r.DataCollector.Zone.Name
-                            : null,
+                    Region = r.Village.District.Region.Name,
+                    District = r.Village.District.Name,
+                    Village = r.Village.Name,
+                    Zone = r.Zone.Name,
                     Location = r.Report != null ? r.Report.Location : null,
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
@@ -390,22 +378,10 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(lc => lc.Name)
                         .Single(),
                     IsValid = r.Report != null,
-                    Region = r.Report != null
-                        ? r.Report.Village.District.Region.Name
-                        : r.DataCollector.Village.District.Region.Name,
-                    District = r.Report != null
-                        ? r.Report.Village.District.Name
-                        : r.DataCollector.Village.District.Name,
-                    Village = r.Report != null
-                        ? r.Report.Village.Name
-                        : r.DataCollector.Village.Name,
-                    Zone = r.Report != null
-                        ? r.Report.Zone != null
-                            ? r.Report.Zone.Name
-                            : null
-                        : r.DataCollector.Zone != null
-                            ? r.DataCollector.Zone.Name
-                            : null,
+                    Region = r.Village.District.Region.Name,
+                    District = r.Village.District.Name,
+                    Village = r.Village.Name,
+                    Zone = r.Zone.Name,
                     DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
