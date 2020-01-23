@@ -46,7 +46,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             var parsedReport = _reportMessageService.ParseReport(reportMessage);
 
             // Assert
-            parsedReport.ReportType.ShouldBe(ReportType.Activity);
+            parsedReport.ReportType.ShouldBe(ReportType.Statement);
             parsedReport.HealthRiskCode.ShouldBe(99);
             parsedReport.ReportedCase.CountMalesBelowFive.ShouldBeNull();
             parsedReport.ReportedCase.CountMalesAtLeastFive.ShouldBeNull();
@@ -67,7 +67,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             var parsedReport = _reportMessageService.ParseReport(reportMessage);
 
             // Assert
-            parsedReport.ReportType.ShouldBe(ReportType.NonHuman);
+            parsedReport.ReportType.ShouldBe(ReportType.Statement);
             parsedReport.HealthRiskCode.ShouldBe(25);
             parsedReport.ReportedCase.CountMalesBelowFive.ShouldBeNull();
             parsedReport.ReportedCase.CountMalesAtLeastFive.ShouldBeNull();

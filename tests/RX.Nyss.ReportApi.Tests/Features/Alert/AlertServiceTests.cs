@@ -55,7 +55,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         }
 
         [Theory]
-        [InlineData(ReportType.Activity)]
+        [InlineData(ReportType.Statement)]
         [InlineData(ReportType.Aggregate)]
         [InlineData(ReportType.DataCollectionPoint)]
         public async Task ReportAdded_WhenReportTypeIsNotSingleOrNonHuman_ShouldReturnNull(ReportType reportType)
@@ -74,7 +74,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
         [Theory]
         [InlineData(ReportType.Single)]
-        [InlineData(ReportType.NonHuman)]
+        [InlineData(ReportType.Statement)]
         public async Task ReportAdded_WhenReportTypeIsNonHumanAndFromDataCollectionPoint_ShouldReturnNull(ReportType reportType)
         {
             // arrange

@@ -51,9 +51,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     CollectionPointDataCollector = new DataCollector { DataCollectorType = DataCollectorType.CollectionPoint }
                 };
 
-                additionalData.HumanDataCollectorReport = new Report { DataCollector = additionalData.HumanDataCollector };
-                additionalData.DataCollectionPointReport = new Report { DataCollector = additionalData.CollectionPointDataCollector };
-                additionalData.SingleReportWithoutHealthRisk = new Report { DataCollector = additionalData.HumanDataCollector, ReportType = ReportType.Single };
+                var projectHealthRisk = new ProjectHealthRisk { HealthRisk = new HealthRisk() };
+
+                additionalData.HumanDataCollectorReport = new Report { ProjectHealthRisk = projectHealthRisk, DataCollector = additionalData.HumanDataCollector };
+                additionalData.DataCollectionPointReport = new Report { ProjectHealthRisk = projectHealthRisk, DataCollector = additionalData.CollectionPointDataCollector };
+                additionalData.SingleReportWithoutHealthRisk = new Report { ProjectHealthRisk = projectHealthRisk, DataCollector = additionalData.HumanDataCollector, ReportType = ReportType.Single };
 
                 return additionalData;
             });

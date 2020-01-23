@@ -50,7 +50,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         public async Task<Alert> ReportAdded(Report report)
         {
             if (report.DataCollector.DataCollectorType != DataCollectorType.Human
-                || (report.ReportType != ReportType.Single && report.ReportType != ReportType.NonHuman)
+                || (report.ReportType != ReportType.Single && report.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman)
                 || report.IsTraining)
             {
                 return null;
