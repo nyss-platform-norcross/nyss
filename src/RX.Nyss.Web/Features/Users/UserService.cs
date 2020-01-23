@@ -94,6 +94,13 @@ namespace RX.Nyss.Web.Features.Users
                 return Error(ResultKey.User.Registration.UserIsAlreadyInThisNationalSociety);
             }
 
+            var nationalSocietyIsArchived = await _dataContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.IsArchived);
+            if (nationalSocietyIsArchived)
+            {
+                return Error(ResultKey.User.Registration.CannotAddExistingUsersToArchivedNationalSociety);
+            }
+
+
             var userNationalSociety = new UserNationalSociety { NationalSocietyId = nationalSocietyId, UserId = userData.Id };
             await _dataContext.UserNationalSocieties.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();

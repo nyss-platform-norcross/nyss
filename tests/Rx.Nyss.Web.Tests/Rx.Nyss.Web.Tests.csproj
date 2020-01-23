@@ -28,6 +28,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\RX.Nyss.Web\RX.Nyss.Web.csproj" />
+    <ProjectReference Include="..\RX.Nyss.TestData\RX.Nyss.TestData.csproj" />
   </ItemGroup>
 
 </Project>

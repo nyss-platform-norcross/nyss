@@ -46,9 +46,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             var healthRiskEventReportsQuery = _reportService.GetHealthRiskEventReportsQuery(filters);
             var alerts = GetAlerts(nationalSocietyId, filters);
 
-            return await _nyssContext.Projects
-                .Where(ph => ph.NationalSocietyId == nationalSocietyId)
-                .Select(ph => new
+            return await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => new
                 {
                     allDataCollectorCount = AllDataCollectorCount(filters, nationalSocietyId),
                     activeDataCollectorCount = rawReportsWithDataCollector.Select(r => r.DataCollector.Id).Distinct().Count()

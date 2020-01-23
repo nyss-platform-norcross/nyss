@@ -168,12 +168,18 @@ namespace RX.Nyss.Web.Features.Projects
         {
             try
             {
-                var nationalSocietyExists =
-                    await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId);
+                var nationalSocietyData = await _nyssContext.NationalSocieties
+                    .Where(ns => ns.Id == nationalSocietyId)
+                    .Select(ns => new { ns.IsArchived })
+                    .SingleOrDefaultAsync();
 
-                if (!nationalSocietyExists)
+                if (nationalSocietyData == null)
                 {
                     return Error<int>(ResultKey.Project.NationalSocietyDoesNotExist);
+                }
+                if (nationalSocietyData.IsArchived)
+                {
+                    return Error<int>(ResultKey.Project.CannotAddProjectInArchivedNationalSociety);
                 }
 
                 var healthRiskIdsInDatabase = await _nyssContext.HealthRisks.Select(hr => hr.Id).ToListAsync();

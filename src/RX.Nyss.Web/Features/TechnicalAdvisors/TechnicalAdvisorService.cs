@@ -20,6 +20,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int technicalAdvisorId);
         Task<Result> UpdateTechnicalAdvisor(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto);
         Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId);
+        Task RemoveTechnicalAdvisorIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId);
     }
 
     public class TechnicalAdvisorService : ITechnicalAdvisorService
@@ -73,6 +74,10 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             if (nationalSociety == null)
             {
                 throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+            }
+            if (nationalSociety.IsArchived)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
             }
 
             var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
@@ -158,25 +163,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
-
-                var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
-
-                var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
-                if (nationalSocietyReferenceToRemove == null)
-                {
-                    return Error(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
-                }
-                _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
-
-                await HandleHeadManagerStatus(technicalAdvisor, nationalSocietyReferenceToRemove);
-
-                var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
-                if (isUsersLastNationalSociety)
-                {
-                    _nationalSocietyUserService.DeleteNationalSocietyUser(technicalAdvisor);
-                    await _identityUserRegistrationService.DeleteIdentityUser(technicalAdvisor.IdentityUserId);
-                }
+                await RemoveTechnicalAdvisorFromNationalSociety(nationalSocietyId, technicalAdvisorId);
 
                 await _dataContext.SaveChangesAsync();
                 transactionScope.Complete();
@@ -187,20 +174,54 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                 _loggerAdapter.Debug(e);
                 return e.Result;
             }
+        }
 
-            async Task HandleHeadManagerStatus(TechnicalAdvisorUser technicalAdvisor, UserNationalSociety nationalSocietyReferenceToRemove)
+        private async Task RemoveTechnicalAdvisorFromNationalSociety(int nationalSocietyId, int technicalAdvisorId, bool allowHeadManagerDeletion = false)
+        {
+            var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
+
+            var userNationalSocieties = technicalAdvisor.UserNationalSocieties;
+
+            var nationalSocietyReferenceToRemove = userNationalSocieties.SingleOrDefault(uns => uns.NationalSocietyId == nationalSocietyId);
+            if (nationalSocietyReferenceToRemove == null)
             {
-                var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyReferenceToRemove.NationalSocietyId);
-                if (nationalSociety.PendingHeadManager == technicalAdvisor)
-                {
-                    nationalSociety.PendingHeadManager = null;
-                }
-                if (nationalSociety.HeadManager == technicalAdvisor)
+                throw new ResultException(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
+            }
+
+            _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
+
+            await HandleHeadManagerStatus(technicalAdvisor, nationalSocietyReferenceToRemove, allowHeadManagerDeletion);
+
+            var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
+            if (isUsersLastNationalSociety)
+            {
+                _nationalSocietyUserService.DeleteNationalSocietyUser(technicalAdvisor);
+                await _identityUserRegistrationService.DeleteIdentityUser(technicalAdvisor.IdentityUserId);
+            }
+        }
+
+        private async Task HandleHeadManagerStatus(TechnicalAdvisorUser technicalAdvisor, UserNationalSociety nationalSocietyReferenceToRemove, bool allowHeadManagerDeletion)
+        {
+            var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyReferenceToRemove.NationalSocietyId);
+            if (nationalSociety.PendingHeadManager == technicalAdvisor)
+            {
+                nationalSociety.PendingHeadManager = null;
+            }
+            if (nationalSociety.HeadManager == technicalAdvisor)
+            {
+                if (!allowHeadManagerDeletion)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
+                nationalSociety.HeadManager = null;
             }
         }
+
+        public async Task RemoveTechnicalAdvisorIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId) =>
+            await RemoveTechnicalAdvisorFromNationalSociety(nationalSocietyId, technicalAdvisorId, true);
+
+
+
     }
 }
 

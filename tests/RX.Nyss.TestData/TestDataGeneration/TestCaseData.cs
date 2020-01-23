@@ -12,56 +12,83 @@ namespace RX.Nyss.TestData.TestDataGeneration
     public class TestCaseData<T> : BaseTestCaseData
     {
         public T AdditionalData { get; set; }
-        private readonly Func<(EntityData, T)> _testCaseDefinition;
+        private readonly Func<EntityData, T> _testCaseDefinition;
 
-        public TestCaseData(INyssContext nyssContextMock, Func<(EntityData, T)> definition)
+        public TestCaseData(INyssContext nyssContextMock, Func<EntityData, T> definition)
             : base(nyssContextMock)
         {
             _testCaseDefinition = definition;
         }
 
-        public void GenerateData()
+        public TestCaseData<T> GenerateData()
         {
-            (EntityData, AdditionalData) = _testCaseDefinition.Invoke();
-            ConfiugureNyssContext(EntityData);
+            AdditionalData = _testCaseDefinition.Invoke(EntityData);
+            return this;
         }
     }
 
     public class TestCaseData : BaseTestCaseData
     {
-        private readonly Func<EntityData> _testCaseDefinition;
+        private readonly Action<EntityData> _testCaseDefinition;
 
-        public TestCaseData(INyssContext nyssContextMock, Func<EntityData> definition)
+        public TestCaseData(INyssContext nyssContextMock, Action<EntityData> definition)
             : base(nyssContextMock)
         {
             _testCaseDefinition = definition;
         }
 
-        public void GenerateData()
+        public TestCaseData GenerateData()
         {
-            EntityData = _testCaseDefinition.Invoke();
-            ConfiugureNyssContext(EntityData);
+            _testCaseDefinition.Invoke(EntityData);
+            return this;
         }
     }
 
     public abstract class BaseTestCaseData
     {
         private readonly INyssContext _nyssContextMock;
-        public virtual EntityData EntityData { get; set; }
+        public virtual EntityData EntityData { get; set; } = new EntityData();
 
         protected BaseTestCaseData(INyssContext nyssContextMock)
         {
             _nyssContextMock = nyssContextMock;
         }
 
+        public void AddToDbContext() =>
+            ConfiugureNyssContext(EntityData);
+
         protected void ConfiugureNyssContext(EntityData data)
         {
-            AddToNyssContext(data.HealthRisks);
-            AddToNyssContext(data.ProjectHealthRisks);
-            AddToNyssContext(data.AlertRules);
-            AddToNyssContext(data.Reports);
             AddToNyssContext(data.Alerts);
+            AddToNyssContext(data.EmailAlertRecipients);
+            AddToNyssContext(data.SmsAlertRecipients);
             AddToNyssContext(data.AlertReports);
+            AddToNyssContext(data.AlertRules);
+            AddToNyssContext(data.ApplicationLanguages);
+            AddToNyssContext(data.ContentLanguages);
+            AddToNyssContext(data.Countries);
+            AddToNyssContext(data.DataCollectors);
+            AddToNyssContext(data.Districts);
+            AddToNyssContext(data.GatewaySettings);
+            AddToNyssContext(data.HeadManagerConsents);
+            AddToNyssContext(data.HealthRisks);
+            AddToNyssContext(data.HealthRiskLanguageContents);
+            AddToNyssContext(data.Localizations);
+            AddToNyssContext(data.LocalizedTemplates);
+            AddToNyssContext(data.NationalSocieties);
+            AddToNyssContext(data.Notifications);
+            AddToNyssContext(data.Projects);
+            AddToNyssContext(data.SupervisorUserProjects);
+            AddToNyssContext(data.ProjectHealthRisks);
+            AddToNyssContext(data.RawReports);
+            AddToNyssContext(data.Regions);
+            AddToNyssContext(data.Reports);
+            AddToNyssContext(data.Users);
+            AddToNyssContext(data.UserNationalSocieties);
+            AddToNyssContext(data.Villages);
+            AddToNyssContext(data.Zones);
+            
+            data.NyssContextMockedMethods?.Invoke(_nyssContextMock);
         }
 
         private void AddToNyssContext<T>(List<T> entities) where T : class
@@ -71,12 +98,31 @@ namespace RX.Nyss.TestData.TestDataGeneration
                 return;
             }
 
-            var dbSet = entities.AsQueryable().BuildMockDbSet();
-
             var properties = typeof(INyssContext).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var dbSetProperty = properties.Single(p => p.PropertyType == typeof(DbSet<T>));
 
-            dbSetProperty.GetValue(_nyssContextMock, null).Returns(dbSet);
+            if (DbSetIsImplemented<T>(dbSetProperty))
+            {
+                var existingDbSet = dbSetProperty.GetValue(_nyssContextMock, null) as DbSet<T>;
+                entities.AddRange( existingDbSet.ToList());
+            }
+
+            var newDbSet = entities.AsQueryable().BuildMockDbSet();
+            dbSetProperty.GetValue(_nyssContextMock, null).Returns(newDbSet);
+        }
+
+        private bool DbSetIsImplemented<T>(PropertyInfo dbSetProperty) where T : class
+        {
+            var dbSet = dbSetProperty.GetValue(_nyssContextMock, null) as DbSet<T>;
+            try
+            {
+                dbSet.Any();
+                return true;
+            }
+            catch (NotImplementedException)
+            {
+                return false;
+            }
         }
     }
 }

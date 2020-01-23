@@ -9,7 +9,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 {
     public class AlertServiceTestData
     {
-        public struct DismissReportAdditionalData
+        public class DismissReportAdditionalData
         {
             public Report ReportBeingDismissed { get; set; }
             public Data.Models.Alert AlertThatReceivedNewReports { get; set; }
@@ -43,7 +43,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
         }
 
         public TestCaseData<SimpleTestCaseAdditionalData> SimpleCasesData =>
-            _testCaseDataProvider.GetOrCreate(nameof(SimpleCasesData), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(SimpleCasesData), (data) =>
             {
                 var additionalData = new SimpleTestCaseAdditionalData
                 {
@@ -55,60 +55,46 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 additionalData.DataCollectionPointReport = new Report { DataCollector = additionalData.CollectionPointDataCollector };
                 additionalData.SingleReportWithoutHealthRisk = new Report { DataCollector = additionalData.HumanDataCollector, ReportType = ReportType.Single };
 
-                return (new EntityData(), additionalData);
+                return additionalData;
             });
                 
 
         public TestCaseData WhenCountThresholdIsOne =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenCountThresholdIsOne), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenCountThresholdIsOne), (data) =>
             {
-                var data = new EntityData();
-
-                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
+               (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf1 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 1);
 
                 var reportGroup = _reportGroupGenerator.Create("93DCD52C-4AD2-45F6-AED4-54CAB1DD3E19")
                     .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf1, _dataCollector);
                 data.Reports = reportGroup.Reports;
-
-                return data;
             });
 
         public TestCaseData WhenCountThresholdIsThreeAndIsNotSatisfied =>
-            _testCaseDataProvider.GetOrCreate( nameof(WhenCountThresholdIsThreeAndIsNotSatisfied),() =>
+            _testCaseDataProvider.GetOrCreate( nameof(WhenCountThresholdIsThreeAndIsNotSatisfied),(data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
                 var reportGroup = _reportGroupGenerator.Create("19378b71-c7cd-43b3-b856-117dc30ee291")
                     .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
                 data.Reports = reportGroup.Reports;
-
-                return data;
             });
 
         public TestCaseData WhenAddingToGroupWithNoAlertAndMeetingThreshold =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenAddingToGroupWithNoAlertAndMeetingThreshold), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenAddingToGroupWithNoAlertAndMeetingThreshold), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
                 var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
                     .AddNReports(3, ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
                 data.Reports = reportGroup.Reports;
-
-                return data;
             });
 
         public TestCaseData WhenAddingToGroupWithAnExistingAlert =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenAddingToGroupWithAnExistingAlert), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenAddingToGroupWithAnExistingAlert), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
@@ -119,15 +105,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                 var reportsToCreateAlertFor = data.Reports.Where(r => r.Status == ReportStatus.Pending).ToList();
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(reportsToCreateAlertFor);
-
-                return data;
             });
         
         public TestCaseData WhenDismissingReportInAlertWithCountThreshold1 =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenDismissingReportInAlertWithCountThreshold1),() =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenDismissingReportInAlertWithCountThreshold1),(data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf1 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 1);
 
@@ -136,15 +118,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 data.Reports = reportGroup.Reports;
 
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
-
-                return data;
             });
 
         public TestCaseData WhenTheReportStillHasAGroupThatMeetsCountThreshold =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenTheReportStillHasAGroupThatMeetsCountThreshold), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenTheReportStillHasAGroupThatMeetsCountThreshold), (data) =>
 
             {
-                var data = new EntityData();
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
 
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
@@ -156,14 +135,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 data.Reports = group1.Reports.Concat(group2.Reports).ToList();
 
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
-                return data;
             });
 
         public TestCaseData<DismissReportAdditionalData> WhenNoGroupInAlertSatisfiesCountThresholdAnymore =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenNoGroupInAlertSatisfiesCountThresholdAnymore), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenNoGroupInAlertSatisfiesCountThresholdAnymore), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
@@ -176,14 +152,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
 
                 var additionalData = new DismissReportAdditionalData { ReportBeingDismissed = group2.Reports.First() };
-                return (data, additionalData);
+                return additionalData;
             });
 
         public TestCaseData<DismissReportAdditionalData> WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
@@ -223,13 +197,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     AlertThatReceivedNewReports = alerts2.Single(),
                     ReportsBeingMoved = reportsBeingMoved
                 };
-                return (data, additionalData);
+                return additionalData;
             });
        public TestCaseData WhenCountThresholdIsZero =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenCountThresholdIsZero), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenCountThresholdIsZero), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf0 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 0);
 
@@ -237,15 +209,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf0, _dataCollector);
 
                 data.Reports = groupWithSingleNewAlert.Reports;
-
-                return data;
             });
 
        public TestCaseData WhenThereAreTrainingReportsInLabelGroup =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenThereAreTrainingReportsInLabelGroup), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenThereAreTrainingReportsInLabelGroup), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
 
@@ -255,8 +223,6 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
 
                 data.Reports = groupWithRealAndTrainingReports.Reports;
-
-                return data;
             });
 
        public TestCaseData WhenAnAlertAreTriggered =>

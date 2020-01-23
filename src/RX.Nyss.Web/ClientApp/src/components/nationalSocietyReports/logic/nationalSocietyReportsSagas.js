@@ -63,6 +63,7 @@ function* openNationalSocietyReportsModule(nationalSocietyId) {
   yield put(appActions.openModule.invoke(null, {
     nationalSocietyId: nationalSociety.value.id,
     nationalSocietyName: nationalSociety.value.name,
-    nationalSocietyCountry: nationalSociety.value.countryName
+    nationalSocietyCountry: nationalSociety.value.countryName,
+    nationalSocietyIsArchived: nationalSociety.value.isArchived
   }));
 }

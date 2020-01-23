@@ -52,13 +52,11 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
                     row.isInTrainingMode ?
                       {
                         title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
-                        action: () => setTrainingState(row.id, false),
-                        condition: true
+                        action: () => setTrainingState(row.id, false)
                       } :
                       {
                         title: strings(stringKeys.dataCollector.list.setToInTraining),
-                        action: () => setTrainingState(row.id, true),
-                        condition: true
+                        action: () => setTrainingState(row.id, true)
                       }
                   ]} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />
                   <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />

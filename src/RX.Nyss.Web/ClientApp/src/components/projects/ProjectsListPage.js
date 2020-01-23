@@ -18,11 +18,12 @@ const ProjectsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      <TableActions>
+      {!props.nationalSocietyIsArchived &&
+      <TableActions>        
         <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
           {strings(stringKeys.project.addNew)}
         </Button>
-      </TableActions>
+      </TableActions>}      
 
       <ProjectsTable
         list={props.list}
@@ -55,6 +56,7 @@ const mapStateToProps = (state, ownProps) => ({
   isClosing: state.projects.isClosing,
   callingUserRoles: state.appData.user.roles,
   isHeadManager: state.appData.siteMap.parameters.nationalSocietyHeadManagerId === state.appData.user.id,
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 
 const mapDispatchToProps = {

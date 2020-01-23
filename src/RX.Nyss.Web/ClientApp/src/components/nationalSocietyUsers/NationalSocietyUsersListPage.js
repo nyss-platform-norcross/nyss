@@ -19,6 +19,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
 
   return (
     <Fragment>
+      {!props.nationalSocietyIsArchived &&
       <TableActions>
           <Box mr={2}>
             <Button onClick={() => props.goToAddExisting(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
@@ -29,7 +30,7 @@ const NationalSocietyUsersListPageComponent = (props) => {
           <Button onClick={() => props.goToCreation(props.nationalSocietyId)} variant="outlined" color="primary" startIcon={<AddIcon />}>
             {strings(stringKeys.nationalSocietyUser.addNew)}
           </Button>
-      </TableActions>
+      </TableActions>}
 
       <NationalSocietyUsersTable
         list={props.list}
@@ -63,7 +64,8 @@ const mapStateToProps = (state, ownProps) => ({
   list: state.nationalSocietyUsers.listData,
   isListFetching: state.nationalSocietyUsers.listFetching,
   isRemoving: state.nationalSocietyUsers.listRemoving,
-  isSettingAsHead: state.nationalSocietyUsers.settingAsHead
+  isSettingAsHead: state.nationalSocietyUsers.settingAsHead,
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 
 const mapDispatchToProps = {

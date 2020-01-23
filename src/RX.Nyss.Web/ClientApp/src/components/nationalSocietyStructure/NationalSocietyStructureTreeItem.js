@@ -7,7 +7,7 @@ import Icon from "@material-ui/core/Icon";
 import ConfirmationAction from "../common/confirmationAction/ConfirmationAction";
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
 
-export const StructureTreeItem = ({ itemKey, item, onEdit, onRemove, children }) => {
+export const StructureTreeItem = ({ itemKey, item, onEdit, onRemove, children, nationalSocietyIsArchived }) => {
   const [isEdited, setIsEdited] = useState(false);
 
   const handleEdit = (e) => {
@@ -39,16 +39,20 @@ export const StructureTreeItem = ({ itemKey, item, onEdit, onRemove, children })
       {!isEdited && (
         <Fragment>
           <div>{label}</div>
-          <Icon
-            className={styles.itemAction}
-            onClick={handleEdit}>
-            edit
-          </Icon>
-          <ConfirmationAction
-            confirmationText={strings(stringKeys.nationalSociety.structure.removalConfirmation)}
-            onClick={handleRemove}>
-            <Icon className={styles.itemAction}>delete_outline</Icon>
-          </ConfirmationAction>
+          {!nationalSocietyIsArchived &&
+            <Fragment>
+              <Icon
+                className={styles.itemAction}
+                onClick={handleEdit}>
+                edit
+              </Icon>
+              <ConfirmationAction
+                confirmationText={strings(stringKeys.nationalSociety.structure.removalConfirmation)}
+                onClick={handleRemove}>
+                <Icon className={styles.itemAction}>delete_outline</Icon>
+              </ConfirmationAction>
+            </Fragment>
+          }
         </Fragment>
       )}
     </div>

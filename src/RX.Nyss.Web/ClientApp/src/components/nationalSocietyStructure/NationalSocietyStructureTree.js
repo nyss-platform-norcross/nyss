@@ -38,14 +38,16 @@ export const NationalSocietyStructureTree = (props) => {
           item={region}
           onRemove={props.removeRegion}
           onEdit={props.editRegion}
+          nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
         >
           {renderDistricts(region.id)}
         </StructureTreeItem>
       ))}
+      {!props.nationalSocietyIsArchived &&
       <AddPanel
         placeholder={strings(stringKeys.nationalSociety.structure.addRegion, true)}
         onSave={name => props.createRegion(nationalSocietyId, name)}
-      />
+      />}
     </Fragment>
 
   const renderDistricts = (regionId) =>
@@ -57,14 +59,16 @@ export const NationalSocietyStructureTree = (props) => {
           item={district}
           onRemove={props.removeDistrict}
           onEdit={props.editDistrict}
+          nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
         >
           {renderVillages(district.id)}
         </StructureTreeItem>
       ))}
+      {!props.nationalSocietyIsArchived &&
       <AddPanel
         placeholder={strings(stringKeys.nationalSociety.structure.addDistrict, true)}
         onSave={name => props.createDistrict(regionId, name)}
-      />
+      />}
     </Fragment>
 
   const renderVillages = (districtId) =>
@@ -76,14 +80,16 @@ export const NationalSocietyStructureTree = (props) => {
           item={village}
           onRemove={props.removeVillage}
           onEdit={props.editVillage}
+          nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
         >
           {renderZones(village.id)}
         </StructureTreeItem>
       ))}
+      {!props.nationalSocietyIsArchived &&
       <AddPanel
         placeholder={strings(stringKeys.nationalSociety.structure.addVillage, true)}
         onSave={name => props.createVillage(districtId, name)}
-      />
+      />}
     </Fragment>
 
   const renderZones = (villageId) =>
@@ -95,12 +101,14 @@ export const NationalSocietyStructureTree = (props) => {
           item={zone}
           onRemove={props.removeZone}
           onEdit={props.editZone}
+          nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
         />
       ))}
+      {!props.nationalSocietyIsArchived &&
       <AddPanel
         placeholder={strings(stringKeys.nationalSociety.structure.addZone, true)}
         onSave={name => props.createZone(villageId, name)}
-      />
+      />}
     </Fragment>
 
   return (

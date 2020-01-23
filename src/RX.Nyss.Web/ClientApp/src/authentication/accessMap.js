@@ -7,6 +7,7 @@ export const accessMap = {
     add: [Administrator, GlobalCoordinator],
     edit: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
     delete: [Administrator, GlobalCoordinator],
+    archive: [Administrator, GlobalCoordinator],
     get: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer],
   },
   nationalSocietyStructure: {

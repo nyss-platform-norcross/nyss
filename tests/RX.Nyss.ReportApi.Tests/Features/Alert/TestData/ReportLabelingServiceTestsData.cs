@@ -49,10 +49,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             new MockPoint(lon, lat);
 
         public TestCaseData WhenNoReportsInKilometerRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenNoReportsInKilometerRange), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenNoReportsInKilometerRange), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
@@ -60,15 +58,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.411269, 17.025807), DateTime.UtcNow);
 
                 data.Reports = reportGroup.Reports;
-
-                return data;
             });
 
         public TestCaseData WhenNoReportsInTimeRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenNoReportsInTimeRange), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenNoReportsInTimeRange), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
@@ -77,15 +71,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.329331, 17.046055), DateTime.UtcNow.AddDays(-(double)projectHealthRiskWithKmThresholdOf1.AlertRule.DaysThreshold));
 
                 data.Reports = reportGroup.Reports;
-
-                return data;
             });
 
         public TestCaseData WhenTwoMatchingReportsInRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenTwoMatchingReportsInRange), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenTwoMatchingReportsInRange), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
@@ -100,15 +90,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
 
                 data.Reports = reportGroup1.Reports.Concat(reportGroup2.Reports).Concat(reportGroup3.Reports).ToList();
-
-                return data;
             });
 
          public TestCaseData<PointLabelingAdditionalData> WhenOneReportGroupInRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenOneReportGroupInRange), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenOneReportGroupInRange), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
@@ -124,13 +110,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                 var additionalData = new PointLabelingAdditionalData { ReportBeingAdded = addedPointGroup.Reports.Single(), LabelOfNewPointAfterAdding = Guid.Parse(group1Label) };
 
-                return (data, additionalData);
+                return additionalData;
             });
          public TestCaseData<PointLabelingAdditionalData> WhenMoreReportGroupsInRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenMoreReportGroupsInRange), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenMoreReportGroupsInRange), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
@@ -168,14 +152,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     Group3Label = Guid.Parse(group3Label)
                 };
 
-                return (data, additionalData);
+                return additionalData;
             });
 
         public TestCaseData<(Guid Label, int KilometerThreshold)> CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold =>
-            _testCaseDataProvider.GetOrCreate(nameof(CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
@@ -188,14 +170,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 data.Reports = reportGroup1.Reports;
 
                 (Guid, int) additionalData = (Guid.Parse(group1Label), projectHealthRiskWithKmThresholdOf1.AlertRule.KilometersThreshold.Value);
-                return (data, additionalData);
+                return additionalData;
             });
 
         public TestCaseData<(Guid Label, int KilometerThreshold, Report Report1InArea, Report Report2InArea, Report Report3InArea, Report ReportFarAway)> CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold =>
-            _testCaseDataProvider.GetOrCreate(nameof(CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
@@ -216,14 +196,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                         reportGroup1.Reports[3]
                     );
 
-                return (data, additionalData);
+                return additionalData;
             });
 
         public TestCaseData<PointLabelingAdditionalData> WhenAddingTrainingReportBetweenPointsWithDifferentLabels =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenAddingTrainingReportBetweenPointsWithDifferentLabels), () =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenAddingTrainingReportBetweenPointsWithDifferentLabels), (data) =>
             {
-                var data = new EntityData();
-
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
@@ -240,7 +218,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 data.Reports = reportGroup1.Reports.Concat(reportGroup2.Reports).ToList();
                 data.Reports.Add(trainingReport);
 
-                return (data, new PointLabelingAdditionalData{ ReportBeingAdded = trainingReport });
+                return new PointLabelingAdditionalData{ ReportBeingAdded = trainingReport };
             });
     }
 }

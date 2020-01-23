@@ -34,6 +34,10 @@ const NationalSocietiesListPageComponent = ({ showStringsKeys, match, openModule
         isListFetching={props.isListFetching}
         isRemoving={props.isRemoving}
         remove={props.remove}
+        archive = {props.archive}
+        reopen = {props.reopen}
+        isArchiving = {props.isArchiving}
+        isReopening = {props.isReopening}       
       />
     </Fragment>
   );
@@ -44,6 +48,8 @@ NationalSocietiesListPageComponent.propTypes = {
   goToCreation: PropTypes.func,
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
+  archive: PropTypes.func,
+  reopen: PropTypes.func,
   isFetching: PropTypes.bool,
   list: PropTypes.array
 };
@@ -51,7 +57,10 @@ NationalSocietiesListPageComponent.propTypes = {
 const mapStateToProps = state => ({
   list: state.nationalSocieties.listData,
   isListFetching: state.nationalSocieties.listFetching,
-  isRemoving: state.nationalSocieties.listRemoving
+  isRemoving: state.nationalSocieties.listRemoving,
+  isArchiving: state.nationalSocieties.listArchiving,
+  isReopening: state.nationalSocieties.listReopening,
+  callingUserRoles: state.appData.user.roles
 });
 
 const mapDispatchToProps = {
@@ -60,7 +69,9 @@ const mapDispatchToProps = {
   goToEdition: nationalSocietiesActions.goToEdition,
   goToDashboard: nationalSocietyDashboardActions.goToDashboard,
   remove: nationalSocietiesActions.remove.invoke,
-  openModule: appActions.openModule.invoke
+  openModule: appActions.openModule.invoke,
+  archive: nationalSocietiesActions.archive.invoke,
+  reopen: nationalSocietiesActions.reopen.invoke
 };
 
 export const NationalSocietiesListPage = useLayout(

@@ -77,6 +77,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result<StructureResponseDto.StructureRegionDto>> CreateRegion(int nationalSocietyId, string name)
         {
+            if (await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.IsArchived))
+            {
+                return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.CannotCreateItemInArchivedNationalSociety);
+            }
+
             if (await _nyssContext.Regions.AnyAsync(ns => ns.Name == name && ns.NationalSociety.Id == nationalSocietyId))
             {
                 return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
@@ -107,7 +112,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
                 return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
             }
 
-            var entity = await _nyssContext.Regions.SingleAsync(r => r.Id == regionId);
+            var entity = await _nyssContext.Regions
+                .Where(r => !r.NationalSociety.IsArchived)
+                .SingleAsync(r => r.Id == regionId);
             entity.Name = name;
             await _nyssContext.SaveChangesAsync();
             return Success();
@@ -117,6 +124,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         {
             var entity = await _nyssContext.Regions
                 .Include(r => r.Districts).ThenInclude(d => d.Villages).ThenInclude(v => v.Zones)
+                .Where(r => !r.NationalSociety.IsArchived)
                 .SingleAsync(region => region.Id == regionId);
 
             _nyssContext.Regions.Remove(entity);
@@ -126,6 +134,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result<StructureResponseDto.StructureDistrictDto>> CreateDistrict(int regionId, string name)
         {
+            if (await _nyssContext.Regions.AnyAsync(r => r.Id == regionId && r.NationalSociety.IsArchived))
+            {
+                return Error<StructureResponseDto.StructureDistrictDto>(ResultKey.NationalSociety.Structure.CannotCreateItemInArchivedNationalSociety);
+            }
+
             if (await _nyssContext.Districts.AnyAsync(d => d.Name == name && d.Region.Id == regionId))
             {
                 return Error<StructureResponseDto.StructureDistrictDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
@@ -154,7 +167,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
                 return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
             }
 
-            var entity = await _nyssContext.Districts.SingleAsync(district => district.Id == districtId);
+            var entity = await _nyssContext.Districts
+                .Where(d => !d.Region.NationalSociety.IsArchived)
+                .SingleAsync(district => district.Id == districtId);
             entity.Name = name;
             await _nyssContext.SaveChangesAsync();
             return Success();
@@ -164,6 +179,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         {
             var entity = await _nyssContext.Districts
                 .Include(d => d.Villages).ThenInclude(v => v.Zones)
+                .Where(r => !r.Region.NationalSociety.IsArchived)
                 .SingleAsync(district => district.Id == districtId);
             _nyssContext.Districts.Remove(entity);
             await _nyssContext.SaveChangesAsync();
@@ -172,6 +188,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result<StructureResponseDto.StructureVillageDto>> CreateVillage(int districtId, string name)
         {
+            if (await _nyssContext.Districts.AnyAsync(d => d.Id == districtId && d.Region.NationalSociety.IsArchived))
+            {
+                return Error<StructureResponseDto.StructureVillageDto>(ResultKey.NationalSociety.Structure.CannotCreateItemInArchivedNationalSociety);
+            }
+
             if (await _nyssContext.Villages.AnyAsync(d => d.Name == name && d.District.Id == districtId))
             {
                 return Error<StructureResponseDto.StructureVillageDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
@@ -200,7 +221,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
                 return Error<StructureResponseDto.StructureRegionDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
             }
 
-            var entity = await _nyssContext.Villages.SingleAsync(village => village.Id == villageId);
+            var entity = await _nyssContext.Villages
+                .Where(v => !v.District.Region.NationalSociety.IsArchived)
+                .SingleAsync(village => village.Id == villageId);
             entity.Name = name;
             await _nyssContext.SaveChangesAsync();
             return Success();
@@ -210,6 +233,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         {
             var entity = await _nyssContext.Villages
                 .Include(v => v.Zones)
+                .Where(v => !v.District.Region.NationalSociety.IsArchived)
                 .SingleAsync(village => village.Id == villageId);
             _nyssContext.Villages.Remove(entity);
             await _nyssContext.SaveChangesAsync();
@@ -218,6 +242,10 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result<StructureResponseDto.StructureZoneDto>> CreateZone(int villageId, string name)
         {
+            if (await _nyssContext.Villages.AnyAsync(v => v.Id == villageId && v.District.Region.NationalSociety.IsArchived))
+            {
+                return Error<StructureResponseDto.StructureZoneDto>(ResultKey.NationalSociety.Structure.CannotCreateItemInArchivedNationalSociety);
+            }
             if (await _nyssContext.Zones.AnyAsync(d => d.Name == name && d.Village.Id == villageId))
             {
                 return Error<StructureResponseDto.StructureZoneDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
@@ -246,7 +274,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
                 return Error<StructureResponseDto.StructureVillageDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
             }
 
-            var entity = await _nyssContext.Zones.SingleAsync(zone => zone.Id == zoneId);
+            var entity = await _nyssContext.Zones
+                .Where(r => !r.Village.District.Region.NationalSociety.IsArchived)
+                .SingleAsync(zone => zone.Id == zoneId);
             entity.Name = name;
             await _nyssContext.SaveChangesAsync();
             return Success();
@@ -254,12 +284,13 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 
         public async Task<Result> RemoveZone(int zoneId)
         {
-            var entity = await _nyssContext.Zones.SingleAsync(zone => zone.Id == zoneId);
+            var entity = await _nyssContext.Zones
+                .Where(r => !r.Village.District.Region.NationalSociety.IsArchived)
+                .SingleAsync(zone => zone.Id == zoneId);
             _nyssContext.Zones.Remove(entity);
             await _nyssContext.SaveChangesAsync();
             return Success();
         }
-
 
         public async Task<Result<List<RegionResponseDto>>> GetRegions(int nationalSocietyId)
         {

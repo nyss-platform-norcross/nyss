@@ -28,7 +28,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task FindReportsSatisfyingRangeAndTimeRequirements_WhenNoReportsInKilometerRange_ReturnsEmptyList()
         {
             //arrange
-            _testData.WhenNoReportsInKilometerRange.GenerateData();
+            _testData.WhenNoReportsInKilometerRange.GenerateData().AddToDbContext();
             var report = _testData.WhenNoReportsInKilometerRange.EntityData.Reports.Single();
 
             //act
@@ -42,7 +42,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task FindReportsSatisfyingRangeAndTimeRequirements_WhenNoReportsInTimeRange_ReturnsEmptyList()
         {
             //arrange
-            _testData.WhenNoReportsInTimeRange.GenerateData();
+            _testData.WhenNoReportsInTimeRange.GenerateData().AddToDbContext();
             var report = _testData.WhenNoReportsInTimeRange.EntityData.Reports.First();
 
             //act
@@ -56,7 +56,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task FindReportsSatisfyingRangeAndTimeRequirements_WhenTwoMatchingReportsInRange_ShouldReturnListWithTwoReports()
         {
             //arrange
-            _testData.WhenTwoMatchingReportsInRange.GenerateData();
+            _testData.WhenTwoMatchingReportsInRange.GenerateData().AddToDbContext();
             var report = _testData.WhenTwoMatchingReportsInRange.EntityData.Reports.First();
 
             //act
@@ -70,7 +70,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ResolveLabelsOnReportAdded_WhenOneReportGroupInRange_ShouldChangeTheLabelOfAddedPoint()
         {
             //arrange
-            _testData.WhenOneReportGroupInRange.GenerateData();
+            _testData.WhenOneReportGroupInRange.GenerateData().AddToDbContext();
             var report = _testData.WhenOneReportGroupInRange.EntityData.Reports.First();
 
             //act
@@ -84,7 +84,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ResolveLabelsOnReportAdded_WhenMoreReportGroupsInRange_ShouldMergeReportGroups()
         {
             //arrange
-            _testData.WhenMoreReportGroupsInRange.GenerateData();
+            _testData.WhenMoreReportGroupsInRange.GenerateData().AddToDbContext();
             var report = _testData.WhenMoreReportGroupsInRange.AdditionalData.ReportBeingAdded;
             var group1Label = _testData.WhenMoreReportGroupsInRange.AdditionalData.Group1Label;
             var group2Label = _testData.WhenMoreReportGroupsInRange.AdditionalData.Group2Label;
@@ -145,7 +145,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold_ShouldAssignDifferentLabels()
         {
             //arrange
-            _testData.CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold.GenerateData();
+            _testData.CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold.GenerateData().AddToDbContext();
             var distanceThreshold = _testData.CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold.AdditionalData.KilometerThreshold;
             var group1Label = _testData.CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold.AdditionalData.Label;
 
@@ -167,7 +167,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold_ShouldAssignNewLabelToAllMeetingTheThreshold()
         {
             //arrange
-            _testData.CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold.GenerateData();
+            _testData.CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold.GenerateData().AddToDbContext();
             var distanceThreshold = _testData.CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold.AdditionalData.KilometerThreshold;
             var groupLabel = _testData.CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold.AdditionalData.Label;
             var report1InArea = _testData.CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold.AdditionalData.Report1InArea;

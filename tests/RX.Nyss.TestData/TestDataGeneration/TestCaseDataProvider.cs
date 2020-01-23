@@ -14,7 +14,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             _nyssContextMock = nyssContextMock;
         }
 
-        public TestCaseData GetOrCreate(string label, Func<EntityData> testCaseDefinition)
+        public TestCaseData GetOrCreate(string label, Action<EntityData> testCaseDefinition)
         {
             if (_testCases.ContainsKey(label))
             {
@@ -26,7 +26,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             return newTestCaseData;
         }
 
-        public TestCaseData<T> GetOrCreate<T>(string label, Func<(EntityData, T)> testCaseDefinition)
+        public TestCaseData<T> GetOrCreate<T>(string label, Func<EntityData, T> testCaseDefinition)
         {
             if (_testCases.ContainsKey(label))
             {

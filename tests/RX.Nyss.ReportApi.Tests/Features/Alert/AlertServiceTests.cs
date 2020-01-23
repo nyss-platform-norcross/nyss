@@ -93,7 +93,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenSingleReportDoesNotHaveAProjectHealthRisk_ShouldThrow()
         {
             //arrange
-            _testData.SimpleCasesData.GenerateData();
+            _testData.SimpleCasesData.GenerateData().AddToDbContext();
             var report = _testData.SimpleCasesData.AdditionalData.SingleReportWithoutHealthRisk;
 
 
@@ -105,7 +105,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenCountThresholdIsOne_ShouldReturnNewPendingAlert()
         {
             //arrange
-            _testData.WhenCountThresholdIsOne.GenerateData();
+            _testData.WhenCountThresholdIsOne.GenerateData().AddToDbContext();
             var report = _testData.WhenCountThresholdIsOne.EntityData.Reports.Single();
             var existingAlerts = _testData.WhenCountThresholdIsOne.EntityData.Alerts;
 
@@ -122,7 +122,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenCountThresholdIsOne_ReportShouldBeChangedToPending()
         {
             //arrange
-            _testData.WhenCountThresholdIsOne.GenerateData();
+            _testData.WhenCountThresholdIsOne.GenerateData().AddToDbContext();
             var report = _testData.WhenCountThresholdIsOne.EntityData.Reports.Single();
 
             //act
@@ -137,7 +137,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenCountThresholdIsOne_ShouldAddAlertReportEntity()
         {
             //arrange
-            _testData.WhenCountThresholdIsOne.GenerateData();
+            _testData.WhenCountThresholdIsOne.GenerateData().AddToDbContext();
             var report = _testData.WhenCountThresholdIsOne.EntityData.Reports.Single();
 
             //act
@@ -153,7 +153,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenCountThresholdIsOne_ShouldSaveChanges2Times()
         {
             //arrange
-            _testData.WhenCountThresholdIsOne.GenerateData();
+            _testData.WhenCountThresholdIsOne.GenerateData().AddToDbContext();
             var report = _testData.WhenCountThresholdIsOne.EntityData.Reports.Single();
 
             //act
@@ -168,7 +168,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenCountThresholdIsThreeAndIsNotSatisfied_ShouldReturnNull()
         {
             //arrange
-            _testData.WhenCountThresholdIsThreeAndIsNotSatisfied.GenerateData();
+            _testData.WhenCountThresholdIsThreeAndIsNotSatisfied.GenerateData().AddToDbContext();
             var report = _testData.WhenCountThresholdIsThreeAndIsNotSatisfied.EntityData.Reports.Single();
 
             //act
@@ -182,7 +182,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenCountThresholdIsThreeAndIsNotSatisfied_ReportStatusShouldRemainNew()
         {
             //arrange
-            _testData.WhenCountThresholdIsThreeAndIsNotSatisfied.GenerateData();
+            _testData.WhenCountThresholdIsThreeAndIsNotSatisfied.GenerateData().AddToDbContext();
             var report = _testData.WhenCountThresholdIsThreeAndIsNotSatisfied.EntityData.Reports.Single();
 
             //act
@@ -197,7 +197,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithNoAlertAndMeetingThreshold_ShouldReturnNewPendingAlert()
         {
             //arrange
-            _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.GenerateData();
+            _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.EntityData.Reports.FirstOrDefault();
             var existingAlerts = _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.EntityData.Alerts;
 
@@ -214,7 +214,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithNoAlertAndMeetingThreshold_ShouldAddAlertReportEntities()
         {
             //arrange
-            _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.GenerateData();
+            _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.EntityData.Reports.FirstOrDefault();
             var existingAlerts = _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.EntityData.Alerts;
 
@@ -233,7 +233,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithNoAlertAndMeetingThreshold_ShouldSaveChanges2Times()
         {
             //arrange
-            _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.GenerateData();
+            _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenAddingToGroupWithNoAlertAndMeetingThreshold.EntityData.Reports.FirstOrDefault();
 
             //act
@@ -247,7 +247,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ShouldReturnNull()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData();
+            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
 
             //act
@@ -261,7 +261,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ReportStatusShouldBeChangedToPending()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData();
+            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
 
             //act
@@ -276,7 +276,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_NoNewAlertShouldCreated()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData();
+            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
 
             //act
@@ -290,7 +290,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ReportShouldBeAddedToAlert()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData();
+            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
             var existingAlert = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Alerts.Single();
 
@@ -309,7 +309,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ShouldSaveChanges2Times()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData();
+            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenAddingToGroupWithAnExistingAlert.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
 
             //act
@@ -323,7 +323,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenCountThresholdIsZero_ShouldNotCreateAnyNewAlert()
         {
             //arrange
-            _testData.WhenCountThresholdIsZero.GenerateData();
+            _testData.WhenCountThresholdIsZero.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenCountThresholdIsZero.EntityData.Reports.Single(r => r.Status == ReportStatus.New);
 
             //act
@@ -337,7 +337,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenThereAreTrainingReportsInLabelGroup_AddingTrainingReportShouldNotTriggerAlerts()
         {
             //arrange
-            _testData.WhenThereAreTrainingReportsInLabelGroup.GenerateData();
+            _testData.WhenThereAreTrainingReportsInLabelGroup.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenThereAreTrainingReportsInLabelGroup.EntityData.Reports.Single(r => r.IsTraining);
 
             //act
@@ -351,7 +351,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportAdded_WhenThereAreTrainingReportsInLabelGroup_AddingRealReportShouldNotTriggerAlerts()
         {
             //arrange
-            _testData.WhenThereAreTrainingReportsInLabelGroup.GenerateData();
+            _testData.WhenThereAreTrainingReportsInLabelGroup.GenerateData().AddToDbContext();
             var reportBeingAdded = _testData.WhenThereAreTrainingReportsInLabelGroup.EntityData.Reports.First(r => !r.IsTraining);
 
             //act
@@ -366,7 +366,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenDismissingNonExistingAlert_ShouldDoNothingAndLogWarning()
         {
             //arrange
-            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData();
+            _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
 
             //act
             await _alertService.ReportDismissed(AlertServiceTestData.SimpleTestCaseAdditionalData.NotExistingReportId);
@@ -382,7 +382,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenDismissingReportInAlertWithCountThreshold1_AlertShouldBeRejected()
         {
             //arrange
-            _testData.WhenDismissingReportInAlertWithCountThreshold1.GenerateData();
+            _testData.WhenDismissingReportInAlertWithCountThreshold1.GenerateData().AddToDbContext();
             var reportBeingDismissed = _testData.WhenDismissingReportInAlertWithCountThreshold1.EntityData.Reports.Single(r => r.Status == ReportStatus.Pending);
             var existingAlert = _testData.WhenDismissingReportInAlertWithCountThreshold1.EntityData.Alerts.Single();
 
@@ -397,7 +397,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenDismissingReportInAlertWithCountThreshold1_ReportShouldBeRejected()
         {
             //arrange
-            _testData.WhenDismissingReportInAlertWithCountThreshold1.GenerateData();
+            _testData.WhenDismissingReportInAlertWithCountThreshold1.GenerateData().AddToDbContext();
             var reportBeingDismissed = _testData.WhenDismissingReportInAlertWithCountThreshold1.EntityData.Reports.Single(r => r.Status == ReportStatus.Pending);
 
             //act
@@ -411,7 +411,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenDismissingReportInAlertWithCountThreshold1_ShouldSaveChangesOnce()
         {
             //arrange
-            _testData.WhenDismissingReportInAlertWithCountThreshold1.GenerateData();
+            _testData.WhenDismissingReportInAlertWithCountThreshold1.GenerateData().AddToDbContext();
             var reportBeingDismissed = _testData.WhenDismissingReportInAlertWithCountThreshold1.EntityData.Reports.Single(r => r.Status == ReportStatus.Pending);
 
             //act
@@ -425,7 +425,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenTheReportStillHasAGroupThatMeetsCountThreshold_ShouldNotRejectAlert()
         {
             //arrange
-            _testData.WhenTheReportStillHasAGroupThatMeetsCountThreshold.GenerateData();
+            _testData.WhenTheReportStillHasAGroupThatMeetsCountThreshold.GenerateData().AddToDbContext();
             var reportBeingDismissed = _testData.WhenTheReportStillHasAGroupThatMeetsCountThreshold.EntityData.Reports.First(r => r.Status == ReportStatus.Pending);
             var alert = reportBeingDismissed.ReportAlerts.Select(ra => ra.Alert).Single();
 
@@ -441,7 +441,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenNoGroupInAlertSatisfiesCountThresholdAnymore_ShouldRejectAlert()
         {
             //arrange
-            _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.GenerateData();
+            _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.GenerateData().AddToDbContext();
             var reportBeingDismissed = (Report)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.AdditionalData.ReportBeingDismissed;
             var alert = reportBeingDismissed.ReportAlerts.Select(ra => ra.Alert).Single();
 
@@ -456,7 +456,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenNoGroupInAlertSatisfiesCountThresholdAnymore_ShouldCallSaveChanges3Times()
         {
             //arrange
-            _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.GenerateData();
+            _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.GenerateData().AddToDbContext();
             var reportBeingDismissed = (Report) _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.AdditionalData.ReportBeingDismissed;
 
             //act
@@ -470,7 +470,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert_MovedSomeReportsToAnotherAlert()
         {
             //arrange
-            _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.GenerateData();
+            _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.GenerateData().AddToDbContext();
             var reportBeingDismissed = (Report)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportBeingDismissed;
             var alertThatReceivedNewReports = (Data.Models.Alert)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.AlertThatReceivedNewReports;
             var reportsBeingMoved = (List<Report>)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportsBeingMoved;
@@ -490,7 +490,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         public async Task ReportDismissed_WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert_ReportsThatWereAcceptedInPreviousAlertShouldRemainAcceptedInTheNewOne()
         {
             //arrange
-            _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.GenerateData();
+            _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.GenerateData().AddToDbContext();
             var reportBeingDismissed = (Report)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportBeingDismissed;
             var reportsBeingMoved = (List<Report>)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportsBeingMoved;
 
