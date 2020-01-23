@@ -190,6 +190,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSociety);
                 rawReport.DataCollector = dataCollector;
                 rawReport.IsTraining = dataCollector.IsInTrainingMode;
+                rawReport.Village = dataCollector.Village;
+                rawReport.Zone = dataCollector.Zone;
 
                 var parsedReport = _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
