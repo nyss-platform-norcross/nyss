@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Services.Authorization;
 
 namespace RX.Nyss.Web.Features.NationalSocieties.Access
@@ -41,7 +42,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
 
         public async Task<bool> HasCurrentUserAccessToUserNationalSocieties(int userId)
         {
-            var userNationalSocieties = await _nyssContext.UserNationalSocieties
+            var userNationalSocieties = await _nyssContext.UserNationalSocieties.FilterAvailableUsers()
                 .Where(u => u.UserId == userId)
                 .Select(uns => uns.NationalSocietyId)
                 .ToListAsync();
@@ -77,7 +78,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
         {
             var userName = _authorizationService.GetCurrentUserName();
 
-            return await _nyssContext.Users
+            return await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userName)
                 .SelectMany(u => u.UserNationalSocieties)
                 .Select(uns => uns.NationalSocietyId)

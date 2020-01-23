@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
@@ -22,6 +23,8 @@ namespace RX.Nyss.Data.Models
         public string Organization  { get; set; }
 
         public bool IsFirstLogin { get; set; } = true;
+
+        public DateTime? DeletedAt { get; set; }
         
         public virtual ApplicationLanguage ApplicationLanguage { get; set; }
 

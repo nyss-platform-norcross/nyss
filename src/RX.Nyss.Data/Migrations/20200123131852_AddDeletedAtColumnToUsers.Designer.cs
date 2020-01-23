@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20200123131852_AddDeletedAtColumnToUsers")]
+    partial class AddDeletedAtColumnToUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2301,6 +2303,12 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
 
+                    b.Property<int>("VillageId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ZoneId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AcceptedById");
@@ -2318,6 +2326,10 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("RejectedById");
 
                     b.HasIndex("ReportGroupLabel");
+
+                    b.HasIndex("VillageId");
+
+                    b.HasIndex("ZoneId");
 
                     b.ToTable("Reports");
                 });
@@ -2794,6 +2806,17 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.User", "RejectedBy")
                         .WithMany()
                         .HasForeignKey("RejectedById")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RX.Nyss.Data.Models.Village", "Village")
+                        .WithMany()
+                        .HasForeignKey("VillageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.Zone", "Zone")
+                        .WithMany()
+                        .HasForeignKey("ZoneId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.OwnsOne("RX.Nyss.Data.Models.DataCollectionPointCase", "DataCollectionPointCase", b1 =>

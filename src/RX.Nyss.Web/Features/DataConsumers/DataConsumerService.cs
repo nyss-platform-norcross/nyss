@@ -8,6 +8,7 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.DataConsumers.Dto;
 using RX.Nyss.Web.Services;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -113,7 +114,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
 
         public async Task<Result<GetDataConsumerResponseDto>> GetDataConsumer(int nationalSocietyUserId)
         {
-            var dataConsumer = await _dataContext.Users
+            var dataConsumer = await _dataContext.Users.FilterAvailable()
                 .OfType<DataConsumerUser>()
                 .Where(u => u.Id == nationalSocietyUserId)
                 .Select(u => new GetDataConsumerResponseDto

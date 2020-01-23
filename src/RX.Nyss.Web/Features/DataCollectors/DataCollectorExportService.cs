@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Services;
@@ -38,7 +39,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         public async Task<byte[]> Export(int projectId)
         {
             var userName = _authorizationService.GetCurrentUserName();
-            var userApplicationLanguage = _nyssContext.Users
+            var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .Single();

@@ -10,6 +10,7 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors;
@@ -483,7 +484,7 @@ namespace RX.Nyss.Web.Features.Projects
         }
 
         public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName) =>
-            await _nyssContext.Users
+            await _nyssContext.Users.FilterAvailable()
                 .OfType<SupervisorUser>()
                 .Where(u => u.EmailAddress == supervisorIdentityName)
                 .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))

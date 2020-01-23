@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Services.Authorization
@@ -33,7 +34,7 @@ namespace RX.Nyss.Web.Services.Authorization
         public User GetCurrentUser()
         {
             var userName = GetCurrentUserName();
-            return _nyssContext.Users.SingleOrDefault(u => u.EmailAddress == userName);
+            return _nyssContext.Users.FilterAvailable().SingleOrDefault(u => u.EmailAddress == userName);
         }
 
         public string GetCurrentUserName() =>

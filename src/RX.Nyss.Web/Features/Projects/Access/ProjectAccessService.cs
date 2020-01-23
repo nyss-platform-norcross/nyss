@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Services.Authorization;
 
@@ -45,6 +46,6 @@ namespace RX.Nyss.Web.Features.Projects.Access
         }
 
         private async Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId) =>
-            await _nyssContext.SupervisorUserProjects.AnyAsync(sup => sup.SupervisorUser.EmailAddress == supervisorIdentityName && sup.ProjectId == projectId);
+            await _nyssContext.SupervisorUserProjects.FilterAvailableUsers().AnyAsync(sup => sup.SupervisorUser.EmailAddress == supervisorIdentityName && sup.ProjectId == projectId);
     }
 }

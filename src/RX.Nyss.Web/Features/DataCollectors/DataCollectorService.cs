@@ -12,6 +12,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
@@ -128,7 +129,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var locationFromCountry = await _geolocationService.GetLocationFromCountry(projectData.CountryName);
 
-            var defaultSupervisorId = await _nyssContext.Users
+            var defaultSupervisorId = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == identityName && u.Role == Role.Supervisor)
                 .Select(u => (int?)u.Id)
                 .FirstOrDefaultAsync();
@@ -206,6 +207,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var nationalSocietyId = project.NationalSociety.Id;
 
             var supervisor = await _nyssContext.UserNationalSocieties
+                .FilterAvailableUsers()
                 .Where(u => u.User.Id == createDto.SupervisorId && u.User.Role == Role.Supervisor && u.NationalSocietyId == nationalSocietyId)
                 .Select(u => (SupervisorUser)u.User)
                 .SingleAsync();
@@ -268,6 +270,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var nationalSocietyId = dataCollector.Project.NationalSociety.Id;
 
             var supervisor = await _nyssContext.UserNationalSocieties
+                .FilterAvailableUsers()
                 .Where(u => u.User.Id == editDto.SupervisorId && u.User.Role == Role.Supervisor && u.NationalSocietyId == nationalSocietyId)
                 .Select(u => (SupervisorUser)u.User)
                 .SingleAsync();
@@ -391,11 +394,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>
             await _nyssContext.SupervisorUserProjects
+                .FilterAvailableUsers()
                 .Where(sup => sup.ProjectId == projectId)
-                .Select(u => new DataCollectorSupervisorResponseDto
+                .Select(sup => new DataCollectorSupervisorResponseDto
                 {
-                    Id = u.SupervisorUserId,
-                    Name = u.SupervisorUser.Name
+                    Id = sup.SupervisorUserId,
+                    Name = sup.SupervisorUser.Name
                 })
                 .ToListAsync();
 

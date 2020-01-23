@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Supervisors;
 using RX.Nyss.Web.Features.Supervisors.Dto;
 using RX.Nyss.Web.Services;
@@ -51,12 +53,12 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
             _deleteUserService = Substitute.For<IDeleteUserService>();
-
+            var dateTimeProvider = Substitute.For<IDateTimeProvider>();
             var applicationLanguages = new List<ApplicationLanguage>();
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
+            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService, dateTimeProvider);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
 
@@ -512,17 +514,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             result.Message.Key.ShouldBe(ResultKey.User.Supervisor.ProjectDoesNotExistOrNoAccess);
         }
 
-
-        [Fact]
-        public async Task Remove_WhenSupervisorHasSomeProjectReferencesAndNoDataCollectors_RemoveRangeIsCalled()
-        {
-            //Act
-            var result = await _supervisorService.Remove(_supervisorWithoutDataCollectorsId);
-
-            //Assert
-            _nyssContext.SupervisorUserProjects.Received(1).RemoveRange(Arg.Any<List<SupervisorUserProject>>());
-        }
-
         [Fact]
         public async Task Remove_WhenRemovingNonExistentSupervisor_ReturnsError()
         {
@@ -598,17 +589,17 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         }
 
         [Fact]
-        public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_DetachDataCollectorsFromSupervisorCommandShouldBeCalled()
+        public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_SupervisorShouldBeSoftDeleted()
         {
             //arrange
-            FormattableString expectedSqlCommand = $"UPDATE Nyss.DataCollectors SET SupervisorId = null WHERE SupervisorId = {_supervisorWithDeletedDataCollectorsId}";
+            var supervisorBeingDeleted = _nyssContext.Users.FilterAvailable().Single(u => u.Id == _supervisorWithDeletedDataCollectorsId);
 
-            // Act
+            //act
             var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId);
 
-            //Assert
+            //assert
             result.IsSuccess.ShouldBeTrue();
-            await _nyssContext.Received().ExecuteSqlInterpolatedAsync(Arg.Is<FormattableString>(arg => arg.ToString() == expectedSqlCommand.ToString()));
+            supervisorBeingDeleted.DeletedAt.ShouldNotBeNull();
         }
     }
 }

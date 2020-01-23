@@ -6,6 +6,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Users.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -38,6 +39,7 @@ namespace RX.Nyss.Web.Features.Users
                 : _dataContext.UserNationalSocieties;
 
             var users = await usersQuery
+                .FilterAvailableUsers()
                 .Where(uns => uns.NationalSocietyId == nationalSocietyId)
                 .Select(uns => new GetNationalSocietyUsersResponseDto
                 {
@@ -61,7 +63,7 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId)
         {
-            var user = await _dataContext.Users
+            var user = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.Id == nationalSocietyUserId)
                 .Select(u => new NationalSocietyUsersBasicDataResponseDto { Email = u.EmailAddress, Role = u.Role })
                 .SingleOrDefaultAsync();
@@ -71,7 +73,7 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result> AddExisting(int nationalSocietyId, string userEmail)
         {
-            var userData = await _dataContext.Users
+            var userData = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userEmail)
                 .Select(u => new { u.Id, u.Role })
                 .SingleOrDefaultAsync();
@@ -87,6 +89,7 @@ namespace RX.Nyss.Web.Features.Users
             }
 
             var userAlreadyIsInThisNationalSociety = await _dataContext.UserNationalSocieties
+                .FilterAvailableUsers()
                 .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == userData.Id);
 
             if (userAlreadyIsInThisNationalSociety)
@@ -108,7 +111,7 @@ namespace RX.Nyss.Web.Features.Users
         }
 
         public async Task<string> GetUserApplicationLanguageCode(string userIdentityName) =>
-            await _dataContext.Users
+            await _dataContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userIdentityName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();

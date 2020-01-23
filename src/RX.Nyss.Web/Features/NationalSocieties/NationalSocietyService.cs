@@ -9,6 +9,7 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
@@ -177,7 +178,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         public async Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId)
         {
             var ns = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
-            var user = await _nyssContext.Users.Include(u => u.UserNationalSocieties).FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _nyssContext.Users.FilterAvailable().Include(u => u.UserNationalSocieties).FirstOrDefaultAsync(u => u.Id == userId);
             
             if (ns.NationalSocietyUsers.Count == 0 || ns.NationalSocietyUsers.All(x => x.UserId != userId))
             {
@@ -199,7 +200,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
-            var user = await _nyssContext.Users
+            var user = await _nyssContext.Users.FilterAvailable()
                 .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
 
             if (user == null)
@@ -243,7 +244,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
-            var userEntity = await _nyssContext.Users
+            var userEntity = await _nyssContext.Users.FilterAvailable()
                 .Include(x => x.ApplicationLanguage)
                 .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
 
