@@ -36,7 +36,9 @@ const TableRowMenuComponent = ({ id, icon, items, isFetching, user }) => {
         >
           {
             items.map(menuItem => (
-              <TableRowMenuItem id={menuItem.id} title={menuItem.title} roles={menuItem.roles} condition={menuItem.condition}
+              <TableRowMenuItem 
+                key={menuItem.id}
+                id={menuItem.id} title={menuItem.title} roles={menuItem.roles} condition={menuItem.condition}
                 action={menuItem.action} handleDropdownClose={handleDropdownClose}>
                 {menuItem.title}
               </TableRowMenuItem>

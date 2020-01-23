@@ -20,9 +20,11 @@ const NationalSocietyStructurePageComponent = (props) => {
 
   return (
     <Fragment>
+      {!props.nationalSocietyIsArchived && (
       <Typography variant="body1">
         {strings(stringKeys.nationalSociety.structure.introduction)}
       </Typography>
+      )}
 
       <NationalSocietyStructureTree
         regions={regions}

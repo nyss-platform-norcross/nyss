@@ -168,7 +168,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             }
 
             var entity = await _nyssContext.Districts
-                .Where(r => !r.Region.NationalSociety.IsArchived)
+                .Where(d => !d.Region.NationalSociety.IsArchived)
                 .SingleAsync(district => district.Id == districtId);
             entity.Name = name;
             await _nyssContext.SaveChangesAsync();
@@ -222,7 +222,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             }
 
             var entity = await _nyssContext.Villages
-                .Where(r => !r.District.Region.NationalSociety.IsArchived)
+                .Where(v => !v.District.Region.NationalSociety.IsArchived)
                 .SingleAsync(village => village.Id == villageId);
             entity.Name = name;
             await _nyssContext.SaveChangesAsync();
@@ -233,7 +233,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         {
             var entity = await _nyssContext.Villages
                 .Include(v => v.Zones)
-                .Where(r => !r.District.Region.NationalSociety.IsArchived)
+                .Where(v => !v.District.Region.NationalSociety.IsArchived)
                 .SingleAsync(village => village.Id == villageId);
             _nyssContext.Villages.Remove(entity);
             await _nyssContext.SaveChangesAsync();

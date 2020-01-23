@@ -383,6 +383,11 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         public async Task<Result> ReopenNationalSociety(int nationalSocietyId)
         {
             var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
+            if (nationalSociety == null)
+            {
+                return Error(ResultKey.NationalSociety.NotFound);
+            }
+
             nationalSociety.IsArchived = false;
             await _nyssContext.SaveChangesAsync();
             return SuccessMessage(ResultKey.NationalSociety.Archive.ReopenSuccess);
