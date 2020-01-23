@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { useState } from 'react';
 import PropTypes from "prop-types";
 import { useLayout } from '../../utils/layout';
 import { connect } from "react-redux";
@@ -12,16 +12,15 @@ import { createForm, validators } from '../../utils/forms';
 import TextInputField from '../forms/TextInputField';
 import PasswordInputField from '../forms/PasswordInputField';
 import * as authActions from '../../authentication/authActions';
-import { getRedirectUrl } from '../../authentication/auth';
+import { getRedirectUrl, redirectToRoot } from '../../authentication/auth';
 import Grid from '@material-ui/core/Grid';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
+import { useMount } from '../../utils/lifecycle';
 
-class LoginPageComponent extends PureComponent {
-  constructor(props) {
-    super(props);
-
+const LoginPageComponent = (props) => {
+  const [form] = useState(() => {
     const fields = {
       userName: "",
       password: ""
@@ -32,70 +31,78 @@ class LoginPageComponent extends PureComponent {
       password: [validators.required]
     };
 
-    this.form = createForm(fields, validation);
-  };
+    return createForm(fields, validation);
+  })
 
-  handleSubmit = (e) => {
+  useMount(() => {
+    if (props.user) {
+      redirectToRoot();
+    }
+  });
+
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!this.form.isValid()) {
+    if (!form.isValid()) {
       return;
     };
 
-    const values = this.form.getValues();
+    const values = form.getValues();
 
-    this.props.login(values.userName, values.password, getRedirectUrl());
+    props.login(values.userName, values.password, getRedirectUrl());
   };
 
-  render() {
-    return (
-      <div className={styles.loginContent}>
-        <Paper className={styles.loginPaper}>
-          <div className={styles.loginPaperContent}>
-            <Typography variant="h1" className={styles.paperHeader}>{strings(stringKeys.login.welcome)}</Typography>
-            <Typography variant="h2" className={styles.loginHeader}>{strings(stringKeys.login.title)}</Typography>
+  if (props.user) {
+    return null;
+  }
 
-            {this.props.loginResponse && <ValidationMessage message={this.props.loginResponse} />}
+  return (
+    <div className={styles.loginContent}>
+      <Paper className={styles.loginPaper}>
+        <div className={styles.loginPaperContent}>
+          <Typography variant="h1" className={styles.paperHeader}>{strings(stringKeys.login.welcome)}</Typography>
+          <Typography variant="h2" className={styles.loginHeader}>{strings(stringKeys.login.title)}</Typography>
 
-            <form onSubmit={this.handleSubmit}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <TextInputField
-                    label={strings(stringKeys.login.email)}
-                    name="userName"
-                    field={this.form.fields.userName}
-                    autoFocus
-                  />
-                </Grid>
+          {props.loginResponse && <ValidationMessage message={props.loginResponse} />}
 
-                <Grid item xs={12}>
-                  <PasswordInputField
-                    label={strings(stringKeys.login.password)}
-                    name="password"
-                    field={this.form.fields.password}
-                  />
-                </Grid>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.login.email)}
+                  name="userName"
+                  field={form.fields.userName}
+                  autoFocus
+                />
               </Grid>
 
-              <div className={styles.forgotPasswordLink}>
-                <Link color="secondary" href="/resetPassword">
-                  {strings(stringKeys.login.forgotPassword)}
-                </Link>
-              </div>
+              <Grid item xs={12}>
+                <PasswordInputField
+                  label={strings(stringKeys.login.password)}
+                  name="password"
+                  field={form.fields.password}
+                />
+              </Grid>
+            </Grid>
 
-              <FormActions>
-                <div />
-                <SubmitButton wide isFetching={this.props.isFetching}>
-                  {strings(stringKeys.login.signIn)}
-                </SubmitButton>
-              </FormActions>
-            </form>
-          </div>
-        </Paper>
-      </div>
-    );
-  }
-}
+            <div className={styles.forgotPasswordLink}>
+              <Link color="secondary" href="/resetPassword">
+                {strings(stringKeys.login.forgotPassword)}
+              </Link>
+            </div>
+
+            <FormActions>
+              <div />
+              <SubmitButton wide isFetching={props.isFetching}>
+                {strings(stringKeys.login.signIn)}
+              </SubmitButton>
+            </FormActions>
+          </form>
+        </div>
+      </Paper>
+    </div>
+  );
+};
 
 LoginPageComponent.propTypes = {
   login: PropTypes.func,
@@ -103,6 +110,7 @@ LoginPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
+  user: state.appData.user,
   loginResponse: state.auth.loginResponse,
   isFetching: state.auth.isFetching
 });
