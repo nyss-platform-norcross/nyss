@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 
         public async Task<ReportByVillageAndDateResponseDto> GetReportsGroupedByVillageAndDate(ReportsFilter filters, DatesGroupingType groupingType)
         {
-            var reports = _reportService.GetValidReportsQuery(filters);
+            var reports = _reportService.GetHealthRiskEventReportsQuery(filters);
 
             return groupingType switch
             {
