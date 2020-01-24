@@ -65,6 +65,7 @@ function* editHealthRisk({ id, data }) {
     http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList());
+    yield put(appActions.showMessage(stringKeys.healthRisk.edit.success));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
@@ -76,6 +77,7 @@ function* removeHealthRisk({ id }) {
     yield call(http.post, `/api/healthrisk/${id}/remove`);
     yield put(actions.remove.success(id));
     yield call(getHealthRisks, true);
+    yield put(appActions.showMessage(stringKeys.healthRisk.delete.success));
   } catch (error) {
     yield put(actions.remove.failure(id, error.message));
   }

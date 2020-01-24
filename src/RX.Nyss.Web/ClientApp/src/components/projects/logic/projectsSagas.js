@@ -70,7 +70,7 @@ function* createProject({ nationalSocietyId, data }) {
     const response = yield call(http.post, `/api/project/add?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
-    yield put(appActions.showMessage(stringKeys.project.create.success));
+    yield put(appActions.showMessage(stringKeys.project.messages.create.success));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -83,6 +83,7 @@ function* editProject({ nationalSocietyId, projectId, data }) {
     yield put(actions.edit.success(response.value));
     yield put(appActions.entityUpdated(entityTypes.project(projectId)));
     yield put(actions.goToOverview(nationalSocietyId, projectId));
+    yield put(appActions.showMessage(stringKeys.project.messages.edit.success));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
@@ -95,6 +96,7 @@ function* closeProject({ nationalSocietyId, projectId }) {
     yield put(actions.close.success(projectId));
     yield call(getProjects, nationalSocietyId);
     yield put(appActions.entityUpdated(entityTypes.project(projectId)));
+    yield put(appActions.showMessage(stringKeys.project.messages.close.success));
   } catch (error) {
     yield put(actions.close.failure(projectId, error.message));
   }

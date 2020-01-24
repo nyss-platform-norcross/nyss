@@ -83,6 +83,7 @@ function* editReport({ projectId, reportId, data }) {
     const response = yield call(http.post, `/api/report/${reportId}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(projectId));
+    yield put(appActions.showMessage(stringKeys.reports.list.editedSuccesfully));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }

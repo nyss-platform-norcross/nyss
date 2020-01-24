@@ -102,6 +102,7 @@ function* editNationalSocietyUser({ nationalSocietyId, data }) {
     const response = yield call(http.post, getSpecificRoleUserEditionUrl(data.id, data.role), data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
+    yield put(appActions.showMessage(stringKeys.nationalSocietyUser.edit.success));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
@@ -112,6 +113,7 @@ function* removeNationalSocietyUser({ nationalSocietyUserId, role, nationalSocie
   try {
     yield call(http.post, getSpecificRoleUserRemovalUrl(nationalSocietyUserId, role, nationalSocietyId));
     yield put(actions.remove.success(nationalSocietyUserId));
+    yield put(appActions.showMessage(stringKeys.nationalSocietyUser.remove.success));
   } catch (error) {
     yield put(actions.remove.failure(nationalSocietyUserId, error.message));
   }
