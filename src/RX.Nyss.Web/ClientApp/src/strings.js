@@ -265,10 +265,11 @@ export const stringKeys = {
         notInTraining: "project.dashboard.filters.notInTraining",
         inTraining: "project.dashboard.filters.inTraining"
       },
-      allReportsChart: {
-        title: "project.dashboard.allReportsChart.title",
-        numberOfReports: "project.dashboard.allReportsChart.numberOfReports",
-        periods: "project.dashboard.allReportsChart.periods"
+      reportsPerHealthRisk: {
+        title: "project.dashboard.reportsPerHealthRisk.title",
+        numberOfReports: "project.dashboard.reportsPerHealthRisk.numberOfReports",
+        periods: "project.dashboard.reportsPerHealthRisk.periods",
+        rest: "project.dashboard.reportsPerHealthRisk.rest",
       },
       reportsPerFeature: {
         title: "project.dashboard.reportsPerFeature.title",

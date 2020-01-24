@@ -2,15 +2,16 @@
 
 namespace RX.Nyss.Web.Services.ReportsDashboard.Dto
 {
-    public class ReportByVillageAndDateResponseDto
+    public class ReportByHealthRiskAndDateResponseDto
     {
-        public IEnumerable<VillageDto> Villages { get; set; } = new List<VillageDto>();
+        public IEnumerable<HealthRiskDto> HealthRisks { get; set; } = new List<HealthRiskDto>();
 
         public IEnumerable<string> AllPeriods { get; set; } = new List<string>();
 
-        public class VillageDto
+
+        public class HealthRiskDto
         {
-            public string Name { get; set; }
+            public string HealthRiskName { get; set; }
 
             public IEnumerable<PeriodDto> Periods { get; set; }
         }

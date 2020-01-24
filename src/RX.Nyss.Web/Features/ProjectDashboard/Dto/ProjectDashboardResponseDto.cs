@@ -8,7 +8,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
     {
         public ProjectSummaryResponseDto Summary { get; set; } = new ProjectSummaryResponseDto();
 
-        public IEnumerable<ReportByDateResponseDto> ReportsGroupedByDate { get; set; } = new List<ReportByDateResponseDto>();
+        public ReportByHealthRiskAndDateResponseDto ReportsGroupedByHealthRiskAndDate { get; set; } = new ReportByHealthRiskAndDateResponseDto();
 
         public IEnumerable<ReportByFeaturesAndDateResponseDto> ReportsGroupedByFeaturesAndDate { get; set; } = new List<ReportByFeaturesAndDateResponseDto>();
 
