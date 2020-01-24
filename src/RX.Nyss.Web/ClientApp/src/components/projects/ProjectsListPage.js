@@ -10,6 +10,7 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import ProjectsTable from './ProjectsTable';
 import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { accessMap } from '../../authentication/accessMap';
 
 const ProjectsListPageComponent = (props) => {
   useMount(() => {
@@ -20,7 +21,7 @@ const ProjectsListPageComponent = (props) => {
     <Fragment>
       {!props.nationalSocietyIsArchived && (
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
+          <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />} roles={accessMap.projects.add}>
             {strings(stringKeys.project.addNew)}
           </TableActionsButton>
         </TableActions>
