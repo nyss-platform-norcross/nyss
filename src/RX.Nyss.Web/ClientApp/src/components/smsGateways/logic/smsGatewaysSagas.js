@@ -69,6 +69,7 @@ function* editSmsGateway({ nationalSocietyId, data }) {
     const response = yield call(http.post, `/api/smsGateway/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
+    yield put(appActions.showMessage(stringKeys.smsGateway.edit.success));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
@@ -80,6 +81,7 @@ function* removeSmsGateway({ nationalSocietyId, smsGatewayId }) {
     yield call(http.post, `/api/smsGateway/${smsGatewayId}/remove`);
     yield put(actions.remove.success(smsGatewayId));
     yield call(getSmsGateways, nationalSocietyId);
+    yield put(appActions.showMessage(stringKeys.smsGateway.delete.success));
   } catch (error) {
     yield put(actions.remove.failure(smsGatewayId, error.message));
   }

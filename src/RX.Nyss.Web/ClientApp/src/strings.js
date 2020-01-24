@@ -46,8 +46,16 @@ export const stringKeys = {
       create: "nationalSociety.form.create",
       update: "nationalSociety.form.update"
     },
-    create: {
-      success: "nationalSociety.create.success"
+    messages: {
+      create: {
+        success: "nationalSociety.create.success"
+      },
+      edit: {
+        success: "nationalSociety.edit.success"
+      },
+      delete: {
+        success: "nationalSociety.delete.success"
+      },
     },
     list: {
       name: "nationalSociety.list.name",
@@ -158,6 +166,12 @@ export const stringKeys = {
     create: {
       success: "healthRisk.create.success"
     },
+    edit: {
+      success: "healthRisk.edit.success"
+    },
+    delete: {
+      success: "healthRisk.delete.success"
+    },
     constants: {
       healthRiskType: {
         human: "healthRisk.type.human",
@@ -182,6 +196,12 @@ export const stringKeys = {
     },
     create: {
       success: "smsGateway.create.success"
+    },
+    edit: {
+      success: "smsGateway.edit.success"
+    },
+    delete: {
+      success: "smsGateway.delete.success"
     },
     list: {
       name: "smsGateway.list.name",
@@ -219,8 +239,16 @@ export const stringKeys = {
       create: "project.form.create",
       update: "project.form.update"
     },
-    create: {
-      success: "project.create.success"
+    messages: {
+      create: {
+        success: "project.create.success"
+      },
+      edit: {
+        success: "project.edit.success"
+      },
+      close: {
+        success: "project.close.success"
+      },
     },
     list: {
       name: "project.list.name",
@@ -345,6 +373,12 @@ export const stringKeys = {
     },
     create: {
       success: "globalCoordinator.create.success"
+    },
+    edit: {
+      success: "globalCoordinator.edit.success"
+    },
+    delete: {
+      success: "globalCoordinator.delete.success"
     }
   },
   nationalSocietyUser: {
@@ -373,6 +407,12 @@ export const stringKeys = {
     },
     create: {
       success: "nationalSocietyUser.create.success"
+    },
+    edit: {
+      success: "nationalSocietyUser.edit.success"
+    },
+    remove: {
+      success: "nationalSocietyUser.remove.success"
     },
     list: {
       name: "nationalSocietyUser.list.name",
@@ -464,6 +504,11 @@ export const stringKeys = {
         "NotReporting": "dataCollectors.mapOverview.legend.notReporting",
         "ReportingWithErrors": "dataCollectors.mapOverview.legend.reportingWithErrors"
       }
+    },
+    messages: {
+      creationSuccessful: "dataCollectors.create.success",
+      editionSuccessful: "dataCollectors.edit.success",
+      deletionSuccessful: "dataCollectors.delete.success"
     }
   },
   reports: {
@@ -501,7 +546,8 @@ export const stringKeys = {
       markAsErrorConfirmation: "reports.list.markAsErrorConfirmation",
       markAsErrorConfirmationText: "reports.list.markAsErrorConfirmationText",
       markedAsError: "reports.list.markedAsError",
-      editReport: "reports.list.editReport"
+      editReport: "reports.list.editReport",
+      editedSuccesfully: "reports.list.editedSuccessfully"
     },
     form: {
       title: "reports.form.editionTitle",

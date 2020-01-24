@@ -66,6 +66,7 @@ function* editGlobalCoordinator({ data }) {
     http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList());
+    yield put(appActions.showMessage(stringKeys.globalCoordinator.edit.success));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
@@ -77,6 +78,7 @@ function* removeGlobalCoordinator({ id }) {
     yield call(http.post, `/api/globalcoordinator/${id}/remove`);
     yield put(actions.remove.success(id));
     yield call(getGlobalCoordinators, true);
+    yield put(appActions.showMessage(stringKeys.globalCoordinator.delete.success));
   } catch (error) {
     yield put(actions.remove.failure(id, error.message));
   }

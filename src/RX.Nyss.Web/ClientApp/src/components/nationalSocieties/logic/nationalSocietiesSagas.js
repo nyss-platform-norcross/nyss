@@ -53,7 +53,7 @@ function* openNationalSocietyEdition({ path, params }) {
 
 function* openNationalSocietyOverview({ path, params }) {
   yield put(actions.openOverview.request());
-  try {        
+  try {
     const response = yield call(http.get, `/api/nationalSociety/${params.nationalSocietyId}/get`);
 
     yield put(appActions.openModule.invoke(path, {
@@ -75,7 +75,7 @@ function* createNationalSociety({ data }) {
     const response = yield call(http.post, "/api/nationalSociety/create", data);
     yield put(actions.create.success(response.value));
     yield put(push(`/nationalsocieties/${response.value}`));
-    yield put(appActions.showMessage(stringKeys.nationalSociety.create.success));
+    yield put(appActions.showMessage(stringKeys.nationalSociety.messages.create.success));
   } catch (error) {
     yield put(actions.create.failure(error.message));
   }
@@ -88,6 +88,7 @@ function* editNationalSociety({ data }) {
     yield put(actions.edit.success(response.value));
     yield put(appActions.entityUpdated(entityTypes.nationalSociety(data.id)));
     yield put(push(`/nationalsocieties/${data.id}/overview`));
+    yield put(appActions.showMessage(stringKeys.nationalSociety.messages.edit.success));
   } catch (error) {
     yield put(actions.edit.failure(error.message));
   }
@@ -100,6 +101,7 @@ function* removeNationalSociety({ id }) {
     yield put(actions.remove.success(id));
     yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
     yield call(getNationalSocieties, true);
+    yield put(appActions.showMessage(stringKeys.nationalSociety.messages.delete.success));
   } catch (error) {
     yield put(actions.remove.failure(id, error.message));
   }
