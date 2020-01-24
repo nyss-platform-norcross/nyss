@@ -29,7 +29,7 @@ const getOptions = (valuesLabel, series, categories) => ({
   },
   legend: {
     enabled: true,
-    style: { fontWeight: "regular" }
+    itemStyle: { fontWeight: "regular" }
   },
   credits: {
     enabled: false

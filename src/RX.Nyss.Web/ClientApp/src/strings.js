@@ -13,6 +13,14 @@ export const stringKeys = {
     notAuthenticated: "error.notAuthenticated",
     unauthorized: "error.unauthorized"
   },
+  roles: {
+    "TechnicalAdvisor": "roles.technicalAdvisor",
+    "Administrator": "roles.administrator",
+    "GlobalCoordinator": "roles.globalCoordinator",
+    "DataConsumer": "roles.dataConsumer",
+    "Manager": "roles.manager",
+    "Supervisor": "roles.supervisor",
+  },
   login: {
     title: "login.title",
     welcome: "login.welcome",
