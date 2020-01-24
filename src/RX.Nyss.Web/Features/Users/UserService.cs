@@ -56,6 +56,7 @@ namespace RX.Nyss.Web.Features.Users
                     IsHeadManager = uns.NationalSociety.HeadManager != null && uns.NationalSociety.HeadManager.Id == uns.User.Id,
                     IsPendingHeadManager = uns.NationalSociety.PendingHeadManager != null && uns.NationalSociety.PendingHeadManager.Id == uns.User.Id
                 })
+                .OrderBy(u => u.IsHeadManager ? "0" : u.Name)
                 .ToListAsync();
 
             return new Result<List<GetNationalSocietyUsersResponseDto>>(users, true);
