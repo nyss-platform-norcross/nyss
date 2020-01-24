@@ -168,10 +168,10 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             _nyssContextMock.DataCollectors.FindAsync(DataCollectorWithoutReportsId).Returns(dataCollectors[0]);
             _nyssContextMock.DataCollectors.FindAsync(2).Returns((DataCollector)null);
 
-            nationalSocietyStructureService.GetRegions(NationalSocietyId).Returns(Success(new List<RegionResponseDto>()));
-            nationalSocietyStructureService.GetDistricts(DistrictId).Returns(Success(new List<DistrictResponseDto>()));
-            nationalSocietyStructureService.GetVillages(VillageId).Returns(Success(new List<VillageResponseDto>()));
-            nationalSocietyStructureService.GetZones(Arg.Any<int>()).Returns(Success(new List<ZoneResponseDto>()));
+            nationalSocietyStructureService.ListRegions(NationalSocietyId).Returns(Success(new List<RegionResponseDto>()));
+            nationalSocietyStructureService.ListDistricts(DistrictId).Returns(Success(new List<DistrictResponseDto>()));
+            nationalSocietyStructureService.ListVillages(VillageId).Returns(Success(new List<VillageResponseDto>()));
+            nationalSocietyStructureService.ListZones(Arg.Any<int>()).Returns(Success(new List<ZoneResponseDto>()));
         }
 
         [Theory]
@@ -192,7 +192,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             };
 
             // Act
-            await _dataCollectorService.CreateDataCollector(ProjectId, dataCollector);
+            await _dataCollectorService.Create(ProjectId, dataCollector);
 
             // Assert
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<DataCollector>());
@@ -212,7 +212,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             };
 
             // Act
-            var result = await _dataCollectorService.CreateDataCollector(ProjectId, dataCollector);
+            var result = await _dataCollectorService.Create(ProjectId, dataCollector);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -233,7 +233,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 Longitude = 45
             };
 
-            Should.ThrowAsync<Exception>(() => _dataCollectorService.EditDataCollector(dataCollector));
+            Should.ThrowAsync<Exception>(() => _dataCollectorService.Edit(dataCollector));
         }
 
         [Theory]
@@ -255,7 +255,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             };
 
             // Act
-            var result = await _dataCollectorService.EditDataCollector(dataCollector);
+            var result = await _dataCollectorService.Edit(dataCollector);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -266,7 +266,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public async Task RemoveDataCollector_WhenDataCollectorDoesNotExist_ShouldReturnError()
         {
             // Act
-            var result = await _dataCollectorService.RemoveDataCollector(999);
+            var result = await _dataCollectorService.Delete(999);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -277,7 +277,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public async Task RemoveDataCollector_WhenDataCollectorExists_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.RemoveDataCollector(DataCollectorWithoutReportsId);
+            var result = await _dataCollectorService.Delete(DataCollectorWithoutReportsId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -288,7 +288,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public async Task GetDataCollector_WhenDataCollectorExists_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.GetDataCollector(DataCollectorWithoutReportsId);
+            var result = await _dataCollectorService.Get(DataCollectorWithoutReportsId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -298,7 +298,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         [Fact]
         public void GetDataCollector_WhenDataCollectorDoesNotExist_ShouldThrowException()
         {
-            Should.ThrowAsync<Exception>(() => _dataCollectorService.GetDataCollector(3));
+            Should.ThrowAsync<Exception>(() => _dataCollectorService.Get(3));
         }
 
         [Fact]
@@ -322,7 +322,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public async Task ListDataCollector_WhenSuccessful_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.ListDataCollectors(ProjectId);
+            var result = await _dataCollectorService.List(ProjectId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -349,7 +349,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var dataCollector = _nyssContextMock.DataCollectors.Single(x => x.Id == DataCollectorWithReportsId);
 
             // Act
-            var result = await _dataCollectorService.RemoveDataCollector(DataCollectorWithReportsId);
+            var result = await _dataCollectorService.Delete(DataCollectorWithReportsId);
 
             //Assert
             result.IsSuccess.ShouldBeTrue();
@@ -367,7 +367,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             FormattableString expectedSqlCommand = $"UPDATE Nyss.RawReports SET Sender = {Anonymization.Text} WHERE DataCollectorId = {dataCollector.Id}";
 
             // Act
-            var result = await _dataCollectorService.RemoveDataCollector(DataCollectorWithReportsId);
+            var result = await _dataCollectorService.Delete(DataCollectorWithReportsId);
 
             //Assert
             result.IsSuccess.ShouldBeTrue();
@@ -389,7 +389,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var dateTimeNow = DateTime.UtcNow;
 
             // Act
-            var result = await _dataCollectorService.GetDataCollectorPerformance(ProjectId);
+            var result = await _dataCollectorService.Performance(ProjectId);
 
             // Assert
             result.Value[0].StatusLastWeek.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 0)));

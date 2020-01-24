@@ -144,7 +144,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             };
 
             // Act
-            await _healthRiskService.CreateHealthRisk(healthRiskRequestDto);
+            await _healthRiskService.Create(healthRiskRequestDto);
 
             // Assert
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<HealthRisk>());
@@ -171,7 +171,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             };
 
             // Act
-            var result = await _healthRiskService.CreateHealthRisk(healthRiskRequestDto);
+            var result = await _healthRiskService.Create(healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -182,7 +182,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
         public async Task GetHealthRisk_WhenHealthRiskDoesNotExists_ShouldReturnError()
         {
             // Act
-            var result = await _healthRiskService.GetHealthRisk(2);
+            var result = await _healthRiskService.Get(2);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -193,7 +193,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
         public async Task GetHealthRisks_WhenSuccess_ShouldReturnAllHealthRisks()
         {
             // Act
-            var result = await _healthRiskService.ListHealthRisks();
+            var result = await _healthRiskService.List();
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -207,7 +207,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             var healthRiskRequestDto = new HealthRiskRequestDto();
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(2, healthRiskRequestDto);
+            var result = await _healthRiskService.Edit(2, healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -253,7 +253,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             };
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+            var result = await _healthRiskService.Edit(HealthRiskId, healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -299,7 +299,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             };
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+            var result = await _healthRiskService.Edit(HealthRiskId, healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -352,7 +352,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             };
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+            var result = await _healthRiskService.Edit(HealthRiskId, healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -434,7 +434,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             };
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+            var result = await _healthRiskService.Edit(HealthRiskId, healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -469,7 +469,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             };
 
             // Act
-            var result = await _healthRiskService.EditHealthRisk(HealthRiskId, healthRiskRequestDto);
+            var result = await _healthRiskService.Edit(HealthRiskId, healthRiskRequestDto);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -485,7 +485,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
 
             // Act
-            var result = await _healthRiskService.RemoveHealthRisk(HealthRiskId);
+            var result = await _healthRiskService.Delete(HealthRiskId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -504,7 +504,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             _healthRisk.AlertRule = alertRule;
 
             // Act
-            await _healthRiskService.RemoveHealthRisk(HealthRiskId);
+            await _healthRiskService.Delete(HealthRiskId);
 
             // Assert
             _nyssContextMock.AlertRules.Received(1).Remove(alertRule);
@@ -521,7 +521,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             _healthRisk.AlertRule = null;
 
             // Act
-            await _healthRiskService.RemoveHealthRisk(HealthRiskId);
+            await _healthRiskService.Delete(HealthRiskId);
 
             // Assert
             _nyssContextMock.AlertRules.DidNotReceiveWithAnyArgs().Remove(null);
@@ -534,7 +534,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             const int nonExistentHealthRiskId = 2;
 
             // Act
-            var result = await _healthRiskService.RemoveHealthRisk(nonExistentHealthRiskId);
+            var result = await _healthRiskService.Delete(nonExistentHealthRiskId);
 
             // Assert
             _nyssContextMock.HealthRisks.DidNotReceiveWithAnyArgs().Remove(null);
@@ -561,7 +561,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
 
             // Act
-            var result = await _healthRiskService.RemoveHealthRisk(HealthRiskId);
+            var result = await _healthRiskService.Delete(HealthRiskId);
 
             // Assert
             _nyssContextMock.HealthRisks.DidNotReceiveWithAnyArgs().Remove(null);

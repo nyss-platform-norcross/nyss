@@ -53,7 +53,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _dateTimeProvider.UtcNow.Returns(currentDate);
 
             // Act
-            var result = await _projectService.ListProjects(nationalSocietyId);
+            var result = await _projectService.List(nationalSocietyId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -179,7 +179,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
 
             // Act
-            var result = await _projectService.GetProject(existingProjectId);
+            var result = await _projectService.Get(existingProjectId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -230,7 +230,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
             // Act
-            var result = await _projectService.GetProject(nonExistentProjectId);
+            var result = await _projectService.Get(nonExistentProjectId);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -312,7 +312,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             };
 
             // Act
-            var result = await _projectService.AddProject(nationalSocietyId, projectRequestDto);
+            var result = await _projectService.Create(nationalSocietyId, projectRequestDto);
 
             // Assert
             await _nyssContextMock.Projects.Received(1).AddAsync(
@@ -349,7 +349,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZoneId = "Time Zone" };
 
             // Act
-            var result = await _projectService.AddProject(nonExistentNationalSocietyId, projectRequestDto);
+            var result = await _projectService.Create(nonExistentNationalSocietyId, projectRequestDto);
 
             // Assert
             await _nyssContextMock.Projects.DidNotReceive().AddAsync(Arg.Any<Project>());
@@ -396,7 +396,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             };
 
             // Act
-            var result = await _projectService.AddProject(nationalSocietyId, projectRequestDto);
+            var result = await _projectService.Create(nationalSocietyId, projectRequestDto);
 
             // Assert
             await _nyssContextMock.Projects.DidNotReceive().AddAsync(Arg.Any<Project>());
@@ -437,7 +437,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZoneId = "Time Zone" };
 
             // Act
-            var result = await _projectService.AddProject(nationalSocietyId, projectRequestDto);
+            var result = await _projectService.Create(nationalSocietyId, projectRequestDto);
 
             // Assert
             await _nyssContextMock.Projects.Received(1).AddAsync(
@@ -624,7 +624,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.SmsAlertRecipients.Returns(smsAlertRecipientsMockDbSet);
 
             // Act
-            var result = await _projectService.UpdateProject(projectId, projectRequestDto);
+            var result = await _projectService.Edit(projectId, projectRequestDto);
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
@@ -662,7 +662,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZoneId = "Updated Time Zone" };
 
             // Act
-            var result = await _projectService.UpdateProject(nonExistentProjectId, projectRequestDto);
+            var result = await _projectService.Edit(nonExistentProjectId, projectRequestDto);
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
@@ -732,7 +732,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             };
 
             // Act
-            var result = await _projectService.UpdateProject(projectId, projectRequestDto);
+            var result = await _projectService.Edit(projectId, projectRequestDto);
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
@@ -770,7 +770,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZoneId = "Updated Time Zone" };
 
             // Act
-            var result = await _projectService.UpdateProject(projectId, projectRequestDto);
+            var result = await _projectService.Edit(projectId, projectRequestDto);
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
@@ -803,7 +803,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
 
             // Act
-            var result = await _projectService.CloseProject(existingProjectId);
+            var result = await _projectService.Close(existingProjectId);
 
             // Assert
             _nyssContextMock.Projects.First().State.ShouldBe(ProjectState.Closed);
@@ -839,7 +839,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
 
             // Act
-            var result = await _projectService.CloseProject(existingProjectId);
+            var result = await _projectService.Close(existingProjectId);
 
             // Assert
             await _dataCollectorService.DidNotReceive().AnonymizeDataCollectorsWithReports(existingProjectId);
@@ -888,7 +888,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
 
             // Act
-            var result = await _projectService.CloseProject(existingProjectId);
+            var result = await _projectService.Close(existingProjectId);
 
             // Assert
             await _dataCollectorService.DidNotReceive().AnonymizeDataCollectorsWithReports(existingProjectId);
@@ -936,7 +936,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
 
             // Act
-            var result = await _projectService.CloseProject(existingProjectId);
+            var result = await _projectService.Close(existingProjectId);
 
             // Assert
             await _dataCollectorService.Received(1).AnonymizeDataCollectorsWithReports(existingProjectId);
@@ -970,7 +970,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.FindAsync(nonExistentProjectId).ReturnsNull();
 
             // Act
-            var result = await _projectService.CloseProject(nonExistentProjectId);
+            var result = await _projectService.Close(nonExistentProjectId);
 
             // Assert
             _nyssContextMock.Projects.DidNotReceive().Remove(Arg.Any<Project>());
@@ -1002,7 +1002,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
 
             // Act
-            var result = await _projectService.CloseProject(projectId);
+            var result = await _projectService.Close(projectId);
 
             // Assert
             _nyssContextMock.Projects.DidNotReceive()

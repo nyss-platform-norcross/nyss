@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _userService.GetUserApplicationLanguageCode(Arg.Any<string>()).Returns(Task.FromResult("en"));
 
             _projectService = Substitute.For<IProjectService>();
-            _projectService.GetProjectHealthRiskNames(Arg.Any<int>(), Arg.Any<List<HealthRiskType>>()).Returns(Task.FromResult(Enumerable.Empty<HealthRiskDto>()));
+            _projectService.GetHealthRiskNames(Arg.Any<int>(), Arg.Any<List<HealthRiskType>>()).Returns(Task.FromResult(Enumerable.Empty<HealthRiskDto>()));
 
             _authorizationService = Substitute.For<IAuthorizationService>();
             _authorizationService.GetCurrentUserName().Returns((string)null);
