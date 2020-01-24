@@ -30,16 +30,18 @@ function* initApplication() {
       yield put(actions.goToHeadManagerConsents())
     }
 
-    if (user) {
-      storeUser(user);
-    }
+    storeUser(user);
   } catch (error) {
     yield put(actions.initApplication.failure(error.message));
   }
 };
 
 function storeUser(user) {
-  localStorage.set(authConsts.localStorageUserIdKey, user.id);
+  if (user) {
+    localStorage.set(authConsts.localStorageUserIdKey, user.id);
+  } else {
+    localStorage.remove(authConsts.localStorageUserIdKey);
+  }
 }
 
 function* checkLogin() {
