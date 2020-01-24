@@ -10,9 +10,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 
         public int ReportCount { get; set; }
 
-        public AlertsSummaryResponseDto AlertsSummary { get; set; }
+        public AlertsSummaryResponseDto AlertsSummary { get; set; } = new AlertsSummaryResponseDto();
 
-        public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; }
+        public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; } = new DataCollectionPointsSummaryResponse();
 
         public int ErrorReportCount { get; set; }
     }

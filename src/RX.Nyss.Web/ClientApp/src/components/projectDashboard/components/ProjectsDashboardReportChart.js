@@ -53,7 +53,7 @@ export const ProjectsDashboardReportChart = ({ data }) => {
   const moduleStrings = stringKeys.project.dashboard.reportsPerHealthRisk;
 
   const categories = data.allPeriods;
-  const healthRisks = data.healthRisks.length ? data.healthRisks : [{ name: "", periods: [] } ];
+  const healthRisks = data.healthRisks.length ? data.healthRisks : [{ healthRiskName: "", periods: [] } ];
 
   const series = healthRisks.map(healthRisk => ({
     name: healthRisk.healthRiskName === "(rest)" ? strings(moduleStrings.rest, true) : healthRisk.healthRiskName,

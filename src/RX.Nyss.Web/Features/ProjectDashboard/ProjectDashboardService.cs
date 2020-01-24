@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         private readonly IReportService _reportService;
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByFeatureService _reportsDashboardByFeatureService;
-        private readonly IReportsDashboardByHealthRiskAndDateService _reportsDashboardByHealthRiskAndDateService;
+        private readonly IReportsDashboardByHealthRiskService reportsDashboardByHealthRiskService;
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
         private readonly IReportsDashboardByDataCollectionPointService _reportsDashboardByDataCollectionPointService;
         private readonly IProjectDashboardSummaryService _projectDashboardSummaryService;
@@ -37,7 +37,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             IReportService reportService,
             IReportsDashboardMapService reportsDashboardMapService,
             IReportsDashboardByFeatureService reportsDashboardByFeatureService,
-            IReportsDashboardByHealthRiskAndDateService reportsDashboardByHealthRiskAndDateService,
+            IReportsDashboardByHealthRiskService reportsDashboardByHealthRiskService,
             IReportsDashboardByVillageService reportsDashboardByVillageService,
             IReportsDashboardByDataCollectionPointService reportsDashboardByDataCollectionPointService,
             IProjectDashboardSummaryService projectDashboardSummaryService)
@@ -46,7 +46,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             _reportService = reportService;
             _reportsDashboardMapService = reportsDashboardMapService;
             _reportsDashboardByFeatureService = reportsDashboardByFeatureService;
-            _reportsDashboardByHealthRiskAndDateService = reportsDashboardByHealthRiskAndDateService;
+            this.reportsDashboardByHealthRiskService = reportsDashboardByHealthRiskService;
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
             _reportsDashboardByDataCollectionPointService = reportsDashboardByDataCollectionPointService;
             _projectDashboardSummaryService = projectDashboardSummaryService;
@@ -78,7 +78,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var dashboardDataDto = new ProjectDashboardResponseDto
             {
                 Summary = await _projectDashboardSummaryService.GetSummaryData(filters),
-                ReportsGroupedByHealthRiskAndDate = await _reportsDashboardByHealthRiskAndDateService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType),
+                ReportsGroupedByHealthRiskAndDate = await reportsDashboardByHealthRiskService.GetReportsGroupedByHealthRiskAndDate(filters, filtersDto.GroupingType),
                 ReportsGroupedByFeaturesAndDate = reportsByFeaturesAndDate,
                 ReportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType),
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),

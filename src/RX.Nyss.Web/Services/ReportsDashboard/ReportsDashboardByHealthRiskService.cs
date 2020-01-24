@@ -12,12 +12,12 @@ using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 
 namespace RX.Nyss.Web.Services.ReportsDashboard
 {
-    public interface IReportsDashboardByHealthRiskAndDateService
+    public interface IReportsDashboardByHealthRiskService
     {
         Task<ReportByHealthRiskAndDateResponseDto> GetReportsGroupedByHealthRiskAndDate(ReportsFilter filters, DatesGroupingType groupingType);
     }
 
-    public class ReportsDashboardByHealthRiskAndDateService : IReportsDashboardByHealthRiskAndDateService
+    public class ReportsDashboardByHealthRiskService : IReportsDashboardByHealthRiskService
     {
         private readonly IReportService _reportService;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
         private readonly INyssContext _nyssContext;
 
 
-        public ReportsDashboardByHealthRiskAndDateService(
+        public ReportsDashboardByHealthRiskService(
             IReportService reportService,
             IDateTimeProvider dateTimeProvider,
             INyssWebConfig config,

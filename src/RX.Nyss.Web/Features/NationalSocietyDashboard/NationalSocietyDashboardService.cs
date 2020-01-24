@@ -54,6 +54,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
         public async Task<Result<NationalSocietyDashboardResponseDto>> GetDashboardData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
+            if (filtersDto.EndDate < filtersDto.StartDate)
+            {
+                return Success(new NationalSocietyDashboardResponseDto());
+            }
+
             var filters = MapToReportFilters(nationalSocietyId, filtersDto);
             var reportsGroupedByVillageAndDate = await _reportsDashboardByVillageService.GetReportsGroupedByVillageAndDate(filters, filtersDto.GroupingType);
 

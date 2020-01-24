@@ -9,10 +9,10 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 
         public int ReportCount { get; set; }
 
-        public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; }
+        public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; } = new DataCollectionPointsSummaryResponse();
 
         public int ErrorReportCount { get; set; }
 
-        public AlertsSummaryResponseDto AlertsSummary { get; set; }
+        public AlertsSummaryResponseDto AlertsSummary { get; set; } = new AlertsSummaryResponseDto();
     }
 }
