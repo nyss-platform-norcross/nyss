@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.HealthRisks.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -35,7 +36,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
         {
             var userName = _authorizationService.GetCurrentUserName();
 
-            var languageCode = await _nyssContext.Users
+            var languageCode = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleOrDefaultAsync() ?? "EN";

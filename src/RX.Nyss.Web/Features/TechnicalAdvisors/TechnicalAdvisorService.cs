@@ -8,6 +8,7 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.TechnicalAdvisors.Dto;
 using RX.Nyss.Web.Services;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -110,7 +111,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
         public async Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int nationalSocietyUserId)
         {
-            var technicalAdvisor = await _dataContext.Users
+            var technicalAdvisor = await _dataContext.Users.FilterAvailable()
                 .OfType<TechnicalAdvisorUser>()
                 .Where(u => u.Id == nationalSocietyUserId)
                 .Select(u => new GetTechnicalAdvisorResponseDto()

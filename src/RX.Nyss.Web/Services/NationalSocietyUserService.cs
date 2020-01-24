@@ -7,6 +7,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Services
@@ -36,7 +37,7 @@ namespace RX.Nyss.Web.Services
 
         public async Task<T> GetNationalSocietyUser<T>(int nationalSocietyUserId) where T : User
         {
-            var nationalSocietyUser = await _dataContext.Users
+            var nationalSocietyUser = await _dataContext.Users.FilterAvailable()
                 .OfType<T>()
                 .Where(u => u.Id == nationalSocietyUserId)
                 .SingleOrDefaultAsync();
@@ -52,7 +53,7 @@ namespace RX.Nyss.Web.Services
 
         public async Task<T> GetNationalSocietyUserIncludingNationalSocieties<T>(int nationalSocietyUserId) where T : User
         {
-            var nationalSocietyUser = await _dataContext.Users
+            var nationalSocietyUser = await _dataContext.Users.FilterAvailable()
                 .Include(u => u.UserNationalSocieties)
                 .OfType<T>()
                 .Where(u => u.Id == nationalSocietyUserId)

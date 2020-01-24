@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Queries;
 
 namespace RX.Nyss.Web.Services
 {
@@ -41,7 +42,7 @@ namespace RX.Nyss.Web.Services
         public async Task EnsureCanDeleteUser(int deletedUserId, Role deletedUserRole)
         {
             var callingUserEmail = _httpContextAccessor.HttpContext.User.Identity.Name;
-            var callingUserData = await _nyssContext.Users
+            var callingUserData = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == callingUserEmail)
                 .Select(u => new{u.Id, u.Role})
                 .SingleAsync();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
@@ -109,7 +110,8 @@ namespace RX.Nyss.Web.Tests.Features.Users
                 new DataConsumerUser {Id = 8, Role = Role.DataConsumer, Name = NationalSociety2Tag, EmailAddress = "dataConsumer8@domain.com"},
                 new TechnicalAdvisorUser {Id = 9, Role = Role.TechnicalAdvisor, Name = NationalSociety2Tag, EmailAddress = "technicalAdvisor9@domain.com"},
                 new SupervisorUser {Id = 10, Role = Role.Supervisor, Name = NationalSociety2Tag, EmailAddress = "supervisor10@domain.com"},
-                new TechnicalAdvisorUser {Id = 13, Role = Role.TechnicalAdvisor, Name = NationalSociety1And2Tag, EmailAddress = "technicalAdvisor11@domain.com"}
+                new TechnicalAdvisorUser {Id = 13, Role = Role.TechnicalAdvisor, Name = NationalSociety1And2Tag, EmailAddress = "technicalAdvisor11@domain.com"},
+                new SupervisorUser {Id = 14, Role = Role.Supervisor, Name = NationalSociety1And2Tag, EmailAddress = "Supervisor444@domain.com", DeletedAt = new DateTime(2018,01,01)}
             };
 
             var userNationalSocieties1 = users.Where(u => u.Name == NationalSociety1Tag).Select(u => new UserNationalSociety {User = u, UserId = u.Id, NationalSocietyId = 1, NationalSociety = nationalSocieties[0]});
@@ -239,6 +241,31 @@ namespace RX.Nyss.Web.Tests.Features.Users
 
             //assert
             await _nyssContext.Received(1).SaveChangesAsync();
+        }
+
+        [Fact]
+        public async Task GetUsers_ReturnsOnlyUsersInSpecifiedNationalSociety()
+        {
+            //act
+            var nationalSocietyId = 1;
+            var result = await _userService.GetUsers(nationalSocietyId);
+
+            //assert
+            result.Value.Count.ShouldBe(5);
+            result.Value.ShouldAllBe(u=> u.Name == NationalSociety1Tag || u.Name == NationalSociety1And2Tag);
+        }
+
+        [Fact]
+        public async Task GetUsers_ReturnsOnlyNotDeletedUsers()
+        {
+            //act
+            var nationalSocietyId = 1;
+            var result = await _userService.GetUsers(nationalSocietyId);
+
+            //assert
+            var users = _nyssContext.Users.Where(u => result.Value.Select(x => x.Id).Contains(u.Id)).ToList();
+            result.Value.Count.ShouldBe(5);
+            users.ShouldAllBe(u => !u.DeletedAt.HasValue);
         }
     }
 }

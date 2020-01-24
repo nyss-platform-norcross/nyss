@@ -8,6 +8,7 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.GlobalCoordinators.Dto;
 using RX.Nyss.Web.Services;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -88,7 +89,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
 
         public async Task<Result> UpdateGlobalCoordinator(EditGlobalCoordinatorRequestDto dto)
         {
-            var globalCoordinator = await _dataContext.Users
+            var globalCoordinator = await _dataContext.Users.FilterAvailable()
                 .SingleOrDefaultAsync(u => u.Id == dto.Id && u.Role == Role.GlobalCoordinator);
 
             if (globalCoordinator == null)
@@ -108,7 +109,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
 
         public async Task<Result<GetGlobalCoordinatorResponseDto>> GetGlobalCoordinator(int id)
         {
-            var globalCoordinator = await _dataContext.Users
+            var globalCoordinator = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.Id == id && u.Role == Role.GlobalCoordinator)
                 .Select(u => new GetGlobalCoordinatorResponseDto
                 {
@@ -132,7 +133,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
 
         public async Task<Result<List<GetGlobalCoordinatorResponseDto>>> GetGlobalCoordinators()
         {
-            var globalCoordinators = await _dataContext.Users
+            var globalCoordinators = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.Role == Role.GlobalCoordinator)
                 .Select(u => new GetGlobalCoordinatorResponseDto
                 {
@@ -155,7 +156,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
             {
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    var globalCoordinator = await _dataContext.Users.FindAsync(id);
+                    var globalCoordinator = await _dataContext.Users.FilterAvailable().FirstOrDefaultAsync(u => u.Id == id);
 
                     if (globalCoordinator == null)
                     {

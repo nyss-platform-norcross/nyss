@@ -17,6 +17,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(u => u.AdditionalPhoneNumber).HasMaxLength(20);
             builder.Property(u => u.Organization).HasMaxLength(100);
             builder.Property(u => u.IsFirstLogin).IsRequired();
+            builder.Property(u => u.DeletedAt);
             builder.HasDiscriminator(u => u.Role)
                 .HasValue<SupervisorUser>(Role.Supervisor)
                 .HasValue<ManagerUser>(Role.Manager)

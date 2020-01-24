@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Supervisors.Dto;
 using RX.Nyss.Web.Services;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -30,9 +32,10 @@ namespace RX.Nyss.Web.Features.Supervisors
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
-        private IDeleteUserService _deleteUserService;
+        private readonly IDeleteUserService _deleteUserService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
+        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IDateTimeProvider dateTimeProvider)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
@@ -40,6 +43,7 @@ namespace RX.Nyss.Web.Features.Supervisors
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
             _deleteUserService = deleteUserService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<Result> Create(int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto)
@@ -147,7 +151,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
         public async Task<Result<GetSupervisorResponseDto>> Get(int supervisorId)
         {
-           var supervisor = await _dataContext.Users
+           var supervisor = await _dataContext.Users.FilterAvailable()
                 .OfType<SupervisorUser>()
                 .Where(u => u.Id == supervisorId)
                 .Select(u => new GetSupervisorResponseDto
@@ -208,7 +212,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         {
             try
             {
-                var supervisorUserData = await _dataContext.Users
+                var supervisorUserData = await _dataContext.Users.FilterAvailable()
                     .OfType<SupervisorUser>()
                     .Include(u => u.UserNationalSocieties)
                     .Where(u => u.Id == supervisorId)
@@ -301,9 +305,11 @@ namespace RX.Nyss.Web.Features.Supervisors
 
                 await EnsureSupervisorHasNoDataCollectors(supervisorUser);
 
-                DetachSupervisorFromAllProjects(supervisorUser);
-                _nationalSocietyUserService.DeleteNationalSocietyUser(supervisorUser);
+                AnonymizeSupervisor(supervisorUser);
+                supervisorUser.DeletedAt = _dateTimeProvider.UtcNow;
+
                 await _identityUserRegistrationService.DeleteIdentityUser(supervisorUser.IdentityUserId);
+                supervisorUser.IdentityUserId = null;
 
                 await _dataContext.SaveChangesAsync();
                 transactionScope.Complete();
@@ -329,19 +335,20 @@ namespace RX.Nyss.Web.Features.Supervisors
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteSupervisorWithDataCollectors);
                 }
-
-                var deletedDataCollectorCount = dataCollectorInfo.SingleOrDefault(dc => dc.IsDeleted)?.Count;
-                if (deletedDataCollectorCount > 0)
-                {
-                    FormattableString updateDataCollectorsCommand = $"UPDATE Nyss.DataCollectors SET SupervisorId = null WHERE SupervisorId = {supervisorUser.Id}";
-                    await _dataContext.ExecuteSqlInterpolatedAsync(updateDataCollectorsCommand);
-                }
             }
+        }
+
+        private void AnonymizeSupervisor(SupervisorUser supervisorUser)
+        {
+            supervisorUser.Name = Anonymization.Text;
+            supervisorUser.EmailAddress = Anonymization.Text;
+            supervisorUser.PhoneNumber = Anonymization.Text;
+            supervisorUser.AdditionalPhoneNumber = Anonymization.Text;
         }
 
         public async Task<SupervisorUser> GetSupervisorUser(int supervisorUserId)
         {
-            var supervisorUser = await _dataContext.Users
+            var supervisorUser = await _dataContext.Users.FilterAvailable()
                 .OfType<SupervisorUser>()
                 .Include(u => u.SupervisorUserProjects)
                 .Include(u => u.UserNationalSocieties)
@@ -356,9 +363,6 @@ namespace RX.Nyss.Web.Features.Supervisors
 
             return supervisorUser;
         }
-
-        private void DetachSupervisorFromAllProjects(SupervisorUser deletedUser) =>
-            _dataContext.SupervisorUserProjects.RemoveRange(deletedUser.SupervisorUserProjects);
     }
 }
 

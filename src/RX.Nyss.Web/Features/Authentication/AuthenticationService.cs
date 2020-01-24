@@ -6,6 +6,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Authentication.Dto;
 using RX.Nyss.Web.Services;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -61,7 +62,7 @@ namespace RX.Nyss.Web.Features.Authentication
         {
             var email = user.FindFirstValue(ClaimTypes.Name);
 
-            var userEntity = await _nyssContext.Users
+            var userEntity = await _nyssContext.Users.FilterAvailable()
                 .Include(x => x.ApplicationLanguage)
                 .SingleOrDefaultAsync(u => u.EmailAddress == email);
 

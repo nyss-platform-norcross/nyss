@@ -8,6 +8,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
@@ -84,7 +85,7 @@ namespace RX.Nyss.Web.Services
                 return Error(ResultKey.User.ResetPassword.UserNotFound);
             }
 
-            var nyssUser = await _nyssContext.Users.Include(u => u.ApplicationLanguage).SingleAsync(x => x.IdentityUserId == user.Id);
+            var nyssUser = await _nyssContext.Users.FilterAvailable().Include(u => u.ApplicationLanguage).SingleAsync(x => x.IdentityUserId == user.Id);
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var baseUrl = new Uri(_config.BaseUrl);

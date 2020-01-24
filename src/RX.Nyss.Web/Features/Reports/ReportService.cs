@@ -9,6 +9,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -247,7 +248,7 @@ namespace RX.Nyss.Web.Features.Reports
         public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports)
         {
             var userName = _authorizationService.GetCurrentUserName();
-            var userApplicationLanguage = _nyssContext.Users
+            var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .Single();
@@ -350,7 +351,7 @@ namespace RX.Nyss.Web.Features.Reports
         {
             var currentUserName = _authorizationService.GetCurrentUserName();
             var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
-            var currentUserId = await _nyssContext.Users
+            var currentUserId = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == currentUserName)
                 .Select(u => u.Id)
                 .SingleAsync();
