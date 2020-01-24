@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
 
             _reportService.GetHealthRiskEventReportsQuery(filters).Returns(reports.AsQueryable());
 
-            var summaryData = await _nationalSocietyDashboardSummaryService.GetSummaryData(filters);
+            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
             summaryData.ReportCount.ShouldBe(5);
         }
@@ -80,7 +80,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
 
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
 
-            var summaryData = await _nationalSocietyDashboardSummaryService.GetSummaryData(filters);
+            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
             summaryData.ActiveDataCollectorCount.ShouldBe(3);
         }
@@ -107,7 +107,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
 
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
 
-            var summaryData = await _nationalSocietyDashboardSummaryService.GetSummaryData(filters);
+            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
             summaryData.ActiveDataCollectorCount.ShouldBe(2);
         }
@@ -127,7 +127,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
             _reportService.GetSuccessReportsQuery(filters).Returns(reports.AsQueryable());
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
 
-            var summaryData = await _nationalSocietyDashboardSummaryService.GetSummaryData(filters);
+            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
             summaryData.ErrorReportCount.ShouldBe(expectedErrorReportsCount);
         }

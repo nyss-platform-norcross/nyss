@@ -248,7 +248,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         {
             //act
             var nationalSocietyId = 1;
-            var result = await _userService.GetUsers(nationalSocietyId);
+            var result = await _userService.List(nationalSocietyId);
 
             //assert
             result.Value.Count.ShouldBe(5);
@@ -260,7 +260,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         {
             //act
             var nationalSocietyId = 1;
-            var result = await _userService.GetUsers(nationalSocietyId);
+            var result = await _userService.List(nationalSocietyId);
 
             //assert
             var users = _nyssContext.Users.Where(u => result.Value.Select(x => x.Id).Contains(u.Id)).ToList();
