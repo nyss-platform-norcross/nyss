@@ -46,7 +46,7 @@ const TableRowMenuComponent = ({ id, icon, items, isFetching, user }) => {
         onClose={handleDropdownClose}
         open={Boolean(anchorEl)}
       >
-        {items.map((menuItem, index) => (
+        {filteredItems.map((menuItem, index) => (
           <MenuItem
             key={`row_${id}_menuItem_${index}`}
             title={menuItem.title}

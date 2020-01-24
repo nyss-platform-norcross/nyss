@@ -15,6 +15,7 @@ import { strings, stringKeys } from '../../strings';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
+import { accessMap } from '../../authentication/accessMap';
 
 export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isSettingTrainingState }) => {
   if (isListFetching) {
@@ -25,12 +26,14 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
     {
       title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
       action: () => setTrainingState(row.id, false),
-      condition: row.isInTrainingMode
+      condition: row.isInTrainingMode,
+      roles: accessMap.dataCollectors.list
     },
     {
       title: strings(stringKeys.dataCollector.list.setToInTraining),
       action: () => setTrainingState(row.id, true),
-      condition: !row.isInTrainingMode
+      condition: !row.isInTrainingMode,
+      roles: accessMap.dataCollectors.list
     }
   ];
 
