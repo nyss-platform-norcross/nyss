@@ -15,11 +15,27 @@ import { strings, stringKeys } from '../../strings';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
+import { accessMap } from '../../authentication/accessMap';
 
 export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isSettingTrainingState }) => {
   if (isListFetching) {
     return <Loading />;
   }
+
+  const getRowMenu = (row) => [
+    {
+      title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
+      action: () => setTrainingState(row.id, false),
+      condition: row.isInTrainingMode,
+      roles: accessMap.dataCollectors.list
+    },
+    {
+      title: strings(stringKeys.dataCollector.list.setToInTraining),
+      action: () => setTrainingState(row.id, true),
+      condition: !row.isInTrainingMode,
+      roles: accessMap.dataCollectors.list
+    }
+  ];
 
   return (
     <TableContainer>
@@ -48,17 +64,7 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
               <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.list.isInTrainingMode) : strings(stringKeys.dataCollector.list.isNotInTrainingMode)}</TableCell>
               <TableCell>
                 <TableRowActions>
-                  <TableRowMenu id={row.id} items={[
-                    row.isInTrainingMode ?
-                      {
-                        title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
-                        action: () => setTrainingState(row.id, false)
-                      } :
-                      {
-                        title: strings(stringKeys.dataCollector.list.setToInTraining),
-                        action: () => setTrainingState(row.id, true)
-                      }
-                  ]} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />
+                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />
                   <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
                   <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>

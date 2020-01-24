@@ -61,6 +61,15 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
     setMarkErrorConfirmationDialog({ isOpen: false })
   }
 
+  const getRowMenu = (row) => [
+    {
+      title: strings(stringKeys.reports.list.markAsError),
+      roles: accessMap.reports.markAsError,
+      condition: !projectIsClosed && row.isValid && !row.isInAlert && !row.isMarkedAsError && row.userHasAccessToReportDataCollector,
+      action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
+    }
+  ];
+
   return (
     <Fragment>
       <TableContainer sticky>
@@ -132,19 +141,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
                 }
                 <TableCell>
                   <TableRowActions>
-                    <TableRowMenu
-                      id={row.id}
-                      icon={<MoreVertIcon />}
-                      isFetching={isMarkingAsError[row.id]}
-                      items={[
-                        {
-                          title: strings(stringKeys.reports.list.markAsError),
-                          roles: accessMap.reports.markAsError,
-                          condition: !projectIsClosed && row.isValid && !row.isInAlert && !row.isMarkedAsError && row.userHasAccessToReportDataCollector,
-                          action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
-                        }
-                      ]}
-                    />
+                    <TableRowMenu id={row.id} icon={<MoreVertIcon />} isFetching={isMarkingAsError[row.id]} items={getRowMenu(row)} />
                     <TableRowAction onClick={() => goToEdition(projectId, row.reportId)} icon={<EditIcon />} title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit} condition={row.reportType === "Aggregate" || row.reportType === "DataCollectionPoint"} />
                   </TableRowActions>

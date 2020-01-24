@@ -35,6 +35,14 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
       (Roles.TechnicalAdvisor.toLowerCase() === row.role.toLowerCase() || Roles.Manager.toLowerCase() === row.role.toLowerCase())) || false;
   }
 
+  const getRowMenu = (row) => [
+    {
+      condition: canBeSetAsHeadManager(row),
+      title: strings(stringKeys.headManagerConsents.setAsHeadManager),
+      action: () => setAsHeadManager(nationalSocietyId, row.id)
+    }
+  ];
+
   return (
     <TableContainer>
       <Table>
@@ -64,13 +72,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               </TableCell>
               <TableCell>
                 <TableRowActions>
-                  <TableRowMenu id={row.id} items={[
-                    {
-                      condition: canBeSetAsHeadManager(row),
-                      title: strings(stringKeys.headManagerConsents.setAsHeadManager),
-                      action: () => setAsHeadManager(nationalSocietyId, row.id)
-                    }
-                  ]} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
+                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
                   <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
                   <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>
