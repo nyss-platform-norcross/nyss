@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns></returns>
         [HttpPost("{projectId:int}/close")]
-        [NeedsRole(Role.Administrator, Role.Manager), NeedsPolicy(Policy.ProjectAccess), NeedsPolicy(Policy.HeadManagerAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess), NeedsPolicy(Policy.HeadManagerAccess)]
         public Task<Result> CloseProject(int projectId, int nationalSocietyId) =>
             _projectService.CloseProject(projectId);
 

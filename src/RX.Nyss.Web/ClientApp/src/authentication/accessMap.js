@@ -33,7 +33,7 @@ export const accessMap = {
     add: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
     edit: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
     delete: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
-    headManagerAccess: [GlobalCoordinator, Administrator, TechnicalAdvisor]
+    headManagerAccess: [GlobalCoordinator, Administrator]
   },
   globalCoordinators: {
     list: [Administrator, GlobalCoordinator],
