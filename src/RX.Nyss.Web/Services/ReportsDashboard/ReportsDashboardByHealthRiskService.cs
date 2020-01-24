@@ -142,7 +142,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     },
                     Count = grouping.Sum(g => g.ReportedCaseCount),
                     HealthRiskId = grouping.Key.HealthRiskId,
-                    HealthRiskName = _nyssContext.HealthRisks.FirstOrDefault(hr => hr.Id == grouping.Key.ContentLanguageId).LanguageContents
+                    HealthRiskName = _nyssContext.HealthRisks.FirstOrDefault(hr => hr.Id == grouping.Key.HealthRiskId).LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == grouping.Key.ContentLanguageId)
                         .Select(lc => lc.Name).FirstOrDefault(),
                 })
