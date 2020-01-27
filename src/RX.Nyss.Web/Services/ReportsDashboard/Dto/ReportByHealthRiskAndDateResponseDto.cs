@@ -4,12 +4,12 @@ namespace RX.Nyss.Web.Services.ReportsDashboard.Dto
 {
     public class ReportByHealthRiskAndDateResponseDto
     {
-        public IEnumerable<HealthRiskDto> HealthRisks { get; set; } = new List<HealthRiskDto>();
+        public IEnumerable<ReportHealthRiskDto> HealthRisks { get; set; } = new List<ReportHealthRiskDto>();
 
         public IEnumerable<string> AllPeriods { get; set; } = new List<string>();
 
 
-        public class HealthRiskDto
+        public class ReportHealthRiskDto
         {
             public string HealthRiskName { get; set; }
 

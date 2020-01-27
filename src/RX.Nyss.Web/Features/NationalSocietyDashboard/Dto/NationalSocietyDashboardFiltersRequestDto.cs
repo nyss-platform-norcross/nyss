@@ -16,11 +16,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 
         public DatesGroupingType GroupingType { get; set; }
 
-        public ReportsTypeDto ReportsType { get; set; }
+        public NationalSocietyReportsTypeDto NationalSocietyReportsType { get; set; }
 
         public bool IsTraining { get; set; }
 
-        public enum ReportsTypeDto
+        public enum NationalSocietyReportsTypeDto
         {
             All,
             DataCollector,
