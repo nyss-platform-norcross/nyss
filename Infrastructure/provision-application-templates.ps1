@@ -48,7 +48,7 @@ if ($subscriptionId) {
 $resourceGroup = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
 
 if (!$resourceGroup) {
-  Write-Error "Resource group $resourceGroupName not found!"serviceBusNamespaceName
+  Write-Error "Resource group $resourceGroupName not found!"
 }
 
 if ($complete) {

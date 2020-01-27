@@ -57,6 +57,12 @@
       "type": "string",
       "defaultValue": "StorageV2"
     },
+    "aadTenantId": {
+      "type": "string"
+    },
+    "aadWebAppClientId": {
+      "type": "string"
+    },
     "specificResource": {
       "defaultValue": null,
       "type": "string",
@@ -279,6 +285,22 @@
         "httpsOnly": true
       },
       "resources": [
+        {
+          "name": "authsettings",
+          "apiVersion": "2018-11-01",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
+          ],
+          "properties": {
+            "enabled": "[not(equals(parameters('env'), 'prod'))]",
+            "unauthenticatedClientAction": "RedirectToLoginPage",
+            "tokenStoreEnabled": true,
+            "defaultProvider": "AzureActiveDirectory",
+            "clientId": "[parameters('aadWebAppClientId')]",
+            "issuer": "[concat('https://sts.windows.net/', parameters('aadTenantId'), '/')]"
+          }
+        },
         {
           "apiVersion": "2018-11-01",
           "name": "appsettings",
