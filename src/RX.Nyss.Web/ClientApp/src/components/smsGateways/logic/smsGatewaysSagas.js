@@ -78,7 +78,7 @@ function* editSmsGateway({ nationalSocietyId, data }) {
 function* removeSmsGateway({ nationalSocietyId, smsGatewayId }) {
   yield put(actions.remove.request(smsGatewayId));
   try {
-    yield call(http.post, `/api/smsGateway/${smsGatewayId}/remove`);
+    yield call(http.post, `/api/smsGateway/${smsGatewayId}/delete`);
     yield put(actions.remove.success(smsGatewayId));
     yield call(getSmsGateways, nationalSocietyId);
     yield put(appActions.showMessage(stringKeys.smsGateway.delete.success));

@@ -114,7 +114,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         public async Task AcceptReport_WhenCriteriaAreMet_ShouldReturnAssessmentStatus()
         {
             var alertAssessmentStatus = AlertAssessmentStatus.ToEscalate;
-            _alertService.GetAlertAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
+            _alertService.GetAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
 
             _alertReports.First().Alert.Status = AlertStatus.Pending;
             _alertReports.First().Report.Status = ReportStatus.Pending;
@@ -181,7 +181,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         public async Task DismissReport_WhenCriteriaAreMet_ShouldReturnAssessmentStatus()
         {
             var alertAssessmentStatus = AlertAssessmentStatus.ToEscalate;
-            _alertService.GetAlertAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
+            _alertService.GetAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
 
             _alertReports.First().Alert.Status = AlertStatus.Pending;
             _alertReports.First().Report.Status = ReportStatus.Pending;

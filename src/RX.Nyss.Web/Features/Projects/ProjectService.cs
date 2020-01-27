@@ -22,15 +22,15 @@ namespace RX.Nyss.Web.Features.Projects
 {
     public interface IProjectService
     {
-        Task<Result<ProjectResponseDto>> GetProject(int projectId);
-        Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId);
-        Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto);
-        Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto);
-        Task<Result> CloseProject(int projectId);
-        Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId);
+        Task<Result<ProjectResponseDto>> Get(int projectId);
+        Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId);
+        Task<Result<int>> Create(int nationalSocietyId, ProjectRequestDto projectRequestDto);
+        Task<Result> Edit(int projectId, ProjectRequestDto projectRequestDto);
+        Task<Result> Close(int projectId);
+        Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId);
         Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
-        Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId, List<HealthRiskType> healthRiskTypes);
+        Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, List<HealthRiskType> healthRiskTypes);
         Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
     }
 
@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Features.Projects
             _dataCollectorService = dataCollectorService;
         }
 
-        public async Task<Result<ProjectResponseDto>> GetProject(int projectId)
+        public async Task<Result<ProjectResponseDto>> Get(int projectId)
         {
             var project = await _nyssContext.Projects
                 .Select(p => new ProjectResponseDto
@@ -106,7 +106,7 @@ namespace RX.Nyss.Web.Features.Projects
             return result;
         }
 
-        public async Task<IEnumerable<HealthRiskDto>> GetProjectHealthRiskNames(int projectId, List<HealthRiskType> healthRiskTypes)
+        public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, List<HealthRiskType> healthRiskTypes)
         {
             healthRiskTypes ??= new List<HealthRiskType>();
 
@@ -124,7 +124,7 @@ namespace RX.Nyss.Web.Features.Projects
                 .ToListAsync();
         }
 
-        public async Task<Result<List<ProjectListItemResponseDto>>> ListProjects(int nationalSocietyId)
+        public async Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId)
         {
             var userIdentityName = _authorizationService.GetCurrentUserName();
 
@@ -165,7 +165,7 @@ namespace RX.Nyss.Web.Features.Projects
             return result;
         }
 
-        public async Task<Result<int>> AddProject(int nationalSocietyId, ProjectRequestDto projectRequestDto)
+        public async Task<Result<int>> Create(int nationalSocietyId, ProjectRequestDto projectRequestDto)
         {
             try
             {
@@ -234,7 +234,7 @@ namespace RX.Nyss.Web.Features.Projects
             }
         }
 
-        public async Task<Result> UpdateProject(int projectId, ProjectRequestDto projectRequestDto)
+        public async Task<Result> Edit(int projectId, ProjectRequestDto projectRequestDto)
         {
             try
             {
@@ -376,7 +376,7 @@ namespace RX.Nyss.Web.Features.Projects
             }
         }
 
-        public async Task<Result> CloseProject(int projectId)
+        public async Task<Result> Close(int projectId)
         {
             try
             {
@@ -387,7 +387,7 @@ namespace RX.Nyss.Web.Features.Projects
                         AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
                     })
                     .SingleOrDefaultAsync(x => x.p.Id == projectId);
-                
+
                 if (projectToClose == null)
                 {
                     return Error(ResultKey.Project.ProjectDoesNotExist);
@@ -397,12 +397,12 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     return Error(ResultKey.Project.ProjectAlreadyClosed);
                 }
-                
+
                 if (projectToClose.AnyOpenAlerts)
                 {
                     return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
                 }
-                
+
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     projectToClose.p.State = ProjectState.Closed;
@@ -411,7 +411,7 @@ namespace RX.Nyss.Web.Features.Projects
 
                     await _dataCollectorService.AnonymizeDataCollectorsWithReports(projectId);
                     _nyssContext.DataCollectors.RemoveRange(dataCollectorsToRemove);
-                    
+
                     await _nyssContext.SaveChangesAsync();
                     transactionScope.Complete();
                 }
@@ -425,7 +425,7 @@ namespace RX.Nyss.Web.Features.Projects
             }
         }
 
-        public async Task<Result<ProjectBasicDataResponseDto>> GetProjectBasicData(int projectId)
+        public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId)
         {
             var project = await _nyssContext.Projects
                 .Select(dc => new ProjectBasicDataResponseDto

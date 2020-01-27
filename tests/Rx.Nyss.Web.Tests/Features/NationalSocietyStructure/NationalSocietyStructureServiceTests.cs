@@ -79,7 +79,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyStructure
         [Fact]
         public async Task GetStructure_ShouldBuildTree()
         {
-            var structure = await _nationalSocietyStructureService.GetStructure(NationalSocietyId);
+            var structure = await _nationalSocietyStructureService.Get(NationalSocietyId);
 
             structure.IsSuccess.ShouldBeTrue();
 

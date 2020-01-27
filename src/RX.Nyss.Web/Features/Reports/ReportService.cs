@@ -27,9 +27,9 @@ namespace RX.Nyss.Web.Features.Reports
 {
     public interface IReportService
     {
-        Task<Result<ReportResponseDto>> GetReport(int reportId);
+        Task<Result<ReportResponseDto>> Get(int reportId);
         Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter);
-        Task<Result<ReportListFilterResponseDto>> GetReportFilters(int nationalSocietyId);
+        Task<Result<ReportListFilterResponseDto>> GetFilters(int nationalSocietyId);
         Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId);
         Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto);
         Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter);
@@ -62,7 +62,7 @@ namespace RX.Nyss.Web.Features.Reports
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<Result<ReportResponseDto>> GetReport(int reportId)
+        public async Task<Result<ReportResponseDto>> Get(int reportId)
         {
             var report = await _nyssContext.Reports
                 .Select(r => new ReportResponseDto
@@ -105,10 +105,10 @@ namespace RX.Nyss.Web.Features.Reports
             return Success(reports.Cast<ReportListResponseDto>().AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
         }
 
-        public async Task<Result<ReportListFilterResponseDto>> GetReportFilters(int projectId)
+        public async Task<Result<ReportListFilterResponseDto>> GetFilters(int projectId)
         {
             var healthRiskTypesWithoutActivity = new List<HealthRiskType> { HealthRiskType.Human, HealthRiskType.NonHuman, HealthRiskType.UnusualEvent };
-            var projectHealthRiskNames = await _projectService.GetProjectHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
+            var projectHealthRiskNames = await _projectService.GetHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
 
             var dto = new ReportListFilterResponseDto
             {
@@ -121,7 +121,7 @@ namespace RX.Nyss.Web.Features.Reports
         public async Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId)
         {
             var humanHealthRiskType = new List<HealthRiskType> { HealthRiskType.Human };
-            var projectHealthRisks = await _projectService.GetProjectHealthRiskNames(projectId, humanHealthRiskType);
+            var projectHealthRisks = await _projectService.GetHealthRiskNames(projectId, humanHealthRiskType);
 
             var dto = new HumanHealthRiskResponseDto
             {
@@ -178,7 +178,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .OrderBy(r => r.DateTime, filter.SortAscending);
 
             var reports = await reportsQuery.ToListAsync<IReportListResponseDto>();
-        
+
             await UpdateTimeZoneInReports(projectId, reports);
 
             var excelSheet = await GetExcelData(reports);
@@ -425,7 +425,7 @@ namespace RX.Nyss.Web.Features.Reports
 
             return Success();
         }
-        
+
         private async Task UpdateTimeZoneInReports(int projectId, List<IReportListResponseDto> reports)
         {
             var project = await _nyssContext.Projects.FindAsync(projectId);

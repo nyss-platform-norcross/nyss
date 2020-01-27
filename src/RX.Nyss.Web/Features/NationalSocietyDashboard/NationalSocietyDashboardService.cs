@@ -14,11 +14,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 {
     public interface INationalSocietyDashboardService
     {
-        Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetDashboardFiltersData(int nationalSocietyId);
+        Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetFiltersData(int nationalSocietyId);
 
-        Task<Result<NationalSocietyDashboardResponseDto>> GetDashboardData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto);
+        Task<Result<NationalSocietyDashboardResponseDto>> GetData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto);
 
-        Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportsHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto);
+        Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto);
     }
 
     public class NationalSocietyDashboardService : INationalSocietyDashboardService
@@ -40,19 +40,19 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
         }
 
-        public async Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetDashboardFiltersData(int nationalSocietyId)
+        public async Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetFiltersData(int nationalSocietyId)
         {
-            var projectHealthRiskNames = await _nationalSocietyService.GetNationalSocietyHealthRiskNames(nationalSocietyId);
+            var healthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId);
 
             var dto = new NationalSocietyDashboardFiltersResponseDto
             {
-                HealthRisks = projectHealthRiskNames
+                HealthRisks = healthRiskNames
             };
 
             return Success(dto);
         }
 
-        public async Task<Result<NationalSocietyDashboardResponseDto>> GetDashboardData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
+        public async Task<Result<NationalSocietyDashboardResponseDto>> GetData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
             if (filtersDto.EndDate < filtersDto.StartDate)
             {
@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
             var dashboardDataDto = new NationalSocietyDashboardResponseDto
             {
-                Summary = await _nationalSocietyDashboardSummaryService.GetSummaryData(filters),
+                Summary = await _nationalSocietyDashboardSummaryService.GetData(filters),
                 ReportsGroupedByLocation = await _reportsDashboardMapService.GetProjectSummaryMap(filters),
                 ReportsGroupedByVillageAndDate = reportsGroupedByVillageAndDate
             };
@@ -72,7 +72,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             return Success(dashboardDataDto);
         }
 
-        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportsHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto)
+        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
             var filters = MapToReportFilters(nationalSocietyId, filtersDto);
             var data = await _reportsDashboardMapService.GetProjectReportHealthRisks(filters, latitude, longitude);
@@ -89,15 +89,15 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 Area = filtersDto.Area == null
                     ? null
                     : new Area { AreaType = filtersDto.Area.Type, AreaId = filtersDto.Area.Id },
-                DataCollectorType = MapToDataCollectorType(filtersDto.ReportsType),
+                DataCollectorType = MapToDataCollectorType(filtersDto.NationalSocietyReportsType),
                 IsTraining = filtersDto.IsTraining
             };
 
-        private static DataCollectorType? MapToDataCollectorType(NationalSocietyDashboardFiltersRequestDto.ReportsTypeDto reportsType) =>
-            reportsType switch
+        private static DataCollectorType? MapToDataCollectorType(NationalSocietyDashboardFiltersRequestDto.NationalSocietyReportsTypeDto nationalSocietyReportsType) =>
+            nationalSocietyReportsType switch
             {
-                NationalSocietyDashboardFiltersRequestDto.ReportsTypeDto.DataCollector => DataCollectorType.Human,
-                NationalSocietyDashboardFiltersRequestDto.ReportsTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
+                NationalSocietyDashboardFiltersRequestDto.NationalSocietyReportsTypeDto.DataCollector => DataCollectorType.Human,
+                NationalSocietyDashboardFiltersRequestDto.NationalSocietyReportsTypeDto.DataCollectionPoint => DataCollectorType.CollectionPoint,
                 _ => null as DataCollectorType?
             };
     }

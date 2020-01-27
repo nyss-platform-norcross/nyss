@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Features.Users
 {
     public interface IUserService
     {
-        Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsers(int nationalSocietyId);
+        Task<Result<List<GetNationalSocietyUsersResponseDto>>> List(int nationalSocietyId);
         Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
         Task<Result> AddExisting(int nationalSocietyId, string userEmail);
         Task<string> GetUserApplicationLanguageCode(string userIdentityName);
@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.Users
             _authorizationService = authorizationService;
         }
 
-        public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> GetUsers(int nationalSocietyId)
+        public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> List(int nationalSocietyId)
         {
             var usersQuery = _authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator)
                 ? _dataContext.UserNationalSocieties.Where(u => u.User.Role != Role.Supervisor)

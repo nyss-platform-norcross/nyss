@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         {
             ArrangeUsersDbSetWithOneGlobalCoordinator();
 
-            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
+            var result = await _globalCoordinatorService.Edit(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
             result.IsSuccess.ShouldBeTrue();
         }
@@ -94,7 +94,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         {
             ArrangeUsersDbSetWithOneGlobalCoordinator();
 
-            await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
+            await _globalCoordinatorService.Edit(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
             await _nyssContext.Received().SaveChangesAsync();
         }
@@ -108,7 +108,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
 
             var editRequest = new EditGlobalCoordinatorRequestDto { Id = 123, Name = "New name", Organization = "New organization", PhoneNumber = "432432" };
 
-            await _globalCoordinatorService.UpdateGlobalCoordinator(editRequest);
+            await _globalCoordinatorService.Edit(editRequest);
 
             var editedUser = _nyssContext.Users.Single(u => u.Id == 123) as GlobalCoordinatorUser;
 
@@ -127,7 +127,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             _nyssContext.Users.Returns(usersDbSet);
 
 
-            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
+            var result = await _globalCoordinatorService.Edit(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
 
             result.IsSuccess.ShouldBeFalse();
@@ -138,7 +138,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         {
             ArrangeUsersDbSetWithOneAdministratorUser();
 
-            var result = await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
+            var result = await _globalCoordinatorService.Edit(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -148,7 +148,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         {
             ArrangeUsersDbSetWithOneAdministratorUser();
 
-            await _globalCoordinatorService.UpdateGlobalCoordinator(new EditGlobalCoordinatorRequestDto { Id = 123 });
+            await _globalCoordinatorService.Edit(new EditGlobalCoordinatorRequestDto { Id = 123 });
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -170,7 +170,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             };
             ArrangeUsersDbSetWithExistingUsers(nyssUsers);
 
-            var result = await _globalCoordinatorService.GetGlobalCoordinators();
+            var result = await _globalCoordinatorService.List();
 
             result.Value.Count.ShouldBe(2);
         }
@@ -182,7 +182,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
-            var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
+            var result = await _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto);
 
 
             await _nyssContext.Received().AddAsync(Arg.Any<GlobalCoordinatorUser>());
@@ -195,7 +195,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
-            var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
+            var result = await _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto);
 
 
             await _nyssContext.Received().SaveChangesAsync();
@@ -208,7 +208,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             var userName = "Mickey Mouse";
             var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userName, Email = userEmail };
 
-            var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
+            var result = await _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
             await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
@@ -226,7 +226,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
-            var result = await _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto);
+            var result = await _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto);
 
 
             result.IsSuccess.ShouldBeFalse();
@@ -243,7 +243,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
 
 
-            _globalCoordinatorService.RegisterGlobalCoordinator(registerGlobalCoordinatorRequestDto).ShouldThrowAsync<Exception>();
+            _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto).ShouldThrowAsync<Exception>();
         }
 
         [Fact]
@@ -253,7 +253,7 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             ArrangeUsersDbSetWithOneGlobalCoordinator();
 
             //act
-            await _globalCoordinatorService.RemoveGlobalCoordinator(123);
+            await _globalCoordinatorService.Delete(123);
 
             //assert
             await _deleteUserService.Received().EnsureCanDeleteUser(123, Role.GlobalCoordinator);

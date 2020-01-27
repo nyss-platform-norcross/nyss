@@ -17,10 +17,10 @@ namespace RX.Nyss.Web.Features.DataConsumers
 {
     public interface IDataConsumerService
     {
-        Task<Result> CreateDataConsumer(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
-        Task<Result<GetDataConsumerResponseDto>> GetDataConsumer(int dataConsumerId);
-        Task<Result> UpdateDataConsumer(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
-        Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId);
+        Task<Result> Create(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto);
+        Task<Result<GetDataConsumerResponseDto>> Get(int dataConsumerId);
+        Task<Result> Edit(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto);
+        Task<Result> Delete(int nationalSocietyId, int dataConsumerId);
     }
 
     public class DataConsumerService : IDataConsumerService
@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
             _nationalSocietyUserService = nationalSocietyUserService;
         }
 
-        public async Task<Result> CreateDataConsumer(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto)
+        public async Task<Result> Create(int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto)
         {
             try
             {
@@ -112,7 +112,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
                 User = user
             };
 
-        public async Task<Result<GetDataConsumerResponseDto>> GetDataConsumer(int nationalSocietyUserId)
+        public async Task<Result<GetDataConsumerResponseDto>> Get(int nationalSocietyUserId)
         {
             var dataConsumer = await _dataContext.Users.FilterAvailable()
                 .OfType<DataConsumerUser>()
@@ -138,7 +138,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
             return new Result<GetDataConsumerResponseDto>(dataConsumer, true);
         }
 
-        public async Task<Result> UpdateDataConsumer(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto)
+        public async Task<Result> Edit(int dataConsumerId, EditDataConsumerRequestDto editDataConsumerRequestDto)
         {
             try
             {
@@ -159,7 +159,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
             }
         }
 
-        public async Task<Result> DeleteDataConsumer(int nationalSocietyId, int dataConsumerId)
+        public async Task<Result> Delete(int nationalSocietyId, int dataConsumerId)
         {
             try
             {
@@ -188,7 +188,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
 
                 await _dataContext.SaveChangesAsync();
                 transactionScope.Complete();
-                return Success(ResultKey.User.Registration.Success);
+                return Success();
             }
             catch (ResultException e)
             {

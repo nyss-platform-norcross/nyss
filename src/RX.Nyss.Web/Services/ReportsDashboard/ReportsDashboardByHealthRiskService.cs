@@ -99,7 +99,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                         Data = gr.ToList()
                     })
                 )
-                .Select(g => new ReportByHealthRiskAndDateResponseDto.HealthRiskDto
+                .Select(g => new ReportByHealthRiskAndDateResponseDto.ReportHealthRiskDto
                 {
                     HealthRiskName = g.HealthRisk.HealthRiskName,
                     Periods = g.Data.GroupBy(v => v.Period).OrderBy(g => g.Key)
@@ -173,7 +173,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                         Data = g.ToList()
                     })
                 )
-                .Select(x => new ReportByHealthRiskAndDateResponseDto.HealthRiskDto
+                .Select(x => new ReportByHealthRiskAndDateResponseDto.ReportHealthRiskDto
                 {
                     HealthRiskName = x.HealthRisk.HealthRiskName,
                     Periods = x.Data.GroupBy(v => v.Period).OrderBy(g => g.Key.EpiYear).ThenBy(g => g.Key.EpiWeek)

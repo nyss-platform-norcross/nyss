@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         [HttpGet("filters")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result<NationalSocietyReportListFilterResponseDto>> GetFilters(int nationalSocietyId) =>
-            await _nationalSocietyReportService.GetNationalSocietyReportFilters(nationalSocietyId);
+        public async Task<Result<NationalSocietyReportListFilterResponseDto>> Filters(int nationalSocietyId) =>
+            await _nationalSocietyReportService.Filters(nationalSocietyId);
     }
 }

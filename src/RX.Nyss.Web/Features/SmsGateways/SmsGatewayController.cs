@@ -25,8 +25,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <returns>A SMS Gateway</returns>
         [HttpGet("{smsGatewayId:int}/get")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
-        public Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int smsGatewayId) =>
-            _smsGatewayService.GetSmsGateway(smsGatewayId);
+        public Task<Result<GatewaySettingResponseDto>> Get(int smsGatewayId) =>
+            _smsGatewayService.Get(smsGatewayId);
 
         /// <summary>
         /// Lists SMS Gateways assigned to a specified national society.
@@ -34,39 +34,39 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <returns>A list of SMS Gateways assigned to the national society</returns>
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<List<GatewaySettingResponseDto>>> GetSmsGateways(int nationalSocietyId) =>
-            _smsGatewayService.GetSmsGateways(nationalSocietyId);
+        public Task<Result<List<GatewaySettingResponseDto>>> List(int nationalSocietyId) =>
+            _smsGatewayService.List(nationalSocietyId);
 
         /// <summary>
-        /// Adds a new SMS Gateway for a specified national society.
+        /// Creates a new SMS Gateway for a specified national society.
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
         /// <returns>An identifier of the created SMS Gateway setting</returns>
-        [HttpPost("add")]
+        [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<int>> AddSmsGateway(int nationalSocietyId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
-            _smsGatewayService.AddSmsGateway(nationalSocietyId, gatewaySettingRequestDto);
+        public Task<Result<int>> Create(int nationalSocietyId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
+            _smsGatewayService.Create(nationalSocietyId, gatewaySettingRequestDto);
 
         /// <summary>
-        /// Updates a specified SMS Gateway.
+        /// Edits a specified SMS Gateway.
         /// </summary>
         /// <param name="smsGatewayId">An identifier of SMS Gateway to be updated</param>
         /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
         /// <returns></returns>
         [HttpPost("{smsGatewayId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
-        public Task<Result> UpdateSmsGateway(int smsGatewayId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
-            _smsGatewayService.UpdateSmsGateway(smsGatewayId, gatewaySettingRequestDto);
+        public Task<Result> Edit(int smsGatewayId, [FromBody]GatewaySettingRequestDto gatewaySettingRequestDto) =>
+            _smsGatewayService.Edit(smsGatewayId, gatewaySettingRequestDto);
 
         /// <summary>
-        /// Removes a specified SMS Gateway.
+        /// Deletes a specified SMS Gateway.
         /// </summary>
-        /// <param name="smsGatewayId">An identifier of SMS Gateway to be removed</param>
+        /// <param name="smsGatewayId">An identifier of SMS Gateway to be deleted</param>
         /// <returns></returns>
-        [HttpPost("{smsGatewayId:int}/remove")]
+        [HttpPost("{smsGatewayId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
-        public Task<Result> UpdateSmsGateway(int smsGatewayId) =>
-            _smsGatewayService.DeleteSmsGateway(smsGatewayId);
+        public Task<Result> Delete(int smsGatewayId) =>
+            _smsGatewayService.Delete(smsGatewayId);
     }
 }

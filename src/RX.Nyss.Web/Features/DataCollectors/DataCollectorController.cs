@@ -24,53 +24,53 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpGet, Route("{dataCollectorId:int}/get")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
-        public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId) =>
-            await _dataCollectorService.GetDataCollector(dataCollectorId);
+        public async Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId) =>
+            await _dataCollectorService.Get(dataCollectorId);
 
         [HttpGet, Route("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId) =>
-            await _dataCollectorService.ListDataCollectors(projectId);
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId) =>
+            await _dataCollectorService.List(projectId);
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result> CreateDataCollector(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) =>
-            await _dataCollectorService.CreateDataCollector(projectId, createDataCollectorDto);
+        public async Task<Result> Create(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) =>
+            await _dataCollectorService.Create(projectId, createDataCollectorDto);
 
         [HttpPost, Route("{dataCollectorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
-        public async Task<Result> EditDataCollector([FromBody]EditDataCollectorRequestDto editDataCollectorDto) =>
-            await _dataCollectorService.EditDataCollector(editDataCollectorDto);
+        public async Task<Result> Edit([FromBody]EditDataCollectorRequestDto editDataCollectorDto) =>
+            await _dataCollectorService.Edit(editDataCollectorDto);
 
         [HttpPost, Route("{dataCollectorId:int}/setTrainingState")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
         public async Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining) =>
             await _dataCollectorService.SetTrainingState(dataCollectorId, isInTraining);
 
-        [HttpPost, Route("{dataCollectorId:int}/remove")]
+        [HttpPost, Route("{dataCollectorId:int}/delete")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
-        public async Task<Result> RemoveDataCollector(int dataCollectorId) =>
-            await _dataCollectorService.RemoveDataCollector(dataCollectorId);
+        public async Task<Result> Delete(int dataCollectorId) =>
+            await _dataCollectorService.Delete(dataCollectorId);
 
         [HttpGet, Route("formData")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
-        public async Task<Result<DataCollectorFormDataResponse>> GetDataCollectorFormData(int projectId) =>
+        public async Task<Result<DataCollectorFormDataResponse>> FormData(int projectId) =>
             await _dataCollectorService.GetFormData(projectId);
 
         [HttpGet, Route("mapOverview")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to) =>
-            await _dataCollectorService.GetMapOverview(projectId, from, to);
+        public async Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to) =>
+            await _dataCollectorService.MapOverview(projectId, from, to);
 
         [HttpGet, Route("mapOverviewDetails")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng) =>
-            await _dataCollectorService.GetMapOverviewDetails(projectId, @from, to, lat, lng);
+        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng) =>
+            await _dataCollectorService.MapOverviewDetails(projectId, @from, to, lat, lng);
 
         [HttpGet, Route("performance")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId) =>
-            await _dataCollectorService.GetDataCollectorPerformance(projectId);
+        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId) =>
+            await _dataCollectorService.Performance(projectId);
 
         [HttpPost, Route("export")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]

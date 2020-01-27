@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.Users
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> List(int nationalSocietyId) =>
-            await _userService.GetUsers(nationalSocietyId);
+            await _userService.List(nationalSocietyId);
 
         /// <summary>
         /// Gets basic data about the user

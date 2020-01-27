@@ -17,11 +17,11 @@ namespace RX.Nyss.Web.Features.Managers
 {
     public interface IManagerService
     {
-        Task<Result> CreateManager(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto);
-        Task<Result<GetManagerResponseDto>> GetManager(int managerId);
-        Task<Result> UpdateManager(int managerId, EditManagerRequestDto editManagerRequestDto);
-        Task<Result> DeleteManager(int managerId);
-        Task RemoveManagerIncludingHeadManagerFlag(int managerId);
+        Task<Result> Create(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto);
+        Task<Result<GetManagerResponseDto>> Get(int managerId);
+        Task<Result> Edit(int managerId, EditManagerRequestDto editManagerRequestDto);
+        Task<Result> Delete(int managerId);
+        Task DeleteIncludingHeadManagerFlag(int managerId);
     }
 
 
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.Managers
             _deleteUserService = deleteUserService;
         }
 
-        public async Task<Result> CreateManager(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
+        public async Task<Result> Create(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
         {
             try
             {
@@ -111,7 +111,7 @@ namespace RX.Nyss.Web.Features.Managers
                 User = user
             };
 
-        public async Task<Result<GetManagerResponseDto>> GetManager(int nationalSocietyUserId)
+        public async Task<Result<GetManagerResponseDto>> Get(int nationalSocietyUserId)
         {
             var manager = await _dataContext.Users.FilterAvailable()
                 .OfType<ManagerUser>()
@@ -137,7 +137,7 @@ namespace RX.Nyss.Web.Features.Managers
             return new Result<GetManagerResponseDto>(manager, true);
         }
 
-        public async Task<Result> UpdateManager(int managerId, EditManagerRequestDto editManagerRequestDto)
+        public async Task<Result> Edit(int managerId, EditManagerRequestDto editManagerRequestDto)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace RX.Nyss.Web.Features.Managers
             }
         }
 
-        public async Task<Result> DeleteManager(int managerId)
+        public async Task<Result> Delete(int managerId)
         {
             try
             {
@@ -166,12 +166,12 @@ namespace RX.Nyss.Web.Features.Managers
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                await RemoveManagerFromDb(managerId);
+                await DeleteFromDb(managerId);
 
                 await _dataContext.SaveChangesAsync();
 
                 transactionScope.Complete();
-                return Success(ResultKey.User.Registration.Success);
+                return Success();
             }
             catch (ResultException e)
             {
@@ -180,7 +180,7 @@ namespace RX.Nyss.Web.Features.Managers
             }
         }
 
-        private async Task RemoveManagerFromDb(int managerId, bool allowHeadManagerDeletion = false)
+        private async Task DeleteFromDb(int managerId, bool allowHeadManagerDeletion = false)
         {
             var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
 
@@ -207,7 +207,7 @@ namespace RX.Nyss.Web.Features.Managers
             }
         }
 
-        public async Task RemoveManagerIncludingHeadManagerFlag(int managerId) =>
-            await RemoveManagerFromDb(managerId, true);
+        public async Task DeleteIncludingHeadManagerFlag(int managerId) =>
+            await DeleteFromDb(managerId, true);
     }
 }

@@ -15,11 +15,11 @@ namespace RX.Nyss.Web.Features.SmsGateways
 {
     public interface ISmsGatewayService
     {
-        Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int smsGatewayId);
-        Task<Result<List<GatewaySettingResponseDto>>> GetSmsGateways(int nationalSocietyId);
-        Task<Result<int>> AddSmsGateway(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto);
-        Task<Result> UpdateSmsGateway(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto);
-        Task<Result> DeleteSmsGateway(int smsGatewayId);
+        Task<Result<GatewaySettingResponseDto>> Get(int smsGatewayId);
+        Task<Result<List<GatewaySettingResponseDto>>> List(int nationalSocietyId);
+        Task<Result<int>> Create(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto);
+        Task<Result> Edit(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto);
+        Task<Result> Delete(int smsGatewayId);
         Task UpdateAuthorizedApiKeys();
     }
 
@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
             _smsGatewayBlobProvider = smsGatewayBlobProvider;
         }
 
-        public async Task<Result<GatewaySettingResponseDto>> GetSmsGateway(int smsGatewayId)
+        public async Task<Result<GatewaySettingResponseDto>> Get(int smsGatewayId)
         {
             var gatewaySetting = await _nyssContext.GatewaySettings
                 .Select(gs => new GatewaySettingResponseDto
@@ -62,7 +62,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
             return result;
         }
 
-        public async Task<Result<List<GatewaySettingResponseDto>>> GetSmsGateways(int nationalSocietyId)
+        public async Task<Result<List<GatewaySettingResponseDto>>> List(int nationalSocietyId)
         {
             var gatewaySettings = await _nyssContext.GatewaySettings
                 .Where(gs => gs.NationalSocietyId == nationalSocietyId)
@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
             return result;
         }
 
-        public async Task<Result<int>> AddSmsGateway(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto)
+        public async Task<Result<int>> Create(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
             }
         }
 
-        public async Task<Result> UpdateSmsGateway(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto)
+        public async Task<Result> Edit(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
             }
         }
 
-        public async Task<Result> DeleteSmsGateway(int smsGatewayId)
+        public async Task<Result> Delete(int smsGatewayId)
         {
             try
             {

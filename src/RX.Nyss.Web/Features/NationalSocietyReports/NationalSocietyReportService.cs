@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
     public interface INationalSocietyReportService
     {
         Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, NationalSocietyReportListFilterRequestDto filter);
-        Task<Result<NationalSocietyReportListFilterResponseDto>> GetNationalSocietyReportFilters(int nationalSocietyId);
+        Task<Result<NationalSocietyReportListFilterResponseDto>> Filters(int nationalSocietyId);
     }
 
     public class NationalSocietyReportService : INationalSocietyReportService
@@ -102,13 +102,13 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             {
                 report.DateTime = TimeZoneInfo.ConvertTimeFromUtc(report.DateTime, TimeZoneInfo.FindSystemTimeZoneById(report.ProjectTimeZone));
             }
-            
+
             return Success(result.AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
         }
 
-        public async Task<Result<NationalSocietyReportListFilterResponseDto>> GetNationalSocietyReportFilters(int nationalSocietyId)
+        public async Task<Result<NationalSocietyReportListFilterResponseDto>> Filters(int nationalSocietyId)
         {
-            var nationalSocietyHealthRiskNames = await _nationalSocietyService.GetNationalSocietyHealthRiskNames(nationalSocietyId);
+            var nationalSocietyHealthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId);
 
             var dto = new NationalSocietyReportListFilterResponseDto
             {

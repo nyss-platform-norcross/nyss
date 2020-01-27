@@ -17,11 +17,11 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 {
     public interface ITechnicalAdvisorService
     {
-        Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto);
-        Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int technicalAdvisorId);
-        Task<Result> UpdateTechnicalAdvisor(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto);
-        Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId);
-        Task RemoveTechnicalAdvisorIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId);
+        Task<Result> Create(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto);
+        Task<Result<GetTechnicalAdvisorResponseDto>> Get(int technicalAdvisorId);
+        Task<Result> Edit(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto);
+        Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId);
+        Task DeleteIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId);
     }
 
     public class TechnicalAdvisorService : ITechnicalAdvisorService
@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             _deleteUserService = deleteUserService;
         }
 
-        public async Task<Result> CreateTechnicalAdvisor(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
+        public async Task<Result> Create(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
         {
             try
             {
@@ -109,7 +109,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                 User = user
             };
 
-        public async Task<Result<GetTechnicalAdvisorResponseDto>> GetTechnicalAdvisor(int nationalSocietyUserId)
+        public async Task<Result<GetTechnicalAdvisorResponseDto>> Get(int nationalSocietyUserId)
         {
             var technicalAdvisor = await _dataContext.Users.FilterAvailable()
                 .OfType<TechnicalAdvisorUser>()
@@ -135,7 +135,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             return new Result<GetTechnicalAdvisorResponseDto>(technicalAdvisor, true);
         }
 
-        public async Task<Result> UpdateTechnicalAdvisor(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto)
+        public async Task<Result> Edit(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             }
         }
 
-        public async Task<Result> DeleteTechnicalAdvisor(int nationalSocietyId, int technicalAdvisorId)
+        public async Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId)
         {
             try
             {
@@ -164,11 +164,11 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                await RemoveTechnicalAdvisorFromNationalSociety(nationalSocietyId, technicalAdvisorId);
+                await DeleteFromNationalSociety(nationalSocietyId, technicalAdvisorId);
 
                 await _dataContext.SaveChangesAsync();
                 transactionScope.Complete();
-                return Success(ResultKey.User.Registration.Success);
+                return Success();
             }
             catch (ResultException e)
             {
@@ -177,7 +177,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             }
         }
 
-        private async Task RemoveTechnicalAdvisorFromNationalSociety(int nationalSocietyId, int technicalAdvisorId, bool allowHeadManagerDeletion = false)
+        private async Task DeleteFromNationalSociety(int nationalSocietyId, int technicalAdvisorId, bool allowHeadManagerDeletion = false)
         {
             var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
 
@@ -218,8 +218,8 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             }
         }
 
-        public async Task RemoveTechnicalAdvisorIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId) =>
-            await RemoveTechnicalAdvisorFromNationalSociety(nationalSocietyId, technicalAdvisorId, true);
+        public async Task DeleteIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId) =>
+            await DeleteFromNationalSociety(nationalSocietyId, technicalAdvisorId, true);
 
 
 

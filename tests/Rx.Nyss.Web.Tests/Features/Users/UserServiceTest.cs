@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersFromSpecifiedNationalSociety()
         {
-            var users = await _userService.GetUsers(1);
+            var users = await _userService.List(1);
 
             users.Value.Count.ShouldBe(5);
             users.Value.ShouldAllBe(u => u.Name == NationalSociety1Tag || u.Name == NationalSociety1And2Tag);
@@ -65,7 +65,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_ShouldReturnOnlyUsersWithSpecificRoles()
         {
-            var users = await _userService.GetUsers(1);
+            var users = await _userService.List(1);
 
             var allowedRoles = new List<Role> {Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor}.Select(x => x.ToString());
             users.Value.Count.ShouldBe(5);
@@ -75,7 +75,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         [Fact]
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsOtherThanGlobalCoordinator_ShouldReturnAllUsers()
         {
-            var users = await _userService.GetUsers(1);
+            var users = await _userService.List(1);
 
             var allowedRoles = new List<Role> { Role.DataConsumer, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor }.Select(x => x.ToString());
             users.Value.Count.ShouldBe(5);
@@ -89,7 +89,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             _authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator).Returns(true);
 
             //act
-            var users = await _userService.GetUsers(1);
+            var users = await _userService.List(1);
 
             //assert
             users.Value.Count.ShouldBe(4);
@@ -177,7 +177,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             var userNationalSocietyDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietyDbSet);
         }
-        
+
         [Fact]
         public async Task AddExisting_WhenEmailDoesntExist_ShouldReturnError()
         {
@@ -211,7 +211,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.User.Registration.UserIsAlreadyInThisNationalSociety);
         }
-         
+
         [Fact]
         public async Task AddExisting_WhenEmailExistsAndIsAssignable_ShouldReturnSuccess()
         {
@@ -248,7 +248,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         {
             //act
             var nationalSocietyId = 1;
-            var result = await _userService.GetUsers(nationalSocietyId);
+            var result = await _userService.List(nationalSocietyId);
 
             //assert
             result.Value.Count.ShouldBe(5);
@@ -260,7 +260,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         {
             //act
             var nationalSocietyId = 1;
-            var result = await _userService.GetUsers(nationalSocietyId);
+            var result = await _userService.List(nationalSocietyId);
 
             //assert
             var users = _nyssContext.Users.Where(u => result.Value.Select(x => x.Id).Contains(u.Id)).ToList();

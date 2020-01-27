@@ -26,15 +26,15 @@ namespace RX.Nyss.Web.Features.DataCollectors
 {
     public interface IDataCollectorService
     {
-        Task<Result> CreateDataCollector(int projectId, CreateDataCollectorRequestDto createDto);
-        Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto);
-        Task<Result> RemoveDataCollector(int dataCollectorId);
-        Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId);
-        Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId);
+        Task<Result> Create(int projectId, CreateDataCollectorRequestDto createDto);
+        Task<Result> Edit(EditDataCollectorRequestDto editDto);
+        Task<Result> Delete(int dataCollectorId);
+        Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
+        Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
-        Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to);
-        Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng);
-        Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId);
+        Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
+        Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng);
+        Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId);
         Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
         Task AnonymizeDataCollectorsWithReports(int projectId);
     }
@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             _authorizationService = authorizationService;
         }
 
-        public async Task<Result<GetDataCollectorResponseDto>> GetDataCollector(int dataCollectorId)
+        public async Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId)
         {
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
@@ -76,10 +76,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         .ThenInclude(d => d.Region)
                 .SingleAsync(dc => dc.Id == dataCollectorId);
 
-            var regions = await _nationalSocietyStructureService.GetRegions(dataCollector.Project.NationalSociety.Id);
-            var districts = await _nationalSocietyStructureService.GetDistricts(dataCollector.Village.District.Region.Id);
-            var villages = await _nationalSocietyStructureService.GetVillages(dataCollector.Village.District.Id);
-            var zones = await _nationalSocietyStructureService.GetZones(dataCollector.Village.Id);
+            var regions = await _nationalSocietyStructureService.ListRegions(dataCollector.Project.NationalSociety.Id);
+            var districts = await _nationalSocietyStructureService.ListDistricts(dataCollector.Village.District.Region.Id);
+            var villages = await _nationalSocietyStructureService.ListVillages(dataCollector.Village.District.Id);
+            var zones = await _nationalSocietyStructureService.ListZones(dataCollector.Village.Id);
 
             var dto = new GetDataCollectorResponseDto
             {
@@ -125,7 +125,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .SingleAsync();
 
-            var regions = await _nationalSocietyStructureService.GetRegions(projectData.NationalSocietyId);
+            var regions = await _nationalSocietyStructureService.ListRegions(projectData.NationalSocietyId);
 
             var locationFromCountry = await _geolocationService.GetLocationFromCountry(projectData.CountryName);
 
@@ -154,7 +154,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             });
         }
 
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> ListDataCollectors(int projectId)
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId)
         {
             var userIdentityName = _authorizationService.GetCurrentUserName();
             var dataCollectorsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
@@ -184,7 +184,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success((IEnumerable<DataCollectorResponseDto>)dataCollectors);
         }
 
-        public async Task<Result> CreateDataCollector(int projectId, CreateDataCollectorRequestDto createDto)
+        public async Task<Result> Create(int projectId, CreateDataCollectorRequestDto createDto)
         {
             var phoneNumberExists = await _nyssContext.DataCollectors
                 .Where(dc => dc.Project.State == ProjectState.Open)
@@ -242,7 +242,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success(ResultKey.DataCollector.CreateSuccess);
         }
 
-        public async Task<Result> EditDataCollector(EditDataCollectorRequestDto editDto)
+        public async Task<Result> Edit(EditDataCollectorRequestDto editDto)
         {
             var phoneNumberExists = await _nyssContext.DataCollectors
                 .AnyAsync(dc => dc.PhoneNumber == editDto.PhoneNumber && dc.Id != editDto.Id);
@@ -297,7 +297,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return SuccessMessage(ResultKey.DataCollector.EditSuccess);
         }
 
-        public async Task<Result> RemoveDataCollector(int dataCollectorId)
+        public async Task<Result> Delete(int dataCollectorId)
         {
             var dataCollector = await _nyssContext.DataCollectors
                 .Select(dc => new
@@ -322,7 +322,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             {
                 if (dataCollector.HasReports)
                 {
-                    await AnonymizeDataCollector(dataCollectorId);
+                    await Anonymize(dataCollectorId);
                 }
                 else
                 {
@@ -336,7 +336,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return SuccessMessage(ResultKey.DataCollector.RemoveSuccess);
         }
 
-        private async Task AnonymizeDataCollector(int dataCollectorId)
+        private async Task Anonymize(int dataCollectorId)
         {
             await _nyssContext.DataCollectors
                 .Where(x => x.Id == dataCollectorId)
@@ -409,7 +409,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
 
-        public async Task<Result<MapOverviewResponseDto>> GetMapOverview(int projectId, DateTime from, DateTime to)
+        public async Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to)
         {
             var userIdentityName = _authorizationService.GetCurrentUserName();
             var endDate = to.Date.AddDays(1);
@@ -479,7 +479,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success(result);
         }
 
-        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> GetMapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng)
+        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng)
         {
             var userIdentityName = _authorizationService.GetCurrentUserName();
 
@@ -529,7 +529,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
-        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> GetDataCollectorPerformance(int projectId)
+        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId)
         {
             var userIdentityName = _authorizationService.GetCurrentUserName();
 

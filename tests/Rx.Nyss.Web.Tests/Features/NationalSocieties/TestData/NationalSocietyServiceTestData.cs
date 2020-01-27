@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
         {
             _smsGatewayServiceMock = smsGatewayServiceMock;
             _testCaseDataProvider = new TestCaseDataProvider(nyssContextMock);
-            
+
             BasicData = new BasicNationalSocietyServiceTestData(nyssContextMock, _nationalSocietyNumerator);
         }
 
@@ -70,7 +70,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                 data.UserNationalSocieties.Add(userNationalSociety);
                 data.NationalSocieties.Add(nationalSociety);
 
-                _smsGatewayServiceMock.GetSmsGateways(nationalSociety.Id).Returns(Result.Success(new List<GatewaySettingResponseDto>() ));
+                _smsGatewayServiceMock.List(nationalSociety.Id).Returns(Result.Success(new List<GatewaySettingResponseDto>() ));
 
                 return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSociety, HeadManager = headManagerUser};
             });
@@ -118,8 +118,8 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                 var smsGateway1 = new GatewaySettingResponseDto { Id = 1 };
                 var smsGateway2 = new GatewaySettingResponseDto { Id = 2 };
 
-                _smsGatewayServiceMock.GetSmsGateways(nationalSociety.Id).Returns(Result.Success(new List<GatewaySettingResponseDto> { smsGateway1, smsGateway2 } ));
-                _smsGatewayServiceMock.DeleteSmsGateway(Arg.Any<int>()).Returns(Result.Success());
+                _smsGatewayServiceMock.List(nationalSociety.Id).Returns(Result.Success(new List<GatewaySettingResponseDto> { smsGateway1, smsGateway2 } ));
+                _smsGatewayServiceMock.Delete(Arg.Any<int>()).Returns(Result.Success());
 
                 return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSociety, SmsGatewaysIds = new List<int>{ smsGateway1.Id, smsGateway2.Id} };
             });
@@ -134,7 +134,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                 {
                     nyssContext.NationalSocieties.FindAsync(nationalSociety.Id).Returns(nationalSociety);
                 };
-                    
+
                 return new RestoreNationalSocietyAdditionalData { NationalSocietyBeingReopened = nationalSociety };
             });
 

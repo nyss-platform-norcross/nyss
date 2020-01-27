@@ -41,8 +41,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpGet("{alertId:int}/get")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result<AlertAssessmentResponseDto>> GetAlert(int alertId) =>
-            _alertService.GetAlert(alertId);
+        public Task<Result<AlertAssessmentResponseDto>> Get(int alertId) =>
+            _alertService.Get(alertId);
 
         /// <summary>
         /// Accepts the report
@@ -73,8 +73,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpGet("{alertId:int}/escalate")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> EscalateAlert(int alertId) =>
-            _alertService.EscalateAlert(alertId);
+        public Task<Result> Escalate(int alertId) =>
+            _alertService.Escalate(alertId);
 
         /// <summary>
         /// Dismisses the alert
@@ -83,8 +83,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpGet("{alertId:int}/dismiss")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> DismissAlert(int alertId) =>
-            _alertService.DismissAlert(alertId);
+        public Task<Result> Dismiss(int alertId) =>
+            _alertService.Dismiss(alertId);
 
         /// <summary>
         /// Closes the alert
@@ -94,8 +94,8 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpPost("{alertId:int}/close")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> CloseAlert(int alertId, [FromBody]CloseAlertRequestDto dto) =>
-            _alertService.CloseAlert(alertId, dto.Comments);
+        public Task<Result> Close(int alertId, [FromBody]CloseAlertRequestDto dto) =>
+            _alertService.Close(alertId, dto.Comments);
 
         /// <summary>
         /// Retrieves the alert actions' log
@@ -105,6 +105,6 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertLogResponseDto>> GetLogs(int alertId) =>
-            _alertService.GetAlertLogs(alertId);
+            _alertService.GetLogs(alertId);
     }
 }

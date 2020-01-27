@@ -16,7 +16,6 @@ using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 
@@ -71,7 +70,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().Status = status;
 
-            var result = await _alertService.EscalateAlert(TestData.AlertId);
+            var result = await _alertService.Escalate(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlert.WrongStatus);
@@ -98,7 +97,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
 
-            var result = await _alertService.EscalateAlert(TestData.AlertId);
+            var result = await _alertService.Escalate(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlert.ThresholdNotReached);
@@ -136,7 +135,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             };
 
 
-            await _alertService.EscalateAlert(TestData.AlertId);
+            await _alertService.Escalate(TestData.AlertId);
 
             await _emailPublisherService.ReceivedWithAnyArgs(2).SendEmail((null, null), null, null);
 
@@ -172,7 +171,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 new SmsAlertRecipient{ PhoneNumber= phonenumber }
             };
 
-            await _alertService.EscalateAlert(TestData.AlertId);
+            await _alertService.Escalate(TestData.AlertId);
 
             await _emailPublisherService.Received(1)
                 .SendEmail((TestData.GatewayEmail, TestData.GatewayEmail), phonenumber, smsText, true);
@@ -198,7 +197,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
 
-            var result = await _alertService.EscalateAlert(TestData.AlertId);
+            var result = await _alertService.Escalate(TestData.AlertId);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Escalated);
             _alerts.First().EscalatedAt.ShouldBe(_now);
@@ -212,7 +211,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().Status = AlertStatus.Closed;
 
-            var result = await _alertService.DismissAlert(TestData.AlertId);
+            var result = await _alertService.Dismiss(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlert.WrongStatus);
@@ -236,7 +235,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
 
-            var result = await _alertService.DismissAlert(TestData.AlertId);
+            var result = await _alertService.Dismiss(TestData.AlertId);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.DismissAlert.PossibleEscalation);
@@ -257,14 +256,14 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             Village = new Village()
-                        } 
+                        }
                     }
                 }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
 
-            var result = await _alertService.DismissAlert(TestData.AlertId);
+            var result = await _alertService.Dismiss(TestData.AlertId);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Dismissed);
             _alerts.First().DismissedAt.ShouldBe(_now);
@@ -282,7 +281,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().Status = status;
 
-            var result = await _alertService.CloseAlert(TestData.AlertId, "");
+            var result = await _alertService.Close(TestData.AlertId, "");
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlert.WrongStatus);
@@ -295,7 +294,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().Status = AlertStatus.Escalated;
 
-            var result = await _alertService.CloseAlert(TestData.AlertId, comments);
+            var result = await _alertService.Close(TestData.AlertId, comments);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Closed);
             _alerts.First().ClosedAt.ShouldBe(_now);
@@ -308,7 +307,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task GetAlertLogs_ShouldMapAlertCreation()
         {
-            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(0).Date.ShouldBe(TestData.AlertCreatedAt.ApplyTimeZone(TestData.TimeZone));
@@ -327,7 +326,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().AlertReports.First().Report.AcceptedAt = date;
             _alerts.First().AlertReports.First().Report.AcceptedBy = user;
 
-            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -346,7 +345,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().AlertReports.First().Report.RejectedAt = date;
             _alerts.First().AlertReports.First().Report.RejectedBy = user;
 
-            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -365,7 +364,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().EscalatedAt = date;
             _alerts.First().EscalatedBy = user;
 
-            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -384,7 +383,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().DismissedAt = date;
             _alerts.First().DismissedBy = user;
 
-            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -403,7 +402,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().ClosedAt = date;
             _alerts.First().ClosedBy = user;
 
-            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -429,7 +428,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().AlertReports.First().Report.AcceptedAt = reportAcceptedAt;
             _alerts.First().AlertReports.First().Report.AcceptedBy = user;
 
-            var result = await _alertService.GetAlertLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.Count().ShouldBe(4);

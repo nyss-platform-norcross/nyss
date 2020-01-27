@@ -12,23 +12,23 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
 {
     public interface INationalSocietyStructureService
     {
-        Task<Result<StructureResponseDto>> GetStructure(int nationalSocietyId);
+        Task<Result<StructureResponseDto>> Get(int nationalSocietyId);
         Task<Result<StructureResponseDto.StructureRegionDto>> CreateRegion(int nationalSocietyId, string name);
         Task<Result> EditRegion(int regionId, string name);
-        Task<Result> RemoveRegion(int regionId);
+        Task<Result> DeleteRegion(int regionId);
         Task<Result<StructureResponseDto.StructureDistrictDto>> CreateDistrict(int regionId, string name);
         Task<Result> EditDistrict(int districtId, string name);
-        Task<Result> RemoveDistrict(int districtId);
+        Task<Result> DeleteDistrict(int districtId);
         Task<Result<StructureResponseDto.StructureVillageDto>> CreateVillage(int districtId, string name);
         Task<Result> EditVillage(int villageId, string name);
-        Task<Result> RemoveVillage(int villageId);
+        Task<Result> DeleteVillage(int villageId);
         Task<Result<StructureResponseDto.StructureZoneDto>> CreateZone(int villageId, string name);
         Task<Result> EditZone(int zoneId, string name);
-        Task<Result> RemoveZone(int zoneId);
-        Task<Result<List<RegionResponseDto>>> GetRegions(int nationalSocietyId);
-        Task<Result<List<DistrictResponseDto>>> GetDistricts(int regionId);
-        Task<Result<List<VillageResponseDto>>> GetVillages(int districtId);
-        Task<Result<List<ZoneResponseDto>>> GetZones(int villageId);
+        Task<Result> DeleteZone(int zoneId);
+        Task<Result<List<RegionResponseDto>>> ListRegions(int nationalSocietyId);
+        Task<Result<List<DistrictResponseDto>>> ListDistricts(int regionId);
+        Task<Result<List<VillageResponseDto>>> ListVillages(int districtId);
+        Task<Result<List<ZoneResponseDto>>> ListZones(int villageId);
     }
 
     public class NationalSocietyStructureService : INationalSocietyStructureService
@@ -40,7 +40,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             _nyssContext = context;
         }
 
-        public async Task<Result<StructureResponseDto>> GetStructure(int nationalSocietyId)
+        public async Task<Result<StructureResponseDto>> Get(int nationalSocietyId)
         {
             var structure = new StructureResponseDto
             {
@@ -120,7 +120,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             return Success();
         }
 
-        public async Task<Result> RemoveRegion(int regionId)
+        public async Task<Result> DeleteRegion(int regionId)
         {
             var entity = await _nyssContext.Regions
                 .Include(r => r.Districts).ThenInclude(d => d.Villages).ThenInclude(v => v.Zones)
@@ -175,7 +175,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             return Success();
         }
 
-        public async Task<Result> RemoveDistrict(int districtId)
+        public async Task<Result> DeleteDistrict(int districtId)
         {
             var entity = await _nyssContext.Districts
                 .Include(d => d.Villages).ThenInclude(v => v.Zones)
@@ -229,7 +229,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             return Success();
         }
 
-        public async Task<Result> RemoveVillage(int villageId)
+        public async Task<Result> DeleteVillage(int villageId)
         {
             var entity = await _nyssContext.Villages
                 .Include(v => v.Zones)
@@ -282,7 +282,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             return Success();
         }
 
-        public async Task<Result> RemoveZone(int zoneId)
+        public async Task<Result> DeleteZone(int zoneId)
         {
             var entity = await _nyssContext.Zones
                 .Where(r => !r.Village.District.Region.NationalSociety.IsArchived)
@@ -292,7 +292,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             return Success();
         }
 
-        public async Task<Result<List<RegionResponseDto>>> GetRegions(int nationalSocietyId)
+        public async Task<Result<List<RegionResponseDto>>> ListRegions(int nationalSocietyId)
         {
             var regions = await _nyssContext.Regions
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
@@ -301,7 +301,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             return Success(regions);
         }
 
-        public async Task<Result<List<DistrictResponseDto>>> GetDistricts(int regionId)
+        public async Task<Result<List<DistrictResponseDto>>> ListDistricts(int regionId)
         {
             var regions = await _nyssContext.Districts
                 .Where(r => r.Region.Id == regionId)
@@ -310,7 +310,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             return Success(regions);
         }
 
-        public async Task<Result<List<VillageResponseDto>>> GetVillages(int districtId)
+        public async Task<Result<List<VillageResponseDto>>> ListVillages(int districtId)
         {
             var regions = await _nyssContext.Villages
                 .Where(r => r.District.Id == districtId)
@@ -319,7 +319,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             return Success(regions);
         }
 
-        public async Task<Result<List<ZoneResponseDto>>> GetZones(int villageId)
+        public async Task<Result<List<ZoneResponseDto>>> ListZones(int villageId)
         {
             var regions = await _nyssContext.Zones
                 .Where(r => r.Village.Id == villageId)

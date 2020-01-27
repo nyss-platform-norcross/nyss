@@ -149,7 +149,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             };
 
             var nationalSocietyId = 1;
-            var result = await _dataConsumerService.CreateDataConsumer(nationalSocietyId, registerDataConsumerRequestDto);
+            var result = await _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
             await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
@@ -163,7 +163,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            var result = await _dataConsumerService.CreateDataConsumer(nationalSocietyId, registerDataConsumerRequestDto);
+            var result = await _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto);
 
 
             await _nyssContext.Received().AddAsync(Arg.Any<UserNationalSociety>());
@@ -176,7 +176,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            var result = await _dataConsumerService.CreateDataConsumer(nationalSocietyId, registerDataConsumerRequestDto);
+            var result = await _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto);
 
 
             await _nyssContext.Received().SaveChangesAsync();
@@ -193,7 +193,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            var result = await _dataConsumerService.CreateDataConsumer(nationalSocietyId, registerDataConsumerRequestDto);
+            var result = await _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto);
 
 
             result.IsSuccess.ShouldBeFalse();
@@ -210,7 +210,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            _dataConsumerService.CreateDataConsumer(nationalSocietyId, registerDataConsumerRequestDto).ShouldThrowAsync<Exception>();
+            _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto).ShouldThrowAsync<Exception>();
         }
 
 
@@ -220,7 +220,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             ArrangeUsersFrom(new List<User>());
 
 
-            var result = await _dataConsumerService.UpdateDataConsumer(123, new EditDataConsumerRequestDto());
+            var result = await _dataConsumerService.Edit(123, new EditDataConsumerRequestDto());
 
 
             result.IsSuccess.ShouldBeFalse();
@@ -231,7 +231,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
         {
             ArrangeUsersWithOneAdministratorUser();
 
-            var result = await _dataConsumerService.UpdateDataConsumer(123, new EditDataConsumerRequestDto());
+            var result = await _dataConsumerService.Edit(123, new EditDataConsumerRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -241,7 +241,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
         {
             ArrangeUsersWithOneAdministratorUser();
 
-            await _dataConsumerService.UpdateDataConsumer(123, new EditDataConsumerRequestDto());
+            await _dataConsumerService.Edit(123, new EditDataConsumerRequestDto());
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -252,7 +252,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
         {
             ArrangeUsersDbSetWithOneDataConsumer();
 
-            var result = await _dataConsumerService.UpdateDataConsumer(123, new EditDataConsumerRequestDto());
+            var result = await _dataConsumerService.Edit(123, new EditDataConsumerRequestDto());
 
             result.IsSuccess.ShouldBeTrue();
         }
@@ -262,7 +262,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
         {
             ArrangeUsersDbSetWithOneDataConsumer();
 
-            await _dataConsumerService.UpdateDataConsumer(123, new EditDataConsumerRequestDto());
+            await _dataConsumerService.Edit(123, new EditDataConsumerRequestDto());
 
             await _nyssContext.Received().SaveChangesAsync();
         }
@@ -283,7 +283,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
                 AdditionalPhoneNumber = "654"
             };
 
-            await _dataConsumerService.UpdateDataConsumer(123, editRequest);
+            await _dataConsumerService.Edit(123, editRequest);
 
             var editedUser = _nyssContext.Users.Single(u => u.Id == 123) as DataConsumerUser;
 
@@ -302,7 +302,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.Delete(1, 123);
 
             //assert
             await _nyssContext.Received(1).SaveChangesAsync();
@@ -315,7 +315,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            var result = await _dataConsumerService.DeleteDataConsumer(2, 123);
+            var result = await _dataConsumerService.Delete(2, 123);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -329,7 +329,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            var result = await _dataConsumerService.DeleteDataConsumer(2, 321);
+            var result = await _dataConsumerService.Delete(2, 321);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -344,7 +344,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.Delete(1, 123);
 
             //assert
             _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
@@ -357,7 +357,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var user = ArrangeUsersDbSetWithOneDataConsumerInOneNationalSociety();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.Delete(1, 123);
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
@@ -370,7 +370,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.Delete(1, 123);
 
             //assert
             _nationalSocietyUserService.Received(0).DeleteNationalSocietyUser(user);
@@ -383,7 +383,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var user = ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.Delete(1, 123);
 
             //assert
             _nyssContext.UserNationalSocieties.Received(1).Remove(Arg.Is<UserNationalSociety>(uns => uns.NationalSocietyId == 1 && uns.UserId == 123));
@@ -396,7 +396,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             ArrangeUsersDbSetWithOneDataConsumerInTwoNationalSocieties();
 
             //act
-            await _dataConsumerService.DeleteDataConsumer(1, 123);
+            await _dataConsumerService.Delete(1, 123);
 
             //assert
             await _deleteUserService.Received().EnsureCanDeleteUser(123, Role.DataConsumer);

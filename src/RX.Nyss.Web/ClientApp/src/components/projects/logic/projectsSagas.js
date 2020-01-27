@@ -67,7 +67,7 @@ function* openProjectOverview({ projectId }) {
 function* createProject({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/project/add?nationalSocietyId=${nationalSocietyId}`, data);
+    const response = yield call(http.post, `/api/project/create?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.project.messages.create.success));

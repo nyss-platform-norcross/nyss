@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         private readonly int _administratorId = 1;
         private readonly int _managerId = 2;
         private readonly int _nationalSocietyId = 1;
-        
+
 
         public ManagerServiceTests()
         {
@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
             _deleteUserService = Substitute.For<IDeleteUserService>();
-            
+
             _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
 
@@ -90,7 +90,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(Arg.Any<int>())
                 .Returns(ci => _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>((int)ci[0]));
         }
-        
+
 
         [Fact]
         public async Task RegisterManager_WhenIdentityUserCreationSuccessful_ShouldReturnSuccessResult()
@@ -103,7 +103,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 Email = userEmail
             };
 
-            var result = await _managerService.CreateManager(_nationalSocietyId, registerManagerRequestDto);
+            var result = await _managerService.Create(_nationalSocietyId, registerManagerRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
             await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
@@ -116,7 +116,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             var userEmail = "emailTest1@domain.com";
             var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
 
-            var result = await _managerService.CreateManager(_nationalSocietyId, registerManagerRequestDto);
+            var result = await _managerService.Create(_nationalSocietyId, registerManagerRequestDto);
 
 
             await _nyssContext.Received().AddAsync(Arg.Any<UserNationalSociety>());
@@ -128,7 +128,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             var userEmail = "emailTest1@domain.com";
             var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
 
-            var result = await _managerService.CreateManager(_nationalSocietyId, registerManagerRequestDto);
+            var result = await _managerService.Create(_nationalSocietyId, registerManagerRequestDto);
 
 
             await _nyssContext.Received().SaveChangesAsync();
@@ -145,7 +145,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
 
             var nationalSocietyId = 1;
-            var result = await _managerService.CreateManager(nationalSocietyId, registerManagerRequestDto);
+            var result = await _managerService.Create(nationalSocietyId, registerManagerRequestDto);
 
 
             result.IsSuccess.ShouldBeFalse();
@@ -161,14 +161,14 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             var userEmail = "emailTest1@domain.com";
             var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
 
-            _managerService.CreateManager(_nationalSocietyId, registerManagerRequestDto).ShouldThrowAsync<Exception>();
+            _managerService.Create(_nationalSocietyId, registerManagerRequestDto).ShouldThrowAsync<Exception>();
         }
 
 
         [Fact]
         public async Task EditManager_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            var result = await _managerService.UpdateManager(999, new EditManagerRequestDto());
+            var result = await _managerService.Edit(999, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -176,16 +176,16 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         [Fact]
         public async Task EditManager_WhenEditingUserThatIsNotManager_ReturnsErrorResult()
         {
-            var result = await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto());
+            var result = await _managerService.Edit(_administratorId, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
 
-        
+
         [Fact]
         public async Task EditManager_WhenEditingUserThatIsNotManager_SaveChangesShouldNotBeCalled()
         {
-            await _managerService.UpdateManager(_administratorId, new EditManagerRequestDto());
+            await _managerService.Edit(_administratorId, new EditManagerRequestDto());
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -194,17 +194,17 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         [Fact]
         public async Task EditManager_WhenEditingExistingManager_ReturnsSuccess()
         {
-            var result = await _managerService.UpdateManager(_managerId, new EditManagerRequestDto());
+            var result = await _managerService.Edit(_managerId, new EditManagerRequestDto());
 
             result.IsSuccess.ShouldBeTrue();
         }
 
-    
+
 
         [Fact]
         public async Task EditManager_WhenEditingExistingManager_SaveChangesAsyncIsCalled()
         {
-            await _managerService.UpdateManager(2, new EditManagerRequestDto());
+            await _managerService.Edit(2, new EditManagerRequestDto());
 
             await _nyssContext.Received().SaveChangesAsync();
         }
@@ -222,7 +222,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 AdditionalPhoneNumber = "654"
             };
 
-            await _managerService.UpdateManager(_managerId, editRequest);
+            await _managerService.Edit(_managerId, editRequest);
 
             var editedUser = _nyssContext.Users.Single(u => u.Id == _managerId) as ManagerUser;
 
@@ -243,7 +243,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             nationalSociety.PendingHeadManager = manager;
 
             //act
-            await _managerService.DeleteManager(_managerId);
+            await _managerService.Delete(_managerId);
 
             //assert
             nationalSociety.PendingHeadManager.ShouldBe(null);

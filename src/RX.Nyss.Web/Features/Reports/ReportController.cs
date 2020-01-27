@@ -26,8 +26,8 @@ namespace RX.Nyss.Web.Features.Reports
         /// <returns>A report</returns>
         [HttpGet("{reportId:int}/get")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
-        public Task<Result<ReportResponseDto>> GetReport(int reportId) =>
-            _reportService.GetReport(reportId);
+        public Task<Result<ReportResponseDto>> Get(int reportId) =>
+            _reportService.Get(reportId);
 
         /// <summary>
         /// Gets a list of reports in a project.
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.Reports
         [HttpGet("filters")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<ReportListFilterResponseDto>> GetFilters(int projectId) =>
-            await _reportService.GetReportFilters(projectId);
+            await _reportService.GetFilters(projectId);
 
         /// <summary>
         /// Export the list of reports in a project to a csv file.

@@ -518,7 +518,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         public async Task Remove_WhenRemovingNonExistentSupervisor_ReturnsError()
         {
             //Act
-            var result = await _supervisorService.Remove(999);
+            var result = await _supervisorService.Delete(999);
 
             //Assert
             result.IsSuccess.ShouldBeFalse();
@@ -560,7 +560,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         public async Task Remove_WhenDeleting_EnsureCanDeleteUserIsCalled()
         {
             //act
-            await _supervisorService.Remove(_supervisorWithoutDataCollectorsId);
+            await _supervisorService.Delete(_supervisorWithoutDataCollectorsId);
 
             //assert
             await _deleteUserService.Received().EnsureCanDeleteUser(_supervisorWithoutDataCollectorsId, Role.Supervisor);
@@ -570,7 +570,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         public async Task Remove_WhenDeletingSupervisorWithDataCollectors_ReturnsError()
         {
             //act
-            var result = await _supervisorService.Remove(_supervisorWithDataCollectorsId);
+            var result = await _supervisorService.Delete(_supervisorWithDataCollectorsId);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -582,7 +582,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_ReturnsSuccess()
         {
             //act
-            var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId);
+            var result = await _supervisorService.Delete(_supervisorWithDeletedDataCollectorsId);
 
             //assert
             result.IsSuccess.ShouldBeTrue();
@@ -595,7 +595,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var supervisorBeingDeleted = _nyssContext.Users.FilterAvailable().Single(u => u.Id == _supervisorWithDeletedDataCollectorsId);
 
             //act
-            var result = await _supervisorService.Remove(_supervisorWithDeletedDataCollectorsId);
+            var result = await _supervisorService.Delete(_supervisorWithDeletedDataCollectorsId);
 
             //assert
             result.IsSuccess.ShouldBeTrue();

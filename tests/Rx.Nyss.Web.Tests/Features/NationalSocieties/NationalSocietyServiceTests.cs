@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
     {
         private readonly INationalSocietyService _nationalSocietyService;
         private readonly NationalSocietyServiceTestData _testData;
-        
+
         private readonly INyssContext _nyssContextMock;
         private readonly ISmsGatewayService _smsGatewayServiceMock;
 
@@ -62,7 +62,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             };
 
             // Actual
-            await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
+            await _nationalSocietyService.Create(nationalSocietyReq);
 
             // Assert
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<NationalSociety>());
@@ -83,7 +83,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             };
 
             // Actual
-            var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
+            var result = await _nationalSocietyService.Create(nationalSocietyReq);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -103,7 +103,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             };
 
             // Actual
-            var result = await _nationalSocietyService.CreateNationalSociety(nationalSocietyReq);
+            var result = await _nationalSocietyService.Create(nationalSocietyReq);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -123,7 +123,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             };
 
             // Actual
-            var result = await _nationalSocietyService.EditNationalSociety(BasicNationalSocietyServiceTestData.NationalSocietyId, nationalSocietyReq);
+            var result = await _nationalSocietyService.Edit(BasicNationalSocietyServiceTestData.NationalSocietyId, nationalSocietyReq);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -135,7 +135,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         {
             // Actual
             _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var result = await _nationalSocietyService.RemoveNationalSociety(BasicNationalSocietyServiceTestData.NationalSocietyId);
+            var result = await _nationalSocietyService.Delete(BasicNationalSocietyServiceTestData.NationalSocietyId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -181,7 +181,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var nationalSocietyBeingArchivedId = nationalSocietyBeingArchived.Id;
 
             //act
-            var result = await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyBeingArchivedId);
+            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
 
             //assert
             result.IsSuccess.ShouldBeTrue();
@@ -197,7 +197,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var nationalSocietyBeingArchivedId = nationalSocietyBeingArchived.Id;
 
             //act
-            var result = await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyBeingArchivedId);
+            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
 
             //assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
@@ -212,10 +212,10 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var headManagerId = _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.HeadManager.Id;
 
             //act
-            var result = await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyBeingArchivedId);
+            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
 
             //assert
-            await _managerServiceMock.Received(1).RemoveManagerIncludingHeadManagerFlag(headManagerId);
+            await _managerServiceMock.Received(1).DeleteIncludingHeadManagerFlag(headManagerId);
         }
 
         [Fact]
@@ -228,10 +228,10 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var headManagerId = testCase.AdditionalData.HeadManager.Id;
 
             //act
-            var result = await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyBeingArchivedId);
+            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
 
             //assert
-            await _technicalAdvisorServiceMock.Received(1).RemoveTechnicalAdvisorIncludingHeadManagerFlag(nationalSocietyBeingArchivedId, headManagerId);
+            await _technicalAdvisorServiceMock.Received(1).DeleteIncludingHeadManagerFlag(nationalSocietyBeingArchivedId, headManagerId);
         }
 
         [Fact]
@@ -243,11 +243,11 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var smsGatewaysInNationalSocietyIds = _testData.WhenSuccessfullyArchivingNationalSocietyWith2SmsGateways.AdditionalData.SmsGatewaysIds;
 
             //act
-            var result = await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyBeingArchivedId);
+            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
 
             //assert
-            await _smsGatewayServiceMock.Received(1).DeleteSmsGateway(smsGatewaysInNationalSocietyIds[0]);
-            await _smsGatewayServiceMock.Received(1).DeleteSmsGateway(smsGatewaysInNationalSocietyIds[1]);
+            await _smsGatewayServiceMock.Received(1).Delete(smsGatewaysInNationalSocietyIds[0]);
+            await _smsGatewayServiceMock.Received(1).Delete(smsGatewaysInNationalSocietyIds[1]);
         }
 
         [Fact]
@@ -258,7 +258,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var nationalSocietyBeingArchivedId = _testData.WhenHasNoProjectsAndSomeUsersExceptHeadManager.AdditionalData.NationalSocietyBeingArchived.Id;
 
             //act
-            var result = await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyBeingArchivedId);
+            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -273,7 +273,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var nationalSocietyBeingArchivedId = _testData.ArchiveWhenHasProjects.AdditionalData.NationalSocietyBeingArchived.Id;
 
             //act
-            var result = await _nationalSocietyService.ArchiveNationalSociety(nationalSocietyBeingArchivedId);
+            var result = await _nationalSocietyService.Archive(nationalSocietyBeingArchivedId);
 
             //assert
             result.IsSuccess.ShouldBeFalse();
@@ -289,7 +289,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var nationalSocietyBeingRestored = _testData.WhenReopeningNationalSociety.AdditionalData.NationalSocietyBeingReopened;
 
             //act
-            var result = await _nationalSocietyService.ReopenNationalSociety(nationalSocietyBeingRestored.Id);
+            var result = await _nationalSocietyService.Reopen(nationalSocietyBeingRestored.Id);
 
             //assert
             result.IsSuccess.ShouldBeTrue();
@@ -304,7 +304,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var nationalSocietyBeingRestoredId = _testData.WhenReopeningNationalSociety.AdditionalData.NationalSocietyBeingReopened.Id;
 
             //act
-            var result = await _nationalSocietyService.ReopenNationalSociety(nationalSocietyBeingRestoredId);
+            var result = await _nationalSocietyService.Reopen(nationalSocietyBeingRestoredId);
 
             //assert
             result.IsSuccess.ShouldBeTrue();

@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         Task<Result> Create(int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto);
         Task<Result<GetSupervisorResponseDto>> Get(int supervisorId);
         Task<Result> Edit(int supervisorId, EditSupervisorRequestDto editSupervisorRequestDto);
-        Task<Result> Remove(int supervisorId);
+        Task<Result> Delete(int supervisorId);
     }
 
     public class SupervisorService : ISupervisorService
@@ -293,7 +293,7 @@ namespace RX.Nyss.Web.Features.Supervisors
             }
         }
 
-        public async Task<Result> Remove(int supervisorId)
+        public async Task<Result> Delete(int supervisorId)
         {
             try
             {
@@ -313,7 +313,8 @@ namespace RX.Nyss.Web.Features.Supervisors
 
                 await _dataContext.SaveChangesAsync();
                 transactionScope.Complete();
-                return Success(ResultKey.User.Registration.Success);
+
+                return Success();
             }
             catch (ResultException e)
             {

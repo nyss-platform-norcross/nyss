@@ -50,7 +50,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
 
             // Act
-            var result = await _smsGatewayService.GetSmsGateways(nationalSocietyId);
+            var result = await _smsGatewayService.List(nationalSocietyId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -75,7 +75,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
 
             // Act
-            var result = await _smsGatewayService.GetSmsGateway(existingNationalSocietyId);
+            var result = await _smsGatewayService.Get(existingNationalSocietyId);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -100,7 +100,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
 
             // Act
-            var result = await _smsGatewayService.GetSmsGateway(nonExistentSmsGatewayId);
+            var result = await _smsGatewayService.Get(nonExistentSmsGatewayId);
 
             // Assert
             result.IsSuccess.ShouldBeFalse();
@@ -137,7 +137,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             };
 
             // Act
-            var result = await _smsGatewayService.AddSmsGateway(nationalSocietyId, gatewaySettingRequestDto);
+            var result = await _smsGatewayService.Create(nationalSocietyId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.GatewaySettings.Received(1).AddAsync(
@@ -174,7 +174,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             };
 
             // Act
-            var result = await _smsGatewayService.AddSmsGateway(nonExistentNationalSocietyId, gatewaySettingRequestDto);
+            var result = await _smsGatewayService.Create(nonExistentNationalSocietyId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.GatewaySettings.DidNotReceive().AddAsync(Arg.Any<GatewaySetting>());
@@ -215,7 +215,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             };
 
             // Act
-            var result = await _smsGatewayService.AddSmsGateway(nationalSocietyId, gatewaySettingRequestDto);
+            var result = await _smsGatewayService.Create(nationalSocietyId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.GatewaySettings.DidNotReceive().AddAsync(Arg.Any<GatewaySetting>());
@@ -259,7 +259,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
-            var result = await _smsGatewayService.AddSmsGateway(nationalSocietyId, gatewaySettingRequestDto);
+            var result = await _smsGatewayService.Create(nationalSocietyId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.GatewaySettings.Received(1).AddAsync(
@@ -305,7 +305,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             };
 
             // Act
-            var result = await _smsGatewayService.UpdateSmsGateway(smsGatewayId, gatewaySettingRequestDto);
+            var result = await _smsGatewayService.Edit(smsGatewayId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
@@ -346,7 +346,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             };
 
             // Act
-            var result = await _smsGatewayService.UpdateSmsGateway(nonExistentSmsGatewayId, gatewaySettingRequestDto);
+            var result = await _smsGatewayService.Edit(nonExistentSmsGatewayId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
@@ -388,7 +388,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             };
 
             // Act
-            var result = await _smsGatewayService.UpdateSmsGateway(smsGatewayId, gatewaySettingRequestDto);
+            var result = await _smsGatewayService.Edit(smsGatewayId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
@@ -432,7 +432,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
-            var result = await _smsGatewayService.UpdateSmsGateway(smsGatewayId, gatewaySettingRequestDto);
+            var result = await _smsGatewayService.Edit(smsGatewayId, gatewaySettingRequestDto);
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
@@ -458,7 +458,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.FindAsync(existingSmsGatewayId).Returns(gatewaySettings[0]);
 
             // Act
-            var result = await _smsGatewayService.DeleteSmsGateway(existingSmsGatewayId);
+            var result = await _smsGatewayService.Delete(existingSmsGatewayId);
 
             // Assert
             _nyssContextMock.GatewaySettings.Received(1).Remove(Arg.Is<GatewaySetting>(gs => gs.Id == existingSmsGatewayId));
@@ -485,7 +485,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.FindAsync(nonExistentSmsGatewayId).ReturnsNull();
 
             // Act
-            var result = await _smsGatewayService.DeleteSmsGateway(nonExistentSmsGatewayId);
+            var result = await _smsGatewayService.Delete(nonExistentSmsGatewayId);
 
             // Assert
             _nyssContextMock.GatewaySettings.DidNotReceive().Remove(Arg.Any<GatewaySetting>());
@@ -515,7 +515,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
-            var result = await _smsGatewayService.DeleteSmsGateway(smsGatewayId);
+            var result = await _smsGatewayService.Delete(smsGatewayId);
 
             // Assert
             _nyssContextMock.GatewaySettings.Received(1).Remove(Arg.Is<GatewaySetting>(gs => gs.Id == smsGatewayId));
