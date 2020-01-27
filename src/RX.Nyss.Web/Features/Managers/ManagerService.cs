@@ -171,7 +171,7 @@ namespace RX.Nyss.Web.Features.Managers
                 await _dataContext.SaveChangesAsync();
 
                 transactionScope.Complete();
-                return Success(ResultKey.User.Registration.Success);
+                return Success();
             }
             catch (ResultException e)
             {

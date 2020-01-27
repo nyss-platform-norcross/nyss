@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Services
 
             if (nationalSocietyUser == null)
             {
-                _loggerAdapter.Debug($"User with id {nationalSocietyUserId} and the role {typeof(T).ToString()} was not found");
+                _loggerAdapter.Warn($"User with id {nationalSocietyUserId} and the role {typeof(T).ToString()} was not found");
                 throw new ResultException(ResultKey.User.Common.UserNotFound);
             }
 
@@ -61,7 +61,7 @@ namespace RX.Nyss.Web.Services
 
             if (nationalSocietyUser == null)
             {
-                _loggerAdapter.Debug($"User with id {nationalSocietyUserId} and the role {typeof(T).ToString()} was not found");
+                _loggerAdapter.Warn($"User with id {nationalSocietyUserId} and the role {typeof(T).ToString()} was not found");
                 throw new ResultException(ResultKey.User.Common.UserNotFound);
             }
 
@@ -84,11 +84,11 @@ namespace RX.Nyss.Web.Services
                 await _dataContext.SaveChangesAsync();
 
                 transactionScope.Complete();
-                return Success(ResultKey.User.Registration.Success);
+                return Success();
             }
             catch (ResultException e)
             {
-                _loggerAdapter.Debug(e);
+                _loggerAdapter.Error(e);
                 return e.Result;
             }
         }

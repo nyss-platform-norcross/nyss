@@ -51,8 +51,8 @@ namespace RX.Nyss.Web.Features.DataConsumers
             await _dataConsumerService.Edit(dataConsumerId, editDataConsumerRequestDto);
 
         /// <summary>
-        /// Delete a data consumer from a national society.
-        /// If the data consumer is also in other national societies, he/she will be deleted from the provided national society, but the user will not be deleted.
+        /// Delete a data consumer in a national society.
+        /// If the data consumer is also in other national societies, he/she will be be removed from the provided national society, but the user will not be deleted.
         /// If this is the only national society of the data consumer, the data consumer will be deleted.
         /// </summary>
         /// <param name="nationalSocietyId">The ID of the national society the data consumer should be deleted from</param>
