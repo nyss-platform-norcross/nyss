@@ -27,8 +27,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
         {
             public NationalSociety NationalSocietyBeingReopened { get; set; }
         }
-
-
+        
         private readonly TestCaseDataProvider _testCaseDataProvider;
         private readonly EntityNumerator _nationalSocietyNumerator = new EntityNumerator();
         private readonly EntityNumerator _userNumerator = new EntityNumerator();

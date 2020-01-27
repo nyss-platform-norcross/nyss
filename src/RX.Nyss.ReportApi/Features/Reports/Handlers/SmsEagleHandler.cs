@@ -25,6 +25,11 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
     public interface ISmsEagleHandler
     {
         Task Handle(string queryString);
+        Task<GatewaySetting> ValidateGatewaySetting(string apiKey);
+        Task<DataCollector> ValidateDataCollector(string phoneNumber, int gatewayNationalSocietyId);
+        Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector);
+        DateTime ParseTimestamp(string timestamp);
+        void ValidateReceivalTime(DateTime receivedAt);
     }
 
     public class SmsEagleHandler : ISmsEagleHandler
@@ -51,7 +56,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,
             IStringsResourcesService stringsResourcesService,
-            IQueuePublisherService queuePublisherService, IAlertService alertService)
+            IQueuePublisherService queuePublisherService,
+            IAlertService alertService)
         {
             _reportMessageService = reportMessageService;
             _nyssContext = nyssContext;
@@ -185,7 +191,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 gatewaySetting = await ValidateGatewaySetting(apiKey);
                 rawReport.NationalSociety = gatewaySetting.NationalSociety;
 
-                var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSociety);
+                var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSocietyId);
                 rawReport.DataCollector = dataCollector;
                 rawReport.IsTraining = dataCollector.IsInTrainingMode;
                 rawReport.Village = dataCollector.Village;
@@ -244,7 +250,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private async Task<GatewaySetting> ValidateGatewaySetting(string apiKey)
+        public async Task<GatewaySetting> ValidateGatewaySetting(string apiKey)
         {
             var gatewaySetting = await _nyssContext.GatewaySettings
                 .Include(gs => gs.NationalSociety)
@@ -263,7 +269,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             return gatewaySetting;
         }
 
-        private async Task<DataCollector> ValidateDataCollector(string phoneNumber, NationalSociety gatewayNationalSociety)
+        public async Task<DataCollector> ValidateDataCollector(string phoneNumber, int gatewayNationalSocietyId)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
             {
@@ -282,16 +288,16 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 throw new ReportValidationException($"A Data Collector with phone number '{phoneNumber}' does not exist.", ReportErrorType.DataCollectorNotFound);
             }
 
-            if (dataCollector.Project.NationalSocietyId != gatewayNationalSociety.Id)
+            if (dataCollector.Project.NationalSocietyId != gatewayNationalSocietyId)
             {
                 throw new ReportValidationException($"A Data Collector's National Society identifier ('{dataCollector.Project.NationalSocietyId}') " +
-                                                    $"is different from SMS Gateway's ('{gatewayNationalSociety.Id}').", ReportErrorType.DataCollectorNotFound);
+                                                    $"is different from SMS Gateway's ('{gatewayNationalSocietyId}').", ReportErrorType.DataCollectorNotFound);
             }
 
             return dataCollector;
         }
 
-        private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
+        public async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
         {
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
@@ -375,7 +381,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             return projectHealthRisk;
         }
 
-        private DateTime ParseTimestamp(string timestamp)
+        public DateTime ParseTimestamp(string timestamp)
         {
             try
             {
@@ -399,7 +405,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private void ValidateReceivalTime(DateTime receivedAt)
+        public void ValidateReceivalTime(DateTime receivedAt)
         {
             const int maxAllowedPrecedenceInMinutes = 3;
 

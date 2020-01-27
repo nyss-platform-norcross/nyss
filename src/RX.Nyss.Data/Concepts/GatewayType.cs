@@ -2,6 +2,7 @@
 {
     public enum GatewayType
     {
+        Unknown,
         SmsEagle
     }
 }
