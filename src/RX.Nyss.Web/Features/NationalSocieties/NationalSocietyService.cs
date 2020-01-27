@@ -79,7 +79,11 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     StartDate = n.StartDate,
                     HeadManagerName = n.HeadManager.Name,
                     PendingHeadManagerName = n.PendingHeadManager.Name,
-                    TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.Where(u => u.User.Role == Role.TechnicalAdvisor).Select(u => u.User.Name).ToList()),
+                    TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.AsQueryable()
+                        .Where(UserNationalSocietyQueries.IsNotDeletedUser)
+                        .Where(u => u.User.Role == Role.TechnicalAdvisor)
+                        .Select(u => u.User.Name)
+                        .ToList()),
                     IsArchived = n.IsArchived
                 })
                 .OrderBy(n => n.Name)
@@ -177,19 +181,20 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         public async Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId)
         {
-            var ns = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
-            var user = await _nyssContext.Users.FilterAvailable().Include(u => u.UserNationalSocieties).FirstOrDefaultAsync(u => u.Id == userId);
-            
-            if (ns.NationalSocietyUsers.Count == 0 || ns.NationalSocietyUsers.All(x => x.UserId != userId))
+            var userNationalSocieties = await _nyssContext.UserNationalSocieties.FilterAvailableUsers()
+                .Where(uns => uns.NationalSocietyId == nationalSocietyId).ToListAsync();
+            if (userNationalSocieties.Count == 0 || userNationalSocieties.All(x => x.UserId != userId))
             {
                 return Error(ResultKey.NationalSociety.SetHead.NotAMemberOfSociety);
             }
 
+            var user = await _nyssContext.Users.FilterAvailable().Include(u => u.UserNationalSocieties).FirstOrDefaultAsync(u => u.Id == userId);
             if (!(user is ManagerUser || user is TechnicalAdvisorUser))
             {
                 return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
             }
 
+            var ns = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
             ns.PendingHeadManager = user;
             await _nyssContext.SaveChangesAsync();
 
@@ -308,7 +313,9 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 .Select(ns => new
                 {
                     NationalSociety = ns,
-                    HasRegisteredUsers = ns.NationalSocietyUsers.Any(uns => uns.UserId != ns.HeadManager.Id),
+                    HasRegisteredUsers = ns.NationalSocietyUsers.AsQueryable()
+                        .Where(UserNationalSocietyQueries.IsNotDeletedUser)
+                        .Any(uns => uns.UserId != ns.HeadManager.Id),
                     HasOpenedProjects = openedProjectsQuery.Any(p => p.NationalSocietyId == ns.Id),
                     HeadManagerId = ns.HeadManager != null ? (int?)ns.HeadManager.Id : null,
                     HeadManagerRole = ns.HeadManager != null ? (Role?)ns.HeadManager.Role : null,
