@@ -284,12 +284,5 @@ namespace RX.Nyss.Web.Configuration
                 .Where(name => name.Name.StartsWith(namePrefix))
                 .Select(Assembly.Load)
                 .ToArray();
-
-        public static IdentityBuilder AddEmailLoginProvider(this IdentityBuilder builder)
-        {
-            var userType = builder.UserType;
-            var provider= typeof(EmailTokenProvider<>).MakeGenericType(userType);
-            return builder.AddTokenProvider("Email", provider);
-        }
     }
 }
