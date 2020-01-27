@@ -114,6 +114,7 @@ function* archiveNationalSociety({ id }) {
     yield put(actions.archive.success(id));
     yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
     yield call(getNationalSocieties, true);
+    yield put(appActions.showMessage(stringKeys.nationalSociety.messages.archive.success));
   } catch (error) {
     yield put(actions.archive.failure(id, error.message));
   }
@@ -126,6 +127,7 @@ function* reopenNationalSociety({ id }) {
     yield put(actions.reopen.success(id));
     yield put(appActions.entityUpdated(entityTypes.nationalSociety(id)));
     yield call(getNationalSocieties, true);
+    yield put(appActions.showMessage(stringKeys.nationalSociety.messages.reopen.success));
   } catch (error) {
     yield put(actions.reopen.failure(id, error.message));
   }
