@@ -64,6 +64,12 @@ export const stringKeys = {
       delete: {
         success: "nationalSociety.delete.success"
       },
+      archive: {
+        success: "nationalSociety.archive.success"
+      },
+      reopen: {
+        success: "nationalSociety.reopen.success"
+      }
     },
     list: {
       name: "nationalSociety.list.name",
