@@ -83,16 +83,23 @@ namespace RX.Nyss.Web.Configuration
         private static void RegisterAuth(IServiceCollection serviceCollection, ConfigSingleton.AuthenticationOptions authenticationOptions)
         {
             serviceCollection
-                .AddIdentity<IdentityUser, IdentityRole>()
+                .AddIdentity<IdentityUser, IdentityRole>(options =>
+                {
+                    options.Tokens.EmailConfirmationTokenProvider = "Email";
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddEmailLoginProvider();
 
             serviceCollection
                 .AddDataProtection()
                 .PersistKeysToDbContext<ApplicationDbContext>();
-                
-            // ToDo: The expiration should be this long only for verification, but shorter for password reset.
-            serviceCollection.Configure<DataProtectionTokenProviderOptions>(o => o.TokenLifespan = TimeSpan.FromDays(10));
+
+            serviceCollection.Configure<DataProtectionTokenProviderOptions>(o =>
+            {
+                o.Name = "Default";
+                o.TokenLifespan = TimeSpan.FromMinutes(30);
+            });
 
             serviceCollection.Configure<IdentityOptions>(options =>
             {
@@ -277,5 +284,12 @@ namespace RX.Nyss.Web.Configuration
                 .Where(name => name.Name.StartsWith(namePrefix))
                 .Select(Assembly.Load)
                 .ToArray();
+
+        public static IdentityBuilder AddEmailLoginProvider(this IdentityBuilder builder)
+        {
+            var userType = builder.UserType;
+            var provider= typeof(EmailTokenProvider<>).MakeGenericType(userType);
+            return builder.AddTokenProvider("Email", provider);
+        }
     }
 }
