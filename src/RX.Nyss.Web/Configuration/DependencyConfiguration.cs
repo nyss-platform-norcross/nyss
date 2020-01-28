@@ -89,7 +89,7 @@ namespace RX.Nyss.Web.Configuration
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
-                .AddEmailLoginProvider();
+                .AddEmailTokenVerificationProvider();
 
             serviceCollection
                 .AddDataProtection()

@@ -4,7 +4,7 @@ namespace RX.Nyss.Web.Configuration
 {
     public static class IdentityBuilderExtenstions
     {
-        public static IdentityBuilder AddEmailLoginProvider(this IdentityBuilder builder)
+        public static IdentityBuilder AddEmailTokenVerificationProvider(this IdentityBuilder builder)
         {
             var userType = builder.UserType;
             var provider= typeof(EmailTokenProvider<>).MakeGenericType(userType);
