@@ -314,21 +314,19 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 case DataCollectorType.Human:
                     if (parsedReport.ReportType != ReportType.Single &&
                         parsedReport.ReportType != ReportType.Aggregate &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                        parsedReport.ReportType != ReportType.Statement)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{HealthRiskType.NonHuman}', '{HealthRiskType.Activity}'.", ReportErrorType.Other);
+                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Statement}'.", ReportErrorType.Other);
                     }
 
                     break;
                 case DataCollectorType.CollectionPoint:
                     if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                        parsedReport.ReportType != ReportType.Statement)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                            $"'{ReportType.DataCollectionPoint}', '{HealthRiskType.NonHuman}', '{HealthRiskType.Activity}'.", ReportErrorType.Other);
+                            $"'{ReportType.DataCollectionPoint}', '{ReportType.Statement}.", ReportErrorType.Other);
                     }
 
                     break;
@@ -363,10 +361,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                     break;
                 case ReportType.DataCollectionPoint:
-                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
                         throw new ReportValidationException(
                             $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}', '{HealthRiskType.NonHuman}', " +

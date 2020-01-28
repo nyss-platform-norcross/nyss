@@ -156,6 +156,86 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
             Should.Throw<ReportValidationException>(() => _smsEagleHandler.ValidateDataCollector(phoneNumber, gatewayNationalSocietyId));
         }
 
+        [Theory]
+        [InlineData(ReportType.Single, DataCollectorType.Human, HealthRiskType.Human)]
+        [InlineData(ReportType.Aggregate, DataCollectorType.Human, HealthRiskType.Human)]
+        [InlineData(ReportType.Statement, DataCollectorType.Human, HealthRiskType.Activity)]
+        [InlineData(ReportType.Statement, DataCollectorType.Human, HealthRiskType.NonHuman)]
+        [InlineData(ReportType.Statement, DataCollectorType.Human, HealthRiskType.UnusualEvent)]
+        [InlineData(ReportType.Statement, DataCollectorType.CollectionPoint, HealthRiskType.Activity)]
+        [InlineData(ReportType.Statement, DataCollectorType.CollectionPoint, HealthRiskType.NonHuman)]
+        [InlineData(ReportType.Statement, DataCollectorType.CollectionPoint, HealthRiskType.UnusualEvent)]
+        [InlineData(ReportType.DataCollectionPoint, DataCollectorType.CollectionPoint, HealthRiskType.Human)]
+        public void ValidateReport_WhenReportIsCorrect_ShouldNotThrowException(ReportType reportType, DataCollectorType dataCollectorType, HealthRiskType healthRiskType)
+        {
+            // Arrange
+            var projectId = 1;
+            var healthRiskCode = 1;
+            var projectHealthRisks = new List<ProjectHealthRisk>
+            {
+                new ProjectHealthRisk
+                {
+                    Project = new Project { Id = projectId },
+                    HealthRisk = new HealthRisk { HealthRiskType = healthRiskType, HealthRiskCode = healthRiskCode }
+                }
+            };
+            var projectHealthRisksDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksDbSet);
+
+            var parsedReport = new ParsedReport { ReportType = reportType, HealthRiskCode = healthRiskCode };
+            var dataCollector = new DataCollector { DataCollectorType = dataCollectorType, Project = new Project { Id = projectId } };
+
+            // Assert
+            Should.NotThrow(async () => await _smsEagleHandler.ValidateReport(parsedReport, dataCollector));
+        }
+
+        [Theory]
+        [InlineData(ReportType.Single, DataCollectorType.Human, HealthRiskType.Activity)]
+        [InlineData(ReportType.Single, DataCollectorType.Human, HealthRiskType.NonHuman)]
+        [InlineData(ReportType.Single, DataCollectorType.Human, HealthRiskType.UnusualEvent)]
+        [InlineData(ReportType.Single, DataCollectorType.CollectionPoint, HealthRiskType.Human)]
+        [InlineData(ReportType.Single, DataCollectorType.CollectionPoint, HealthRiskType.Activity)]
+        [InlineData(ReportType.Single, DataCollectorType.CollectionPoint, HealthRiskType.NonHuman)]
+        [InlineData(ReportType.Single, DataCollectorType.CollectionPoint, HealthRiskType.UnusualEvent)]
+        [InlineData(ReportType.Aggregate, DataCollectorType.Human, HealthRiskType.Activity)]
+        [InlineData(ReportType.Aggregate, DataCollectorType.Human, HealthRiskType.NonHuman)]
+        [InlineData(ReportType.Aggregate, DataCollectorType.Human, HealthRiskType.UnusualEvent)]
+        [InlineData(ReportType.Aggregate, DataCollectorType.CollectionPoint, HealthRiskType.Human)]
+        [InlineData(ReportType.Aggregate, DataCollectorType.CollectionPoint, HealthRiskType.Activity)]
+        [InlineData(ReportType.Aggregate, DataCollectorType.CollectionPoint, HealthRiskType.NonHuman)]
+        [InlineData(ReportType.Aggregate, DataCollectorType.CollectionPoint, HealthRiskType.UnusualEvent)]
+        [InlineData(ReportType.Statement, DataCollectorType.Human, HealthRiskType.Human)]
+        [InlineData(ReportType.Statement, DataCollectorType.CollectionPoint, HealthRiskType.Human)]
+        [InlineData(ReportType.DataCollectionPoint, DataCollectorType.Human, HealthRiskType.Human)]
+        [InlineData(ReportType.DataCollectionPoint, DataCollectorType.Human, HealthRiskType.Activity)]
+        [InlineData(ReportType.DataCollectionPoint, DataCollectorType.Human, HealthRiskType.NonHuman)]
+        [InlineData(ReportType.DataCollectionPoint, DataCollectorType.Human, HealthRiskType.UnusualEvent)]
+        [InlineData(ReportType.DataCollectionPoint, DataCollectorType.CollectionPoint, HealthRiskType.Activity)]
+        [InlineData(ReportType.DataCollectionPoint, DataCollectorType.CollectionPoint, HealthRiskType.NonHuman)]
+        [InlineData(ReportType.DataCollectionPoint, DataCollectorType.CollectionPoint, HealthRiskType.UnusualEvent)]
+        public void ValidateReport_WhenReportIsNotCorrect_ShouldThrowException(ReportType reportType, DataCollectorType dataCollectorType, HealthRiskType healthRiskType)
+        {
+            // Arrange
+            var projectId = 1;
+            var healthRiskCode = 1;
+            var projectHealthRisks = new List<ProjectHealthRisk>
+            {
+                new ProjectHealthRisk
+                {
+                    Project = new Project { Id = projectId },
+                    HealthRisk = new HealthRisk { HealthRiskType = healthRiskType, HealthRiskCode = healthRiskCode }
+                }
+            };
+            var projectHealthRisksDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksDbSet);
+
+            var parsedReport = new ParsedReport { ReportType = reportType, HealthRiskCode = healthRiskCode };
+            var dataCollector = new DataCollector { DataCollectorType = dataCollectorType, Project = new Project { Id = projectId } };
+
+            // Assert
+            Should.Throw<ReportValidationException>(async () => await _smsEagleHandler.ValidateReport(parsedReport, dataCollector));
+        }
+
         [Fact]
         public void ValidateReport_WhenProjectHealthRiskDoesNotExist_ShouldThrowException()
         {
