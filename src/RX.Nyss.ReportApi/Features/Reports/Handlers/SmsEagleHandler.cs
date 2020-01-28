@@ -25,6 +25,11 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
     public interface ISmsEagleHandler
     {
         Task Handle(string queryString);
+        Task<GatewaySetting> ValidateGatewaySetting(string apiKey);
+        Task<DataCollector> ValidateDataCollector(string phoneNumber, int gatewayNationalSocietyId);
+        Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector);
+        DateTime ParseTimestamp(string timestamp);
+        void ValidateReceivalTime(DateTime receivedAt);
     }
 
     public class SmsEagleHandler : ISmsEagleHandler
@@ -51,7 +56,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,
             IStringsResourcesService stringsResourcesService,
-            IQueuePublisherService queuePublisherService, IAlertService alertService)
+            IQueuePublisherService queuePublisherService,
+            IAlertService alertService)
         {
             _reportMessageService = reportMessageService;
             _nyssContext = nyssContext;
@@ -185,7 +191,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 gatewaySetting = await ValidateGatewaySetting(apiKey);
                 rawReport.NationalSociety = gatewaySetting.NationalSociety;
 
-                var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSociety);
+                var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSocietyId);
                 rawReport.DataCollector = dataCollector;
                 rawReport.IsTraining = dataCollector.IsInTrainingMode;
                 rawReport.Village = dataCollector.Village;
@@ -244,7 +250,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private async Task<GatewaySetting> ValidateGatewaySetting(string apiKey)
+        public async Task<GatewaySetting> ValidateGatewaySetting(string apiKey)
         {
             var gatewaySetting = await _nyssContext.GatewaySettings
                 .Include(gs => gs.NationalSociety)
@@ -263,7 +269,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             return gatewaySetting;
         }
 
-        private async Task<DataCollector> ValidateDataCollector(string phoneNumber, NationalSociety gatewayNationalSociety)
+        public async Task<DataCollector> ValidateDataCollector(string phoneNumber, int gatewayNationalSocietyId)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
             {
@@ -282,16 +288,16 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 throw new ReportValidationException($"A Data Collector with phone number '{phoneNumber}' does not exist.", ReportErrorType.DataCollectorNotFound);
             }
 
-            if (dataCollector.Project.NationalSocietyId != gatewayNationalSociety.Id)
+            if (dataCollector.Project.NationalSocietyId != gatewayNationalSocietyId)
             {
                 throw new ReportValidationException($"A Data Collector's National Society identifier ('{dataCollector.Project.NationalSocietyId}') " +
-                                                    $"is different from SMS Gateway's ('{gatewayNationalSociety.Id}').", ReportErrorType.DataCollectorNotFound);
+                                                    $"is different from SMS Gateway's ('{gatewayNationalSocietyId}').", ReportErrorType.DataCollectorNotFound);
             }
 
             return dataCollector;
         }
 
-        private async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
+        public async Task<ProjectHealthRisk> ValidateReport(ParsedReport parsedReport, DataCollector dataCollector)
         {
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
@@ -308,21 +314,19 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 case DataCollectorType.Human:
                     if (parsedReport.ReportType != ReportType.Single &&
                         parsedReport.ReportType != ReportType.Aggregate &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                        parsedReport.ReportType != ReportType.Statement)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{HealthRiskType.NonHuman}', '{HealthRiskType.Activity}'.", ReportErrorType.Other);
+                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Statement}'.", ReportErrorType.Other);
                     }
 
                     break;
                 case DataCollectorType.CollectionPoint:
                     if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                        parsedReport.ReportType != ReportType.Statement)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                            $"'{ReportType.DataCollectionPoint}', '{HealthRiskType.NonHuman}', '{HealthRiskType.Activity}'.", ReportErrorType.Other);
+                            $"'{ReportType.DataCollectionPoint}', '{ReportType.Statement}.", ReportErrorType.Other);
                     }
 
                     break;
@@ -357,10 +361,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                     break;
                 case ReportType.DataCollectionPoint:
-                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent &&
-                        projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                    if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
                         throw new ReportValidationException(
                             $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}', '{HealthRiskType.NonHuman}', " +
@@ -375,7 +376,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             return projectHealthRisk;
         }
 
-        private DateTime ParseTimestamp(string timestamp)
+        public DateTime ParseTimestamp(string timestamp)
         {
             try
             {
@@ -399,7 +400,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private void ValidateReceivalTime(DateTime receivedAt)
+        public void ValidateReceivalTime(DateTime receivedAt)
         {
             const int maxAllowedPrecedenceInMinutes = 3;
 

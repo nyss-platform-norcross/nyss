@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
-using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
@@ -32,6 +30,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private readonly IStringsResourcesService _stringsResourcesServiceMock;
         private readonly INyssReportApiConfig _nyssReportApiConfigMock;
         private readonly IDateTimeProvider _dateTimeProviderMock;
+
         public AlertServiceTests()
         {
             var reportLabelingServiceMock = Substitute.For<IReportLabelingService>();
@@ -77,28 +76,27 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         [InlineData(ReportType.Statement)]
         public async Task ReportAdded_WhenReportTypeIsNonHumanAndFromDataCollectionPoint_ShouldReturnNull(ReportType reportType)
         {
-            // arrange
+            //arrange
             _testData.SimpleCasesData.GenerateData();
             var report = _testData.SimpleCasesData.AdditionalData.DataCollectionPointReport;
             report.ReportType = reportType;
 
-            // act
+            //act
             var result = await _alertService.ReportAdded(report);
 
-            // assert
+            //assert
             result.ShouldBeNull();
         }
 
         [Fact]
-        public async Task ReportAdded_WhenSingleReportDoesNotHaveAProjectHealthRisk_ShouldThrow()
+        public void ReportAdded_WhenSingleReportDoesNotHaveAProjectHealthRisk_ShouldThrow()
         {
             //arrange
             _testData.SimpleCasesData.GenerateData().AddToDbContext();
             var report = _testData.SimpleCasesData.AdditionalData.SingleReportWithoutHealthRisk;
 
-
             //assert
-            await Should.ThrowAsync<System.Reflection.TargetInvocationException>(() => _alertService.ReportAdded(report));
+            Should.ThrowAsync<System.Reflection.TargetInvocationException>(() => _alertService.ReportAdded(report));
         }
 
         [Fact]
@@ -143,7 +141,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             //act
             var result = await _alertService.ReportAdded(report);
 
-            // Assert
+            //assert
             await _nyssContextMock.AlertReports.Received(1).AddRangeAsync(Arg.Is<IEnumerable<AlertReport>>(list =>
                 list.Count() == 1 && list.Any(ar => ar.Alert == result && ar.Report == report)
             ));
