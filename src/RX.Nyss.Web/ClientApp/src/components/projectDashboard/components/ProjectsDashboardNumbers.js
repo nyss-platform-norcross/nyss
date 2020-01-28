@@ -59,8 +59,8 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
           <Card className={styles.card}>
             <CardHeader title={strings(stringKeys.project.dashboard.alertsSummary)} />
             <CardContent>
-              {renderNumber(strings(stringKeys.project.dashboard.numbers.dismissedAlerts), projectSummary.alertsSummary.dismissed)}
               {renderNumber(strings(stringKeys.project.dashboard.numbers.escalatedAlerts), projectSummary.alertsSummary.escalated)}
+              {renderNumber(strings(stringKeys.project.dashboard.numbers.dismissedAlerts), projectSummary.alertsSummary.dismissed)}
               {renderNumber(strings(stringKeys.project.dashboard.numbers.closedAlerts), projectSummary.alertsSummary.closed)}
             </CardContent>
           </Card>

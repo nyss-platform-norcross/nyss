@@ -1223,7 +1223,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 },
                                 new Alert
                                 {
-                                    Id = 3, Status = AlertStatus.Escalated
+                                    Id = 3, Status = AlertStatus.Escalated, EscalatedAt = new DateTime(2019, 1, 1)
                                 }
                             }
                         },
@@ -1277,7 +1277,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 },
                                 new Alert
                                 {
-                                    Id = 6, Status = AlertStatus.Escalated
+                                    Id = 6, Status = AlertStatus.Escalated, EscalatedAt = new DateTime(2019, 1, 1)
                                 }
                             }
                         }
