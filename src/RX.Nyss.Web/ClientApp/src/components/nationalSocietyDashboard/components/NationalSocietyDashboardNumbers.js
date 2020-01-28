@@ -59,8 +59,8 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
           <Card className={styles.card}>
             <CardHeader title={strings(stringKeys.nationalSociety.dashboard.numbers.alertsSummaryTitle)} />
             <CardContent>
-              {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.dismissedAlerts), summary.alertsSummary.dismissed)}
               {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.escalatedAlerts), summary.alertsSummary.escalated)}
+              {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.dismissedAlerts), summary.alertsSummary.dismissed)}
               {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.closedAlerts), summary.alertsSummary.closed)}
             </CardContent>
           </Card>

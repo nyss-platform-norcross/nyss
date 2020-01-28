@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
@@ -42,7 +41,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var healthRiskEventReportsQuery = _reportService.GetHealthRiskEventReportsQuery(filters);
             var validReports = _reportService.GetSuccessReportsQuery(filters);
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
-            var alerts = GetAlerts(filters);
 
             return await _nyssContext.Projects
                 .Where(ph => ph.Id == filters.ProjectId.Value)
@@ -58,7 +56,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     ErrorReportCount = rawReportsWithDataCollector.Count() - validReports.Count(),
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
-                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(alerts)
+                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters)
                 })
                 .FirstOrDefaultAsync();
         }
@@ -71,10 +69,5 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 .FilterByTrainingMode(filters.IsTraining)
                 .FilterOnlyNotDeletedBefore(filters.StartDate)
                 .Count();
-
-        private IQueryable<Alert> GetAlerts(ReportsFilter filters) =>
-            _nyssContext.Alerts
-                .FilterByProject(filters.ProjectId.Value)
-                .FilterByDateAndStatus(filters.StartDate, filters.EndDate);
     }
 }

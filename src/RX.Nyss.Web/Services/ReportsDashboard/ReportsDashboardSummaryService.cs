@@ -1,25 +1,40 @@
 ﻿using System.Linq;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Common.Extensions;
+using RX.Nyss.Web.Features.Reports;
 using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 
 namespace RX.Nyss.Web.Services.ReportsDashboard
 {
     public interface IReportsDashboardSummaryService
     {
-        AlertsSummaryResponseDto AlertsSummary(IQueryable<Alert> alerts);
+        AlertsSummaryResponseDto AlertsSummary(ReportsFilter filter);
         DataCollectionPointsSummaryResponse DataCollectionPointsSummary(IQueryable<Report> reports);
     }
 
     public class ReportsDashboardSummaryService : IReportsDashboardSummaryService
     {
-        public AlertsSummaryResponseDto AlertsSummary(IQueryable<Alert> alerts) =>
-            new AlertsSummaryResponseDto
+        private readonly INyssContext _nyssContext;
+
+        public ReportsDashboardSummaryService(
+            INyssContext nyssContext)
+        {
+            _nyssContext = nyssContext;
+        }
+
+        public AlertsSummaryResponseDto AlertsSummary(ReportsFilter filter)
+        {
+            var alerts = GetAlerts(filter);
+
+            return new AlertsSummaryResponseDto
             {
-                Escalated = alerts.Count(a => a.Status == AlertStatus.Escalated),
-                Dismissed = alerts.Count(a => a.Status == AlertStatus.Dismissed),
-                Closed = alerts.Count(a => a.Status == AlertStatus.Closed)
+                Escalated = alerts.Count(a => a.EscalatedAt.HasValue && a.EscalatedAt >= filter.StartDate && a.EscalatedAt <= filter.EndDate),
+                Dismissed = alerts.Count(a => a.DismissedAt.HasValue && a.DismissedAt >= filter.StartDate && a.DismissedAt <= filter.EndDate),
+                Closed = alerts.Count(a => a.ClosedAt.HasValue && a.ClosedAt >= filter.StartDate && a.ClosedAt <= filter.EndDate)
             };
+        }
 
         public DataCollectionPointsSummaryResponse DataCollectionPointsSummary(IQueryable<Report> reports)
         {
@@ -32,5 +47,12 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 DeathCount = dataCollectionPointReports.Sum(r => r.DataCollectionPointCase.DeathCount ?? 0),
             };
         }
+
+        private IQueryable<Alert> GetAlerts(ReportsFilter filters) =>
+            _nyssContext.Alerts
+                .FilterByProject(filters.ProjectId)
+                .FilterByNationalSociety(filters.NationalSocietyId)
+                .FilterByHealthRisk(filters.HealthRiskId)
+                .FilterByArea(filters.Area);
     }
 }

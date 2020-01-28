@@ -152,9 +152,7 @@ namespace RX.Nyss.Web.Features.Projects
                         .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity && !r.IsTraining && !r.MarkedAsError)
                         .Sum(r => r.ReportedCaseCount),
                     EscalatedAlertCount = p.ProjectHealthRisks
-                        .SelectMany(phr => phr.Alerts
-                            .Where(a => a.Status == AlertStatus.Escalated)
-                        ).Count(),
+                        .SelectMany(phr => phr.Alerts.Where(a => a.EscalatedAt.HasValue)).Count(),
                     TotalDataCollectorCount = p.DataCollectors.Count(dc => dc.Name != Anonymization.Text && dc.DeletedAt == null),
                     SupervisorCount = p.SupervisorUserProjects.Count
                 })

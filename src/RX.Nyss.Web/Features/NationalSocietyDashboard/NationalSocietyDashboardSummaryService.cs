@@ -44,7 +44,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
             var successReports = _reportService.GetSuccessReportsQuery(filters);
             var healthRiskEventReportsQuery = _reportService.GetHealthRiskEventReportsQuery(filters);
-            var alerts = GetAlerts(nationalSocietyId, filters);
 
             return await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
@@ -60,7 +59,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     ErrorReportCount = rawReportsWithDataCollector.Count() - successReports.Count(),
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
-                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(alerts)
+                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters)
                 })
                 .FirstOrDefaultAsync();
         }
@@ -73,10 +72,5 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 .FilterByTrainingMode(filters.IsTraining)
                 .FilterOnlyNotDeletedBefore(filters.StartDate)
                 .Count();
-
-        private IQueryable<Alert> GetAlerts(int nationalSocietyId, ReportsFilter filters) =>
-            _nyssContext.Alerts
-                .FilterByNationalSociety(nationalSocietyId)
-                .FilterByDateAndStatus(filters.StartDate, filters.EndDate);
     }
 }
