@@ -58,10 +58,10 @@
       "defaultValue": "StorageV2"
     },
     "aadTenantId": {
-      "type": "string"
+      "type": "secureString"
     },
     "aadWebAppClientId": {
-      "type": "string"
+      "type": "securestring"
     },
     "specificResource": {
       "defaultValue": null,
@@ -286,8 +286,9 @@
       },
       "resources": [
         {
-          "name": "authsettings",
           "apiVersion": "2018-11-01",
+          "name": "authsettings",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('webAppName')))]",
           "type": "config",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
