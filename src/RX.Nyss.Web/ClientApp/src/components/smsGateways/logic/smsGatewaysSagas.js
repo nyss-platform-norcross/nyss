@@ -54,7 +54,7 @@ function* openSmsGatewayEdition({ nationalSocietyId, smsGatewayId }) {
 function* createSmsGateway({ nationalSocietyId, data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/smsGateway/add?nationalSocietyId=${nationalSocietyId}`, data);
+    const response = yield call(http.post, `/api/smsGateway/create?nationalSocietyId=${nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.smsGateway.create.success));
