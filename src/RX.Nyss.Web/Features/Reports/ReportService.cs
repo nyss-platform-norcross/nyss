@@ -107,8 +107,8 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result<ReportListFilterResponseDto>> GetFilters(int projectId)
         {
-            var healthRiskTypesWithoutActivity = new List<HealthRiskType> { HealthRiskType.Human, HealthRiskType.NonHuman, HealthRiskType.UnusualEvent };
-            var projectHealthRiskNames = await _projectService.GetHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
+            var healthRiskTypes = new List<HealthRiskType> { HealthRiskType.Human, HealthRiskType.NonHuman, HealthRiskType.UnusualEvent, HealthRiskType.Activity };
+            var projectHealthRiskNames = await _projectService.GetHealthRiskNames(projectId, healthRiskTypes);
 
             var dto = new ReportListFilterResponseDto
             {
