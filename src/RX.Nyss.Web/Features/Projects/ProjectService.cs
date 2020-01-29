@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Features.Projects
         Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId);
         Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
-        Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, List<HealthRiskType> healthRiskTypes);
+        Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes);
         Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
     }
 
@@ -106,11 +106,8 @@ namespace RX.Nyss.Web.Features.Projects
             return result;
         }
 
-        public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, List<HealthRiskType> healthRiskTypes)
-        {
-            healthRiskTypes ??= new List<HealthRiskType>();
-
-            return await _nyssContext.ProjectHealthRisks
+        public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes) =>
+            await _nyssContext.ProjectHealthRisks
                 .Where(ph => ph.Project.Id == projectId && healthRiskTypes.Contains(ph.HealthRisk.HealthRiskType))
                 .Select(ph => new HealthRiskDto
                 {
@@ -122,7 +119,6 @@ namespace RX.Nyss.Web.Features.Projects
                 })
                 .OrderBy(x => x.Name)
                 .ToListAsync();
-        }
 
         public async Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId)
         {
