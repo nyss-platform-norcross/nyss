@@ -1,6 +1,7 @@
 import styles from './Layout.module.scss';
 
 import React, { useEffect } from 'react';
+import {useMount } from 'react-use';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Loading } from '../common/loading/Loading';
@@ -9,7 +10,7 @@ import Button from "@material-ui/core/Button";
 import { push } from 'connected-react-router';
 import { StringsSwitcher } from './StringsSwitcher';
 import { pageFocused } from '../app/logic/appActions';
-import { checkIsIOS, disableIosTextFieldZoom } from '../../utils/disableFormZoom';
+import { checkIsIOS, addMaximumScaleToMetaViewport } from '../../utils/disableFormZoom';
 
 const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
   useEffect(() => {
@@ -21,9 +22,12 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
     };
   });
 
-  if (checkIsIOS()) {
-    disableIosTextFieldZoom();
-  }
+  useMount(() => {
+    if (checkIsIOS()) {
+      addMaximumScaleToMetaViewport();
+    }
+  });
+
 
   const handleWindowFocus = () => pageFocused();
   const handleWindowStorageChange = () => { };

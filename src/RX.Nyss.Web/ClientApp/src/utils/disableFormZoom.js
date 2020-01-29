@@ -1,4 +1,4 @@
-const addMaximumScaleToMetaViewport = () => {
+export const addMaximumScaleToMetaViewport = () => {
   const el = document.querySelector('meta[name=viewport]');
 
   if (el !== null) {
@@ -14,8 +14,6 @@ const addMaximumScaleToMetaViewport = () => {
     el.setAttribute('content', content);
   }
 };
-
-export const disableIosTextFieldZoom = addMaximumScaleToMetaViewport;
 
 export const checkIsIOS = () =>
   /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
