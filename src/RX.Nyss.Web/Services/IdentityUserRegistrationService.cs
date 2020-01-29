@@ -106,7 +106,7 @@ namespace RX.Nyss.Web.Services
             {
                 return Error(ResultKey.User.ResetPassword.UserNotFound);
             }
-            
+
             var passwordAddResult = await _userManager.AddPasswordAsync(user, newPassword);
 
             var isPasswordTooWeak = passwordAddResult.Errors.Any(x => x.IsPasswordTooWeak());
