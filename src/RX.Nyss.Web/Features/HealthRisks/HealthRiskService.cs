@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             var languageCode = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
-                .SingleOrDefaultAsync() ?? "EN";
+                .SingleOrDefaultAsync() ?? "en";
 
             var healthRisks = await _nyssContext.HealthRisks
                 .Select(hr => new HealthRiskListItemResponseDto

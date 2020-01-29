@@ -50,7 +50,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
                     {
                         Id = LanguageId,
                         DisplayName = "English",
-                        LanguageCode = "EN"
+                        LanguageCode = "en"
                     }
                 }
             };
@@ -61,7 +61,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
                 {
                     Id = LanguageId,
                     DisplayName = "English",
-                    LanguageCode = "EN"
+                    LanguageCode = "en"
                 },
                 new ContentLanguage
                 {
