@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -98,7 +99,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorsData = dataCollectors
                 .Select(dc => new
                 {
-                    dc.DataCollectorType,
+                    DataCollectorType = dc.DataCollectorType == DataCollectorType.Human
+                        ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.human")
+                        : dc.DataCollectorType == DataCollectorType.CollectionPoint
+                          ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.collectionPoint")
+                          : string.Empty,
                     dc.Name,
                     dc.DisplayName,
                     dc.PhoneNumber,
