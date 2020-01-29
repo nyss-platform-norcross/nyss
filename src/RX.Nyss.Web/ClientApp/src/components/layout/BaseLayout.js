@@ -9,6 +9,7 @@ import Button from "@material-ui/core/Button";
 import { push } from 'connected-react-router';
 import { StringsSwitcher } from './StringsSwitcher';
 import { pageFocused } from '../app/logic/appActions';
+import { checkIsIOS, disableIosTextFieldZoom } from '../../utils/disableFormZoom';
 
 const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
   useEffect(() => {
@@ -19,6 +20,10 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
       window.removeEventListener("storage", handleWindowStorageChange)
     };
   });
+
+  if (checkIsIOS()) {
+    disableIosTextFieldZoom();
+  }
 
   const handleWindowFocus = () => pageFocused();
   const handleWindowStorageChange = () => { };
