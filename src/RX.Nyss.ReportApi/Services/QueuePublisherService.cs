@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
-using Newtonsoft.Json;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.ReportApi.Configuration;
 
@@ -40,7 +39,7 @@ namespace RX.Nyss.ReportApi.Services
                     To = new Contact { Email = smsEagleEmailAddress, Name = smsEagleName }, Body = body, Subject = recipientPhoneNumber, SendAsTextOnly = true
                 };
 
-                var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail))) { Label = "RX.Nyss.ReportApi", };
+                var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi", };
 
                 return _sendEmailQueueClient.SendAsync(message);
             }));
@@ -65,7 +64,7 @@ namespace RX.Nyss.ReportApi.Services
                 Subject = emailSubject
             };
 
-            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail))) { Label = "RX.Nyss.ReportApi", };
+            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi", };
 
             return _sendEmailQueueClient.SendAsync(message);
         }

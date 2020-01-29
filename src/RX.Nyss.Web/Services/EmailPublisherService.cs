@@ -1,7 +1,7 @@
 ﻿using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
-using Newtonsoft.Json;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Services
         {
             var sendEmail = new SendEmailMessage {To = new Contact{Email = to.email, Name = to.name}, Body = body, Subject = subject, SendAsTextOnly = sendAsTextOnly};
 
-            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(sendEmail)))
+            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail)))
             {
                 Label = "RX.Nyss.Web",
             };

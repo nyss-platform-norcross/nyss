@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 
@@ -78,7 +78,7 @@ namespace RX.Nyss.FuncApp.Services
 
         private async Task<HttpResponseMessage> PostJsonAsync<T>(Uri requestUri, T body, IEnumerable<(string key, string value)> headers = null)
         {
-            var payload = JsonConvert.SerializeObject(body);
+            var payload = JsonSerializer.Serialize(body);
             var httpClient = _httpClientFactory.CreateClient();
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = new StringContent(payload, Encoding.UTF8, "application/json") };
