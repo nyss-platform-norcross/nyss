@@ -38,7 +38,9 @@ export const ensureResponseIsSuccess = (response) => {
 const callApi = (path, method, data, headers = {}, authenticate = false) => {
   return new Promise((resolve, reject) => {
     let init = {
-      method, headers: new Headers({
+      method,
+      redirect: "manual",
+      headers: new Headers({
         ...headers,
         "Pragma": "no-cache",
         "Cache-Control": "no-cache",
@@ -56,6 +58,8 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
           } else {
             resolve(response.json());
           }
+        } else if (response.status === 0 && response.type === "opaqueredirect") {
+          reject(new Error(stringKey(stringKeys.error.redirected)));
         } else if (response.status === 401) {
           reloadPage();
           reject(new Error(stringKey(stringKeys.error.notAuthenticated)));

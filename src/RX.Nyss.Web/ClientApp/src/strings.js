@@ -11,7 +11,8 @@ export const stringKeys = {
   error: {
     responseNotSuccessful: "error.responseNotSuccessful",
     notAuthenticated: "error.notAuthenticated",
-    unauthorized: "error.unauthorized"
+    unauthorized: "error.unauthorized",
+    redirected: "error.redirected"
   },
   roles: {
     "TechnicalAdvisor": "roles.technicalAdvisor",
