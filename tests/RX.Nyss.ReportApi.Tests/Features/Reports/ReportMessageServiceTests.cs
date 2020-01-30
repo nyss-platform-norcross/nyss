@@ -99,7 +99,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             parsedReport.ReportedCase.CountMalesBelowFive.ShouldBe(malesBelowFive);
             parsedReport.ReportedCase.CountMalesAtLeastFive.ShouldBe(malesAtLeastFive);
             parsedReport.ReportedCase.CountFemalesBelowFive.ShouldBe(femalesBelowFive);
-            parsedReport.ReportedCase.CountFemalesAtLeastFive.ShouldBe(femalesAtLeastFive);;
+            parsedReport.ReportedCase.CountFemalesAtLeastFive.ShouldBe(femalesAtLeastFive);
             parsedReport.DataCollectionPointCase.ReferredCount.ShouldBeNull();
             parsedReport.DataCollectionPointCase.DeathCount.ShouldBeNull();
             parsedReport.DataCollectionPointCase.FromOtherVillagesCount.ShouldBeNull();
@@ -120,7 +120,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             parsedReport.ReportedCase.CountMalesBelowFive.ShouldBe(malesBelowFive);
             parsedReport.ReportedCase.CountMalesAtLeastFive.ShouldBe(malesAtLeastFive);
             parsedReport.ReportedCase.CountFemalesBelowFive.ShouldBe(femalesBelowFive);
-            parsedReport.ReportedCase.CountFemalesAtLeastFive.ShouldBe(femalesAtLeastFive);;
+            parsedReport.ReportedCase.CountFemalesAtLeastFive.ShouldBe(femalesAtLeastFive);
             parsedReport.DataCollectionPointCase.ReferredCount.ShouldBeNull();
             parsedReport.DataCollectionPointCase.DeathCount.ShouldBeNull();
             parsedReport.DataCollectionPointCase.FromOtherVillagesCount.ShouldBeNull();
@@ -141,7 +141,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             parsedReport.ReportedCase.CountMalesBelowFive.ShouldBe(malesBelowFive);
             parsedReport.ReportedCase.CountMalesAtLeastFive.ShouldBe(malesAtLeastFive);
             parsedReport.ReportedCase.CountFemalesBelowFive.ShouldBe(femalesBelowFive);
-            parsedReport.ReportedCase.CountFemalesAtLeastFive.ShouldBe(femalesAtLeastFive);;
+            parsedReport.ReportedCase.CountFemalesAtLeastFive.ShouldBe(femalesAtLeastFive);
             parsedReport.DataCollectionPointCase.ReferredCount.ShouldBe(referredCount);
             parsedReport.DataCollectionPointCase.DeathCount.ShouldBe(deathCount);
             parsedReport.DataCollectionPointCase.FromOtherVillagesCount.ShouldBe(fromOtherVillagesCount);
