@@ -9,6 +9,8 @@ import Button from "@material-ui/core/Button";
 import { push } from 'connected-react-router';
 import { StringsSwitcher } from './StringsSwitcher';
 import { pageFocused } from '../app/logic/appActions';
+import { checkIsIOS, addMaximumScaleToMetaViewport } from '../../utils/disableFormZoom';
+import { useMount } from '../../utils/lifecycle';
 
 const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
   useEffect(() => {
@@ -19,6 +21,13 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
       window.removeEventListener("storage", handleWindowStorageChange)
     };
   });
+
+  useMount(() => {
+    if (checkIsIOS()) {
+      addMaximumScaleToMetaViewport();
+    }
+  });
+
 
   const handleWindowFocus = () => pageFocused();
   const handleWindowStorageChange = () => { };
