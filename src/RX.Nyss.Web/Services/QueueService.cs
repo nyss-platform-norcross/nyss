@@ -1,7 +1,7 @@
 ﻿using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
-using Newtonsoft.Json;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Services
@@ -24,13 +24,12 @@ namespace RX.Nyss.Web.Services
         {
             var queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, queueName);
 
-            var message = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data)))
+            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)))
             {
                 Label = "RX.Nyss.Web",
             };
 
             await queueClient.SendAsync(message);
         }
-
     }
 }

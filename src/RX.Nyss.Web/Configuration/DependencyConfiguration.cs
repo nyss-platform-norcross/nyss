@@ -34,6 +34,7 @@ using RX.Nyss.Web.Features.SmsGateways.Access;
 using RX.Nyss.Web.Features.Supervisors.Access;
 using RX.Nyss.Web.Features.TechnicalAdvisors.Access;
 using RX.Nyss.Web.Features.Users.Access;
+using RX.Nyss.Web.Utils;
 using Serilog;
 
 namespace RX.Nyss.Web.Configuration
@@ -231,9 +232,10 @@ namespace RX.Nyss.Web.Configuration
                 .AddControllersWithViews()
                 .AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                     options.JsonSerializerOptions.IgnoreNullValues = true;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringDateTimeConverter());
                 })
                 .AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()))
                 .ConfigureApiBehaviorOptions(options =>

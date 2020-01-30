@@ -188,6 +188,10 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 var timestamp = parsedQueryString[TimestampParameterName];
                 var text = parsedQueryString[TextParameterName];
 
+                var receivedAt = ParseTimestamp(timestamp);
+                ValidateReceivalTime(receivedAt);
+                rawReport.ReceivedAt = receivedAt;
+
                 gatewaySetting = await ValidateGatewaySetting(apiKey);
                 rawReport.NationalSociety = gatewaySetting.NationalSociety;
 
@@ -199,10 +203,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                 var parsedReport = _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
-
-                var receivedAt = ParseTimestamp(timestamp);
-                ValidateReceivalTime(receivedAt);
-                rawReport.ReceivedAt = receivedAt;
 
                 return new ReportValidationResult
                 {
@@ -223,10 +223,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                 var sender = parsedQueryString[SenderParameterName];
 
-                var languageCode = await _nyssContext.NationalSocieties
-                    .Where(ns => ns.Id == gatewaySetting.NationalSocietyId)
-                    .Select(ns => ns.ContentLanguage.LanguageCode)
-                    .FirstOrDefaultAsync();
+                string languageCode = null;
+                if (gatewaySetting != null)
+                {
+                    languageCode = await _nyssContext.NationalSocieties
+                        .Where(ns => ns.Id == gatewaySetting.NationalSocietyId)
+                        .Select(ns => ns.ContentLanguage.LanguageCode)
+                        .FirstOrDefaultAsync();
+                }
 
                 return new ReportValidationResult
                 {
@@ -428,14 +432,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     return;
                 }
 
-                var senderList = new List<string>(new string[] { errorReport.Sender });
+                var senderList = new List<string>(new[] { errorReport.Sender });
                 await _queuePublisherService.SendSMSesViaEagle(gatewaySetting.EmailAddress, gatewaySetting.Name, senderList, feedbackMessage);
             }
         }
 
         private async Task<string> GetFeedbackMessageContent(string key, string languageCode)
         {
-            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "EN");
+            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "en");
             smsContents.Value.TryGetValue(key, out var message);
 
             if (message == null)
