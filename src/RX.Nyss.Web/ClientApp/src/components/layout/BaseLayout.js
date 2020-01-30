@@ -1,7 +1,6 @@
 import styles from './Layout.module.scss';
 
 import React, { useEffect } from 'react';
-import {useMount } from 'react-use';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Loading } from '../common/loading/Loading';
@@ -11,6 +10,7 @@ import { push } from 'connected-react-router';
 import { StringsSwitcher } from './StringsSwitcher';
 import { pageFocused } from '../app/logic/appActions';
 import { checkIsIOS, addMaximumScaleToMetaViewport } from '../../utils/disableFormZoom';
+import { useMount } from '../../utils/lifecycle';
 
 const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
   useEffect(() => {
