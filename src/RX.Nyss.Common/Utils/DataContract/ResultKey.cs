@@ -2,6 +2,8 @@
 {
     public static class ResultKey
     {
+        public const string UnexpectedError = "error.unexpected";
+
         public static class User
         {
             public static class Common
@@ -128,6 +130,10 @@
 
         public static class HealthRisk
         {
+            public const string HealthRiskNotFound = "healthRisk.notFound";
+            public const string HealthRiskNumberAlreadyExists = "healthRisk.healthRiskNumberAlreadyExists";
+            public const string HealthRiskContainsReports = "healthRisk.healthRiskContainsReports";
+
             public static class Create
             {
                 public const string CreationSuccess = "healthRisk.create.success";
@@ -144,14 +150,13 @@
             {
                 public const string RemoveSuccess = "healthRisk.remove.success";
             }
-            
-            public const string HealthRiskNotFound = "healthRisk.notFound";
-            public const string HealthRiskNumberAlreadyExists = "healthRisk.healthRiskNumberAlreadyExists";
-            public const string HealthRiskContainsReports = "healthRisk.healthRiskContainsReports";
         }
 
         public static class Report
         {
+            public const string ProjectIsClosed = "report.projectIsClosed";
+            public const string ReportNotFound = "report.reportNotFound";
+
             public static class Edit
             {
                 public const string EditSuccess = "report.edit.success";
@@ -159,9 +164,6 @@
                 public const string HealthRiskNotAssignedToProject = "report.healthRiskNotAssignedToProject";
                 public const string HealthRiskCannotBeEdited = "report.healthRiskCannotBeEdited";
             }
-
-            public const string ProjectIsClosed = "report.projectIsClosed";
-            public const string ReportNotFound = "report.reportNotFound";
         }
 
         public static class Project
@@ -178,8 +180,6 @@
             public const string CannotAddProjectInArchivedNationalSociety = "project.cannotAddProjectInArchivedNationalSociety";
             public const string ProjectHasOpenOrEscalatedAlerts = "project.projectHasOpenOrEscalatedAlerts";
         }
-        
-        public const string UnexpectedError = "error.unexpected";
 
         public class SqlExceptions
         {
@@ -211,6 +211,8 @@
 
         public static class Alert
         {
+            public const string InconsistentReportData = "alert.inconsistentReportData";
+
             public static class AcceptReport
             {
                 public const string WrongAlertStatus = "alert.acceptReport.wrongAlertStatus";
@@ -243,8 +245,6 @@
             {
                 public const string WrongStatus = "alert.closeAlert.wrongStatus";
             }
-
-            public const string InconsistentReportData = "alert.inconsistentReportData";
         }
     }
 }

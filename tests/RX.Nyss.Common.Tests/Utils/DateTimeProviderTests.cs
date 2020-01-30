@@ -8,18 +8,18 @@ namespace RX.Nyss.Common.Tests.Utils
 {
     public class DateTimeProviderTests
     {
-        private readonly IDateTimeProvider _dateTimeProvider;
-
         public static object[][] TestData =
         {
             new object[] { new DateTime(2019, 12, 28), 52, 2019 },
             new object[] { new DateTime(2019, 12, 29), 1, 2020 },
-            new object[] { new DateTime(2019, 6, 29), 26, 2019},
-            new object[] { new DateTime(2019, 10, 29), 44, 2019},
-            new object[] { new DateTime(2018, 1, 1), 1, 2018},
-            new object[] { new DateTime(2018, 9, 29), 39, 2018},
+            new object[] { new DateTime(2019, 6, 29), 26, 2019 },
+            new object[] { new DateTime(2019, 10, 29), 44, 2019 },
+            new object[] { new DateTime(2018, 1, 1), 1, 2018 },
+            new object[] { new DateTime(2018, 9, 29), 39, 2018 },
             new object[] { new DateTime(2020, 1, 1), 1, 2020 }
         };
+
+        private readonly IDateTimeProvider _dateTimeProvider;
 
 
         public DateTimeProviderTests()

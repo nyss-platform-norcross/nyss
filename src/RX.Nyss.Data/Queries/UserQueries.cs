@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Data.Queries

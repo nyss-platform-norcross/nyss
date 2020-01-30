@@ -15,19 +15,15 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 {
     public class ProjectDashboardSummaryServiceTests
     {
+        private const int ProjectId = 1;
         private readonly ProjectDashboardSummaryService _projectDashboardDataService;
         private readonly IReportService _reportService;
         private readonly List<DataCollector> _dataCollectors;
         private readonly List<Project> _projects;
 
-        private const int ProjectId = 1;
-
         public ProjectDashboardSummaryServiceTests()
         {
-            _projects = new List<Project>
-            {
-                new Project { Id = ProjectId }
-            };
+            _projects = new List<Project> { new Project { Id = ProjectId } };
 
             var alerts = new List<Alert>();
             _dataCollectors = new List<DataCollector>();
@@ -53,7 +49,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             var reports = new List<Report>
             {
                 new Report { ReportedCaseCount = 2 },
-                new Report { ReportedCaseCount = 3 },
+                new Report { ReportedCaseCount = 3 }
             };
 
             _reportService.GetHealthRiskEventReportsQuery(filters).Returns(reports.AsQueryable());
@@ -97,12 +93,28 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 new RawReport { DataCollector = new DataCollector { Id = 2 } }
             };
 
-            _dataCollectors.AddRange(new []
+            _dataCollectors.AddRange(new[]
             {
-                new DataCollector { Id = 1, Project = _projects.First() },
-                new DataCollector { Id = 2, Project = _projects.First() },
-                new DataCollector { Id = 3, Project = _projects.First() },
-                new DataCollector { Id = 4, Project = _projects.First() },
+                new DataCollector
+                {
+                    Id = 1,
+                    Project = _projects.First()
+                },
+                new DataCollector
+                {
+                    Id = 2,
+                    Project = _projects.First()
+                },
+                new DataCollector
+                {
+                    Id = 3,
+                    Project = _projects.First()
+                },
+                new DataCollector
+                {
+                    Id = 4,
+                    Project = _projects.First()
+                }
             });
 
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());

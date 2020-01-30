@@ -15,7 +15,9 @@ namespace RX.Nyss.Common.Services.StringsResources
             public IDictionary<string, string> Translations { get; set; }
 
             public string GetTranslation(string languageCode) =>
-                (Translations.ContainsKey(languageCode) ? Translations[languageCode] : default) ??
+                (Translations.ContainsKey(languageCode)
+                    ? Translations[languageCode]
+                    : default) ??
                 DefaultValue ?? Key;
         }
     }

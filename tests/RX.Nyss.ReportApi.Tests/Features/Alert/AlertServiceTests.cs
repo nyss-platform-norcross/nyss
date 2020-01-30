@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using NSubstitute;
 using RX.Nyss.Common.Services.StringsResources;
@@ -96,7 +97,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var report = _testData.SimpleCasesData.AdditionalData.SingleReportWithoutHealthRisk;
 
             //assert
-            Should.ThrowAsync<System.Reflection.TargetInvocationException>(() => _alertService.ReportAdded(report));
+            Should.ThrowAsync<TargetInvocationException>(() => _alertService.ReportAdded(report));
         }
 
         [Fact]
@@ -207,7 +208,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             result.Status.ShouldBe(AlertStatus.Pending);
             existingAlerts.ShouldNotContain(result);
         }
-        
+
         [Fact]
         public async Task ReportAdded_WhenAddingToGroupWithNoAlertAndMeetingThreshold_ShouldAddAlertReportEntities()
         {
@@ -440,7 +441,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             //arrange
             _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.GenerateData().AddToDbContext();
-            var reportBeingDismissed = (Report)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.AdditionalData.ReportBeingDismissed;
+            var reportBeingDismissed = _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.AdditionalData.ReportBeingDismissed;
             var alert = reportBeingDismissed.ReportAlerts.Select(ra => ra.Alert).Single();
 
             //act
@@ -455,7 +456,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             //arrange
             _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.GenerateData().AddToDbContext();
-            var reportBeingDismissed = (Report) _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.AdditionalData.ReportBeingDismissed;
+            var reportBeingDismissed = _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymore.AdditionalData.ReportBeingDismissed;
 
             //act
             await _alertService.ReportDismissed(reportBeingDismissed.Id);
@@ -469,9 +470,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             //arrange
             _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.GenerateData().AddToDbContext();
-            var reportBeingDismissed = (Report)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportBeingDismissed;
-            var alertThatReceivedNewReports = (Data.Models.Alert)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.AlertThatReceivedNewReports;
-            var reportsBeingMoved = (List<Report>)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportsBeingMoved;
+            var reportBeingDismissed = _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportBeingDismissed;
+            var alertThatReceivedNewReports = _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.AlertThatReceivedNewReports;
+            var reportsBeingMoved = _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportsBeingMoved;
 
             //act
             await _alertService.ReportDismissed(reportBeingDismissed.Id);
@@ -489,8 +490,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             //arrange
             _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.GenerateData().AddToDbContext();
-            var reportBeingDismissed = (Report)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportBeingDismissed;
-            var reportsBeingMoved = (List<Report>)_testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportsBeingMoved;
+            var reportBeingDismissed = _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportBeingDismissed;
+            var reportsBeingMoved = _testData.WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert.AdditionalData.ReportsBeingMoved;
 
             var acceptedMovedReport = reportsBeingMoved.Single(r => r.Status == ReportStatus.Accepted);
 
@@ -498,7 +499,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             await _alertService.ReportDismissed(reportBeingDismissed.Id);
 
             //assert
-            acceptedMovedReport.Status.ShouldBe(ReportStatus.Accepted);;
+            acceptedMovedReport.Status.ShouldBe(ReportStatus.Accepted);
+            ;
         }
 
         [Fact]
@@ -532,14 +534,14 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             // arrange
             _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
-            var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
-            var stringResourceResult = new Dictionary<string, string> { { SmsContentKey.Alerts.AlertTriggered, "Alert triggered!" }};
+            var alert = _testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
+            var stringResourceResult = new Dictionary<string, string> { { SmsContentKey.Alerts.AlertTriggered, "Alert triggered!" } };
             _stringsResourcesServiceMock.GetSmsContentResources(Arg.Any<string>())
                 .Returns(Result.Success<IDictionary<string, string>>(stringResourceResult));
             _nyssReportApiConfigMock.BaseUrl = "http://example.com";
 
             // act
-            await _alertService.SendNotificationsForNewAlert(alert, new GatewaySetting{ApiKey = "123"});
+            await _alertService.SendNotificationsForNewAlert(alert, new GatewaySetting { ApiKey = "123" });
 
             // assert
             await _queuePublisherServiceMock.Received(1).QueueAlertCheck(alert.Id);
@@ -550,8 +552,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             // arrange
             _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
-            var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
-            var stringResourceResult = new Dictionary<string, string> {
+            var alert = _testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
+            var stringResourceResult = new Dictionary<string, string>
+            {
                 { EmailContentKey.AlertHasNotBeenHandled.Subject, "Alert escalated subject" },
                 { EmailContentKey.AlertHasNotBeenHandled.Body, "Alert escalated body" }
             };
@@ -575,9 +578,10 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         {
             // arrange
             _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
-            var alert = (Data.Models.Alert)_testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
+            var alert = _testData.WhenAnAlertAreTriggered.EntityData.Alerts.Single();
             alert.Status = alertStatus;
-            var stringResourceResult = new Dictionary<string, string> {
+            var stringResourceResult = new Dictionary<string, string>
+            {
                 { EmailContentKey.AlertHasNotBeenHandled.Subject, "Alert escalated subject" },
                 { EmailContentKey.AlertHasNotBeenHandled.Body, "Alert escalated body" }
             };
@@ -593,8 +597,3 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         }
     }
 }
-
-
-
-
-

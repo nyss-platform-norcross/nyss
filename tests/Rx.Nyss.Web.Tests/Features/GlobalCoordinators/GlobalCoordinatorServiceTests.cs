@@ -20,6 +20,13 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
 {
     public class GlobalCoordinatorServiceTests
     {
+        private readonly GlobalCoordinatorService _globalCoordinatorService;
+        private readonly ILoggerAdapter _loggerAdapter;
+        private readonly INyssContext _nyssContext;
+        private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
+        private readonly IVerificationEmailService _verificationEmailServiceMock;
+        private readonly IDeleteUserService _deleteUserService;
+
         public GlobalCoordinatorServiceTests()
         {
             _loggerAdapter = Substitute.For<ILoggerAdapter>();
@@ -31,17 +38,14 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
             _globalCoordinatorService =
                 new GlobalCoordinatorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
-            _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
+            _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
+            {
+                Id = "123",
+                Email = (string)ci[0]
+            });
 
             ArrangeApplicationLanguages();
         }
-
-        private readonly GlobalCoordinatorService _globalCoordinatorService;
-        private readonly ILoggerAdapter _loggerAdapter;
-        private readonly INyssContext _nyssContext;
-        private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
-        private readonly IVerificationEmailService _verificationEmailServiceMock;
-        private readonly IDeleteUserService _deleteUserService;
 
         private void ArrangeApplicationLanguages()
         {
@@ -51,7 +55,14 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         }
 
         private void ArrangeUsersDbSetWithOneAdministratorUser() =>
-            ArrangeUsersDbSetWithExistingUsers(new List<User> { new AdministratorUser { Id = 123, Role = Role.Administrator } });
+            ArrangeUsersDbSetWithExistingUsers(new List<User>
+            {
+                new AdministratorUser
+                {
+                    Id = 123,
+                    Role = Role.Administrator
+                }
+            });
 
         private void ArrangeUsersDbSetWithExistingUsers(IEnumerable<User> existingUsers)
         {
@@ -106,7 +117,13 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
 
             var existingUserEmail = _nyssContext.Users.Single(u => u.Id == 123)?.EmailAddress;
 
-            var editRequest = new EditGlobalCoordinatorRequestDto { Id = 123, Name = "New name", Organization = "New organization", PhoneNumber = "432432" };
+            var editRequest = new EditGlobalCoordinatorRequestDto
+            {
+                Id = 123,
+                Name = "New name",
+                Organization = "New organization",
+                PhoneNumber = "432432"
+            };
 
             await _globalCoordinatorService.Edit(editRequest);
 
@@ -158,15 +175,51 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         {
             var nyssUsers = new List<User>
             {
-                new GlobalCoordinatorUser { Id = 1, Role = Role.GlobalCoordinator },
-                new GlobalCoordinatorUser { Id = 2, Role = Role.GlobalCoordinator },
-                new GlobalCoordinatorUser { Id = 3, Role = Role.Administrator },
-                new GlobalCoordinatorUser { Id = 4, Role = Role.Supervisor },
-                new GlobalCoordinatorUser { Id = 5, Role = Role.TechnicalAdvisor },
-                new GlobalCoordinatorUser { Id = 6, Role = Role.DataConsumer },
-                new GlobalCoordinatorUser { Id = 7, Role = Role.Supervisor },
-                new GlobalCoordinatorUser { Id = 8, Role = Role.Supervisor },
-                new GlobalCoordinatorUser { Id = 9, Role = Role.Supervisor }
+                new GlobalCoordinatorUser
+                {
+                    Id = 1,
+                    Role = Role.GlobalCoordinator
+                },
+                new GlobalCoordinatorUser
+                {
+                    Id = 2,
+                    Role = Role.GlobalCoordinator
+                },
+                new GlobalCoordinatorUser
+                {
+                    Id = 3,
+                    Role = Role.Administrator
+                },
+                new GlobalCoordinatorUser
+                {
+                    Id = 4,
+                    Role = Role.Supervisor
+                },
+                new GlobalCoordinatorUser
+                {
+                    Id = 5,
+                    Role = Role.TechnicalAdvisor
+                },
+                new GlobalCoordinatorUser
+                {
+                    Id = 6,
+                    Role = Role.DataConsumer
+                },
+                new GlobalCoordinatorUser
+                {
+                    Id = 7,
+                    Role = Role.Supervisor
+                },
+                new GlobalCoordinatorUser
+                {
+                    Id = 8,
+                    Role = Role.Supervisor
+                },
+                new GlobalCoordinatorUser
+                {
+                    Id = 9,
+                    Role = Role.Supervisor
+                }
             };
             ArrangeUsersDbSetWithExistingUsers(nyssUsers);
 
@@ -179,7 +232,11 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         public async Task RegisterGlobalCoordinator_WhenIdentityUserCreationSuccessful_NyssContextAddIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
 
             var result = await _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto);
@@ -192,7 +249,11 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         public async Task RegisterGlobalCoordinator_WhenIdentityUserCreationSuccessful_NyssContextSaveChangesIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
 
             var result = await _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto);
@@ -206,7 +267,11 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
         {
             var userEmail = "emailTest1@domain.com";
             var userName = "Mickey Mouse";
-            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userName, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto
+            {
+                Name = userName,
+                Email = userEmail
+            };
 
             var result = await _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto);
 
@@ -223,7 +288,11 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
                 .Do(x => throw exception);
 
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
 
             var result = await _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto);
@@ -240,7 +309,11 @@ namespace RX.Nyss.Web.Tests.Features.GlobalCoordinators
                 .Do(x => throw new Exception());
 
             var userEmail = "emailTest1@domain.com";
-            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto { Name = userEmail, Email = userEmail };
+            var registerGlobalCoordinatorRequestDto = new CreateGlobalCoordinatorRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
 
             _globalCoordinatorService.Create(registerGlobalCoordinatorRequestDto).ShouldThrowAsync<Exception>();

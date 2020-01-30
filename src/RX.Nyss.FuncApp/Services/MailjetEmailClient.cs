@@ -35,8 +35,19 @@ namespace RX.Nyss.FuncApp.Services
                 {
                     new MailjetEmail
                     {
-                        To = new List<MailjetContact> {new MailjetContact {Email = message.To.Email, Name = message.To.Name}},
-                        From = new MailjetContact {Email = _config.MailjetConfig.FromAddress, Name = _config.MailjetConfig.FromName},
+                        To = new List<MailjetContact>
+                        {
+                            new MailjetContact
+                            {
+                                Email = message.To.Email,
+                                Name = message.To.Name
+                            }
+                        },
+                        From = new MailjetContact
+                        {
+                            Email = _config.MailjetConfig.FromAddress,
+                            Name = _config.MailjetConfig.FromName
+                        },
                         Subject = message.Subject,
                         HTMLPart = message.Body
                     }
@@ -45,10 +56,7 @@ namespace RX.Nyss.FuncApp.Services
 
             var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
 
-            await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
-            {
-                ("Authorization", basicAuthHeader)
-            });
+            await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[] { ("Authorization", basicAuthHeader) });
         }
 
         public async Task SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode)
@@ -60,8 +68,19 @@ namespace RX.Nyss.FuncApp.Services
                 {
                     new MailjetTextEmail
                     {
-                        To = new List<MailjetContact> {new MailjetContact {Email = message.To.Email, Name = message.To.Name}},
-                        From = new MailjetContact {Email = _config.MailjetConfig.FromAddress, Name = _config.MailjetConfig.FromName},
+                        To = new List<MailjetContact>
+                        {
+                            new MailjetContact
+                            {
+                                Email = message.To.Email,
+                                Name = message.To.Name
+                            }
+                        },
+                        From = new MailjetContact
+                        {
+                            Email = _config.MailjetConfig.FromAddress,
+                            Name = _config.MailjetConfig.FromName
+                        },
                         Subject = message.Subject,
                         TextPart = message.Body
                     }
@@ -70,10 +89,7 @@ namespace RX.Nyss.FuncApp.Services
 
             var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
 
-            await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[]
-            {
-                ("Authorization", basicAuthHeader)
-            });
+            await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[] { ("Authorization", basicAuthHeader) });
         }
 
         private async Task<HttpResponseMessage> PostJsonAsync<T>(Uri requestUri, T body, IEnumerable<(string key, string value)> headers = null)

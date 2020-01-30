@@ -5,7 +5,7 @@
         public int Id { get; set; }
 
         public string EmailAddress { get; set; }
-        
+
         public virtual Project Project { get; set; }
     }
 }

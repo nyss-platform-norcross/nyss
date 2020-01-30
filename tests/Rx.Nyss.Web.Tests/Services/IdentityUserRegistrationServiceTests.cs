@@ -18,20 +18,20 @@ namespace RX.Nyss.Web.Tests.Services
 {
     public class IdentityUserRegistrationServiceTests
     {
-        public IdentityUserRegistrationServiceTests()
-        {
-            _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
-            _configMock = new ConfigSingleton {BaseUrl = "https://testurl"};
-            _nyssContext = Substitute.For<INyssContext>();
-            _emailTextGeneratorServiceMock = Substitute.For<IEmailTextGeneratorService>();
-        }
-
         private readonly ILoggerAdapter _loggerAdapterMock;
         private readonly IEmailPublisherService _emailPublisherServiceMock;
         private readonly IEmailTextGeneratorService _emailTextGeneratorServiceMock;
         private readonly INyssWebConfig _configMock;
         private readonly INyssContext _nyssContext;
+
+        public IdentityUserRegistrationServiceTests()
+        {
+            _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
+            _emailPublisherServiceMock = Substitute.For<IEmailPublisherService>();
+            _configMock = new ConfigSingleton { BaseUrl = "https://testurl" };
+            _nyssContext = Substitute.For<INyssContext>();
+            _emailTextGeneratorServiceMock = Substitute.For<IEmailTextGeneratorService>();
+        }
 
         private IIdentityUserRegistrationService GetIdentityUserServiceWithMockedDependencies(List<IdentityUser> users)
         {
@@ -89,7 +89,14 @@ namespace RX.Nyss.Web.Tests.Services
         public async Task CreateIdentityUser_WhenUserAlreadyExists_ShouldThrowException()
         {
             var userEmail = "emailTest1@domain.com";
-            var existingUserList = new List<IdentityUser> {new IdentityUser {UserName = userEmail, Email = userEmail}};
+            var existingUserList = new List<IdentityUser>
+            {
+                new IdentityUser
+                {
+                    UserName = userEmail,
+                    Email = userEmail
+                }
+            };
             var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(existingUserList);
 
             await Assert.ThrowsAsync<ResultException>(() => identityUserRegistrationService.CreateIdentityUser(userEmail, Role.GlobalCoordinator));

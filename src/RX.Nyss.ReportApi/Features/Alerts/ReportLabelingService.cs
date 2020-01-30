@@ -12,8 +12,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 {
     public interface IReportLabelingService
     {
-        ///<Summary>
-        /// <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with care.
+        /// <Summary>
+        ///  <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with
+        /// care.
         /// </Summary>
         Task ResolveLabelsOnReportAdded(Report addedReport, ProjectHealthRisk projectHealthRisk);
 
@@ -21,13 +22,14 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         Task<List<Report>> FindReportsSatisfyingRangeAndTimeRequirements(Report report, ProjectHealthRisk projectHealthRisk);
 
-        ///<Summary>
-        /// <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with care.
+        /// <Summary>
+        ///  <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with
+        /// care.
         /// </Summary>
         Task UpdateLabelsInDatabaseDirect(IEnumerable<(int ReportId, Guid Label)> pointsWithLabels);
     }
 
-    public class ReportLabelingService: IReportLabelingService
+    public class ReportLabelingService : IReportLabelingService
     {
         private readonly INyssContext _nyssContext;
 
@@ -36,8 +38,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             _nyssContext = nyssContext;
         }
 
-        ///<Summary>
-        /// <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with care.
+        /// <Summary>
+        ///  <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with
+        /// care.
         /// </Summary>
         public async Task ResolveLabelsOnReportAdded(Report addedReport, ProjectHealthRisk projectHealthRisk)
         {
@@ -74,7 +77,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(r => r.ProjectHealthRisk == projectHealthRisk)
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
                 .Where(r => !r.IsTraining)
-                .Where(r=> !r.MarkedAsError)
+                .Where(r => !r.MarkedAsError)
                 .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
                 .Where(r => r.Id != report.Id)
                 .Where(r => r.ReportGroupLabel != default)
@@ -88,21 +91,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             }
 
             return reportsQuery.AsNoTracking().ToListAsync();
-        }
-
-        private Task UpdateValueWhereParametersInRangeDirect<TUpdateValue, TParameter>(string commandTemplate, TUpdateValue updateValue, IEnumerable<TParameter> rangeOfParameters)
-        {
-            var parameters = rangeOfParameters.Cast<object>().ToList();
-            parameters.Insert(0, updateValue);
-            var labelUpdateCommand = FormattableStringFactory.Create(commandTemplate, parameters.ToArray());
-            return _nyssContext.ExecuteSqlInterpolatedAsync(labelUpdateCommand);
-        }
-
-        private static string CreateSequenceOfParameterPlaceholders(int startIndex, int number)
-        {
-            var labelsPlaceholders = Enumerable.Range(startIndex, number).Select(x => $"{{{x}}}");
-            var labelsPlaceholderTemplate = string.Join(", ", labelsPlaceholders);
-            return labelsPlaceholderTemplate;
         }
 
         public async Task<IEnumerable<(int ReportId, Guid Label)>> CalculateNewLabelsInLabelGroup(Guid label, double distanceThreshold, int? reportIdToIgnore)
@@ -129,8 +117,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return updatedReportPoints.Select(p => (p.ReportId, Label: p.Label.Value));
         }
 
-        ///<Summary>
-        /// <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with care.
+        /// <Summary>
+        ///  <strong>Caution:</strong> does a direct update in the DB that is not tracked by the database context. Handle with
+        /// care.
         /// </Summary>
         public async Task UpdateLabelsInDatabaseDirect(IEnumerable<(int ReportId, Guid Label)> pointsWithLabels)
         {
@@ -143,6 +132,21 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 var commandTemplate = $"UPDATE nyss.Reports SET ReportGroupLabel={{0}} WHERE Id IN ({idsPlaceholderTemplate})";
                 await UpdateValueWhereParametersInRangeDirect(commandTemplate, labelGroup.Key, reportIdsInGroup);
             }
+        }
+
+        private Task UpdateValueWhereParametersInRangeDirect<TUpdateValue, TParameter>(string commandTemplate, TUpdateValue updateValue, IEnumerable<TParameter> rangeOfParameters)
+        {
+            var parameters = rangeOfParameters.Cast<object>().ToList();
+            parameters.Insert(0, updateValue);
+            var labelUpdateCommand = FormattableStringFactory.Create(commandTemplate, parameters.ToArray());
+            return _nyssContext.ExecuteSqlInterpolatedAsync(labelUpdateCommand);
+        }
+
+        private static string CreateSequenceOfParameterPlaceholders(int startIndex, int number)
+        {
+            var labelsPlaceholders = Enumerable.Range(startIndex, number).Select(x => $"{{{x}}}");
+            var labelsPlaceholderTemplate = string.Join(", ", labelsPlaceholders);
+            return labelsPlaceholderTemplate;
         }
 
         private List<ReportPoint> ReassignLabelsByAddingPointsOneByOne(List<ReportPoint> reportsWithNoLabel, double distanceThreshold)

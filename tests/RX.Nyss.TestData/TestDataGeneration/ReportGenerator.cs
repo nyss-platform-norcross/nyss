@@ -9,7 +9,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
     {
         private readonly EntityNumerator _numerator = new EntityNumerator();
 
-        public Report CreateNewReport(ProjectHealthRisk projectHealthRisk, DataCollector dataCollector, bool isTraining = false, Point location = null, DateTime ? receivedAt = null )
+        public Report CreateNewReport(ProjectHealthRisk projectHealthRisk, DataCollector dataCollector, bool isTraining = false, Point location = null, DateTime? receivedAt = null)
         {
             return new Report
             {

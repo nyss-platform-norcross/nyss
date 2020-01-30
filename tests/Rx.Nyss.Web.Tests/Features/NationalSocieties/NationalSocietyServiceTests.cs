@@ -160,7 +160,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         {
             // Arrange
             _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var users = new List<User>{new ManagerUser{EmailAddress = "no-yo"}};
+            var users = new List<User> { new ManagerUser { EmailAddress = "no-yo" } };
             var mockDbSet = users.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Users.Returns(mockDbSet);
 

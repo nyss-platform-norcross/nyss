@@ -9,7 +9,11 @@ namespace RX.Nyss.Data.Models.Maps
         {
             builder.HasOne(u => u.ApplicationLanguage).WithMany()
                 .HasForeignKey(u => u.ApplicationLanguageId).IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasKey(loc => new { loc.ApplicationLanguageId, loc.Key });
+            builder.HasKey(loc => new
+            {
+                loc.ApplicationLanguageId,
+                loc.Key
+            });
             builder.Property(lt => lt.Value).HasMaxLength(2000);
         }
     }

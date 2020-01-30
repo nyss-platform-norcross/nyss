@@ -15,19 +15,15 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
 {
     public class NationalSocietyDashboardSummaryServiceTests
     {
+        private const int NationalSocietyId = 1;
         private readonly NationalSocietyDashboardSummaryService _nationalSocietyDashboardSummaryService;
         private readonly IReportService _reportService;
         private readonly List<DataCollector> _dataCollectors;
         private readonly List<NationalSociety> _nationalSocieties;
 
-        private const int NationalSocietyId = 1;
-
         public NationalSocietyDashboardSummaryServiceTests()
         {
-            _nationalSocieties = new List<NationalSociety>
-            {
-                new NationalSociety { Id = NationalSocietyId }
-            };
+            _nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = NationalSocietyId } };
 
             var alerts = new List<Alert>();
             _dataCollectors = new List<DataCollector>();
@@ -53,7 +49,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
             var reports = new List<Report>
             {
                 new Report { ReportedCaseCount = 2 },
-                new Report { ReportedCaseCount = 3 },
+                new Report { ReportedCaseCount = 3 }
             };
 
             _reportService.GetHealthRiskEventReportsQuery(filters).Returns(reports.AsQueryable());
@@ -97,12 +93,28 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                 new RawReport { DataCollector = new DataCollector { Id = 2 } }
             };
 
-            _dataCollectors.AddRange(new []
+            _dataCollectors.AddRange(new[]
             {
-                new DataCollector { Id = 1, Project = new Project { NationalSociety = _nationalSocieties.First() } },
-                new DataCollector { Id = 2, Project = new Project { NationalSociety = _nationalSocieties.First() } },
-                new DataCollector { Id = 3, Project = new Project { NationalSociety = _nationalSocieties.First() } },
-                new DataCollector { Id = 4, Project = new Project { NationalSociety = _nationalSocieties.First() } },
+                new DataCollector
+                {
+                    Id = 1,
+                    Project = new Project { NationalSociety = _nationalSocieties.First() }
+                },
+                new DataCollector
+                {
+                    Id = 2,
+                    Project = new Project { NationalSociety = _nationalSocieties.First() }
+                },
+                new DataCollector
+                {
+                    Id = 3,
+                    Project = new Project { NationalSociety = _nationalSocieties.First() }
+                },
+                new DataCollector
+                {
+                    Id = 4,
+                    Project = new Project { NationalSociety = _nationalSocieties.First() }
+                }
             });
 
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());

@@ -37,9 +37,14 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
             _deleteUserService = Substitute.For<IDeleteUserService>();
 
-            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
+            _dataConsumerService = new DataConsumerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock,
+                _deleteUserService);
 
-            _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
+            _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
+            {
+                Id = "123",
+                Email = (string)ci[0]
+            });
 
             SetupTestNationalSocieties();
         }
@@ -66,7 +71,13 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
 
             var userNationalSocieties = new List<UserNationalSociety>
             {
-                new UserNationalSociety {User = dataConsumer, UserId = dataConsumer.Id, NationalSocietyId = 1, NationalSociety = _nyssContext.NationalSocieties.Find(1)}
+                new UserNationalSociety
+                {
+                    User = dataConsumer,
+                    UserId = dataConsumer.Id,
+                    NationalSocietyId = 1,
+                    NationalSociety = _nyssContext.NationalSocieties.Find(1)
+                }
             };
 
             ArrangeUserNationalSocietiesFrom(userNationalSocieties);
@@ -80,10 +91,22 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
         {
             var dataConsumer = ArrangeUsersDbSetWithOneDataConsumer();
 
-            var userNationalSocieties= new List<UserNationalSociety>
+            var userNationalSocieties = new List<UserNationalSociety>
             {
-                new UserNationalSociety {User = dataConsumer, UserId = dataConsumer.Id, NationalSocietyId = 1, NationalSociety = _nyssContext.NationalSocieties.Find(1)},
-                new UserNationalSociety {User = dataConsumer, UserId = dataConsumer.Id, NationalSocietyId = 2, NationalSociety = _nyssContext.NationalSocieties.Find(2)}
+                new UserNationalSociety
+                {
+                    User = dataConsumer,
+                    UserId = dataConsumer.Id,
+                    NationalSocietyId = 1,
+                    NationalSociety = _nyssContext.NationalSocieties.Find(1)
+                },
+                new UserNationalSociety
+                {
+                    User = dataConsumer,
+                    UserId = dataConsumer.Id,
+                    NationalSocietyId = 2,
+                    NationalSociety = _nyssContext.NationalSocieties.Find(2)
+                }
             };
 
             ArrangeUserNationalSocietiesFrom(userNationalSocieties);
@@ -104,6 +127,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
                 {
                     throw new ResultException(ResultKey.User.Registration.UserNotFound);
                 }
+
                 return user;
             });
 
@@ -118,14 +142,33 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
         }
 
         private void ArrangeUsersWithOneAdministratorUser() =>
-            ArrangeUsersFrom(new List<User> { new AdministratorUser { Id = 123, Role = Role.Administrator } });
+            ArrangeUsersFrom(new List<User>
+            {
+                new AdministratorUser
+                {
+                    Id = 123,
+                    Role = Role.Administrator
+                }
+            });
 
 
         private void SetupTestNationalSocieties()
         {
-            var nationalSociety1 = new NationalSociety {Id = 1, Name = "Test national society 1"};
-            var nationalSociety2 = new NationalSociety { Id = 2, Name = "Test national society 2" };
-            var nationalSocieties = new List<NationalSociety> { nationalSociety1 , nationalSociety2 };
+            var nationalSociety1 = new NationalSociety
+            {
+                Id = 1,
+                Name = "Test national society 1"
+            };
+            var nationalSociety2 = new NationalSociety
+            {
+                Id = 2,
+                Name = "Test national society 2"
+            };
+            var nationalSocieties = new List<NationalSociety>
+            {
+                nationalSociety1,
+                nationalSociety2
+            };
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
 
@@ -160,7 +203,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
         public async Task RegisterDataConsumer_WhenIdentityUserCreationSuccessful_NyssContextAddIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto { Name = userEmail, Email = userEmail };
+            var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
             var nationalSocietyId = 1;
             var result = await _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto);
@@ -173,7 +220,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
         public async Task RegisterDataConsumer_WhenIdentityUserCreationSuccessful_NyssContextSaveChangesIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto { Name = userEmail, Email = userEmail };
+            var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
             var nationalSocietyId = 1;
             var result = await _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto);
@@ -190,7 +241,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
                 .Do(x => throw exception);
 
             var userEmail = "emailTest1@domain.com";
-            var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto { Name = userEmail, Email = userEmail };
+            var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
             var nationalSocietyId = 1;
             var result = await _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto);
@@ -207,7 +262,11 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
                 .Do(x => throw new Exception());
 
             var userEmail = "emailTest1@domain.com";
-            var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto { Name = userEmail, Email = userEmail };
+            var registerDataConsumerRequestDto = new CreateDataConsumerRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
             var nationalSocietyId = 1;
             _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto).ShouldThrowAsync<Exception>();

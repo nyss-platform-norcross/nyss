@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using NSubstitute;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
@@ -16,6 +14,159 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
     {
         private readonly ISmsGatewayService _smsGatewayServiceMock;
 
+        private readonly TestCaseDataProvider _testCaseDataProvider;
+        private readonly EntityNumerator _nationalSocietyNumerator = new EntityNumerator();
+        private readonly EntityNumerator _userNumerator = new EntityNumerator();
+
+        public BasicNationalSocietyServiceTestData BasicData { get; set; }
+
+        public TestCaseData<ArchiveNationalSocietyAdditionalData> ArchiveWhenHasProjects =>
+            _testCaseDataProvider.GetOrCreate(nameof(ArchiveWhenHasProjects), data =>
+            {
+                var nationalSocietyWithProjects = new NationalSociety
+                {
+                    Id = _nationalSocietyNumerator.Next,
+                    NationalSocietyUsers = new List<UserNationalSociety>()
+                };
+                data.NationalSocieties.Add(nationalSocietyWithProjects);
+                data.Projects.Add(new Project
+                {
+                    NationalSociety = nationalSocietyWithProjects,
+                    NationalSocietyId = nationalSocietyWithProjects.Id
+                });
+
+                return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSocietyWithProjects };
+            });
+
+        public TestCaseData<ArchiveNationalSocietyAdditionalData> WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager), data =>
+            {
+                var nationalSociety = new NationalSociety
+                {
+                    Id = _nationalSocietyNumerator.Next,
+                    NationalSocietyUsers = new List<UserNationalSociety>()
+                };
+                var headManagerUser = new ManagerUser
+                {
+                    Id = _userNumerator.Next,
+                    Role = Role.Manager
+                };
+                var userNationalSociety = new UserNationalSociety
+                {
+                    User = headManagerUser,
+                    UserId = headManagerUser.Id,
+                    NationalSocietyId = nationalSociety.Id,
+                    NationalSociety = nationalSociety
+                };
+                nationalSociety.NationalSocietyUsers = new List<UserNationalSociety> { userNationalSociety };
+                nationalSociety.HeadManager = headManagerUser;
+                headManagerUser.UserNationalSocieties = new List<UserNationalSociety> { userNationalSociety };
+
+                data.Users.Add(headManagerUser);
+                data.UserNationalSocieties.Add(userNationalSociety);
+                data.NationalSocieties.Add(nationalSociety);
+
+                _smsGatewayServiceMock.List(nationalSociety.Id).Returns(Result.Success(new List<GatewaySettingResponseDto>()));
+
+                return new ArchiveNationalSocietyAdditionalData
+                {
+                    NationalSocietyBeingArchived = nationalSociety,
+                    HeadManager = headManagerUser
+                };
+            });
+
+        public TestCaseData<ArchiveNationalSocietyAdditionalData> WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleTechnicalAdvisor =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleTechnicalAdvisor), data =>
+            {
+                data.Include(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().EntityData);
+                var nationalSociety = WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived;
+                var headManagerUser = WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.HeadManager;
+
+                headManagerUser.Role = Role.TechnicalAdvisor;
+
+                return new ArchiveNationalSocietyAdditionalData
+                {
+                    NationalSocietyBeingArchived = nationalSociety,
+                    HeadManager = headManagerUser
+                };
+            });
+
+        public TestCaseData<ArchiveNationalSocietyAdditionalData> WhenHasNoProjectsAndSomeUsersExceptHeadManager =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenHasNoProjectsAndSomeUsersExceptHeadManager), data =>
+            {
+                data.Include(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().EntityData);
+
+                var nationalSociety = WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived;
+
+                var additionalUser = new ManagerUser { Id = _userNumerator.Next };
+                var userNationalSociety = new UserNationalSociety
+                {
+                    User = additionalUser,
+                    UserId = additionalUser.Id,
+                    NationalSocietyId = nationalSociety.Id,
+                    NationalSociety = nationalSociety
+                };
+
+                additionalUser.UserNationalSocieties = new List<UserNationalSociety> { userNationalSociety };
+                nationalSociety.NationalSocietyUsers.Add(userNationalSociety);
+
+                return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSociety };
+            });
+
+        public TestCaseData<ArchiveNationalSocietyAdditionalData> WhenSuccessfullyArchivingNationalSocietyWith2SmsGateways =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenSuccessfullyArchivingNationalSocietyWith2SmsGateways), data =>
+            {
+                data.Include(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().EntityData);
+                var nationalSociety = WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived;
+
+                var smsGateway1 = new GatewaySettingResponseDto { Id = 1 };
+                var smsGateway2 = new GatewaySettingResponseDto { Id = 2 };
+
+                _smsGatewayServiceMock.List(nationalSociety.Id).Returns(Result.Success(new List<GatewaySettingResponseDto>
+                {
+                    smsGateway1,
+                    smsGateway2
+                }));
+                _smsGatewayServiceMock.Delete(Arg.Any<int>()).Returns(Result.Success());
+
+                return new ArchiveNationalSocietyAdditionalData
+                {
+                    NationalSocietyBeingArchived = nationalSociety,
+                    SmsGatewaysIds = new List<int>
+                    {
+                        smsGateway1.Id,
+                        smsGateway2.Id
+                    }
+                };
+            });
+
+        public TestCaseData<RestoreNationalSocietyAdditionalData> WhenReopeningNationalSociety =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenReopeningNationalSociety), data =>
+            {
+                var nationalSociety = new NationalSociety
+                {
+                    Id = _nationalSocietyNumerator.Next,
+                    NationalSocietyUsers = new List<UserNationalSociety>(),
+                    IsArchived = true
+                };
+                data.NationalSocieties.Add(nationalSociety);
+
+                data.NyssContextMockedMethods = nyssContext =>
+                {
+                    nyssContext.NationalSocieties.FindAsync(nationalSociety.Id).Returns(nationalSociety);
+                };
+
+                return new RestoreNationalSocietyAdditionalData { NationalSocietyBeingReopened = nationalSociety };
+            });
+
+        public NationalSocietyServiceTestData(INyssContext nyssContextMock, ISmsGatewayService smsGatewayServiceMock)
+        {
+            _smsGatewayServiceMock = smsGatewayServiceMock;
+            _testCaseDataProvider = new TestCaseDataProvider(nyssContextMock);
+
+            BasicData = new BasicNationalSocietyServiceTestData(nyssContextMock, _nationalSocietyNumerator);
+        }
+
         public struct ArchiveNationalSocietyAdditionalData
         {
             public NationalSociety NationalSocietyBeingArchived { get; set; }
@@ -27,115 +178,5 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
         {
             public NationalSociety NationalSocietyBeingReopened { get; set; }
         }
-        
-        private readonly TestCaseDataProvider _testCaseDataProvider;
-        private readonly EntityNumerator _nationalSocietyNumerator = new EntityNumerator();
-        private readonly EntityNumerator _userNumerator = new EntityNumerator();
-
-        public BasicNationalSocietyServiceTestData BasicData { get; set; }
-
-        public NationalSocietyServiceTestData(INyssContext nyssContextMock, ISmsGatewayService smsGatewayServiceMock)
-        {
-            _smsGatewayServiceMock = smsGatewayServiceMock;
-            _testCaseDataProvider = new TestCaseDataProvider(nyssContextMock);
-
-            BasicData = new BasicNationalSocietyServiceTestData(nyssContextMock, _nationalSocietyNumerator);
-        }
-
-        public TestCaseData<ArchiveNationalSocietyAdditionalData> ArchiveWhenHasProjects =>
-            _testCaseDataProvider.GetOrCreate(nameof(ArchiveWhenHasProjects), (data) =>
-            {
-                var nationalSocietyWithProjects = new NationalSociety { Id = _nationalSocietyNumerator.Next , NationalSocietyUsers = new List<UserNationalSociety>()};
-                data.NationalSocieties.Add(nationalSocietyWithProjects);
-                data.Projects.Add(new Project{ NationalSociety = nationalSocietyWithProjects, NationalSocietyId = nationalSocietyWithProjects .Id});
-
-                return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSocietyWithProjects };
-            });
-
-        public TestCaseData<ArchiveNationalSocietyAdditionalData> WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager), (data) =>
-            {
-                var nationalSociety = new NationalSociety { Id = _nationalSocietyNumerator.Next, NationalSocietyUsers = new List<UserNationalSociety>() };
-                var headManagerUser = new ManagerUser { Id = _userNumerator.Next, Role = Role.Manager};
-                var userNationalSociety = new UserNationalSociety
-                {
-                    User = headManagerUser, UserId = headManagerUser.Id, NationalSocietyId = nationalSociety.Id, NationalSociety = nationalSociety
-                };
-                nationalSociety.NationalSocietyUsers = new List<UserNationalSociety> { userNationalSociety };
-                nationalSociety.HeadManager = headManagerUser;
-                headManagerUser.UserNationalSocieties = new List<UserNationalSociety>{userNationalSociety};
-
-                data.Users.Add(headManagerUser);
-                data.UserNationalSocieties.Add(userNationalSociety);
-                data.NationalSocieties.Add(nationalSociety);
-
-                _smsGatewayServiceMock.List(nationalSociety.Id).Returns(Result.Success(new List<GatewaySettingResponseDto>() ));
-
-                return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSociety, HeadManager = headManagerUser};
-            });
-
-        public TestCaseData<ArchiveNationalSocietyAdditionalData> WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleTechnicalAdvisor =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleTechnicalAdvisor), (data) =>
-            {
-                data.Include(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().EntityData);
-                var nationalSociety = WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived;
-                var headManagerUser = WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.HeadManager;
-
-                headManagerUser.Role = Role.TechnicalAdvisor;
-
-                return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSociety, HeadManager = headManagerUser };
-            });
-
-        public TestCaseData<ArchiveNationalSocietyAdditionalData> WhenHasNoProjectsAndSomeUsersExceptHeadManager =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenHasNoProjectsAndSomeUsersExceptHeadManager), (data) =>
-            {
-                data.Include(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().EntityData);
-
-                var nationalSociety = WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived;
-
-                var additionalUser = new ManagerUser{ Id = _userNumerator.Next };
-                var userNationalSociety = new UserNationalSociety
-                {
-                    User = additionalUser,
-                    UserId = additionalUser.Id,
-                    NationalSocietyId = nationalSociety.Id,
-                    NationalSociety = nationalSociety
-                };
-
-                additionalUser.UserNationalSocieties = new List<UserNationalSociety>{userNationalSociety};
-                nationalSociety.NationalSocietyUsers.Add(userNationalSociety);
-
-                return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSociety };
-            });
-
-        public TestCaseData<ArchiveNationalSocietyAdditionalData> WhenSuccessfullyArchivingNationalSocietyWith2SmsGateways =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenSuccessfullyArchivingNationalSocietyWith2SmsGateways), (data) =>
-            {
-                data.Include(WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().EntityData);
-                var nationalSociety = WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.AdditionalData.NationalSocietyBeingArchived;
-
-                var smsGateway1 = new GatewaySettingResponseDto { Id = 1 };
-                var smsGateway2 = new GatewaySettingResponseDto { Id = 2 };
-
-                _smsGatewayServiceMock.List(nationalSociety.Id).Returns(Result.Success(new List<GatewaySettingResponseDto> { smsGateway1, smsGateway2 } ));
-                _smsGatewayServiceMock.Delete(Arg.Any<int>()).Returns(Result.Success());
-
-                return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSociety, SmsGatewaysIds = new List<int>{ smsGateway1.Id, smsGateway2.Id} };
-            });
-
-        public TestCaseData<RestoreNationalSocietyAdditionalData> WhenReopeningNationalSociety =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenReopeningNationalSociety), (data) =>
-            {
-                var nationalSociety = new NationalSociety { Id = _nationalSocietyNumerator.Next, NationalSocietyUsers = new List<UserNationalSociety>() , IsArchived = true };
-                data.NationalSocieties.Add(nationalSociety);
-
-                data.NyssContextMockedMethods = (nyssContext) =>
-                {
-                    nyssContext.NationalSocieties.FindAsync(nationalSociety.Id).Returns(nationalSociety);
-                };
-
-                return new RestoreNationalSocietyAdditionalData { NationalSocietyBeingReopened = nationalSociety };
-            });
-
     }
 }

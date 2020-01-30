@@ -79,7 +79,11 @@ namespace RX.Nyss.ReportApi.Configuration
         private static void RegisterSwagger(IServiceCollection serviceCollection) =>
             serviceCollection.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Nyss Report API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Nyss Report API",
+                    Version = "v1"
+                });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
@@ -95,7 +99,11 @@ namespace RX.Nyss.ReportApi.Configuration
         private static void RegisterTypes(IServiceCollection serviceCollection, string namePrefix) =>
             GetAssemblies(namePrefix: namePrefix)
                 .SelectMany(assembly => assembly.GetExportedTypes())
-                .Select(type => new { implementationType = type, interfaceType = type.GetInterfaces().FirstOrDefault(i => i.Name == $"I{type.Name}") })
+                .Select(type => new
+                {
+                    implementationType = type,
+                    interfaceType = type.GetInterfaces().FirstOrDefault(i => i.Name == $"I{type.Name}")
+                })
                 .Where(x => x.interfaceType != null)
                 .ToList()
                 .ForEach(i => serviceCollection.AddScoped(i.interfaceType, i.implementationType));

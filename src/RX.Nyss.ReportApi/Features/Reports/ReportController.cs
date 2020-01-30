@@ -17,10 +17,14 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Report report) =>
-            await _reportService.ReceiveReport(report) ? (StatusCodeResult) new OkResult() : new BadRequestResult();
+            await _reportService.ReceiveReport(report)
+                ? (StatusCodeResult)new OkResult()
+                : new BadRequestResult();
 
         [HttpPost("dismiss")]
         public async Task<IActionResult> Dismiss(int reportId) =>
-            await _reportService.DismissReport(reportId) ? (StatusCodeResult)new OkResult() : new BadRequestResult();
+            await _reportService.DismissReport(reportId)
+                ? (StatusCodeResult)new OkResult()
+                : new BadRequestResult();
     }
 }

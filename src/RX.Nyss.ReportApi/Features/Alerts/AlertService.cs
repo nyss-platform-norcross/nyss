@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Services;
-using RX.Nyss.Common.Services.StringsResources;
-using RX.Nyss.Common.Utils;
-using RX.Nyss.Common.Utils.DataContract;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
 {
@@ -25,7 +24,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task CheckIfAlertHasBeenHandled(int alertId);
     }
 
-    public class AlertService: IAlertService
+    public class AlertService : IAlertService
     {
         private readonly INyssContext _nyssContext;
         private readonly IReportLabelingService _reportLabelingService;
@@ -120,10 +119,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         public async Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting)
         {
             var phoneNumbersOfSupervisorsInAlert = await _nyssContext.AlertReports
-                    .Where(ar => ar.Alert.Id == alert.Id)
-                    .Select(ar => ar.Report.DataCollector.Supervisor.PhoneNumber)
-                    .Distinct()
-                    .ToListAsync();
+                .Where(ar => ar.Alert.Id == alert.Id)
+                .Select(ar => ar.Report.DataCollector.Supervisor.PhoneNumber)
+                .Distinct()
+                .ToListAsync();
 
             var message = await CreateNotificationMessageForNewAlert(alert);
 
@@ -135,17 +134,18 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             var alert = await _nyssContext.Alerts.Where(a => a.Id == alertId)
                 .Select(a =>
-                new {
-                    a.Status,
-                    a.CreatedAt,
-                    a.ProjectHealthRisk.Project.NationalSociety.HeadManager,
-                    Supervisors = a.AlertReports.Select(x => x.Report.DataCollector.Supervisor.Name),
-                    HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents.First().Name,
-                    VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
-                        .Select(ar => ar.Report.RawReport.Village.Name)
-                        .FirstOrDefault(),
-                    LanguageCode =a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode.ToLower()
-                })
+                    new
+                    {
+                        a.Status,
+                        a.CreatedAt,
+                        a.ProjectHealthRisk.Project.NationalSociety.HeadManager,
+                        Supervisors = a.AlertReports.Select(x => x.Report.DataCollector.Supervisor.Name),
+                        HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents.First().Name,
+                        VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
+                            .Select(ar => ar.Report.RawReport.Village.Name)
+                            .FirstOrDefault(),
+                        LanguageCode = a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode.ToLower()
+                    })
                 .FirstOrDefaultAsync();
 
             if (alert == null)
@@ -161,7 +161,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 var timeSinceTriggered = (_dateTimeProvider.UtcNow - alert.CreatedAt).TotalHours;
                 var emailSubject = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Subject, alert.LanguageCode);
                 var emailBody = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Body, alert.LanguageCode);
-                
+
                 emailBody = emailBody
                     .Replace("{{healthRiskName}}", alert.HealthRiskName)
                     .Replace("{{lastReportVillage}}", alert.VillageOfLastReport)
@@ -188,7 +188,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(r => r.ReportGroupLabel == reportGroupLabel)
                 .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
-                .Where(r=> !r.IsTraining)
+                .Where(r => !r.IsTraining)
                 .Where(r => !r.MarkedAsError)
                 .ToListAsync();
 
@@ -223,7 +223,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     .Where(r => !r.IsTraining)
                     .Where(r => r.ReportGroupLabel == reportGroupLabel)
                     .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated || ra.Alert.Status == AlertStatus.Closed)
-                              || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore) )
+                        || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore))
                     .ToListAsync();
 
                 await AddReportsToAlert(existingActiveAlertForLabel, reportsInLabelWithNoActiveAlert);
@@ -249,7 +249,11 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             reports.Where(r => r.Status == ReportStatus.New).ToList()
                 .ForEach(r => r.Status = ReportStatus.Pending);
 
-            var alertReports = reports.Select(r => new AlertReport { Report = r, Alert = alert });
+            var alertReports = reports.Select(r => new AlertReport
+            {
+                Report = r,
+                Alert = alert
+            });
             return _nyssContext.AlertReports.AddRangeAsync(alertReports);
         }
 
@@ -295,9 +299,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                         .Where(lc => lc.ContentLanguage == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage)
                         .Select(lc => lc.Name)
                         .FirstOrDefault(),
-
                     a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-
                     VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
                         .Select(ar => ar.Report.RawReport.Village.Name)
                         .FirstOrDefault()
@@ -319,7 +321,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         private async Task<string> GetSmsMessageContent(string key, string languageCode)
         {
-            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "en");
+            var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode)
+                ? languageCode
+                : "en");
             smsContents.Value.TryGetValue(key, out var message);
 
             if (message == null)
@@ -334,9 +338,12 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             return message;
         }
+
         private async Task<string> GetEmailMessageContent(string key, string languageCode)
         {
-            var contents = await _stringsResourcesService.GetEmailContentResources(!string.IsNullOrEmpty(languageCode) ? languageCode : "en");
+            var contents = await _stringsResourcesService.GetEmailContentResources(!string.IsNullOrEmpty(languageCode)
+                ? languageCode
+                : "en");
 
             if (!contents.Value.TryGetValue(key, out var message))
             {

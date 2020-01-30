@@ -25,10 +25,7 @@ namespace RX.Nyss.ReportApi.Configuration
 
                         var result = new object();
 
-                        var json = JsonSerializer.Serialize(result, new JsonSerializerOptions
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                        });
+                        var json = JsonSerializer.Serialize(result, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
                         await context.Response.WriteAsync(json);
                     }

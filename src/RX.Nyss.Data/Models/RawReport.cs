@@ -23,7 +23,7 @@ namespace RX.Nyss.Data.Models
         public string ApiKey { get; set; }
 
         public int? ReportId { get; set; }
-        
+
         public bool? IsTraining { get; set; }
 
         public virtual Village Village { get; set; }

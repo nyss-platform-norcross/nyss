@@ -38,10 +38,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
 
             var numberOfGroupedVillagesInProjectDashboard = 3;
 
-            _config.View.Returns(new ConfigSingleton.ViewOptions
-            {
-                NumberOfGroupedVillagesInProjectDashboard = numberOfGroupedVillagesInProjectDashboard
-            });
+            _config.View.Returns(new ConfigSingleton.ViewOptions { NumberOfGroupedVillagesInProjectDashboard = numberOfGroupedVillagesInProjectDashboard });
 
             //act
             var result = await _reportsDashboardByDataCollectionPointService.GetReportsGroupedByVillageAndDate(new ReportsFilter(), DatesGroupingType.Day);

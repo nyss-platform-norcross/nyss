@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
-using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -91,13 +91,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = 1,
                     NationalSocietyId = 1,
-                    NationalSociety = new NationalSociety
-                    {
-                        ContentLanguage = new ContentLanguage
-                        {
-                            Id = 2
-                        }
-                    },
+                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 2 } },
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
                     EmailAlertRecipients = new List<EmailAlertRecipient>(),
                     SmsAlertRecipients = new List<SmsAlertRecipient>()
@@ -109,13 +103,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     State = ProjectState.Open,
                     NationalSocietyId = 2,
-                    NationalSociety = new NationalSociety
-                    {
-                        ContentLanguage = new ContentLanguage
-                        {
-                            Id = 1
-                        }
-                    },
+                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 1 } },
                     ProjectHealthRisks = new[]
                     {
                         new ProjectHealthRisk
@@ -131,10 +119,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     new HealthRiskLanguageContent
                                     {
                                         Name = "HealthRiskName",
-                                        ContentLanguage = new ContentLanguage
-                                        {
-                                            Id = 1
-                                        }
+                                        ContentLanguage = new ContentLanguage { Id = 1 }
                                     }
                                 }
                             },
@@ -146,10 +131,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new[]
-                            {
-                                new Report()
-                            }
+                            Reports = new[] { new Report() }
                         }
                     },
                     EmailAlertRecipients = new[]
@@ -212,17 +194,15 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int nonExistentProjectId = 0;
 
-            var project = new[] {
+            var project = new[]
+            {
                 new Project
                 {
                     Id = 1,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
                     EmailAlertRecipients = new List<EmailAlertRecipient>(),
                     SmsAlertRecipients = new List<SmsAlertRecipient>(),
-                    NationalSociety = new NationalSociety
-                    {
-                        ContentLanguage = new ContentLanguage { Id = 1 }
-                    }
+                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 1 } }
                 }
             };
 
@@ -245,7 +225,11 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var nationalSocieties = new[]
             {
-                new NationalSociety {Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -253,10 +237,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             const int healthRiskId = 1;
 
-            var healthRisks = new[]
-            {
-                new HealthRisk {Id = healthRiskId}
-            };
+            var healthRisks = new[] { new HealthRisk { Id = healthRiskId } };
 
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
@@ -295,20 +276,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         FeedbackMessage = "FeedbackMessage"
                     }
                 },
-                EmailAlertRecipients = new[]
-                {
-                    new EmailAlertRecipientDto
-                    {
-                        Email = "user@domain.com"
-                    }
-                },
-                SmsAlertRecipients = new[]
-                {
-                    new SmsAlertRecipientDto
-                    {
-                        PhoneNumber = "+48123456789"
-                    }
-                }
+                EmailAlertRecipients = new[] { new EmailAlertRecipientDto { Email = "user@domain.com" } },
+                SmsAlertRecipients = new[] { new SmsAlertRecipientDto { PhoneNumber = "+48123456789" } }
             };
 
             // Act
@@ -341,12 +310,23 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int nonExistentNationalSocietyId = 0;
 
-            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[]
+            {
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
+            };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZoneId = "Time Zone" };
+            var projectRequestDto = new ProjectRequestDto
+            {
+                Name = "New Project",
+                TimeZoneId = "Time Zone"
+            };
 
             // Act
             var result = await _projectService.Create(nonExistentNationalSocietyId, projectRequestDto);
@@ -366,7 +346,11 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var nationalSocieties = new[]
             {
-                new NationalSociety {Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -374,10 +358,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             const int nonExistentHealthRiskId = 0;
 
-            var healthRisks = new[]
-            {
-                new HealthRisk {Id = 1}
-            };
+            var healthRisks = new[] { new HealthRisk { Id = 1 } };
 
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
@@ -386,13 +367,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             {
                 Name = "New Project",
                 TimeZoneId = "Time Zone",
-                HealthRisks = new[]
-                {
-                    new ProjectHealthRiskRequestDto
-                    {
-                        HealthRiskId = nonExistentHealthRiskId
-                    }
-                }
+                HealthRisks = new[] { new ProjectHealthRiskRequestDto { HealthRiskId = nonExistentHealthRiskId } }
             };
 
             // Act
@@ -413,7 +388,11 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var nationalSocieties = new[]
             {
-                new NationalSociety {Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -434,7 +413,11 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto { Name = "New Project", TimeZoneId = "Time Zone" };
+            var projectRequestDto = new ProjectRequestDto
+            {
+                Name = "New Project",
+                TimeZoneId = "Time Zone"
+            };
 
             // Act
             var result = await _projectService.Create(nationalSocietyId, projectRequestDto);
@@ -455,7 +438,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int projectId = 1;
 
-            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[]
+            {
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
+            };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
@@ -638,7 +628,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int nonExistentProjectId = 0;
 
-            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[]
+            {
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
+            };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
@@ -659,7 +656,11 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(nonExistentProjectId).ReturnsNull();
 
-            var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZoneId = "Updated Time Zone" };
+            var projectRequestDto = new ProjectRequestDto
+            {
+                Name = "Updated Project",
+                TimeZoneId = "Updated Time Zone"
+            };
 
             // Act
             var result = await _projectService.Edit(nonExistentProjectId, projectRequestDto);
@@ -676,7 +677,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int projectId = 1;
 
-            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[]
+            {
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
+            };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
@@ -704,10 +712,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                 DaysThreshold = 2,
                                 KilometersThreshold = 3
                             },
-                            Reports = new List<Report>()
-                            {
-                                new Report()
-                            }
+                            Reports = new List<Report> { new Report() }
                         }
                     },
                     EmailAlertRecipients = new List<EmailAlertRecipient>(),
@@ -746,7 +751,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int projectId = 1;
 
-            var nationalSocieties = new[] { new NationalSociety { Id = 1, Name = "National Society" } };
+            var nationalSocieties = new[]
+            {
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
+            };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
@@ -767,7 +779,11 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
 
-            var projectRequestDto = new ProjectRequestDto { Name = "Updated Project", TimeZoneId = "Updated Time Zone" };
+            var projectRequestDto = new ProjectRequestDto
+            {
+                Name = "Updated Project",
+                TimeZoneId = "Updated Time Zone"
+            };
 
             // Act
             var result = await _projectService.Edit(projectId, projectRequestDto);
@@ -866,19 +882,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
-                    ProjectHealthRisks = new[]
-                    {
-                        new ProjectHealthRisk
-                        {
-                            Alerts = new[]
-                            {
-                                new Alert
-                                {
-                                    Status = alertStatus
-                                }
-                            }
-                        }
-                    }
+                    ProjectHealthRisks = new[] { new ProjectHealthRisk { Alerts = new[] { new Alert { Status = alertStatus } } } }
                 }
             };
 
@@ -920,15 +924,22 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 new DataCollector
                 {
                     Project = project[0],
-                    RawReports = new[]{new RawReport()}
+                    RawReports = new[] { new RawReport() }
                 },
                 new DataCollector
                 {
                     Project = project[0],
-                    RawReports = new[]{new RawReport()}
+                    RawReports = new[] { new RawReport() }
                 }
             };
-            var dataCollectorsToDelete = new List<DataCollector> { new DataCollector { Id = 123, Project = project[0] } };
+            var dataCollectorsToDelete = new List<DataCollector>
+            {
+                new DataCollector
+                {
+                    Id = 123,
+                    Project = project[0]
+                }
+            };
 
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
@@ -1014,10 +1025,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
         private IEnumerable<Project> GenerateExemplaryProjects(int nationalSocietyId)
         {
-            var projectHealthRisk = new ProjectHealthRisk
-            {
-                HealthRisk = new HealthRisk()
-            };
+            var projectHealthRisk = new ProjectHealthRisk { HealthRisk = new HealthRisk() };
 
             return new[]
             {
@@ -1043,7 +1051,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 },
@@ -1054,7 +1065,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 }
@@ -1075,7 +1089,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 },
@@ -1086,7 +1103,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 }
@@ -1095,7 +1115,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             {
                                 new Alert
                                 {
-                                    Id = 10, Status = AlertStatus.Pending
+                                    Id = 10,
+                                    Status = AlertStatus.Pending
                                 }
                             }
                         }
@@ -1103,7 +1124,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 },
                 new Project
                 {
-                    Id = 2, Name = "2", State = ProjectState.Open, NationalSocietyId = 2
+                    Id = 2,
+                    Name = "2",
+                    State = ProjectState.Open,
+                    NationalSocietyId = 2
                 },
                 new Project
                 {
@@ -1127,7 +1151,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 },
@@ -1138,7 +1165,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 }
@@ -1156,7 +1186,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 },
@@ -1167,7 +1200,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 },
@@ -1178,7 +1214,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 }
@@ -1199,7 +1238,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 },
@@ -1210,7 +1252,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 }
@@ -1219,11 +1264,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             {
                                 new Alert
                                 {
-                                    Id = 1, Status = AlertStatus.Pending
+                                    Id = 1,
+                                    Status = AlertStatus.Pending
                                 },
                                 new Alert
                                 {
-                                    Id = 3, Status = AlertStatus.Escalated, EscalatedAt = new DateTime(2019, 1, 1)
+                                    Id = 3,
+                                    Status = AlertStatus.Escalated,
+                                    EscalatedAt = new DateTime(2019, 1, 1)
                                 }
                             }
                         },
@@ -1238,7 +1286,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 },
@@ -1249,7 +1300,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 },
@@ -1260,7 +1314,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                                     ReceivedAt = new DateTime(2019, 1, 1),
                                     ReportedCase = new ReportCase
                                     {
-                                        CountFemalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0, CountMalesBelowFive = 0
+                                        CountFemalesAtLeastFive = 1,
+                                        CountFemalesBelowFive = 0,
+                                        CountMalesAtLeastFive = 0,
+                                        CountMalesBelowFive = 0
                                     },
                                     ReportedCaseCount = 1
                                 }
@@ -1269,15 +1326,19 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             {
                                 new Alert
                                 {
-                                    Id = 4, Status = AlertStatus.Pending
+                                    Id = 4,
+                                    Status = AlertStatus.Pending
                                 },
                                 new Alert
                                 {
-                                    Id = 5, Status = AlertStatus.Dismissed
+                                    Id = 5,
+                                    Status = AlertStatus.Dismissed
                                 },
                                 new Alert
                                 {
-                                    Id = 6, Status = AlertStatus.Escalated, EscalatedAt = new DateTime(2019, 1, 1)
+                                    Id = 6,
+                                    Status = AlertStatus.Escalated,
+                                    EscalatedAt = new DateTime(2019, 1, 1)
                                 }
                             }
                         }

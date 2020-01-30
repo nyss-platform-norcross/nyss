@@ -105,18 +105,12 @@ namespace RX.Nyss.Common.Services.StringsResources
         {
             var blobValue = await _nyssBlobProvider.GetStringsResources();
 
-            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
 
         public async Task SaveStringsBlob(StringsBlob blob)
         {
-            var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+            var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
             await _nyssBlobProvider.SaveStringsResources(blobValue);
         }
@@ -125,20 +119,14 @@ namespace RX.Nyss.Common.Services.StringsResources
         {
             var blobValue = await _nyssBlobProvider.GetEmailContentResources();
 
-            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
 
         private async Task<StringsBlob> GetSmsContentBlob()
         {
             var blobValue = await _nyssBlobProvider.GetSmsContentResources();
 
-            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+            return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
     }
 }

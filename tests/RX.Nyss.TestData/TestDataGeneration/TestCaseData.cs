@@ -11,8 +11,8 @@ namespace RX.Nyss.TestData.TestDataGeneration
 {
     public class TestCaseData<T> : BaseTestCaseData
     {
-        public T AdditionalData { get; set; }
         private readonly Func<EntityData, T> _testCaseDefinition;
+        public T AdditionalData { get; set; }
 
         public TestCaseData(INyssContext nyssContextMock, Func<EntityData, T> definition)
             : base(nyssContextMock)
@@ -87,7 +87,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             AddToNyssContext(data.UserNationalSocieties);
             AddToNyssContext(data.Villages);
             AddToNyssContext(data.Zones);
-            
+
             data.NyssContextMockedMethods?.Invoke(_nyssContextMock);
         }
 
@@ -104,7 +104,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             if (DbSetIsImplemented<T>(dbSetProperty))
             {
                 var existingDbSet = dbSetProperty.GetValue(_nyssContextMock, null) as DbSet<T>;
-                entities.AddRange( existingDbSet.ToList());
+                entities.AddRange(existingDbSet.ToList());
             }
 
             var newDbSet = entities.AsQueryable().BuildMockDbSet();

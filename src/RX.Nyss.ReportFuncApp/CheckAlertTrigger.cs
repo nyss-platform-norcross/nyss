@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using RX.Nyss.ReportFuncApp.Configuration;
-using RX.Nyss.ReportFuncApp.Contracts;
 
 namespace RX.Nyss.ReportFuncApp
 {
@@ -33,7 +31,7 @@ namespace RX.Nyss.ReportFuncApp
 
             if (!postResult.IsSuccessStatusCode)
             {
-                _logger.LogError($"Status code: {(int) postResult.StatusCode} ReasonPhrase: {postResult.ReasonPhrase}");
+                _logger.LogError($"Status code: {(int)postResult.StatusCode} ReasonPhrase: {postResult.ReasonPhrase}");
                 throw new Exception($"Check alert '{alertId}' was not handled properly by the Report API.");
             }
         }

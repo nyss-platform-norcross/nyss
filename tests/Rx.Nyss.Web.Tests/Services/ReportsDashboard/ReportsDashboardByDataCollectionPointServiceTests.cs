@@ -17,8 +17,8 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
     public class ReportsDashboardByDataCollectionPointServiceTests
     {
         private readonly ReportsDashboardByDataCollectionPointService _reportsDashboardByDataCollectionPointService;
-        private IReportService _reportService;
         private readonly List<Report> _reports;
+        private readonly IReportService _reportService;
 
         public ReportsDashboardByDataCollectionPointServiceTests()
         {
@@ -38,9 +38,39 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
         {
             _reports.AddRange(new[]
             {
-                new Report { ReportType = ReportType.DataCollectionPoint, ReceivedAt = new DateTime(2020, 1, 1), DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 1, ReferredCount = 2, FromOtherVillagesCount = 3} },
-                new Report { ReportType = ReportType.DataCollectionPoint, ReceivedAt = new DateTime(2020, 1, 2), DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 4, ReferredCount = 5, FromOtherVillagesCount = 6} },
-                new Report { ReportType = ReportType.Single, ReceivedAt = new DateTime(2020, 1, 2), DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 4, ReferredCount = 5, FromOtherVillagesCount = 6} }
+                new Report
+                {
+                    ReportType = ReportType.DataCollectionPoint,
+                    ReceivedAt = new DateTime(2020, 1, 1),
+                    DataCollectionPointCase = new DataCollectionPointCase
+                    {
+                        DeathCount = 1,
+                        ReferredCount = 2,
+                        FromOtherVillagesCount = 3
+                    }
+                },
+                new Report
+                {
+                    ReportType = ReportType.DataCollectionPoint,
+                    ReceivedAt = new DateTime(2020, 1, 2),
+                    DataCollectionPointCase = new DataCollectionPointCase
+                    {
+                        DeathCount = 4,
+                        ReferredCount = 5,
+                        FromOtherVillagesCount = 6
+                    }
+                },
+                new Report
+                {
+                    ReportType = ReportType.Single,
+                    ReceivedAt = new DateTime(2020, 1, 2),
+                    DataCollectionPointCase = new DataCollectionPointCase
+                    {
+                        DeathCount = 4,
+                        ReferredCount = 5,
+                        FromOtherVillagesCount = 6
+                    }
+                }
             });
 
             var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Day);
@@ -55,9 +85,24 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
         {
             _reports.AddRange(new[]
             {
-                new Report { ReportType = ReportType.DataCollectionPoint, ReceivedAt = new DateTime(2020, 1, 1), DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 1 } },
-                new Report { ReportType = ReportType.DataCollectionPoint, ReceivedAt = new DateTime(2020, 1, 2), DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 2 } },
-                new Report { ReportType = ReportType.DataCollectionPoint, ReceivedAt = new DateTime(2020, 1, 2), DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 3 } }
+                new Report
+                {
+                    ReportType = ReportType.DataCollectionPoint,
+                    ReceivedAt = new DateTime(2020, 1, 1),
+                    DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 1 }
+                },
+                new Report
+                {
+                    ReportType = ReportType.DataCollectionPoint,
+                    ReceivedAt = new DateTime(2020, 1, 2),
+                    DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 2 }
+                },
+                new Report
+                {
+                    ReportType = ReportType.DataCollectionPoint,
+                    ReceivedAt = new DateTime(2020, 1, 2),
+                    DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 3 }
+                }
             });
 
             var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Day);
@@ -72,9 +117,30 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
         {
             _reports.AddRange(new[]
             {
-                new Report { ReportType = ReportType.DataCollectionPoint, ReceivedAt = new DateTime(2020, 1, 1), EpiWeek = 1, EpiYear = 2020, DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 1 } },
-                new Report { ReportType = ReportType.DataCollectionPoint, ReceivedAt = new DateTime(2020, 1, 2), EpiWeek = 53, EpiYear = 2019, DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 2 } },
-                new Report { ReportType = ReportType.DataCollectionPoint, ReceivedAt = new DateTime(2019, 12, 27), EpiWeek = 53, EpiYear = 2019, DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 3 } }
+                new Report
+                {
+                    ReportType = ReportType.DataCollectionPoint,
+                    ReceivedAt = new DateTime(2020, 1, 1),
+                    EpiWeek = 1,
+                    EpiYear = 2020,
+                    DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 1 }
+                },
+                new Report
+                {
+                    ReportType = ReportType.DataCollectionPoint,
+                    ReceivedAt = new DateTime(2020, 1, 2),
+                    EpiWeek = 53,
+                    EpiYear = 2019,
+                    DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 2 }
+                },
+                new Report
+                {
+                    ReportType = ReportType.DataCollectionPoint,
+                    ReceivedAt = new DateTime(2019, 12, 27),
+                    EpiWeek = 53,
+                    EpiYear = 2019,
+                    DataCollectionPointCase = new DataCollectionPointCase { DeathCount = 3 }
+                }
             });
 
             var result = await _reportsDashboardByDataCollectionPointService.GetDataCollectionPointReports(new ReportsFilter(), DatesGroupingType.Week);

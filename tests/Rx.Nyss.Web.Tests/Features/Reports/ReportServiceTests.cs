@@ -72,21 +72,9 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
         private void ArrangeData()
         {
-            var nationalSocieties = new List<NationalSociety>
-            {
-                new NationalSociety
-                {
-                    Id = 1
-                }
-            };
+            var nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = 1 } };
 
-            var alertRules = new List<AlertRule>
-            {
-                new AlertRule
-                {
-                    Id = 1
-                }
-            };
+            var alertRules = new List<AlertRule> { new AlertRule { Id = 1 } };
 
             var contentLanguages = new List<ContentLanguage>
             {
@@ -252,7 +240,14 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             var reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
             var rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).ToList();
 
-            var users = new List<User> { new AdministratorUser{ Role = Role.Administrator, EmailAddress = "admin@domain.com"} };
+            var users = new List<User>
+            {
+                new AdministratorUser
+                {
+                    Role = Role.Administrator,
+                    EmailAddress = "admin@domain.com"
+                }
+            };
 
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var contentLanguageMockDbSet = contentLanguages.AsQueryable().BuildMockDbSet();
@@ -296,14 +291,16 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 .Select(i => new Report
                 {
                     Id = i,
-                    DataCollector =  dataCollector,
+                    DataCollector = dataCollector,
                     Status = ReportStatus.Pending,
-                    ProjectHealthRisk =  projectHealthRisk,
+                    ProjectHealthRisk = projectHealthRisk,
                     ReportedCase = new ReportCase(),
                     DataCollectionPointCase = new DataCollectionPointCase(),
-                    CreatedAt = new DateTime(2020,1,1),
+                    CreatedAt = new DateTime(2020, 1, 1),
                     IsTraining = isTraining ?? false,
-                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? ReportType.DataCollectionPoint : ReportType.Single
+                    ReportType = dataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                        ? ReportType.DataCollectionPoint
+                        : ReportType.Single
                 })
                 .ToList();
             return reports;
@@ -344,7 +341,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _config.PaginationRowsPerPage.Returns(13);
 
             //act
-            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.FromDcp, IsTraining = false, Status = true});
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
+            {
+                ReportsType = ReportListType.FromDcp,
+                IsTraining = false,
+                Status = true
+            });
 
             //assert
             result.Value.Data.Count.ShouldBe(13);
@@ -354,7 +356,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenSelectedLastPageThatHasLessRows_ShouldReturnLessRows()
         {
             //act
-            var result = await _reportService.List(2, 2, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true});
+            var result = await _reportService.List(2, 2, new ReportListFilterRequestDto
+            {
+                ReportsType = ReportListType.Main,
+                IsTraining = false,
+                Status = true
+            });
 
             //assert
             result.Value.Data.Count.ShouldBe(1);
@@ -364,7 +371,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenListFilterIsTraining_ShouldReturnOnlyTraining()
         {
             //act
-            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = true, Status = true });
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto
+            {
+                ReportsType = ReportListType.Main,
+                IsTraining = true,
+                Status = true
+            });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(100, _rowsPerPage));
@@ -375,7 +387,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenReportTypeFilterIsDcp_ShouldReturnOnlyDcpReports()
         {
             //act
-            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.FromDcp, IsTraining = false, Status = true});
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
+            {
+                ReportsType = ReportListType.FromDcp,
+                IsTraining = false,
+                Status = true
+            });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(20, _rowsPerPage));
@@ -386,7 +403,12 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenListFilterIsSuccessStatus_ShouldReturnOnlySuccessReports()
         {
             //act
-            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true});
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
+            {
+                ReportsType = ReportListType.Main,
+                IsTraining = false,
+                Status = true
+            });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(11, _rowsPerPage));
@@ -397,7 +419,17 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenListFilterIsArea_ShouldReturnOnlyReportsFromArea()
         {
             //act
-            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true, Area = new AreaDto {Id = 2, Type = AreaType.Zone}});
+            var result = await _reportService.List(1, 1, new ReportListFilterRequestDto
+            {
+                ReportsType = ReportListType.Main,
+                IsTraining = false,
+                Status = true,
+                Area = new AreaDto
+                {
+                    Id = 2,
+                    Type = AreaType.Zone
+                }
+            });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(13, _rowsPerPage));
@@ -408,7 +440,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
         public async Task List_WhenListFilterIsHealthRisk_ShouldReturnOnlyReportsForHealthRisk()
         {
             //act
-            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto { ReportsType = ReportListType.Main, IsTraining = false, Status = true, HealthRiskId = 2});
+            var result = await _reportService.List(2, 1, new ReportListFilterRequestDto
+            {
+                ReportsType = ReportListType.Main,
+                IsTraining = false,
+                Status = true,
+                HealthRiskId = 2
+            });
 
             //assert
             result.Value.Data.Count.ShouldBe(Math.Min(11, _rowsPerPage));

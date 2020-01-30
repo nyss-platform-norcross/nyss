@@ -66,6 +66,7 @@ namespace RX.Nyss.Data
         public DbSet<Village> Villages { get; set; }
 
         public DbSet<Zone> Zones { get; set; }
+
         public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
             Database.ExecuteSqlInterpolatedAsync(sql);
 

@@ -9,7 +9,7 @@ namespace RX.Nyss.Data.MigrationApp
         private static void Main(string[] args)
         {
             Console.WriteLine("About to migrate NyssContext database");
-            
+
             if (args.Length == 0)
             {
                 throw new ArgumentException("Missing DbConnection string!");

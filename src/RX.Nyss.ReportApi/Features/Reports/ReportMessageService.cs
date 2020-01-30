@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
@@ -21,15 +20,18 @@ namespace RX.Nyss.ReportApi.Features.Reports
         private const int AtLeastFive = 2;
 
         private const string SingleReportPattern = @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<sex>[1-2])\k<separator>(?<ageGroup>[1-2])$";
-        private static readonly Regex SingleReportRegex = new Regex(SingleReportPattern, RegexOptions.Compiled);
 
-        private const string AggregatedReportPattern = @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<malesBelowFive>[0-9]+)\k<separator>(?<malesAtLeastFive>[0-9]+)\k<separator>(?<femalesBelowFive>[0-9]+)\k<separator>(?<femalesAtLeastFive>[0-9]+)$";
-        private static readonly Regex AggregatedReportRegex = new Regex(AggregatedReportPattern, RegexOptions.Compiled);
+        private const string AggregatedReportPattern =
+            @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<malesBelowFive>[0-9]+)\k<separator>(?<malesAtLeastFive>[0-9]+)\k<separator>(?<femalesBelowFive>[0-9]+)\k<separator>(?<femalesAtLeastFive>[0-9]+)$";
 
         private const string EventReportPattern = @"^(?<eventCode>[1-9][0-9]*)$";
-        private static readonly Regex EventReportRegex = new Regex(EventReportPattern, RegexOptions.Compiled);
 
-        private const string DcpReportPattern = @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<malesBelowFive>[0-9]+)\k<separator>(?<malesAtLeastFive>[0-9]+)\k<separator>(?<femalesBelowFive>[0-9]+)\k<separator>(?<femalesAtLeastFive>[0-9]+)\k<separator>(?<referredToHealthFacility>[0-9]+)\k<separator>(?<diedInOrp>[0-9]+)\k<separator>(?<cameFromOtherVillage>[0-9]+)$";
+        private const string DcpReportPattern =
+            @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<malesBelowFive>[0-9]+)\k<separator>(?<malesAtLeastFive>[0-9]+)\k<separator>(?<femalesBelowFive>[0-9]+)\k<separator>(?<femalesAtLeastFive>[0-9]+)\k<separator>(?<referredToHealthFacility>[0-9]+)\k<separator>(?<diedInOrp>[0-9]+)\k<separator>(?<cameFromOtherVillage>[0-9]+)$";
+
+        private static readonly Regex SingleReportRegex = new Regex(SingleReportPattern, RegexOptions.Compiled);
+        private static readonly Regex AggregatedReportRegex = new Regex(AggregatedReportPattern, RegexOptions.Compiled);
+        private static readonly Regex EventReportRegex = new Regex(EventReportPattern, RegexOptions.Compiled);
         private static readonly Regex DcpReportRegex = new Regex(DcpReportPattern, RegexOptions.Compiled);
 
         private readonly INyssContext _nyssContext;
@@ -43,7 +45,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
         {
             if (string.IsNullOrWhiteSpace(reportMessage))
             {
-                throw new ReportValidationException("A report cannot be empty.", ReportErrorType.Other);
+                throw new ReportValidationException("A report cannot be empty.");
             }
 
             if (SingleReportRegex.IsMatch(reportMessage))
@@ -86,10 +88,18 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 ReportType = ReportType.Single,
                 ReportedCase =
                 {
-                    CountMalesBelowFive = sex == Male && ageGroup == BelowFive ? 1 : 0,
-                    CountMalesAtLeastFive = sex == Male && ageGroup == AtLeastFive ? 1 : 0,
-                    CountFemalesBelowFive = sex == Female && ageGroup == BelowFive ? 1 : 0,
-                    CountFemalesAtLeastFive = sex == Female && ageGroup == AtLeastFive ? 1 : 0
+                    CountMalesBelowFive = sex == Male && ageGroup == BelowFive
+                        ? 1
+                        : 0,
+                    CountMalesAtLeastFive = sex == Male && ageGroup == AtLeastFive
+                        ? 1
+                        : 0,
+                    CountFemalesBelowFive = sex == Female && ageGroup == BelowFive
+                        ? 1
+                        : 0,
+                    CountFemalesAtLeastFive = sex == Female && ageGroup == AtLeastFive
+                        ? 1
+                        : 0
                 }
             };
 

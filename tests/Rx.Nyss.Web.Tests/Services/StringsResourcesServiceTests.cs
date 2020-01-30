@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using RX.Nyss.Common.Services;
@@ -13,9 +12,24 @@ namespace RX.Nyss.Web.Tests.Services
 {
     public class StringsResourcesServiceTests
     {
+        private const string DefaultLanguageCode = "en";
+
+        private const string BlobValue = @"
+            {
+                ""strings"": [
+                    {
+                        ""key"": ""login.signIn"",
+                        ""translations"": {
+                            ""en"": ""Log in"",
+                            ""fr"": ""S'identifier""
+                        }
+                    }
+                ]
+            }
+        ";
+
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly INyssBlobProvider _nyssBlobProvider;
-        private const string DefaultLanguageCode = "en";
 
         public StringsResourcesServiceTests()
         {
@@ -49,19 +63,5 @@ namespace RX.Nyss.Web.Tests.Services
             result.Value.ShouldContainKey(key);
             result.Value[key].ShouldBe(value);
         }
-
-        private const string BlobValue = @"
-            {
-                ""strings"": [
-                    {
-                        ""key"": ""login.signIn"",
-                        ""translations"": {
-                            ""en"": ""Log in"",
-                            ""fr"": ""S'identifier""
-                        }
-                    }
-                ]
-            }
-        ";
     }
 }
