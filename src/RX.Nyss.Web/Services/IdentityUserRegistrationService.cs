@@ -71,7 +71,7 @@ namespace RX.Nyss.Web.Services
 
             if (!confirmationResult.Succeeded)
             {
-                return Error(ResultKey.User.VerifyEmail.Failed, string.Join(", " ,confirmationResult.Errors.Select(x => x.Description)));
+                return Error(ResultKey.User.VerifyEmail.Failed, string.Join(", ", confirmationResult.Errors.Select(x => x.Description)));
             }
 
             return Success(true, ResultKey.User.VerifyEmail.Success, confirmationResult);
@@ -147,6 +147,26 @@ namespace RX.Nyss.Web.Services
             return Success(true, ResultKey.User.ResetPassword.Success, passwordChangeResult);
         }
 
+        public async Task DeleteIdentityUser(string identityUserId)
+        {
+            var user = await _userManager.FindByIdAsync(identityUserId);
+
+            if (user == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.UserNotFound);
+            }
+
+            var userDeletionResult = await _userManager.DeleteAsync(user);
+
+            if (!userDeletionResult.Succeeded)
+            {
+                var errorMessages = string.Join(",", userDeletionResult.Errors.Select(x => x.Description));
+                _loggerAdapter.Debug($"A user with id {identityUserId} could not be deleted. {errorMessages}");
+
+                throw new ResultException(ResultKey.User.Registration.UnknownError);
+            }
+        }
+
         private async Task<IdentityUser> AddIdentityUser(string email, bool emailConfirmed = false)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -202,26 +222,6 @@ namespace RX.Nyss.Web.Services
 
                 var errorMessages = string.Join(",", assignmentToRoleResult.Errors.Select(x => x.Description));
                 _loggerAdapter.Debug($"A role {role} could not be assigned. {errorMessages}");
-
-                throw new ResultException(ResultKey.User.Registration.UnknownError);
-            }
-        }
-
-        public async Task DeleteIdentityUser(string identityUserId)
-        {
-            var user = await _userManager.FindByIdAsync(identityUserId);
-
-            if (user == null)
-            {
-                throw new ResultException(ResultKey.User.Registration.UserNotFound);
-            }
-
-            var userDeletionResult = await _userManager.DeleteAsync(user);
-
-            if (!userDeletionResult.Succeeded)
-            {
-                var errorMessages = string.Join(",", userDeletionResult.Errors.Select(x => x.Description));
-                _loggerAdapter.Debug($"A user with id {identityUserId} could not be deleted. {errorMessages}");
 
                 throw new ResultException(ResultKey.User.Registration.UnknownError);
             }

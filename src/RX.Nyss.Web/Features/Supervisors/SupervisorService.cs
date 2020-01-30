@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -35,7 +34,8 @@ namespace RX.Nyss.Web.Features.Supervisors
         private readonly IDeleteUserService _deleteUserService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IDateTimeProvider dateTimeProvider)
+        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IDateTimeProvider dateTimeProvider)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
@@ -61,6 +61,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
                     transactionScope.Complete();
                 }
+
                 await _verificationEmailService.SendVerificationEmail(user, securityStamp);
                 return Success(ResultKey.User.Registration.Success);
             }
@@ -71,87 +72,9 @@ namespace RX.Nyss.Web.Features.Supervisors
             }
         }
 
-        private async Task<SupervisorUser> CreateSupervisorUser(IdentityUser identityUser, int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto)
-        {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
-                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
-
-            if (nationalSociety == null)
-            {
-                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
-            }
-            if (nationalSociety.IsArchived)
-            {
-                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
-            }
-
-            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
-                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
-
-            var user = new SupervisorUser
-            {
-                IdentityUserId = identityUser.Id,
-                EmailAddress = identityUser.Email,
-                Name = createSupervisorRequestDto.Name,
-                PhoneNumber = createSupervisorRequestDto.PhoneNumber,
-                AdditionalPhoneNumber = createSupervisorRequestDto.AdditionalPhoneNumber,
-                ApplicationLanguage = defaultUserApplicationLanguage,
-                DecadeOfBirth = createSupervisorRequestDto.DecadeOfBirth,
-                Sex = createSupervisorRequestDto.Sex,
-                Organization = createSupervisorRequestDto.Organization
-            };
-
-            await AddNewSupervisorToProject(user, createSupervisorRequestDto.ProjectId, nationalSocietyId);
-
-            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
-
-            await _dataContext.AddAsync(userNationalSociety);
-            await _dataContext.SaveChangesAsync();
-            return user;
-        }
-
-        private async Task AddNewSupervisorToProject(SupervisorUser user, int? projectId, int nationalSocietyId)
-        {
-            if (projectId.HasValue)
-            {
-                var project = await _dataContext.Projects
-                    .Where(p => p.State == ProjectState.Open)
-                    .Where(p => p.NationalSociety.Id == nationalSocietyId)
-                    .SingleOrDefaultAsync(p => p.Id == projectId.Value);
-
-                if (project == null)
-                {
-                    throw new ResultException(ResultKey.User.Supervisor.ProjectDoesNotExistOrNoAccess);
-                }
-
-                await AttachSupervisorToProject(user, project);
-            }
-        }
-
-        private async Task AttachSupervisorToProject(SupervisorUser user, Project project)
-        {
-            var newSupervisorUserProject = CreateSupervisorUserProjectReference(project, user);
-            user.CurrentProject = project;
-            await _dataContext.AddAsync(newSupervisorUserProject);
-        }
-
-        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
-            new UserNationalSociety
-            {
-                NationalSociety = nationalSociety,
-                User = user
-            };
-
-        private SupervisorUserProject CreateSupervisorUserProjectReference(Project project, SupervisorUser supervisorUser) =>
-            new SupervisorUserProject
-            {
-                Project = project,
-                SupervisorUser = supervisorUser
-            };
-
         public async Task<Result<GetSupervisorResponseDto>> Get(int supervisorId)
         {
-           var supervisor = await _dataContext.Users.FilterAvailable()
+            var supervisor = await _dataContext.Users.FilterAvailable()
                 .OfType<SupervisorUser>()
                 .Where(u => u.Id == supervisorId)
                 .Select(u => new GetSupervisorResponseDto
@@ -251,6 +174,139 @@ namespace RX.Nyss.Web.Features.Supervisors
             }
         }
 
+        public async Task<Result> Delete(int supervisorId)
+        {
+            try
+            {
+                await _deleteUserService.EnsureCanDeleteUser(supervisorId, Role.Supervisor);
+
+                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                var supervisorUser = await GetSupervisorUser(supervisorId);
+
+                await EnsureSupervisorHasNoDataCollectors(supervisorUser);
+
+                AnonymizeSupervisor(supervisorUser);
+                supervisorUser.DeletedAt = _dateTimeProvider.UtcNow;
+
+                await _identityUserRegistrationService.DeleteIdentityUser(supervisorUser.IdentityUserId);
+                supervisorUser.IdentityUserId = null;
+
+                await _dataContext.SaveChangesAsync();
+                transactionScope.Complete();
+
+                return Success();
+            }
+            catch (ResultException e)
+            {
+                _loggerAdapter.Debug(e);
+                return e.Result;
+            }
+
+            async Task EnsureSupervisorHasNoDataCollectors(SupervisorUser supervisorUser)
+            {
+                var dataCollectorInfo = await _dataContext.DataCollectors
+                    .Where(dc => dc.Supervisor == supervisorUser)
+                    .Select(dc => new
+                    {
+                        dc,
+                        IsDeleted = dc.DeletedAt != null
+                    })
+                    .GroupBy(dc => dc.IsDeleted)
+                    .Select(g => new
+                    {
+                        IsDeleted = g.Key,
+                        Count = g.Count()
+                    })
+                    .ToListAsync();
+
+                var notDeletedDataCollectorCount = dataCollectorInfo.SingleOrDefault(dc => !dc.IsDeleted)?.Count;
+                if (notDeletedDataCollectorCount > 0)
+                {
+                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteSupervisorWithDataCollectors);
+                }
+            }
+        }
+
+        private async Task<SupervisorUser> CreateSupervisorUser(IdentityUser identityUser, int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto)
+        {
+            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+
+            if (nationalSociety == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+            }
+
+            if (nationalSociety.IsArchived)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
+            }
+
+            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
+
+            var user = new SupervisorUser
+            {
+                IdentityUserId = identityUser.Id,
+                EmailAddress = identityUser.Email,
+                Name = createSupervisorRequestDto.Name,
+                PhoneNumber = createSupervisorRequestDto.PhoneNumber,
+                AdditionalPhoneNumber = createSupervisorRequestDto.AdditionalPhoneNumber,
+                ApplicationLanguage = defaultUserApplicationLanguage,
+                DecadeOfBirth = createSupervisorRequestDto.DecadeOfBirth,
+                Sex = createSupervisorRequestDto.Sex,
+                Organization = createSupervisorRequestDto.Organization
+            };
+
+            await AddNewSupervisorToProject(user, createSupervisorRequestDto.ProjectId, nationalSocietyId);
+
+            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+
+            await _dataContext.AddAsync(userNationalSociety);
+            await _dataContext.SaveChangesAsync();
+            return user;
+        }
+
+        private async Task AddNewSupervisorToProject(SupervisorUser user, int? projectId, int nationalSocietyId)
+        {
+            if (projectId.HasValue)
+            {
+                var project = await _dataContext.Projects
+                    .Where(p => p.State == ProjectState.Open)
+                    .Where(p => p.NationalSociety.Id == nationalSocietyId)
+                    .SingleOrDefaultAsync(p => p.Id == projectId.Value);
+
+                if (project == null)
+                {
+                    throw new ResultException(ResultKey.User.Supervisor.ProjectDoesNotExistOrNoAccess);
+                }
+
+                await AttachSupervisorToProject(user, project);
+            }
+        }
+
+        private async Task AttachSupervisorToProject(SupervisorUser user, Project project)
+        {
+            var newSupervisorUserProject = CreateSupervisorUserProjectReference(project, user);
+            user.CurrentProject = project;
+            await _dataContext.AddAsync(newSupervisorUserProject);
+        }
+
+        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
+            new UserNationalSociety
+            {
+                NationalSociety = nationalSociety,
+                User = user
+            };
+
+        private SupervisorUserProject CreateSupervisorUserProjectReference(Project project, SupervisorUser supervisorUser) =>
+            new SupervisorUserProject
+            {
+                Project = project,
+                SupervisorUser = supervisorUser
+            };
+
         private async Task UpdateSupervisorProjectReferences(SupervisorUser user, SupervisorUserProject currentProjectReference, int? selectedProjectId)
         {
             var projectHasNotChanged = selectedProjectId.HasValue && selectedProjectId.Value == currentProjectReference?.ProjectId;
@@ -293,52 +349,6 @@ namespace RX.Nyss.Web.Features.Supervisors
             }
         }
 
-        public async Task<Result> Delete(int supervisorId)
-        {
-            try
-            {
-                await _deleteUserService.EnsureCanDeleteUser(supervisorId, Role.Supervisor);
-
-                using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-
-                var supervisorUser = await GetSupervisorUser(supervisorId);
-
-                await EnsureSupervisorHasNoDataCollectors(supervisorUser);
-
-                AnonymizeSupervisor(supervisorUser);
-                supervisorUser.DeletedAt = _dateTimeProvider.UtcNow;
-
-                await _identityUserRegistrationService.DeleteIdentityUser(supervisorUser.IdentityUserId);
-                supervisorUser.IdentityUserId = null;
-
-                await _dataContext.SaveChangesAsync();
-                transactionScope.Complete();
-
-                return Success();
-            }
-            catch (ResultException e)
-            {
-                _loggerAdapter.Debug(e);
-                return e.Result;
-            }
-
-            async Task EnsureSupervisorHasNoDataCollectors(SupervisorUser supervisorUser)
-            {
-                var dataCollectorInfo = await _dataContext.DataCollectors
-                    .Where(dc => dc.Supervisor == supervisorUser)
-                    .Select(dc => new { dc, IsDeleted = (dc.DeletedAt != null) })
-                    .GroupBy(dc => dc.IsDeleted)
-                    .Select(g => new { IsDeleted = g.Key, Count = g.Count() })
-                    .ToListAsync();
-
-                var notDeletedDataCollectorCount = dataCollectorInfo.SingleOrDefault(dc => !dc.IsDeleted)?.Count;
-                if (notDeletedDataCollectorCount > 0)
-                {
-                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteSupervisorWithDataCollectors);
-                }
-            }
-        }
-
         private void AnonymizeSupervisor(SupervisorUser supervisorUser)
         {
             supervisorUser.Name = Anonymization.Text;
@@ -366,4 +376,3 @@ namespace RX.Nyss.Web.Features.Supervisors
         }
     }
 }
-

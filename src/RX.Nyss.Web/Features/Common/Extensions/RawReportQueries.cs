@@ -8,17 +8,17 @@ namespace RX.Nyss.Web.Features.Common.Extensions
     public static class RawReportQueries
     {
         public static IQueryable<RawReport> FilterByDataCollectorType(this IQueryable<RawReport> reports, DataCollectorType? dataCollectorType) =>
-           dataCollectorType switch
-           {
-               DataCollectorType.Human =>
-               reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
+            dataCollectorType switch
+            {
+                DataCollectorType.Human =>
+                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
 
-               DataCollectorType.CollectionPoint =>
-               reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
+                DataCollectorType.CollectionPoint =>
+                reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
 
-               _ =>
-               reports
-           };
+                _ =>
+                reports
+            };
 
         public static IQueryable<RawReport> FilterReportsByNationalSociety(this IQueryable<RawReport> reports, int? nationalSocietyId) =>
             reports.Where(r => !nationalSocietyId.HasValue || r.DataCollector.Project.NationalSocietyId == nationalSocietyId.Value);

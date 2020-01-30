@@ -15,7 +15,6 @@ using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
 using RX.Nyss.Web.Features.SmsGateways;
-using RX.Nyss.Web.Features.SmsGateways.Dto;
 using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -271,23 +270,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success(pendingSocieties);
         }
 
-        public async Task<ContentLanguage> GetLanguageById(int id) =>
-            await _nyssContext.ContentLanguages.FindAsync(id);
-
-        public async Task<Country> GetCountryById(int id) =>
-            await _nyssContext.Countries.FindAsync(id);
-
-        private async Task<IQueryable<NationalSociety>> GetNationalSocietiesQuery()
-        {
-            if (_nationalSocietyAccessService.HasCurrentUserAccessToAllNationalSocieties())
-            {
-                return _nyssContext.NationalSocieties;
-            }
-
-            var availableNationalSocieties = await _nationalSocietyAccessService.GetCurrentUserNationalSocietyIds();
-            return _nyssContext.NationalSocieties.Where(ns => availableNationalSocieties.Contains(ns.Id));
-        }
-
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>
             await _nyssContext.ProjectHealthRisks
                 .Where(ph => ph.Project.NationalSocietyId == nationalSocietyId)
@@ -317,8 +299,12 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                         .Where(UserNationalSocietyQueries.IsNotDeletedUser)
                         .Any(uns => uns.UserId != ns.HeadManager.Id),
                     HasOpenedProjects = openedProjectsQuery.Any(p => p.NationalSocietyId == ns.Id),
-                    HeadManagerId = ns.HeadManager != null ? (int?)ns.HeadManager.Id : null,
-                    HeadManagerRole = ns.HeadManager != null ? (Role?)ns.HeadManager.Role : null,
+                    HeadManagerId = ns.HeadManager != null
+                        ? (int?)ns.HeadManager.Id
+                        : null,
+                    HeadManagerRole = ns.HeadManager != null
+                        ? (Role?)ns.HeadManager.Role
+                        : null
                 })
                 .SingleAsync();
 
@@ -356,6 +342,36 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             }
         }
 
+        public async Task<Result> Reopen(int nationalSocietyId)
+        {
+            var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
+            if (nationalSociety == null)
+            {
+                return Error(ResultKey.NationalSociety.NotFound);
+            }
+
+            nationalSociety.IsArchived = false;
+            await _nyssContext.SaveChangesAsync();
+            return SuccessMessage(ResultKey.NationalSociety.Archive.ReopenSuccess);
+        }
+
+        public async Task<ContentLanguage> GetLanguageById(int id) =>
+            await _nyssContext.ContentLanguages.FindAsync(id);
+
+        public async Task<Country> GetCountryById(int id) =>
+            await _nyssContext.Countries.FindAsync(id);
+
+        private async Task<IQueryable<NationalSociety>> GetNationalSocietiesQuery()
+        {
+            if (_nationalSocietyAccessService.HasCurrentUserAccessToAllNationalSocieties())
+            {
+                return _nyssContext.NationalSocieties;
+            }
+
+            var availableNationalSocieties = await _nationalSocietyAccessService.GetCurrentUserNationalSocietyIds();
+            return _nyssContext.NationalSocieties.Where(ns => availableNationalSocieties.Contains(ns.Id));
+        }
+
         private async Task RemoveApiKeys(int nationalSocietyId)
         {
             var gatewaysResult = await _smsGatewayService.List(nationalSocietyId);
@@ -386,19 +402,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             {
                 await _technicalAdvisorService.DeleteIncludingHeadManagerFlag(nationalSocietyId, headManagerId);
             }
-        }
-
-        public async Task<Result> Reopen(int nationalSocietyId)
-        {
-            var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
-            if (nationalSociety == null)
-            {
-                return Error(ResultKey.NationalSociety.NotFound);
-            }
-
-            nationalSociety.IsArchived = false;
-            await _nyssContext.SaveChangesAsync();
-            return SuccessMessage(ResultKey.NationalSociety.Archive.ReopenSuccess);
         }
     }
 }

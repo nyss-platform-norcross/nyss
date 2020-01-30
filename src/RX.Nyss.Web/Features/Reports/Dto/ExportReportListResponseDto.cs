@@ -7,7 +7,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     {
         public int Id { get; set; }
         public Point Location { get; set; }
-        public DateTime DateTime { get; set; }
         public string HealthRiskName { get; set; }
         public bool IsValid { get; set; }
         public string Region { get; set; }
@@ -27,5 +26,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int EpiWeek { get; set; }
         public int EpiYear { get; set; }
         public bool MarkedAsError { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }

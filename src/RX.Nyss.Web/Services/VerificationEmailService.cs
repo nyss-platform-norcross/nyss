@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Services
             var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(user.EmailAddress)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
 
             var (emailSubject, emailBody) = await _emailTextGeneratorService.GenerateEmailVerificationEmail(
-                role:user.Role,
+                role: user.Role,
                 callbackUrl: verificationUrl,
                 name: user.Name,
                 user.ApplicationLanguage.LanguageCode);

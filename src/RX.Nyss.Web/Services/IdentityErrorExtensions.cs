@@ -9,7 +9,7 @@ namespace RX.Nyss.Web.Services
         {
             switch (Enum.Parse<IdentityErrorCode>(identityError.Code))
             {
-                case IdentityErrorCode.PasswordTooShort: 
+                case IdentityErrorCode.PasswordTooShort:
                 case IdentityErrorCode.PasswordRequiresNonAlphanumeric:
                 case IdentityErrorCode.PasswordRequiresDigit:
                 case IdentityErrorCode.PasswordRequiresLower:

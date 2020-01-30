@@ -34,7 +34,8 @@ namespace RX.Nyss.Web.Features.Managers
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
 
-        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
+        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
@@ -59,6 +60,7 @@ namespace RX.Nyss.Web.Features.Managers
 
                     transactionScope.Complete();
                 }
+
                 await _verificationEmailService.SendVerificationEmail(user, securityStamp);
                 return Success(ResultKey.User.Registration.Success);
             }
@@ -68,48 +70,6 @@ namespace RX.Nyss.Web.Features.Managers
                 return e.Result;
             }
         }
-
-        private async Task<ManagerUser> CreateManagerUser(IdentityUser identityUser, int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
-        {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
-                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
-
-            if (nationalSociety == null)
-            {
-                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
-            }
-            if (nationalSociety.IsArchived)
-            {
-                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
-            }
-
-            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
-                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
-
-            var user = new ManagerUser
-            {
-                IdentityUserId = identityUser.Id,
-                EmailAddress = identityUser.Email,
-                Name = createManagerRequestDto.Name,
-                PhoneNumber = createManagerRequestDto.PhoneNumber,
-                AdditionalPhoneNumber = createManagerRequestDto.AdditionalPhoneNumber,
-                Organization = createManagerRequestDto.Organization,
-                ApplicationLanguage = defaultUserApplicationLanguage,
-            };
-
-            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
-
-            await _dataContext.AddAsync(userNationalSociety);
-            await _dataContext.SaveChangesAsync();
-            return user;
-        }
-
-        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
-            new UserNationalSociety
-            {
-                NationalSociety = nationalSociety,
-                User = user
-            };
 
         public async Task<Result<GetManagerResponseDto>> Get(int nationalSocietyUserId)
         {
@@ -124,7 +84,7 @@ namespace RX.Nyss.Web.Features.Managers
                     Email = u.EmailAddress,
                     PhoneNumber = u.PhoneNumber,
                     AdditionalPhoneNumber = u.AdditionalPhoneNumber,
-                    Organization = u.Organization,
+                    Organization = u.Organization
                 })
                 .SingleOrDefaultAsync();
 
@@ -180,13 +140,59 @@ namespace RX.Nyss.Web.Features.Managers
             }
         }
 
+        public async Task DeleteIncludingHeadManagerFlag(int managerId) =>
+            await DeleteFromDb(managerId, true);
+
+        private async Task<ManagerUser> CreateManagerUser(IdentityUser identityUser, int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
+        {
+            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+
+            if (nationalSociety == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+            }
+
+            if (nationalSociety.IsArchived)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
+            }
+
+            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
+
+            var user = new ManagerUser
+            {
+                IdentityUserId = identityUser.Id,
+                EmailAddress = identityUser.Email,
+                Name = createManagerRequestDto.Name,
+                PhoneNumber = createManagerRequestDto.PhoneNumber,
+                AdditionalPhoneNumber = createManagerRequestDto.AdditionalPhoneNumber,
+                Organization = createManagerRequestDto.Organization,
+                ApplicationLanguage = defaultUserApplicationLanguage
+            };
+
+            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+
+            await _dataContext.AddAsync(userNationalSociety);
+            await _dataContext.SaveChangesAsync();
+            return user;
+        }
+
+        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
+            new UserNationalSociety
+            {
+                NationalSociety = nationalSociety,
+                User = user
+            };
+
         private async Task DeleteFromDb(int managerId, bool allowHeadManagerDeletion = false)
         {
             var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
 
             await HandleHeadManagerStatus(manager, allowHeadManagerDeletion);
 
-            _nationalSocietyUserService.DeleteNationalSocietyUser<ManagerUser>(manager);
+            _nationalSocietyUserService.DeleteNationalSocietyUser(manager);
             await _identityUserRegistrationService.DeleteIdentityUser(manager.IdentityUserId);
         }
 
@@ -197,17 +203,16 @@ namespace RX.Nyss.Web.Features.Managers
             {
                 nationalSociety.PendingHeadManager = null;
             }
+
             if (nationalSociety.HeadManager == manager)
             {
                 if (!allowHeadManagerDeletion)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
+
                 nationalSociety.HeadManager = null;
             }
         }
-
-        public async Task DeleteIncludingHeadManagerFlag(int managerId) =>
-            await DeleteFromDb(managerId, true);
     }
 }

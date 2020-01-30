@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.Authentication
             await _authenticationService.GetStatus(User);
 
         [Route("login"), HttpPost, AllowAnonymous]
-        public async Task<Result> Login([FromBody]LoginRequestDto dto) =>
+        public async Task<Result> Login([FromBody] LoginRequestDto dto) =>
             await _authenticationService.Login(dto);
 
         [Route("logout"), HttpPost]

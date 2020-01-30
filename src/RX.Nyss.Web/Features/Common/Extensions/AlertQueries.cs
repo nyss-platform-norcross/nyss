@@ -39,6 +39,5 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 _ =>
                 alerts
             };
-
     }
 }

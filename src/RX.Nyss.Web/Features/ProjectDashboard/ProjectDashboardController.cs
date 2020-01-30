@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// <returns>A summary of specified project</returns>
         [HttpPost("data")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<ProjectDashboardResponseDto>> Data(int projectId, [FromBody]FiltersRequestDto dto) =>
+        public Task<Result<ProjectDashboardResponseDto>> Data(int projectId, [FromBody] FiltersRequestDto dto) =>
             _projectDashboardService.GetData(projectId, dto);
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// <param name="filters">Filters</param>
         [HttpPost("reportHealthRisks")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int projectId, double latitude, double longitude, [FromBody]FiltersRequestDto filters) =>
+        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int projectId, double latitude, double longitude, [FromBody] FiltersRequestDto filters) =>
             await _projectDashboardService.GetProjectReportHealthRisks(projectId, latitude, longitude, filters);
     }
 }

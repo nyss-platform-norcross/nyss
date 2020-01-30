@@ -50,4 +50,3 @@ namespace RX.Nyss.Web.Features.Users
             await _userService.AddExisting(nationalSocietyId, existingUser.Email);
     }
 }
-

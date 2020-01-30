@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Create(int nationalSocietyId, [FromBody]CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto) =>
+        public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto) =>
             await _technicalAdvisorService.Create(nationalSocietyId, createTechnicalAdvisorRequestDto);
 
         /// <summary>
@@ -48,12 +48,13 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         /// <returns></returns>
         [HttpPost("{technicalAdvisorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.TechnicalAdvisorAccess)]
-        public async Task<Result> Edit(int technicalAdvisorId, [FromBody]EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto) =>
+        public async Task<Result> Edit(int technicalAdvisorId, [FromBody] EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto) =>
             await _technicalAdvisorService.Edit(technicalAdvisorId, editTechnicalAdvisorRequestDto);
 
         /// <summary>
         /// Delete a technical advisor in a national society.
-        /// If the technical advisor is also in other national societies, he/she will be removed from the provided national society, but the user will not be deleted.
+        /// If the technical advisor is also in other national societies, he/she will be removed from the provided national
+        /// society, but the user will not be deleted.
         /// If this is the only national society of the technical advisor, the technical advisor will be deleted.
         /// </summary>
         /// <param name="nationalSocietyId">The ID of the national society the technical advisor should be deleted from</param>

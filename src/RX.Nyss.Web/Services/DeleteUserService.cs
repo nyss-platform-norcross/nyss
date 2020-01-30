@@ -16,11 +16,11 @@ namespace RX.Nyss.Web.Services
         bool GetCanRoleDeleteRole(Role deletedUserRole, Role deletingUserRole);
     }
 
-    public class DeleteUserService: IDeleteUserService
+    public class DeleteUserService : IDeleteUserService
     {
         private readonly IDictionary<Role, int> _userRoleHierarchyDictionary = new Dictionary<Role, int>();
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private INyssContext _nyssContext;
+        private readonly INyssContext _nyssContext;
 
         public DeleteUserService(IHttpContextAccessor httpContextAccessor, INyssContext nyssContext)
         {
@@ -29,22 +29,16 @@ namespace RX.Nyss.Web.Services
             SetupUserRolesHierarchy();
         }
 
-        private void SetupUserRolesHierarchy()
-        {
-            _userRoleHierarchyDictionary[Role.Administrator] = 1;
-            _userRoleHierarchyDictionary[Role.GlobalCoordinator] = 2;
-            _userRoleHierarchyDictionary[Role.DataConsumer] = 3;
-            _userRoleHierarchyDictionary[Role.Manager] = 3;
-            _userRoleHierarchyDictionary[Role.TechnicalAdvisor] = 3;
-            _userRoleHierarchyDictionary[Role.Supervisor] = 4;
-        }
-
         public async Task EnsureCanDeleteUser(int deletedUserId, Role deletedUserRole)
         {
             var callingUserEmail = _httpContextAccessor.HttpContext.User.Identity.Name;
             var callingUserData = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == callingUserEmail)
-                .Select(u => new{u.Id, u.Role})
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Role
+                })
                 .SingleAsync();
 
             if (deletedUserId == callingUserData.Id)
@@ -69,6 +63,16 @@ namespace RX.Nyss.Web.Services
             }
 
             return true;
+        }
+
+        private void SetupUserRolesHierarchy()
+        {
+            _userRoleHierarchyDictionary[Role.Administrator] = 1;
+            _userRoleHierarchyDictionary[Role.GlobalCoordinator] = 2;
+            _userRoleHierarchyDictionary[Role.DataConsumer] = 3;
+            _userRoleHierarchyDictionary[Role.Manager] = 3;
+            _userRoleHierarchyDictionary[Role.TechnicalAdvisor] = 3;
+            _userRoleHierarchyDictionary[Role.Supervisor] = 4;
         }
     }
 }

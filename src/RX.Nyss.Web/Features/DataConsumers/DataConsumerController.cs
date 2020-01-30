@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Create(int nationalSocietyId, [FromBody]CreateDataConsumerRequestDto createDataConsumerRequestDto) =>
+        public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateDataConsumerRequestDto createDataConsumerRequestDto) =>
             await _dataConsumerService.Create(nationalSocietyId, createDataConsumerRequestDto);
 
         /// <summary>
@@ -47,12 +47,13 @@ namespace RX.Nyss.Web.Features.DataConsumers
         /// <returns></returns>
         [HttpPost("{dataConsumerId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DataConsumerAccess)]
-        public async Task<Result> Edit(int dataConsumerId, [FromBody]EditDataConsumerRequestDto editDataConsumerRequestDto) =>
+        public async Task<Result> Edit(int dataConsumerId, [FromBody] EditDataConsumerRequestDto editDataConsumerRequestDto) =>
             await _dataConsumerService.Edit(dataConsumerId, editDataConsumerRequestDto);
 
         /// <summary>
         /// Delete a data consumer in a national society.
-        /// If the data consumer is also in other national societies, he/she will be be removed from the provided national society, but the user will not be deleted.
+        /// If the data consumer is also in other national societies, he/she will be be removed from the provided national society,
+        /// but the user will not be deleted.
         /// If this is the only national society of the data consumer, the data consumer will be deleted.
         /// </summary>
         /// <param name="nationalSocietyId">The ID of the national society the data consumer should be deleted from</param>
@@ -64,4 +65,3 @@ namespace RX.Nyss.Web.Features.DataConsumers
             await _dataConsumerService.Delete(nationalSocietyId, dataConsumerId);
     }
 }
-

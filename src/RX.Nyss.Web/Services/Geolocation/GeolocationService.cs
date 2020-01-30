@@ -58,11 +58,11 @@ namespace RX.Nyss.Web.Services.Geolocation
                 }
 
                 var location = value.Select(g => new LocationDto
-                {
-                    Longitude = double.Parse(g.Longitude, CultureInfo.InvariantCulture),
-                    Latitude = double.Parse(g.Latitude, CultureInfo.InvariantCulture)
-                })
-                .First();
+                    {
+                        Longitude = double.Parse(g.Longitude, CultureInfo.InvariantCulture),
+                        Latitude = double.Parse(g.Latitude, CultureInfo.InvariantCulture)
+                    })
+                    .First();
 
                 return Success(location);
             }

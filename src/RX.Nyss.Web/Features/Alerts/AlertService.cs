@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
-using RX.Nyss.Common.Utils.DataContract;
-using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -215,7 +215,8 @@ namespace RX.Nyss.Web.Features.Alerts
             try
             {
                 await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-                await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+                await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project,
+                    alertData.HealthRisk, alertData.LastReportVillage);
             }
             catch (ResultException exception)
             {
@@ -344,10 +345,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(alert.ProjectTimeZone);
 
-            var list = new List<AlertLogResponseDto.Item>
-            {
-                new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.TriggeredAlert, alert.CreatedAt.ApplyTimeZone(timeZone), null)
-            };
+            var list = new List<AlertLogResponseDto.Item> { new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.TriggeredAlert, alert.CreatedAt.ApplyTimeZone(timeZone), null) };
 
             if (alert.EscalatedAt.HasValue)
             {
@@ -389,25 +387,25 @@ namespace RX.Nyss.Web.Features.Alerts
             alertStatus switch
             {
                 AlertStatus.Escalated =>
-                    AlertAssessmentStatus.Escalated,
+                AlertAssessmentStatus.Escalated,
 
                 AlertStatus.Dismissed =>
-                    AlertAssessmentStatus.Dismissed,
+                AlertAssessmentStatus.Dismissed,
 
                 AlertStatus.Closed =>
-                    AlertAssessmentStatus.Closed,
+                AlertAssessmentStatus.Closed,
 
                 AlertStatus.Rejected =>
-                    AlertAssessmentStatus.Rejected,
+                AlertAssessmentStatus.Rejected,
 
                 AlertStatus.Pending when acceptedReports >= countThreshold =>
-                    AlertAssessmentStatus.ToEscalate,
+                AlertAssessmentStatus.ToEscalate,
 
                 AlertStatus.Pending when acceptedReports + pendingReports >= countThreshold =>
-                    AlertAssessmentStatus.Open,
+                AlertAssessmentStatus.Open,
 
                 _ =>
-                    AlertAssessmentStatus.ToDismiss
+                AlertAssessmentStatus.ToDismiss
             };
 
         private static string GetSex(ReportCase reportedCase)
@@ -473,7 +471,8 @@ namespace RX.Nyss.Web.Features.Alerts
             }
         }
 
-        private async Task SendNotificationSmses(int nationalSocietyId, string lastReportApiKey, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk, string lastReportVillage)
+        private async Task SendNotificationSmses(int nationalSocietyId, string lastReportApiKey, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk,
+            string lastReportVillage)
         {
             try
             {

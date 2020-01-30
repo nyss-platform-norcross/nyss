@@ -11,7 +11,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     public class ReportListResponseDto : IReportListResponseDto
     {
         public int Id { get; set; }
-        public DateTime DateTime { get; set; }
         public string HealthRiskName { get; set; }
         public bool IsValid { get; set; }
         public string Region { get; set; }
@@ -33,5 +32,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public bool IsInAlert { get; set; }
         public int? ReportId { get; set; }
         public ReportType? ReportType { get; set; }
+        public DateTime DateTime { get; set; }
     }
 }

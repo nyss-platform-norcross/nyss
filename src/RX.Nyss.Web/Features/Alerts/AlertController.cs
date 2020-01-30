@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
@@ -94,7 +93,7 @@ namespace RX.Nyss.Web.Features.Alerts
         [HttpPost("{alertId:int}/close")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> Close(int alertId, [FromBody]CloseAlertRequestDto dto) =>
+        public Task<Result> Close(int alertId, [FromBody] CloseAlertRequestDto dto) =>
             _alertService.Close(alertId, dto.Comments);
 
         /// <summary>

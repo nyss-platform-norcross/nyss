@@ -164,49 +164,49 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddAuthorization(options =>
             {
                 options.AddPolicy(Policy.NationalSocietyAccess.ToString(),
-                    policy => policy.Requirements.Add(new NationalSocietyAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<NationalSocietyAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.ManagerAccess.ToString(),
-                    policy => policy.Requirements.Add(new ManagerAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<ManagerAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.DataConsumerAccess.ToString(),
-                    policy => policy.Requirements.Add(new DataConsumerAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<DataConsumerAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.TechnicalAdvisorAccess.ToString(),
-                    policy => policy.Requirements.Add(new TechnicalAdvisorAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<TechnicalAdvisorAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
-                    policy => policy.Requirements.Add(new SmsGatewayAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<SmsGatewayAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.SupervisorAccess.ToString(),
-                    policy => policy.Requirements.Add(new SupervisorAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<SupervisorAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.DataCollectorAccess.ToString(),
-                    policy => policy.Requirements.Add(new DataCollectorAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<DataCollectorAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.ProjectAccess.ToString(),
-                    policy => policy.Requirements.Add(new ProjectAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.HeadManagerAccess.ToString(),
-                    policy => policy.Requirements.Add(new HeadManagerAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<HeadManagerAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.RegionAccess.ToString(),
-                    policy => policy.Requirements.Add(new RegionAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<RegionAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.DistrictAccess.ToString(),
-                    policy => policy.Requirements.Add(new DistrictAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<DistrictAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.VillageAccess.ToString(),
-                    policy => policy.Requirements.Add(new VillageAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<VillageAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.ZoneAccess.ToString(),
-                    policy => policy.Requirements.Add(new ZoneAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<ZoneAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.AlertAccess.ToString(),
-                    policy => policy.Requirements.Add(new AlertAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<AlertAccessHandler>.Requirement()));
 
                 options.AddPolicy(Policy.ReportAccess.ToString(),
-                    policy => policy.Requirements.Add(new ReportAccessHandler.Requirement()));
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectAccessHandler>.Requirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
@@ -260,7 +260,11 @@ namespace RX.Nyss.Web.Configuration
         private static void RegisterSwagger(IServiceCollection serviceCollection) =>
             serviceCollection.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Nyss API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Nyss API",
+                    Version = "v1"
+                });
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
@@ -276,7 +280,11 @@ namespace RX.Nyss.Web.Configuration
         private static void RegisterTypes(IServiceCollection serviceCollection, string namePrefix) =>
             GetAssemblies(namePrefix: namePrefix)
                 .SelectMany(assembly => assembly.GetExportedTypes())
-                .Select(type => new { implementationType = type, interfaceType = type.GetInterfaces().FirstOrDefault(i => i.Name == $"I{type.Name}") })
+                .Select(type => new
+                {
+                    implementationType = type,
+                    interfaceType = type.GetInterfaces().FirstOrDefault(i => i.Name == $"I{type.Name}")
+                })
                 .Where(x => x.interfaceType != null)
                 .ToList()
                 .ForEach(i => serviceCollection.AddScoped(i.interfaceType, i.implementationType));

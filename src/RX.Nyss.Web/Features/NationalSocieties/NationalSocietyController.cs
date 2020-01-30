@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator)]
-        public async Task<Result> Create([FromBody]CreateNationalSocietyRequestDto nationalSociety) =>
+        public async Task<Result> Create([FromBody] CreateNationalSocietyRequestDto nationalSociety) =>
             await _nationalSocietyService.Create(nationalSociety);
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// <returns></returns>
         [HttpPost("{nationalSocietyId}/edit")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Edit(int nationalSocietyId, [FromBody]EditNationalSocietyRequestDto nationalSociety) =>
+        public async Task<Result> Edit(int nationalSocietyId, [FromBody] EditNationalSocietyRequestDto nationalSociety) =>
             await _nationalSocietyService.Edit(nationalSocietyId, nationalSociety);
 
         /// <summary>
@@ -69,7 +69,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             await _nationalSocietyService.Delete(nationalSocietyId);
 
         /// <summary>
-        /// Sets a user as the pending Head Manager for the National Society. Next time this user logs in, the person will get a consent form, and if the user consents the user
+        /// Sets a user as the pending Head Manager for the National Society. Next time this user logs in, the person will get a
+        /// consent form, and if the user consents the user
         /// will be the next Head Manager
         /// </summary>
         /// <param name="nationalSocietyId"></param>
@@ -77,7 +78,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// <returns></returns>
         [HttpPost("{nationalSocietyId}/setHeadManager")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.HeadManagerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> SetHeadManager(int nationalSocietyId, [FromBody]SetAsHeadManagerRequestDto requestDto) =>
+        public async Task<Result> SetHeadManager(int nationalSocietyId, [FromBody] SetAsHeadManagerRequestDto requestDto) =>
             await _nationalSocietyService.SetPendingHeadManager(nationalSocietyId, requestDto.UserId);
 
 

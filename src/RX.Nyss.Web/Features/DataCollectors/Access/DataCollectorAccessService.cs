@@ -33,7 +33,11 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
         {
             var dataCollectorData = await _nyssContext.DataCollectors
                 .Where(dc => dc.Id == dataCollectorId)
-                .Select(dc => new { ProjectId = dc.Project.Id, SupervisorEmailAddress = dc.Supervisor.EmailAddress })
+                .Select(dc => new
+                {
+                    ProjectId = dc.Project.Id,
+                    SupervisorEmailAddress = dc.Supervisor.EmailAddress
+                })
                 .SingleAsync();
 
             return await _projectAccessService.HasCurrentUserAccessToProject(dataCollectorData.ProjectId)

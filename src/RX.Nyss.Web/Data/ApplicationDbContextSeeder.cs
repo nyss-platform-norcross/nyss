@@ -15,7 +15,8 @@ namespace RX.Nyss.Web.Data
         private static void SeedUserRoles(ModelBuilder modelBuilder) =>
             modelBuilder.Entity<IdentityUserRole<string>>().HasData(new IdentityUserRole<string>
             {
-                UserId = "9c1071c1-fa69-432a-9cd0-2c4baa703a67", RoleId = "b0091a03-ffaf-44f4-ac70-df9fcd295457"
+                UserId = "9c1071c1-fa69-432a-9cd0-2c4baa703a67",
+                RoleId = "b0091a03-ffaf-44f4-ac70-df9fcd295457"
             });
 
         private static void SeedUsers(ModelBuilder modelBuilder) =>
@@ -62,7 +63,10 @@ namespace RX.Nyss.Web.Data
                 },
                 new IdentityRole
                 {
-                    Id = "cef5482a-383c-4eaa-a23f-16577fc8d34b", Name = "Supervisor", NormalizedName = "SUPERVISOR", ConcurrencyStamp = "dd7ea34c-cffe-47ec-aa98-2dd668668070"
+                    Id = "cef5482a-383c-4eaa-a23f-16577fc8d34b",
+                    Name = "Supervisor",
+                    NormalizedName = "SUPERVISOR",
+                    ConcurrencyStamp = "dd7ea34c-cffe-47ec-aa98-2dd668668070"
                 },
                 new IdentityRole
                 {
@@ -73,7 +77,10 @@ namespace RX.Nyss.Web.Data
                 },
                 new IdentityRole
                 {
-                    Id = "fb23c271-059a-4537-ae3e-7f9fd5b305c6", Name = "Manager", NormalizedName = "MANAGER", ConcurrencyStamp = "8d27b561-f2ad-47cf-bd3a-e614995fffce"
+                    Id = "fb23c271-059a-4537-ae3e-7f9fd5b305c6",
+                    Name = "Manager",
+                    NormalizedName = "MANAGER",
+                    ConcurrencyStamp = "8d27b561-f2ad-47cf-bd3a-e614995fffce"
                 });
     }
 }

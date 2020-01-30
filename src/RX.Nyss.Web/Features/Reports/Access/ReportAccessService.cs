@@ -11,7 +11,7 @@ namespace RX.Nyss.Web.Features.Reports.Access
         Task<bool> HasCurrentUserAccessToReport(int reportId);
     }
 
-    public class ReportAccessService: IReportAccessService
+    public class ReportAccessService : IReportAccessService
     {
         private readonly INyssContext _nyssContext;
         private readonly IProjectAccessService _projectAccessService;
@@ -29,5 +29,4 @@ namespace RX.Nyss.Web.Features.Reports.Access
             return await _projectAccessService.HasCurrentUserAccessToProject(reportProjectId);
         }
     }
-
 }

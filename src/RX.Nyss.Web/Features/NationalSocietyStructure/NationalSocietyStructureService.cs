@@ -246,6 +246,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
             {
                 return Error<StructureResponseDto.StructureZoneDto>(ResultKey.NationalSociety.Structure.CannotCreateItemInArchivedNationalSociety);
             }
+
             if (await _nyssContext.Zones.AnyAsync(d => d.Name == name && d.Village.Id == villageId))
             {
                 return Error<StructureResponseDto.StructureZoneDto>(ResultKey.NationalSociety.Structure.ItemAlreadyExists);
@@ -296,7 +297,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         {
             var regions = await _nyssContext.Regions
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
-                .Select(n => new RegionResponseDto { Id = n.Id, Name = n.Name })
+                .Select(n => new RegionResponseDto
+                {
+                    Id = n.Id,
+                    Name = n.Name
+                })
                 .ToListAsync();
             return Success(regions);
         }
@@ -305,7 +310,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         {
             var regions = await _nyssContext.Districts
                 .Where(r => r.Region.Id == regionId)
-                .Select(n => new DistrictResponseDto { Id = n.Id, Name = n.Name })
+                .Select(n => new DistrictResponseDto
+                {
+                    Id = n.Id,
+                    Name = n.Name
+                })
                 .ToListAsync();
             return Success(regions);
         }
@@ -314,7 +323,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         {
             var regions = await _nyssContext.Villages
                 .Where(r => r.District.Id == districtId)
-                .Select(n => new VillageResponseDto { Id = n.Id, Name = n.Name })
+                .Select(n => new VillageResponseDto
+                {
+                    Id = n.Id,
+                    Name = n.Name
+                })
                 .ToListAsync();
             return Success(regions);
         }
@@ -323,7 +336,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         {
             var regions = await _nyssContext.Zones
                 .Where(r => r.Village.Id == villageId)
-                .Select(n => new ZoneResponseDto { Id = n.Id, Name = n.Name })
+                .Select(n => new ZoneResponseDto
+                {
+                    Id = n.Id,
+                    Name = n.Name
+                })
                 .ToListAsync();
             return Success(regions);
         }

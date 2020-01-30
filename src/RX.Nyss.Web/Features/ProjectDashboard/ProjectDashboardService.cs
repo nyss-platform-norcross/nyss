@@ -17,6 +17,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     {
         Task<Result<ProjectDashboardFiltersResponseDto>> GetFiltersData(int projectId);
         Task<Result<ProjectDashboardResponseDto>> GetData(int projectId, FiltersRequestDto filtersDto);
+
         Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetProjectReportHealthRisks(int projectId, double latitude, double longitude,
             FiltersRequestDto filtersDto);
     }
@@ -54,13 +55,15 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public async Task<Result<ProjectDashboardFiltersResponseDto>> GetFiltersData(int projectId)
         {
-            var healthRiskTypesWithoutActivity = new List<HealthRiskType> { HealthRiskType.Human, HealthRiskType.NonHuman, HealthRiskType.UnusualEvent };
+            var healthRiskTypesWithoutActivity = new List<HealthRiskType>
+            {
+                HealthRiskType.Human,
+                HealthRiskType.NonHuman,
+                HealthRiskType.UnusualEvent
+            };
             var projectHealthRisks = await _projectService.GetHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
 
-            var dto = new ProjectDashboardFiltersResponseDto
-            {
-                HealthRisks = projectHealthRisks
-            };
+            var dto = new ProjectDashboardFiltersResponseDto { HealthRisks = projectHealthRisks };
 
             return Success(dto);
         }
@@ -116,7 +119,11 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 HealthRiskId = filtersDto.HealthRiskId,
                 Area = filtersDto.Area == null
                     ? null
-                    : new Area { AreaType = filtersDto.Area.Type, AreaId = filtersDto.Area.Id },
+                    : new Area
+                    {
+                        AreaType = filtersDto.Area.Type,
+                        AreaId = filtersDto.Area.Id
+                    },
                 ProjectId = projectId,
                 DataCollectorType = MapToDataCollectorType(filtersDto.ReportsType),
                 IsTraining = filtersDto.IsTraining

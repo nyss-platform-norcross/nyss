@@ -16,7 +16,6 @@ using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
-using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
@@ -33,7 +32,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
-        Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng);
+        Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
         Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId);
         Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
         Task AnonymizeDataCollectorsWithReports(int projectId);
@@ -68,12 +67,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
         {
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
-                    .ThenInclude(p => p.NationalSociety)
+                .ThenInclude(p => p.NationalSociety)
                 .Include(dc => dc.Supervisor)
                 .Include(dc => dc.Zone)
                 .Include(dc => dc.Village)
-                    .ThenInclude(v => v.District)
-                        .ThenInclude(d => d.Region)
+                .ThenInclude(v => v.District)
+                .ThenInclude(d => d.Region)
                 .SingleAsync(dc => dc.Id == dataCollectorId);
 
             var regions = await _nationalSocietyStructureService.ListRegions(dataCollector.Project.NationalSociety.Id);
@@ -178,7 +177,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     IsInTrainingMode = dc.IsInTrainingMode
                 })
                 .OrderBy(dc => dc.Name)
-                    .ThenBy(dc => dc.DisplayName)
+                .ThenBy(dc => dc.DisplayName)
                 .ToListAsync();
 
             return Success((IEnumerable<DataCollectorResponseDto>)dataCollectors);
@@ -254,11 +253,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
-                    .ThenInclude(x => x.NationalSociety)
+                .ThenInclude(x => x.NationalSociety)
                 .Include(dc => dc.Supervisor)
                 .Include(dc => dc.Village)
-                    .ThenInclude(v => v.District)
-                        .ThenInclude(d => d.Region)
+                .ThenInclude(v => v.District)
+                .ThenInclude(d => d.Region)
                 .Include(dc => dc.Zone)
                 .SingleAsync(dc => dc.Id == editDto.Id);
 
@@ -336,39 +335,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return SuccessMessage(ResultKey.DataCollector.RemoveSuccess);
         }
 
-        private async Task Anonymize(int dataCollectorId)
-        {
-            await _nyssContext.DataCollectors
-                .Where(x => x.Id == dataCollectorId)
-                .BatchUpdateAsync(x => new Nyss.Data.Models.DataCollector
-                {
-                    Name = Anonymization.Text,
-                    DisplayName = Anonymization.Text,
-                    PhoneNumber = Anonymization.Text,
-                    AdditionalPhoneNumber = Anonymization.Text,
-                    DeletedAt = DateTime.UtcNow
-                });
-
-            await _nyssContext.RawReports
-                .Where(rawReport => rawReport.DataCollector.Id == dataCollectorId)
-                .BatchUpdateAsync(x => new RawReport
-                {
-                    Sender = Anonymization.Text
-                });
-
-            await _nyssContext.Reports
-                .Where(report => report.DataCollector.Id == dataCollectorId)
-                .BatchUpdateAsync(x => new Nyss.Data.Models.Report
-                {
-                    PhoneNumber = Anonymization.Text
-                });
-        }
-
         public async Task AnonymizeDataCollectorsWithReports(int projectId)
         {
             await _nyssContext.DataCollectors
                 .Where(x => x.Project.Id == projectId && x.RawReports.Any())
-                .BatchUpdateAsync(x => new Nyss.Data.Models.DataCollector
+                .BatchUpdateAsync(x => new DataCollector
                 {
                     Name = Anonymization.Text,
                     DisplayName = Anonymization.Text,
@@ -379,34 +350,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             await _nyssContext.RawReports
                 .Where(rawReport => rawReport.DataCollector.Project.Id == projectId)
-                .BatchUpdateAsync(x => new RawReport
-                {
-                    Sender = Anonymization.Text
-                });
+                .BatchUpdateAsync(x => new RawReport { Sender = Anonymization.Text });
 
             await _nyssContext.Reports
                 .Where(report => report.ProjectHealthRisk.Project.Id == projectId)
-                .BatchUpdateAsync(x => new Nyss.Data.Models.Report
-                {
-                    PhoneNumber = Anonymization.Text
-                });
-        }
-
-        private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>
-            await _nyssContext.SupervisorUserProjects
-                .FilterAvailableUsers()
-                .Where(sup => sup.ProjectId == projectId)
-                .Select(sup => new DataCollectorSupervisorResponseDto
-                {
-                    Id = sup.SupervisorUserId,
-                    Name = sup.SupervisorUser.Name
-                })
-                .ToListAsync();
-
-        private static Point CreatePoint(double latitude, double longitude)
-        {
-            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
-            return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
+                .BatchUpdateAsync(x => new Report { PhoneNumber = Anonymization.Text });
         }
 
         public async Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to)
@@ -421,7 +369,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorsWithNoReports = dataCollectors
                 .Where(dc => dc.CreatedAt < endDate && dc.Name != Anonymization.Text && dc.DeletedAt == null)
                 .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value
-                                                                           && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
+                    && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
                 .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
                 {
@@ -446,17 +394,29 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 {
                     r.DataCollector.Location.X,
                     r.DataCollector.Location.Y,
-                    InvalidReport = r.Report == null ? 1 : 0,
-                    ValidReport = r.Report != null ? 1 : 0,
+                    InvalidReport = r.Report == null
+                        ? 1
+                        : 0,
+                    ValidReport = r.Report != null
+                        ? 1
+                        : 0,
                     NoReport = 0
                 });
 
             var locations = await dataCollectorsWithReports
                 .Union(dataCollectorsWithNoReports)
-                .GroupBy(x => new { x.X, x.Y })
+                .GroupBy(x => new
+                {
+                    x.X,
+                    x.Y
+                })
                 .Select(location => new MapOverviewLocationResponseDto
                 {
-                    Location = new LocationDto { Latitude = location.Key.Y, Longitude = location.Key.X },
+                    Location = new LocationDto
+                    {
+                        Latitude = location.Key.Y,
+                        Longitude = location.Key.X
+                    },
                     CountReportingCorrectly = location.Sum(x => x.ValidReport),
                     CountReportingWithErrors = location.Sum(x => x.InvalidReport),
                     CountNotReporting = location.Sum(x => x.NoReport)
@@ -479,7 +439,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success(result);
         }
 
-        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime @from, DateTime to, double lat, double lng)
+        public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng)
         {
             var userIdentityName = _authorizationService.GetCurrentUserName();
 
@@ -494,16 +454,16 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 {
                     DataCollector = dc,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
-                                                                  &&  r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1) )
+                        && r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
                 })
                 .Select(dc => new MapOverviewDataCollectorResponseDto
                 {
                     Id = dc.DataCollector.Id,
-                    DisplayName = dc.DataCollector.DataCollectorType == DataCollectorType.Human ? dc.DataCollector.DisplayName : dc.DataCollector.Name,
+                    DisplayName = dc.DataCollector.DataCollectorType == DataCollectorType.Human
+                        ? dc.DataCollector.DisplayName
+                        : dc.DataCollector.Name,
                     Status = dc.ReportsInTimeRange.Any()
-                        ? dc.ReportsInTimeRange.All(r => r.Report != null)
-                            ? DataCollectorStatus.ReportingCorrectly
-                            : DataCollectorStatus.ReportingWithErrors
+                        ? dc.ReportsInTimeRange.All(r => r.Report != null) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
                         : DataCollectorStatus.NotReporting
                 })
                 .ToListAsync();
@@ -524,9 +484,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
             dataCollector.IsInTrainingMode = isInTraining;
             await _nyssContext.SaveChangesAsync();
 
-            return SuccessMessage(isInTraining ?
-                ResultKey.DataCollector.SetInTrainingSuccess :
-                ResultKey.DataCollector.SetOutOfTrainingSuccess);
+            return SuccessMessage(isInTraining
+                ? ResultKey.DataCollector.SetInTrainingSuccess
+                : ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
         public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId)
@@ -546,7 +506,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 {
                     DataCollectorName = dc.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
-                                                                                        &&  r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
+                            && r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
                         .Select(r => new RawReportData
                         {
                             IsValid = r.ReportId.HasValue,
@@ -556,33 +516,74 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .ToListAsync();
 
             var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
-            {
-                r.DataCollectorName,
-                ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(r => (int)(to - r.ReceivedAt).TotalDays / 7)
-            })
-            .Select(dc => new DataCollectorPerformanceResponseDto
-            {
-                Name = dc.DataCollectorName,
-                DaysSinceLastReport = dc.ReportsGroupedByWeek.Any() ? (int)(to  - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).FirstOrDefault().ReceivedAt).TotalDays : -1,
-                StatusLastWeek = GetDataCollectorStatus(0, dc.ReportsGroupedByWeek),
-                StatusTwoWeeksAgo = GetDataCollectorStatus(1, dc.ReportsGroupedByWeek),
-                StatusThreeWeeksAgo = GetDataCollectorStatus(2, dc.ReportsGroupedByWeek),
-                StatusFourWeeksAgo = GetDataCollectorStatus(3, dc.ReportsGroupedByWeek),
-                StatusFiveWeeksAgo = GetDataCollectorStatus(4, dc.ReportsGroupedByWeek),
-                StatusSixWeeksAgo = GetDataCollectorStatus(5, dc.ReportsGroupedByWeek),
-                StatusSevenWeeksAgo = GetDataCollectorStatus(6, dc.ReportsGroupedByWeek),
-                StatusEightWeeksAgo = GetDataCollectorStatus(7, dc.ReportsGroupedByWeek)
-            })
-            .ToList();
+                {
+                    r.DataCollectorName,
+                    ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(r => (int)(to - r.ReceivedAt).TotalDays / 7)
+                })
+                .Select(dc => new DataCollectorPerformanceResponseDto
+                {
+                    Name = dc.DataCollectorName,
+                    DaysSinceLastReport = dc.ReportsGroupedByWeek.Any()
+                        ? (int)(to - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).FirstOrDefault().ReceivedAt).TotalDays
+                        : -1,
+                    StatusLastWeek = GetDataCollectorStatus(0, dc.ReportsGroupedByWeek),
+                    StatusTwoWeeksAgo = GetDataCollectorStatus(1, dc.ReportsGroupedByWeek),
+                    StatusThreeWeeksAgo = GetDataCollectorStatus(2, dc.ReportsGroupedByWeek),
+                    StatusFourWeeksAgo = GetDataCollectorStatus(3, dc.ReportsGroupedByWeek),
+                    StatusFiveWeeksAgo = GetDataCollectorStatus(4, dc.ReportsGroupedByWeek),
+                    StatusSixWeeksAgo = GetDataCollectorStatus(5, dc.ReportsGroupedByWeek),
+                    StatusSevenWeeksAgo = GetDataCollectorStatus(6, dc.ReportsGroupedByWeek),
+                    StatusEightWeeksAgo = GetDataCollectorStatus(7, dc.ReportsGroupedByWeek)
+                })
+                .ToList();
 
             return Success(dataCollectorPerformances);
+        }
+
+        private async Task Anonymize(int dataCollectorId)
+        {
+            await _nyssContext.DataCollectors
+                .Where(x => x.Id == dataCollectorId)
+                .BatchUpdateAsync(x => new DataCollector
+                {
+                    Name = Anonymization.Text,
+                    DisplayName = Anonymization.Text,
+                    PhoneNumber = Anonymization.Text,
+                    AdditionalPhoneNumber = Anonymization.Text,
+                    DeletedAt = DateTime.UtcNow
+                });
+
+            await _nyssContext.RawReports
+                .Where(rawReport => rawReport.DataCollector.Id == dataCollectorId)
+                .BatchUpdateAsync(x => new RawReport { Sender = Anonymization.Text });
+
+            await _nyssContext.Reports
+                .Where(report => report.DataCollector.Id == dataCollectorId)
+                .BatchUpdateAsync(x => new Report { PhoneNumber = Anonymization.Text });
+        }
+
+        private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>
+            await _nyssContext.SupervisorUserProjects
+                .FilterAvailableUsers()
+                .Where(sup => sup.ProjectId == projectId)
+                .Select(sup => new DataCollectorSupervisorResponseDto
+                {
+                    Id = sup.SupervisorUserId,
+                    Name = sup.SupervisorUser.Name
+                })
+                .ToListAsync();
+
+        private static Point CreatePoint(double latitude, double longitude)
+        {
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
+            return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
 
         private DataCollectorStatus GetDataCollectorStatus(int week, IEnumerable<IGrouping<int, RawReportData>> grouping)
         {
             var reports = grouping.Where(g => g.Key == week).SelectMany(g => g);
-            return reports.Any() ?
-                reports.All(x => x.IsValid) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
+            return reports.Any()
+                ? reports.All(x => x.IsValid) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
                 : DataCollectorStatus.NotReporting;
         }
 
@@ -593,7 +594,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Single();
 
             var result = await _geolocationService.GetLocationFromCountry(countryName);
-            return result.IsSuccess ? result.Value : null;
+            return result.IsSuccess
+                ? result.Value
+                : null;
         }
 
         private class RawReportData

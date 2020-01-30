@@ -18,7 +18,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
         Task<Result<NationalSocietyDashboardResponseDto>> GetData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto);
 
-        Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto);
+        Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int nationalSocietyId, double latitude, double longitude,
+            NationalSocietyDashboardFiltersRequestDto filtersDto);
     }
 
     public class NationalSocietyDashboardService : INationalSocietyDashboardService
@@ -44,10 +45,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         {
             var healthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId, true);
 
-            var dto = new NationalSocietyDashboardFiltersResponseDto
-            {
-                HealthRisks = healthRiskNames
-            };
+            var dto = new NationalSocietyDashboardFiltersResponseDto { HealthRisks = healthRiskNames };
 
             return Success(dto);
         }
@@ -72,7 +70,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             return Success(dashboardDataDto);
         }
 
-        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int nationalSocietyId, double latitude, double longitude, NationalSocietyDashboardFiltersRequestDto filtersDto)
+        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int nationalSocietyId, double latitude, double longitude,
+            NationalSocietyDashboardFiltersRequestDto filtersDto)
         {
             var filters = MapToReportFilters(nationalSocietyId, filtersDto);
             var data = await _reportsDashboardMapService.GetProjectReportHealthRisks(filters, latitude, longitude);
@@ -88,7 +87,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 NationalSocietyId = nationalSocietyId,
                 Area = filtersDto.Area == null
                     ? null
-                    : new Area { AreaType = filtersDto.Area.Type, AreaId = filtersDto.Area.Id },
+                    : new Area
+                    {
+                        AreaType = filtersDto.Area.Type,
+                        AreaId = filtersDto.Area.Id
+                    },
                 DataCollectorType = MapToDataCollectorType(filtersDto.NationalSocietyReportsType),
                 IsTraining = filtersDto.IsTraining
             };

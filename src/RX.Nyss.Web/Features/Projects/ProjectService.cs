@@ -90,7 +90,7 @@ namespace RX.Nyss.Web.Features.Projects
                         Id = sar.Id,
                         PhoneNumber = sar.PhoneNumber
                     }),
-                    ContentLanguageId = p.NationalSociety.ContentLanguage.Id,
+                    ContentLanguageId = p.NationalSociety.ContentLanguage.Id
                 })
                 .FirstOrDefaultAsync(p => p.Id == projectId);
 
@@ -172,6 +172,7 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     return Error<int>(ResultKey.Project.NationalSocietyDoesNotExist);
                 }
+
                 if (nationalSocietyData.IsArchived)
                 {
                     return Error<int>(ResultKey.Project.CannotAddProjectInArchivedNationalSociety);
@@ -206,14 +207,8 @@ namespace RX.Nyss.Web.Features.Projects
                             KilometersThreshold = phr.AlertRuleKilometersThreshold
                         }
                     }).ToList(),
-                    EmailAlertRecipients = projectRequestDto.EmailAlertRecipients.Select(ar => new EmailAlertRecipient
-                    {
-                        EmailAddress = ar.Email
-                    }).ToList(),
-                    SmsAlertRecipients = projectRequestDto.SmsAlertRecipients.Select(ar => new SmsAlertRecipient
-                    {
-                        PhoneNumber = ar.PhoneNumber
-                    }).ToList()
+                    EmailAlertRecipients = projectRequestDto.EmailAlertRecipients.Select(ar => new EmailAlertRecipient { EmailAddress = ar.Email }).ToList(),
+                    SmsAlertRecipients = projectRequestDto.SmsAlertRecipients.Select(ar => new SmsAlertRecipient { PhoneNumber = ar.PhoneNumber }).ToList()
                 };
 
                 await _nyssContext.Projects.AddAsync(projectToAdd);
@@ -262,6 +257,120 @@ namespace RX.Nyss.Web.Features.Projects
                 return exception.Result;
             }
         }
+
+        public async Task<Result> Close(int projectId)
+        {
+            try
+            {
+                var projectToClose = await _nyssContext.Projects
+                    .Select(p => new
+                    {
+                        p,
+                        AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
+                    })
+                    .SingleOrDefaultAsync(x => x.p.Id == projectId);
+
+                if (projectToClose == null)
+                {
+                    return Error(ResultKey.Project.ProjectDoesNotExist);
+                }
+
+                if (projectToClose.p.State == ProjectState.Closed)
+                {
+                    return Error(ResultKey.Project.ProjectAlreadyClosed);
+                }
+
+                if (projectToClose.AnyOpenAlerts)
+                {
+                    return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
+                }
+
+                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    projectToClose.p.State = ProjectState.Closed;
+                    projectToClose.p.EndDate = _dateTimeProvider.UtcNow;
+                    var dataCollectorsToRemove = _nyssContext.DataCollectors.Where(dc => dc.Project.Id == projectId && !dc.RawReports.Any());
+
+                    await _dataCollectorService.AnonymizeDataCollectorsWithReports(projectId);
+                    _nyssContext.DataCollectors.RemoveRange(dataCollectorsToRemove);
+
+                    await _nyssContext.SaveChangesAsync();
+                    transactionScope.Complete();
+                }
+
+                return SuccessMessage(ResultKey.Project.SuccessfullyClosed);
+            }
+            catch (ResultException exception)
+            {
+                _loggerAdapter.Debug(exception);
+                return exception.Result;
+            }
+        }
+
+        public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId)
+        {
+            var project = await _nyssContext.Projects
+                .Select(dc => new ProjectBasicDataResponseDto
+                {
+                    Id = dc.Id,
+                    Name = dc.Name,
+                    IsClosed = dc.State == ProjectState.Closed,
+                    NationalSociety = new ProjectBasicDataResponseDto.NationalSocietyIdDto
+                    {
+                        Id = dc.NationalSociety.Id,
+                        Name = dc.NationalSociety.Name,
+                        CountryName = dc.NationalSociety.Country.Name
+                    }
+                })
+                .SingleAsync(p => p.Id == projectId);
+
+            return Success(project);
+        }
+
+        public async Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId)
+        {
+            var projects = await _nyssContext.Projects
+                .Where(p => p.NationalSociety.Id == nationalSocietyId)
+                .Where(p => p.State == ProjectState.Open)
+                .Select(p => new ListOpenProjectsResponseDto
+                {
+                    Id = p.Id,
+                    Name = p.Name
+                })
+                .ToListAsync();
+
+            return Success(projects);
+        }
+
+        public async Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId)
+        {
+            try
+            {
+                var nationalSociety = await _nyssContext.NationalSocieties
+                    .Include(x => x.ContentLanguage)
+                    .FirstOrDefaultAsync(x => x.Id == nationalSocietyId);
+
+                if (nationalSociety == null)
+                {
+                    throw new ResultException(ResultKey.Project.NationalSocietyDoesNotExist);
+                }
+
+                var result = await GetFormDataDto(nationalSociety.ContentLanguage.Id);
+                return Success(result);
+            }
+            catch (ResultException exception)
+            {
+                _loggerAdapter.Debug(exception);
+                return exception.GetResult<ProjectFormDataResponseDto>();
+            }
+        }
+
+        public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName) =>
+            await _nyssContext.Users.FilterAvailable()
+                .OfType<SupervisorUser>()
+                .Where(u => u.EmailAddress == supervisorIdentityName)
+                .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
+                .ToListAsync();
 
         private async Task UpdateHealthRisks(Project projectToUpdate, ProjectRequestDto projectRequestDto)
         {
@@ -370,120 +479,6 @@ namespace RX.Nyss.Web.Features.Projects
             }
         }
 
-        public async Task<Result> Close(int projectId)
-        {
-            try
-            {
-                var projectToClose = await _nyssContext.Projects
-                    .Select(p => new
-                    {
-                        p,
-                        AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
-                    })
-                    .SingleOrDefaultAsync(x => x.p.Id == projectId);
-
-                if (projectToClose == null)
-                {
-                    return Error(ResultKey.Project.ProjectDoesNotExist);
-                }
-
-                if (projectToClose.p.State == ProjectState.Closed)
-                {
-                    return Error(ResultKey.Project.ProjectAlreadyClosed);
-                }
-
-                if (projectToClose.AnyOpenAlerts)
-                {
-                    return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
-                }
-
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                {
-                    projectToClose.p.State = ProjectState.Closed;
-                    projectToClose.p.EndDate = _dateTimeProvider.UtcNow;
-                    var dataCollectorsToRemove = _nyssContext.DataCollectors.Where(dc => dc.Project.Id == projectId && !dc.RawReports.Any());
-
-                    await _dataCollectorService.AnonymizeDataCollectorsWithReports(projectId);
-                    _nyssContext.DataCollectors.RemoveRange(dataCollectorsToRemove);
-
-                    await _nyssContext.SaveChangesAsync();
-                    transactionScope.Complete();
-                }
-
-                return SuccessMessage(ResultKey.Project.SuccessfullyClosed);
-            }
-            catch (ResultException exception)
-            {
-                _loggerAdapter.Debug(exception);
-                return exception.Result;
-            }
-        }
-
-        public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId)
-        {
-            var project = await _nyssContext.Projects
-                .Select(dc => new ProjectBasicDataResponseDto
-                {
-                    Id = dc.Id,
-                    Name = dc.Name,
-                    IsClosed = dc.State == ProjectState.Closed,
-                    NationalSociety = new ProjectBasicDataResponseDto.NationalSocietyIdDto
-                    {
-                        Id = dc.NationalSociety.Id,
-                        Name = dc.NationalSociety.Name,
-                        CountryName = dc.NationalSociety.Country.Name,
-                    }
-                })
-                .SingleAsync(p => p.Id == projectId);
-
-            return Success(project);
-        }
-
-        public async Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId)
-        {
-            var projects = await _nyssContext.Projects
-                .Where(p => p.NationalSociety.Id == nationalSocietyId)
-                .Where(p => p.State == ProjectState.Open)
-                .Select(p => new ListOpenProjectsResponseDto()
-                {
-                    Id = p.Id,
-                    Name = p.Name
-                })
-                .ToListAsync();
-
-            return Success(projects);
-        }
-
-        public async Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId)
-        {
-            try
-            {
-                var nationalSociety = await _nyssContext.NationalSocieties
-                    .Include(x => x.ContentLanguage)
-                    .FirstOrDefaultAsync(x => x.Id == nationalSocietyId);
-
-                if (nationalSociety == null)
-                {
-                    throw new ResultException(ResultKey.Project.NationalSocietyDoesNotExist);
-                }
-
-                var result = await GetFormDataDto(nationalSociety.ContentLanguage.Id);
-                return Success(result);
-            }
-            catch (ResultException exception)
-            {
-                _loggerAdapter.Debug(exception);
-                return exception.GetResult<ProjectFormDataResponseDto>();
-            }
-        }
-
-        public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName) =>
-            await _nyssContext.Users.FilterAvailable()
-                .OfType<SupervisorUser>()
-                .Where(u => u.EmailAddress == supervisorIdentityName)
-                .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
-                .ToListAsync();
-
         private async Task<ProjectFormDataResponseDto> GetFormDataDto(int contentLanguageId)
         {
             var projectHealthRisks = await _nyssContext.HealthRisks
@@ -515,7 +510,11 @@ namespace RX.Nyss.Web.Features.Projects
 
             var timeZones = GetTimeZones();
 
-            return new ProjectFormDataResponseDto { TimeZones = timeZones, HealthRisks = projectHealthRisks };
+            return new ProjectFormDataResponseDto
+            {
+                TimeZones = timeZones,
+                HealthRisks = projectHealthRisks
+            };
         }
 
         private IEnumerable<TimeZoneResponseDto> GetTimeZones()

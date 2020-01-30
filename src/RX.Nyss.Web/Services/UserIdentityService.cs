@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Services
 
             throw new ResultException(ResultKey.Login.NotSucceeded);
         }
-        
+
         public async Task Logout() =>
             await _signInManager.SignOutAsync();
 

@@ -22,12 +22,19 @@ namespace RX.Nyss.Web.Services
 
         public async Task SendEmail((string email, string name) to, string subject, string body, bool sendAsTextOnly = false)
         {
-            var sendEmail = new SendEmailMessage {To = new Contact{Email = to.email, Name = to.name}, Body = body, Subject = subject, SendAsTextOnly = sendAsTextOnly};
-
-            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail)))
+            var sendEmail = new SendEmailMessage
             {
-                Label = "RX.Nyss.Web",
+                To = new Contact
+                {
+                    Email = to.email,
+                    Name = to.name
+                },
+                Body = body,
+                Subject = subject,
+                SendAsTextOnly = sendAsTextOnly
             };
+
+            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.Web" };
 
             await _queueClient.SendAsync(message);
         }

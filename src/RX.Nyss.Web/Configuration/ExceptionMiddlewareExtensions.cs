@@ -29,10 +29,7 @@ namespace RX.Nyss.Web.Configuration
 
                     var result = Error(GetErrorKey(contextFeature.Error));
 
-                    var resultJson = JsonSerializer.Serialize(result, new JsonSerializerOptions
-                    {
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                    });
+                    var resultJson = JsonSerializer.Serialize(result, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
                     await context.Response.WriteAsync(resultJson);
                 }
@@ -42,12 +39,12 @@ namespace RX.Nyss.Web.Configuration
             exception switch
             {
                 DbUpdateException dbUpdateException when dbUpdateException.InnerException is SqlException sqlException =>
-                    GetDbUpdateExceptionErrorKey(sqlException),
+                GetDbUpdateExceptionErrorKey(sqlException),
 
                 _ =>
-                    ResultKey.UnexpectedError
+                ResultKey.UnexpectedError
             };
-        
+
         private static string GetDbUpdateExceptionErrorKey(SqlException sqlException) =>
             sqlException.Number switch
             {

@@ -17,5 +17,4 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
         protected override Task<bool> HasAccess(int dataCollectorId) =>
             _dataCollectorAccessService.HasCurrentUserAccessToDataCollector(dataCollectorId);
     }
-
 }

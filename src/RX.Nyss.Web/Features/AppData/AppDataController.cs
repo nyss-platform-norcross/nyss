@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,7 +59,7 @@ namespace RX.Nyss.Web.Features.AppData
             {
                 assemblyName.Name,
                 Version = $"{version.Major}.{version.Minor}.{version.Build}",
-                Framework = System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription
+                Framework = RuntimeInformation.FrameworkDescription
             });
         }
     }

@@ -48,15 +48,18 @@ namespace RX.Nyss.Web.Features.Authentication
         }
 
         public async Task<Result<StatusResponseDto>> GetStatus(ClaimsPrincipal user) =>
-            user.Identity.IsAuthenticated ?
-                await GetAuthenticatedStatus(user) :
-                GetAnonymousStatus();
+            user.Identity.IsAuthenticated
+                ? await GetAuthenticatedStatus(user)
+                : GetAnonymousStatus();
+
+        public async Task<Result> Logout()
+        {
+            await _userIdentityService.Logout();
+            return Success();
+        }
 
         private static Result<StatusResponseDto> GetAnonymousStatus() =>
-            Success(new StatusResponseDto
-            {
-                IsAuthenticated = false,
-            });
+            Success(new StatusResponseDto { IsAuthenticated = false });
 
         private async Task<Result<StatusResponseDto>> GetAuthenticatedStatus(ClaimsPrincipal user)
         {
@@ -95,12 +98,6 @@ namespace RX.Nyss.Web.Features.Authentication
             });
         }
 
-        public async Task<Result> Logout()
-        {
-            await _userIdentityService.Logout();
-            return Success();
-        }
-
         private async Task<StatusResponseDto.HomePageDto> GetHomePageData(User userEntity) =>
             userEntity switch
             {
@@ -125,7 +122,11 @@ namespace RX.Nyss.Web.Features.Authentication
                 return new StatusResponseDto.HomePageDto { Page = HomePageType.Root };
             }
 
-            return new StatusResponseDto.HomePageDto { Page = HomePageType.ProjectList, NationalSocietyId = nationalSocietyIds.Single() };
+            return new StatusResponseDto.HomePageDto
+            {
+                Page = HomePageType.ProjectList,
+                NationalSocietyId = nationalSocietyIds.Single()
+            };
         }
 
         private async Task<StatusResponseDto.HomePageDto> GetProjectHomePage(SupervisorUser user)
