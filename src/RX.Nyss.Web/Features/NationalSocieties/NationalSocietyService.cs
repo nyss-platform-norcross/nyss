@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
         Task<Result> SetAsHeadManager();
         Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents();
-        Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId);
+        Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
         Task<Result> Reopen(int nationalSocietyId);
     }
 
@@ -288,10 +288,10 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return _nyssContext.NationalSocieties.Where(ns => availableNationalSocieties.Contains(ns.Id));
         }
 
-        public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId) =>
+        public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>
             await _nyssContext.ProjectHealthRisks
                 .Where(ph => ph.Project.NationalSocietyId == nationalSocietyId)
-                .Where(ph => ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                .Where(ph => !excludeActivity || ph.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                 .Select(ph => new HealthRiskDto
                 {
                     Id = ph.HealthRiskId,

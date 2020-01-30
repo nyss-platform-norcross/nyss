@@ -108,7 +108,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 
         public async Task<Result<NationalSocietyReportListFilterResponseDto>> Filters(int nationalSocietyId)
         {
-            var nationalSocietyHealthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId);
+            var nationalSocietyHealthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId, false);
 
             var dto = new NationalSocietyReportListFilterResponseDto
             {
