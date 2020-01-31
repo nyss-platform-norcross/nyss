@@ -16,6 +16,7 @@ import { nationalSocietyStructureSagas } from "../components/nationalSocietyStru
 import { projectDashboardSagas } from "../components/projectDashboard/logic/projectDashboardSagas";
 import { alertsSagas } from "../components/alerts/logic/alertsSagas";
 import { nationalSocietyDashboardSagas } from "../components/nationalSocietyDashboard/logic/nationalSocietyDashboardSagas";
+import { translationsSagas } from "../components/translations/logic/translationsSagas";
 
 function* rootSaga() {
   yield all([
@@ -34,7 +35,8 @@ function* rootSaga() {
     ...reportsSagas(),
     ...nationalSocietyReportsSagas(),
     ...nationalSocietyDashboardSagas(),
-    ...alertsSagas()
+    ...alertsSagas(),
+    ...translationsSagas()
   ]);
 }
 
