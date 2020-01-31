@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Resources.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils;
@@ -22,7 +23,7 @@ namespace RX.Nyss.Web.Features.Resources
             _inMemoryCache = inMemoryCache;
         }
 
-        [Route("saveString"), HttpPost, AllowAnonymous]
+        [HttpPost("saveString"), AllowAnonymous]
         public async Task<Result> SaveString([FromBody] SaveStringRequestDto dto)
         {
             var result = await _resourcesService.SaveString(dto);
@@ -38,8 +39,13 @@ namespace RX.Nyss.Web.Features.Resources
             return result;
         }
 
-        [Route("getString/{key}"), HttpGet, AllowAnonymous]
+        [HttpGet("getString/{key}"), AllowAnonymous]
         public async Task<Result<GetStringResponseDto>> GetString(string key) =>
             await _resourcesService.GetString(key);
+
+        [HttpGet("listTranslations")]
+        [NeedsRole(Role.Administrator)]
+        public async Task<Result<ListTranslationsResponseDto>> ListTranslations() =>
+            await _resourcesService.ListTranslations();
     }
 }
