@@ -49,13 +49,13 @@ const ReportsEditPageComponent = (props) => {
         const validation = {
             date: [validators.required],
             healthRiskId: [validators.required],
-            countMalesBelowFive: [validators.required],
-            countMalesAtLeastFive: [validators.required],
-            countFemalesBelowFive: [validators.required],
-            countFemalesAtLeastFive: [validators.required],
-            referredCount: [],
-            deathCount: [],
-            fromOtherVillagesCount: []
+            countMalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
+            countMalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
+            countFemalesBelowFive: [validators.required, validators.integer, validators.nonNegativeNumber],
+            countFemalesAtLeastFive: [validators.required, validators.integer, validators.nonNegativeNumber],
+            referredCount: [validators.integer, validators.nonNegativeNumber],
+            deathCount: [validators.integer, validators.nonNegativeNumber],
+            fromOtherVillagesCount: [validators.integer, validators.nonNegativeNumber]
         };
 
         setForm(createForm(fields, validation));
