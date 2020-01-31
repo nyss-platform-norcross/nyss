@@ -20,12 +20,12 @@ namespace RX.Nyss.Data.Models
 
         public string AdditionalPhoneNumber { get; set; }
 
-        public string Organization  { get; set; }
+        public string Organization { get; set; }
 
         public bool IsFirstLogin { get; set; } = true;
 
         public DateTime? DeletedAt { get; set; }
-        
+
         public virtual ApplicationLanguage ApplicationLanguage { get; set; }
 
         public virtual ICollection<UserNationalSociety> UserNationalSocieties { get; set; }

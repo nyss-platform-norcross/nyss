@@ -73,7 +73,7 @@ namespace RX.Nyss.Web.Features.Resources
                 return Error<string>(ResultKey.UnexpectedError);
             }
 
-            var stringsBlob =  await _stringsResourcesService.GetStringsBlob();
+            var stringsBlob = await _stringsResourcesService.GetStringsBlob();
             var strings = stringsBlob.Strings.ToList();
             var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
 
@@ -90,11 +90,8 @@ namespace RX.Nyss.Web.Features.Resources
                     entry.Translations.Add(languageCode, dtoTranslation.Value);
                 }
             }
-            
-            await _stringsResourcesService.SaveStringsBlob(new StringsBlob
-            {
-                Strings = strings.OrderBy(x => x.Key)
-            });
+
+            await _stringsResourcesService.SaveStringsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
 
             return Success("Success");
         }

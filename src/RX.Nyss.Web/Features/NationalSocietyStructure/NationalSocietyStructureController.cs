@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("region/create"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result<StructureResponseDto.StructureRegionDto>> CreateRegion(int nationalSocietyId, [FromBody]StructureEntryRequestDto dto) =>
+        public async Task<Result<StructureResponseDto.StructureRegionDto>> CreateRegion(int nationalSocietyId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.CreateRegion(nationalSocietyId, dto.Name);
 
 
@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("region/{regionId}/edit"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.RegionAccess)]
-        public async Task<Result> EditRegion(int regionId, [FromBody]StructureEntryRequestDto dto) =>
+        public async Task<Result> EditRegion(int regionId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.EditRegion(regionId, dto.Name);
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("region/{regionId:int}/district/create"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.RegionAccess)]
-        public async Task<Result<StructureResponseDto.StructureDistrictDto>> CreateDistrict(int regionId, [FromBody]StructureEntryRequestDto dto) =>
+        public async Task<Result<StructureResponseDto.StructureDistrictDto>> CreateDistrict(int regionId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.CreateDistrict(regionId, dto.Name);
 
 
@@ -66,7 +66,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("district/{districtId}/edit"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DistrictAccess)]
-        public async Task<Result> EditDistrict(int districtId, [FromBody]StructureEntryRequestDto dto) =>
+        public async Task<Result> EditDistrict(int districtId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.EditDistrict(districtId, dto.Name);
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("district/{districtId:int}/village/create"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.DistrictAccess)]
-        public async Task<Result<StructureResponseDto.StructureVillageDto>> CreateVillage(int districtId, [FromBody]StructureEntryRequestDto dto) =>
+        public async Task<Result<StructureResponseDto.StructureVillageDto>> CreateVillage(int districtId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.CreateVillage(districtId, dto.Name);
 
 
@@ -91,7 +91,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("village/{villageId}/edit"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.VillageAccess)]
-        public async Task<Result> EditVillage(int villageId, [FromBody]StructureEntryRequestDto dto) =>
+        public async Task<Result> EditVillage(int villageId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.EditVillage(villageId, dto.Name);
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("zone/create"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.VillageAccess)]
-        public async Task<Result<StructureResponseDto.StructureZoneDto>> CreateZone(int villageId, [FromBody]StructureEntryRequestDto dto) =>
+        public async Task<Result<StructureResponseDto.StructureZoneDto>> CreateZone(int villageId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.CreateZone(villageId, dto.Name);
 
 
@@ -117,7 +117,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// </summary>
         [Route("zone/{zoneId}/edit"), HttpPost]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ZoneAccess)]
-        public async Task<Result> EditZone(int zoneId, [FromBody]StructureEntryRequestDto dto) =>
+        public async Task<Result> EditZone(int zoneId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.EditZone(zoneId, dto.Name);
 
         /// <summary>

@@ -14,7 +14,7 @@
         InvalidRoleName,
         DuplicateRoleName,
         UserAlreadyHasPassword,
-        UserLockoutNotEnabled, 
+        UserLockoutNotEnabled,
         UserAlreadyInRole,
         UserNotInRole,
         PasswordTooShort,

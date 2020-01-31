@@ -50,7 +50,8 @@ namespace RX.Nyss.Web.Features.Reports
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public ReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INyssWebConfig config, IAuthorizationService authorizationService, IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
+        public ReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INyssWebConfig config, IAuthorizationService authorizationService,
+            IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _userService = userService;
@@ -107,13 +108,16 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result<ReportListFilterResponseDto>> GetFilters(int projectId)
         {
-            var healthRiskTypes = new List<HealthRiskType> { HealthRiskType.Human, HealthRiskType.NonHuman, HealthRiskType.UnusualEvent, HealthRiskType.Activity };
+            var healthRiskTypes = new List<HealthRiskType>
+            {
+                HealthRiskType.Human,
+                HealthRiskType.NonHuman,
+                HealthRiskType.UnusualEvent,
+                HealthRiskType.Activity
+            };
             var projectHealthRiskNames = await _projectService.GetHealthRiskNames(projectId, healthRiskTypes);
 
-            var dto = new ReportListFilterResponseDto
-            {
-                HealthRisks = projectHealthRiskNames
-            };
+            var dto = new ReportListFilterResponseDto { HealthRisks = projectHealthRiskNames };
 
             return Success(dto);
         }
@@ -123,10 +127,7 @@ namespace RX.Nyss.Web.Features.Reports
             var humanHealthRiskType = new List<HealthRiskType> { HealthRiskType.Human };
             var projectHealthRisks = await _projectService.GetHealthRiskNames(projectId, humanHealthRiskType);
 
-            var dto = new HumanHealthRiskResponseDto
-            {
-                HealthRisks = projectHealthRisks
-            };
+            var dto = new HumanHealthRiskResponseDto { HealthRisks = projectHealthRisks };
 
             return Success(dto);
         }
@@ -137,14 +138,16 @@ namespace RX.Nyss.Web.Features.Reports
 
             var reportsQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.ReportsType == ReportListType.FromDcp ?
-                    r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
-                    r.DataCollector.DataCollectorType == DataCollectorType.Human)
+                .Where(r => filter.ReportsType == ReportListType.FromDcp
+                    ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                    : r.DataCollector.DataCollectorType == DataCollectorType.Human)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
-                .Where(r => filter.IsTraining ?
-                    r.IsTraining.HasValue && r.IsTraining.Value :
-                    r.IsTraining.HasValue && !r.IsTraining.Value)
+                .Where(r => filter.Status
+                    ? r.Report != null && !r.Report.MarkedAsError
+                    : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
+                .Where(r => filter.IsTraining
+                    ? r.IsTraining.HasValue && r.IsTraining.Value
+                    : r.IsTraining.HasValue && !r.IsTraining.Value)
                 .FilterByArea(MapToArea(filter.Area))
                 .Select(r => new ExportReportListResponseDto
                 {
@@ -160,8 +163,12 @@ namespace RX.Nyss.Web.Features.Reports
                     District = r.Village.District.Name,
                     Village = r.Village.Name,
                     Zone = r.Zone.Name,
-                    Location = r.Report != null ? r.Report.Location : null,
-                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
+                    Location = r.Report != null
+                        ? r.Report.Location
+                        : null,
+                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                        ? r.DataCollector.Name
+                        : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
                     Message = r.Text,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
@@ -190,7 +197,7 @@ namespace RX.Nyss.Web.Features.Reports
             var report = await _nyssContext.Reports
                 .Include(r => r.RawReport)
                 .Include(r => r.ProjectHealthRisk)
-                    .ThenInclude(phr => phr.Project)
+                .ThenInclude(phr => phr.Project)
                 .SingleOrDefaultAsync(r => r.Id == reportId);
 
             if (report == null)
@@ -207,8 +214,8 @@ namespace RX.Nyss.Web.Features.Reports
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
                 .SingleOrDefaultAsync(phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&
-                                             phr.HealthRisk.HealthRiskType == HealthRiskType.Human &&
-                                             phr.Project.Id == report.ProjectHealthRisk.Project.Id);
+                    phr.HealthRisk.HealthRiskType == HealthRiskType.Human &&
+                    phr.Project.Id == report.ProjectHealthRisk.Project.Id);
 
             if (projectHealthRisk == null)
             {
@@ -226,9 +233,9 @@ namespace RX.Nyss.Web.Features.Reports
             report.ReportedCase.CountFemalesAtLeastFive = reportRequestDto.CountFemalesAtLeastFive;
 
             report.ReportedCaseCount = reportRequestDto.CountMalesBelowFive +
-                                       reportRequestDto.CountMalesAtLeastFive +
-                                       reportRequestDto.CountFemalesBelowFive +
-                                       reportRequestDto.CountFemalesAtLeastFive;
+                reportRequestDto.CountMalesAtLeastFive +
+                reportRequestDto.CountFemalesBelowFive +
+                reportRequestDto.CountFemalesAtLeastFive;
 
             if (report.ReportType == ReportType.DataCollectionPoint)
             {
@@ -243,76 +250,6 @@ namespace RX.Nyss.Web.Features.Reports
             await _nyssContext.SaveChangesAsync();
 
             return SuccessMessage(ResultKey.Report.Edit.EditSuccess);
-        }
-
-        public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports)
-        {
-            var userName = _authorizationService.GetCurrentUserName();
-            var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
-                .Where(u => u.EmailAddress == userName)
-                .Select(u => u.ApplicationLanguage.LanguageCode)
-                .Single();
-
-            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
-
-            var columnLabels = new List<string>()
-            {
-                GetStringResource(stringResources,"reports.export.date"),
-                GetStringResource(stringResources,"reports.export.time"),
-                GetStringResource(stringResources,"reports.list.status"),
-                GetStringResource(stringResources,"reports.list.dataCollectorDisplayName"),
-                GetStringResource(stringResources,"reports.list.dataCollectorPhoneNumber"),
-                GetStringResource(stringResources,"reports.list.region"),
-                GetStringResource(stringResources,"reports.list.district"),
-                GetStringResource(stringResources,"reports.list.village"),
-                GetStringResource(stringResources,"reports.list.zone"),
-                GetStringResource(stringResources,"reports.list.healthRisk"),
-                GetStringResource(stringResources,"reports.list.malesBelowFive"),
-                GetStringResource(stringResources,"reports.list.malesAtLeastFive"),
-                GetStringResource(stringResources,"reports.list.femalesBelowFive"),
-                GetStringResource(stringResources,"reports.list.femalesAtLeastFive"),
-                GetStringResource(stringResources,"reports.export.totalBelowFive"),
-                GetStringResource(stringResources,"reports.export.totalAtLeastFive"),
-                GetStringResource(stringResources,"reports.export.totalMale"),
-                GetStringResource(stringResources,"reports.export.totalFemale"),
-                GetStringResource(stringResources,"reports.export.total"),
-                GetStringResource(stringResources,"reports.export.location"),
-                GetStringResource(stringResources,"reports.export.message"),
-                GetStringResource(stringResources,"reports.export.epiYear"),
-                GetStringResource(stringResources,"reports.export.epiWeek")
-            };
-
-            var reportData = reports.Select(r => {
-                var report = (ExportReportListResponseDto)r;
-                return new
-                {
-                    Date = report.DateTime.ToString("yyyy-MM-dd"),
-                    Time = report.DateTime.ToString("HH:mm"),
-                    Status = GetReportStatus(report, stringResources),
-                    report.DataCollectorDisplayName,
-                    report.PhoneNumber,
-                    report.Region,
-                    report.District,
-                    report.Village,
-                    report.Zone,
-                    report.HealthRiskName,
-                    report.CountMalesBelowFive,
-                    report.CountMalesAtLeastFive,
-                    report.CountFemalesBelowFive,
-                    report.CountFemalesAtLeastFive,
-                    TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
-                    TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
-                    TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
-                    TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
-                    Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
-                    Location = report.Location != null ? $"{report.Location.Y}/{report.Location.Coordinate.X}" : "",
-                    report.Message,
-                    EpiYear = report.EpiWeek,
-                    EpiWeek = report.EpiYear
-                };
-            });
-
-            return _excelExportService.ToCsv(reportData, columnLabels);
         }
 
         public IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters) =>
@@ -336,6 +273,81 @@ namespace RX.Nyss.Web.Features.Reports
             GetSuccessReportsQuery(filters)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
+        public async Task<Result> MarkAsError(int reportId) => await SetMarkedAsError(reportId, true);
+
+        public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports)
+        {
+            var userName = _authorizationService.GetCurrentUserName();
+            var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
+                .Where(u => u.EmailAddress == userName)
+                .Select(u => u.ApplicationLanguage.LanguageCode)
+                .Single();
+
+            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
+
+            var columnLabels = new List<string>
+            {
+                GetStringResource(stringResources, "reports.export.date"),
+                GetStringResource(stringResources, "reports.export.time"),
+                GetStringResource(stringResources, "reports.list.status"),
+                GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
+                GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
+                GetStringResource(stringResources, "reports.list.region"),
+                GetStringResource(stringResources, "reports.list.district"),
+                GetStringResource(stringResources, "reports.list.village"),
+                GetStringResource(stringResources, "reports.list.zone"),
+                GetStringResource(stringResources, "reports.list.healthRisk"),
+                GetStringResource(stringResources, "reports.list.malesBelowFive"),
+                GetStringResource(stringResources, "reports.list.malesAtLeastFive"),
+                GetStringResource(stringResources, "reports.list.femalesBelowFive"),
+                GetStringResource(stringResources, "reports.list.femalesAtLeastFive"),
+                GetStringResource(stringResources, "reports.export.totalBelowFive"),
+                GetStringResource(stringResources, "reports.export.totalAtLeastFive"),
+                GetStringResource(stringResources, "reports.export.totalMale"),
+                GetStringResource(stringResources, "reports.export.totalFemale"),
+                GetStringResource(stringResources, "reports.export.total"),
+                GetStringResource(stringResources, "reports.export.location"),
+                GetStringResource(stringResources, "reports.export.message"),
+                GetStringResource(stringResources, "reports.export.epiYear"),
+                GetStringResource(stringResources, "reports.export.epiWeek")
+            };
+
+            var reportData = reports.Select(r =>
+            {
+                var report = (ExportReportListResponseDto)r;
+                return new
+                {
+                    Date = report.DateTime.ToString("yyyy-MM-dd"),
+                    Time = report.DateTime.ToString("HH:mm"),
+                    Status = GetReportStatus(report, stringResources),
+                    report.DataCollectorDisplayName,
+                    report.PhoneNumber,
+                    report.Region,
+                    report.District,
+                    report.Village,
+                    report.Zone,
+                    report.HealthRiskName,
+                    report.CountMalesBelowFive,
+                    report.CountMalesAtLeastFive,
+                    report.CountFemalesBelowFive,
+                    report.CountFemalesAtLeastFive,
+                    TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
+                    TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
+                    TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
+                    TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
+                    Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
+                    Location = report.Location != null
+                        ? $"{report.Location.Y}/{report.Location.Coordinate.X}"
+                        : "",
+                    report.Message,
+                    EpiYear = report.EpiWeek,
+                    EpiWeek = report.EpiYear
+                };
+            });
+
+            return _excelExportService.ToCsv(reportData, columnLabels);
+        }
+
         private string GetReportStatus(ExportReportListResponseDto report, IDictionary<string, string> stringResources) =>
             report.MarkedAsError switch
             {
@@ -345,9 +357,7 @@ namespace RX.Nyss.Web.Features.Reports
                     : GetStringResource(stringResources, "reports.list.error")
             };
 
-        public async Task<Result> MarkAsError(int reportId) => await SetMarkedAsError(reportId, true);
-
-        private  async Task<(IQueryable<RawReport> baseQuery, IQueryable<IReportListResponseDto> result)> GetReportQueries(int projectId, ReportListFilterRequestDto filter)
+        private async Task<(IQueryable<RawReport> baseQuery, IQueryable<IReportListResponseDto> result)> GetReportQueries(int projectId, ReportListFilterRequestDto filter)
         {
             var currentUserName = _authorizationService.GetCurrentUserName();
             var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
@@ -360,14 +370,16 @@ namespace RX.Nyss.Web.Features.Reports
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.ReportsType== ReportListType.FromDcp ?
-                    r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
-                    r.DataCollector.DataCollectorType == DataCollectorType.Human)
+                .Where(r => filter.ReportsType == ReportListType.FromDcp
+                    ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                    : r.DataCollector.DataCollectorType == DataCollectorType.Human)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || r.Report.MarkedAsError)
-                .Where(r => filter.IsTraining ?
-                    r.IsTraining.HasValue && r.IsTraining.Value :
-                    r.IsTraining.HasValue && !r.IsTraining.Value)
+                .Where(r => filter.Status
+                    ? r.Report != null && !r.Report.MarkedAsError
+                    : r.Report == null || r.Report.MarkedAsError)
+                .Where(r => filter.IsTraining
+                    ? r.IsTraining.HasValue && r.IsTraining.Value
+                    : r.IsTraining.HasValue && !r.IsTraining.Value)
                 .FilterByArea(MapToArea(filter.Area));
 
             var result = baseQuery.Select(r => new ReportListResponseDto
@@ -383,7 +395,9 @@ namespace RX.Nyss.Web.Features.Reports
                     District = r.Village.District.Name,
                     Village = r.Village.Name,
                     Zone = r.Zone.Name,
-                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
+                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                        ? r.DataCollector.Name
+                        : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
                     UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
@@ -406,7 +420,9 @@ namespace RX.Nyss.Web.Features.Reports
         }
 
         private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
-            stringResources.Keys.Contains(key) ? stringResources[key] : key;
+            stringResources.Keys.Contains(key)
+                ? stringResources[key]
+                : key;
 
         private async Task<Result> SetMarkedAsError(int reportId, bool markedAsError)
         {
@@ -436,6 +452,10 @@ namespace RX.Nyss.Web.Features.Reports
         private static Area MapToArea(AreaDto area) =>
             area == null
                 ? null
-                : new Area { AreaType = area.Type, AreaId = area.Id };
+                : new Area
+                {
+                    AreaType = area.Type,
+                    AreaId = area.Id
+                };
     }
 }

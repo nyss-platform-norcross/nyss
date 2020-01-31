@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.Resources
         }
 
         [Route("saveString"), HttpPost, AllowAnonymous]
-        public async Task<Result> SaveString([FromBody]SaveStringRequestDto dto)
+        public async Task<Result> SaveString([FromBody] SaveStringRequestDto dto)
         {
             var result = await _resourcesService.SaveString(dto);
 

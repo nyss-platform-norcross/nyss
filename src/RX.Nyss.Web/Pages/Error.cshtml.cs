@@ -10,14 +10,14 @@ namespace RX.Nyss.Web.Pages
     {
         private readonly ILogger<ErrorModel> _logger;
 
+        public string RequestId { get; set; }
+
+        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
         public ErrorModel(ILogger<ErrorModel> logger)
         {
             _logger = logger;
         }
-
-        public string RequestId { get; set; }
-
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
         public void OnGet()
         {

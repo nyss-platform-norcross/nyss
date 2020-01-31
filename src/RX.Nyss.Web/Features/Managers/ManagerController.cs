@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.Managers
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Create(int nationalSocietyId, [FromBody]CreateManagerRequestDto createManagerRequestDto) =>
+        public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateManagerRequestDto createManagerRequestDto) =>
             await _managerService.Create(nationalSocietyId, createManagerRequestDto);
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace RX.Nyss.Web.Features.Managers
         /// <returns></returns>
         [HttpPost("{managerId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
-        public async Task<Result> Edit(int managerId, [FromBody]EditManagerRequestDto editManagerRequestDto) =>
+        public async Task<Result> Edit(int managerId, [FromBody] EditManagerRequestDto editManagerRequestDto) =>
             await _managerService.Edit(managerId, editManagerRequestDto);
 
         /// <summary>
@@ -61,4 +61,3 @@ namespace RX.Nyss.Web.Features.Managers
             await _managerService.Delete(managerId);
     }
 }
-

@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Linq;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.Common.Extensions
 {
     public static class ReportQueries
     {
-        public static IQueryable<Nyss.Data.Models.Report> FilterByNationalSociety(this IQueryable<Nyss.Data.Models.Report> reports, int nationalSocietyId) =>
+        public static IQueryable<Report> FilterByNationalSociety(this IQueryable<Report> reports, int nationalSocietyId) =>
             reports.Where(r => r.DataCollector.Project.NationalSocietyId == nationalSocietyId);
 
-        public static IQueryable<Nyss.Data.Models.Report> FilterByDataCollectorType(this IQueryable<Nyss.Data.Models.Report> reports, DataCollectorType? dataCollectorType) =>
+        public static IQueryable<Report> FilterByDataCollectorType(this IQueryable<Report> reports, DataCollectorType? dataCollectorType) =>
             dataCollectorType switch
             {
                 DataCollectorType.Human =>
@@ -23,16 +24,16 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 reports
             };
 
-        public static IQueryable<Nyss.Data.Models.Report> FilterByDate(this IQueryable<Nyss.Data.Models.Report> reports, DateTime startDate, DateTime endDate) =>
+        public static IQueryable<Report> FilterByDate(this IQueryable<Report> reports, DateTime startDate, DateTime endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 
-        public static IQueryable<Nyss.Data.Models.Report> FilterByProject(this IQueryable<Nyss.Data.Models.Report> reports, int projectId) =>
+        public static IQueryable<Report> FilterByProject(this IQueryable<Report> reports, int projectId) =>
             reports.Where(r => r.DataCollector.Project.Id == projectId);
 
-        public static IQueryable<Nyss.Data.Models.Report> FilterByHealthRisk(this IQueryable<Nyss.Data.Models.Report> reports, int? healthRiskId) =>
+        public static IQueryable<Report> FilterByHealthRisk(this IQueryable<Report> reports, int? healthRiskId) =>
             reports.Where(r => !healthRiskId.HasValue || r.ProjectHealthRisk.HealthRiskId == healthRiskId.Value);
 
-        public static IQueryable<Nyss.Data.Models.Report> FilterByArea(this IQueryable<Nyss.Data.Models.Report> reports, AreaDto area) =>
+        public static IQueryable<Report> FilterByArea(this IQueryable<Report> reports, AreaDto area) =>
             area?.Type switch
             {
                 AreaType.Region =>

@@ -34,14 +34,16 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             return await reports
                 .GroupBy(report => new
                 {
-                    report.Location.X, report.Location.Y
+                    report.Location.X,
+                    report.Location.Y
                 })
                 .Select(grouping => new ReportsSummaryMapResponseDto
                 {
                     ReportsCount = grouping.Sum(g => g.ReportedCaseCount),
                     Location = new ReportsSummaryMapResponseDto.MapReportLocation
                     {
-                        Latitude = grouping.Key.Y, Longitude = grouping.Key.X
+                        Latitude = grouping.Key.Y,
+                        Longitude = grouping.Key.X
                     }
                 })
                 .ToListAsync();
@@ -59,14 +61,14 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     HealthRiskName = r.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == r.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name).FirstOrDefault(),
-                    Total = r.ReportedCaseCount,
+                    Total = r.ReportedCaseCount
                 })
                 .Where(r => r.Total > 0)
                 .GroupBy(r => r.HealthRiskId)
                 .Select(grouping => new ReportsSummaryHealthRiskResponseDto
                 {
                     Name = _nyssContext.HealthRiskLanguageContents.Where(f => f.HealthRisk.Id == grouping.Key).Select(s => s.Name).FirstOrDefault(),
-                    Value = grouping.Sum(r => r.Total),
+                    Value = grouping.Sum(r => r.Total)
                 })
                 .ToListAsync();
         }

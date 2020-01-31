@@ -1,6 +1,6 @@
 ﻿namespace RX.Nyss.Data.Models
 {
-    public class AdministratorUser: User
+    public class AdministratorUser : User
     {
     }
 }

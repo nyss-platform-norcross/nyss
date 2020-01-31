@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
         /// <param name="dto">The global coordinator to be created</param>
         /// <returns></returns>
         [HttpPost("create"), NeedsRole(Role.Administrator)]
-        public async Task<Result> Create([FromBody]CreateGlobalCoordinatorRequestDto dto) =>
+        public async Task<Result> Create([FromBody] CreateGlobalCoordinatorRequestDto dto) =>
             await _globalCoordinatorService.Create(dto);
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
         /// <param name="editGlobalCoordinatorRequestDto">The global coordinator user to be edited</param>
         /// <returns></returns>
         [HttpPost("{id:int}/edit"), NeedsRole(Role.Administrator)]
-        public async Task<Result> Edit([FromBody]EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto) =>
+        public async Task<Result> Edit([FromBody] EditGlobalCoordinatorRequestDto editGlobalCoordinatorRequestDto) =>
             await _globalCoordinatorService.Edit(editGlobalCoordinatorRequestDto);
 
         /// <summary>

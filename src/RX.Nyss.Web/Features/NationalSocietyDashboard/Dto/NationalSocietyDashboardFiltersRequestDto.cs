@@ -6,6 +6,13 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 {
     public class NationalSocietyDashboardFiltersRequestDto
     {
+        public enum NationalSocietyReportsTypeDto
+        {
+            All,
+            DataCollector,
+            DataCollectionPoint
+        }
+
         public int? HealthRiskId { get; set; }
 
         public DateTime StartDate { get; set; }
@@ -19,12 +26,5 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
         public NationalSocietyReportsTypeDto NationalSocietyReportsType { get; set; }
 
         public bool IsTraining { get; set; }
-
-        public enum NationalSocietyReportsTypeDto
-        {
-            All,
-            DataCollector,
-            DataCollectionPoint
-        }
     }
 }

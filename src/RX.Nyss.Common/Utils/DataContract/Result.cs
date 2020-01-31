@@ -10,7 +10,11 @@
         internal Result(bool isSuccess, string messageKey, object messageData)
         {
             IsSuccess = isSuccess;
-            Message = new Message { Key = messageKey, Data = messageData};
+            Message = new Message
+            {
+                Key = messageKey,
+                Data = messageData
+            };
         }
 
         public static Result SuccessMessage(string messageKey, object messageData = null) => new Result(true, messageKey, messageData);

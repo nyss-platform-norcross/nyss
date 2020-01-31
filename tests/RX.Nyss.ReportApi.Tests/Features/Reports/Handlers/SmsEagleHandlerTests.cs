@@ -45,7 +45,14 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
         {
             // Arrange
             var apiKey = "api-key";
-            var gatewaySettings = new List<GatewaySetting> { new GatewaySetting { ApiKey = apiKey, GatewayType = GatewayType.SmsEagle } };
+            var gatewaySettings = new List<GatewaySetting>
+            {
+                new GatewaySetting
+                {
+                    ApiKey = apiKey,
+                    GatewayType = GatewayType.SmsEagle
+                }
+            };
             var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsDbSet);
 
@@ -71,7 +78,14 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
         {
             // Arrange
             var apiKey = "api-key";
-            var gatewaySettings = new List<GatewaySetting> { new GatewaySetting { ApiKey = apiKey, GatewayType = GatewayType.Unknown } };
+            var gatewaySettings = new List<GatewaySetting>
+            {
+                new GatewaySetting
+                {
+                    ApiKey = apiKey,
+                    GatewayType = GatewayType.Unknown
+                }
+            };
             var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsDbSet);
 
@@ -90,10 +104,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
                 new DataCollector
                 {
                     PhoneNumber = phoneNumber,
-                    Project = new Project
-                    {
-                        NationalSocietyId = gatewayNationalSocietyId
-                    }
+                    Project = new Project { NationalSocietyId = gatewayNationalSocietyId }
                 }
             };
             var dataCollectorsDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
@@ -143,10 +154,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
                 new DataCollector
                 {
                     PhoneNumber = phoneNumber,
-                    Project = new Project
-                    {
-                        NationalSocietyId = 2
-                    }
+                    Project = new Project { NationalSocietyId = 2 }
                 }
             };
             var dataCollectorsDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
@@ -176,14 +184,26 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
                 new ProjectHealthRisk
                 {
                     Project = new Project { Id = projectId },
-                    HealthRisk = new HealthRisk { HealthRiskType = healthRiskType, HealthRiskCode = healthRiskCode }
+                    HealthRisk = new HealthRisk
+                    {
+                        HealthRiskType = healthRiskType,
+                        HealthRiskCode = healthRiskCode
+                    }
                 }
             };
             var projectHealthRisksDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksDbSet);
 
-            var parsedReport = new ParsedReport { ReportType = reportType, HealthRiskCode = healthRiskCode };
-            var dataCollector = new DataCollector { DataCollectorType = dataCollectorType, Project = new Project { Id = projectId } };
+            var parsedReport = new ParsedReport
+            {
+                ReportType = reportType,
+                HealthRiskCode = healthRiskCode
+            };
+            var dataCollector = new DataCollector
+            {
+                DataCollectorType = dataCollectorType,
+                Project = new Project { Id = projectId }
+            };
 
             // Assert
             Should.NotThrow(async () => await _smsEagleHandler.ValidateReport(parsedReport, dataCollector));
@@ -223,14 +243,26 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
                 new ProjectHealthRisk
                 {
                     Project = new Project { Id = projectId },
-                    HealthRisk = new HealthRisk { HealthRiskType = healthRiskType, HealthRiskCode = healthRiskCode }
+                    HealthRisk = new HealthRisk
+                    {
+                        HealthRiskType = healthRiskType,
+                        HealthRiskCode = healthRiskCode
+                    }
                 }
             };
             var projectHealthRisksDbSet = projectHealthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksDbSet);
 
-            var parsedReport = new ParsedReport { ReportType = reportType, HealthRiskCode = healthRiskCode };
-            var dataCollector = new DataCollector { DataCollectorType = dataCollectorType, Project = new Project { Id = projectId } };
+            var parsedReport = new ParsedReport
+            {
+                ReportType = reportType,
+                HealthRiskCode = healthRiskCode
+            };
+            var dataCollector = new DataCollector
+            {
+                DataCollectorType = dataCollectorType,
+                Project = new Project { Id = projectId }
+            };
 
             // Assert
             Should.Throw<ReportValidationException>(async () => await _smsEagleHandler.ValidateReport(parsedReport, dataCollector));

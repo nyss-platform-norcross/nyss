@@ -52,7 +52,12 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
         private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
-                .GroupBy(r => new { r.ReceivedAt.Date, VillageId = r.RawReport.Village.Id, VillageName = r.RawReport.Village.Name })
+                .GroupBy(r => new
+                {
+                    r.ReceivedAt.Date,
+                    VillageId = r.RawReport.Village.Id,
+                    VillageName = r.RawReport.Village.Name
+                })
                 .Select(grouping => new
                 {
                     Period = grouping.Key.Date,
@@ -64,7 +69,11 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .ToListAsync();
 
             var reportsGroupedByVillages = groupedReports
-                .GroupBy(r => new { r.VillageId, r.VillageName })
+                .GroupBy(r => new
+                {
+                    r.VillageId,
+                    r.VillageName
+                })
                 .OrderByDescending(g => g.Sum(w => w.Count))
                 .Select(g => new
                 {
@@ -83,7 +92,11 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     .GroupBy(_ => true)
                     .Select(g => new
                     {
-                        Village = new { VillageId = 0, VillageName = "(rest)" },
+                        Village = new
+                        {
+                            VillageId = 0,
+                            VillageName = "(rest)"
+                        },
                         Data = g.ToList()
                     })
                 )
@@ -115,7 +128,13 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
         private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
-                .GroupBy(r => new { r.EpiWeek, ReceivedAt = r.ReceivedAt.Date, VillageId = r.RawReport.Village.Id, VillageName = r.RawReport.Village.Name })
+                .GroupBy(r => new
+                {
+                    r.EpiWeek,
+                    ReceivedAt = r.ReceivedAt.Date,
+                    VillageId = r.RawReport.Village.Id,
+                    VillageName = r.RawReport.Village.Name
+                })
                 .Select(grouping => new
                 {
                     Period = new
@@ -131,7 +150,11 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .ToListAsync();
 
             var reportsGroupedByVillages = groupedReports
-                .GroupBy(r => new { r.VillageId, r.VillageName })
+                .GroupBy(r => new
+                {
+                    r.VillageId,
+                    r.VillageName
+                })
                 .OrderByDescending(g => g.Sum(w => w.Count))
                 .Select(g => new
                 {
@@ -150,7 +173,11 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     .GroupBy(_ => true)
                     .Select(g => new
                     {
-                        Village = new { VillageId = 0, VillageName = "(rest)" },
+                        Village = new
+                        {
+                            VillageId = 0,
+                            VillageName = "(rest)"
+                        },
                         Data = g.ToList()
                     })
                 )

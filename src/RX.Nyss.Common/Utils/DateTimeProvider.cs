@@ -18,13 +18,6 @@ namespace RX.Nyss.Common.Utils
 
     public class DateTimeProvider : IDateTimeProvider
     {
-        public TimeZoneInfo GetTimeZoneInfo(string timeZoneName) =>
-            TimeZoneInfo.GetSystemTimeZones().First(tzi => tzi.Id == timeZoneName
-                || tzi.DisplayName == timeZoneName
-                || tzi.StandardName == timeZoneName
-                || tzi.DaylightName == timeZoneName);
-
-
         public DateTime UtcNow => DateTime.UtcNow;
 
         public int GetEpiWeek(DateTime date)
@@ -67,6 +60,12 @@ namespace RX.Nyss.Common.Utils
                 .Select(GetEpiDate)
                 .Distinct()
                 .ToList();
+
+        public TimeZoneInfo GetTimeZoneInfo(string timeZoneName) =>
+            TimeZoneInfo.GetSystemTimeZones().First(tzi => tzi.Id == timeZoneName
+                || tzi.DisplayName == timeZoneName
+                || tzi.StandardName == timeZoneName
+                || tzi.DaylightName == timeZoneName);
     }
 
     public struct EpiDate

@@ -17,7 +17,7 @@ namespace RX.Nyss.FuncApp
 
         [FunctionName("SendEmail")]
         public async Task SendEmail(
-            [ServiceBusTrigger("%SERVICEBUS_SENDEMAILQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")]SendEmailMessage message,
+            [ServiceBusTrigger("%SERVICEBUS_SENDEMAILQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] SendEmailMessage message,
             [Blob("%WhitelistedPhoneNumbersBlobPath%", FileAccess.Read)] string whitelistedPhoneNumbers,
             [Blob("%WhitelistedEmailAddressesBlobPath%", FileAccess.Read)] string whitelistedEmailAddresses) =>
             await _emailService.SendEmailWithMailjet(message, whitelistedEmailAddresses, whitelistedPhoneNumbers);

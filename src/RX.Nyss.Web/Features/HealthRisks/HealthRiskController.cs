@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
         /// <param name="healthRiskRequestDto"></param>
         /// <returns>An identifier of the created health risk</returns>
         [HttpPost, Route("create"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result> Create([FromBody]HealthRiskRequestDto healthRiskRequestDto) =>
+        public async Task<Result> Create([FromBody] HealthRiskRequestDto healthRiskRequestDto) =>
             await _healthRiskService.Create(healthRiskRequestDto);
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
         /// <param name="healthRiskRequestDto">A health risk</param>
         /// <returns></returns>
         [HttpPost, Route("{id:int}/edit"), NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result> Edit(int id, [FromBody]HealthRiskRequestDto healthRiskRequestDto) =>
+        public async Task<Result> Edit(int id, [FromBody] HealthRiskRequestDto healthRiskRequestDto) =>
             await _healthRiskService.Edit(id, healthRiskRequestDto);
 
         /// <summary>

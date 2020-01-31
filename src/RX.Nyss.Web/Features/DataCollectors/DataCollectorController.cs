@@ -34,12 +34,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result> Create(int projectId, [FromBody]CreateDataCollectorRequestDto createDataCollectorDto) =>
+        public async Task<Result> Create(int projectId, [FromBody] CreateDataCollectorRequestDto createDataCollectorDto) =>
             await _dataCollectorService.Create(projectId, createDataCollectorDto);
 
         [HttpPost, Route("{dataCollectorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.DataCollectorAccess)]
-        public async Task<Result> Edit([FromBody]EditDataCollectorRequestDto editDataCollectorDto) =>
+        public async Task<Result> Edit([FromBody] EditDataCollectorRequestDto editDataCollectorDto) =>
             await _dataCollectorService.Edit(editDataCollectorDto);
 
         [HttpPost, Route("{dataCollectorId:int}/setTrainingState")]
@@ -65,7 +65,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [HttpGet, Route("mapOverviewDetails")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng) =>
-            await _dataCollectorService.MapOverviewDetails(projectId, @from, to, lat, lng);
+            await _dataCollectorService.MapOverviewDetails(projectId, from, to, lat, lng);
 
         [HttpGet, Route("performance")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]

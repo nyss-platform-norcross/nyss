@@ -41,9 +41,21 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = 1, NationalSocietyId = nationalSocietyId },
-                new GatewaySetting { Id = 2, NationalSocietyId = 2 },
-                new GatewaySetting { Id = 3, NationalSocietyId = nationalSocietyId }
+                new GatewaySetting
+                {
+                    Id = 1,
+                    NationalSocietyId = nationalSocietyId
+                },
+                new GatewaySetting
+                {
+                    Id = 2,
+                    NationalSocietyId = 2
+                },
+                new GatewaySetting
+                {
+                    Id = 3,
+                    NationalSocietyId = nationalSocietyId
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -66,9 +78,24 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = 1, NationalSocietyId = 1 },
-                new GatewaySetting { Id = 2, NationalSocietyId = 2 },
-                new GatewaySetting { Id = existingNationalSocietyId, Name = "Name", ApiKey = "api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = 1,
+                    NationalSocietyId = 1
+                },
+                new GatewaySetting
+                {
+                    Id = 2,
+                    NationalSocietyId = 2
+                },
+                new GatewaySetting
+                {
+                    Id = existingNationalSocietyId,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -91,10 +118,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Arrange
             const int nonExistentSmsGatewayId = 0;
 
-            var gatewaySettings = new[]
-            {
-                new GatewaySetting { Id = 1 }
-            };
+            var gatewaySettings = new[] { new GatewaySetting { Id = 1 } };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
@@ -115,7 +139,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new NationalSociety { Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -123,7 +151,14 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = 1, Name = "Name", ApiKey = "api-key", NationalSocietyId = nationalSocietyId, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = 1,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = nationalSocietyId,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -146,7 +181,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                     gs.ApiKey == "new-api-key" &&
                     gs.GatewayType == GatewayType.SmsEagle));
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content);
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SuccessfullyAdded);
@@ -160,7 +195,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -179,7 +218,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             await _nyssContextMock.GatewaySettings.DidNotReceive().AddAsync(Arg.Any<GatewaySetting>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.NationalSocietyDoesNotExist);
@@ -193,7 +232,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new NationalSociety { Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -201,7 +244,14 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = 1, Name = "Name", ApiKey = "existing-api-key", NationalSocietyId = nationalSocietyId, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = 1,
+                    Name = "Name",
+                    ApiKey = "existing-api-key",
+                    NationalSocietyId = nationalSocietyId,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -220,7 +270,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             await _nyssContextMock.GatewaySettings.DidNotReceive().AddAsync(Arg.Any<GatewaySetting>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
@@ -234,7 +284,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new NationalSociety { Id = nationalSocietyId, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -242,7 +296,14 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = 1, Name = "Name", ApiKey = "api-key", NationalSocietyId = nationalSocietyId, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = 1,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = nationalSocietyId,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -255,7 +316,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                 GatewayType = GatewayType.SmsEagle
             };
 
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
@@ -268,7 +329,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                     gs.ApiKey == "new-api-key" &&
                     gs.GatewayType == GatewayType.SmsEagle));
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            string content1 = Arg.Any<string>();
+            var content1 = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
@@ -282,7 +343,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -290,7 +355,14 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = smsGatewayId, Name = "Name", ApiKey = "api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = smsGatewayId,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -309,7 +381,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content);
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SuccessfullyUpdated);
@@ -323,7 +395,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -331,7 +407,14 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = 1, Name = "Name", ApiKey = "api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = 1,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -350,7 +433,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
@@ -364,7 +447,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -372,8 +459,22 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = smsGatewayId, Name = "Name", ApiKey = "api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle},
-                new GatewaySetting { Id = 2, Name = "Name", ApiKey = "existing-api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = smsGatewayId,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                },
+                new GatewaySetting
+                {
+                    Id = 2,
+                    Name = "Name",
+                    ApiKey = "existing-api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -392,7 +493,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             // Assert
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
@@ -406,7 +507,11 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var nationalSocieties = new[]
             {
-                new NationalSociety { Id = 1, Name = "National Society"}
+                new NationalSociety
+                {
+                    Id = 1,
+                    Name = "National Society"
+                }
             };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
@@ -414,7 +519,14 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = smsGatewayId, Name = "Name", ApiKey = "api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = smsGatewayId,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -428,7 +540,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                 GatewayType = GatewayType.SmsEagle
             };
 
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
@@ -436,7 +548,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            string content1 = Arg.Any<string>();
+            var content1 = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
@@ -450,7 +562,14 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = existingSmsGatewayId, Name = "Name", ApiKey = "api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = existingSmsGatewayId,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -463,7 +582,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             _nyssContextMock.GatewaySettings.Received(1).Remove(Arg.Is<GatewaySetting>(gs => gs.Id == existingSmsGatewayId));
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content);
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SuccessfullyDeleted);
@@ -477,7 +596,14 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = 1, Name = "Name", ApiKey = "api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = 1,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -490,7 +616,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             _nyssContextMock.GatewaySettings.DidNotReceive().Remove(Arg.Any<GatewaySetting>());
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
@@ -504,14 +630,21 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = smsGatewayId, Name = "Name", ApiKey = "api-key", NationalSocietyId = 1, GatewayType = GatewayType.SmsEagle}
+                new GatewaySetting
+                {
+                    Id = smsGatewayId,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
             _nyssContextMock.GatewaySettings.FindAsync(smsGatewayId).Returns(gatewaySettings[0]);
 
-            string content = Arg.Any<string>();
+            var content = Arg.Any<string>();
             _smsGatewayBlobProviderMock.UpdateApiKeys(content).ThrowsForAnyArgs(new ResultException(ResultKey.UnexpectedError));
 
             // Act
@@ -520,7 +653,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Assert
             _nyssContextMock.GatewaySettings.Received(1).Remove(Arg.Is<GatewaySetting>(gs => gs.Id == smsGatewayId));
             await _nyssContextMock.Received(1).SaveChangesAsync();
-            string content1 = Arg.Any<string>();
+            var content1 = Arg.Any<string>();
             await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
@@ -532,9 +665,24 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             // Arrange
             var gatewaySettings = new[]
             {
-                new GatewaySetting { Id = 1, ApiKey = "first-api-key", NationalSocietyId = 1},
-                new GatewaySetting { Id = 2, ApiKey = "second-api-key", NationalSocietyId = 1},
-                new GatewaySetting { Id = 3, ApiKey = "third-api-key", NationalSocietyId = 1}
+                new GatewaySetting
+                {
+                    Id = 1,
+                    ApiKey = "first-api-key",
+                    NationalSocietyId = 1
+                },
+                new GatewaySetting
+                {
+                    Id = 2,
+                    ApiKey = "second-api-key",
+                    NationalSocietyId = 1
+                },
+                new GatewaySetting
+                {
+                    Id = 3,
+                    ApiKey = "third-api-key",
+                    NationalSocietyId = 1
+                }
             };
 
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -544,7 +692,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             await _smsGatewayService.UpdateAuthorizedApiKeys();
 
             // Assert
-            string content = Arg.Is<string>(c =>
+            var content = Arg.Is<string>(c =>
                 c.Contains("first-api-key") &&
                 c.Contains("second-api-key") &&
                 c.Contains("third-api-key"));

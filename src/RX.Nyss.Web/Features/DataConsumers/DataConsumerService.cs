@@ -33,7 +33,8 @@ namespace RX.Nyss.Web.Features.DataConsumers
 
         private readonly IDeleteUserService _deleteService;
 
-        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteService)
+        public DataConsumerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
@@ -69,49 +70,6 @@ namespace RX.Nyss.Web.Features.DataConsumers
             }
         }
 
-        private async Task<DataConsumerUser> CreateDataConsumerUser(IdentityUser identityUser, int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto)
-        {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
-                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
-
-            if (nationalSociety == null)
-            {
-                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
-            }
-            if (nationalSociety.IsArchived)
-            {
-                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
-            }
-
-            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
-                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
-
-            var user = new DataConsumerUser
-            {
-                IdentityUserId = identityUser.Id,
-                EmailAddress = identityUser.Email,
-                Name = createDataConsumerRequestDto.Name,
-                PhoneNumber = createDataConsumerRequestDto.PhoneNumber,
-                AdditionalPhoneNumber = createDataConsumerRequestDto.AdditionalPhoneNumber,
-                Organization = createDataConsumerRequestDto.Organization,
-                ApplicationLanguage = defaultUserApplicationLanguage,
-            };
-
-            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
-
-            await _dataContext.AddAsync(userNationalSociety);
-            await _dataContext.SaveChangesAsync();
-
-            return user;
-        }
-
-        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
-            new UserNationalSociety
-            {
-                NationalSociety = nationalSociety,
-                User = user
-            };
-
         public async Task<Result<GetDataConsumerResponseDto>> Get(int nationalSocietyUserId)
         {
             var dataConsumer = await _dataContext.Users.FilterAvailable()
@@ -125,7 +83,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
                     Email = u.EmailAddress,
                     PhoneNumber = u.PhoneNumber,
                     AdditionalPhoneNumber = u.AdditionalPhoneNumber,
-                    Organization = u.Organization,
+                    Organization = u.Organization
                 })
                 .SingleOrDefaultAsync();
 
@@ -177,7 +135,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
                     return Error(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
                 }
 
-                var isUsersLastNationalSociety = (userNationalSocieties.Count == 1);
+                var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
                 _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
 
                 if (isUsersLastNationalSociety)
@@ -196,6 +154,49 @@ namespace RX.Nyss.Web.Features.DataConsumers
                 return e.Result;
             }
         }
+
+        private async Task<DataConsumerUser> CreateDataConsumerUser(IdentityUser identityUser, int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto)
+        {
+            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+
+            if (nationalSociety == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+            }
+
+            if (nationalSociety.IsArchived)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
+            }
+
+            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
+
+            var user = new DataConsumerUser
+            {
+                IdentityUserId = identityUser.Id,
+                EmailAddress = identityUser.Email,
+                Name = createDataConsumerRequestDto.Name,
+                PhoneNumber = createDataConsumerRequestDto.PhoneNumber,
+                AdditionalPhoneNumber = createDataConsumerRequestDto.AdditionalPhoneNumber,
+                Organization = createDataConsumerRequestDto.Organization,
+                ApplicationLanguage = defaultUserApplicationLanguage
+            };
+
+            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+
+            await _dataContext.AddAsync(userNationalSociety);
+            await _dataContext.SaveChangesAsync();
+
+            return user;
+        }
+
+        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
+            new UserNationalSociety
+            {
+                NationalSociety = nationalSociety,
+                User = user
+            };
     }
 }
-

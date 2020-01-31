@@ -48,10 +48,8 @@ namespace RX.Nyss.Web.Features.Users
                     Email = uns.User.EmailAddress,
                     PhoneNumber = uns.User.PhoneNumber,
                     Role = uns.User.Role.ToString(),
-                    Project = (uns.User is SupervisorUser)
-                        ? ((SupervisorUser)uns.User).CurrentProject != null
-                            ? ((SupervisorUser)uns.User).CurrentProject.Name
-                            : null
+                    Project = uns.User is SupervisorUser
+                        ? ((SupervisorUser)uns.User).CurrentProject != null ? ((SupervisorUser)uns.User).CurrentProject.Name : null
                         : null,
                     IsHeadManager = uns.NationalSociety.HeadManager != null && uns.NationalSociety.HeadManager.Id == uns.User.Id,
                     IsPendingHeadManager = uns.NationalSociety.PendingHeadManager != null && uns.NationalSociety.PendingHeadManager.Id == uns.User.Id
@@ -66,7 +64,11 @@ namespace RX.Nyss.Web.Features.Users
         {
             var user = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.Id == nationalSocietyUserId)
-                .Select(u => new NationalSocietyUsersBasicDataResponseDto { Email = u.EmailAddress, Role = u.Role })
+                .Select(u => new NationalSocietyUsersBasicDataResponseDto
+                {
+                    Email = u.EmailAddress,
+                    Role = u.Role
+                })
                 .SingleOrDefaultAsync();
 
             return Success(user);
@@ -76,7 +78,11 @@ namespace RX.Nyss.Web.Features.Users
         {
             var userData = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userEmail)
-                .Select(u => new { u.Id, u.Role })
+                .Select(u => new
+                {
+                    u.Id,
+                    u.Role
+                })
                 .SingleOrDefaultAsync();
 
             if (userData == null)
@@ -105,7 +111,11 @@ namespace RX.Nyss.Web.Features.Users
             }
 
 
-            var userNationalSociety = new UserNationalSociety { NationalSocietyId = nationalSocietyId, UserId = userData.Id };
+            var userNationalSociety = new UserNationalSociety
+            {
+                NationalSocietyId = nationalSocietyId,
+                UserId = userData.Id
+            };
             await _dataContext.UserNationalSocieties.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
             return Success();

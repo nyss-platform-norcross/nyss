@@ -26,12 +26,12 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
 
     public class GlobalCoordinatorService : IGlobalCoordinatorService
     {
+        private const string EnglishLanguageCode = "en";
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
-        private const string EnglishLanguageCode = "en";
 
         public GlobalCoordinatorService(
             IIdentityUserRegistrationService identityUserRegistrationService,
@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
                         AdditionalPhoneNumber = dto.AdditionalPhoneNumber,
                         Organization = dto.Organization,
                         Role = Role.GlobalCoordinator,
-                        ApplicationLanguage = defaultUserApplicationLanguage,
+                        ApplicationLanguage = defaultUserApplicationLanguage
                     };
                     await _dataContext.AddAsync(user);
 
@@ -137,7 +137,7 @@ namespace RX.Nyss.Web.Features.GlobalCoordinators
                 .Where(u => u.Role == Role.GlobalCoordinator)
                 .Select(u => new GetGlobalCoordinatorResponseDto
                 {
-                    Id =  u.Id,
+                    Id = u.Id,
                     Name = u.Name,
                     Email = u.EmailAddress,
                     PhoneNumber = u.PhoneNumber,

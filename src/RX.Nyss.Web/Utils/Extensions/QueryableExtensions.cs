@@ -10,6 +10,8 @@ namespace RX.Nyss.Web.Utils.Extensions
             query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
         public static IOrderedQueryable<TSource> OrderBy<TSource, TKey>(this IQueryable<TSource> query, Expression<Func<TSource, TKey>> keySelector, bool sortAscending) =>
-            sortAscending ? query.OrderBy(keySelector) : query.OrderByDescending(keySelector);
+            sortAscending
+                ? query.OrderBy(keySelector)
+                : query.OrderByDescending(keySelector);
     }
 }

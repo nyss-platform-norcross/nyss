@@ -27,7 +27,8 @@ namespace RX.Nyss.Web.Services
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly IDeleteUserService _deleteUserService;
 
-        public NationalSocietyUserService(INyssContext dataContext, ILoggerAdapter loggerAdapter, IIdentityUserRegistrationService identityUserRegistrationService, IDeleteUserService deleteUserService)
+        public NationalSocietyUserService(INyssContext dataContext, ILoggerAdapter loggerAdapter, IIdentityUserRegistrationService identityUserRegistrationService,
+            IDeleteUserService deleteUserService)
         {
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
@@ -44,7 +45,7 @@ namespace RX.Nyss.Web.Services
 
             if (nationalSocietyUser == null)
             {
-                _loggerAdapter.Warn($"User with id {nationalSocietyUserId} and the role {typeof(T).ToString()} was not found");
+                _loggerAdapter.Warn($"User with id {nationalSocietyUserId} and the role {typeof(T)} was not found");
                 throw new ResultException(ResultKey.User.Common.UserNotFound);
             }
 
@@ -61,7 +62,7 @@ namespace RX.Nyss.Web.Services
 
             if (nationalSocietyUser == null)
             {
-                _loggerAdapter.Warn($"User with id {nationalSocietyUserId} and the role {typeof(T).ToString()} was not found");
+                _loggerAdapter.Warn($"User with id {nationalSocietyUserId} and the role {typeof(T)} was not found");
                 throw new ResultException(ResultKey.User.Common.UserNotFound);
             }
 
@@ -78,7 +79,7 @@ namespace RX.Nyss.Web.Services
                 var nationalSocietyUser = await GetNationalSocietyUserIncludingNationalSocieties<T>(nationalSocietyUserId);
                 await _deleteUserService.EnsureCanDeleteUser(nationalSocietyUserId, nationalSocietyUser.Role);
 
-                DeleteNationalSocietyUser<T>(nationalSocietyUser);
+                DeleteNationalSocietyUser(nationalSocietyUser);
                 await _identityUserRegistrationService.DeleteIdentityUser(nationalSocietyUser.IdentityUserId);
 
                 await _dataContext.SaveChangesAsync();

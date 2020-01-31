@@ -15,7 +15,6 @@ using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Utils.DataContract;
 using Shouldly;
 using Xunit;
 
@@ -48,10 +47,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var alertReportsDbSet = _alertReports.AsQueryable().BuildMockDbSet();
             _nyssContext.AlertReports.Returns(alertReportsDbSet);
 
-            config.ServiceBusQueues.Returns(new ServiceBusQueuesOptions
-            {
-                ReportDismissalQueue = TestData.ReportDismissalQueue
-            });
+            config.ServiceBusQueues.Returns(new ServiceBusQueuesOptions { ReportDismissalQueue = TestData.ReportDismissalQueue });
 
             _dateTimeProvider.UtcNow.Returns(_now);
             _authorizationService.GetCurrentUser().Returns(_currentUser);
@@ -206,7 +202,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         AlertId = AlertId,
                         ReportId = ReportId,
                         Alert = new Alert { Id = AlertId },
-                        Report = new Report { Id = ReportId, Status = ReportStatus.Pending }
+                        Report = new Report
+                        {
+                            Id = ReportId,
+                            Status = ReportStatus.Pending
+                        }
                     }
                 };
         }

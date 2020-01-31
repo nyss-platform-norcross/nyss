@@ -12,10 +12,9 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
 {
     public class ReportsDashboardTestData
     {
+        private static readonly DateTime BaseDate = new DateTime(2019, 01, 01);
         private readonly IDateTimeProvider _dateTimeProvider;
         public int ProjectId { get; set; } = 1;
-
-        private static readonly DateTime BaseDate = new DateTime(2019, 01, 01);
 
         public List<NationalSociety> NationalSocieties { get; set; }
         public List<HealthRisk> HealthRisks { get; set; }
@@ -33,6 +32,105 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
         public List<Village> Villages { get; set; }
         public List<Zone> Zones { get; set; }
         public List<Alert> Alerts { get; set; }
+
+        public ReportsDashboardTestData(IDateTimeProvider dateTimeProvider)
+        {
+            _dateTimeProvider = dateTimeProvider;
+
+
+            NationalSocieties = new List<NationalSociety> { new NationalSociety { Id = 1 } };
+
+            Projects = new List<Project>
+            {
+                new Project
+                {
+                    Id = ProjectId,
+                    NationalSocietyId = NationalSocieties[0].Id,
+                    NationalSociety = NationalSocieties[0]
+                }
+            };
+
+            Users = new List<User> { new SupervisorUser { Id = 1 } };
+
+            UserNationalSocieties = new List<UserNationalSociety>
+            {
+                new UserNationalSociety
+                {
+                    NationalSociety = NationalSocieties[0],
+                    NationalSocietyId = NationalSocieties[0].Id,
+                    User = Users[0],
+                    UserId = Users[0].Id
+                }
+            };
+
+            SupervisorUserProjects = new List<SupervisorUserProject>
+            {
+                new SupervisorUserProject
+                {
+                    SupervisorUser = (SupervisorUser)Users[0],
+                    SupervisorUserId = Users[0].Id,
+                    Project = Projects[0],
+                    ProjectId = Projects[0].Id
+                }
+            };
+
+            AlertRules = new List<AlertRule>
+            {
+                new AlertRule
+                {
+                    Id = 1,
+                    CountThreshold = 1
+                },
+                new AlertRule
+                {
+                    Id = 2,
+                    CountThreshold = 1
+                }
+            };
+
+            HealthRisks = new List<HealthRisk>
+            {
+                new HealthRisk
+                {
+                    Id = 1,
+                    AlertRule = AlertRules[0],
+                    HealthRiskType = HealthRiskType.Human
+                },
+                new HealthRisk
+                {
+                    Id = 2,
+                    AlertRule = AlertRules[1],
+                    HealthRiskType = HealthRiskType.Human
+                }
+            };
+
+            ProjectHealthRisks = new List<ProjectHealthRisk>
+            {
+                new ProjectHealthRisk
+                {
+                    Id = 1,
+                    AlertRule = AlertRules[0],
+                    Project = Projects[0],
+                    HealthRisk = HealthRisks[0],
+                    HealthRiskId = HealthRisks[0].Id,
+                    Reports = new List<Report>()
+                },
+                new ProjectHealthRisk
+                {
+                    Id = 2,
+                    AlertRule = AlertRules[1],
+                    Project = Projects[0],
+                    HealthRisk = HealthRisks[1],
+                    HealthRiskId = HealthRisks[1].Id,
+                    Reports = new List<Report>()
+                }
+            };
+
+            Alerts = new List<Alert>();
+
+            GenerateGeographicalStructure();
+            GenerateDataCollectorsWithReports();
+        }
 
         public INyssContext GetNyssContextMock()
         {
@@ -75,86 +173,105 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
             return nyssContextMock;
         }
 
-        public ReportsDashboardTestData(IDateTimeProvider dateTimeProvider)
-        {
-            _dateTimeProvider = dateTimeProvider;
-
-
-            NationalSocieties = new List<NationalSociety> { new NationalSociety { Id = 1 } };
-
-            Projects = new List<Project>
-            {
-                new Project { Id = ProjectId, NationalSocietyId = NationalSocieties[0].Id, NationalSociety = NationalSocieties[0]}
-            };
-
-            Users = new List<User>
-            {
-                new SupervisorUser { Id = 1 }
-            };
-
-            UserNationalSocieties = new List<UserNationalSociety>
-            {
-                new UserNationalSociety { NationalSociety = NationalSocieties[0], NationalSocietyId = NationalSocieties[0].Id, User = Users[0], UserId = Users[0].Id }
-            };
-
-            SupervisorUserProjects = new List<SupervisorUserProject>
-            {
-                new SupervisorUserProject{ SupervisorUser = (SupervisorUser)Users[0], SupervisorUserId = Users[0].Id, Project = Projects[0], ProjectId = Projects[0].Id }
-            };
-
-            AlertRules = new List<AlertRule>
-            {
-                new AlertRule{ Id = 1, CountThreshold = 1},
-                new AlertRule{ Id = 2, CountThreshold = 1}
-            };
-
-            HealthRisks = new List<HealthRisk>
-            {
-                new HealthRisk{Id = 1, AlertRule = AlertRules[0], HealthRiskType = HealthRiskType.Human },
-                new HealthRisk{Id = 2, AlertRule = AlertRules[1], HealthRiskType = HealthRiskType.Human }
-            };
-
-            ProjectHealthRisks = new List<ProjectHealthRisk>
-            {
-                new ProjectHealthRisk{Id=1, AlertRule = AlertRules[0], Project = Projects[0], HealthRisk = HealthRisks[0], HealthRiskId = HealthRisks[0].Id, Reports = new List<Report>() },
-                new ProjectHealthRisk{Id=2, AlertRule = AlertRules[1], Project = Projects[0], HealthRisk = HealthRisks[1], HealthRiskId = HealthRisks[1].Id, Reports = new List<Report>() }
-            };
-
-            Alerts = new List<Alert>();
-
-            GenerateGeographicalStructure();
-            GenerateDataCollectorsWithReports();
-        }
-
         private void GenerateGeographicalStructure()
         {
             Regions = new List<Region>
             {
-                new Region { Id = 1, Name = "Region 1", NationalSociety = NationalSocieties[0]},
-                new Region { Id = 2, Name = "Region 2", NationalSociety = NationalSocieties[0]}
+                new Region
+                {
+                    Id = 1,
+                    Name = "Region 1",
+                    NationalSociety = NationalSocieties[0]
+                },
+                new Region
+                {
+                    Id = 2,
+                    Name = "Region 2",
+                    NationalSociety = NationalSocieties[0]
+                }
             };
 
             Districts = new List<District>
             {
-                new District {Id = 1, Name = "District 1", Region = Regions[0]},
-                new District {Id = 2, Name = "District 2", Region = Regions[0]},
-                new District {Id = 3, Name = "District 3", Region = Regions[1]},
-                new District {Id = 4, Name = "District 4", Region = Regions[1]}
+                new District
+                {
+                    Id = 1,
+                    Name = "District 1",
+                    Region = Regions[0]
+                },
+                new District
+                {
+                    Id = 2,
+                    Name = "District 2",
+                    Region = Regions[0]
+                },
+                new District
+                {
+                    Id = 3,
+                    Name = "District 3",
+                    Region = Regions[1]
+                },
+                new District
+                {
+                    Id = 4,
+                    Name = "District 4",
+                    Region = Regions[1]
+                }
             };
 
-            Regions[0].Districts = Districts.GetRange(0,2);
-            Regions[1].Districts = Districts.GetRange(2,2);
+            Regions[0].Districts = Districts.GetRange(0, 2);
+            Regions[1].Districts = Districts.GetRange(2, 2);
 
             Villages = new List<Village>
             {
-                new Village{ Id = 1, District = Districts[0], Name = "Village 1" },
-                new Village{ Id = 2, District = Districts[0], Name = "Village 2" },
-                new Village{ Id = 3, District = Districts[1], Name = "Village 3" },
-                new Village{ Id = 4, District = Districts[1], Name = "Village 4" },
-                new Village{ Id = 5, District = Districts[2], Name = "Village 5" },
-                new Village{ Id = 6, District = Districts[2], Name = "Village 6" },
-                new Village{ Id = 7, District = Districts[3], Name = "Village 7" },
-                new Village{ Id = 8, District = Districts[3], Name = "Village 8" },
+                new Village
+                {
+                    Id = 1,
+                    District = Districts[0],
+                    Name = "Village 1"
+                },
+                new Village
+                {
+                    Id = 2,
+                    District = Districts[0],
+                    Name = "Village 2"
+                },
+                new Village
+                {
+                    Id = 3,
+                    District = Districts[1],
+                    Name = "Village 3"
+                },
+                new Village
+                {
+                    Id = 4,
+                    District = Districts[1],
+                    Name = "Village 4"
+                },
+                new Village
+                {
+                    Id = 5,
+                    District = Districts[2],
+                    Name = "Village 5"
+                },
+                new Village
+                {
+                    Id = 6,
+                    District = Districts[2],
+                    Name = "Village 6"
+                },
+                new Village
+                {
+                    Id = 7,
+                    District = Districts[3],
+                    Name = "Village 7"
+                },
+                new Village
+                {
+                    Id = 8,
+                    District = Districts[3],
+                    Name = "Village 8"
+                }
             };
 
             Districts[0].Villages = Villages.GetRange(0, 2);
@@ -164,22 +281,102 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
 
             Zones = new List<Zone>
             {
-                new Zone{ Id = 1, Village = Villages [0], Name = "Zone 1" },
-                new Zone{ Id = 2, Village = Villages [0], Name = "Zone 2" },
-                new Zone{ Id = 3, Village = Villages [1], Name = "Zone 3" },
-                new Zone{ Id = 4, Village = Villages [1], Name = "Zone 4" },
-                new Zone{ Id = 5, Village = Villages [2], Name = "Zone 5" },
-                new Zone{ Id = 6, Village = Villages [2], Name = "Zone 6" },
-                new Zone{ Id = 7, Village = Villages [3], Name = "Zone 7" },
-                new Zone{ Id = 8, Village = Villages [3], Name = "Zone 8" },
-                new Zone{ Id = 9, Village = Villages [4], Name = "Zone 9" },
-                new Zone{ Id = 10, Village = Villages [4], Name = "Zone 10" },
-                new Zone{ Id = 11, Village = Villages [5], Name = "Zone 11" },
-                new Zone{ Id = 12, Village = Villages [5], Name = "Zone 12" },
-                new Zone{ Id = 13, Village = Villages [6], Name = "Zone 13" },
-                new Zone{ Id = 14, Village = Villages [6], Name = "Zone 14" },
-                new Zone{ Id = 15, Village = Villages [7], Name = "Zone 15" },
-                new Zone{ Id = 16, Village = Villages [7], Name = "Zone 16" },
+                new Zone
+                {
+                    Id = 1,
+                    Village = Villages[0],
+                    Name = "Zone 1"
+                },
+                new Zone
+                {
+                    Id = 2,
+                    Village = Villages[0],
+                    Name = "Zone 2"
+                },
+                new Zone
+                {
+                    Id = 3,
+                    Village = Villages[1],
+                    Name = "Zone 3"
+                },
+                new Zone
+                {
+                    Id = 4,
+                    Village = Villages[1],
+                    Name = "Zone 4"
+                },
+                new Zone
+                {
+                    Id = 5,
+                    Village = Villages[2],
+                    Name = "Zone 5"
+                },
+                new Zone
+                {
+                    Id = 6,
+                    Village = Villages[2],
+                    Name = "Zone 6"
+                },
+                new Zone
+                {
+                    Id = 7,
+                    Village = Villages[3],
+                    Name = "Zone 7"
+                },
+                new Zone
+                {
+                    Id = 8,
+                    Village = Villages[3],
+                    Name = "Zone 8"
+                },
+                new Zone
+                {
+                    Id = 9,
+                    Village = Villages[4],
+                    Name = "Zone 9"
+                },
+                new Zone
+                {
+                    Id = 10,
+                    Village = Villages[4],
+                    Name = "Zone 10"
+                },
+                new Zone
+                {
+                    Id = 11,
+                    Village = Villages[5],
+                    Name = "Zone 11"
+                },
+                new Zone
+                {
+                    Id = 12,
+                    Village = Villages[5],
+                    Name = "Zone 12"
+                },
+                new Zone
+                {
+                    Id = 13,
+                    Village = Villages[6],
+                    Name = "Zone 13"
+                },
+                new Zone
+                {
+                    Id = 14,
+                    Village = Villages[6],
+                    Name = "Zone 14"
+                },
+                new Zone
+                {
+                    Id = 15,
+                    Village = Villages[7],
+                    Name = "Zone 15"
+                },
+                new Zone
+                {
+                    Id = 16,
+                    Village = Villages[7],
+                    Name = "Zone 16"
+                }
             };
 
             Villages[0].Zones = Zones.GetRange(0, 2);
@@ -216,8 +413,12 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                     IsInTrainingMode = false,
                     Reports = new List<Report>(),
                     RawReports = new List<RawReport>(),
-                    Zone = i == numberOfDataCollectors ? Zones[i-2] : Zones [i-1],
-                    Village = i == numberOfDataCollectors ? Zones[i-2].Village : Zones [i-1].Village
+                    Zone = i == numberOfDataCollectors
+                        ? Zones[i - 2]
+                        : Zones[i - 1],
+                    Village = i == numberOfDataCollectors
+                        ? Zones[i - 2].Village
+                        : Zones[i - 1].Village
                 })
                 .ToList();
 
@@ -229,7 +430,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 .Select(i => new Report
                 {
                     Id = i,
-                    DataCollector = DataCollectors[(i-1)/2],
+                    DataCollector = DataCollectors[(i - 1) / 2],
                     Status = ReportStatus.New
                 })
                 .ToList();
@@ -241,7 +442,9 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 r.ReceivedAt = r.CreatedAt;
                 r.EpiWeek = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiWeek;
                 r.EpiYear = _dateTimeProvider.GetEpiDate(r.CreatedAt).EpiYear;
-                r.ProjectHealthRisk = ProjectHealthRisks[ (((r.Id-1) % 3) == 0) ? 0 : 1];
+                r.ProjectHealthRisk = ProjectHealthRisks[(r.Id - 1) % 3 == 0
+                    ? 0
+                    : 1];
                 r.RawReport = new RawReport
                 {
                     Id = r.Id,
@@ -257,7 +460,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 r.ProjectHealthRisk.Reports.Add(r);
             });
 
-            Reports.Where( r => r.DataCollector.DataCollectorType == DataCollectorType.Human).ToList()
+            Reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human).ToList()
                 .ForEach(r =>
                 {
                     r.ReportedCaseCount = (r.Id % 4) switch
@@ -266,15 +469,41 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                         1 => 1,
                         2 => 1,
                         3 => 1,
-                        _ => (r.ReportedCase.CountMalesBelowFive ?? 0) + (r.ReportedCase.CountFemalesAtLeastFive ?? 0) + (r.ReportedCase.CountFemalesBelowFive ?? 0) + (r.ReportedCase.CountMalesAtLeastFive ?? 0) + (r.DataCollectionPointCase.DeathCount ?? 0) + (r.DataCollectionPointCase.FromOtherVillagesCount ?? 0) + (r.DataCollectionPointCase.ReferredCount ?? 0)
+                        _ => (r.ReportedCase.CountMalesBelowFive ?? 0) + (r.ReportedCase.CountFemalesAtLeastFive ?? 0) + (r.ReportedCase.CountFemalesBelowFive ?? 0) +
+                        (r.ReportedCase.CountMalesAtLeastFive ?? 0) + (r.DataCollectionPointCase.DeathCount ?? 0) + (r.DataCollectionPointCase.FromOtherVillagesCount ?? 0) +
+                        (r.DataCollectionPointCase.ReferredCount ?? 0)
                     };
 
                     r.ReportedCase = (r.Id % 4) switch
                     {
-                        0 => new ReportCase { CountMalesBelowFive = 1, CountMalesAtLeastFive = 0, CountFemalesBelowFive = 0, CountFemalesAtLeastFive = 0 },
-                        1 => new ReportCase { CountMalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountFemalesAtLeastFive = 0, CountMalesBelowFive = 0 },
-                        2 => new ReportCase { CountFemalesBelowFive = 1, CountMalesBelowFive = 0, CountMalesAtLeastFive = 0, CountFemalesAtLeastFive = 0 },
-                        3 => new ReportCase { CountFemalesAtLeastFive = 1, CountMalesBelowFive = 0, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0 },
+                        0 => new ReportCase
+                        {
+                            CountMalesBelowFive = 1,
+                            CountMalesAtLeastFive = 0,
+                            CountFemalesBelowFive = 0,
+                            CountFemalesAtLeastFive = 0
+                        },
+                        1 => new ReportCase
+                        {
+                            CountMalesAtLeastFive = 1,
+                            CountFemalesBelowFive = 0,
+                            CountFemalesAtLeastFive = 0,
+                            CountMalesBelowFive = 0
+                        },
+                        2 => new ReportCase
+                        {
+                            CountFemalesBelowFive = 1,
+                            CountMalesBelowFive = 0,
+                            CountMalesAtLeastFive = 0,
+                            CountFemalesAtLeastFive = 0
+                        },
+                        3 => new ReportCase
+                        {
+                            CountFemalesAtLeastFive = 1,
+                            CountMalesBelowFive = 0,
+                            CountFemalesBelowFive = 0,
+                            CountMalesAtLeastFive = 0
+                        },
                         _ => r.ReportedCase
                     };
                 });
@@ -286,18 +515,57 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                     r.ReportType = ReportType.DataCollectionPoint;
                     r.ReportedCase = (r.Id % 4) switch
                     {
-                        0 => new ReportCase { CountMalesBelowFive = 1, CountMalesAtLeastFive = 0, CountFemalesBelowFive = 0, CountFemalesAtLeastFive = 0 },
-                        1 => new ReportCase { CountMalesAtLeastFive = 1, CountFemalesBelowFive = 0, CountFemalesAtLeastFive = 0, CountMalesBelowFive = 0 },
-                        2 => new ReportCase { CountFemalesBelowFive = 1, CountMalesBelowFive = 0, CountMalesAtLeastFive = 0, CountFemalesAtLeastFive = 0 },
-                        3 => new ReportCase { CountFemalesAtLeastFive = 1, CountMalesBelowFive = 0, CountFemalesBelowFive = 0, CountMalesAtLeastFive = 0 },
+                        0 => new ReportCase
+                        {
+                            CountMalesBelowFive = 1,
+                            CountMalesAtLeastFive = 0,
+                            CountFemalesBelowFive = 0,
+                            CountFemalesAtLeastFive = 0
+                        },
+                        1 => new ReportCase
+                        {
+                            CountMalesAtLeastFive = 1,
+                            CountFemalesBelowFive = 0,
+                            CountFemalesAtLeastFive = 0,
+                            CountMalesBelowFive = 0
+                        },
+                        2 => new ReportCase
+                        {
+                            CountFemalesBelowFive = 1,
+                            CountMalesBelowFive = 0,
+                            CountMalesAtLeastFive = 0,
+                            CountFemalesAtLeastFive = 0
+                        },
+                        3 => new ReportCase
+                        {
+                            CountFemalesAtLeastFive = 1,
+                            CountMalesBelowFive = 0,
+                            CountFemalesBelowFive = 0,
+                            CountMalesAtLeastFive = 0
+                        },
                         _ => r.ReportedCase
                     };
 
                     r.DataCollectionPointCase = (r.Id % 3) switch
                     {
-                        0 => new DataCollectionPointCase { FromOtherVillagesCount = 1, ReferredCount = 0, DeathCount = 0 },
-                        1 => new DataCollectionPointCase { ReferredCount = 1, FromOtherVillagesCount = 0, DeathCount = 0 },
-                        2 => new DataCollectionPointCase { DeathCount = 1, FromOtherVillagesCount = 0, ReferredCount = 0 },
+                        0 => new DataCollectionPointCase
+                        {
+                            FromOtherVillagesCount = 1,
+                            ReferredCount = 0,
+                            DeathCount = 0
+                        },
+                        1 => new DataCollectionPointCase
+                        {
+                            ReferredCount = 1,
+                            FromOtherVillagesCount = 0,
+                            DeathCount = 0
+                        },
+                        2 => new DataCollectionPointCase
+                        {
+                            DeathCount = 1,
+                            FromOtherVillagesCount = 0,
+                            ReferredCount = 0
+                        },
                         _ => r.DataCollectionPointCase
                     };
 
@@ -307,19 +575,22 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                         1 => 1,
                         2 => 1,
                         3 => 1,
-                        _ => (r.ReportedCase.CountMalesBelowFive ?? 0) + (r.ReportedCase.CountFemalesAtLeastFive ?? 0) + (r.ReportedCase.CountFemalesBelowFive ?? 0) + (r.ReportedCase.CountMalesAtLeastFive ?? 0) + (r.DataCollectionPointCase.DeathCount ?? 0) + (r.DataCollectionPointCase.FromOtherVillagesCount ?? 0) + (r.DataCollectionPointCase.ReferredCount ?? 0)
+                        _ => (r.ReportedCase.CountMalesBelowFive ?? 0) + (r.ReportedCase.CountFemalesAtLeastFive ?? 0) + (r.ReportedCase.CountFemalesBelowFive ?? 0) +
+                        (r.ReportedCase.CountMalesAtLeastFive ?? 0) + (r.DataCollectionPointCase.DeathCount ?? 0) + (r.DataCollectionPointCase.FromOtherVillagesCount ?? 0) +
+                        (r.DataCollectionPointCase.ReferredCount ?? 0)
                     };
                 });
 
             RawReports = new List<RawReport>();
-            Reports.ForEach(r => {
+            Reports.ForEach(r =>
+            {
                 var rawReport = new RawReport
                 {
                     Id = r.Id,
                     DataCollector = r.DataCollector,
                     ReceivedAt = r.ReceivedAt,
                     IsTraining = r.IsTraining,
-                    Report = r,
+                    Report = r
                 };
                 RawReports.Add(rawReport);
             });

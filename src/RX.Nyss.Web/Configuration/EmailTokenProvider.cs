@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace RX.Nyss.Web.Configuration
 {
     public class EmailTokenProvider<TUser> : DataProtectorTokenProvider<TUser>
-    where TUser: class
+        where TUser : class
     {
         public EmailTokenProvider(
             IDataProtectionProvider dataProtectionProvider,

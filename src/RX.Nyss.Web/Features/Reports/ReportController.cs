@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// <param name="reportRequestDto">A report</param>
         [HttpPost("{reportId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
-        public async Task<Result> Edit(int reportId, [FromBody]ReportRequestDto reportRequestDto) =>
+        public async Task<Result> Edit(int reportId, [FromBody] ReportRequestDto reportRequestDto) =>
             await _reportService.Edit(reportId, reportRequestDto);
     }
 }

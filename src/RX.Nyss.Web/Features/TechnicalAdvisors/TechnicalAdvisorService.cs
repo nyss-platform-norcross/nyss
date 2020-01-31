@@ -33,7 +33,8 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
 
-        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext, ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
+        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
@@ -57,6 +58,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
                     transactionScope.Complete();
                 }
+
                 await _verificationEmailService.SendVerificationEmail(user, securityStamp);
                 return Success(ResultKey.User.Registration.Success);
             }
@@ -67,54 +69,12 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             }
         }
 
-        private async Task<TechnicalAdvisorUser> CreateTechnicalAdvisorUser(IdentityUser identityUser, int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
-        {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
-                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
-
-            if (nationalSociety == null)
-            {
-                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
-            }
-            if (nationalSociety.IsArchived)
-            {
-                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
-            }
-
-            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
-                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
-
-            var user = new TechnicalAdvisorUser
-            {
-                IdentityUserId = identityUser.Id,
-                EmailAddress = identityUser.Email,
-                Name = createTechnicalAdvisorRequestDto.Name,
-                PhoneNumber = createTechnicalAdvisorRequestDto.PhoneNumber,
-                AdditionalPhoneNumber = createTechnicalAdvisorRequestDto.AdditionalPhoneNumber,
-                Organization = createTechnicalAdvisorRequestDto.Organization,
-                ApplicationLanguage = defaultUserApplicationLanguage,
-            };
-
-            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
-
-            await _dataContext.AddAsync(userNationalSociety);
-            await _dataContext.SaveChangesAsync();
-            return user;
-        }
-
-        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
-            new UserNationalSociety
-            {
-                NationalSociety = nationalSociety,
-                User = user
-            };
-
         public async Task<Result<GetTechnicalAdvisorResponseDto>> Get(int nationalSocietyUserId)
         {
             var technicalAdvisor = await _dataContext.Users.FilterAvailable()
                 .OfType<TechnicalAdvisorUser>()
                 .Where(u => u.Id == nationalSocietyUserId)
-                .Select(u => new GetTechnicalAdvisorResponseDto()
+                .Select(u => new GetTechnicalAdvisorResponseDto
                 {
                     Id = u.Id,
                     Name = u.Name,
@@ -122,7 +82,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                     Email = u.EmailAddress,
                     PhoneNumber = u.PhoneNumber,
                     AdditionalPhoneNumber = u.AdditionalPhoneNumber,
-                    Organization = u.Organization,
+                    Organization = u.Organization
                 })
                 .SingleOrDefaultAsync();
 
@@ -177,6 +137,52 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             }
         }
 
+        public async Task DeleteIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId) =>
+            await DeleteFromNationalSociety(nationalSocietyId, technicalAdvisorId, true);
+
+        private async Task<TechnicalAdvisorUser> CreateTechnicalAdvisorUser(IdentityUser identityUser, int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
+        {
+            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+
+            if (nationalSociety == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
+            }
+
+            if (nationalSociety.IsArchived)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
+            }
+
+            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
+
+            var user = new TechnicalAdvisorUser
+            {
+                IdentityUserId = identityUser.Id,
+                EmailAddress = identityUser.Email,
+                Name = createTechnicalAdvisorRequestDto.Name,
+                PhoneNumber = createTechnicalAdvisorRequestDto.PhoneNumber,
+                AdditionalPhoneNumber = createTechnicalAdvisorRequestDto.AdditionalPhoneNumber,
+                Organization = createTechnicalAdvisorRequestDto.Organization,
+                ApplicationLanguage = defaultUserApplicationLanguage
+            };
+
+            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+
+            await _dataContext.AddAsync(userNationalSociety);
+            await _dataContext.SaveChangesAsync();
+            return user;
+        }
+
+        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
+            new UserNationalSociety
+            {
+                NationalSociety = nationalSociety,
+                User = user
+            };
+
         private async Task DeleteFromNationalSociety(int nationalSocietyId, int technicalAdvisorId, bool allowHeadManagerDeletion = false)
         {
             var technicalAdvisor = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<TechnicalAdvisorUser>(technicalAdvisorId);
@@ -208,21 +214,16 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             {
                 nationalSociety.PendingHeadManager = null;
             }
+
             if (nationalSociety.HeadManager == technicalAdvisor)
             {
                 if (!allowHeadManagerDeletion)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
+
                 nationalSociety.HeadManager = null;
             }
         }
-
-        public async Task DeleteIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId) =>
-            await DeleteFromNationalSociety(nationalSocietyId, technicalAdvisorId, true);
-
-
-
     }
 }
-

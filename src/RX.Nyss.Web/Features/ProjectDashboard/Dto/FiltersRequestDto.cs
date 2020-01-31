@@ -6,6 +6,13 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
     public class FiltersRequestDto
     {
+        public enum ReportsTypeDto
+        {
+            All,
+            DataCollector,
+            DataCollectionPoint
+        }
+
         public int? HealthRiskId { get; set; }
 
         public DateTime StartDate { get; set; }
@@ -19,12 +26,5 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
         public ReportsTypeDto ReportsType { get; set; }
 
         public bool IsTraining { get; set; }
-
-        public enum ReportsTypeDto
-        {
-            All,
-            DataCollector,
-            DataCollectionPoint
-        }
     }
 }

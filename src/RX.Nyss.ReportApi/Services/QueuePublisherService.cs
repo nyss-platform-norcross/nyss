@@ -22,7 +22,7 @@ namespace RX.Nyss.ReportApi.Services
         private readonly IQueueClient _checkAlertQueueClient;
         private readonly INyssReportApiConfig _config;
         private readonly IDateTimeProvider _dateTimeProvider;
-        
+
         public QueuePublisherService(INyssReportApiConfig config, IDateTimeProvider dateTimeProvider)
         {
             _config = config;
@@ -36,10 +36,17 @@ namespace RX.Nyss.ReportApi.Services
             {
                 var sendEmail = new SendEmailMessage
                 {
-                    To = new Contact { Email = smsEagleEmailAddress, Name = smsEagleName }, Body = body, Subject = recipientPhoneNumber, SendAsTextOnly = true
+                    To = new Contact
+                    {
+                        Email = smsEagleEmailAddress,
+                        Name = smsEagleName
+                    },
+                    Body = body,
+                    Subject = recipientPhoneNumber,
+                    SendAsTextOnly = true
                 };
 
-                var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi", };
+                var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi" };
 
                 return _sendEmailQueueClient.SendAsync(message);
             }));
@@ -59,12 +66,16 @@ namespace RX.Nyss.ReportApi.Services
         {
             var sendEmail = new SendEmailMessage
             {
-                To = new Contact { Email = to.EmailAddress, Name = to.Name},
+                To = new Contact
+                {
+                    Email = to.EmailAddress,
+                    Name = to.Name
+                },
                 Body = emailBody,
                 Subject = emailSubject
             };
 
-            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi", };
+            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi" };
 
             return _sendEmailQueueClient.SendAsync(message);
         }

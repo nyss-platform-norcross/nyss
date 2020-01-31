@@ -37,7 +37,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
         public List<UserNationalSociety> UserNationalSocieties { get; set; } = new List<UserNationalSociety>();
         public List<Village> Villages { get; set; } = new List<Village>();
         public List<Zone> Zones { get; set; } = new List<Zone>();
-        
+
         public void Include(EntityData otherData)
         {
             Alerts.AddRange(otherData.Alerts);

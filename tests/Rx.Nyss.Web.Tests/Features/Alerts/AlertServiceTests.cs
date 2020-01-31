@@ -44,7 +44,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _authorizationService = Substitute.For<IAuthorizationService>();
-            _alertService = new AlertService(_nyssContext, _emailPublisherService, emailTextGeneratorService, config, _smsTextGeneratorService, loggerAdapter, _dateTimeProvider, _authorizationService);
+            _alertService = new AlertService(_nyssContext, _emailPublisherService, emailTextGeneratorService, config, _smsTextGeneratorService, loggerAdapter, _dateTimeProvider,
+                _authorizationService);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
@@ -83,16 +84,42 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report {
-                    Status = ReportStatus.Accepted,
-                    RawReport = new RawReport { ApiKey = TestData.ApiKey, Village = new Village() } } },
-                new AlertReport {
-                    Report = new Report {
-                    Status = ReportStatus.Accepted,
-                    RawReport = new RawReport { ApiKey = TestData.ApiKey, Village = new Village() } } },
-                new AlertReport { Report = new Report {
-                    Status = ReportStatus.Rejected,
-                    RawReport = new RawReport { ApiKey = TestData.ApiKey, Village = new Village() } } }
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted,
+                        RawReport = new RawReport
+                        {
+                            ApiKey = TestData.ApiKey,
+                            Village = new Village()
+                        }
+                    }
+                },
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted,
+                        RawReport = new RawReport
+                        {
+                            ApiKey = TestData.ApiKey,
+                            Village = new Village()
+                        }
+                    }
+                },
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Rejected,
+                        RawReport = new RawReport
+                        {
+                            ApiKey = TestData.ApiKey,
+                            Village = new Village()
+                        }
+                    }
+                }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
@@ -116,23 +143,23 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report {
-                    Status = ReportStatus.Accepted,
-                    RawReport = new RawReport {
-                        ApiKey = TestData.ApiKey,
-                        Village = new Village()
-                    } } }
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted,
+                        RawReport = new RawReport
+                        {
+                            ApiKey = TestData.ApiKey,
+                            Village = new Village()
+                        }
+                    }
+                }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.EmailAlertRecipients = new List<EmailAlertRecipient>
-            {
-                new EmailAlertRecipient { EmailAddress = emailAddress }
-            };
-            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient>
-            {
-                new SmsAlertRecipient{ PhoneNumber= phonenumber }
-            };
+            _alerts.First().ProjectHealthRisk.Project.EmailAlertRecipients = new List<EmailAlertRecipient> { new EmailAlertRecipient { EmailAddress = emailAddress } };
+            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
 
 
             await _alertService.Escalate(TestData.AlertId);
@@ -157,19 +184,22 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report {
-                    Status = ReportStatus.Accepted,
-                    RawReport = new RawReport {
-                        ApiKey = "Some_missing_key",
-                        Village = new Village()
-                    } } }
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted,
+                        RawReport = new RawReport
+                        {
+                            ApiKey = "Some_missing_key",
+                            Village = new Village()
+                        }
+                    }
+                }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient>
-            {
-                new SmsAlertRecipient{ PhoneNumber= phonenumber }
-            };
+            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
 
             await _alertService.Escalate(TestData.AlertId);
 
@@ -184,10 +214,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport {
-                    Report = new Report {
+                new AlertReport
+                {
+                    Report = new Report
+                    {
                         Status = ReportStatus.Accepted,
-                        RawReport = new RawReport {
+                        RawReport = new RawReport
+                        {
                             ApiKey = TestData.ApiKey,
                             Village = new Village()
                         }
@@ -224,13 +257,62 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().AlertReports = new List<AlertReport>
             {
-                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, RawReport = new RawReport { Village = new Village() } } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Accepted, RawReport = new RawReport { Village = new Village() } } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Pending, RawReport = new RawReport { Village = new Village() } } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, RawReport = new RawReport { Village = new Village() } } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, RawReport = new RawReport { Village = new Village() } } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, RawReport = new RawReport { Village = new Village() } } },
-                new AlertReport { Report = new Report { Status = ReportStatus.Rejected, RawReport = new RawReport { Village = new Village() } } }
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted,
+                        RawReport = new RawReport { Village = new Village() }
+                    }
+                },
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted,
+                        RawReport = new RawReport { Village = new Village() }
+                    }
+                },
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Pending,
+                        RawReport = new RawReport { Village = new Village() }
+                    }
+                },
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Rejected,
+                        RawReport = new RawReport { Village = new Village() }
+                    }
+                },
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Rejected,
+                        RawReport = new RawReport { Village = new Village() }
+                    }
+                },
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Rejected,
+                        RawReport = new RawReport { Village = new Village() }
+                    }
+                },
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Rejected,
+                        RawReport = new RawReport { Village = new Village() }
+                    }
+                }
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
@@ -253,10 +335,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                     Report = new Report
                     {
                         Status = ReportStatus.Rejected,
-                        RawReport = new RawReport
-                        {
-                            Village = new Village()
-                        }
+                        RawReport = new RawReport { Village = new Village() }
                     }
                 }
             };
@@ -441,10 +520,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private static class TestData
         {
             public const int AlertId = 1;
-            public static readonly DateTime AlertCreatedAt = new DateTime(2020, 1, 1);
-            public static readonly string TimeZoneName = "UTC";
-            public static readonly TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName);
-            public static readonly GlobalCoordinatorUser DefaultUser = new GlobalCoordinatorUser { Name = "DefaultUser" };
             public const int ReportId = 23;
             public const int ContentLanguageId = 4;
             public const int NationalSocietyId = 5;
@@ -453,6 +528,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             public const string EscalationEmailBody = "body";
             public const string ApiKey = "123";
             public const string GatewayEmail = "gw1@example.com";
+            public static readonly DateTime AlertCreatedAt = new DateTime(2020, 1, 1);
+            public static readonly string TimeZoneName = "UTC";
+            public static readonly TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName);
+            public static readonly GlobalCoordinatorUser DefaultUser = new GlobalCoordinatorUser { Name = "DefaultUser" };
 
             public static List<Alert> GetAlerts() =>
                 new List<Alert>
@@ -503,20 +582,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Project = new Project
                             {
                                 TimeZone = TimeZoneName,
-                                EmailAlertRecipients = new List<EmailAlertRecipient>
-                                {
-                                    new EmailAlertRecipient
-                                    {
-                                        EmailAddress = "aaa@aaa.com"
-                                    }
-                                },
-                                SmsAlertRecipients = new List<SmsAlertRecipient>
-                                {
-                                    new SmsAlertRecipient
-                                    {
-                                        PhoneNumber = "+12345678"
-                                    }
-                                },
+                                EmailAlertRecipients = new List<EmailAlertRecipient> { new EmailAlertRecipient { EmailAddress = "aaa@aaa.com" } },
+                                SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = "+12345678" } },
                                 NationalSociety = new NationalSociety
                                 {
                                     Id = NationalSocietyId,

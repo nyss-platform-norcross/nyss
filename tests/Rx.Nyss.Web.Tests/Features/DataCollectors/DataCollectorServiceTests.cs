@@ -25,9 +25,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
 {
     public class DataCollectorServiceTests
     {
-        private readonly INyssContext _nyssContextMock;
-        private readonly IDataCollectorService _dataCollectorService;
-
         private const int DataCollectorWithoutReportsId = 1;
         private const int DataCollectorWithReportsId = 2;
         private const string DataCollectorPhoneNumber1 = "+4712345678";
@@ -40,6 +37,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const int RegionId = 1;
         private const int DistrictId = 1;
         private const int VillageId = 1;
+        private readonly INyssContext _nyssContextMock;
+        private readonly IDataCollectorService _dataCollectorService;
 
         public DataCollectorServiceTests()
         {
@@ -53,37 +52,68 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider, authorizationService);
 
             // Arrange
-            var nationalSocieties = new List<NationalSociety>
-            {
-                new NationalSociety { Id = NationalSocietyId }
-            };
+            var nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = NationalSocietyId } };
             var users = new List<User>
             {
-                new SupervisorUser { Id = SupervisorId, Role = Role.Supervisor }
+                new SupervisorUser
+                {
+                    Id = SupervisorId,
+                    Role = Role.Supervisor
+                }
             };
             var usersNationalSocieties = new List<UserNationalSociety>
             {
-                new UserNationalSociety { NationalSociety = nationalSocieties[0], User = users[0], NationalSocietyId = NationalSocietyId }
+                new UserNationalSociety
+                {
+                    NationalSociety = nationalSocieties[0],
+                    User = users[0],
+                    NationalSocietyId = NationalSocietyId
+                }
             };
             var projects = new List<Project>
             {
-                new Project { Id = ProjectId, NationalSociety = nationalSocieties[0] }
+                new Project
+                {
+                    Id = ProjectId,
+                    NationalSociety = nationalSocieties[0]
+                }
             };
             var supervisorUserProjects = new List<SupervisorUserProject>
             {
-                new SupervisorUserProject { SupervisorUserId = SupervisorId, SupervisorUser = (SupervisorUser)users[0], ProjectId = ProjectId, Project = projects[0] }
+                new SupervisorUserProject
+                {
+                    SupervisorUserId = SupervisorId,
+                    SupervisorUser = (SupervisorUser)users[0],
+                    ProjectId = ProjectId,
+                    Project = projects[0]
+                }
             };
             var regions = new List<Region>
             {
-                new Region { Id = RegionId, NationalSociety = nationalSocieties[0], Name = "Layuna" }
+                new Region
+                {
+                    Id = RegionId,
+                    NationalSociety = nationalSocieties[0],
+                    Name = "Layuna"
+                }
             };
             var districts = new List<District>
             {
-                new District { Id = DistrictId, Region = regions[0], Name = "Layuna" }
+                new District
+                {
+                    Id = DistrictId,
+                    Region = regions[0],
+                    Name = "Layuna"
+                }
             };
             var villages = new List<Village>
             {
-                new Village { Id = VillageId, District = districts[0], Name = Village }
+                new Village
+                {
+                    Id = VillageId,
+                    District = districts[0],
+                    Name = Village
+                }
             };
             var zones = new List<Zone>();
             var dataCollectors = new List<DataCollector>
@@ -136,7 +166,11 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 }
             };
             dataCollectors[0].RawReports = new List<RawReport>();
-            dataCollectors[1].RawReports = new List<RawReport>{ rawReports[0], rawReports[1] };
+            dataCollectors[1].RawReports = new List<RawReport>
+            {
+                rawReports[0],
+                rawReports[1]
+            };
 
             var nationalSocietyMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
@@ -380,7 +414,15 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         {
             // Arrange
             var rawReportsMockDbSet = reports.AsQueryable().BuildMockDbSet();
-            var dataCollectors = new List<DataCollector> { new DataCollector { PhoneNumber = phoneNumber, Project = new Project { Id = ProjectId }, RawReports = reports }};
+            var dataCollectors = new List<DataCollector>
+            {
+                new DataCollector
+                {
+                    PhoneNumber = phoneNumber,
+                    Project = new Project { Id = ProjectId },
+                    RawReports = reports
+                }
+            };
             var dataCollectorsMockDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
 
             _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
@@ -404,8 +446,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
 
         public DataCollectorStatus DataCollectorStatusFromReports(IEnumerable<RawReport> reports)
         {
-            return reports.Any() ?
-                reports.All(r => r.Report != null) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
+            return reports.Any()
+                ? reports.All(r => r.Report != null) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
                 : DataCollectorStatus.NotReporting;
         }
 
@@ -414,25 +456,58 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             yield return new object[]
             {
                 DataCollectorPhoneNumber1,
-                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow, IsTraining = false, Report = new Report() , ReportId = 1}}
+                new List<RawReport>
+                {
+                    new RawReport
+                    {
+                        ReceivedAt = DateTime.UtcNow,
+                        IsTraining = false,
+                        Report = new Report(),
+                        ReportId = 1
+                    }
+                }
             };
 
             yield return new object[]
             {
                 DataCollectorPhoneNumber1,
-                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-8), IsTraining = false, Report = new Report(), ReportId = 2 }, new RawReport { ReceivedAt = DateTime.UtcNow, IsTraining = false, }}
+                new List<RawReport>
+                {
+                    new RawReport
+                    {
+                        ReceivedAt = DateTime.UtcNow.AddDays(-8),
+                        IsTraining = false,
+                        Report = new Report(),
+                        ReportId = 2
+                    },
+                    new RawReport
+                    {
+                        ReceivedAt = DateTime.UtcNow,
+                        IsTraining = false
+                    }
+                }
             };
+
+            yield return new object[] { DataCollectorPhoneNumber1, new List<RawReport>() };
 
             yield return new object[]
             {
                 DataCollectorPhoneNumber1,
-                new List<RawReport>()
-            };
-
-            yield return new object[]
-            {
-                DataCollectorPhoneNumber1,
-                new List<RawReport> { new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-8), IsTraining = false, Report = new Report(), ReportId = 3 }, new RawReport { ReceivedAt = DateTime.UtcNow.AddDays(-35), IsTraining = false, }}
+                new List<RawReport>
+                {
+                    new RawReport
+                    {
+                        ReceivedAt = DateTime.UtcNow.AddDays(-8),
+                        IsTraining = false,
+                        Report = new Report(),
+                        ReportId = 3
+                    },
+                    new RawReport
+                    {
+                        ReceivedAt = DateTime.UtcNow.AddDays(-35),
+                        IsTraining = false
+                    }
+                }
             };
         }
     }

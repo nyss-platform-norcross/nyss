@@ -10,11 +10,11 @@ namespace RX.Nyss.Data.Models
         public int Id { get; set; }
 
         public ReportType ReportType { get; set; }
-        
+
         public DateTime ReceivedAt { get; set; }
-        
+
         public DateTime CreatedAt { get; set; }
-        
+
         public DateTime? ModifiedAt { get; set; }
 
         public DateTime? AcceptedAt { get; set; }
@@ -49,7 +49,7 @@ namespace RX.Nyss.Data.Models
 
         public Guid ReportGroupLabel { get; set; }
 
-        public bool MarkedAsError { get; set; }      
+        public bool MarkedAsError { get; set; }
 
         public virtual RawReport RawReport { get; set; }
 

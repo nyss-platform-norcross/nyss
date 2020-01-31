@@ -34,7 +34,7 @@ namespace RX.Nyss.ReportFuncApp
 
             if (!postResult.IsSuccessStatusCode)
             {
-                _logger.LogError($"Status code: {(int) postResult.StatusCode} ReasonPhrase: {postResult.ReasonPhrase}");
+                _logger.LogError($"Status code: {(int)postResult.StatusCode} ReasonPhrase: {postResult.ReasonPhrase}");
                 throw new Exception($"A report '{dismissReportMessage}' was not properly dismissed by the Report API.");
             }
         }

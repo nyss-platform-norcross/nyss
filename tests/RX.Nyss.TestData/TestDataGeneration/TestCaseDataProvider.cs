@@ -18,7 +18,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
         {
             if (_testCases.ContainsKey(label))
             {
-                return (TestCaseData) _testCases[label];
+                return (TestCaseData)_testCases[label];
             }
 
             var newTestCaseData = new TestCaseData(_nyssContextMock, testCaseDefinition);
@@ -30,7 +30,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
         {
             if (_testCases.ContainsKey(label))
             {
-                return (TestCaseData<T>) _testCases[label];
+                return (TestCaseData<T>)_testCases[label];
             }
 
             var newTestCaseData = new TestCaseData<T>(_nyssContextMock, testCaseDefinition);

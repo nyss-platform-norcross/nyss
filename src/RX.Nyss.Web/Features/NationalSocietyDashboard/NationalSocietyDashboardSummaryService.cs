@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;

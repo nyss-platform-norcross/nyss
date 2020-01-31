@@ -51,7 +51,11 @@ namespace RX.Nyss.FuncApp
                 return new UnauthorizedResult();
             }
 
-            var reportMessage = new Report { Content = httpRequestContent, ReportSource = ReportSource.SmsEagle };
+            var reportMessage = new Report
+            {
+                Content = httpRequestContent,
+                ReportSource = ReportSource.SmsEagle
+            };
 
             await reportQueue.AddAsync(reportMessage);
 
@@ -74,7 +78,7 @@ namespace RX.Nyss.FuncApp
                 _logger.Log(LogLevel.Warning, "Received a SMS Eagle report with an empty API key.");
                 return false;
             }
-            
+
             if (!authorizedApiKeyList.Contains(apiKey))
             {
                 _logger.Log(LogLevel.Warning, $"Received a SMS Eagle report with not authorized API key: {apiKey}.");

@@ -13,8 +13,8 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyStructure
 {
     public class NationalSocietyStructureServiceTests
     {
-        private readonly NationalSocietyStructureService _nationalSocietyStructureService;
         private const int NationalSocietyId = 1;
+        private readonly NationalSocietyStructureService _nationalSocietyStructureService;
 
         public NationalSocietyStructureServiceTests()
         {
@@ -25,10 +25,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyStructure
                 Id = 1,
                 Name = "Region",
                 Districts = new List<District>(),
-                NationalSociety = new NationalSociety
-                {
-                    Id = NationalSocietyId
-                }
+                NationalSociety = new NationalSociety { Id = NationalSocietyId }
             };
 
             var district = new District
@@ -58,10 +55,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyStructure
             district.Villages.Add(village);
             village.Zones.Add(zone);
 
-            var regions = new List<Region>
-            {
-                region
-            };
+            var regions = new List<Region> { region };
 
             var regionsDbSet = regions.AsQueryable().BuildMockDbSet();
             var districtsDbSet = region.Districts.AsQueryable().BuildMockDbSet();

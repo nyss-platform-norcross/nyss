@@ -68,16 +68,10 @@ namespace RX.Nyss.Web.Features.Alerts
             alertReport.Report.AcceptedBy = _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
-            var response = new AcceptReportResponseDto
-            {
-                AssessmentStatus = await _alertService.GetAssessmentStatus(alertId)
-            };
+            var response = new AcceptReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
 
             return Success(response);
         }
-
-        private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
-            StatusConstants.AlertStatusesAllowingCrossChecks.Contains(alertReport.Alert.Status);
 
         public async Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId)
         {
@@ -105,20 +99,17 @@ namespace RX.Nyss.Web.Features.Alerts
 
             await _nyssContext.SaveChangesAsync();
 
-            var response = new DismissReportResponseDto
-            {
-                AssessmentStatus = await _alertService.GetAssessmentStatus(alertId)
-            };
+            var response = new DismissReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
 
             return Success(response);
         }
 
+        private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
+            StatusConstants.AlertStatusesAllowingCrossChecks.Contains(alertReport.Alert.Status);
+
         private Task DismissAlertReport(int reportId)
         {
-            var message = new DismissReportMessage
-            {
-                ReportId = reportId
-            };
+            var message = new DismissReportMessage { ReportId = reportId };
 
             return _queueService.Send(_config.ServiceBusQueues.ReportDismissalQueue, message);
         }

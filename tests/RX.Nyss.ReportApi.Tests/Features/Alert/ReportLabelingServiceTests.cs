@@ -127,9 +127,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
                 (1, label1),
                 (2, label1),
                 (3, label2),
-                (4, label2),
+                (4, label2)
             };
-         
+
             //act
             await _reportLabelingService.UpdateLabelsInDatabaseDirect(pointWithLabels);
 

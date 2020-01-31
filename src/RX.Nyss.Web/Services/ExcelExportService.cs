@@ -10,7 +10,7 @@ namespace RX.Nyss.Web.Services
         byte[] ToCsv<T>(IEnumerable<T> data, IEnumerable<string> columnLabels) where T : class;
     }
 
-    public class ExcelExportService: IExcelExportService
+    public class ExcelExportService : IExcelExportService
     {
         private readonly INyssWebConfig _config;
 
@@ -22,17 +22,17 @@ namespace RX.Nyss.Web.Services
             _config = config;
         }
 
-        public byte[] ToCsv<T>(IEnumerable<T> data, IEnumerable<string> columnLabels) where T:class
+        public byte[] ToCsv<T>(IEnumerable<T> data, IEnumerable<string> columnLabels) where T : class
         {
             var columnData = data.Select(x =>
-            {
-                var type = typeof(T);
-                var rowValues = type.GetProperties()
-                    .Select(p => EscapeCharacters(p.GetValue(x)))
-                    .ToList();
-                return rowValues;
-            })
-            .ToList();
+                {
+                    var type = typeof(T);
+                    var rowValues = type.GetProperties()
+                        .Select(p => EscapeCharacters(p.GetValue(x)))
+                        .ToList();
+                    return rowValues;
+                })
+                .ToList();
 
             var builder = new StringBuilder();
             builder.AppendLine(string.Join(_config.Export.CsvFieldSeparator, columnLabels));
@@ -51,7 +51,7 @@ namespace RX.Nyss.Web.Services
 
             var value = data.ToString();
 
-            if (value.IndexOfAny(_charsToEscape) > - 1)
+            if (value.IndexOfAny(_charsToEscape) > -1)
             {
                 return $"{_quote}{value}{_quote}";
             }

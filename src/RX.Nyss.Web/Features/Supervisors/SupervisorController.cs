@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         /// <returns></returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> Create(int nationalSocietyId, [FromBody]CreateSupervisorRequestDto createSupervisorRequestDto) =>
+        public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateSupervisorRequestDto createSupervisorRequestDto) =>
             await _supervisorService.Create(nationalSocietyId, createSupervisorRequestDto);
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         /// <returns></returns>
         [HttpPost("{supervisorId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]
-        public async Task<Result> Edit(int supervisorId, [FromBody]EditSupervisorRequestDto editSupervisorRequestDto) =>
+        public async Task<Result> Edit(int supervisorId, [FromBody] EditSupervisorRequestDto editSupervisorRequestDto) =>
             await _supervisorService.Edit(supervisorId, editSupervisorRequestDto);
 
         /// <summary>
@@ -61,4 +61,3 @@ namespace RX.Nyss.Web.Features.Supervisors
             await _supervisorService.Delete(supervisorId);
     }
 }
-

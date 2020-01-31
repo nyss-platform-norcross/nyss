@@ -31,8 +31,12 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
         {
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
-            _user = new AdministratorUser { EmailAddress = UserEmail, Name = UserName };
-            _nyssContext.Users = new List<User>{ _user }.AsQueryable().BuildMockDbSet();
+            _user = new AdministratorUser
+            {
+                EmailAddress = UserEmail,
+                Name = UserName
+            };
+            _nyssContext.Users = new List<User> { _user }.AsQueryable().BuildMockDbSet();
             _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
         }
 

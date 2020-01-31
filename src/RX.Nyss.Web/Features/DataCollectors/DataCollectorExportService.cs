@@ -66,10 +66,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Latitude = dc.Location.Y,
                     Longitude = dc.Location.X,
                     Supervisor = dc.Supervisor.Name,
-                    TrainingStatus = dc.IsInTrainingMode ? GetStringResource(stringResources, "dataCollectors.export.isInTraining") : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining")
+                    TrainingStatus = dc.IsInTrainingMode
+                        ? GetStringResource(stringResources, "dataCollectors.export.isInTraining")
+                        : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining")
                 })
                 .OrderBy(dc => dc.Name)
-                    .ThenBy(dc => dc.DisplayName)
+                .ThenBy(dc => dc.DisplayName)
                 .ToListAsync();
 
             return GetExcelData(dataCollectors, stringResources);
@@ -77,33 +79,30 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public byte[] GetExcelData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
         {
-            var columnLabels = new List<string>()
+            var columnLabels = new List<string>
             {
-                GetStringResource(stringResources,"dataCollectors.export.dataCollectorType"),
-                GetStringResource(stringResources,"dataCollectors.export.name"),
-                GetStringResource(stringResources,"dataCollectors.export.displayName"),
-                GetStringResource(stringResources,"dataCollectors.export.phoneNumber"),
-                GetStringResource(stringResources,"dataCollectors.export.additionalPhoneNumber"),
-                GetStringResource(stringResources,"dataCollectors.export.sex"),
-                GetStringResource(stringResources,"dataCollectors.export.birthGroupDecade"),
-                GetStringResource(stringResources,"dataCollectors.export.region"),
-                GetStringResource(stringResources,"dataCollectors.export.district"),
-                GetStringResource(stringResources,"dataCollectors.export.village"),
-                GetStringResource(stringResources,"dataCollectors.export.zone"),
-                GetStringResource(stringResources,"dataCollectors.export.latitude"),
-                GetStringResource(stringResources,"dataCollectors.export.longitude"),
-                GetStringResource(stringResources,"dataCollectors.export.supervisor"),
-                GetStringResource(stringResources,"dataCollectors.export.trainingStatus")
+                GetStringResource(stringResources, "dataCollectors.export.dataCollectorType"),
+                GetStringResource(stringResources, "dataCollectors.export.name"),
+                GetStringResource(stringResources, "dataCollectors.export.displayName"),
+                GetStringResource(stringResources, "dataCollectors.export.phoneNumber"),
+                GetStringResource(stringResources, "dataCollectors.export.additionalPhoneNumber"),
+                GetStringResource(stringResources, "dataCollectors.export.sex"),
+                GetStringResource(stringResources, "dataCollectors.export.birthGroupDecade"),
+                GetStringResource(stringResources, "dataCollectors.export.region"),
+                GetStringResource(stringResources, "dataCollectors.export.district"),
+                GetStringResource(stringResources, "dataCollectors.export.village"),
+                GetStringResource(stringResources, "dataCollectors.export.zone"),
+                GetStringResource(stringResources, "dataCollectors.export.latitude"),
+                GetStringResource(stringResources, "dataCollectors.export.longitude"),
+                GetStringResource(stringResources, "dataCollectors.export.supervisor"),
+                GetStringResource(stringResources, "dataCollectors.export.trainingStatus")
             };
 
             var dataCollectorsData = dataCollectors
                 .Select(dc => new
                 {
-                    DataCollectorType = dc.DataCollectorType == DataCollectorType.Human
-                        ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.human")
-                        : dc.DataCollectorType == DataCollectorType.CollectionPoint
-                          ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.collectionPoint")
-                          : string.Empty,
+                    DataCollectorType = dc.DataCollectorType == DataCollectorType.Human ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.human") :
+                        dc.DataCollectorType == DataCollectorType.CollectionPoint ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.collectionPoint") : string.Empty,
                     dc.Name,
                     dc.DisplayName,
                     dc.PhoneNumber,
@@ -124,6 +123,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
         }
 
         private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
-            stringResources.Keys.Contains(key) ? stringResources[key] : key;
+            stringResources.Keys.Contains(key)
+                ? stringResources[key]
+                : key;
     }
 }

@@ -67,9 +67,15 @@ namespace RX.Nyss.Web.Features.HealthRisks
                     Id = healthRisk.Id,
                     HealthRiskCode = healthRisk.HealthRiskCode,
                     HealthRiskType = healthRisk.HealthRiskType,
-                    AlertRuleCountThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.CountThreshold : (int?) null,
-                    AlertRuleDaysThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.DaysThreshold : null,
-                    AlertRuleKilometersThreshold = healthRisk.AlertRule != null ? healthRisk.AlertRule.KilometersThreshold : null,
+                    AlertRuleCountThreshold = healthRisk.AlertRule != null
+                        ? healthRisk.AlertRule.CountThreshold
+                        : (int?)null,
+                    AlertRuleDaysThreshold = healthRisk.AlertRule != null
+                        ? healthRisk.AlertRule.DaysThreshold
+                        : null,
+                    AlertRuleKilometersThreshold = healthRisk.AlertRule != null
+                        ? healthRisk.AlertRule.KilometersThreshold
+                        : null,
                     LanguageContent = healthRisk.LanguageContents.Select(lc => new HealthRiskLanguageContentDto
                     {
                         LanguageId = lc.ContentLanguage.Id,
@@ -129,7 +135,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             var healthRisk = await _nyssContext.HealthRisks
                 .Include(hr => hr.AlertRule)
                 .Include(hr => hr.LanguageContents)
-                    .ThenInclude(lc => lc.ContentLanguage)
+                .ThenInclude(lc => lc.ContentLanguage)
                 .SingleOrDefaultAsync(hr => hr.Id == id);
 
             if (healthRisk == null)
@@ -211,7 +217,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
         }
 
         private static bool CodeOrNameWasChanged(HealthRiskRequestDto healthRiskRequestDto, HealthRisk healthRisk) =>
-            healthRiskRequestDto.HealthRiskCode != healthRisk.HealthRiskCode  ||
+            healthRiskRequestDto.HealthRiskCode != healthRisk.HealthRiskCode ||
             healthRiskRequestDto.LanguageContent.Any(lcDto =>
                 healthRisk.LanguageContents.Any(lc =>
                     lc.ContentLanguage.Id == lcDto.LanguageId && !string.IsNullOrEmpty(lc.Name)) &&
@@ -225,7 +231,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
             var newLanguageContent = new HealthRiskLanguageContent
             {
                 HealthRisk = healthRisk,
-                ContentLanguageId = languageId,
+                ContentLanguageId = languageId
             };
 
             healthRisk.LanguageContents.Add(newLanguageContent);

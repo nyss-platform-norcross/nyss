@@ -11,45 +11,14 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 {
     public class ReportLabelingServiceTestsData
     {
-        private class MockPoint : Point
-        {
-            public MockPoint(double x, double y)
-                : base(x, y)
-            {
-            }
-
-            public override double Distance(Geometry g)
-            {
-                var firstCoordinate = new GeoCoordinate(Y, X);
-                var secondCoordinate = new GeoCoordinate(g.Coordinate.Y, g.Coordinate.X);
-                return firstCoordinate.GetDistanceTo(secondCoordinate);
-            }
-        }
-
-        public class PointLabelingAdditionalData
-        {
-            public Report ReportBeingAdded { get; set; }
-            public Guid LabelOfNewPointAfterAdding { get; set; }
-            public Guid Group1Label { get; set; }
-            public Guid Group2Label { get; set; }
-            public Guid Group3Label { get; set; }
-        }
-        
         private readonly EntityNumerator _reportNumerator = new EntityNumerator();
         private readonly LabeledReportGroupGenerator _reportGroupGenerator = new LabeledReportGroupGenerator();
         private readonly ReportGenerator _reportGenerator = new ReportGenerator();
         private readonly TestCaseDataProvider _testCaseDataProvider;
         private readonly DataCollector _dataCollector = new DataCollector { DataCollectorType = DataCollectorType.Human };
 
-        public ReportLabelingServiceTestsData(INyssContext nyssContextMock)
-        {
-            _testCaseDataProvider = new TestCaseDataProvider(nyssContextMock);
-        }
-        private Point GetMockPoint(double lat, double lon) =>
-            new MockPoint(lon, lat);
-
         public TestCaseData WhenNoReportsInKilometerRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenNoReportsInKilometerRange), (data) =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenNoReportsInKilometerRange), data =>
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
@@ -61,20 +30,21 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             });
 
         public TestCaseData WhenNoReportsInTimeRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenNoReportsInTimeRange), (data) =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenNoReportsInTimeRange), data =>
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
                 var reportGroup = _reportGroupGenerator.Create("93DCD52C-4AD2-45F6-AED4-54CAB1DD3E19")
                     .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.330898, 17.047525), DateTime.UtcNow)
-                    .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.329331, 17.046055), DateTime.UtcNow.AddDays(-(double)projectHealthRiskWithKmThresholdOf1.AlertRule.DaysThreshold));
+                    .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.329331, 17.046055),
+                        DateTime.UtcNow.AddDays(-(double)projectHealthRiskWithKmThresholdOf1.AlertRule.DaysThreshold));
 
                 data.Reports = reportGroup.Reports;
             });
 
         public TestCaseData WhenTwoMatchingReportsInRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenTwoMatchingReportsInRange), (data) =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenTwoMatchingReportsInRange), data =>
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
@@ -84,7 +54,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                 var reportGroup2 = _reportGroupGenerator.Create("b4328e8f-d834-4d9e-a37c-9a6c1f11c25c")
                     .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.344401, 16.823278), DateTime.UtcNow);
-                
+
                 var reportGroup3 = _reportGroupGenerator.Create("b7e399bb-9618-4ac2-b3dc-2bf951d01a0c")
                     .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.355015, 16.827793), DateTime.UtcNow);
 
@@ -92,8 +62,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 data.Reports = reportGroup1.Reports.Concat(reportGroup2.Reports).Concat(reportGroup3.Reports).ToList();
             });
 
-         public TestCaseData<PointLabelingAdditionalData> WhenOneReportGroupInRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenOneReportGroupInRange), (data) =>
+        public TestCaseData<PointLabelingAdditionalData> WhenOneReportGroupInRange =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenOneReportGroupInRange), data =>
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
@@ -108,12 +78,17 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                 data.Reports = reportGroup1.Reports.Concat(addedPointGroup.Reports).ToList();
 
-                var additionalData = new PointLabelingAdditionalData { ReportBeingAdded = addedPointGroup.Reports.Single(), LabelOfNewPointAfterAdding = Guid.Parse(group1Label) };
+                var additionalData = new PointLabelingAdditionalData
+                {
+                    ReportBeingAdded = addedPointGroup.Reports.Single(),
+                    LabelOfNewPointAfterAdding = Guid.Parse(group1Label)
+                };
 
                 return additionalData;
             });
-         public TestCaseData<PointLabelingAdditionalData> WhenMoreReportGroupsInRange =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenMoreReportGroupsInRange), (data) =>
+
+        public TestCaseData<PointLabelingAdditionalData> WhenMoreReportGroupsInRange =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenMoreReportGroupsInRange), data =>
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
@@ -131,7 +106,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                 var group3Label = "9cc6e1fa-9660-4259-8fe9-77c103d11aac";
                 var reportGroup3 = _reportGroupGenerator.Create(group3Label)
-                    .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false,  GetMockPoint(52.389927, 16.795507), DateTime.UtcNow)
+                    .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.389927, 16.795507), DateTime.UtcNow)
                     .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.389928, 16.795508), DateTime.UtcNow);
 
                 var addedPointGroup = _reportGroupGenerator.Create("b7e399bb-9618-4ac2-b3dc-2bf951d01a0c")
@@ -156,7 +131,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             });
 
         public TestCaseData<(Guid Label, int KilometerThreshold)> CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold =>
-            _testCaseDataProvider.GetOrCreate(nameof(CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold), (data) =>
+            _testCaseDataProvider.GetOrCreate(nameof(CalculateNewLabelsInLabelGroup_WhenReportsDontMeetDistanceThreshold), data =>
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
@@ -173,8 +148,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 return additionalData;
             });
 
-        public TestCaseData<(Guid Label, int KilometerThreshold, Report Report1InArea, Report Report2InArea, Report Report3InArea, Report ReportFarAway)> CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold =>
-            _testCaseDataProvider.GetOrCreate(nameof(CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold), (data) =>
+        public TestCaseData<(Guid Label, int KilometerThreshold, Report Report1InArea, Report Report2InArea, Report Report3InArea, Report ReportFarAway)>
+            CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold =>
+            _testCaseDataProvider.GetOrCreate(nameof(CalculateNewLabelsInLabelGroup_WhenReportsMeetDistanceThreshold), data =>
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
@@ -189,7 +165,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 data.Reports = reportGroup1.Reports;
 
                 (Guid, int, Report, Report, Report, Report) additionalData = (Guid.Parse(group1Label),
-                    projectHealthRiskWithKmThresholdOf1.AlertRule.KilometersThreshold.Value,
+                        projectHealthRiskWithKmThresholdOf1.AlertRule.KilometersThreshold.Value,
                         reportGroup1.Reports[0],
                         reportGroup1.Reports[1],
                         reportGroup1.Reports[2],
@@ -200,7 +176,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             });
 
         public TestCaseData<PointLabelingAdditionalData> WhenAddingTrainingReportBetweenPointsWithDifferentLabels =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenAddingTrainingReportBetweenPointsWithDifferentLabels), (data) =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenAddingTrainingReportBetweenPointsWithDifferentLabels), data =>
             {
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
@@ -218,7 +194,39 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 data.Reports = reportGroup1.Reports.Concat(reportGroup2.Reports).ToList();
                 data.Reports.Add(trainingReport);
 
-                return new PointLabelingAdditionalData{ ReportBeingAdded = trainingReport };
+                return new PointLabelingAdditionalData { ReportBeingAdded = trainingReport };
             });
+
+        public ReportLabelingServiceTestsData(INyssContext nyssContextMock)
+        {
+            _testCaseDataProvider = new TestCaseDataProvider(nyssContextMock);
+        }
+
+        private Point GetMockPoint(double lat, double lon) =>
+            new MockPoint(lon, lat);
+
+        private class MockPoint : Point
+        {
+            public MockPoint(double x, double y)
+                : base(x, y)
+            {
+            }
+
+            public override double Distance(Geometry g)
+            {
+                var firstCoordinate = new GeoCoordinate(Y, X);
+                var secondCoordinate = new GeoCoordinate(g.Coordinate.Y, g.Coordinate.X);
+                return firstCoordinate.GetDistanceTo(secondCoordinate);
+            }
+        }
+
+        public class PointLabelingAdditionalData
+        {
+            public Report ReportBeingAdded { get; set; }
+            public Guid LabelOfNewPointAfterAdding { get; set; }
+            public Guid Group1Label { get; set; }
+            public Guid Group2Label { get; set; }
+            public Guid Group3Label { get; set; }
+        }
     }
 }

@@ -52,20 +52,32 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
         private static async Task<IEnumerable<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
-                .Select(r => new { r.ReceivedAt, r.DataCollectionPointCase.ReferredCount, r.DataCollectionPointCase.DeathCount, r.DataCollectionPointCase.FromOtherVillagesCount })
+                .Select(r => new
+                {
+                    r.ReceivedAt,
+                    r.DataCollectionPointCase.ReferredCount,
+                    r.DataCollectionPointCase.DeathCount,
+                    r.DataCollectionPointCase.FromOtherVillagesCount
+                })
                 .GroupBy(r => r.ReceivedAt.Date)
                 .Select(grouping => new
                 {
                     Period = grouping.Key,
                     ReferredCount = (int)grouping.Sum(g => g.ReferredCount),
                     DeathCount = (int)grouping.Sum(g => g.DeathCount),
-                    FromOtherVillagesCount = (int)grouping.Sum(g => g.FromOtherVillagesCount),
+                    FromOtherVillagesCount = (int)grouping.Sum(g => g.FromOtherVillagesCount)
                 })
                 .ToListAsync();
 
             var missingDays = startDate.GetDaysRange(endDate)
                 .Except(groupedReports.Select(x => x.Period))
-                .Select(day => new { Period = day, ReferredCount = 0, DeathCount = 0, FromOtherVillagesCount = 0 });
+                .Select(day => new
+                {
+                    Period = day,
+                    ReferredCount = 0,
+                    DeathCount = 0,
+                    FromOtherVillagesCount = 0
+                });
 
             return groupedReports
                 .Union(missingDays)
@@ -83,20 +95,41 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
         private async Task<IEnumerable<DataCollectionPointsReportsByDateDto>> GroupReportsByDataCollectionPointFeaturesAndWeek(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
         {
             var groupedReports = await reports
-                .Select(r => new { r.EpiYear, r.EpiWeek, r.DataCollectionPointCase.ReferredCount, r.DataCollectionPointCase.DeathCount, r.DataCollectionPointCase.FromOtherVillagesCount })
-                .GroupBy(r => new { r.EpiYear, r.EpiWeek })
+                .Select(r => new
+                {
+                    r.EpiYear,
+                    r.EpiWeek,
+                    r.DataCollectionPointCase.ReferredCount,
+                    r.DataCollectionPointCase.DeathCount,
+                    r.DataCollectionPointCase.FromOtherVillagesCount
+                })
+                .GroupBy(r => new
+                {
+                    r.EpiYear,
+                    r.EpiWeek
+                })
                 .Select(grouping => new
                 {
                     EpiPeriod = grouping.Key,
                     ReferredCount = (int)grouping.Sum(g => g.ReferredCount),
                     DeathCount = (int)grouping.Sum(g => g.DeathCount),
-                    FromOtherVillagesCount = (int)grouping.Sum(g => g.FromOtherVillagesCount),
+                    FromOtherVillagesCount = (int)grouping.Sum(g => g.FromOtherVillagesCount)
                 })
                 .ToListAsync();
 
             var missingWeeks = _dateTimeProvider.GetEpiWeeksRange(startDate, endDate)
                 .Where(epiDate => !groupedReports.Any(r => r.EpiPeriod.EpiYear == epiDate.EpiYear && r.EpiPeriod.EpiWeek == epiDate.EpiWeek))
-                .Select(epiDate => new { EpiPeriod = new { epiDate.EpiYear, epiDate.EpiWeek }, ReferredCount = 0, DeathCount = 0, FromOtherVillagesCount = 0 });
+                .Select(epiDate => new
+                {
+                    EpiPeriod = new
+                    {
+                        epiDate.EpiYear,
+                        epiDate.EpiWeek
+                    },
+                    ReferredCount = 0,
+                    DeathCount = 0,
+                    FromOtherVillagesCount = 0
+                });
 
             return groupedReports
                 .Union(missingWeeks)

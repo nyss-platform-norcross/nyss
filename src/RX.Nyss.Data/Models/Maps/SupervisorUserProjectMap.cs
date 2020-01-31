@@ -7,7 +7,11 @@ namespace RX.Nyss.Data.Models.Maps
     {
         public void Configure(EntityTypeBuilder<SupervisorUserProject> builder)
         {
-            builder.HasKey(sup => new { sup.SupervisorUserId, sup.ProjectId });
+            builder.HasKey(sup => new
+            {
+                sup.SupervisorUserId,
+                sup.ProjectId
+            });
             builder.HasOne(uns => uns.SupervisorUser).WithMany(su => su.SupervisorUserProjects)
                 .HasForeignKey(uns => uns.SupervisorUserId).IsRequired().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(uns => uns.Project).WithMany(p => p.SupervisorUserProjects)

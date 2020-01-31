@@ -7,7 +7,7 @@ namespace RX.Nyss.Web.Features.Common.Dto
         public int Id { get; set; }
 
         public AreaType Type { get; set; }
-        
+
         public class Validator : AbstractValidator<AreaDto>
         {
             public Validator()

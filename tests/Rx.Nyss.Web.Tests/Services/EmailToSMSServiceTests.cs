@@ -22,10 +22,7 @@ namespace RX.Nyss.Web.Tests.Services
         public async Task SendMessage_WhenSuccessful_ShouldCallEmailPublisherService()
         {
             // Arrange
-            var recipients = new List<string>
-            {
-                "+47123143513"
-            };
+            var recipients = new List<string> { "+47123143513" };
             var message = "Thanks for your message";
 
             var gatewaySetting = new GatewaySetting
@@ -37,7 +34,8 @@ namespace RX.Nyss.Web.Tests.Services
             // Act
             await _emailToSMSService.SendMessage(gatewaySetting, recipients, message);
 
-            await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Is<string>(_ => _ == "+47123143513"), Arg.Is<string>(body => body == "Thanks for your message"), Arg.Is<bool>(_ => _));
+            await _emailPublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Is<string>(_ => _ == "+47123143513"), Arg.Is<string>(body => body == "Thanks for your message"),
+                Arg.Is<bool>(_ => _));
         }
     }
 }

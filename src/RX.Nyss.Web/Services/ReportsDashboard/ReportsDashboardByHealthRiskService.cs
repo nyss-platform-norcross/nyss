@@ -44,13 +44,13 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             return groupingType switch
             {
                 DatesGroupingType.Day =>
-                    await GroupReportsByHealthRiskAndDay(reports, filters.StartDate.Date, filters.EndDate.Date),
+                await GroupReportsByHealthRiskAndDay(reports, filters.StartDate.Date, filters.EndDate.Date),
 
                 DatesGroupingType.Week =>
-                    await GroupReportsByHealthRiskAndWeek(reports, filters.StartDate.Date, filters.EndDate.Date),
+                await GroupReportsByHealthRiskAndWeek(reports, filters.StartDate.Date, filters.EndDate.Date),
 
                 _ =>
-                    throw new InvalidOperationException()
+                throw new InvalidOperationException()
             };
         }
 
@@ -76,7 +76,11 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .ToListAsync();
 
             var reportsGroupedByHealthRisk = groupedReports
-                .GroupBy(r => new { r.HealthRiskId, r.HealthRiskName })
+                .GroupBy(r => new
+                {
+                    r.HealthRiskId,
+                    r.HealthRiskName
+                })
                 .OrderByDescending(g => g.Sum(w => w.Count))
                 .Select(g => new
                 {
@@ -95,7 +99,11 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     .GroupBy(_ => true)
                     .Select(gr => new
                     {
-                        HealthRisk = new { HealthRiskId = 0, HealthRiskName = "(rest)" },
+                        HealthRisk = new
+                        {
+                            HealthRiskId = 0,
+                            HealthRiskName = "(rest)"
+                        },
                         Data = gr.ToList()
                     })
                 )
@@ -144,13 +152,17 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     HealthRiskId = grouping.Key.HealthRiskId,
                     HealthRiskName = _nyssContext.HealthRisks.FirstOrDefault(hr => hr.Id == grouping.Key.HealthRiskId).LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == grouping.Key.ContentLanguageId)
-                        .Select(lc => lc.Name).FirstOrDefault(),
+                        .Select(lc => lc.Name).FirstOrDefault()
                 })
                 .Where(g => g.Count > 0)
                 .ToListAsync();
 
             var reportsGroupedByHealthRisk = groupedReports
-                .GroupBy(r => new { r.HealthRiskId, r.HealthRiskName })
+                .GroupBy(r => new
+                {
+                    r.HealthRiskId,
+                    r.HealthRiskName
+                })
                 .OrderByDescending(g => g.Sum(w => w.Count))
                 .Select(g => new
                 {
@@ -169,7 +181,11 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     .GroupBy(_ => true)
                     .Select(g => new
                     {
-                        HealthRisk = new { HealthRiskId = 0, HealthRiskName = "(rest)" },
+                        HealthRisk = new
+                        {
+                            HealthRiskId = 0,
+                            HealthRiskName = "(rest)"
+                        },
                         Data = g.ToList()
                     })
                 )

@@ -14,6 +14,7 @@ namespace RX.Nyss.Web.Services
     public class SmsTextGeneratorService : ISmsTextGeneratorService
     {
         private readonly IStringsResourcesService _stringsResourcesService;
+
         public SmsTextGeneratorService(IStringsResourcesService stringsResourcesService)
         {
             _stringsResourcesService = stringsResourcesService;
@@ -25,7 +26,7 @@ namespace RX.Nyss.Web.Services
 
             return GetTranslation("sms.alertEscalated", languageCode, translatedSmsTexts.Value);
         }
-        
+
         private static string GetTranslation(string key, string languageCode, IDictionary<string, string> translations)
         {
             if (!translations.TryGetValue(key, out var value))

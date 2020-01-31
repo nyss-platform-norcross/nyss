@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -36,7 +35,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private readonly INationalSocietyService _nationalSocietyService;
         private readonly IAuthorizationService _authorizationService;
 
-        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INationalSocietyService nationalSocietyService, INyssWebConfig config, IAuthorizationService authorizationService)
+        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INationalSocietyService nationalSocietyService, INyssWebConfig config,
+            IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _userService = userService;
@@ -60,7 +60,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     filter.ReportsType == NationalSocietyReportListType.Main ? r.DataCollector.DataCollectorType == DataCollectorType.Human :
                     r.DataCollector == null)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                .Where(r => filter.Status ? r.Report != null && !r.Report.MarkedAsError : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
+                .Where(r => filter.Status
+                    ? r.Report != null && !r.Report.MarkedAsError
+                    : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
                 .FilterByArea(MapToArea(filter.Area));
 
             if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
@@ -76,13 +78,19 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
                     IsValid = r.Report != null,
                     IsMarkedAsError = r.Report.MarkedAsError,
-                    ProjectName = r.Report != null ? r.Report.ProjectHealthRisk.Project.Name : r.DataCollector.Project.Name,
-                    ProjectTimeZone = r.Report != null ?  r.Report.ProjectHealthRisk.Project.TimeZone : r.DataCollector.Project.TimeZone,
+                    ProjectName = r.Report != null
+                        ? r.Report.ProjectHealthRisk.Project.Name
+                        : r.DataCollector.Project.Name,
+                    ProjectTimeZone = r.Report != null
+                        ? r.Report.ProjectHealthRisk.Project.TimeZone
+                        : r.DataCollector.Project.TimeZone,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
                     Village = r.Village.Name,
                     Zone = r.Zone.Name,
-                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint ? r.DataCollector.Name : r.DataCollector.DisplayName,
+                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                        ? r.DataCollector.Name
+                        : r.DataCollector.DisplayName,
                     PhoneNumber = r.Sender,
                     Message = r.Text,
                     CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
@@ -113,7 +121,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var dto = new NationalSocietyReportListFilterResponseDto
             {
                 HealthRisks = nationalSocietyHealthRiskNames
-                    .Select(p => new HealthRiskDto { Id = p.Id, Name = p.Name })
+                    .Select(p => new HealthRiskDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name
+                    })
             };
 
             return Success(dto);
@@ -122,6 +134,10 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private static Area MapToArea(AreaDto area) =>
             area == null
                 ? null
-                : new Area { AreaType = area.Type, AreaId = area.Id };
+                : new Area
+                {
+                    AreaType = area.Type,
+                    AreaId = area.Id
+                };
     }
 }

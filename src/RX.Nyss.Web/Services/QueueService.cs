@@ -24,10 +24,7 @@ namespace RX.Nyss.Web.Services
         {
             var queueClient = new QueueClient(_config.ConnectionStrings.ServiceBus, queueName);
 
-            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data)))
-            {
-                Label = "RX.Nyss.Web",
-            };
+            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(data))) { Label = "RX.Nyss.Web" };
 
             await queueClient.SendAsync(message);
         }

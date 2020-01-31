@@ -26,11 +26,11 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
-        private IDeleteUserService _deleteUserService;
 
         private readonly int _administratorId = 1;
         private readonly int _managerId = 2;
         private readonly int _nationalSocietyId = 1;
+        private readonly IDeleteUserService _deleteUserService;
 
 
         public ManagerServiceTests()
@@ -45,11 +45,22 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
 
 
-            var nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = _nationalSocietyId, Name = "Test national society" } };
+            var nationalSocieties = new List<NationalSociety>
+            {
+                new NationalSociety
+                {
+                    Id = _nationalSocietyId,
+                    Name = "Test national society"
+                }
+            };
             var applicationLanguages = new List<ApplicationLanguage>();
             var users = new List<User>
             {
-                new AdministratorUser { Id = _administratorId, Role = Role.Administrator },
+                new AdministratorUser
+                {
+                    Id = _administratorId,
+                    Role = Role.Administrator
+                },
                 new ManagerUser
                 {
                     Id = _managerId,
@@ -61,7 +72,16 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                     AdditionalPhoneNumber = "321"
                 }
             };
-            var userNationalSocieties = new List<UserNationalSociety> { new UserNationalSociety{User = users[1], UserId = _managerId, NationalSocietyId = _nationalSocietyId, NationalSociety = nationalSocieties[0]}};
+            var userNationalSocieties = new List<UserNationalSociety>
+            {
+                new UserNationalSociety
+                {
+                    User = users[1],
+                    UserId = _managerId,
+                    NationalSocietyId = _nationalSocietyId,
+                    NationalSociety = nationalSocieties[0]
+                }
+            };
             users[1].UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[0] };
 
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
@@ -74,7 +94,11 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
 
-            _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser { Id = "123", Email = (string)ci[0] });
+            _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
+            {
+                Id = "123",
+                Email = (string)ci[0]
+            });
             _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSocieties[0]);
 
             _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(Arg.Any<int>()).Returns(ci =>
@@ -84,6 +108,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 {
                     throw new ResultException(ResultKey.User.Registration.UserNotFound);
                 }
+
                 return user;
             });
 
@@ -114,7 +139,11 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         public async Task RegisterManager_WhenIdentityUserCreationSuccessful_NyssContextAddIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
+            var registerManagerRequestDto = new CreateManagerRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
             var result = await _managerService.Create(_nationalSocietyId, registerManagerRequestDto);
 
@@ -126,7 +155,11 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         public async Task RegisterManager_WhenIdentityUserCreationSuccessful_NyssContextSaveChangesIsCalledOnce()
         {
             var userEmail = "emailTest1@domain.com";
-            var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
+            var registerManagerRequestDto = new CreateManagerRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
             var result = await _managerService.Create(_nationalSocietyId, registerManagerRequestDto);
 
@@ -142,7 +175,11 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 .Do(x => throw exception);
 
             var userEmail = "emailTest1@domain.com";
-            var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
+            var registerManagerRequestDto = new CreateManagerRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
             var nationalSocietyId = 1;
             var result = await _managerService.Create(nationalSocietyId, registerManagerRequestDto);
@@ -159,7 +196,11 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 .Do(x => throw new Exception());
 
             var userEmail = "emailTest1@domain.com";
-            var registerManagerRequestDto = new CreateManagerRequestDto { Name = userEmail, Email = userEmail };
+            var registerManagerRequestDto = new CreateManagerRequestDto
+            {
+                Name = userEmail,
+                Email = userEmail
+            };
 
             _managerService.Create(_nationalSocietyId, registerManagerRequestDto).ShouldThrowAsync<Exception>();
         }
@@ -198,7 +239,6 @@ namespace RX.Nyss.Web.Tests.Features.Managers
 
             result.IsSuccess.ShouldBeTrue();
         }
-
 
 
         [Fact]

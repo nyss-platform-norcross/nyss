@@ -37,7 +37,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         /// <returns>A summary of specified project</returns>
         [HttpPost("data")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.GlobalCoordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<NationalSocietyDashboardResponseDto>> Data(int nationalSocietyId, [FromBody]NationalSocietyDashboardFiltersRequestDto dto) =>
+        public Task<Result<NationalSocietyDashboardResponseDto>> Data(int nationalSocietyId, [FromBody] NationalSocietyDashboardFiltersRequestDto dto) =>
             _nationalSocietyDashboardService.GetData(nationalSocietyId, dto);
 
         /// <summary>
@@ -49,7 +49,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         /// <param name="filters">Filters</param>
         [HttpPost("reportHealthRisks")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.GlobalCoordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> ReportHealthRisks(int nationalSocietyId, double latitude, double longitude, [FromBody]NationalSocietyDashboardFiltersRequestDto filters) =>
+        public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> ReportHealthRisks(int nationalSocietyId, double latitude, double longitude,
+            [FromBody] NationalSocietyDashboardFiltersRequestDto filters) =>
             await _nationalSocietyDashboardService.GetReportHealthRisks(nationalSocietyId, latitude, longitude, filters);
     }
 }
