@@ -42,7 +42,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
       </Grid>
 
       {reportsType === "dataCollectionPoint" && (
-        <Grid item sm={3} xs={12} className={styles.numberBox}>
+        <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
           <Card className={styles.card}>
             <CardHeader title={strings(stringKeys.project.dashboard.dataCollectionPoints)} />
             <CardContent>
@@ -55,7 +55,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
       )}
 
       {reportsType !== "dataCollectionPoint" && (
-        <Grid item sm={3} xs={12} className={styles.numberBox}>
+        <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
           <Card className={styles.card}>
             <CardHeader title={strings(stringKeys.project.dashboard.alertsSummary)} />
             <CardContent>
