@@ -14,10 +14,10 @@ export function translationsReducer(state = initialState.translations, action) {
       return { ...state };
 
     case actions.GET_TRANSLATIONS.REQUEST:
-      return { ...state, listFetching: true, listData: [] };
+      return { ...state, listFetching: true, listLanguages: [], listTranslations: [] };
 
     case actions.GET_TRANSLATIONS.SUCCESS:
-      return { ...state, listFetching: false, listData: action.list };
+      return { ...state, listFetching: false, listLanguages: action.data.languages, listTranslations: action.data.translations };
 
     case actions.GET_TRANSLATIONS.FAILURE:
       return { ...state, listFetching: false, listData: [] };

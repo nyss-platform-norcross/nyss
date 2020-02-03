@@ -193,6 +193,7 @@ export const initialState = {
   },
   translations: {
     listFetching: false,
-    listData: []
-  },
+    listLanguages: [],
+    listTranslations: []
+  }
 };

@@ -13,6 +13,6 @@ export const openList = {
 export const getList = {
   invoke: () => ({ type: GET_TRANSLATIONS.INVOKE }),
   request: () => ({ type: GET_TRANSLATIONS.REQUEST }),
-  success: (list) => ({ type: GET_TRANSLATIONS.SUCCESS, list }),
+  success: (data) => ({ type: GET_TRANSLATIONS.SUCCESS, data }),
   failure: (message) => ({ type: GET_TRANSLATIONS.FAILURE, message })
 };
