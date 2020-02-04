@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as translationsActions from './logic/translationsActions';
@@ -13,24 +13,24 @@ const TranslationsListPageComponent = (props) => {
   });
 
   return (
-    <Fragment>
-      <TranslationsTable
-        list={props.list}
-        isListFetching={props.isListFetching}
-      />
-    </Fragment>
+    <TranslationsTable
+      isListFetching={props.isListFetching}
+      languages={props.languages}
+      translations={props.translations}
+    />
   );
 }
 
 TranslationsListPageComponent.propTypes = {
-  getTranslations: PropTypes.func,
   isFetching: PropTypes.bool,
-  //list: PropTypes.object
+  languages: PropTypes.array,
+  translations: PropTypes.array
 };
 
 const mapStateToProps = (state, ownProps) => ({
-  list: state.translations.listData,
-  isListFetching: state.translations.listFetching
+  isListFetching: state.translations.listFetching,
+  translations: state.translations.listTranslations,
+  languages: state.translations.listLanguages
 });
 
 const mapDispatchToProps = {

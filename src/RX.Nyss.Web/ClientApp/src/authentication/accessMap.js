@@ -68,6 +68,6 @@ export const accessMap = {
     assess: [Administrator, Manager, TechnicalAdvisor, Supervisor],
   },
   translations: {
-    list: [Administrator]
+    list: [Administrator, GlobalCoordinator]
   }
 };
