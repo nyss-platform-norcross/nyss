@@ -12,6 +12,7 @@ import { projectDashboardSiteMap } from "./components/projectDashboard/logic/pro
 import { headManagerConsentsSiteMap } from "./components/headManagerConsents/logic/headManagerConsentsSiteMap";
 import { alertsSiteMap } from "./components/alerts/logic/alertsSiteMap";
 import { nationalSocietyDashboardSiteMap } from "./components/nationalSocietyDashboard/logic/nationalSocietyDashboardSiteMap";
+import { translationsSiteMap } from "./components/translations/logic/translationsSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
@@ -27,5 +28,6 @@ export const siteMap = [
   ...reportsSiteMap,
   ...nationalSocietyReportsSiteMap,
   ...headManagerConsentsSiteMap,
-  ...alertsSiteMap
+  ...alertsSiteMap,
+  ...translationsSiteMap
 ];

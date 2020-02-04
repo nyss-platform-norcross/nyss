@@ -190,5 +190,10 @@ export const initialState = {
     listRemoving: {},
     listProjectId: null,
     listData: null
+  },
+  translations: {
+    listFetching: false,
+    listLanguages: [],
+    listTranslations: []
   }
 };

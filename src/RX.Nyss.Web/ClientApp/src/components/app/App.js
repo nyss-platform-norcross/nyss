@@ -50,6 +50,7 @@ import { ProjectsOverviewPage } from '../projects/ProjectsOverviewPage';
 import { DataCollectorsPerformancePage } from '../dataCollectors/DataCollectorsPerformancePage';
 import { AlertsLogsPage } from '../alerts/AlertsLogsPage';
 import { NationalSocietyDashboardPage } from '../nationalSocietyDashboard/NationalSocietyDashboardPage';
+import { TranslationsListPage } from '../translations/TranslationsListPage';
 import { NotFoundPage } from '../layout/NotFoundPage';
 
 export const App = ({ history }) => (
@@ -114,6 +115,8 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/alerts' component={AlertsListPage} roles={accessMap.alerts.list} />
           <AuthRoute exact path='/projects/:projectId/alerts/:alertId/assess' component={AlertsAssessmentPage} roles={accessMap.alerts.assess} />
           <AuthRoute exact path='/projects/:projectId/alerts/:alertId/logs' component={AlertsLogsPage} roles={accessMap.alerts.assess} />
+
+          <AuthRoute exact path='/translations' component={TranslationsListPage} roles={accessMap.translations.list} />
 
           <Route component={NotFoundPage} />
         </Switch>
