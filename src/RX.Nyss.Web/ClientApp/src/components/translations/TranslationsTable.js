@@ -27,10 +27,14 @@ export const TranslationsTable = ({ isListFetching, languages, translations }) =
     setSorting({ orderBy: column, sortAscending: !isAscending });
   }
 
-  const sortedTranslations = [...translations].sort((a, b) =>
-    (sorting.sortAscending ? -1 : 1) * (sorting.orderBy === "key"
-      ? (a.key > b.key ? 1 : -1)
-      : a.translations[sorting.orderBy] > b.translations[sorting.orderBy] ? 1 : -1));
+  const sortedTranslations = () => {
+    const sorted = [...translations].sort((a, b) =>
+      sorting.orderBy === "key"
+        ? (a.key > b.key ? 1 : -1)
+        : a.translations[sorting.orderBy] > b.translations[sorting.orderBy] ? 1 : -1);
+
+    return sorting.sortAscending ? sorted : [...sorted].reverse();
+  }
 
   return (
     <TableContainer sticky>
@@ -60,7 +64,7 @@ export const TranslationsTable = ({ isListFetching, languages, translations }) =
           </TableRow>
         </TableHead>
         <TableBody>
-          {sortedTranslations.map(translation => (
+          {sortedTranslations().map(translation => (
             <TableRow key={translation.key}>
               <TableCell>
                 <StringsEditor stringKey={translation.key} />
