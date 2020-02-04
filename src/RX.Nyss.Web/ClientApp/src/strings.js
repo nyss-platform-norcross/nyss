@@ -778,6 +778,10 @@ export const stringKeys = {
     list: {
       key: "translations.list.key"
     }
+  },
+  feedback: {
+      send: "feedback.send",
+      dialogTitle: "feedback.dialogTitle"
   }
 };
 
