@@ -82,7 +82,7 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
       </TableContainer>
       <ConfirmationDialog
         isOpened={closeConfirmationDialog.isOpen}
-        titlteText={strings(stringKeys.project.list.removalConfirmation)}
+        titleText={strings(stringKeys.project.list.removalConfirmation)}
         submit={() => closeConfirmed()}
         close={() => setRemoveConfirmationDialog({ isOpen: false })}
       >

@@ -13,14 +13,14 @@ import { useTheme } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
 import { useAccessRestriction } from "../hasAccess/HasAccess";
 
-export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, close, submit, titlteText, contentText }) => {
+export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, close, submit, titleText, contentText }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
   return (
     <Dialog onClose={close} open={isOpened} fullScreen={fullScreen}>
       <DialogTitle>
-        {titlteText}
+        {titleText}
       </DialogTitle>
       <DialogContent className={styles.content}>
         {contentText &&
