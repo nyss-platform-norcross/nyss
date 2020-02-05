@@ -1,20 +1,19 @@
 import styles from './UserStatus.module.scss';
 
-import React, { useState, Fragment } from 'react';
+import React, { useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Icon from "@material-ui/core/Icon";
 import * as authActions from '../../authentication/authActions';
+import * as appActions from '../app/logic/appActions';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { strings, stringKeys } from '../../strings';
 import { FeedbackDialog } from '../feedback/FeedbackDialog';
 
-export const UserStatusComponent = ({ user, logout }) => {
+export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedback }) => {
   const [anchorEl, setAnchorEl] = useState();
   const [feedbackDialogOpened, setfeedbackDialogOpened] = useState(false);
 
@@ -32,48 +31,56 @@ export const UserStatusComponent = ({ user, logout }) => {
         <div className={styles.userName}>{user.name}</div>
         <ArrowDropDownIcon color="primary" className={styles.arrow} />
       </div>
-      <FeedbackDialog isOpened={feedbackDialogOpened} close={() => setfeedbackDialogOpened(false)} />
       <Menu
         anchorEl={anchorEl}
         open={!!anchorEl}
-        onClose={handleClose}>
-        <List className={styles.popover}>
-          <ListItem
-            onClick={handleClose}
-            disabled
-            className={styles.authCaption}>
-            <ListItemText primary={user.name} secondary={strings(stringKeys.roles[user.roles[0]])} />
-          </ListItem>
-          <ListItem
-            onClick={handleClose}
-            disabled
-            className={styles.authCaption}>
-            <ListItemText secondary={user.email} />
-          </ListItem>
-          <MenuItem onClick={() => setfeedbackDialogOpened(true)} className={styles.authButton}>
-            <Icon className={styles.fontIcon}>feedback</Icon>
-            {strings(stringKeys.feedback.send)}
-          </MenuItem>
-          <MenuItem onClick={logout} className={styles.authButton}>
-            <Icon className={styles.fontIcon}>exit_to_app</Icon>
-            {strings(stringKeys.user.logout)}
-          </MenuItem>
-        </List>
+        onClose={handleClose}
+        className={styles.popover}>
+        <MenuItem
+          onClick={handleClose}
+          disabled
+          className={styles.authCaption}>
+          <ListItemText primary={user.name} secondary={strings(stringKeys.roles[user.roles[0]])} />
+        </MenuItem>
+        <MenuItem
+          onClick={handleClose}
+          disabled
+          className={styles.authCaption}>
+          <ListItemText secondary={user.email} />
+        </MenuItem>
+        <MenuItem onClick={() => setfeedbackDialogOpened(true)} className={styles.authButton}>
+          <Icon className={styles.fontIcon}>feedback</Icon>
+          {strings(stringKeys.feedback.send)}
+        </MenuItem>
+        <MenuItem onClick={logout} className={styles.authButton}>
+          <Icon className={styles.fontIcon}>exit_to_app</Icon>
+          {strings(stringKeys.user.logout)}
+        </MenuItem>
       </Menu>
-    </div>
+      <FeedbackDialog
+        isOpened={feedbackDialogOpened}
+        close={() => setfeedbackDialogOpened(false)}
+        sendFeedback={sendFeedback}
+        isSending={isSendingFeedback} />
+    </div >
   );
 }
 
+UserStatusComponent.propTypes = {
+  logout: PropTypes.func,
+  sendFeedback: PropTypes.func,
+  isSendingFeedback: PropTypes.bool,
+};
+
 const mapStateToProps = state => ({
-  user: state.appData.user
+  user: state.appData.user,
+  isSendingFeedback: state.appData.feedback.isSending
 });
 
 const mapDispatchToProps = {
-  logout: authActions.logout.invoke
+  logout: authActions.logout.invoke,
+  sendFeedback: appActions.sendFeedback.invoke
 };
 
-UserStatusComponent.propTypes = {
-  logout: PropTypes.func
-};
 
 export const UserStatus = connect(mapStateToProps, mapDispatchToProps)(UserStatusComponent);

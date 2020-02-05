@@ -781,7 +781,10 @@ export const stringKeys = {
   },
   feedback: {
       send: "feedback.send",
-      dialogTitle: "feedback.dialogTitle"
+      submit: "feedback.submit",
+      dialogTitle: "feedback.dialogTitle",
+      dialogDescription: "feedback.dialogDescription",
+      privacyMessage: "feedback.privacyMessage"
   }
 };
 

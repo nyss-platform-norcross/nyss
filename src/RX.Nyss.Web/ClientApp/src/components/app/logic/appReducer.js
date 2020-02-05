@@ -126,6 +126,27 @@ export function appReducer(state = initialState.appData, action) {
         messageTime: null
       }
 
+    case actions.SEND_FEEDBACK.REQUEST:
+      return {
+        ...state, feedback: {
+          isSending: true
+        }
+      }
+
+    case actions.SEND_FEEDBACK.SUCCESS:
+      return {
+        ...state, feedback: {
+          isSending: false
+        }
+      }
+
+    case actions.SEND_FEEDBACK.FAILURE:
+      return {
+        ...state, feedback: {
+          isSending: false
+        }
+      }
+
     default:
       return state;
   }

@@ -14,8 +14,11 @@
 }
 
 .popover {
-  min-width: 200px;
   padding-top: 0;
+  padding-bottom: 15px;
+  li {
+    min-width: 200px;
+  }
 }
 
 .authCaption {
