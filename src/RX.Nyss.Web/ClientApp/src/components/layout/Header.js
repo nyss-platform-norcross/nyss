@@ -12,6 +12,7 @@ const HeaderComponent = ({ sideMenuOpen, toggleSideMenu }) => {
     <div className={styles.header}>
       <div className={styles.placeholder}>
         <Icon className={styles.toggleMenu} onClick={() => toggleSideMenu(!sideMenuOpen)}>menu</Icon>
+        <img className={styles.smallLogo} src="/images/logo-small.svg" alt="Nyss logo" />
       </div>
       <div className={styles.topMenu}>
         <TopMenu />

@@ -25,3 +25,12 @@
     display: none;
   }
 }
+
+.smallLogo{
+  height: 21px;
+  margin-left: 15px;
+
+  @media screen and (min-width: 1280px) {
+    display: none;
+  }
+}
