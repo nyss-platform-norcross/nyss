@@ -60,7 +60,9 @@ const LoginPageComponent = (props) => {
     <div className={styles.loginContent}>
       <Paper className={styles.loginPaper}>
         <div className={styles.loginPaperContent}>
-          <Typography variant="h1" className={styles.paperHeader}>{strings(stringKeys.login.welcome)}</Typography>
+          <div className={styles.loginPageLogo}>
+            <img src="/images/logo.svg" alt="Nyss logo" />
+          </div>
           <Typography variant="h2" className={styles.loginHeader}>{strings(stringKeys.login.title)}</Typography>
 
           {props.loginResponse && <ValidationMessage message={props.loginResponse} />}
