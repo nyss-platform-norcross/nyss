@@ -1,6 +1,8 @@
-# RX.Nyss
+# Nyss
 
-Welcome to the repository for the new CBS solution, called *NYSS*!
+<img src="src\RX.Nyss.Web\ClientApp\public\images\logo.svg" alt="The Nyss logo" width="200"/>
+
+### Welcome to the repository for the new community-based surveillance solution, called *Nyss*!
 
 Nyss is a Norwegian word and means to "get the wind of something". The first Norwegian computer was called [Nusse](https://no.wikipedia.org/wiki/Nusse).
 

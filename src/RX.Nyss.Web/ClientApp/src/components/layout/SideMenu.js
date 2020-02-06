@@ -42,8 +42,7 @@ const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => 
         <div className={styles.sideMenu}>
           <div className={styles.sideMenuHeader}>
             <Link to="/" className={styles.logo}>
-              <div className={styles.headerName}>Nyss</div>
-              <div className={styles.headerDescription}>Community Based Surveillance</div>
+              <img src="/images/logo.svg" alt="Nyss logo" />
             </Link>
           </div>
 

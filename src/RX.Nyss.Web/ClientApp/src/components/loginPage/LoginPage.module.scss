@@ -1,13 +1,13 @@
 .loginContent {
-    align-items: flex-start;
-    justify-content: center;
-    flex: 1;
-    display: flex;
-    padding-top: 30px;
+  align-items: flex-start;
+  justify-content: center;
+  flex: 1;
+  display: flex;
+  padding-top: 30px;
 
-    @media screen and (max-width: 1280px) {
-      padding-top: 0;
-    }
+  @media screen and (max-width: 1280px) {
+    padding-top: 0;
+  }
 }
 
 .paperHeader {
@@ -55,4 +55,17 @@
 .actions {
   margin-top: 40px;
   text-align: right;
+}
+
+.loginPageLogo {
+  text-align: center;
+  img {
+    margin: 60px;
+    margin-bottom: 100px;
+
+    @media screen and (max-width: 1280px) {
+      width: 270px;
+      margin: 20px;
+    }
+  }
 }
