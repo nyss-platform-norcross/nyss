@@ -38,6 +38,9 @@
         },
         "serviceBusSku": {
             "value": "Standard"
+        },
+        "specificResource": {
+            "value": ""
         }
     }
 }

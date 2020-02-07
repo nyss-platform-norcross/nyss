@@ -311,6 +311,8 @@
             "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
           ],
           "properties": {
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('generalStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('generalStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName')), '2015-05-01-preview').key1,';')]",
             "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('webAppName')), '2015-05-01').InstrumentationKey]",
             "ApplicationInsightsAgent_EXTENSION_VERSION": "~2",
             "XDT_MicrosoftApplicationInsights_Mode": "default",
