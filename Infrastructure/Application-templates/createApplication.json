@@ -69,6 +69,12 @@
       "metadata": {
         "description": "Only the specified resource will get provisioned, NB! If used in complete mode, the other resource will get deleted"
       }
+    },
+    "customDomain": {
+      "type": "string"
+    },
+    "certificateName": {
+      "type": "string"
     }
   },
   "variables": {
@@ -311,8 +317,6 @@
             "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
           ],
           "properties": {
-            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('generalStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName')), '2015-05-01-preview').key1,';')]",
-            "AzureWebJobsDashboard": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('generalStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName')), '2015-05-01-preview').key1,';')]",
             "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('webAppName')), '2015-05-01').InstrumentationKey]",
             "ApplicationInsightsAgent_EXTENSION_VERSION": "~2",
             "XDT_MicrosoftApplicationInsights_Mode": "default",
@@ -390,6 +394,31 @@
         }
       ]
     },
+    {
+        "type": "Microsoft.Web/sites/hostnameBindings",
+        "name": "[concat(variables('webAppName'), '/', parameters('customDomain'))]",
+        "apiVersion": "2019-08-01",
+        "location": "[resourceGroup().location]",
+        "properties": {
+        },
+        "dependsOn": [
+            "[concat('Microsoft.Web/sites/',variables('webAppName'))]"
+        ]
+    },
+    {
+      "apiVersion": "2019-08-01",
+      "location": "[resourceGroup().location]",
+      "name": "[parameters('certificateName')]",
+      "type": "Microsoft.Web/certificates",
+      "properties": {
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
+          "canonicalName": "[parameters('customDomain')]"
+      },
+      "dependsOn": [
+          "[concat('Microsoft.Web/sites/',variables('webAppName'))]",
+          "[concat('Microsoft.Web/sites/',variables('webAppName'),'/hostnameBindings/',parameters('customDomain'))]"
+      ]
+  },
     {
       "name": "[variables('reportApiWebAppName')]",
       "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('reportApiWebAppName')))]",

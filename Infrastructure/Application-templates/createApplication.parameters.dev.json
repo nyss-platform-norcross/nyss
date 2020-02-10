@@ -41,6 +41,12 @@
         },
         "specificResource": {
             "value": ""
+        },
+        "customDomain": {
+          "value": "dev.rcnyss.org"
+        },
+        "certificateName": {
+          "value": "dev.rcnyss.org"
         }
     }
 }
