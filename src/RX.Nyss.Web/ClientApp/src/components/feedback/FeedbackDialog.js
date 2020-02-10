@@ -53,7 +53,7 @@ export const FeedbackDialog = ({ isOpened, close, isSending, sendFeedback }) => 
     });
 
     setHasSent(true);
-    resetForm()
+    resetForm();
     setTimeout(handleClose, 1500);
   }
 

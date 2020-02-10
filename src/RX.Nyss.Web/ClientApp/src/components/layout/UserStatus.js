@@ -15,12 +15,12 @@ import { FeedbackDialog } from '../feedback/FeedbackDialog';
 
 export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedback }) => {
   const [anchorEl, setAnchorEl] = useState();
-  const [feedbackDialogOpened, setfeedbackDialogOpened] = useState(false);
+  const [feedbackDialogOpened, setFeedbackDialogOpened] = useState(false);
 
   const handleClick = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const handleFeedbackDialogClose = () => {
-    setfeedbackDialogOpened(false);
+    setFeedbackDialogOpened(false);
     handleClose();
   }
 
@@ -51,7 +51,7 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
           className={styles.authCaption}>
           <ListItemText secondary={user.email} />
         </MenuItem>
-        <MenuItem onClick={() => setfeedbackDialogOpened(true)} className={styles.authButton}>
+        <MenuItem onClick={() => setFeedbackDialogOpened(true)} className={styles.authButton}>
           <Icon className={styles.fontIcon}>feedback</Icon>
           {strings(stringKeys.feedback.send)}
         </MenuItem>
