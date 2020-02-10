@@ -90,7 +90,7 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
 
       <ConfirmationDialog
         isOpened={archiveConfirmationDialog.isOpen}
-        titlteText={strings(stringKeys.nationalSociety.archive.title)}
+        titleText={strings(stringKeys.nationalSociety.archive.title)}
         submit={() => archiveConfirmed()}
         close={() => setArchiveConfirmationDialog({ isOpen: false })}
         contentText={strings(stringKeys.nationalSociety.archive.content)}
@@ -98,7 +98,7 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
 
       <ConfirmationDialog
         isOpened={reopenConfirmationDialog.isOpen}
-        titlteText={strings(stringKeys.nationalSociety.reopen.title)}
+        titleText={strings(stringKeys.nationalSociety.reopen.title)}
         submit={() => reopenConfirmed()}
         close={() => setReopenConfirmationDialog({ isOpen: false })}
         contentText={strings(stringKeys.nationalSociety.reopen.content)}

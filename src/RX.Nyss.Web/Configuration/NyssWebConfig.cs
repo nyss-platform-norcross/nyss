@@ -8,6 +8,7 @@ namespace RX.Nyss.Web.Configuration
         string Environment { get; set; }
         bool IsProduction { get; }
         string AuthorizedApiKeysBlobObjectName { get; set; }
+        string FeedbackReceiverEmail { get; set; }
         int PaginationRowsPerPage { get; set; }
         ConfigSingleton.AuthenticationOptions Authentication { get; set; }
         ConfigSingleton.ExportOptions Export { get; set; }
@@ -27,6 +28,8 @@ namespace RX.Nyss.Web.Configuration
         public string GeneralBlobContainerName { get; set; }
 
         public string AuthorizedApiKeysBlobObjectName { get; set; }
+
+        public string FeedbackReceiverEmail { get; set; }
 
         public string StringsResourcesBlobObjectName { get; set; }
 

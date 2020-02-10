@@ -33,6 +33,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// Gets a summary of specified project displayed on the dashboard page.
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
+        /// <param name="dto">Filter</param>
         /// <returns>A summary of specified project</returns>
         [HttpPost("data")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]

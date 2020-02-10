@@ -156,7 +156,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
       <ConfirmationDialog
         isOpened={markErrorConfirmationDialog.isOpen}
         isFetching={isMarkingAsError}
-        titlteText={strings(stringKeys.reports.list.markAsErrorConfirmation)}
+        titleText={strings(stringKeys.reports.list.markAsErrorConfirmation)}
         contentText={strings(stringKeys.reports.list.markAsErrorConfirmationText)}
         submit={() => markAsErrorConfirmed()}
         close={() => setMarkErrorConfirmationDialog({ isOpen: false })}
