@@ -18,8 +18,11 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
   const [feedbackDialogOpened, setfeedbackDialogOpened] = useState(false);
 
   const handleClick = (e) => setAnchorEl(e.currentTarget);
-
   const handleClose = () => setAnchorEl(null);
+  const handleFeedbackDialogClose = () => {
+    setfeedbackDialogOpened(false);
+    handleClose();
+  }
 
   if (!user) {
     return null;
@@ -59,7 +62,7 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
       </Menu>
       <FeedbackDialog
         isOpened={feedbackDialogOpened}
-        close={() => setfeedbackDialogOpened(false)}
+        close={handleFeedbackDialogClose}
         sendFeedback={sendFeedback}
         isSending={isSendingFeedback} />
     </div >

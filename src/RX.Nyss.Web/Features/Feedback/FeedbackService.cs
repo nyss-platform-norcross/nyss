@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
@@ -39,7 +40,7 @@ namespace RX.Nyss.Web.Features.Feedback
             if (!sendFeedbackRequest.IncludeContactDetails)
             {
                 var anonymousFeedback = $@"<p>An anonymous user has sent the following feedback:</p><hr/>
-                    <p>{sendFeedbackRequest.Message}</p>
+                    <p>{HtmlEncoder.Default.Encode(sendFeedbackRequest.Message)}</p>
                     <p>Browser used: {userAgent}</p>
                     <p>Nyss platform version: {version}</p>
                     <p>Date: {_dateTimeProvider.UtcNow:O}</p>";

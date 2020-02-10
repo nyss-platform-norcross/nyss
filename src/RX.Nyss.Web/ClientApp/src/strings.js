@@ -784,7 +784,8 @@ export const stringKeys = {
       submit: "feedback.submit",
       dialogTitle: "feedback.dialogTitle",
       dialogDescription: "feedback.dialogDescription",
-      privacyMessage: "feedback.privacyMessage"
+      privacyMessage: "feedback.privacyMessage",
+      thankYou: "feedback.thankYou"
   }
 };
 
