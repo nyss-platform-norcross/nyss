@@ -65,9 +65,9 @@ export const FeedbackDialog = ({ isOpened, close, isSending, sendFeedback }) => 
   return (
     <Dialog onClose={handleClose} open={isOpened} fullScreen={fullScreen}>
       <DialogTitle>{!hasSent && strings(stringKeys.feedback.dialogTitle)}</DialogTitle>
-      <DialogContent style={{ paddingBottom: "25px" }}>
+      <DialogContent className={styles.feedbackContent}>
         {hasSent
-          ? <Typography className={styles.thankYouMessage}>{strings(stringKeys.feedback.thankYou)}</Typography>
+          ? <Typography variant="h3" className={styles.thankYouMessage}>{strings(stringKeys.feedback.thankYou)}</Typography>
           : (
             <Grid container spacing={3}>
               <Grid item xs={12}>
