@@ -27,6 +27,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// Lists alerts for a specific project
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
+        /// <param name="pageNumber">Page number</param>
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.ProjectAccess)]
