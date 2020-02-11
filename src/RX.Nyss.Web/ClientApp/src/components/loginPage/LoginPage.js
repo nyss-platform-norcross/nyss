@@ -57,52 +57,72 @@ const LoginPageComponent = (props) => {
   }
 
   return (
-    <div className={styles.loginContent}>
-      <Paper className={styles.loginPaper}>
-        <div className={styles.loginPaperContent}>
-          <div className={styles.loginPageLogo}>
-            <img src="/images/logo.svg" alt="Nyss logo" />
-          </div>
-          <Typography variant="h2" className={styles.loginHeader}>{strings(stringKeys.login.title)}</Typography>
+    <Grid container direction="row">
+      <Grid item xs={12}>
+        <div className={styles.loginContent}>
+          <Paper className={styles.loginPaper}>
+            <div className={styles.loginPaperContent}>
+              <div className={styles.loginPageLogo}>
+                <img src="/images/logo.svg" alt="Nyss logo" />
+              </div>
+              <Typography variant="h2" className={styles.loginHeader}>{strings(stringKeys.login.title)}</Typography>
 
-          {props.loginResponse && <ValidationMessage message={props.loginResponse} />}
+              {props.loginResponse && <ValidationMessage message={props.loginResponse} />}
 
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <TextInputField
-                  label={strings(stringKeys.login.email)}
-                  name="userName"
-                  field={form.fields.userName}
-                  autoFocus
-                />
-              </Grid>
+              <form onSubmit={handleSubmit}>
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <TextInputField
+                      label={strings(stringKeys.login.email)}
+                      name="userName"
+                      field={form.fields.userName}
+                      autoFocus
+                    />
+                  </Grid>
 
-              <Grid item xs={12}>
-                <PasswordInputField
-                  label={strings(stringKeys.login.password)}
-                  name="password"
-                  field={form.fields.password}
-                />
-              </Grid>
-            </Grid>
+                  <Grid item xs={12}>
+                    <PasswordInputField
+                      label={strings(stringKeys.login.password)}
+                      name="password"
+                      field={form.fields.password}
+                    />
+                  </Grid>
+                </Grid>
 
-            <div className={styles.forgotPasswordLink}>
-              <Link color="secondary" href="/resetPassword">
-                {strings(stringKeys.login.forgotPassword)}
-              </Link>
+                <div className={styles.forgotPasswordLink}>
+                  <Link color="secondary" href="/resetPassword">
+                    {strings(stringKeys.login.forgotPassword)}
+                  </Link>
+                </div>
+
+                <FormActions>
+                  <div />
+                  <SubmitButton wide isFetching={props.isFetching}>
+                    {strings(stringKeys.login.signIn)}
+                  </SubmitButton>
+                </FormActions>
+              </form>
             </div>
-
-            <FormActions>
-              <div />
-              <SubmitButton wide isFetching={props.isFetching}>
-                {strings(stringKeys.login.signIn)}
-              </SubmitButton>
-            </FormActions>
-          </form>
+          </Paper>
         </div>
-      </Paper>
-    </div>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container justify="center" alignItems="baseline">
+          <Grid item xs={12}>
+            <Typography align="center" variant="h6" className={styles.supportLogoHeader}>Nyss was developed with the support of:</Typography>
+          </Grid>
+          <Grid item>
+            <img className={styles.supportLogo} src="/images/logo-ifrc.svg" alt="IFRC logo" />
+          </Grid>
+          <Grid item>
+            <img className={styles.supportLogo} src="/images/logo-nrc.svg" alt="Norwegian Red Cross logo" />
+          </Grid>
+          <Grid item>
+            <img className={styles.supportLogo} src="/images/logo-crb.svg" alt="Croix-Rouge Belgium logo" />
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };
 
