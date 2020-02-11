@@ -38,6 +38,12 @@
         },
         "serviceBusSku": {
             "value": "Standard"
+        },
+        "customDomain": {
+          "value": "test.rcnyss.org"
+        },
+        "certificateName": {
+          "value": "test.rcnyss.org"
         }
     }
 }

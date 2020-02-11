@@ -64,7 +64,7 @@
       "type": "securestring"
     },
     "specificResource": {
-      "defaultValue": null,
+      "defaultValue": "all",
       "type": "string",
       "metadata": {
         "description": "Only the specified resource will get provisioned, NB! If used in complete mode, the other resource will get deleted"

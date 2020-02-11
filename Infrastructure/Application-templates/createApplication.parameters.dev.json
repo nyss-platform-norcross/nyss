@@ -39,9 +39,6 @@
         "serviceBusSku": {
             "value": "Standard"
         },
-        "specificResource": {
-            "value": ""
-        },
         "customDomain": {
           "value": "dev.rcnyss.org"
         },
