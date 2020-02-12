@@ -395,26 +395,27 @@
       ]
     },
     {
-        "type": "Microsoft.Web/sites/hostnameBindings",
-        "name": "[concat(variables('webAppName'), '/', parameters('customDomain'))]",
-        "apiVersion": "2019-08-01",
-        "location": "[resourceGroup().location]",
-        "properties": {
-        },
-        "dependsOn": [
-            "[concat('Microsoft.Web/sites/',variables('webAppName'))]"
-        ]
+      "type": "Microsoft.Web/sites/hostnameBindings",
+      "name": "[concat(variables('webAppName'), '/', parameters('customDomain'))]",
+      "apiVersion": "2019-08-01",
+      "location": "[variables('location')]",
+      "properties": {
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Web/sites/',variables('webAppName'))]"
+      ]
     },
     {
-        "type": "Microsoft.Web/sites/hostnameBindings",
-        "name": "[concat(variables('webAppName'), '/', parameters('customSubDomain'))]",
-        "apiVersion": "2019-08-01",
-        "location": "[resourceGroup().location]",
-        "properties": {
-        },
-        "dependsOn": [
-            "[concat('Microsoft.Web/sites/',variables('webAppName'))]"
-        ]
+      "type": "Microsoft.Web/sites/hostnameBindings",
+      "name": "[concat(variables('webAppName'), '/', parameters('customSubDomain'))]",
+      "apiVersion": "2019-08-01",
+      "location": "[variables('location')]",
+      "properties": {
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites/',variables('webAppName'))]",
+        "[concat('Microsoft.Web/sites/',variables('webAppName'),'/hostnameBindings/',parameters('customDomain'))]"
+      ]
     },
     {
       "apiVersion": "2019-08-01",
@@ -422,12 +423,12 @@
       "name": "[parameters('customDomain')]",
       "type": "Microsoft.Web/certificates",
       "properties": {
-          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
-          "canonicalName": "[parameters('customDomain')]"
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
+        "canonicalName": "[parameters('customDomain')]"
       },
       "dependsOn": [
-          "[concat('Microsoft.Web/sites/',variables('webAppName'))]",
-          "[concat('Microsoft.Web/sites/',variables('webAppName'),'/hostnameBindings/',parameters('customDomain'))]"
+        "[concat('Microsoft.Web/sites/',variables('webAppName'))]",
+        "[concat('Microsoft.Web/sites/',variables('webAppName'),'/hostnameBindings/',parameters('customDomain'))]"
       ]
     },
     {
@@ -436,12 +437,12 @@
       "name": "[parameters('customSubDomain')]",
       "type": "Microsoft.Web/certificates",
       "properties": {
-          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
-          "canonicalName": "[parameters('customSubDomain')]"
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
+        "canonicalName": "[parameters('customSubDomain')]"
       },
       "dependsOn": [
-          "[concat('Microsoft.Web/sites/',variables('webAppName'))]",
-          "[concat('Microsoft.Web/sites/',variables('webAppName'),'/hostnameBindings/',parameters('customSubDomain'))]"
+        "[concat('Microsoft.Web/sites/',variables('webAppName'))]",
+        "[concat('Microsoft.Web/sites/',variables('webAppName'),'/hostnameBindings/',parameters('customSubDomain'))]"
       ]
     },
     {
