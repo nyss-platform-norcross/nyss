@@ -60,9 +60,10 @@
   text-align: center;
 
   svg {
-    width: 45%;
+    width: 44%;
     margin: 60px 0 100px 0;
-    animation: initlogo 1s ease-in-out forwards;
+    opacity: 1;
+    animation: initlogo 1s ease-in-out;
 
     @media screen and (max-width: 1280px) {
       margin: 20px;
@@ -75,8 +76,8 @@
 
     .logoCurve {
       fill: #f5333f;
-      opacity: 100%;
-      animation: showcurve 1.5s linear forwards;
+      opacity: 1;
+      animation: showcurve 1.5s linear;
     }
 
     .animationCurve {
@@ -90,7 +91,7 @@
 
       stroke-dasharray: 100 1000;
       stroke-dashoffset: 600;
-      animation: swosh 1.5s linear forwards;
+      animation: swosh 1.5s linear;
     }
   }
 }
@@ -112,6 +113,7 @@
 @keyframes initlogo {
   from {
     opacity: 0;
+    width: 35%;
   }
 
   30% {
@@ -119,8 +121,8 @@
   }
 
   to {
-    opacity: 100%;
-    width: 50%;
+    opacity: 1;
+    width: 44%;
   }
 }
 
@@ -132,14 +134,14 @@
 
 @keyframes showcurve {
   from {
-    visibility: hidden;
+    opacity: 0;
   }
 
   62% {
-    visibility: hidden;
+    opacity: 0;
   }
 
   66% {
-    visibility: visible;
+    opacity: 1;
   }
 }
