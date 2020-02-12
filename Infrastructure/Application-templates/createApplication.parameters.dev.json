@@ -42,8 +42,8 @@
         "customDomain": {
           "value": "dev.rcnyss.org"
         },
-        "certificateName": {
-          "value": "dev.rcnyss.org"
+        "customSubDomain": {
+          "value": "www.dev.rcnyss.org"
         }
     }
 }
