@@ -58,14 +58,39 @@
 
 .loginPageLogo {
   text-align: center;
-  img {
-    height: 70px;
+
+  svg {
+    width: 45%;
     margin: 60px 0 100px 0;
+    animation: initlogo 1s ease-in-out forwards;
 
     @media screen and (max-width: 1280px) {
-      width: 110px;
       margin: 20px;
       margin-top: 50px;
+    }
+
+    .redFill {
+      fill: #f5333f;
+    }
+
+    .logoCurve {
+      fill: #f5333f;
+      opacity: 100%;
+      animation: showcurve 1.5s linear forwards;
+    }
+
+    .animationCurve {
+      fill: none;
+      stroke: #f5333f;
+      stroke-width: 5.30000019;
+      stroke-linecap: butt;
+      stroke-linejoin: miter;
+      stroke-miterlimit: 4;
+      stroke-opacity: 1;
+
+      stroke-dasharray: 100 1000;
+      stroke-dashoffset: 600;
+      animation: swosh 1.5s linear forwards;
     }
   }
 }
@@ -76,10 +101,45 @@
 
 .supportLogo {
   margin: 15px 30px;
-  height: 30px;
+  width: 160px;
 
   @media screen and (max-width: 600px) {
     height: unset;
     width: 140px;
+  }
+}
+
+@keyframes initlogo {
+  from {
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 100%;
+    width: 50%;
+  }
+}
+
+@keyframes swosh {
+  to {
+    stroke-dashoffset: -600;
+  }
+}
+
+@keyframes showcurve {
+  from {
+    visibility: hidden;
+  }
+
+  62% {
+    visibility: hidden;
+  }
+
+  66% {
+    visibility: visible;
   }
 }
