@@ -48,11 +48,11 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         public async Task<Alert> ReportAdded(Report report)
         {
-            var reportIsTraining = report.DataCollector.DataCollectorType != DataCollectorType.Human || report.IsTraining;
+            var dataCollectorIsNotHuman = report.DataCollector.DataCollectorType != DataCollectorType.Human;
             var reportTypeIsAggregateOrDcp = report.ReportType == ReportType.Aggregate || report.ReportType == ReportType.DataCollectionPoint;
             var healthRiskTypeIsActivity = report.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Activity;
 
-            if (reportIsTraining || reportTypeIsAggregateOrDcp || healthRiskTypeIsActivity)
+            if (report.IsTraining || dataCollectorIsNotHuman || reportTypeIsAggregateOrDcp || healthRiskTypeIsActivity)
             {
                 return null;
             }
