@@ -71,8 +71,8 @@ export const FeedbackDialog = ({ isOpened, close, isSending, sendFeedback }) => 
           : (
             <Grid container spacing={3}>
               <Grid item xs={12}>
+                <Typography variant="body1">{strings(stringKeys.feedback.dialogDescription)}</Typography>
                 <TextInputField
-                  label={strings(stringKeys.feedback.dialogDescription)}
                   name="feedback"
                   multiline
                   rows="4"
