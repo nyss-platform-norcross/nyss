@@ -21,7 +21,7 @@ namespace RX.Nyss.Web.Features.Feedback
         /// <param name="sendFeedbackRequestDto"></param>
         /// <returns></returns>
         [HttpPost]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> Create([FromBody] SendFeedbackRequestDto sendFeedbackRequestDto) =>
             await _feedbackService.SendFeedback(sendFeedbackRequestDto, Request.Headers["User-Agent"].ToString());
     }

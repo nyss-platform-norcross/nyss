@@ -12,6 +12,7 @@ import * as appActions from '../app/logic/appActions';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { strings, stringKeys } from '../../strings';
 import { FeedbackDialog } from '../feedback/FeedbackDialog';
+import * as roles from '../../authentication/roles';
 
 export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedback }) => {
   const [anchorEl, setAnchorEl] = useState();
@@ -23,6 +24,7 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
     setFeedbackDialogOpened(false);
     handleClose();
   }
+  const canSendFeedback = [roles.Administrator, roles.GlobalCoordinator, roles.Manager, roles.TechnicalAdvisor].some(neededRole => user.roles.some(userRole => userRole === neededRole))
 
   if (!user) {
     return null;
@@ -51,20 +53,20 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
           className={styles.authCaption}>
           <ListItemText secondary={user.email} />
         </MenuItem>
-        <MenuItem onClick={() => setFeedbackDialogOpened(true)} className={styles.authButton}>
+        {canSendFeedback && (<MenuItem onClick={() => setFeedbackDialogOpened(true)} className={styles.authButton}>
           <Icon className={styles.fontIcon}>feedback</Icon>
           {strings(stringKeys.feedback.send)}
-        </MenuItem>
+        </MenuItem>)}
         <MenuItem onClick={logout} className={styles.authButton}>
           <Icon className={styles.fontIcon}>exit_to_app</Icon>
           {strings(stringKeys.user.logout)}
         </MenuItem>
       </Menu>
-      <FeedbackDialog
+      {canSendFeedback && (<FeedbackDialog
         isOpened={feedbackDialogOpened}
         close={handleFeedbackDialogClose}
         sendFeedback={sendFeedback}
-        isSending={isSendingFeedback} />
+        isSending={isSendingFeedback} />)}
     </div >
   );
 }
