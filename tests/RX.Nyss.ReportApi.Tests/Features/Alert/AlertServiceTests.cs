@@ -55,10 +55,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         }
 
         [Theory]
-        [InlineData(ReportType.Statement)]
         [InlineData(ReportType.Aggregate)]
         [InlineData(ReportType.DataCollectionPoint)]
-        public async Task ReportAdded_WhenReportTypeIsNotSingleOrNonHuman_ShouldReturnNull(ReportType reportType)
+        public async Task ReportAdded_WhenReportTypeIsAggregateOrDCP_ShouldReturnNull(ReportType reportType)
         {
             //arrange
             _testData.SimpleCasesData.GenerateData();
@@ -72,9 +71,27 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             result.ShouldBeNull();
         }
 
+        [Fact]
+        public async Task ReportAdded_WhenReportTypeIsStatementAndHealthRiskIsActivity_ShouldReturnNull()
+        {
+            //arrange
+            _testData.SimpleCasesData.GenerateData();
+            var report = _testData.SimpleCasesData.AdditionalData.HumanDataCollectorReport;
+            report.ReportType = ReportType.Statement;
+            report.ProjectHealthRisk.HealthRisk.HealthRiskType = HealthRiskType.Activity;
+
+            //act
+            var result = await _alertService.ReportAdded(report);
+
+            //assert
+            result.ShouldBeNull();
+        }
+
         [Theory]
         [InlineData(ReportType.Single)]
         [InlineData(ReportType.Statement)]
+        [InlineData(ReportType.Aggregate)]
+        [InlineData(ReportType.DataCollectionPoint)]
         public async Task ReportAdded_WhenReportTypeIsNonHumanAndFromDataCollectionPoint_ShouldReturnNull(ReportType reportType)
         {
             //arrange
