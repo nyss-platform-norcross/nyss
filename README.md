@@ -6,6 +6,8 @@
 
 Nyss is a Norwegian word and means to "get the wind of something". The first Norwegian computer was called [Nusse](https://no.wikipedia.org/wiki/Nusse).
 
+Nyss is a reimplementation of [the previous CBS solution](https://github.com/IFRCGo/cbs) and proudly extending all the great work done there.
+
 ## Getting started
 
 ### Prerequisites
@@ -30,7 +32,8 @@ Nyss is a Norwegian word and means to "get the wind of something". The first Nor
 3. Run database migrations:
    1. Make sure that a connection string for _NyssDatabase_ set in `appsettings.Development.json` is correct. By default, [SQL Server Express LocalDB](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) instance is used.
    2. `dotnet ef database update --context NyssContext`
-   3. `dotnet ef database update --context ApplicationDbContext`
+   3. `dotnet ef database update --context ApplicationDbContext`\
+  See [Database and migrations](src/RX.Nyss.Data/README.MD) for further details on working with the database.
 4. Set up Blob Object connection string
    1. Make sure that a shared access signature for _SmsGatewayBlobContainer_ set in `appsettings.Development.json` is correct. You can generate a new one by opening Microsoft Azure Storage Explorer, then clicking right mouse button on _Local & Attached &rarr; Storage Accounts &rarr; (Emulator - Default Ports)(Key) &rarr; Blob Containers &rarr; sms-gateway_ node and selecting _Get Shared Access Signature..._ In a pop-up window ensure that the _Expiry time_ is set far in the future enough and _Write_ checkbox on the _Permissions_ list is selected. The _SmsGatewayBlobContainer_ should have the following format: `BlobEndpoint=https://{Environment URL}/sms-gateway;SharedAccessSignature={Query string without question mark at the beginning}`.
 5. Start the application:
@@ -85,7 +88,6 @@ References: [Code and test Azure Functions locally](https://docs.microsoft.com/e
   * object initializers
   * usings
 * Keep it simple
-* One developer creates initial code convention specification and the rest follows
 
 ### Git commit message style
 
