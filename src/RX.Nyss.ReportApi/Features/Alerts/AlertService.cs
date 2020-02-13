@@ -48,13 +48,15 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         public async Task<Alert> ReportAdded(Report report)
         {
-            if (report.DataCollector.DataCollectorType != DataCollectorType.Human
-                || (report.ReportType != ReportType.Single && report.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman)
-                || report.IsTraining)
+            var dataCollectorIsNotHuman = report.DataCollector.DataCollectorType != DataCollectorType.Human;
+            var reportTypeIsAggregateOrDcp = report.ReportType == ReportType.Aggregate || report.ReportType == ReportType.DataCollectionPoint;
+            var healthRiskTypeIsActivity = report.ProjectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Activity;
+
+            if (report.IsTraining || dataCollectorIsNotHuman || reportTypeIsAggregateOrDcp || healthRiskTypeIsActivity)
             {
                 return null;
             }
-
+        
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Where(phr => phr == report.ProjectHealthRisk)
                 .Include(phr => phr.AlertRule)
