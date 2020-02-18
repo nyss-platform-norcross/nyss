@@ -283,3 +283,4 @@ src/RX.Nyss.Web/RX.Nyss.Web.xml
 /src/RX.Nyss.Web/*.db
 **/appsettings.Development.json
 **/local.settings.json
+/scripts/tmp*
