@@ -53,7 +53,9 @@ const HeadManagerConsentsPageComponent = (props) => {
             }:
           </Typography>
           <Typography variant="body1">
-            {props.nationalSocieties && props.nationalSocieties.map(ns => ns.nationalSocietyName).join(', ')}
+            {props.nationalSocieties && props.nationalSocieties.map(ns =>
+              <a href={ns.agreementPdf}>{ns.nationalSocietyName}</a>
+            )}
           </Typography>
 
           <Form onSubmit={handleSubmit} fullWidth>

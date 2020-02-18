@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
 
@@ -10,6 +11,7 @@ namespace RX.Nyss.Common.Services
         Task SaveStringsResources(string value);
         Task<string> GetEmailContentResources();
         Task<string> GetSmsContentResources();
+        string GetAgreementPdf(string languageCode);
     }
 
     public class NyssBlobProvider : INyssBlobProvider
@@ -34,5 +36,7 @@ namespace RX.Nyss.Common.Services
 
         public async Task<string> GetSmsContentResources() =>
             await _blobProvider.GetBlobValue(_config.SmsContentResourcesBlobObjectName);
+
+        public string GetAgreementPdf(string languageCode) => _blobProvider.GetBlobUrl($"platform-agreement-{languageCode}.pdf", TimeSpan.FromHours(1));
     }
 }

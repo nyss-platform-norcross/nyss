@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
@@ -45,13 +46,14 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         private readonly IManagerService _managerService;
         private readonly ITechnicalAdvisorService _technicalAdvisorService;
         private readonly ISmsGatewayService _smsGatewayService;
+        private readonly INyssBlobProvider _nyssBlobProvider;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
             ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService,
             IManagerService managerService, ITechnicalAdvisorService technicalAdvisorService,
-            ISmsGatewayService smsGatewayService)
+            ISmsGatewayService smsGatewayService, INyssBlobProvider nyssBlobProvider)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
@@ -60,6 +62,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             _managerService = managerService;
             _technicalAdvisorService = technicalAdvisorService;
             _smsGatewayService = smsGatewayService;
+            _nyssBlobProvider = nyssBlobProvider;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> List()
@@ -256,14 +259,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             {
                 return Error<List<PendingHeadManagerConsentDto>>(ResultKey.User.Common.UserNotFound);
             }
-
+            var blobUrl = _nyssBlobProvider.GetAgreementPdf("en");
             var pendingSocieties = await _nyssContext.NationalSocieties
                 .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId)
                 .Select(ns => new PendingHeadManagerConsentDto
                 {
                     NationalSocietyName = ns.Name,
                     NationalSocietyCountryName = ns.Country.Name,
-                    NationalSocietyId = ns.Id
+                    NationalSocietyId = ns.Id,
+                    AgreementPdf = blobUrl
                 })
                 .ToListAsync();
 

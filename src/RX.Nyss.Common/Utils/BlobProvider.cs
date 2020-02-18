@@ -28,6 +28,19 @@ namespace RX.Nyss.Common.Utils
             await blob.UploadTextAsync(value);
         }
 
+        public string GetBlobUrl(string blobName, TimeSpan lifeTime)
+        {
+            var blob = GetBlobReference(blobName);
+            var sasToken = blob.GetSharedAccessSignature(new SharedAccessBlobPolicy
+            {
+                Permissions = SharedAccessBlobPermissions.Read,
+                SharedAccessExpiryTime = DateTime.UtcNow.Add(lifeTime)
+            }, new SharedAccessBlobHeaders { ContentDisposition = $"attachment; filename={blobName}" });
+
+            var blobUrl = $"{blob.Uri}{sasToken}";
+            return blobUrl;
+        }
+
         private CloudBlockBlob GetBlobReference(string blobName)
         {
             if (string.IsNullOrWhiteSpace(_blobContainerName) ||
