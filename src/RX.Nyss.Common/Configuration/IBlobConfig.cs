@@ -7,5 +7,6 @@ namespace RX.Nyss.Common.Configuration
         string SmsContentResourcesBlobObjectName { get; set; }
         string StringsResourcesBlobObjectName { get; set; }
         string EmailContentResourcesBlobObjectName { get; set; }
-    }
+        string PlatformAgreementBlobObjectName { get; set; }
+}
 }

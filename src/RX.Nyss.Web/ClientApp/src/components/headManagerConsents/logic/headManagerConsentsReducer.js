@@ -5,10 +5,10 @@ export function headManagerConsentsReducer(state = initialState.headManagerConse
   switch (action.type) {
 
     case actions.OPEN_HEAD_MANAGER_CONSENTS_PAGE.REQUEST:
-      return { ...state, fetching: true, nationalSocieties: [] };
+      return { ...state, fetching: true, nationalSocieties: [], agreementDocuments: [] };
 
     case actions.OPEN_HEAD_MANAGER_CONSENTS_PAGE.SUCCESS:
-      return { ...state, fetching: false, nationalSocieties: action.list };
+      return { ...state, fetching: false, nationalSocieties: action.pendingHeadManagerConsent.nationalSocieties, agreementDocuments: action.pendingHeadManagerConsent.agreementDocuments };
 
     case actions.OPEN_HEAD_MANAGER_CONSENTS_PAGE.FAILURE:
       return { ...state, fetching: false };
@@ -20,7 +20,7 @@ export function headManagerConsentsReducer(state = initialState.headManagerConse
       return { ...state, submitting: false };
 
     case actions.CONSENT_AS_HEAD_MANAGER.FAILURE:
-      return { ...state, submitting: false, consentAsHeadManagerErrorMessage: action.message };
+      return { ...state, submitting: false };
 
     default:
       return state;

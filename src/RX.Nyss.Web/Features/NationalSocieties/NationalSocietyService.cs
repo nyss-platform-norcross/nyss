@@ -31,8 +31,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<Result> Delete(int id);
         Task<Result> Archive(int nationalSocietyId);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
-        Task<Result> SetAsHeadManager();
-        Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents();
+        Task<Result> SetAsHeadManager(string consentRequestDto);
+        Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents();
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
         Task<Result> Reopen(int nationalSocietyId);
     }
@@ -203,7 +203,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success();
         }
 
-        public async Task<Result> SetAsHeadManager()
+        public async Task<Result> SetAsHeadManager(string consentRequestDto)
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
@@ -247,7 +247,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success();
         }
 
-        public async Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents()
+        public async Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents()
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
@@ -257,21 +257,34 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             if (userEntity == null)
             {
-                return Error<List<PendingHeadManagerConsentDto>>(ResultKey.User.Common.UserNotFound);
+                return Error<PendingHeadManagerConsentDto>(ResultKey.User.Common.UserNotFound);
             }
-            var blobUrl = _nyssBlobProvider.GetAgreementPdf("en");
+
             var pendingSocieties = await _nyssContext.NationalSocieties
                 .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId)
-                .Select(ns => new PendingHeadManagerConsentDto
+                .Select(ns => new PendingNationalSocietyConsentDto
                 {
                     NationalSocietyName = ns.Name,
                     NationalSocietyCountryName = ns.Country.Name,
-                    NationalSocietyId = ns.Id,
-                    AgreementPdf = blobUrl
+                    NationalSocietyId = ns.Id
                 })
                 .ToListAsync();
 
-            return Success(pendingSocieties);
+            var applicationLanguages = await _nyssContext.ApplicationLanguages.ToListAsync();
+            var docs = applicationLanguages.Select(apl => new AgreementDocument
+            {
+                Language = apl.DisplayName,
+                LanguageCode = apl.LanguageCode,
+                AgreementDocumentUrl = _nyssBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower())
+            }).Where(d => d.AgreementDocumentUrl != null);
+
+            var pendingSociety = new PendingHeadManagerConsentDto
+            {
+                AgreementDocuments = docs,
+                NationalSocieties = pendingSocieties
+            };
+
+            return Success(pendingSociety);
         }
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>

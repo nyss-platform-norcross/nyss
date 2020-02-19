@@ -772,6 +772,8 @@ export const stringKeys = {
     setAsHeadManager: "headManagerConsents.setAsHeadManager",
     pendingHeadManager: "headManagerConsents.pendingHeadManager",
     setSuccessfully: "headManagerConsents.setSuccessfully",
+    selectLanguage: "headManagerConsents.selectLanguage",
+    downloadDirectly: "headManagerConsents.downloadDirectly"
   },
   translations: {
     title: "translations.title",

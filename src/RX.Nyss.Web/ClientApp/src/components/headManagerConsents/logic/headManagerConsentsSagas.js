@@ -1,4 +1,5 @@
 import { call, put, takeEvery } from "redux-saga/effects";
+import * as appActions from "../../app/logic/appActions";
 import * as consts from "./headManagerConsentsConstants";
 import * as actions from "./headManagerConsentsActions";
 import * as http from "../../../utils/http";
@@ -19,13 +20,14 @@ function* getPendingConsents() {
   }
 }
 
-function* consentAsHeadManager() {
+function* consentAsHeadManager({ selectedLanguage }) {
   yield put(actions.consentAsHeadManager.request());
   try {
-    yield call(http.post, "/api/nationalSociety/consentAsHeadManager");
+    yield call(http.post, `/api/nationalSociety/consentAsHeadManager?languageCode=${selectedLanguage}`);
     yield put(actions.consentAsHeadManager.success());
     window.location.href = "/";
   } catch (error) {
+    yield put(appActions.showMessage(error.message));
     yield put(actions.consentAsHeadManager.failure(error.message));
   }
 }

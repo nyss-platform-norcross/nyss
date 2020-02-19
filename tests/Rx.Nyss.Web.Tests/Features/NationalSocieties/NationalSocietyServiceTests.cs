@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
@@ -30,6 +31,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 
         private readonly IManagerService _managerServiceMock;
         private readonly ITechnicalAdvisorService _technicalAdvisorServiceMock;
+        private INyssBlobProvider _nyssBlobProviderMock;
 
 
         public NationalSocietyServiceTests()
@@ -40,11 +42,18 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             authorizationService.GetCurrentUserName().Returns("yo");
             _managerServiceMock = Substitute.For<IManagerService>();
             _technicalAdvisorServiceMock = Substitute.For<ITechnicalAdvisorService>();
-
             _smsGatewayServiceMock = Substitute.For<ISmsGatewayService>();
+            _nyssBlobProviderMock = Substitute.For<INyssBlobProvider>();
 
-            _nationalSocietyService = new NationalSocietyService(_nyssContextMock, Substitute.For<INationalSocietyAccessService>(), loggerAdapterMock,
-                authorizationService, _managerServiceMock, _technicalAdvisorServiceMock, _smsGatewayServiceMock);
+            _nationalSocietyService = new NationalSocietyService(
+                _nyssContextMock,
+                Substitute.For<INationalSocietyAccessService>(),
+                loggerAdapterMock,
+                authorizationService,
+                _managerServiceMock,
+                _technicalAdvisorServiceMock,
+                _smsGatewayServiceMock,
+                _nyssBlobProviderMock);
 
             _testData = new NationalSocietyServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
         }
@@ -147,7 +156,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         {
             // Actual
             _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var result = await _nationalSocietyService.SetAsHeadManager();
+            var result = await _nationalSocietyService.SetAsHeadManager("en");
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -165,7 +174,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             _nyssContextMock.Users.Returns(mockDbSet);
 
             // Actual
-            var result = await _nationalSocietyService.SetAsHeadManager();
+            var result = await _nationalSocietyService.SetAsHeadManager("fr");
 
             // Assert
             result.IsSuccess.ShouldBeFalse();

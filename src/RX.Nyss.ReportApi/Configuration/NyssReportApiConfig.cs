@@ -28,6 +28,7 @@ namespace RX.Nyss.ReportApi.Configuration
         public string StringsResourcesBlobObjectName { get; set; }
 
         public string EmailContentResourcesBlobObjectName { get; set; }
+        public string PlatformAgreementBlobObjectName { get; set; }
 
         public string SmsContentResourcesBlobObjectName { get; set; }
     }

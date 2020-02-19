@@ -35,6 +35,8 @@ namespace RX.Nyss.Web.Configuration
 
         public string EmailContentResourcesBlobObjectName { get; set; }
 
+        public string PlatformAgreementBlobObjectName { get; set; }
+
         public int PaginationRowsPerPage { get; set; }
 
         public string SmsContentResourcesBlobObjectName { get; set; }
