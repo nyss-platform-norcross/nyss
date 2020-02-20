@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -73,7 +74,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 CountryId = BasicNationalSocietyServiceTestData.CountryId
             };
 
-            // Actual
+            // Act
             await _nationalSocietyService.Create(nationalSocietyReq);
 
             // Assert
@@ -94,7 +95,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 ContentLanguageId = contentLanguageId
             };
 
-            // Actual
+            // Act
             var result = await _nationalSocietyService.Create(nationalSocietyReq);
 
             // Assert
@@ -114,7 +115,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 ContentLanguageId = BasicNationalSocietyServiceTestData.ContentLanguageId
             };
 
-            // Actual
+            // Act
             var result = await _nationalSocietyService.Create(nationalSocietyReq);
 
             // Assert
@@ -134,7 +135,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 ContentLanguageId = BasicNationalSocietyServiceTestData.ContentLanguageId
             };
 
-            // Actual
+            // Act
             var result = await _nationalSocietyService.Edit(BasicNationalSocietyServiceTestData.NationalSocietyId, nationalSocietyReq);
 
             // Assert
@@ -145,7 +146,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         [Fact]
         public async Task RemoveNationalSociety_WhenSuccessful_ShouldReturnSuccess()
         {
-            // Actual
+            // Act
             _testData.BasicData.Data.GenerateData().AddToDbContext();
             var result = await _nationalSocietyService.Delete(BasicNationalSocietyServiceTestData.NationalSocietyId);
 
@@ -157,12 +158,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         [Fact]
         public async Task SetAsHead_WhenOk_ShouldBeOk()
         {
-            // Actual
+            // Arrange
+            var sourceUri = "https://yo.example.com";
+            _generalBlobProviderMock.GetPlatformAgreementUrl("en").Returns(sourceUri);
+
+            // Act
             _testData.BasicData.Data.GenerateData().AddToDbContext();
             var result = await _nationalSocietyService.SetAsHeadManager("en");
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
+            await _dataBlobServiceMock.Received(1).StorePlatformAgreement(sourceUri, Arg.Any<string>());
             await _nyssContextMock.HeadManagerConsents.Received(1).AddAsync(Arg.Any<HeadManagerConsent>());
             await _nyssContextMock.Received(1).SaveChangesAsync();
         }
@@ -176,7 +182,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             var mockDbSet = users.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Users.Returns(mockDbSet);
 
-            // Actual
+            // Act
             var result = await _nationalSocietyService.SetAsHeadManager("fr");
 
             // Assert
