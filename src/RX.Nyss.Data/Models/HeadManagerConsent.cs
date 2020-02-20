@@ -15,5 +15,7 @@ namespace RX.Nyss.Data.Models
         public DateTime ConsentedFrom { get; set; }
 
         public DateTime? ConsentedUntil { get; set; }
+
+        public string ConsentDocument { get; set; }
     }
 }

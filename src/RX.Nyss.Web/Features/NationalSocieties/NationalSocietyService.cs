@@ -225,9 +225,9 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             var pendingSocieties = _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager.Id == user.Id);
             var utcNow = DateTime.UtcNow;
 
-            var consentFileName = Guid.NewGuid();
+            var consentDocumentFileName = Guid.NewGuid() + ".pdf";
             var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
-            await _dataBlobService.StorePlatformAgreement(sourceUri, consentFileName.ToString());
+            await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
 
             // Set until date for the previous consent
             await _nyssContext.HeadManagerConsents
@@ -244,7 +244,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     ConsentedFrom = utcNow,
                     NationalSocietyId = nationalSociety.Id,
                     UserEmailAddress = user.EmailAddress,
-                    UserPhoneNumber = user.PhoneNumber
+                    UserPhoneNumber = user.PhoneNumber,
+                    ConsentDocument = consentDocumentFileName
                 });
             }
 
