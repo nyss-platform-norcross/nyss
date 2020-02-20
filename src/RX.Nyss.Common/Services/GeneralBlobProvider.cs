@@ -5,7 +5,7 @@ using RX.Nyss.Common.Utils;
 
 namespace RX.Nyss.Common.Services
 {
-    public interface INyssBlobProvider
+    public interface IGeneralBlobProvider
     {
         Task<string> GetStringsResources();
         Task SaveStringsResources(string value);
@@ -14,12 +14,12 @@ namespace RX.Nyss.Common.Services
         string GetPlatformAgreementUrl(string languageCode);
     }
 
-    public class NyssBlobProvider : INyssBlobProvider
+    public class GeneralBlobProvider : IGeneralBlobProvider
     {
         private readonly IConfig _config;
         private readonly BlobProvider _blobProvider;
 
-        public NyssBlobProvider(IConfig config)
+        public GeneralBlobProvider(IConfig config)
         {
             _config = config;
             _blobProvider = new BlobProvider(config.GeneralBlobContainerName, config.ConnectionStrings.GeneralBlobContainer);

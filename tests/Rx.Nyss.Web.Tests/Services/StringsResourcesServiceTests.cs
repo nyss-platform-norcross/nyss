@@ -29,20 +29,20 @@ namespace RX.Nyss.Web.Tests.Services
         ";
 
         private readonly IStringsResourcesService _stringsResourcesService;
-        private readonly INyssBlobProvider _nyssBlobProvider;
+        private readonly IGeneralBlobProvider _generalBlobProvider;
 
         public StringsResourcesServiceTests()
         {
             var logger = Substitute.For<ILoggerAdapter>();
-            _nyssBlobProvider = Substitute.For<INyssBlobProvider>();
+            _generalBlobProvider = Substitute.For<IGeneralBlobProvider>();
 
-            _stringsResourcesService = new StringsResourcesService(_nyssBlobProvider, logger);
+            _stringsResourcesService = new StringsResourcesService(_generalBlobProvider, logger);
         }
 
         [Fact]
         public async Task GetStringsResources_WhenThrowsException_ShouldReturnError()
         {
-            _nyssBlobProvider.GetStringsResources().Throws(new InvalidOperationException());
+            _generalBlobProvider.GetStringsResources().Throws(new InvalidOperationException());
 
             var result = await _stringsResourcesService.GetStringsResources(DefaultLanguageCode);
 
@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Tests.Services
         [InlineData("login.signIn", "wrong-lang", "login.signIn")]
         public async Task GetStringsResources_ReturnsProperTranslations(string key, string languageCode, string value)
         {
-            _nyssBlobProvider.GetStringsResources().Returns(BlobValue);
+            _generalBlobProvider.GetStringsResources().Returns(BlobValue);
 
             var result = await _stringsResourcesService.GetStringsResources(languageCode);
 

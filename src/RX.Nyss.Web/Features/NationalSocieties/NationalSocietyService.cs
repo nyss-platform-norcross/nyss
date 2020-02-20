@@ -46,14 +46,14 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         private readonly IManagerService _managerService;
         private readonly ITechnicalAdvisorService _technicalAdvisorService;
         private readonly ISmsGatewayService _smsGatewayService;
-        private readonly INyssBlobProvider _nyssBlobProvider;
+        private readonly IGeneralBlobProvider _generalBlobProvider;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
             ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService,
             IManagerService managerService, ITechnicalAdvisorService technicalAdvisorService,
-            ISmsGatewayService smsGatewayService, INyssBlobProvider nyssBlobProvider)
+            ISmsGatewayService smsGatewayService, IGeneralBlobProvider generalBlobProvider)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
@@ -62,7 +62,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             _managerService = managerService;
             _technicalAdvisorService = technicalAdvisorService;
             _smsGatewayService = smsGatewayService;
-            _nyssBlobProvider = nyssBlobProvider;
+            _generalBlobProvider = generalBlobProvider;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> List()
@@ -275,7 +275,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             {
                 Language = apl.DisplayName,
                 LanguageCode = apl.LanguageCode,
-                AgreementDocumentUrl = _nyssBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower())
+                AgreementDocumentUrl = _generalBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower())
             }).Where(d => d.AgreementDocumentUrl != null);
 
             var pendingSociety = new PendingHeadManagerConsentDto

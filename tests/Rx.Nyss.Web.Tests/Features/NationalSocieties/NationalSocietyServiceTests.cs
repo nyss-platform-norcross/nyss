@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 
         private readonly IManagerService _managerServiceMock;
         private readonly ITechnicalAdvisorService _technicalAdvisorServiceMock;
-        private INyssBlobProvider _nyssBlobProviderMock;
+        private IGeneralBlobProvider _generalBlobProviderMock;
 
 
         public NationalSocietyServiceTests()
@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             _managerServiceMock = Substitute.For<IManagerService>();
             _technicalAdvisorServiceMock = Substitute.For<ITechnicalAdvisorService>();
             _smsGatewayServiceMock = Substitute.For<ISmsGatewayService>();
-            _nyssBlobProviderMock = Substitute.For<INyssBlobProvider>();
+            _generalBlobProviderMock = Substitute.For<IGeneralBlobProvider>();
 
             _nationalSocietyService = new NationalSocietyService(
                 _nyssContextMock,
@@ -53,7 +53,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 _managerServiceMock,
                 _technicalAdvisorServiceMock,
                 _smsGatewayServiceMock,
-                _nyssBlobProviderMock);
+                _generalBlobProviderMock);
 
             _testData = new NationalSocietyServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
         }
