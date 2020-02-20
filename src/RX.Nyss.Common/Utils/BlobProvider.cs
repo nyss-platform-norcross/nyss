@@ -46,6 +46,17 @@ namespace RX.Nyss.Common.Utils
             return blobUrl;
         }
 
+        public async Task CopyBlob(string sourceUri, string to)
+        {
+            var newBlob = GetBlobReference(to);
+            if (newBlob.Exists())
+            {
+                throw new Exception($"Blob with name {to} already exists!");
+            }
+
+            await newBlob.StartCopyAsync(new Uri(sourceUri));
+        }
+
         private CloudBlockBlob GetBlobReference(string blobName)
         {
             if (string.IsNullOrWhiteSpace(_blobContainerName) ||

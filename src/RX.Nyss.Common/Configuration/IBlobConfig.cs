@@ -4,6 +4,7 @@ namespace RX.Nyss.Common.Configuration
     {
         string GeneralBlobContainerName { get; set; }
         string SmsGatewayBlobContainerName { get; set; }
+        string PlatformAgreementsContainerName { get; set; }
         string SmsContentResourcesBlobObjectName { get; set; }
         string StringsResourcesBlobObjectName { get; set; }
         string EmailContentResourcesBlobObjectName { get; set; }

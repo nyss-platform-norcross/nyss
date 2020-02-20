@@ -25,6 +25,8 @@ namespace RX.Nyss.Web.Configuration
 
         public string SmsGatewayBlobContainerName { get; set; }
 
+        public string PlatformAgreementsContainerName { get; set; }
+
         public string GeneralBlobContainerName { get; set; }
 
         public string AuthorizedApiKeysBlobObjectName { get; set; }

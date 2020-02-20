@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<Result> Delete(int id);
         Task<Result> Archive(int nationalSocietyId);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
-        Task<Result> SetAsHeadManager(string consentRequestDto);
+        Task<Result> SetAsHeadManager(string languageCode);
         Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents();
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
         Task<Result> Reopen(int nationalSocietyId);
@@ -47,13 +47,14 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         private readonly ITechnicalAdvisorService _technicalAdvisorService;
         private readonly ISmsGatewayService _smsGatewayService;
         private readonly IGeneralBlobProvider _generalBlobProvider;
+        private readonly IDataBlobService _dataBlobService;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
             ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService,
             IManagerService managerService, ITechnicalAdvisorService technicalAdvisorService,
-            ISmsGatewayService smsGatewayService, IGeneralBlobProvider generalBlobProvider)
+            ISmsGatewayService smsGatewayService, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
@@ -63,6 +64,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             _technicalAdvisorService = technicalAdvisorService;
             _smsGatewayService = smsGatewayService;
             _generalBlobProvider = generalBlobProvider;
+            _dataBlobService = dataBlobService;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> List()
@@ -203,7 +205,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success();
         }
 
-        public async Task<Result> SetAsHeadManager(string consentRequestDto)
+        public async Task<Result> SetAsHeadManager(string languageCode)
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
@@ -222,6 +224,10 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             var pendingSocieties = _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager.Id == user.Id);
             var utcNow = DateTime.UtcNow;
+
+            var consentFileName = Guid.NewGuid();
+            var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
+            await _dataBlobService.StorePlatformAgreement(sourceUri, consentFileName.ToString());
 
             // Set until date for the previous consent
             await _nyssContext.HeadManagerConsents
