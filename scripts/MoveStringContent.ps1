@@ -9,13 +9,8 @@ param(
 )
 
 $ScriptPath = Split-Path -parent $MyInvocation.MyCommand.Definition;
-$folderForNewBlobs = "$ScriptPath\\tmp-new"
-$folderForOldBlobs = "$ScriptPath\\tmp-old"
-
-if (Get-Variable IsMacOS) {
-  $folderForNewBlobs = "$ScriptPath/tmp-new"
-  $folderForOldBlobs = "$ScriptPath/tmp-old"
-}
+$folderForNewBlobs = Join-Path -Path $ScriptPath -ChildPath "tmp-new"
+$folderForOldBlobs = Join-Path -Path $ScriptPath -ChildPath "tmp-old"
 
 Write-Host "1. Snapshotting blobs that exist in the destination $to..."
 $blobs = az storage blob list --container-name nyss-blob-container --account-name nrxcbsnyssst$to | ConvertFrom-Json
