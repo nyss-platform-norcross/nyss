@@ -38,12 +38,6 @@
         },
         "serviceBusSku": {
             "value": "Standard"
-        },
-        "customDomain": {
-          "value": "test.rcnyss.org"
-        },
-        "customSubDomain": {
-          "value": "www.test.rcnyss.org"
         }
     }
 }
