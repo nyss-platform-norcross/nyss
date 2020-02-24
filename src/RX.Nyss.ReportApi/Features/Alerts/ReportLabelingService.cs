@@ -85,9 +85,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             if (projectHealthRisk.AlertRule.DaysThreshold.HasValue)
             {
-                var utcNow = DateTime.UtcNow;
-                var receivalThreshold = utcNow.AddDays(-projectHealthRisk.AlertRule.DaysThreshold.Value);
-                reportsQuery = reportsQuery.Where(r => r.ReceivedAt > receivalThreshold);
+                var earliestReceivedTime = report.ReceivedAt.AddDays(-projectHealthRisk.AlertRule.DaysThreshold.Value);
+                var latestReceivedTime = report.ReceivedAt.AddDays(projectHealthRisk.AlertRule.DaysThreshold.Value);
+                reportsQuery = reportsQuery.Where(r => r.ReceivedAt > earliestReceivedTime && r.ReceivedAt < latestReceivedTime);
             }
 
             return reportsQuery.AsNoTracking().ToListAsync();
