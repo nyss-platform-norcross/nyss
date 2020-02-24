@@ -53,7 +53,6 @@ if (!$resourceGroup) {
 
 
 if ($complete) {
-
   if ($test) {
     Write-Host "Test deploying all resources (Complete mode)"
     Test-AzResourceGroupDeployment `

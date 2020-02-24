@@ -61,10 +61,6 @@
       "defaultValue": "",
       "type": "String"
     },
-    "enableADS": {
-      "defaultValue": false,
-      "type": "Bool"
-    },
     "allowAzureIps": {
       "defaultValue": true,
       "type": "Bool"
@@ -79,37 +75,17 @@
       },
       "type": "Object"
     },
-    "enableVA": {
-      "defaultValue": false,
-      "type": "Bool"
-    },
     "storageAccessTier": {
       "type": "string",
       "defaultValue": "Cool"
     }
   },
   "variables": {
-    "subscriptionId": "[subscription().subscriptionId]",
     "resourceGroupName": "[resourceGroup().name]",
-    "uniqueStorage": "[uniqueString(variables('subscriptionId'), variables('resourceGroupName'), resourceGroup().location)]",
-    "storageName": "[tolower(concat('sqlva', variables('uniqueStorage')))]",
     "dataStorageAccountName": "[concat('nrxcbsnyssdatast', parameters('env'))]",
     "platformAgreementsContainerName": "nyss-agreements-container"
   },
   "resources": [
-    {
-      "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2016-01-01",
-      "name": "[variables('storageName')]",
-      "location": "[resourceGroup().location]",
-      "sku": {
-        "name": "Standard_LRS"
-      },
-      "kind": "Storage",
-      "properties": {
-      },
-      "condition": "[parameters('enableVA')]"
-    },
     {
       "type": "Microsoft.Sql/servers",
       "apiVersion": "2015-05-01-preview",
@@ -186,45 +162,6 @@
             "startIpAddress": "0.0.0.0"
           },
           "condition": "[parameters('allowAzureIps')]"
-        },
-        {
-          "type": "securityAlertPolicies",
-          "apiVersion": "2017-03-01-preview",
-          "name": "Default",
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', parameters('serverName'))]",
-            "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/databases/', parameters('databaseName'))]"
-          ],
-          "properties": {
-            "state": "Enabled",
-            "disabledAlerts": [
-            ],
-            "emailAddresses": [
-            ],
-            "emailAccountAdmins": true
-          },
-          "condition": "[parameters('enableADS')]"
-        },
-        {
-          "type": "vulnerabilityAssessments",
-          "apiVersion": "2018-06-01-preview",
-          "name": "Default",
-          "dependsOn": [
-            "[concat('Microsoft.Sql/servers/', parameters('serverName'))]",
-            "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
-            "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/securityAlertPolicies/Default')]"
-          ],
-          "properties": {
-            "storageContainerPath": "[if(parameters('enableVA'), concat(reference(variables('storageName'), '2018-02-01').primaryEndpoints.blob, 'vulnerability-assessment'), '')]",
-            "storageAccountAccessKey": "[if(parameters('enableVA'), listKeys(variables('storageName'), '2018-02-01').keys[0].value, '')]",
-            "recurringScans": {
-              "isEnabled": true,
-              "emailSubscriptionAdmins": true,
-              "emails": [
-              ]
-            }
-          },
-          "condition": "[parameters('enableVA')]"
         }
       ]
     },

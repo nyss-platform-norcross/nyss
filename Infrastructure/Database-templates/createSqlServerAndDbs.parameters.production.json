@@ -47,9 +47,6 @@
     "autoPauseDelay": {
       "value": ""
     },
-    "enableADS": {
-      "value": false
-    },
     "allowAzureIps": {
       "value": true
     },
@@ -62,9 +59,6 @@
     },
     "TestTagValues": {
       "value": {}
-    },
-    "enableVA": {
-      "value": false
     }
   }
 }

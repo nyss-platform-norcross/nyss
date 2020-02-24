@@ -50,9 +50,6 @@
     "autoPauseDelay": {
       "value": ""
     },
-    "enableADS": {
-      "value": false
-    },
     "allowAzureIps": {
       "value": true
     },
@@ -69,9 +66,6 @@
         "System": "Nyss",
         "Environment": "Test"
       }
-    },
-    "enableVA": {
-      "value": false
     }
   }
 }
