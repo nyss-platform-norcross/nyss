@@ -17,7 +17,7 @@ import CardMedia from '@material-ui/core/CardMedia';
 import { MenuItem, Grid, FormControl, InputLabel, Select, Snackbar } from '@material-ui/core';
 
 const HeadManagerConsentsPageComponent = (props) => {
-  const [hasConsented, consent] = useState(false);
+  const [hasConsented, setHasConsented] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [validationMessage, setValidationMessage] = useState(null);
 
@@ -39,7 +39,7 @@ const HeadManagerConsentsPageComponent = (props) => {
     setSelectedLanguage(event.target.value);
   }
 
-  const selectedDocumentUrl = props.agreementDocuments.length > 0 && props.agreementDocuments.find(ad => ad.languageCode == selectedLanguage).agreementDocumentUrl;
+  const selectedDocumentUrl = props.agreementDocuments.length > 0 && props.agreementDocuments.find(ad => ad.languageCode === selectedLanguage).agreementDocumentUrl;
 
   return (
     <div className={styles.consentWrapper}>
@@ -69,7 +69,7 @@ const HeadManagerConsentsPageComponent = (props) => {
                     <Select
                       onChange={handleDocChange}
                       value={selectedLanguage}>
-                      {props.agreementDocuments.map(ad => (<MenuItem value={ad.languageCode}>{ad.language}</MenuItem>))}
+                      {props.agreementDocuments.map(ad => (<MenuItem key={ad.languageCode} value={ad.languageCode}>{ad.language}</MenuItem>))}
                     </Select>
                   </FormControl>
                 </Grid>
@@ -83,15 +83,17 @@ const HeadManagerConsentsPageComponent = (props) => {
         </div>
         <div className={styles.belowDocument}>
           <Grid container alignItems="center">
-            <Grid item xs>
-              <a target="_blank" href={selectedDocumentUrl}>{strings(stringKeys.headManagerConsents.downloadDirectly)}</a>
-            </Grid>
+            {selectedDocumentUrl &&
+              (<Grid item xs>
+                <a target="_blank" href={selectedDocumentUrl}>{strings(stringKeys.headManagerConsents.downloadDirectly)}</a>
+              </Grid>
+            )}
             <Grid item>
               <FormControlLabel
                 control={
                   <Checkbox
                     onClick={() => {
-                      consent(!hasConsented);
+                      setHasConsented(!hasConsented);
                       setValidationMessage(null);
                     }}
                     checked={hasConsented}

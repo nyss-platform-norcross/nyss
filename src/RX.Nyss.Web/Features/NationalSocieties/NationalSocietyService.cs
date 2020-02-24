@@ -231,8 +231,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             // Set until date for the previous consent
             await _nyssContext.HeadManagerConsents
-                .Where(x => pendingSocieties.Select(y => y.Id).Contains(x.NationalSocietyId) && x.ConsentedUntil == null)
-                .ForEachAsync(x => x.ConsentedUntil = utcNow);
+                .Where(hmc => pendingSocieties.Select(ps => ps.Id).Contains(hmc.NationalSocietyId) && hmc.ConsentedUntil == null)
+                .ForEachAsync(hmc => hmc.ConsentedUntil = utcNow);
 
             foreach (var nationalSociety in pendingSocieties)
             {
