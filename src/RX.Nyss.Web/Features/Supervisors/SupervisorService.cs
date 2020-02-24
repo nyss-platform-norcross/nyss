@@ -11,6 +11,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Supervisors.Dto;
+using RX.Nyss.Web.Features.Supervisors.Models;
 using RX.Nyss.Web.Services;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
@@ -135,17 +136,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         {
             try
             {
-                var supervisorUserData = await _dataContext.Users.FilterAvailable()
-                    .OfType<SupervisorUser>()
-                    .Include(u => u.UserNationalSocieties)
-                    .Where(u => u.Id == supervisorId)
-                    .Select(u => new
-                    {
-                        User = u,
-                        CurrentProjectReference = u.SupervisorUserProjects
-                            .SingleOrDefault(sup => sup.Project.State == ProjectState.Open)
-                    })
-                    .SingleOrDefaultAsync();
+                var supervisorUserData = await GetSupervisorUser(supervisorId);
 
                 if (supervisorUserData == null)
                 {
@@ -182,15 +173,17 @@ namespace RX.Nyss.Web.Features.Supervisors
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                var supervisorUser = await GetSupervisorUser(supervisorId);
+                var supervisorUserData = await GetSupervisorUser(supervisorId);
 
-                await EnsureSupervisorHasNoDataCollectors(supervisorUser);
+                await EnsureSupervisorHasNoDataCollectors(supervisorUserData.User);
 
-                AnonymizeSupervisor(supervisorUser);
-                supervisorUser.DeletedAt = _dateTimeProvider.UtcNow;
+                RemoveExistingProjectReference(supervisorUserData.CurrentProjectReference);
 
-                await _identityUserRegistrationService.DeleteIdentityUser(supervisorUser.IdentityUserId);
-                supervisorUser.IdentityUserId = null;
+                AnonymizeSupervisor(supervisorUserData.User);
+                supervisorUserData.User.DeletedAt = _dateTimeProvider.UtcNow;
+
+                await _identityUserRegistrationService.DeleteIdentityUser(supervisorUserData.User.IdentityUserId);
+                supervisorUserData.User.IdentityUserId = null;
 
                 await _dataContext.SaveChangesAsync();
                 transactionScope.Complete();
@@ -357,22 +350,27 @@ namespace RX.Nyss.Web.Features.Supervisors
             supervisorUser.AdditionalPhoneNumber = Anonymization.Text;
         }
 
-        public async Task<SupervisorUser> GetSupervisorUser(int supervisorUserId)
+        public async Task<SupervisorUserData> GetSupervisorUser(int supervisorUserId)
         {
-            var supervisorUser = await _dataContext.Users.FilterAvailable()
+            var supervisorUserData = await _dataContext.Users.FilterAvailable()
                 .OfType<SupervisorUser>()
-                .Include(u => u.SupervisorUserProjects)
                 .Include(u => u.UserNationalSocieties)
                 .Where(u => u.Id == supervisorUserId)
+                .Select(u => new SupervisorUserData
+                {
+                    User = u,
+                    CurrentProjectReference = u.SupervisorUserProjects
+                        .SingleOrDefault(sup => sup.Project.State == ProjectState.Open)
+                })
                 .SingleOrDefaultAsync();
 
-            if (supervisorUser == null)
+            if (supervisorUserData == null)
             {
                 _loggerAdapter.Debug($"Supervisor user id {supervisorUserId} was not found");
                 throw new ResultException(ResultKey.User.Common.UserNotFound);
             }
 
-            return supervisorUser;
+            return supervisorUserData;
         }
     }
 }
