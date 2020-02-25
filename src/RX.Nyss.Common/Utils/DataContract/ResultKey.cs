@@ -246,6 +246,7 @@
             public static class CloseAlert
             {
                 public const string WrongStatus = "alert.closeAlert.wrongStatus";
+                public const string HasPendingReports = "alert.closeAlert.hasPendingReports";
             }
         }
     }
