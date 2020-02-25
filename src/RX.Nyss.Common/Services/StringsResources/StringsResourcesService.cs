@@ -20,14 +20,14 @@ namespace RX.Nyss.Common.Services.StringsResources
 
     public class StringsResourcesService : IStringsResourcesService
     {
-        private readonly INyssBlobProvider _nyssBlobProvider;
+        private readonly IGeneralBlobProvider _generalBlobProvider;
         private readonly ILoggerAdapter _loggerAdapter;
 
         public StringsResourcesService(
-            INyssBlobProvider nyssBlobProvider,
+            IGeneralBlobProvider generalBlobProvider,
             ILoggerAdapter loggerAdapter)
         {
-            _nyssBlobProvider = nyssBlobProvider;
+            _generalBlobProvider = generalBlobProvider;
             _loggerAdapter = loggerAdapter;
         }
 
@@ -103,7 +103,7 @@ namespace RX.Nyss.Common.Services.StringsResources
 
         public async Task<StringsBlob> GetStringsBlob()
         {
-            var blobValue = await _nyssBlobProvider.GetStringsResources();
+            var blobValue = await _generalBlobProvider.GetStringsResources();
 
             return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
@@ -112,19 +112,19 @@ namespace RX.Nyss.Common.Services.StringsResources
         {
             var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
-            await _nyssBlobProvider.SaveStringsResources(blobValue);
+            await _generalBlobProvider.SaveStringsResources(blobValue);
         }
 
         private async Task<StringsBlob> GetEmailContentBlob()
         {
-            var blobValue = await _nyssBlobProvider.GetEmailContentResources();
+            var blobValue = await _generalBlobProvider.GetEmailContentResources();
 
             return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
 
         private async Task<StringsBlob> GetSmsContentBlob()
         {
-            var blobValue = await _nyssBlobProvider.GetSmsContentResources();
+            var blobValue = await _generalBlobProvider.GetSmsContentResources();
 
             return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }

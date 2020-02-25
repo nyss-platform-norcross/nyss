@@ -36,14 +36,5 @@ namespace RX.Nyss.Web.Services
 
             return value;
         }
-
-        private static string GetRoleName(Role userRole) =>
-            userRole switch
-            {
-                Role.DataConsumer => "Data consumer",
-                Role.GlobalCoordinator => "Global coordinator",
-                Role.TechnicalAdvisor => "Technical advisor",
-                _ => userRole.ToString()
-            };
     }
 }

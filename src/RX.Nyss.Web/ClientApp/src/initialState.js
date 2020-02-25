@@ -160,7 +160,8 @@ export const initialState = {
     performanceListFetching: false
   },
   headManagerConsents: {
-    nationalSocieties: []
+    nationalSocieties: [],
+    agreementDocuments: []
   },
   reports: {
     listFetching: false,

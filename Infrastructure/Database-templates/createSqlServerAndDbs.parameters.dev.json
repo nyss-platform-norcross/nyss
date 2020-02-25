@@ -1,74 +1,71 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "administratorLogin": {
-            "value": "nrx-cbs-dbadmin"
-        },
-        "collation": {
-            "value": "SQL_Latin1_General_CP1_CI_AS"
-        },
-        "databaseName": {
-            "value": "nrx-cbs-nyss-sqldb-dev"
-        },
-        "testDatabaseName": {
-            "value": "nrx-cbs-nyss-sqldb-test"
-        },
-        "tier": {
-            "value": "Standard"
-        },
-        "skuName": {
-            "value": "S1"
-        },
-        "maxSizeBytes": {
-            "value": 32212254720
-        },
-        "serverName": {
-            "value": "nrx-cbs-nyss-sqlserver-dev"
-        },
-        "sampleName": {
-            "value": ""
-        },
-        "zoneRedundant": {
-            "value": false
-        },
-        "licenseType": {
-            "value": ""
-        },
-        "readScaleOut": {
-            "value": "Disabled"
-        },
-        "numberOfReplicas": {
-            "value": 0
-        },
-        "minCapacity": {
-            "value": ""
-        },
-        "autoPauseDelay": {
-            "value": ""
-        },
-        "enableADS": {
-            "value": false
-        },
-        "allowAzureIps": {
-            "value": true
-        },
-        "TagValues": {
-            "value": {
-                "Team": "CBS",
-                "System": "Nyss",
-                "Environment": "Development"
-            }
-        },
-        "TestTagValues": {
-            "value": {
-                "Team": "CBS",
-                "System": "Nyss",
-                "Environment": "Test"
-            }
-        },
-        "enableVA": {
-            "value": false
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "administratorLogin": {
+      "value": "nrx-cbs-dbadmin"
+    },
+    "env": {
+      "value": "dev"
+    },
+    "collation": {
+      "value": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "databaseName": {
+      "value": "nrx-cbs-nyss-sqldb-dev"
+    },
+    "testDatabaseName": {
+      "value": "nrx-cbs-nyss-sqldb-test"
+    },
+    "tier": {
+      "value": "Standard"
+    },
+    "skuName": {
+      "value": "S1"
+    },
+    "maxSizeBytes": {
+      "value": 32212254720
+    },
+    "serverName": {
+      "value": "nrx-cbs-nyss-sqlserver-dev"
+    },
+    "sampleName": {
+      "value": ""
+    },
+    "zoneRedundant": {
+      "value": false
+    },
+    "licenseType": {
+      "value": ""
+    },
+    "readScaleOut": {
+      "value": "Disabled"
+    },
+    "numberOfReplicas": {
+      "value": 0
+    },
+    "minCapacity": {
+      "value": ""
+    },
+    "autoPauseDelay": {
+      "value": ""
+    },
+    "allowAzureIps": {
+      "value": true
+    },
+    "TagValues": {
+      "value": {
+        "Team": "CBS",
+        "System": "Nyss",
+        "Environment": "Development"
+      }
+    },
+    "TestTagValues": {
+      "value": {
+        "Team": "CBS",
+        "System": "Nyss",
+        "Environment": "Test"
+      }
     }
+  }
 }

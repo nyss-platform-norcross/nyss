@@ -25,6 +25,8 @@ namespace RX.Nyss.Web.Configuration
 
         public string SmsGatewayBlobContainerName { get; set; }
 
+        public string PlatformAgreementsContainerName { get; set; }
+
         public string GeneralBlobContainerName { get; set; }
 
         public string AuthorizedApiKeysBlobObjectName { get; set; }
@@ -34,6 +36,8 @@ namespace RX.Nyss.Web.Configuration
         public string StringsResourcesBlobObjectName { get; set; }
 
         public string EmailContentResourcesBlobObjectName { get; set; }
+
+        public string PlatformAgreementBlobObjectName { get; set; }
 
         public int PaginationRowsPerPage { get; set; }
 

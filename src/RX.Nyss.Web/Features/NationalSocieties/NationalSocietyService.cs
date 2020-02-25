@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
@@ -30,8 +31,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<Result> Delete(int id);
         Task<Result> Archive(int nationalSocietyId);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
-        Task<Result> SetAsHeadManager();
-        Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents();
+        Task<Result> SetAsHeadManager(string languageCode);
+        Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents();
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
         Task<Result> Reopen(int nationalSocietyId);
     }
@@ -45,13 +46,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         private readonly IManagerService _managerService;
         private readonly ITechnicalAdvisorService _technicalAdvisorService;
         private readonly ISmsGatewayService _smsGatewayService;
+        private readonly IGeneralBlobProvider _generalBlobProvider;
+        private readonly IDataBlobService _dataBlobService;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
             ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService,
             IManagerService managerService, ITechnicalAdvisorService technicalAdvisorService,
-            ISmsGatewayService smsGatewayService)
+            ISmsGatewayService smsGatewayService, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
@@ -60,6 +63,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             _managerService = managerService;
             _technicalAdvisorService = technicalAdvisorService;
             _smsGatewayService = smsGatewayService;
+            _generalBlobProvider = generalBlobProvider;
+            _dataBlobService = dataBlobService;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> List()
@@ -200,7 +205,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success();
         }
 
-        public async Task<Result> SetAsHeadManager()
+        public async Task<Result> SetAsHeadManager(string languageCode)
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
@@ -220,10 +225,14 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             var pendingSocieties = _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager.Id == user.Id);
             var utcNow = DateTime.UtcNow;
 
+            var consentDocumentFileName = Guid.NewGuid() + ".pdf";
+            var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
+            await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
+
             // Set until date for the previous consent
             await _nyssContext.HeadManagerConsents
-                .Where(x => pendingSocieties.Select(y => y.Id).Contains(x.NationalSocietyId) && x.ConsentedUntil == null)
-                .ForEachAsync(x => x.ConsentedUntil = utcNow);
+                .Where(hmc => pendingSocieties.Select(ps => ps.Id).Contains(hmc.NationalSocietyId) && hmc.ConsentedUntil == null)
+                .ForEachAsync(hmc => hmc.ConsentedUntil = utcNow);
 
             foreach (var nationalSociety in pendingSocieties)
             {
@@ -235,7 +244,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     ConsentedFrom = utcNow,
                     NationalSocietyId = nationalSociety.Id,
                     UserEmailAddress = user.EmailAddress,
-                    UserPhoneNumber = user.PhoneNumber
+                    UserPhoneNumber = user.PhoneNumber,
+                    ConsentDocument = consentDocumentFileName
                 });
             }
 
@@ -244,7 +254,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success();
         }
 
-        public async Task<Result<List<PendingHeadManagerConsentDto>>> GetPendingHeadManagerConsents()
+        public async Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents()
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
@@ -254,12 +264,12 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             if (userEntity == null)
             {
-                return Error<List<PendingHeadManagerConsentDto>>(ResultKey.User.Common.UserNotFound);
+                return Error<PendingHeadManagerConsentDto>(ResultKey.User.Common.UserNotFound);
             }
 
             var pendingSocieties = await _nyssContext.NationalSocieties
                 .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId)
-                .Select(ns => new PendingHeadManagerConsentDto
+                .Select(ns => new PendingNationalSocietyConsentDto
                 {
                     NationalSocietyName = ns.Name,
                     NationalSocietyCountryName = ns.Country.Name,
@@ -267,7 +277,21 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 })
                 .ToListAsync();
 
-            return Success(pendingSocieties);
+            var applicationLanguages = await _nyssContext.ApplicationLanguages.ToListAsync();
+            var docs = applicationLanguages.Select(apl => new AgreementDocument
+            {
+                Language = apl.DisplayName,
+                LanguageCode = apl.LanguageCode,
+                AgreementDocumentUrl = _generalBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower())
+            }).Where(d => d.AgreementDocumentUrl != null);
+
+            var pendingSociety = new PendingHeadManagerConsentDto
+            {
+                AgreementDocuments = docs,
+                NationalSocieties = pendingSocieties
+            };
+
+            return Success(pendingSociety);
         }
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>

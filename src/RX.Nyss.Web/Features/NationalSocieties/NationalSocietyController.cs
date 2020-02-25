@@ -81,15 +81,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         public async Task<Result> SetHeadManager(int nationalSocietyId, [FromBody] SetAsHeadManagerRequestDto requestDto) =>
             await _nationalSocietyService.SetPendingHeadManager(nationalSocietyId, requestDto.UserId);
 
-
         /// <summary>
-        /// Will set the current user as the head for the given national societies
+        /// Will set the current user as the head manager for the national societies he or she is pending as.
         /// </summary>
+        /// <param name="languageCode">The selected language the user has chosen to see the agreement in</param>
         /// <returns></returns>
         [HttpPost("consentAsHeadManager")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
-        public async Task<Result> ConsentAsHeadManager() =>
-            await _nationalSocietyService.SetAsHeadManager();
+        [NeedsRole(Role.Manager, Role.TechnicalAdvisor)]
+        public async Task<Result> ConsentAsHeadManager(string languageCode) =>
+            await _nationalSocietyService.SetAsHeadManager(languageCode);
 
         /// <summary>
         /// Get the current user's list of national societies that he is assigned as pending head manager

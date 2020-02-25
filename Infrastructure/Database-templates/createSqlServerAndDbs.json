@@ -1,217 +1,223 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "administratorLogin": {
-            "type": "String"
-        },
-        "administratorLoginPassword": {
-            "type": "SecureString"
-        },
-        "collation": {
-            "type": "String"
-        },
-        "databaseName": {
-            "type": "String"
-        },
-        "testDatabaseName": {
-            "type": "String",
-            "defaultValue": "testdb"
-        },
-        "tier": {
-            "type": "String"
-        },
-        "skuName": {
-            "type": "String"
-        },
-        "maxSizeBytes": {
-            "type": "Int"
-        },
-        "serverName": {
-            "type": "String"
-        },
-        "sampleName": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "zoneRedundant": {
-            "defaultValue": false,
-            "type": "Bool"
-        },
-        "licenseType": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "readScaleOut": {
-            "defaultValue": "Disabled",
-            "type": "String"
-        },
-        "numberOfReplicas": {
-            "defaultValue": 0,
-            "type": "Int"
-        },
-        "minCapacity": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "autoPauseDelay": {
-            "defaultValue": "",
-            "type": "String"
-        },
-        "enableADS": {
-            "defaultValue": false,
-            "type": "Bool"
-        },
-        "allowAzureIps": {
-            "defaultValue": true,
-            "type": "Bool"
-        },
-        "tagValues": {
-            "defaultValue": {},
-            "type": "Object"
-        },
-        "testTagValues": {
-            "defaultValue": {},
-            "type": "Object"
-        },
-        "enableVA": {
-            "defaultValue": false,
-            "type": "Bool"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "env": {
+      "type": "String"
     },
-    "variables": {
-        "subscriptionId": "[subscription().subscriptionId]",
-        "resourceGroupName": "[resourceGroup().name]",
-        "uniqueStorage": "[uniqueString(variables('subscriptionId'), variables('resourceGroupName'), resourceGroup().location)]",
-        "storageName": "[tolower(concat('sqlva', variables('uniqueStorage')))]"
+    "administratorLogin": {
+      "type": "String"
     },
-    "resources": [
+    "administratorLoginPassword": {
+      "type": "SecureString"
+    },
+    "collation": {
+      "type": "String"
+    },
+    "databaseName": {
+      "type": "String"
+    },
+    "testDatabaseName": {
+      "type": "String",
+      "defaultValue": "testdb"
+    },
+    "tier": {
+      "type": "String"
+    },
+    "skuName": {
+      "type": "String"
+    },
+    "maxSizeBytes": {
+      "type": "Int"
+    },
+    "serverName": {
+      "type": "String"
+    },
+    "sampleName": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "zoneRedundant": {
+      "defaultValue": false,
+      "type": "Bool"
+    },
+    "licenseType": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "readScaleOut": {
+      "defaultValue": "Disabled",
+      "type": "String"
+    },
+    "numberOfReplicas": {
+      "defaultValue": 0,
+      "type": "Int"
+    },
+    "minCapacity": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "autoPauseDelay": {
+      "defaultValue": "",
+      "type": "String"
+    },
+    "allowAzureIps": {
+      "defaultValue": true,
+      "type": "Bool"
+    },
+    "tagValues": {
+      "defaultValue": {
+      },
+      "type": "Object"
+    },
+    "testTagValues": {
+      "defaultValue": {
+      },
+      "type": "Object"
+    },
+    "storageAccessTier": {
+      "type": "string",
+      "defaultValue": "Cool"
+    }
+  },
+  "variables": {
+    "resourceGroupName": "[resourceGroup().name]",
+    "dataStorageAccountName": "[concat('nrxcbsnyssdatast', parameters('env'))]",
+    "platformAgreementsContainerName": "nyss-agreements-container"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2015-05-01-preview",
+      "name": "[parameters('serverName')]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('tagValues')]",
+      "properties": {
+        "administratorLogin": "[parameters('administratorLogin')]",
+        "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+        "version": "12.0"
+      },
+      "resources": [
         {
-            "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2016-01-01",
-            "name": "[variables('storageName')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Standard_LRS"
-            },
-            "kind": "Storage",
-            "properties": {},
-            "condition": "[parameters('enableVA')]"
+          "type": "databases",
+          "apiVersion": "2017-10-01-preview",
+          "name": "[parameters('databaseName')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+          ],
+          "tags": "[parameters('tagValues')]",
+          "sku": {
+            "name": "[parameters('skuName')]",
+            "tier": "[parameters('tier')]"
+          },
+          "properties": {
+            "collation": "[parameters('collation')]",
+            "maxSizeBytes": "[parameters('maxSizeBytes')]",
+            "sampleName": "[parameters('sampleName')]",
+            "zoneRedundant": "[parameters('zoneRedundant')]",
+            "licenseType": "[parameters('licenseType')]",
+            "readScale": "[parameters('readScaleOut')]",
+            "readReplicaCount": "[parameters('numberOfReplicas')]",
+            "minCapacity": "[parameters('minCapacity')]",
+            "autoPauseDelay": "[parameters('autoPauseDelay')]"
+          }
         },
         {
-            "type": "Microsoft.Sql/servers",
-            "apiVersion": "2015-05-01-preview",
-            "name": "[parameters('serverName')]",
-            "location": "[resourceGroup().location]",
-            "tags": "[parameters('tagValues')]",
-            "properties": {
-                "administratorLogin": "[parameters('administratorLogin')]",
-                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
-                "version": "12.0"
-            },
-            "resources": [
-                {
-                    "type": "databases",
-                    "apiVersion": "2017-10-01-preview",
-                    "name": "[parameters('databaseName')]",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
-                    ],
-                    "tags": "[parameters('tagValues')]",
-                    "sku": {
-                        "name": "[parameters('skuName')]",
-                        "tier": "[parameters('tier')]"
-                    },
-                    "properties": {
-                        "collation": "[parameters('collation')]",
-                        "maxSizeBytes": "[parameters('maxSizeBytes')]",
-                        "sampleName": "[parameters('sampleName')]",
-                        "zoneRedundant": "[parameters('zoneRedundant')]",
-                        "licenseType": "[parameters('licenseType')]",
-                        "readScale": "[parameters('readScaleOut')]",
-                        "readReplicaCount": "[parameters('numberOfReplicas')]",
-                        "minCapacity": "[parameters('minCapacity')]",
-                        "autoPauseDelay": "[parameters('autoPauseDelay')]"
-                    }
-                },
-                {
-                    "type": "databases",
-                    "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
-                    "apiVersion": "2017-10-01-preview",
-                    "name": "[parameters('testDatabaseName')]",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
-                    ],
-                    "tags": "[parameters('testTagValues')]",
-                    "sku": {
-                        "name": "[parameters('skuName')]",
-                        "tier": "[parameters('tier')]"
-                    },
-                    "properties": {
-                        "collation": "[parameters('collation')]",
-                        "maxSizeBytes": "[parameters('maxSizeBytes')]",
-                        "sampleName": "[parameters('sampleName')]",
-                        "zoneRedundant": "[parameters('zoneRedundant')]",
-                        "licenseType": "[parameters('licenseType')]",
-                        "readScale": "[parameters('readScaleOut')]",
-                        "readReplicaCount": "[parameters('numberOfReplicas')]",
-                        "minCapacity": "[parameters('minCapacity')]",
-                        "autoPauseDelay": "[parameters('autoPauseDelay')]"
-                    }
-                },
-                {
-                    "type": "firewallrules",
-                    "apiVersion": "2014-04-01-preview",
-                    "name": "AllowAllWindowsAzureIps",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
-                    ],
-                    "properties": {
-                        "endIpAddress": "0.0.0.0",
-                        "startIpAddress": "0.0.0.0"
-                    },
-                    "condition": "[parameters('allowAzureIps')]"
-                },
-                {
-                    "type": "securityAlertPolicies",
-                    "apiVersion": "2017-03-01-preview",
-                    "name": "Default",
-                    "dependsOn": [
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]",
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/databases/', parameters('databaseName'))]"
-                    ],
-                    "properties": {
-                        "state": "Enabled",
-                        "disabledAlerts": [],
-                        "emailAddresses": [],
-                        "emailAccountAdmins": true
-                    },
-                    "condition": "[parameters('enableADS')]"
-                },
-                {
-                    "type": "vulnerabilityAssessments",
-                    "apiVersion": "2018-06-01-preview",
-                    "name": "Default",
-                    "dependsOn": [
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]",
-                        "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/securityAlertPolicies/Default')]"
-                    ],
-                    "properties": {
-                        "storageContainerPath": "[if(parameters('enableVA'), concat(reference(variables('storageName'), '2018-02-01').primaryEndpoints.blob, 'vulnerability-assessment'), '')]",
-                        "storageAccountAccessKey": "[if(parameters('enableVA'), listKeys(variables('storageName'), '2018-02-01').keys[0].value, '')]",
-                        "recurringScans": {
-                            "isEnabled": true,
-                            "emailSubscriptionAdmins": true,
-                            "emails": []
-                        }
-                    },
-                    "condition": "[parameters('enableVA')]"
-                }
-            ]
+          "type": "databases",
+          "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
+          "apiVersion": "2017-10-01-preview",
+          "name": "[parameters('testDatabaseName')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+          ],
+          "tags": "[parameters('testTagValues')]",
+          "sku": {
+            "name": "[parameters('skuName')]",
+            "tier": "[parameters('tier')]"
+          },
+          "properties": {
+            "collation": "[parameters('collation')]",
+            "maxSizeBytes": "[parameters('maxSizeBytes')]",
+            "sampleName": "[parameters('sampleName')]",
+            "zoneRedundant": "[parameters('zoneRedundant')]",
+            "licenseType": "[parameters('licenseType')]",
+            "readScale": "[parameters('readScaleOut')]",
+            "readReplicaCount": "[parameters('numberOfReplicas')]",
+            "minCapacity": "[parameters('minCapacity')]",
+            "autoPauseDelay": "[parameters('autoPauseDelay')]"
+          }
+        },
+        {
+          "type": "firewallrules",
+          "apiVersion": "2014-04-01-preview",
+          "name": "AllowAllWindowsAzureIps",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+          ],
+          "properties": {
+            "endIpAddress": "0.0.0.0",
+            "startIpAddress": "0.0.0.0"
+          },
+          "condition": "[parameters('allowAzureIps')]"
         }
-    ]
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('dataStorageAccountName')]",
+      "apiVersion": "2018-07-01",
+      "location": "[resourceGroup().location]",
+      "kind": "StorageV2",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "tags": "[parameters('tagValues')]",
+      "properties": {
+        "accessTier": "[parameters('storageAccessTier')]",
+        "supportsHttpsTrafficOnly": true,
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "defaultAction": "Allow"
+        }
+      },
+      "resources": [
+        {
+          "name": "default",
+          "type": "blobServices",
+          "apiVersion": "2018-07-01",
+          "properties": {
+            "deleteRetentionPolicy": {
+              "enabled": true,
+              "days": 30
+            }
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'))]"
+          ],
+          "resources": [
+            {
+              "name": "[variables('platformAgreementsContainerName')]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
+              ]
+            },
+            {
+              "name": "nyss-agreements-container-test",
+              "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

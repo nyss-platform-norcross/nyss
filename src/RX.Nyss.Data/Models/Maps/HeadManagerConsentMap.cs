@@ -13,6 +13,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(u => u.UserPhoneNumber).HasMaxLength(20).IsRequired();
             builder.Property(x => x.ConsentedFrom).IsRequired();
             builder.Property(x => x.ConsentedUntil);
+            builder.Property(x => x.ConsentDocument).HasMaxLength(50);
         }
     }
 }

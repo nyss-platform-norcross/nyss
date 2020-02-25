@@ -13,6 +13,7 @@ namespace RX.Nyss.Common.Configuration
     {
         string GeneralBlobContainer { get; set; }
         string SmsGatewayBlobContainer { get; set; }
+        string DataBlobContainer { get; set; }
     }
 
     public interface IServiceConnectionStringOptions
@@ -29,6 +30,7 @@ namespace RX.Nyss.Common.Configuration
     {
         public string NyssDatabase { get; set; }
         public string GeneralBlobContainer { get; set; }
+        public string DataBlobContainer { get; set; }
         public string SmsGatewayBlobContainer { get; set; }
         public string ServiceBus { get; set; }
         public string Nominatim { get; set; }

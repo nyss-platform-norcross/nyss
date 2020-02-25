@@ -1,23 +1,25 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Common.Utils;
 
 namespace RX.Nyss.Common.Services
 {
-    public interface INyssBlobProvider
+    public interface IGeneralBlobProvider
     {
         Task<string> GetStringsResources();
         Task SaveStringsResources(string value);
         Task<string> GetEmailContentResources();
         Task<string> GetSmsContentResources();
+        string GetPlatformAgreementUrl(string languageCode);
     }
 
-    public class NyssBlobProvider : INyssBlobProvider
+    public class GeneralBlobProvider : IGeneralBlobProvider
     {
         private readonly IConfig _config;
         private readonly BlobProvider _blobProvider;
 
-        public NyssBlobProvider(IConfig config)
+        public GeneralBlobProvider(IConfig config)
         {
             _config = config;
             _blobProvider = new BlobProvider(config.GeneralBlobContainerName, config.ConnectionStrings.GeneralBlobContainer);
@@ -34,5 +36,8 @@ namespace RX.Nyss.Common.Services
 
         public async Task<string> GetSmsContentResources() =>
             await _blobProvider.GetBlobValue(_config.SmsContentResourcesBlobObjectName);
+
+        public string GetPlatformAgreementUrl(string languageCode) =>
+            _blobProvider.GetBlobUrl(_config.PlatformAgreementBlobObjectName.Replace("{languageCode}", languageCode), TimeSpan.FromHours(1));
     }
 }
