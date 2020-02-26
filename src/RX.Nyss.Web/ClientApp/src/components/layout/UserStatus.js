@@ -11,20 +11,13 @@ import * as authActions from '../../authentication/authActions';
 import * as appActions from '../app/logic/appActions';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { strings, stringKeys } from '../../strings';
-import { FeedbackDialog } from '../feedback/FeedbackDialog';
 import * as roles from '../../authentication/roles';
 
-export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedback }) => {
+export const UserStatusComponent = ({ user, logout }) => {
   const [anchorEl, setAnchorEl] = useState();
-  const [feedbackDialogOpened, setFeedbackDialogOpened] = useState(false);
 
   const handleClick = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
-  const handleFeedbackDialogClose = () => {
-    setFeedbackDialogOpened(false);
-    handleClose();
-  }
-  const canSendFeedback = [roles.Administrator, roles.GlobalCoordinator, roles.Manager, roles.TechnicalAdvisor].some(neededRole => user.roles.some(userRole => userRole === neededRole))
 
   if (!user) {
     return null;
@@ -53,38 +46,25 @@ export const UserStatusComponent = ({ user, logout, sendFeedback, isSendingFeedb
           className={styles.authCaption}>
           <ListItemText secondary={user.email} />
         </MenuItem>
-        {canSendFeedback && (<MenuItem onClick={() => setFeedbackDialogOpened(true)} className={styles.authButton}>
-          <Icon className={styles.fontIcon}>feedback</Icon>
-          {strings(stringKeys.feedback.send)}
-        </MenuItem>)}
         <MenuItem onClick={logout} className={styles.authButton}>
           <Icon className={styles.fontIcon}>exit_to_app</Icon>
           {strings(stringKeys.user.logout)}
         </MenuItem>
       </Menu>
-      {canSendFeedback && (<FeedbackDialog
-        isOpened={feedbackDialogOpened}
-        close={handleFeedbackDialogClose}
-        sendFeedback={sendFeedback}
-        isSending={isSendingFeedback} />)}
     </div >
   );
 }
 
 UserStatusComponent.propTypes = {
-  logout: PropTypes.func,
-  sendFeedback: PropTypes.func,
-  isSendingFeedback: PropTypes.bool,
+  logout: PropTypes.func
 };
 
 const mapStateToProps = state => ({
-  user: state.appData.user,
-  isSendingFeedback: state.appData.feedback.isSending
+  user: state.appData.user
 });
 
 const mapDispatchToProps = {
-  logout: authActions.logout.invoke,
-  sendFeedback: appActions.sendFeedback.invoke
+  logout: authActions.logout.invoke
 };
 
 
