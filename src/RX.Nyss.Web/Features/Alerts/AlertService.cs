@@ -92,7 +92,11 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Select(lc => lc.Name)
                         .Single()
                 })
-                .OrderByDescending(a => a.CreatedAt)
+                .OrderBy(a => a.Status == AlertStatus.Escalated ? 0 :
+                    a.Status == AlertStatus.Pending ? 1 :
+                    a.Status == AlertStatus.Rejected ? 2 :
+                    a.Status == AlertStatus.Closed ? 3 : 4) // ...and Dismissed last
+                .ThenByDescending(a => a.CreatedAt)
                 .Page(pageNumber, rowsPerPage)
                 .AsNoTracking()
                 .ToListAsync();
