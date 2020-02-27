@@ -51,14 +51,13 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             _nyssContext = Substitute.For<INyssContext>();
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
-            _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
             _deleteUserService = Substitute.For<IDeleteUserService>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
             var applicationLanguages = new List<ApplicationLanguage>();
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock,
+            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock,
                 _deleteUserService, dateTimeProvider);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
@@ -270,18 +269,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
 
             _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSocieties[0]);
             _nyssContext.NationalSocieties.FindAsync(2).Returns(nationalSocieties[1]);
-
-
-            _nationalSocietyUserService.GetNationalSocietyUser<SupervisorUser>(Arg.Any<int>()).Returns(ci =>
-            {
-                var user = users.OfType<SupervisorUser>().FirstOrDefault(x => x.Id == (int)ci[0]);
-                if (user == null)
-                {
-                    throw new ResultException(ResultKey.User.Registration.UserNotFound);
-                }
-
-                return user;
-            });
         }
 
 
@@ -636,7 +623,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         }
 
         [Fact]
-        public async Task Remove_WhenRemovingNonExistentSupervisor_ReturnsError()
+        public async Task Delete_WhenRemovingNonExistentSupervisor_ReturnsError()
         {
             //Act
             var result = await _supervisorService.Delete(999);
@@ -678,7 +665,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         }
 
         [Fact]
-        public async Task Remove_WhenDeleting_EnsureCanDeleteUserIsCalled()
+        public async Task Delete_WhenDeleting_EnsureCanDeleteUserIsCalled()
         {
             //act
             await _supervisorService.Delete(_supervisorWithoutDataCollectorsId);
@@ -688,7 +675,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         }
 
         [Fact]
-        public async Task Remove_WhenDeletingSupervisorWithDataCollectors_ReturnsError()
+        public async Task Delete_WhenDeletingSupervisorWithDataCollectors_ReturnsError()
         {
             //act
             var result = await _supervisorService.Delete(_supervisorWithDataCollectorsId);
@@ -700,7 +687,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
 
 
         [Fact]
-        public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_ReturnsSuccess()
+        public async Task Delete_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_ReturnsSuccess()
         {
             //act
             var result = await _supervisorService.Delete(_supervisorWithDeletedDataCollectorsId);
@@ -710,7 +697,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         }
 
         [Fact]
-        public async Task Remove_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_SupervisorShouldBeSoftDeleted()
+        public async Task Delete_WhenDeletingSupervisorWithOnlyDeletedDataCollectors_SupervisorShouldBeSoftDeleted()
         {
             //arrange
             var supervisorBeingDeleted = _nyssContext.Users.FilterAvailable().Single(u => u.Id == _supervisorWithDeletedDataCollectorsId);
@@ -721,6 +708,20 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             //assert
             result.IsSuccess.ShouldBeTrue();
             supervisorBeingDeleted.DeletedAt.ShouldNotBeNull();
+        }
+
+        [Fact]
+        public async Task Delete_WhenDeletingSupervisor_ProjectReferenceShouldBeRemoved()
+        {
+            //arrange
+            var supervisorBeingDeleted = _nyssContext.Users.FilterAvailable().Single(u => u.Id == _supervisorWithDeletedDataCollectorsId);
+
+            //act
+            var result = await _supervisorService.Delete(_supervisorWithDeletedDataCollectorsId);
+
+            //assert
+            _nyssContext.SupervisorUserProjects.Received(1).Remove(Arg.Any<SupervisorUserProject>());
+            result.IsSuccess.ShouldBeTrue();
         }
     }
 }
