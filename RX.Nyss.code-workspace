@@ -1,0 +1,57 @@
+{
+  "folders": [
+    {
+      "path": "src/RX.Nyss.Common",
+    },
+    {
+      "path": "src/RX.Nyss.FuncApp",
+    },
+    {
+      "path": "src/RX.Nyss.ReportApi",
+    },
+    {
+      "path": "src/RX.Nyss.ReportFuncApp",
+    },
+    {
+      "path": "src/RX.Nyss.Web",
+    },
+    {
+      "path": "tests",
+      "name": "Tests"
+    }
+  ],
+  "settings": {},
+  "launch": {
+    "configurations": [
+      {
+        "name": "Attach",
+        "type": "coreclr",
+        "request": "attach",
+        "processId": "${command:pickProcess}"
+      }
+    ],
+    "compounds": [
+      {
+        "name": "Run everything",
+        "configurations": [
+          {
+            "folder": "RX.Nyss.ReportApi",
+            "name": "Run RX.Nyss.ReportApi"
+          },
+          {
+            "folder": "RX.Nyss.Web",
+            "name": "Run RX.Nyss.Web"
+          },
+          {
+            "folder": "RX.Nyss.FuncApp",
+            "name": "Run RX.Nyss.FuncApp"
+          },
+          {
+            "folder": "RX.Nyss.ReportFuncApp",
+            "name": "Run RX.Nyss.ReportFuncApp"
+          }
+        ]
+      }
+    ]
+  }
+}
