@@ -49,7 +49,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="reportId">An identifier of the report</param>
-        [HttpGet("{alertId:int}/acceptReport")]
+        [HttpPost("{alertId:int}/acceptReport")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId) =>
@@ -60,7 +60,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="reportId">An identifier of the report</param>
-        [HttpGet("{alertId:int}/dismissReport")]
+        [HttpPost("{alertId:int}/dismissReport")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId) =>
@@ -70,7 +70,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// Escalates the alert
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
-        [HttpGet("{alertId:int}/escalate")]
+        [HttpPost("{alertId:int}/escalate")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Escalate(int alertId) =>
@@ -80,7 +80,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// Dismisses the alert
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
-        [HttpGet("{alertId:int}/dismiss")]
+        [HttpPost("{alertId:int}/dismiss")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Dismiss(int alertId) =>

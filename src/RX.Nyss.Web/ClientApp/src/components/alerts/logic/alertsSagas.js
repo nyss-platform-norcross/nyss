@@ -78,7 +78,7 @@ function* acceptReport({ alertId, reportId }) {
 
   yield put(actions.acceptReport.request(reportId));
   try {
-    const response = yield call(http.get, `/api/alert/${alertId}/acceptReport?reportId=${reportId}`);
+    const response = yield call(http.post, `/api/alert/${alertId}/acceptReport?reportId=${reportId}`);
     const newAssessmentStatus = response.value.assessmentStatus;
     yield put(actions.acceptReport.success(reportId, newAssessmentStatus));
 
@@ -96,7 +96,7 @@ function* dismissReport({ alertId, reportId }) {
 
   yield put(actions.dismissReport.request(reportId));
   try {
-    const response = yield call(http.get, `/api/alert/${alertId}/dismissReport?reportId=${reportId}`);
+    const response = yield call(http.post, `/api/alert/${alertId}/dismissReport?reportId=${reportId}`);
     const newAssessmentStatus = response.value.assessmentStatus;
     yield put(actions.dismissReport.success(reportId, newAssessmentStatus));
 
@@ -113,7 +113,7 @@ function* escalateAlert({ alertId }) {
 
   yield put(actions.escalateAlert.request());
   try {
-    const response = yield call(http.get, `/api/alert/${alertId}/escalate`);
+    const response = yield call(http.post, `/api/alert/${alertId}/escalate`);
     yield put(actions.escalateAlert.success());
     yield put(actions.goToList(projectId))
     yield put(appActions.showMessage(response.value));
@@ -128,7 +128,7 @@ function* dismissAlert({ alertId }) {
 
   yield put(actions.dismissAlert.request());
   try {
-    yield call(http.get, `/api/alert/${alertId}/dismiss`);
+    yield call(http.post, `/api/alert/${alertId}/dismiss`);
     yield put(actions.dismissAlert.success());
     yield put(actions.goToList(projectId))
     yield put(appActions.showMessage(stringKeys.alerts.assess.alert.dismissedSuccessfully));
