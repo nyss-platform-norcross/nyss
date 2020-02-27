@@ -35,10 +35,27 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithKmThresholdOf1 = data.ProjectHealthRisks.FirstOrDefault(hr => hr.AlertRule.KilometersThreshold == 1);
 
+                var utcNow = DateTime.UtcNow;
                 var reportGroup = _reportGroupGenerator.Create("93DCD52C-4AD2-45F6-AED4-54CAB1DD3E19")
-                    .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.330898, 17.047525), DateTime.UtcNow)
-                    .AddReport(ReportStatus.New, projectHealthRiskWithKmThresholdOf1, _dataCollector, false, GetMockPoint(52.329331, 17.046055),
-                        DateTime.UtcNow.AddDays(-(double)projectHealthRiskWithKmThresholdOf1.AlertRule.DaysThreshold));
+                    .AddReport(ReportStatus.New,
+                        projectHealthRiskWithKmThresholdOf1,
+                        _dataCollector,
+                        false, GetMockPoint(52.330898, 17.047525), utcNow)
+                    .AddReport(ReportStatus.New,
+                        projectHealthRiskWithKmThresholdOf1,
+                        _dataCollector,
+                        false, GetMockPoint(52.329331, 17.046055),
+                        utcNow.AddDays(-(double)projectHealthRiskWithKmThresholdOf1.AlertRule.DaysThreshold))
+                    .AddReport(ReportStatus.New,
+                        projectHealthRiskWithKmThresholdOf1,
+                        _dataCollector,
+                        false, GetMockPoint(52.329331, 17.046055),
+                        utcNow.AddDays((double)projectHealthRiskWithKmThresholdOf1.AlertRule.DaysThreshold))
+                    .AddReport(ReportStatus.New,
+                        projectHealthRiskWithKmThresholdOf1,
+                        _dataCollector,
+                        false, GetMockPoint(52.329331, 17.046055),
+                        utcNow.AddDays((double)projectHealthRiskWithKmThresholdOf1.AlertRule.DaysThreshold + 10));
 
                 data.Reports = reportGroup.Reports;
             });
