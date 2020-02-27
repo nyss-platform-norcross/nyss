@@ -6,7 +6,7 @@ const validateField = (field, validators, formValues) => {
       if (validator.length !== 2) {
         throw new Error("Wrong validator structure");
       }
-
+      
       const isValid = validator[1](field.value, formValues);
 
       if (!isValid) {

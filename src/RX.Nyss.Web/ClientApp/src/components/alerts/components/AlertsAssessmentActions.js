@@ -1,6 +1,6 @@
 import styles from "./AlertsAssessmentActions.module.scss"
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { stringKeys, strings } from "../../../strings";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import FormActions from "../../forms/formActions/FormActions";
@@ -24,7 +24,7 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
     };
     const validation = { comments: [validators.maxLength(500)] };
     return createForm(fields, validation);
-  })
+  });
 
   const handleEscalateAlert = () => {
     if (form.fields.escalateWithoutNotification.value) {
