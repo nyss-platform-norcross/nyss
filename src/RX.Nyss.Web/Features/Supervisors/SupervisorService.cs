@@ -30,16 +30,14 @@ namespace RX.Nyss.Web.Features.Supervisors
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssContext _dataContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
-        private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
+        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext,
             ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IDateTimeProvider dateTimeProvider)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
-            _nationalSocietyUserService = nationalSocietyUserService;
             _dataContext = dataContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
@@ -137,12 +135,6 @@ namespace RX.Nyss.Web.Features.Supervisors
             try
             {
                 var supervisorUserData = await GetSupervisorUser(supervisorId);
-
-                if (supervisorUserData == null)
-                {
-                    _loggerAdapter.Debug($"A supervisor with id {supervisorId} was not found");
-                    return Error(ResultKey.User.Common.UserNotFound);
-                }
 
                 var supervisorUser = supervisorUserData.User;
 
