@@ -76,10 +76,3 @@ export const openModule = {
   failure: (message) =>
     ({ type: actions.OPEN_MODULE.FAILURE, message })
 };
-
-export const sendFeedback = {
-  invoke: (message) => ({ type: actions.SEND_FEEDBACK.INVOKE, message }),
-  request: () => ({ type: actions.SEND_FEEDBACK.REQUEST }),
-  success: () => ({ type: actions.SEND_FEEDBACK.SUCCESS, }),
-  failure: (message) => ({ type: actions.SEND_FEEDBACK.FAILURE, message })
-};

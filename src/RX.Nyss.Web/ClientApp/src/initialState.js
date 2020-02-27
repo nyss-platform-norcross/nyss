@@ -16,10 +16,7 @@ export const initialState = {
     },
     message: null,
     moduleError: null,
-    showStringsKeys: false,
-    feedback: {
-      isSending: false
-    }
+    showStringsKeys: false
   },
   requests: {
     isFetching: false,

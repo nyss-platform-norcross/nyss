@@ -16,4 +16,3 @@ export const SWITCH_STRINGS = "SWITCH_STRINGS";
 export const SET_APP_READY = "SET_APP_READY";
 export const PAGE_FOCUSED = "PAGE_FOCUSED";
 export const TOGGLE_SIDE_MENU = "TOGGLE_SIDE_MENU";
-export const SEND_FEEDBACK = action("SEND_FEEDBACK");
