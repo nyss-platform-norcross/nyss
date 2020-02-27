@@ -22,7 +22,14 @@
   ],
   "settings": {},
   "launch": {
-    "configurations": [],
+    "configurations": [
+      {
+        "name": "Attach",
+        "type": "coreclr",
+        "request": "attach",
+        "processId": "${command:pickProcess}"
+      }
+    ],
     "compounds": [
       {
         "name": "Run everything",
