@@ -11,6 +11,7 @@ import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
 import Icon from "@material-ui/core/Icon";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
+import { assessmentStatus } from "../logic/alertsConstants";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>
@@ -29,8 +30,9 @@ const getReportIcon = (status) => {
   }
 }
 
-export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, assessmentStatus, projectIsClosed }) => {
-  const showActions = assessmentStatus !== "Closed" && report.status === "Pending";
+export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, resetReport, status, projectIsClosed }) => {
+  const showActions = status !== assessmentStatus.closed && report.status === "Pending";
+  const showResetOption = report.status === "Accepted" || report.status === "Rejected";
 
   return (
     <ExpansionPanel>
@@ -88,6 +90,14 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
 
             {!showActions && (
               <div className={styles.reportStatus}>{strings(stringKeys.alerts.constants.reportStatus[report.status])}</div>
+            )}
+            
+            {showResetOption && (
+              <Fragment>
+                <SubmitButton onClick={() => resetReport(alertId, report.id)} isResetting={report.isResetting}>
+                  {strings(stringKeys.alerts.assess.report.reset)}
+                </SubmitButton>
+              </Fragment>
             )}
           </ExpansionPanelActions>
         </Fragment>

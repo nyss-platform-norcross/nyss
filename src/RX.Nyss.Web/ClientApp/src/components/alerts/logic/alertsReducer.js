@@ -96,9 +96,37 @@ export function alertsReducer(state = initialState.alerts, action) {
         ...state,
         formData: {
           ...state.formData,
-          reports: updateReport(state.formData.reports, action.reportId, { isDismissing: false })
+          reports: updateReport(state.formData.reports, action.reportId, { isResetting: false })
         }
       };
+
+      case actions.RESET_REPORT.REQUEST:
+        return {
+          ...state,
+          formData: {
+            ...state.formData,
+            reports: updateReport(state.formData.reports, action.reportId, { isResetting: true })
+          }
+        };
+  
+      case actions.RESET_REPORT.SUCCESS:
+        return {
+          ...state,
+          formData: {
+            ...state.formData,
+            assessmentStatus: action.assessmentStatus,
+            reports: updateReport(state.formData.reports, action.reportId, { isResetting: false, status: "Pending" })
+          }
+        };
+  
+      case actions.RESET_REPORT.FAILURE:
+        return {
+          ...state,
+          formData: {
+            ...state.formData,
+            reports: updateReport(state.formData.reports, action.reportId, { isResetting: false })
+          }
+        };
 
     case actions.ESCALATE_ALERT.REQUEST:
       return { ...state, formEscalating: true };

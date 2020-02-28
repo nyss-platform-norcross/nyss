@@ -67,6 +67,17 @@ namespace RX.Nyss.Web.Features.Alerts
             _alertReportService.DismissReport(alertId, reportId);
 
         /// <summary>
+        /// Resets the report
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        /// <param name="reportId">An identifier of the report</param>
+        [HttpPost("{alertId:int}/resetReport")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result<ResetReportResponseDto>> ResetReport(int alertId, int reportId) =>
+            _alertReportService.ResetReport(alertId, reportId);
+
+        /// <summary>
         /// Escalates the alert
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>

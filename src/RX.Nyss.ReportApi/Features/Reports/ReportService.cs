@@ -68,7 +68,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
         {
             try
             {
-                await _alertService.ReportDismissed(reportId);
+                await _alertService.ReportReset(reportId);
                 return true;
             }
             catch (Exception e)

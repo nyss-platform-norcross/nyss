@@ -695,6 +695,8 @@ export const stringKeys = {
         acceptedSuccessfully: "alerts.assess.report.acceptedSuccessfully",
         dismiss: "alerts.assess.report.dismiss",
         dismissedSuccessfully: "alerts.assess.report.dismissedSuccessfully",
+        reset: "alerts.assess.report.reset",
+        resetSuccessfully: "alerts.assess.report.resetSuccessfully",
         sender: "alerts.assess.report.sender",
         phoneNumber: "alerts.assess.report.phoneNumber",
         village: "alerts.assess.report.village",

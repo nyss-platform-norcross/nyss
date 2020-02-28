@@ -82,9 +82,10 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
               <AlertsAssessmentReport
                 report={report}
                 alertId={alertId}
-                assessmentStatus={data.assessmentStatus}
+                status={data.assessmentStatus}
                 acceptReport={props.acceptReport}
                 dismissReport={props.dismissReport}
+                resetReport={props.resetReport}
                 projectIsClosed={props.projectIsClosed}
               />
             </Grid>
@@ -135,6 +136,7 @@ const mapDispatchToProps = {
   openAssessment: alertsActions.openAssessment.invoke,
   acceptReport: alertsActions.acceptReport.invoke,
   dismissReport: alertsActions.dismissReport.invoke,
+  resetReport: alertsActions.resetReport.invoke,
   escalateAlert: alertsActions.escalateAlert.invoke,
   closeAlert: alertsActions.closeAlert.invoke,
   dismissAlert: alertsActions.dismissAlert.invoke,
