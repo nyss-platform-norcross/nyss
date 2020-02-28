@@ -127,7 +127,7 @@ namespace RX.Nyss.Web.Features.Alerts
             alertReport.Report.ResetAt = _dateTimeProvider.UtcNow;
             alertReport.Report.ResetBy = _authorizationService.GetCurrentUser();
 
-            ResetAlertReport(reportId);
+            await ResetAlertReport(reportId);
 
             await _nyssContext.SaveChangesAsync();
 
