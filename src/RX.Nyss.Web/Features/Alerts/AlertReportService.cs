@@ -18,6 +18,7 @@ namespace RX.Nyss.Web.Features.Alerts
     {
         Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId);
         Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId);
+        Task<Result<ResetReportResponseDto>> ResetReport(int alertId, int reportId);
     }
 
     public class AlertReportService : IAlertReportService
@@ -104,6 +105,33 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(response);
         }
 
+        public async Task<Result<ResetReportResponseDto>> ResetReport(int alertId, int reportId)
+        {
+            var alertReport = await _nyssContext.AlertReports
+                .Include(ar => ar.Alert)
+                .Include(ar => ar.Report)
+                .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
+                .SingleAsync();
+
+            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
+            {
+                return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongAlertStatus);
+            }
+
+            if (alertReport.Report.Status != ReportStatus.Accepted && alertReport.Report.Status != ReportStatus.Rejected)
+            {
+                return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongReportStatus);
+            }
+
+            alertReport.Report = ResetAlertReport(alertReport.Report);
+
+            await _nyssContext.SaveChangesAsync();
+
+            var response = new ResetReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
+
+            return Success(response);
+        }
+
         private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
             StatusConstants.AlertStatusesAllowingCrossChecks.Contains(alertReport.Alert.Status);
 
@@ -112,6 +140,31 @@ namespace RX.Nyss.Web.Features.Alerts
             var message = new DismissReportMessage { ReportId = reportId };
 
             return _queueService.Send(_config.ServiceBusQueues.ReportDismissalQueue, message);
+        }
+
+        private Report ResetAlertReport(Report report)
+        {
+            if (report.Status == ReportStatus.Accepted)
+            {
+                report.AcceptedAt = null;
+                report.AcceptedBy = null;
+            }
+            else
+            {
+                report.RejectedAt = null;
+                report.RejectedBy = null;
+                RetriggerAlertCalculation(report.Id);
+            }
+
+            report.Status = ReportStatus.Pending;
+            return report;
+        }
+
+        private Task RetriggerAlertCalculation(int reportId)
+        {
+            var message = new ResetReportMessage { ReportId = reportId };
+
+            return _queueService.Send(_config.ServiceBusQueues.ReportResetQueue, message);
         }
     }
 }
