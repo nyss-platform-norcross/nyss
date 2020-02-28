@@ -745,7 +745,8 @@ export const stringKeys = {
         "DismissedAlert": "alerts.logType.DismissedAlert",
         "ClosedAlert": "alerts.logType.ClosedAlert",
         "AcceptedReport": "alerts.logType.AcceptedReport",
-        "RejectedReport": "alerts.logType.RejectedReport"
+        "RejectedReport": "alerts.logType.RejectedReport",
+        "ResetReport": "alerts.logType.ResetReport"
       }
     },
     title: "alerts.title"

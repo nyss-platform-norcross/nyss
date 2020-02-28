@@ -25,6 +25,10 @@ namespace RX.Nyss.Data.Models
 
         public virtual User RejectedBy { get; set; }
 
+        public DateTime? ResetAt { get; set; }
+
+        public virtual User ResetBy { get; set; }
+
         public string ModifiedBy { get; set; }
 
         public ReportStatus Status { get; set; }

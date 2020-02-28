@@ -353,14 +353,16 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Select(lc => lc.Name)
                         .Single(),
                     Reports = a.AlertReports
-                        .Where(ar => ar.Report.Status == ReportStatus.Accepted || ar.Report.Status == ReportStatus.Rejected)
+                        .Where(ar => ar.Report.Status == ReportStatus.Accepted || ar.Report.Status == ReportStatus.Rejected || ar.Report.ResetAt.HasValue)
                         .Select(ar => new
                         {
                             ar.ReportId,
                             ar.Report.AcceptedAt,
                             ar.Report.RejectedAt,
+                            ar.Report.ResetAt,
                             AcceptedBy = ar.Report.AcceptedBy.Name,
-                            RejectedBy = ar.Report.RejectedBy.Name
+                            RejectedBy = ar.Report.RejectedBy.Name,
+                            ResetBy = ar.Report.ResetBy.Name
                         })
                         .ToList()
                 })
@@ -395,6 +397,11 @@ namespace RX.Nyss.Web.Features.Alerts
                 if (report.RejectedAt.HasValue)
                 {
                     list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.RejectedReport, report.RejectedAt.Value.ApplyTimeZone(timeZone), report.RejectedBy, new { report.ReportId }));
+                }
+
+                if (report.ResetAt.HasValue)
+                {
+                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ResetReport, report.ResetAt.Value.ApplyTimeZone(timeZone), report.ResetBy, new { report.ReportId }));
                 }
             }
 

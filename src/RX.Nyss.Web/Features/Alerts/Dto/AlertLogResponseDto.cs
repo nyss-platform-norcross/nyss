@@ -12,7 +12,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
             DismissedAlert,
             ClosedAlert,
             AcceptedReport,
-            RejectedReport
+            RejectedReport,
+            ResetReport
         }
 
         public DateTime CreatedAt { get; set; }

@@ -123,7 +123,11 @@ namespace RX.Nyss.Web.Features.Alerts
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongReportStatus);
             }
 
-            alertReport.Report = ResetAlertReport(alertReport.Report);
+            alertReport.Report.Status = ReportStatus.Pending;
+            alertReport.Report.ResetAt = _dateTimeProvider.UtcNow;
+            alertReport.Report.ResetBy = _authorizationService.GetCurrentUser();
+
+            ResetAlertReport(reportId);
 
             await _nyssContext.SaveChangesAsync();
 
@@ -142,25 +146,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return _queueService.Send(_config.ServiceBusQueues.ReportDismissalQueue, message);
         }
 
-        private Report ResetAlertReport(Report report)
-        {
-            if (report.Status == ReportStatus.Accepted)
-            {
-                report.AcceptedAt = null;
-                report.AcceptedBy = null;
-            }
-            else
-            {
-                report.RejectedAt = null;
-                report.RejectedBy = null;
-                RetriggerAlertCalculation(report.Id);
-            }
-
-            report.Status = ReportStatus.Pending;
-            return report;
-        }
-
-        private Task RetriggerAlertCalculation(int reportId)
+        private Task ResetAlertReport(int reportId)
         {
             var message = new ResetReportMessage { ReportId = reportId };
 
