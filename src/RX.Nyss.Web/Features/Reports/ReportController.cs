@@ -51,12 +51,25 @@ namespace RX.Nyss.Web.Features.Reports
         /// </summary>
         /// <param name="projectId">The ID of the project to export the reports from</param>
         /// <param name="filterRequest">The filters object</param>
-        [HttpPost("exportToExcel")]
+        [HttpPost("exportToCsv")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> Export(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
+        public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
         {
             var excelSheetBytes = await _reportService.Export(projectId, filterRequest);
             return File(excelSheetBytes, "text/csv");
+        }
+
+        /// <summary>
+        /// Export the list of reports in a project to a xlsx file.
+        /// </summary>
+        /// <param name="projectId">The ID of the project to export the reports from</param>
+        /// <param name="filterRequest">The filters object</param>
+        [HttpPost("exportToExcel")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
+        {
+            var excelSheetBytes = await _reportService.Export(projectId, filterRequest, useExcelFormat: true);
+            return File(excelSheetBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
         /// <summary>

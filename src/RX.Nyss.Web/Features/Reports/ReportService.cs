@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
@@ -32,7 +33,7 @@ namespace RX.Nyss.Web.Features.Reports
         Task<Result<ReportListFilterResponseDto>> GetFilters(int nationalSocietyId);
         Task<Result<HumanHealthRiskResponseDto>> GetHumanHealthRisksForProject(int projectId);
         Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto);
-        Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter);
+        Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter, bool useExcelFormat = false);
         Task<Result> MarkAsError(int reportId);
         IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
         IQueryable<Report> GetHealthRiskEventReportsQuery(ReportsFilter filters);
@@ -132,9 +133,10 @@ namespace RX.Nyss.Web.Features.Reports
             return Success(dto);
         }
 
-        public async Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter)
+        public async Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter, bool useExcelFormat = false)
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
+            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
 
             var reportsQuery = _nyssContext.RawReports
                 .Where(r => r.DataCollector.Project.Id == projectId)
@@ -158,6 +160,7 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(lc => lc.Name)
                         .Single(),
                     IsValid = r.Report != null,
+                    Status = GetReportStatus(r.Report != null, r.Report.MarkedAsError, stringResources),
                     MarkedAsError = r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
@@ -187,6 +190,14 @@ namespace RX.Nyss.Web.Features.Reports
             var reports = await reportsQuery.ToListAsync<IReportListResponseDto>();
 
             await UpdateTimeZoneInReports(projectId, reports);
+
+            if (useExcelFormat)
+            {
+                var documentTitle = GetStringResource(stringResources, "reports.export.title");
+                var columnLabels = GetColumnLabels(stringResources);
+                var excelDoc = _excelExportService.ToExcel(reports, columnLabels, documentTitle);
+                return excelDoc.GetAsByteArray();
+            }
 
             var excelSheet = await GetExcelData(reports);
             return excelSheet;
@@ -275,7 +286,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result> MarkAsError(int reportId) => await SetMarkedAsError(reportId, true);
 
-        public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports)
+        public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports, bool useExcelFormat = false)
         {
             var userName = _authorizationService.GetCurrentUserName();
             var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
@@ -319,7 +330,7 @@ namespace RX.Nyss.Web.Features.Reports
                 {
                     Date = report.DateTime.ToString("yyyy-MM-dd"),
                     Time = report.DateTime.ToString("HH:mm"),
-                    Status = GetReportStatus(report, stringResources),
+                    Status = report.Status,
                     report.DataCollectorDisplayName,
                     report.PhoneNumber,
                     report.Region,
@@ -348,11 +359,11 @@ namespace RX.Nyss.Web.Features.Reports
             return _excelExportService.ToCsv(reportData, columnLabels);
         }
 
-        private string GetReportStatus(ExportReportListResponseDto report, IDictionary<string, string> stringResources) =>
-            report.MarkedAsError switch
+        private static string GetReportStatus(bool isValid, bool markedAsError, IDictionary<string, string> stringResources) =>
+            markedAsError switch
             {
                 true => GetStringResource(stringResources, "reports.list.markedAsError"),
-                false => report.IsValid
+                false => isValid
                     ? GetStringResource(stringResources, "reports.list.success")
                     : GetStringResource(stringResources, "reports.list.error")
             };
@@ -419,7 +430,37 @@ namespace RX.Nyss.Web.Features.Reports
             return (baseQuery, result);
         }
 
-        private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
+        private List<string> GetColumnLabels(IDictionary<string, string> stringResources)
+        {
+            return new List<string>
+            {
+                GetStringResource(stringResources, "reports.export.date"),
+                GetStringResource(stringResources, "reports.export.time"),
+                GetStringResource(stringResources, "reports.list.status"),
+                GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
+                GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
+                GetStringResource(stringResources, "reports.list.region"),
+                GetStringResource(stringResources, "reports.list.district"),
+                GetStringResource(stringResources, "reports.list.village"),
+                GetStringResource(stringResources, "reports.list.zone"),
+                GetStringResource(stringResources, "reports.list.healthRisk"),
+                GetStringResource(stringResources, "reports.list.malesBelowFive"),
+                GetStringResource(stringResources, "reports.list.malesAtLeastFive"),
+                GetStringResource(stringResources, "reports.list.femalesBelowFive"),
+                GetStringResource(stringResources, "reports.list.femalesAtLeastFive"),
+                GetStringResource(stringResources, "reports.export.totalBelowFive"),
+                GetStringResource(stringResources, "reports.export.totalAtLeastFive"),
+                GetStringResource(stringResources, "reports.export.totalMale"),
+                GetStringResource(stringResources, "reports.export.totalFemale"),
+                GetStringResource(stringResources, "reports.export.total"),
+                GetStringResource(stringResources, "reports.export.location"),
+                GetStringResource(stringResources, "reports.export.message"),
+                GetStringResource(stringResources, "reports.export.epiYear"),
+                GetStringResource(stringResources, "reports.export.epiWeek")
+            };
+        }
+
+        private static string GetStringResource(IDictionary<string, string> stringResources, string key) =>
             stringResources.Keys.Contains(key)
                 ? stringResources[key]
                 : key;
