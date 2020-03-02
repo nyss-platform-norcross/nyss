@@ -35,5 +35,32 @@ namespace RX.Nyss.TestData.TestDataGeneration
 
             return (new List<Alert> { newAlert }, alertReports);
         }
+
+        public (List<Alert>, List<AlertReport>) AddEscalatedAlertForReports(List<Report> reports)
+        {
+            var projectHealthRisk = reports.First().ProjectHealthRisk;
+
+            var newAlert = new Alert
+            {
+                Id = _numerator.Next,
+                Status = AlertStatus.Escalated,
+                ProjectHealthRisk = projectHealthRisk,
+                AlertReports = new List<AlertReport>()
+            };
+            var alertReports = reports.Select(r => new AlertReport
+            {
+                Report = r,
+                ReportId = r.Id,
+                Alert = newAlert,
+                AlertId = newAlert.Id
+            }).ToList();
+            alertReports.ForEach(ar =>
+            {
+                newAlert.AlertReports.Add(ar);
+                ar.Report.ReportAlerts.Add(ar);
+            });
+
+            return (new List<Alert> { newAlert }, alertReports);
+        }
     }
 }

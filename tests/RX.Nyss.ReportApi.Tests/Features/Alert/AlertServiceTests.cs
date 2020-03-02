@@ -31,10 +31,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         private readonly IStringsResourcesService _stringsResourcesServiceMock;
         private readonly INyssReportApiConfig _nyssReportApiConfigMock;
         private readonly IDateTimeProvider _dateTimeProviderMock;
+        private readonly IReportLabelingService _reportLabelingServiceMock;
 
         public AlertServiceTests()
         {
-            var reportLabelingServiceMock = Substitute.For<IReportLabelingService>();
+            _reportLabelingServiceMock = Substitute.For<IReportLabelingService>();
             _queuePublisherServiceMock = Substitute.For<IQueuePublisherService>();
             _nyssReportApiConfigMock = Substitute.For<INyssReportApiConfig>();
             _nyssContextMock = Substitute.For<INyssContext>();
@@ -43,7 +44,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _dateTimeProviderMock = Substitute.For<IDateTimeProvider>();
             _alertService = new AlertService(
                 _nyssContextMock,
-                reportLabelingServiceMock,
+                _reportLabelingServiceMock,
                 _loggerAdapterMock,
                 _queuePublisherServiceMock,
                 _nyssReportApiConfigMock,
@@ -518,6 +519,78 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             //assert
             acceptedMovedReport.Status.ShouldBe(ReportStatus.Accepted);
             ;
+        }
+
+        [Fact]
+        public async Task ReportReset_WhenResettingDismissedReport_ShouldReturnSuccess()
+        {
+            //arrange
+            _testData.WhenADismissedReportIsReset.GenerateData().AddToDbContext();
+            var reportBeingReset = _testData.WhenADismissedReportIsReset.AdditionalData.ReportBeingReset;
+
+            //act
+            await _alertService.ReportReset(reportBeingReset.Id);
+
+            //assert
+            reportBeingReset.Status.ShouldBe(ReportStatus.Pending);
+        }
+
+        [Fact]
+        public async Task ReportReset_WhenResettingKeptReport_ShouldReturnSuccess()
+        {
+            //arrange
+            _testData.WhenAnAcceptedReportIsReset.GenerateData().AddToDbContext();
+            var reportBeingReset = _testData.WhenAnAcceptedReportIsReset.AdditionalData.ReportBeingReset;
+
+            //act
+            await _alertService.ReportReset(reportBeingReset.Id);
+
+            //assert
+            reportBeingReset.Status.ShouldBe(ReportStatus.Pending);
+        }
+
+        [Fact]
+        public async Task ReportReset_WhenResettingReportInEscalatedAlert_StatusOfReportShouldNotChange()
+        {
+            //arrange
+            _testData.WhenResettingAReportInAlertWithStatusNotPending.GenerateData().AddToDbContext();
+            var reportBeingReset = _testData.WhenResettingAReportInAlertWithStatusNotPending.AdditionalData.ReportBeingReset;
+
+            //act
+            await _alertService.ReportReset(reportBeingReset.Id);
+
+            //assert
+            reportBeingReset.Status.ShouldBe(ReportStatus.Accepted);
+        }
+
+        [Fact]
+        public async Task ReportReset_WhenResettingAcceptedReport_ShouldNotRecalculate()
+        {
+            //arrange
+            _testData.WhenAnAcceptedReportIsReset.GenerateData().AddToDbContext();
+            var reportBeingReset = _testData.WhenAnAcceptedReportIsReset.AdditionalData.ReportBeingReset;
+            var alertRule = _testData.WhenAnAcceptedReportIsReset.AdditionalData.AlertRule;
+
+            //act
+            await _alertService.ReportReset(reportBeingReset.Id);
+
+            //assert
+            await _reportLabelingServiceMock.Received(0).CalculateNewLabelsInLabelGroup(reportBeingReset.ReportGroupLabel, alertRule.KilometersThreshold.Value * 1000 * 2, reportBeingReset.Id);
+        }
+
+        [Fact]
+        public async Task ReportReset_WhenResettingDismissedReport_ShouldRecalculate()
+        {
+            //arrange
+            _testData.WhenADismissedReportIsReset.GenerateData().AddToDbContext();
+            var reportBeingReset = _testData.WhenADismissedReportIsReset.AdditionalData.ReportBeingReset;
+            var alertRule = _testData.WhenADismissedReportIsReset.AdditionalData.AlertRule;
+
+            //act
+            await _alertService.ReportReset(reportBeingReset.Id);
+
+            //assert
+            await _reportLabelingServiceMock.Received(1).CalculateNewLabelsInLabelGroup(reportBeingReset.ReportGroupLabel, alertRule.KilometersThreshold.Value * 1000 * 2, reportBeingReset.Id);
         }
 
         [Fact]

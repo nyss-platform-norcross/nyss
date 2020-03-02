@@ -188,6 +188,21 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             result.Value.AssessmentStatus.ShouldBe(alertAssessmentStatus);
         }
 
+        [Fact]
+        public async Task ResetReport_WhenAlertIsOpen_ShouldReturnSuccess()
+        {
+            var alertAssessmentStatus = AlertAssessmentStatus.Open;
+            _alertService.GetAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
+
+            _alertReports.First().Alert.Status = AlertStatus.Pending;
+            _alertReports.First().Report.Status = ReportStatus.Accepted;
+
+            var result = await _alertReportService.ResetReport(TestData.AlertId, TestData.ReportId);
+
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.AssessmentStatus.ShouldBe(alertAssessmentStatus);
+        }
+
         private static class TestData
         {
             public const int AlertId = 1;

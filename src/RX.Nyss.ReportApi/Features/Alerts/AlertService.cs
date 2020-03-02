@@ -147,15 +147,20 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 return;
             }
 
+            var shouldBeRecalculated = report.Status == ReportStatus.Rejected;
+            
             if (report.Status == ReportStatus.Accepted || report.Status == ReportStatus.Rejected)
             {
                 report.Status = ReportStatus.Pending;
             }
 
-            var alertRule = report.ProjectHealthRisk.AlertRule;
+            if (shouldBeRecalculated)
+            {
+                var alertRule = report.ProjectHealthRisk.AlertRule;
 
-            await RecalculateAlert(report, alertRule);
-            await RejectAlertWhenRequirementsAreNotMet(reportId, alertRule, inspectedAlert);
+                await RecalculateAlert(report, alertRule);
+                await RejectAlertWhenRequirementsAreNotMet(reportId, alertRule, inspectedAlert);
+            }
 
             await _nyssContext.SaveChangesAsync();
             transactionScope.Complete();
