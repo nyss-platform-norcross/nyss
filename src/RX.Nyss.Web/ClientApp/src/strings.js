@@ -556,6 +556,7 @@ export const stringKeys = {
       nonTraining: "reports.list.nonTraining",
       dcpReportListType: "reports.list.dcpReportListType",
       exportToExcel: "reports.list.exportToExcel",
+      exportToCsv: "reports.list.exportToCsv",
       successfulyMarkedAsError: "reports.list.successfulyMarkedAsError",
       markAsError: "reports.list.markAsError",
       markAsErrorConfirmation: "reports.list.markAsErrorConfirmation",

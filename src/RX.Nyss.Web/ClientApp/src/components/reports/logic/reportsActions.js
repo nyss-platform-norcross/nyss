@@ -2,7 +2,7 @@ import { push } from "connected-react-router";
 import {
   OPEN_REPORTS_LIST, GET_REPORTS,
   OPEN_REPORT_EDITION, EDIT_REPORT,
-  EXPORT_TO_EXCEL, MARK_AS_ERROR
+  EXPORT_TO_EXCEL, MARK_AS_ERROR, EXPORT_TO_CSV
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
@@ -41,6 +41,13 @@ export const exportToExcel = {
   request: () => ({ type: EXPORT_TO_EXCEL.REQUEST }),
   success: () => ({ type: EXPORT_TO_EXCEL.SUCCESS }),
   failure: (message) => ({ type: EXPORT_TO_EXCEL.FAILURE, message })
+};
+
+export const exportToCsv = {
+  invoke: (projectId, filters, sorting) => ({ type: EXPORT_TO_CSV.INVOKE, projectId, filters, sorting }),
+  request: () => ({ type: EXPORT_TO_CSV.REQUEST }),
+  success: () => ({ type: EXPORT_TO_CSV.SUCCESS }),
+  failure: (message) => ({ type: EXPORT_TO_CSV.FAILURE, message })
 };
 
 export const markAsError = {

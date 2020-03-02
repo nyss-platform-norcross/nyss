@@ -49,6 +49,10 @@ const ReportsListPageComponent = (props) => {
           </TableActionsButton>
         </Hidden>
 
+        <TableActionsButton onClick={() => props.exportToCsv(props.projectId, props.filters, props.sorting)}>
+          {strings(stringKeys.reports.list.exportToCsv)}
+        </TableActionsButton>
+
         <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters, props.sorting)}>
           {strings(stringKeys.reports.list.exportToExcel)}
         </TableActionsButton>
@@ -111,6 +115,7 @@ const mapDispatchToProps = {
   openReportsList: reportsActions.openList.invoke,
   getList: reportsActions.getList.invoke,
   exportToExcel: reportsActions.exportToExcel.invoke,
+  exportToCsv: reportsActions.exportToCsv.invoke,
   markAsError: reportsActions.markAsError.invoke,
   goToEdition: reportsActions.goToEdition
 };

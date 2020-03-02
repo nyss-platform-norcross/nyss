@@ -14,7 +14,8 @@ export const reportsSagas = () => [
   takeEvery(consts.GET_REPORTS.INVOKE, getReports),
   takeEvery(consts.OPEN_REPORT_EDITION.INVOKE, openReportEdition),
   takeEvery(consts.EDIT_REPORT.INVOKE, editReport),
-  takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExportData),
+  takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExcelExportData),
+  takeEvery(consts.EXPORT_TO_CSV.INVOKE, getCsvExportData),
   takeEvery(consts.MARK_AS_ERROR.INVOKE, markAsError)
 ];
 
@@ -89,12 +90,27 @@ function* editReport({ projectId, reportId, data }) {
   }
 };
 
-function* getExportData({ projectId, filters, sorting }) {
+function* getCsvExportData({ projectId, filters, sorting }) {
+  yield put(actions.exportToExcel.request());
+  try {
+    yield downloadFile({
+      url: `/api/report/exportToCsv?projectId=${projectId}`,
+      fileName: `reports.csv`,
+      data: { ...filters, ...sorting }
+    });
+
+    yield put(actions.exportToExcel.success());
+  } catch (error) {
+    yield put(actions.exportToExcel.failure(error.message));
+  }
+};
+
+function* getExcelExportData({ projectId, filters, sorting }) {
   yield put(actions.exportToExcel.request());
   try {
     yield downloadFile({
       url: `/api/report/exportToExcel?projectId=${projectId}`,
-      fileName: `reports.csv`,
+      fileName: `reports.xlsx`,
       data: { ...filters, ...sorting }
     });
 
