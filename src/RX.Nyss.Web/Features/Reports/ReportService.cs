@@ -139,18 +139,14 @@ namespace RX.Nyss.Web.Features.Reports
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
 
             var reportsQuery = _nyssContext.RawReports
-                .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.ReportsType == ReportListType.FromDcp
-                    ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
-                    : r.DataCollector.DataCollectorType == DataCollectorType.Human)
-                .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
+                .FilterByProject(projectId)
+                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByTrainingMode(filter.IsTraining)
+                .FilterByDataCollectorType(filter.ReportsType == ReportListType.FromDcp ? DataCollectorType.CollectionPoint : DataCollectorType.Human)
+                .FilterByArea(MapToArea(filter.Area))
                 .Where(r => filter.Status
                     ? r.Report != null && !r.Report.MarkedAsError
                     : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
-                .Where(r => filter.IsTraining
-                    ? r.IsTraining.HasValue && r.IsTraining.Value
-                    : r.IsTraining.HasValue && !r.IsTraining.Value)
-                .FilterByArea(MapToArea(filter.Area))
                 .Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,
@@ -380,18 +376,14 @@ namespace RX.Nyss.Web.Features.Reports
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
 
             var baseQuery = _nyssContext.RawReports
-                .Where(r => r.DataCollector.Project.Id == projectId)
-                .Where(r => filter.ReportsType == ReportListType.FromDcp
-                    ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
-                    : r.DataCollector.DataCollectorType == DataCollectorType.Human)
-                .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
+                .FilterByProject(projectId)
+                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByTrainingMode(filter.IsTraining)
+                .FilterByDataCollectorType(filter.ReportsType == ReportListType.FromDcp ? DataCollectorType.CollectionPoint : DataCollectorType.Human)
+                .FilterByArea(MapToArea(filter.Area))
                 .Where(r => filter.Status
                     ? r.Report != null && !r.Report.MarkedAsError
-                    : r.Report == null || r.Report.MarkedAsError)
-                .Where(r => filter.IsTraining
-                    ? r.IsTraining.HasValue && r.IsTraining.Value
-                    : r.IsTraining.HasValue && !r.IsTraining.Value)
-                .FilterByArea(MapToArea(filter.Area));
+                    : r.Report == null || r.Report.MarkedAsError);
 
             var result = baseQuery.Select(r => new ReportListResponseDto
                 {
