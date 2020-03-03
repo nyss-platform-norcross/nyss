@@ -189,14 +189,10 @@ namespace RX.Nyss.Web.Features.Reports
 
             if (useExcelFormat)
             {
-                var documentTitle = GetStringResource(stringResources, "reports.export.title");
-                var columnLabels = GetColumnLabels(stringResources);
-                var excelDoc = _excelExportService.ToExcel(reports, columnLabels, documentTitle);
-                return excelDoc.GetAsByteArray();
+                return GetExcelData(reports, stringResources);
             }
 
-            var excelSheet = await GetExcelData(reports);
-            return excelSheet;
+            return await GetCsvData(reports);
         }
 
         public async Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto)
@@ -282,7 +278,15 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result> MarkAsError(int reportId) => await SetMarkedAsError(reportId, true);
 
-        public async Task<byte[]> GetExcelData(List<IReportListResponseDto> reports, bool useExcelFormat = false)
+        private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, string> stringResources)
+        {
+            var documentTitle = GetStringResource(stringResources, "reports.export.title");
+            var columnLabels = GetColumnLabels(stringResources);
+            var excelDoc = _excelExportService.ToExcel(reports, columnLabels, documentTitle);
+            return excelDoc.GetAsByteArray();
+        }
+
+        private async Task<byte[]> GetCsvData(List<IReportListResponseDto> reports)
         {
             var userName = _authorizationService.GetCurrentUserName();
             var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
@@ -292,32 +296,7 @@ namespace RX.Nyss.Web.Features.Reports
 
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
 
-            var columnLabels = new List<string>
-            {
-                GetStringResource(stringResources, "reports.export.date"),
-                GetStringResource(stringResources, "reports.export.time"),
-                GetStringResource(stringResources, "reports.list.status"),
-                GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
-                GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
-                GetStringResource(stringResources, "reports.list.region"),
-                GetStringResource(stringResources, "reports.list.district"),
-                GetStringResource(stringResources, "reports.list.village"),
-                GetStringResource(stringResources, "reports.list.zone"),
-                GetStringResource(stringResources, "reports.list.healthRisk"),
-                GetStringResource(stringResources, "reports.list.malesBelowFive"),
-                GetStringResource(stringResources, "reports.list.malesAtLeastFive"),
-                GetStringResource(stringResources, "reports.list.femalesBelowFive"),
-                GetStringResource(stringResources, "reports.list.femalesAtLeastFive"),
-                GetStringResource(stringResources, "reports.export.totalBelowFive"),
-                GetStringResource(stringResources, "reports.export.totalAtLeastFive"),
-                GetStringResource(stringResources, "reports.export.totalMale"),
-                GetStringResource(stringResources, "reports.export.totalFemale"),
-                GetStringResource(stringResources, "reports.export.total"),
-                GetStringResource(stringResources, "reports.export.location"),
-                GetStringResource(stringResources, "reports.export.message"),
-                GetStringResource(stringResources, "reports.export.epiYear"),
-                GetStringResource(stringResources, "reports.export.epiWeek")
-            };
+            var columnLabels = GetColumnLabels(stringResources);
 
             var reportData = reports.Select(r =>
             {
@@ -344,7 +323,7 @@ namespace RX.Nyss.Web.Features.Reports
                     TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
                     Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
                     Location = report.Location != null
-                        ? $"{report.Location.Y}/{report.Location.Coordinate.X}"
+                        ? $"{report.Location.Y}/{report.Location.X}"
                         : "",
                     report.Message,
                     EpiYear = report.EpiWeek,

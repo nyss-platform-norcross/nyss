@@ -88,6 +88,10 @@ namespace RX.Nyss.Web.Services
                 worksheet.Cells[columnIndex, 23].Value = data.EpiWeek;
             }
 
+            worksheet.Column(1).Width = 20;
+            worksheet.Column(5).Width = 20;
+            worksheet.Column(20).Width = 30;
+
             return package;
         }
 

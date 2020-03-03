@@ -85,7 +85,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return GetCsvData(dataCollectors, stringResources);
         }
 
-        public byte[] GetCsvData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
+        private byte[] GetCsvData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
         {
             var columnLabels = new List<string>
             {
@@ -129,7 +129,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return _excelExportService.ToCsv(dataCollectorsData, columnLabels);
         }
 
-        public ExcelPackage GetExcelData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
+        private ExcelPackage GetExcelData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
         {
             var columnLabels = new List<string>
             {
@@ -182,6 +182,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 worksheet.Cells[index, 14].Value = dataCollector.Supervisor;
                 worksheet.Cells[index, 15].Value = dataCollector.TrainingStatus;
             }
+
+            worksheet.Column(1).Width = 20;
+            worksheet.Column(4).Width = 20;
 
             return package;
         }
