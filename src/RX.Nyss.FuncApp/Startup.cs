@@ -44,6 +44,8 @@ namespace RX.Nyss.FuncApp
             builder.Services.AddHttpClient();
             builder.Services.AddLogging();
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<IWhitelistValidator, WhitelistValidator>();
+            builder.Services.AddScoped<ISmsService, SmsService>();
             builder.Services.AddSingleton<IHttpPostClient, HttpPostClient>();
             
             if (nyssFuncAppConfig.MailConfig.UseSendGrid)

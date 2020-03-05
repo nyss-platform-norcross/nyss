@@ -7,6 +7,7 @@
     "SERVICEBUS_CONNECTIONSTRING": "",
     "SERVICEBUS_REPORTQUEUE": "nrx-cbs-nyss-bus-report-queue-dev",
     "SERVICEBUS_SENDEMAILQUEUE": "nrx-cbs-nyss-bus-send-email-queue-dev",
+    "SERVICEBUS_SENDSMSQUEUE": "nrx-cbs-nyss-bus-send-sms-queue-dev",
     "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys.txt",
     "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses.txt",
     "WhitelistedPhoneNumbersBlobPath": "sms-gateway/whitelisted-phone-numbers.txt"
@@ -27,6 +28,9 @@
       "SendMailUrl": "https://api.sendgrid.com/v3/mail/send",
       "ApiKey": ""
     }
+  },
+  "ConnectionStrings": {
+    "IotHubService": ""
   },
   "Host": {
     "LocalHttpPort": 7070

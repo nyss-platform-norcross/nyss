@@ -17,12 +17,14 @@ namespace RX.Nyss.FuncApp.Services
         private readonly IConfig _config;
         private readonly IEmailClient _emailClient;
         private readonly ILogger<EmailService> _logger;
+        private readonly IWhitelistValidator _whitelistValidator;
 
-        public EmailService(ILogger<EmailService> logger, IConfig config, IEmailClient emailClient)
+        public EmailService(ILogger<EmailService> logger, IConfig config, IEmailClient emailClient, IWhitelistValidator whitelistValidator)
         {
             _logger = logger;
             _config = config;
             _emailClient = emailClient;
+            _whitelistValidator = whitelistValidator;
         }
 
         public async Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers)
@@ -31,7 +33,7 @@ namespace RX.Nyss.FuncApp.Services
             {
                 if (_config.MailConfig.EnableFeedbackSms)
                 {
-                    var sandboxMode = !(_config.MailConfig.SendFeedbackSmsToAll || IsWhiteListedPhoneNumber(message.Subject, whitelistedPhoneNumbers));
+                    var sandboxMode = !(_config.MailConfig.SendFeedbackSmsToAll || _whitelistValidator.IsWhiteListedPhoneNumber(message.Subject, whitelistedPhoneNumbers));
                     await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
                 }
             }
@@ -40,58 +42,12 @@ namespace RX.Nyss.FuncApp.Services
                 var sandboxMode = false;
                 if (!_config.MailConfig.SendToAll)
                 {
-                    sandboxMode = !IsWhitelistedEmailAddress(whitelistedEmailAddresses, message.To.Email);
+                    sandboxMode = !_whitelistValidator.IsWhitelistedEmailAddress(whitelistedEmailAddresses, message.To.Email);
                 }
 
                 _logger.LogDebug($"Sending email to '{message.To.Email.Substring(0, Math.Min(message.To.Email.Length, 4))}...' SandboxMode: {sandboxMode}");
                 await _emailClient.SendEmail(message, sandboxMode);
             }
-        }
-
-        private bool IsWhitelistedEmailAddress(string whitelistedEmailAddresses, string email)
-        {
-            if (string.IsNullOrWhiteSpace(whitelistedEmailAddresses))
-            {
-                _logger.Log(LogLevel.Critical, "The email whitelist is empty.");
-                return false;
-            }
-
-            var whitelist = whitelistedEmailAddresses
-                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => x.Trim());
-
-            var isWhitelisted = whitelist.Contains(email);
-            if (isWhitelisted)
-            {
-                _logger.Log(LogLevel.Information, $"{email} found on the email address whitelist");
-            }
-
-            return isWhitelisted;
-        }
-
-        private bool IsWhiteListedPhoneNumber(string phoneNumber, string whitelistedPhoneNumbers)
-        {
-            if (string.IsNullOrWhiteSpace(whitelistedPhoneNumbers))
-            {
-                _logger.Log(LogLevel.Critical, "The sms whitelist is empty.");
-                return false;
-            }
-
-            var whitelist = whitelistedPhoneNumbers
-                .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => x.Trim());
-
-            var isWhitelisted = whitelist.Contains(phoneNumber);
-            if (isWhitelisted)
-            {
-                _logger.Log(LogLevel.Information, $"{phoneNumber} found on the sms whitelist");
-            }
-            else
-            {
-                _logger.LogWarning($"Phone number: {phoneNumber} not whitelisted. Skip sending email.");
-            }
-
-            return isWhitelisted;
         }
     }
 }

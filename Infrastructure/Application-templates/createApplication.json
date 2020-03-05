@@ -87,6 +87,7 @@
     "serviceBusNamespaceNameStaging": "[concat('nrx-cbs-nyss-bus-stg-', parameters('env'))]",
     "reportQueueName": "[concat('nrx-cbs-nyss-bus-report-queue-', parameters('env'))]",
     "sendEmailQueueName": "[concat('nrx-cbs-nyss-bus-send-email-queue-', parameters('env'))]",
+    "sendSmsQueueName": "[concat('nrx-cbs-nyss-bus-send-sms-queue-', parameters('env'))]",
     "reportDismissalQueue": "[concat('nrx-cbs-nyss-bus-report-dismissal-queue-', parameters('env'))]",
     "checkAlertQueue": "[concat('nrx-cbs-nyss-bus-check-alert-queue-', parameters('env'))]",
     "defaultSASKeyName": "RootManageSharedAccessKey",
@@ -601,6 +602,28 @@
             "enablePartitioning": false,
             "enableExpress": false
           }
+        },
+        {
+          "apiVersion": "2017-04-01",
+          "name": "[variables('sendSmsQueueName')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceName')))]",
+          "type": "queues",
+          "dependsOn": [
+            "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+          ],
+          "properties": {
+            "lockDuration": "PT1M",
+            "maxSizeInMegabytes": 1024,
+            "requiresDuplicateDetection": false,
+            "requiresSession": false,
+            "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+            "duplicateDetectionHistoryTimeWindow": "PT10M",
+            "deadLetteringOnMessageExpiration": true,
+            "maxDeliveryCount": 1,
+            "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+            "enablePartitioning": false,
+            "enableExpress": false
+          }
         }
       ]
     },
@@ -686,6 +709,28 @@
         {
           "apiVersion": "2017-04-01",
           "name": "[variables('checkAlertQueue')]",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
+          "type": "queues",
+          "dependsOn": [
+            "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceNameStaging'))]"
+          ],
+          "properties": {
+            "lockDuration": "PT1M",
+            "maxSizeInMegabytes": 1024,
+            "requiresDuplicateDetection": false,
+            "requiresSession": false,
+            "defaultMessageTimeToLive": "P10675199DT2H48M5.4775807S",
+            "duplicateDetectionHistoryTimeWindow": "PT10M",
+            "deadLetteringOnMessageExpiration": true,
+            "maxDeliveryCount": 1,
+            "autoDeleteOnIdle": "P10675199DT2H48M5.4775807S",
+            "enablePartitioning": false,
+            "enableExpress": false
+          }
+        },
+        {
+          "apiVersion": "2017-04-01",
+          "name": "[variables('sendSmsQueueName')]",
           "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('serviceBusNamespaceNameStaging')))]",
           "type": "queues",
           "dependsOn": [
@@ -907,18 +952,15 @@
       "name": "[variables('iotHubName')]",
       "location": "[variables('location')]",
       "sku": {
-        "name": "F1",
+        "name": "S1",
         "capacity": 1
       },
       "properties": {
         "eventHubEndpoints": {
           "events": {
             "retentionTimeInDays": 1,
-            "partitionCount": 1
+            "partitionCount": 2
           }
-        },
-        "cloudToDevice": {
-
         }
       }
     }
