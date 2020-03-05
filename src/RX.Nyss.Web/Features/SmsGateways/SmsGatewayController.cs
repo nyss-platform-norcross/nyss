@@ -68,5 +68,16 @@ namespace RX.Nyss.Web.Features.SmsGateways
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
         public Task<Result> Delete(int smsGatewayId) =>
             _smsGatewayService.Delete(smsGatewayId);
+
+        /// <summary>
+        /// Get the connectionstring that the SMSGateway should use as a device in order to connect to the IotHub.
+        /// </summary>
+        /// <param name="smsGatewayId">SmsGateway identifier</param>
+        /// <returns></returns>
+        [HttpGet("{smsGatewayId:int}/getIotHubConnectionstring")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
+        public Task<Result> GetIotHubConnectionString(int smsGatewayId) =>
+            _smsGatewayService.GetIotHubConnectionString(smsGatewayId);
+
     }
 }

@@ -14,6 +14,7 @@ namespace RX.Nyss.FuncApp.Tests
         private readonly ILogger<EmailService> _loggerMock;
         private readonly IConfig _configurationMock;
         private readonly IEmailClient _emailClientMock;
+        private readonly IWhitelistValidator _whitelistValidator;
 
         public EmailServiceTests()
         {
@@ -21,10 +22,12 @@ namespace RX.Nyss.FuncApp.Tests
             _configurationMock = Substitute.For<IConfig>();
             _configurationMock.MailConfig = new NyssFuncAppConfig.MailConfigOptions() { EnableFeedbackSms = true };
             _emailClientMock = Substitute.For<IEmailClient>();
+            _whitelistValidator = Substitute.For<IWhitelistValidator>();
             _emailService = new EmailService(
                 _loggerMock,
                 _configurationMock,
-                _emailClientMock);
+                _emailClientMock,
+                _whitelistValidator);
         }
 
         [Theory]
