@@ -843,6 +843,19 @@
               "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', variables('generalStorageAccountName'), '/blobServices/default')]"
               ]
+            },
+            {
+              "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('generalStorageAccountName')))]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "name": "nrxcbsnyssstdev/default/insights-logs-connections",
+              "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', 'nrxcbsnyssstdev', 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', 'nrxcbsnyssstdev')]"
+              ],
+              "properties": {
+                "publicAccess": "None"
+              }
             }
           ]
         }
@@ -951,6 +964,7 @@
       "apiVersion": "2019-11-04",
       "name": "[variables('iotHubName')]",
       "location": "[variables('location')]",
+      "condition": "[not(equals(parameters('env'), 'test'))]",
       "sku": {
         "name": "S1",
         "capacity": 1
@@ -959,7 +973,7 @@
         "eventHubEndpoints": {
           "events": {
             "retentionTimeInDays": 1,
-            "partitionCount": 2
+            "partitionCount": 1
           }
         }
       }
