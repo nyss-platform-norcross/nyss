@@ -35,6 +35,8 @@ namespace RX.Nyss.FuncApp.Services
 
             if (isWhitelisted)
             {
+                _logger.LogDebug($"Sending sms to phone number starting with '{message.PhoneNumber.Substring(0, Math.Min(message.PhoneNumber.Length, 4))}...' through IOT device {message.IotHubDeviceName}...");
+
                 var cloudToDeviceMethod = new CloudToDeviceMethod("send_sms", TimeSpan.FromSeconds(30));
                 cloudToDeviceMethod.SetPayloadJson(JsonSerializer.Serialize(new
                 {
@@ -42,7 +44,12 @@ namespace RX.Nyss.FuncApp.Services
                     Message = message.SmsMessage
                 }));
 
-                await _iotHubServiceClient.InvokeDeviceMethodAsync(message.IotHubDeviceName, cloudToDeviceMethod);
+                var response = await _iotHubServiceClient.InvokeDeviceMethodAsync(message.IotHubDeviceName, cloudToDeviceMethod);
+
+                if(response.Status != 200)
+                {
+                    throw new Exception($"Failed to send sms to device {message.IotHubDeviceName}, {response.GetPayloadAsJson()}");
+                }
             }
         }
     }

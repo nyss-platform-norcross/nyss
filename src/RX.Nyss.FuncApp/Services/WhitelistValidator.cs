@@ -55,11 +55,11 @@ namespace RX.Nyss.FuncApp.Services
             var isWhitelisted = whitelist.Contains(phoneNumber);
             if (isWhitelisted)
             {
-                _logger.Log(LogLevel.Information, $"{phoneNumber} found on the sms whitelist");
+                _logger.Log(LogLevel.Information, $"{phoneNumber} found on the sms whitelist.");
             }
             else
             {
-                _logger.LogWarning($"Phone number: {phoneNumber} not whitelisted. Skip sending email.");
+                _logger.LogWarning($"Phone number: {phoneNumber} not whitelisted.");
             }
 
             return isWhitelisted;
