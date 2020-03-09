@@ -17,6 +17,8 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import CheckboxField from '../forms/CheckboxField';
+import * as roles from '../../authentication/roles'
 
 const SmsGatewaysEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
@@ -24,6 +26,9 @@ const SmsGatewaysEditPageComponent = (props) => {
   useMount(() => {
     props.openEdition(props.nationalSocietyId, props.smsGatewayId);
   });
+
+
+  const canEditIotHub = props.user && props.user.roles.some(userRole => userRole === roles.Administrator);
 
   useEffect(() => {
     if (!props.data) {
@@ -36,6 +41,8 @@ const SmsGatewaysEditPageComponent = (props) => {
       apiKey: props.data.apiKey,
       gatewayType: props.data.gatewayType.toString(),
       emailAddress: props.data.emailAddress,
+      useIotHub: props.data.useIotHub,
+      iotHubDeviceName: props.data.iotHubDeviceName
     };
 
     const validation = {
@@ -61,7 +68,8 @@ const SmsGatewaysEditPageComponent = (props) => {
       name: values.name,
       apiKey: values.apiKey,
       gatewayType: values.gatewayType,
-      emailAddress: values.emailAddress
+      emailAddress: values.emailAddress,
+      useIotHub: values.useIotHub
     });
   };
 
@@ -114,6 +122,28 @@ const SmsGatewaysEditPageComponent = (props) => {
               ))}
             </SelectInput>
           </Grid>
+          {canEditIotHub &&
+            <Grid item xs={12}>
+              <CheckboxField label={strings(stringKeys.smsGateway.form.useIotHub)} field={form.fields.useIotHub}></CheckboxField>
+            </Grid>
+          }
+
+          {props.data && props.data.useIotHub && canEditIotHub && (
+            <Fragment>
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.smsGateway.form.iotHubDeviceName)}
+                  disabled
+                  field={form.fields.iotHubDeviceName}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <SubmitButton regular onClick={() => props.pingIotDevice(props.smsGatewayId)} isFetching={props.pinging}>
+                  {strings(stringKeys.smsGateway.form.ping)}
+                </SubmitButton>
+              </Grid>
+            </Fragment>
+          )}
         </Grid>
 
         <FormActions>
@@ -134,13 +164,16 @@ const mapStateToProps = (state, ownProps) => ({
   isFetching: state.smsGateways.formFetching,
   isSaving: state.smsGateways.formSaving,
   data: state.smsGateways.formData,
-  error: state.smsGateways.formError
+  error: state.smsGateways.formError,
+  pinging: state.smsGateways.pinging,
+  user: state.appData.user
 });
 
 const mapDispatchToProps = {
   openEdition: smsGatewaysActions.openEdition.invoke,
   edit: smsGatewaysActions.edit.invoke,
-  goToList: smsGatewaysActions.goToList
+  goToList: smsGatewaysActions.goToList,
+  pingIotDevice: smsGatewaysActions.pingIotDevice.invoke
 };
 
 export const SmsGatewaysEditPage = useLayout(

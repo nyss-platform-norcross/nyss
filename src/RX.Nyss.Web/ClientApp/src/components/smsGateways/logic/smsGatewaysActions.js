@@ -3,7 +3,7 @@ import {
   OPEN_SMS_GATEWAYS_LIST, GET_SMS_GATEWAYS,
   OPEN_SMS_GATEWAY_CREATION, CREATE_SMS_GATEWAY,
   OPEN_SMS_GATEWAY_EDITION, EDIT_SMS_GATEWAY,
-  REMOVE_SMS_GATEWAY
+  REMOVE_SMS_GATEWAY, PING_IOT_DEVICE
 } from "./smsGatewaysConstants";
 
 export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/smsgateways`);
@@ -57,4 +57,11 @@ export const remove = {
   request: (id) => ({ type: REMOVE_SMS_GATEWAY.REQUEST, id }),
   success: (id) => ({ type: REMOVE_SMS_GATEWAY.SUCCESS, id }),
   failure: (id, message) => ({ type: REMOVE_SMS_GATEWAY.FAILURE, id, message })
+};
+
+export const pingIotDevice = {
+  invoke: (smsGatewayId) => ({ type: PING_IOT_DEVICE.INVOKE, smsGatewayId }),
+  request: (smsGatewayId) => ({ type: PING_IOT_DEVICE.REQUEST, smsGatewayId }),
+  success: (smsGatewayId) => ({ type: PING_IOT_DEVICE.SUCCESS, smsGatewayId }),
+  failure: (smsGatewayId, message) => ({ type: PING_IOT_DEVICE.FAILURE, smsGatewayId, message })
 };

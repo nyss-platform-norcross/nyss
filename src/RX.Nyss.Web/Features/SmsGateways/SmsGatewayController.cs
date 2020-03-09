@@ -79,5 +79,14 @@ namespace RX.Nyss.Web.Features.SmsGateways
         public Task<Result> GetIotHubConnectionString(int smsGatewayId) =>
             _smsGatewayService.GetIotHubConnectionString(smsGatewayId);
 
+        /// <summary>
+        /// Ping the IoT device the SMSGateway is set up to use.
+        /// </summary>
+        /// <param name="smsGatewayId">SmsGateway identifier</param>
+        /// <returns></returns>
+        [HttpPost("{smsGatewayId:int}/ping")]
+        [NeedsRole(Role.Administrator), NeedsPolicy(Policy.SmsGatewayAccess)]
+        public Task<Result> PingGatewayDevice(int smsGatewayId) =>
+            _smsGatewayService.PingIotHubDevice(smsGatewayId);
     }
 }

@@ -12,7 +12,8 @@ export const smsGatewaysSagas = () => [
   takeEvery(consts.OPEN_SMS_GATEWAY_EDITION.INVOKE, openSmsGatewayEdition),
   takeEvery(consts.CREATE_SMS_GATEWAY.INVOKE, createSmsGateway),
   takeEvery(consts.EDIT_SMS_GATEWAY.INVOKE, editSmsGateway),
-  takeEvery(consts.REMOVE_SMS_GATEWAY.INVOKE, removeSmsGateway)
+  takeEvery(consts.REMOVE_SMS_GATEWAY.INVOKE, removeSmsGateway),
+  takeEvery(consts.PING_IOT_DEVICE.INVOKE, pingIotDevice)
 ];
 
 function* openSmsGatewaysList({ nationalSocietyId }) {
@@ -96,6 +97,18 @@ function* getSmsGateways(nationalSocietyId) {
     yield put(actions.getList.failure(error.message));
   }
 };
+
+function* pingIotDevice({ smsGatewayId }) {
+  yield put(actions.pingIotDevice.request());
+  try {
+    const response = yield call(http.post, `api/smsGateway/${smsGatewayId}/ping`);
+    yield put(actions.pingIotDevice.success(response.value));
+    yield put(appActions.showMessage(stringKeys.smsGateway.ping.success));
+  }catch (error) {
+    yield put(actions.pingIotDevice.failure(error.message));
+    yield put(appActions.showMessage(stringKeys.smsGateway.ping.error));
+  }
+}
 
 function* openSmsGatewaysModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {

@@ -25,9 +25,10 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
         <TableHead>
           <TableRow>
             <TableCell>{strings(stringKeys.smsGateway.list.name)}</TableCell>
-            <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.smsGateway.list.apiKey)}</TableCell>
-            <TableCell style={{ width: "16%", minWidth: 75 }}>{strings(stringKeys.smsGateway.list.gatewayType)}</TableCell>
-            <TableCell style={{ width: "16%" }} />
+            <TableCell style={{ width: "30%", minWidth: 100 }}>{strings(stringKeys.smsGateway.list.apiKey)}</TableCell>
+            <TableCell style={{ width: "20%", minWidth: 75 }}>{strings(stringKeys.smsGateway.list.gatewayType)}</TableCell>
+            <TableCell style={{ width: "25%", minWidth: 100 }}>{strings(stringKeys.smsGateway.list.useIotHub)}</TableCell>
+            <TableCell style={{ width: "10%" }} />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -36,6 +37,7 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
               <TableCell>{row.name}</TableCell>
               <TableCell>{row.apiKey}</TableCell>
               <TableCell>{strings(`smsGateway.type.${row.gatewayType.toLowerCase()}`)}</TableCell>
+              <TableCell>{row.iotHubDeviceName}</TableCell>
               <TableCell>
                 <TableRowActions>
                   <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />

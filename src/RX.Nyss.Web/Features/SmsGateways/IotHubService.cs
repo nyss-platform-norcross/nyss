@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Features.SmsGateways
@@ -9,16 +11,20 @@ namespace RX.Nyss.Web.Features.SmsGateways
         Task CreateDevice(string deviceName);
         Task<string> GetConnectionString(string deviceName);
         Task RemoveDevice(string deviceName);
+        Task<Result> Ping(string gatewayDeviceIotHubDeviceName);
     }
 
     public class IotHubService : IIotHubService
     {
         private readonly RegistryManager _registry;
         private readonly string _ioTHubHostName;
+        private readonly ServiceClient _iotHubServiceClient;
 
         public IotHubService(INyssWebConfig config)
         {
             _registry = RegistryManager.CreateFromConnectionString(config.ConnectionStrings.IotHubManagement);
+            _iotHubServiceClient = ServiceClient.CreateFromConnectionString(config.ConnectionStrings.IotHubService);
+
             _ioTHubHostName = IotHubConnectionStringBuilder.Create(config.ConnectionStrings.IotHubManagement).HostName;
         }
 
@@ -38,5 +44,19 @@ namespace RX.Nyss.Web.Features.SmsGateways
         }
 
         public async Task RemoveDevice(string deviceName) => await _registry.RemoveDeviceAsync(deviceName);
+
+        public async Task<Result> Ping(string gatewayDeviceIotHubDeviceName)
+        {
+            var cloudToDeviceMethod = new CloudToDeviceMethod("ping_device", TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
+
+            var response = await _iotHubServiceClient.InvokeDeviceMethodAsync(gatewayDeviceIotHubDeviceName, cloudToDeviceMethod);
+
+            if (response.Status == 200)
+            {
+                return Result.Success(response.GetPayloadAsJson());
+            }
+
+            return Result.Error(response.GetPayloadAsJson());
+        }
     }
 }

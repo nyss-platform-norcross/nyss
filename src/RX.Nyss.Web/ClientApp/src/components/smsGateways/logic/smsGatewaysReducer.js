@@ -66,7 +66,15 @@ export function smsGatewaysReducer(state = initialState.smsGateways, action) {
     case nationalSocietyActions.ARCHIVE_NATIONAL_SOCIETY.SUCCESS:
         return { ...state, listStale: true };
 
-        
+    case actions.PING_IOT_DEVICE.REQUEST:
+      return { ...state, pinging: true };
+
+    case actions.PING_IOT_DEVICE.SUCCESS:
+      return { ...state, pinging: false };
+
+    case actions.PING_IOT_DEVICE.FAILURE:
+      return { ...state, pinging: false, formError: action.message };
+
     default:
       return state;
   }

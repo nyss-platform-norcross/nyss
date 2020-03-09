@@ -9,6 +9,7 @@ namespace RX.Nyss.Web.Features.SmsGateways.Dto
         public string ApiKey { get; set; }
         public string EmailAddress { get; set; }
         public GatewayType GatewayType { get; set; }
+        public bool UseIotHub { get; set; }
 
         public class GatewaySettingValidator : AbstractValidator<GatewaySettingRequestDto>
         {

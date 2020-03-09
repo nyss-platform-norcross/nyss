@@ -74,7 +74,8 @@ export const initialState = {
     listData: [],
     formFetching: false,
     formSaving: false,
-    formData: null
+    formData: null,
+    pinging: false
   },
   projects: {
     listFetching: false,
