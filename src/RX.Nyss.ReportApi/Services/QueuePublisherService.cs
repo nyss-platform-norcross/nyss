@@ -11,7 +11,7 @@ namespace RX.Nyss.ReportApi.Services
 {
     public interface IQueuePublisherService
     {
-        Task SendSMSesViaEagle(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
+        Task SendSmsViaEmail(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
         Task QueueAlertCheck(int alertId);
         Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody);
     }
@@ -20,6 +20,7 @@ namespace RX.Nyss.ReportApi.Services
     {
         private readonly IQueueClient _sendEmailQueueClient;
         private readonly IQueueClient _checkAlertQueueClient;
+        private readonly IQueueClient _sendSmsEmailQueueClient;
         private readonly INyssReportApiConfig _config;
         private readonly IDateTimeProvider _dateTimeProvider;
 
@@ -29,9 +30,10 @@ namespace RX.Nyss.ReportApi.Services
             _dateTimeProvider = dateTimeProvider;
             _sendEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
             _checkAlertQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.CheckAlertQueue);
+            _sendSmsEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendSmsQueue);
         }
 
-        public async Task SendSMSesViaEagle(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body) =>
+        public async Task SendSmsViaEmail(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body) =>
             await Task.WhenAll(recipientPhoneNumbers.Select(recipientPhoneNumber =>
             {
                 var sendEmail = new SendEmailMessage

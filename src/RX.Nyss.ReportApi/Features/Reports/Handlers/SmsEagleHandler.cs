@@ -160,7 +160,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
                     {
                         var recipients = new List<string> { sender };
-                        await _queuePublisherService.SendSMSesViaEagle(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
+                        await _queuePublisherService.SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
                     }
 
                     if (triggeredAlert != null)
@@ -439,7 +439,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 }
 
                 var senderList = new List<string>(new[] { errorReport.Sender });
-                await _queuePublisherService.SendSMSesViaEagle(gatewaySetting.EmailAddress, gatewaySetting.Name, senderList, feedbackMessage);
+                await _queuePublisherService.SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, senderList, feedbackMessage);
             }
         }
 
