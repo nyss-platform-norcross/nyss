@@ -49,6 +49,7 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
             <TableCell>{strings(stringKeys.dataCollector.list.sex)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollector.list.location)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollector.list.trainingStatus)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollector.list.supervisor)}</TableCell>
             <TableCell />
           </TableRow>
         </TableHead>
@@ -62,6 +63,7 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
               <TableCell>{row.sex}</TableCell>
               <TableCell>{row.region}, {row.district}, {row.village}</TableCell>
               <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.list.isInTrainingMode) : strings(stringKeys.dataCollector.list.isNotInTrainingMode)}</TableCell>
+              <TableCell>{row.supervisor.name}</TableCell>
               <TableCell>
                 <TableRowActions>
                   <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />

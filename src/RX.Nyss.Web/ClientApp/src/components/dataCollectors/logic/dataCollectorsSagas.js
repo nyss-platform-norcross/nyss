@@ -22,6 +22,7 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, openDataCollectorsPerformanceList),
   takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_EXCEL.INVOKE, getExcelExportData),
   takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, getCsvExportData)
+  takeEvery(consts.GET_DATA_COLLECTORS.INVOKE, getDataCollectors)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -31,12 +32,19 @@ function* openDataCollectorsList({ projectId }) {
   yield put(actions.openList.request());
   try {
     yield openDataCollectorsModule(projectId);
+    const filtersData = yield call(http.get, `/api/dataCollector/filters?projectId=${projectId}`);
+    const filters = (yield select(state => state.projectDashboard.filters)) ||
+    {
+      supervisorId: null,
+      area: null,
+      sex: null
+    };
 
     if (listStale || listProjectId !== projectId) {
-      yield call(getDataCollectors, projectId);
+      yield call(getDataCollectors, { projectId, filters });
     }
-
-    yield put(actions.openList.success(projectId));
+    
+    yield put(actions.openList.success(projectId, filtersData.value));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
   }
@@ -143,11 +151,11 @@ function* getMapDetails({ projectId, lat, lng }) {
   }
 };
 
-function* getDataCollectors(projectId) {
+function* getDataCollectors({ projectId, filters }) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/dataCollector/list?projectId=${projectId}`);
-    yield put(actions.getList.success(response.value));
+    const response = yield call(http.post, `/api/dataCollector/list?projectId=${projectId}`, filters);
+    yield put(actions.getList.success(response.value, filters));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }

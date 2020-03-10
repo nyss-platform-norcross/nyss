@@ -483,7 +483,8 @@ export const stringKeys = {
       isInTrainingMode: "dataCollectors.list.isInTrainingMode",
       isNotInTrainingMode: "dataCollectors.list.isNotInTrainingMode",
       setToInTraining: "dataCollectors.list.setToInTraining",
-      takeOutOfTraining: "dataCollectors.list.takeOutOfTraining"
+      takeOutOfTraining: "dataCollectors.list.takeOutOfTraining",
+      supervisor: "dataCollectors.list.supervisor"
     },
     performanceList: {
       title: "dataCollectors.performanceList.title",
@@ -502,6 +503,16 @@ export const stringKeys = {
         "NotReporting": "dataCollectors.performanceList.legend.notReporting",
         "ReportingWithErrors": "dataCollectors.performanceList.legend.reportingWithErrors"
       }
+    },
+    filters: {
+      supervisors: "dataCollectors.filters.supervisors",
+      area: "dataCollectors.filters.area",
+      sex: "dataCollectors.filters.sex",
+      male: "dataCollectors.filters.male",
+      female: "dataCollectors.filters.female",
+      other: "dataCollectors.filters.other",
+      supervisorsAll: "dataCollectors.filters.supervisorsAll",
+      sexAll: "dataCollectors.filters.sexAll"
     },
     constants: {
       sex: {

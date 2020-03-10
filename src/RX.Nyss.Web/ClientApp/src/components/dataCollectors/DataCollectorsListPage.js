@@ -11,11 +11,15 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
+import { DataCollectorsFilters } from './DataCollectorsFilters';
 
 const DataCollectorsListPageComponent = (props) => {
   useMount(() => {
-    props.openDataCollectorsList(props.projectId);
+    props.openDataCollectorsList(props.projectId, props.filters);
   });
+
+  const handleFilterChange = (filters) => 
+    props.getDataCollectorList(props.projectId, filters);
 
   return (
     <Fragment>
@@ -32,6 +36,12 @@ const DataCollectorsListPageComponent = (props) => {
           </TableActionsButton>
         </TableActions>
       }
+
+      <DataCollectorsFilters
+        nationalSocietyId={props.nationalSocietyId}
+        supervisors={props.supervisors}
+        filters={props.filters}
+        onChange={handleFilterChange} />
 
       <DataCollectorsTable
         list={props.list}
@@ -64,11 +74,15 @@ const mapStateToProps = (state, ownProps) => ({
   list: state.dataCollectors.listData,
   isListFetching: state.dataCollectors.listFetching,
   isRemoving: state.dataCollectors.listRemoving,
-  isSettingTrainingState: state.dataCollectors.settingTrainingState
+  isSettingTrainingState: state.dataCollectors.settingTrainingState,
+  supervisors: state.dataCollectors.filtersData.supervisors,
+  nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
+  filters: state.dataCollectors.filters
 });
 
 const mapDispatchToProps = {
   openDataCollectorsList: dataCollectorsActions.openList.invoke,
+  getDataCollectorList: dataCollectorsActions.getList.invoke,
   goToCreation: dataCollectorsActions.goToCreation,
   goToEdition: dataCollectorsActions.goToEdition,
   remove: dataCollectorsActions.remove.invoke,

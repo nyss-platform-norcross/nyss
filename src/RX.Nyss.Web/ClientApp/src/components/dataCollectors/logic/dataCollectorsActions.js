@@ -22,14 +22,14 @@ export const goToEdition = (projectId, dataCollectorId) => push(`/projects/${pro
 export const openList = {
   invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_LIST.INVOKE, projectId }),
   request: () => ({ type: OPEN_DATA_COLLECTORS_LIST.REQUEST }),
-  success: (projectId) => ({ type: OPEN_DATA_COLLECTORS_LIST.SUCCESS, projectId }),
+  success: (projectId, filtersData) => ({ type: OPEN_DATA_COLLECTORS_LIST.SUCCESS, projectId, filtersData }),
   failure: (message) => ({ type: OPEN_DATA_COLLECTORS_LIST.FAILURE, message })
 };
 
 export const getList = {
-  invoke: (projectId) => ({ type: GET_DATA_COLLECTORS.INVOKE, projectId }),
+  invoke: (projectId, filters) => ({ type: GET_DATA_COLLECTORS.INVOKE, projectId, filters }),
   request: () => ({ type: GET_DATA_COLLECTORS.REQUEST }),
-  success: (list) => ({ type: GET_DATA_COLLECTORS.SUCCESS, list }),
+  success: (list, filters) => ({ type: GET_DATA_COLLECTORS.SUCCESS, list, filters }),
   failure: (message) => ({ type: GET_DATA_COLLECTORS.FAILURE, message })
 };
 

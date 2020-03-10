@@ -10,16 +10,16 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, listStale: true };
 
     case LOCATION_CHANGE: // cleanup
-      return { ...state, formData: null, formError: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null }
+      return { ...state, formData: null, formError: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null };
 
     case actions.OPEN_DATA_COLLECTORS_LIST.SUCCESS:
-      return { ...state, listProjectId: action.projectId };
+      return { ...state, listProjectId: action.projectId, filtersData: action.filtersData };
 
     case actions.GET_DATA_COLLECTORS.REQUEST:
       return { ...state, listFetching: true, listData: [] };
 
     case actions.GET_DATA_COLLECTORS.SUCCESS:
-      return { ...state, listFetching: false, listData: action.list, listStale: false };
+      return { ...state, listFetching: false, filters: action.filters, listData: action.list, listStale: false };
 
     case actions.GET_DATA_COLLECTORS.FAILURE:
       return { ...state, listFetching: false, listData: [] };
