@@ -1,4 +1,5 @@
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Dto
 {
@@ -23,5 +24,6 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public string Region { get; set; }
 
         public bool IsInTrainingMode { get; set; }
+        public SupervisorUser Supervisor { get; set; }
     }
 }

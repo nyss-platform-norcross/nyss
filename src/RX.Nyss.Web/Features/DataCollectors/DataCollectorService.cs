@@ -14,6 +14,7 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Services.Authorization;
@@ -29,7 +30,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result> Edit(EditDataCollectorRequestDto editDto);
         Task<Result> Delete(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
-        Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId);
+        Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId);
+        Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, FiltersRequestDto filters);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
@@ -153,7 +155,22 @@ namespace RX.Nyss.Web.Features.DataCollectors
             });
         }
 
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId)
+        public async Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId)
+        {
+            var supervisors = await GetSupervisors(projectId);
+            var nationalSocietyId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => p.NationalSocietyId)
+                .FirstOrDefaultAsync();
+
+            return Success(new DataCollectorFiltersReponseDto
+            {
+                Supervisors = supervisors,
+                NationalSocietyId = nationalSocietyId
+            });
+        }
+
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, FiltersRequestDto filters)
         {
             var userIdentityName = _authorizationService.GetCurrentUserName();
             var dataCollectorsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
@@ -162,7 +179,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var dataCollectors = await dataCollectorsQuery
                 .Where(dc => dc.DeletedAt == null)
-                .Where(dc => dc.Project.Id == projectId)
+                .FilterByProject(projectId)
+                .FilterByArea(filters.Area)
+                .FilterBySupervisor(filters.SupervisorId)
+                .FilterBySex(filters.Sex)
                 .Select(dc => new DataCollectorResponseDto
                 {
                     Id = dc.Id,
@@ -174,7 +194,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     District = dc.Village.District.Name,
                     Region = dc.Village.District.Region.Name,
                     Sex = dc.Sex,
-                    IsInTrainingMode = dc.IsInTrainingMode
+                    IsInTrainingMode = dc.IsInTrainingMode,
+                    Supervisor = dc.Supervisor
                 })
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
