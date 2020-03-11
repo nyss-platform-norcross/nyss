@@ -12,8 +12,11 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
     case LOCATION_CHANGE: // cleanup
       return { ...state, formData: null, formError: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null };
 
+    case actions.OPEN_DATA_COLLECTORS_LIST.INVOKE:
+      return { ...state, filters: action.projectId === state.projectId ? state.filters : null };
+
     case actions.OPEN_DATA_COLLECTORS_LIST.SUCCESS:
-      return { ...state, listProjectId: action.projectId, filtersData: action.filtersData };
+      return { ...state, projectId: action.projectId, filtersData: action.filtersData };
 
     case actions.GET_DATA_COLLECTORS.REQUEST:
       return { ...state, listFetching: true, listData: [] };

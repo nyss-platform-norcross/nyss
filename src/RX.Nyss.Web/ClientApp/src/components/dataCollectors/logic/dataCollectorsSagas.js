@@ -27,13 +27,13 @@ export const dataCollectorsSagas = () => [
 
 function* openDataCollectorsList({ projectId }) {
   const listStale = yield select(state => state.dataCollectors.listStale);
-  const listProjectId = yield select(state => state.dataCollectors.listProjectId);
+  const listProjectId = yield select(state => state.dataCollectors.projectId);
 
   yield put(actions.openList.request());
   try {
     yield openDataCollectorsModule(projectId);
     const filtersData = yield call(http.get, `/api/dataCollector/filters?projectId=${projectId}`);
-    const filters = (yield select(state => state.projectDashboard.filters)) ||
+    const filters = (yield select(state => state.dataCollectors.filters)) ||
     {
       supervisorId: null,
       area: null,

@@ -38,7 +38,7 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
   ];
 
   return (
-    <TableContainer>
+    <TableContainer sticky>
       <Table>
         <TableHead>
           <TableRow>
