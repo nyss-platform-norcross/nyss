@@ -506,11 +506,7 @@ export const stringKeys = {
     },
     filters: {
       supervisors: "dataCollectors.filters.supervisors",
-      area: "dataCollectors.filters.area",
       sex: "dataCollectors.filters.sex",
-      male: "dataCollectors.filters.male",
-      female: "dataCollectors.filters.female",
-      other: "dataCollectors.filters.other",
       supervisorsAll: "dataCollectors.filters.supervisorsAll",
       sexAll: "dataCollectors.filters.sexAll"
     },
