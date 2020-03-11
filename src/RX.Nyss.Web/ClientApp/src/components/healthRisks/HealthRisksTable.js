@@ -20,7 +20,7 @@ export const HealthRisksTable = ({ isListFetching, isRemoving, goToEdition, remo
   }
 
   return (
-    <TableContainer>
+    <TableContainer sticky>
       <Table>
         <TableHead>
           <TableRow>

@@ -12,7 +12,7 @@ import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon'
 
 export const DataCollectorsPerformanceTable = ({ list }) => {
   return (
-    <TableContainer>
+    <TableContainer sticky>
       <Table>
         <TableHead>
           <TableRow>

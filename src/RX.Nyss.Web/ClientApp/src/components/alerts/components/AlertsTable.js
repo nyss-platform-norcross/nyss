@@ -24,7 +24,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
   }
 
   return (
-    <TableContainer>
+    <TableContainer sticky>
       {isListFetching && <Loading absolute />}
       <Table>
         <TableHead>
