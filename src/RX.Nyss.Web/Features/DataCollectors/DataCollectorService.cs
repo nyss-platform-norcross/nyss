@@ -157,17 +157,22 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId)
         {
-            var supervisors = await GetSupervisors(projectId);
-            var nationalSocietyId = await _nyssContext.Projects
+            var filtersData = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
-                .Select(p => p.NationalSocietyId)
+                .Select(p => new DataCollectorFiltersReponseDto
+                {
+                    NationalSocietyId = p.NationalSocietyId,
+                    Supervisors = p.SupervisorUserProjects
+                        .Where(sup => sup.ProjectId == projectId && !sup.SupervisorUser.DeletedAt.HasValue)
+                        .Select(sup => new DataCollectorSupervisorResponseDto
+                        {
+                            Id = sup.SupervisorUserId,
+                            Name = sup.SupervisorUser.Name
+                        })
+                })
                 .FirstOrDefaultAsync();
 
-            return Success(new DataCollectorFiltersReponseDto
-            {
-                Supervisors = supervisors,
-                NationalSocietyId = nationalSocietyId
-            });
+            return Success(filtersData);
         }
 
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, FiltersRequestDto filters)

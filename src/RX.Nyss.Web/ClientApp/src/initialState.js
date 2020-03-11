@@ -159,7 +159,7 @@ export const initialState = {
       supervisors: [],
       nationalSocietyId: null
     },
-    filters: { area: null, sex: null, supervisors: null}
+    filters: null
   },
   headManagerConsents: {
     nationalSocieties: [],

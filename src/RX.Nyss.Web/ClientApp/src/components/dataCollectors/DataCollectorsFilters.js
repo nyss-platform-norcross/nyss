@@ -1,5 +1,5 @@
 import styles from "./DataCollectorsFilters.module.scss";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -11,6 +11,10 @@ import { sexValues } from './logic/dataCollectorsConstants';
 
 export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors, onChange }) => {
   const [value, setValue] = useState(filters);
+
+  useEffect(() => {
+    setValue(filters);
+  }, [filters]);
 
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
 
