@@ -1,4 +1,3 @@
-using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Dto
@@ -10,5 +9,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public SexDto? Sex { get; set; }
 
         public int? SupervisorId { get; set; }
+
+        public TrainingStatusDto? TrainingStatus { get; set; }
     }
 }

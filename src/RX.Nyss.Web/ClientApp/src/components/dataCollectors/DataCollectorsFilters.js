@@ -7,7 +7,8 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { AreaFilter } from "../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../strings";
-import { sexValues } from './logic/dataCollectorsConstants';
+import { sexValues, trainingStatus } from './logic/dataCollectorsConstants';
+import { InputLabel, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
 
 export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors, onChange }) => {
   const [value, setValue] = useState(filters);
@@ -36,9 +37,11 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
   const handleSupervisorChange = event =>
     onChange(updateValue({ supervisorId: event.target.value === 0 ? null : event.target.value }));
 
-
   const handleSexChange = event =>
     onChange(updateValue({ sex: event.target.value }));
+
+  const handleTrainingStatusChange = event =>
+    onChange(updateValue({ trainingStatus: event.target.value }));
 
   if (!value) {
     return null;
@@ -95,7 +98,18 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
               ))}
             </TextField>
           </Grid>
-
+          
+          <Grid item>
+            <InputLabel>{strings(stringKeys.dataCollector.filters.trainingStatus)}</InputLabel>
+            <RadioGroup
+              value={filters.trainingStatus}
+              onChange={handleTrainingStatusChange}
+              className={styles.filterRadioGroup}>
+              {trainingStatus.map(status => (
+                <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={status} value={status} />
+              ))}
+            </RadioGroup>
+          </Grid>
         </Grid>
       </CardContent>
     </Card>

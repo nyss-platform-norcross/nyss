@@ -508,7 +508,8 @@ export const stringKeys = {
       supervisors: "dataCollectors.filters.supervisors",
       sex: "dataCollectors.filters.sex",
       supervisorsAll: "dataCollectors.filters.supervisorsAll",
-      sexAll: "dataCollectors.filters.sexAll"
+      sexAll: "dataCollectors.filters.sexAll",
+      trainingStatus: "dataCollectors.filters.trainingStatus"
     },
     constants: {
       sex: {

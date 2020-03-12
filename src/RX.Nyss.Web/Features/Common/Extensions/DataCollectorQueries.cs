@@ -81,6 +81,14 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 ? dc.IsInTrainingMode
                 : !dc.IsInTrainingMode);
 
+        public static IQueryable<DataCollector> FilterByTrainingMode(this IQueryable<DataCollector> dataCollectors, TrainingStatusDto? trainingStatus) =>
+            trainingStatus switch
+            {
+                TrainingStatusDto.InTraining => dataCollectors.Where(dc => dc.IsInTrainingMode),
+                TrainingStatusDto.Trained => dataCollectors.Where(dc => !dc.IsInTrainingMode),
+                _ => dataCollectors
+            };
+
         public static IQueryable<DataCollector> FilterByProject(this IQueryable<DataCollector> dataCollectors, int projectId) =>
             dataCollectors.Where(dc => dc.Project.Id == projectId);
 

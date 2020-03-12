@@ -37,7 +37,8 @@ function* openDataCollectorsList({ projectId }) {
     {
       supervisorId: null,
       area: null,
-      sex: null
+      sex: null,
+      trainingStatus: 'All'
     };
 
     if (listStale || listProjectId !== projectId) {
