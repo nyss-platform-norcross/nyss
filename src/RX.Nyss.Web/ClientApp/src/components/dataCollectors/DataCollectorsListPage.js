@@ -24,8 +24,11 @@ const DataCollectorsListPageComponent = (props) => {
           <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportDataCollectors(props.projectId)} roles={accessMap.dataCollectors.export}>
-            {strings(stringKeys.dataCollector.export)}
+          <TableActionsButton onClick={() => props.exportToExcel(props.projectId)} roles={accessMap.dataCollectors.export}>
+            {strings(stringKeys.dataCollector.exportExcel)}
+          </TableActionsButton>
+          <TableActionsButton onClick={() => props.exportToCsv(props.projectId)} roles={accessMap.dataCollectors.export}>
+            {strings(stringKeys.dataCollector.exportCsv)}
           </TableActionsButton>
         </TableActions>
       }
@@ -70,7 +73,8 @@ const mapDispatchToProps = {
   goToEdition: dataCollectorsActions.goToEdition,
   remove: dataCollectorsActions.remove.invoke,
   setTrainingState: dataCollectorsActions.setTrainingState.invoke,
-  exportDataCollectors: dataCollectorsActions.exportToExcel.invoke
+  exportToExcel: dataCollectorsActions.exportToExcel.invoke,
+  exportToCsv: dataCollectorsActions.exportToCsv.invoke
 };
 
 export const DataCollectorsListPage = useLayout(

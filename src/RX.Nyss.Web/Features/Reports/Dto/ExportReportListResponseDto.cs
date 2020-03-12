@@ -6,6 +6,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     public class ExportReportListResponseDto : IReportListResponseDto
     {
         public int Id { get; set; }
+        public string Status { get; set; }
         public Point Location { get; set; }
         public string HealthRiskName { get; set; }
         public bool IsValid { get; set; }

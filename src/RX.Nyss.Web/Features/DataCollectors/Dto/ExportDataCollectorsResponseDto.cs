@@ -4,7 +4,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 {
     public class ExportDataCollectorsResponseDto
     {
-        public DataCollectorType DataCollectorType { get; set; }
+        public string DataCollectorType { get; set; }
         public string Name { get; set; }
         public string DisplayName { get; set; }
         public Sex? Sex { get; set; }

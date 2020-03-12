@@ -20,7 +20,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.GET_DATA_COLLECTORS_MAP_DETAILS.INVOKE, getMapDetails),
   takeEvery(consts.SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, setTrainingState),
   takeEvery(consts.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, openDataCollectorsPerformanceList),
-  takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExportData)
+  takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_EXCEL.INVOKE, getExcelExportData),
+  takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, getCsvExportData)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -203,17 +204,31 @@ function* getDataCollectorsPerformance(projectId) {
   }
 };
 
-function* getExportData({ projectId }) {
+function* getExcelExportData({ projectId }) {
   yield put(actions.exportToExcel.request());
   try {
     yield downloadFile({
-      url: `/api/dataCollector/export?projectId=${projectId}`,
-      fileName: `dataCollectors.csv`
+      url: `/api/dataCollector/exportToExcel?projectId=${projectId}`,
+      fileName: `dataCollectors.xlsx`
     });
 
     yield put(actions.exportToExcel.success());
   } catch (error) {
     yield put(actions.exportToExcel.failure(error.message));
+  }
+};
+
+function* getCsvExportData({ projectId }) {
+  yield put(actions.exportToCsv.request());
+  try {
+    yield downloadFile({
+      url: `/api/dataCollector/exportToCsv?projectId=${projectId}`,
+      fileName: `dataCollectors.csv`
+    });
+
+    yield put(actions.exportToCsv.success());
+  } catch (error) {
+    yield put(actions.exportToCsv.failure(error.message));
   }
 };
 

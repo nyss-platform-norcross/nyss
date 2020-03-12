@@ -446,7 +446,8 @@ export const stringKeys = {
   dataCollector: {
     title: "dataCollectors.title",
     addNew: "dataCollectors.addNew",
-    export: "dataCollectors.export",
+    exportExcel: "dataCollectors.exportExcel",
+    exportCsv: "dataCollectors.exportCsv",
     form: {
       creationTitle: "dataCollectors.form.creationTitle",
       editionTitle: "dataCollectors.form.editionTitle",
@@ -556,6 +557,7 @@ export const stringKeys = {
       nonTraining: "reports.list.nonTraining",
       dcpReportListType: "reports.list.dcpReportListType",
       exportToExcel: "reports.list.exportToExcel",
+      exportToCsv: "reports.list.exportToCsv",
       successfulyMarkedAsError: "reports.list.successfulyMarkedAsError",
       markAsError: "reports.list.markAsError",
       markAsErrorConfirmation: "reports.list.markAsErrorConfirmation",
