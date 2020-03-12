@@ -16,7 +16,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 {
     public interface IDataCollectorExportService
     {
-        Task<byte[]> Export(int projectId, bool useExcelFormat = false);
+        Task<byte[]> ExportAsCsv(int projectId);
+        Task<byte[]> ExportAsXls(int projectId);
     }
 
     public class DataCollectorExportService : IDataCollectorExportService
@@ -38,7 +39,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             _authorizationService = authorizationService;
         }
 
-        public async Task<byte[]> Export(int projectId, bool useExcelFormat = false)
+        public async Task<byte[]> ExportAsCsv(int projectId)
         {
             var userName = _authorizationService.GetCurrentUserName();
             var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
@@ -48,41 +49,25 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
 
-            var dataCollectors = await _nyssContext.DataCollectors
-                .FilterByProject(projectId)
-                .Where(dc => dc.DeletedAt == null)
-                .Select(dc => new ExportDataCollectorsResponseDto
-                {
-                    DataCollectorType = dc.DataCollectorType == DataCollectorType.Human ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.human") :
-                        dc.DataCollectorType == DataCollectorType.CollectionPoint ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.collectionPoint") : string.Empty,
-                    Name = dc.Name,
-                    DisplayName = dc.DisplayName,
-                    PhoneNumber = dc.PhoneNumber,
-                    AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
-                    Sex = dc.Sex,
-                    BirthGroupDecade = dc.BirthGroupDecade,
-                    Region = dc.Village.District.Region.Name,
-                    District = dc.Village.District.Name,
-                    Village = dc.Village.Name,
-                    Zone = dc.Zone.Name,
-                    Latitude = dc.Location.Y,
-                    Longitude = dc.Location.X,
-                    Supervisor = dc.Supervisor.Name,
-                    TrainingStatus = dc.IsInTrainingMode
-                        ? GetStringResource(stringResources, "dataCollectors.export.isInTraining")
-                        : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining")
-                })
-                .OrderBy(dc => dc.Name)
-                .ThenBy(dc => dc.DisplayName)
-                .ToListAsync();
-
-            if (useExcelFormat)
-            {
-                var excelSheet = GetExcelData(dataCollectors, stringResources);
-                return excelSheet.GetAsByteArray();
-            }
+            var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources);
 
             return GetCsvData(dataCollectors, stringResources);
+        }
+
+        public async Task<byte[]> ExportAsXls(int projectId)
+        {
+            var userName = _authorizationService.GetCurrentUserName();
+            var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
+                .Where(u => u.EmailAddress == userName)
+                .Select(u => u.ApplicationLanguage.LanguageCode)
+                .Single();
+
+            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
+
+            var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources);
+
+            var excelSheet = GetExcelData(dataCollectors, stringResources);
+            return excelSheet.GetAsByteArray();
         }
 
         private byte[] GetCsvData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
@@ -188,6 +173,35 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             return package;
         }
+
+        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, string> stringResources) => 
+            await _nyssContext.DataCollectors
+                .FilterByProject(projectId)
+                .Where(dc => dc.DeletedAt == null)
+                .Select(dc => new ExportDataCollectorsResponseDto
+                {
+                    DataCollectorType = dc.DataCollectorType == DataCollectorType.Human ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.human") :
+                        dc.DataCollectorType == DataCollectorType.CollectionPoint ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.collectionPoint") : string.Empty,
+                    Name = dc.Name,
+                    DisplayName = dc.DisplayName,
+                    PhoneNumber = dc.PhoneNumber,
+                    AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
+                    Sex = dc.Sex,
+                    BirthGroupDecade = dc.BirthGroupDecade,
+                    Region = dc.Village.District.Region.Name,
+                    District = dc.Village.District.Name,
+                    Village = dc.Village.Name,
+                    Zone = dc.Zone.Name,
+                    Latitude = dc.Location.Y,
+                    Longitude = dc.Location.X,
+                    Supervisor = dc.Supervisor.Name,
+                    TrainingStatus = dc.IsInTrainingMode
+                        ? GetStringResource(stringResources, "dataCollectors.export.isInTraining")
+                        : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining")
+                })
+                .OrderBy(dc => dc.Name)
+                .ThenBy(dc => dc.DisplayName)
+                .ToListAsync();
 
         private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
             stringResources.Keys.Contains(key)

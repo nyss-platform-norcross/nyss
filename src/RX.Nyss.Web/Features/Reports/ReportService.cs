@@ -401,9 +401,8 @@ namespace RX.Nyss.Web.Features.Reports
             return (baseQuery, result);
         }
 
-        private List<string> GetColumnLabels(IDictionary<string, string> stringResources)
-        {
-            return new List<string>
+        private List<string> GetColumnLabels(IDictionary<string, string> stringResources) =>
+            new List<string>
             {
                 GetStringResource(stringResources, "reports.export.date"),
                 GetStringResource(stringResources, "reports.export.time"),
@@ -429,7 +428,6 @@ namespace RX.Nyss.Web.Features.Reports
                 GetStringResource(stringResources, "reports.export.epiYear"),
                 GetStringResource(stringResources, "reports.export.epiWeek")
             };
-        }
 
         private static string GetStringResource(IDictionary<string, string> stringResources, string key) =>
             stringResources.Keys.Contains(key)
