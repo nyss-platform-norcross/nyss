@@ -21,7 +21,7 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, setTrainingState),
   takeEvery(consts.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, openDataCollectorsPerformanceList),
   takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_EXCEL.INVOKE, getExcelExportData),
-  takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, getCsvExportData)
+  takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, getCsvExportData),
   takeEvery(consts.GET_DATA_COLLECTORS.INVOKE, getDataCollectors)
 ];
 
