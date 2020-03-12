@@ -1,8 +1,12 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet'
 
 export const DataCollectorMap = ({ onChange, location, zoom }) => {
   const [markerLocation, setMarkerLocation] = useState(location);
+
+  useEffect(() => {
+    setMarkerLocation(location);
+  }, [location]);
 
   const mapRef = useRef(null);
 

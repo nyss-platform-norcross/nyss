@@ -24,11 +24,21 @@ import { DataCollectorMap } from './DataCollectorMap';
 import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { Radio, FormControlLabel } from "@material-ui/core";
+import { useReducer } from "react";
 
 const DataCollectorsCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
   const [type, setType] = useState(dataCollectorType.human);
+
+  const [location, dispatch] = useReducer((state, action) => {
+    switch (action.type) {
+      case "latitude": return { ...state, lat: action.value };
+      case "longitude": return { ...state, lng: action.value };
+      case "latlng": return { lat: action.lat, lng: action.lng };
+      default: return state;
+    }
+  }, null);
 
   useMount(() => {
     props.openCreation(props.projectId);
@@ -39,6 +49,8 @@ const DataCollectorsCreatePageComponent = (props) => {
       setForm(null);
       return;
     }
+
+    dispatch({ type: "latlng", lat: props.defaultLocation.latitude, lng: props.defaultLocation.longitude });
 
     const fields = {
       dataCollectorType: dataCollectorType.human,
@@ -74,7 +86,9 @@ const DataCollectorsCreatePageComponent = (props) => {
     const newForm = createForm(fields, validation);
     setForm(newForm);
     newForm.fields.dataCollectorType.subscribe(({newValue}) => setType(newValue));
-  }, [props.regions, props.defaultSupervisorId, props.defaultLocation])
+    newForm.fields.latitude.subscribe(({newValue}) => dispatch({ type: "latitude", value: newValue}));
+    newForm.fields.longitude.subscribe(({newValue}) => dispatch({ type: "longitude", value: newValue}));
+  }, [props.regions, props.defaultSupervisorId, props.defaultLocation]);
 
   const onLocationChange = (e) => {
     form.fields.latitude.update(e.lat);
@@ -201,12 +215,27 @@ const DataCollectorsCreatePageComponent = (props) => {
             <div>Location</div>
             <DataCollectorMap
               onChange={onLocationChange}
-              location={props.defaultLocation ? { lat: props.defaultLocation.latitude, lng: props.defaultLocation.longitude } : null}
+              location={location}
               zoom={6}
             />
           </Grid>
         </Grid>
         <Grid container spacing={3} className={formStyles.shrinked}>
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.dataCollector.form.latitude)}
+              name="latitude"
+              field={form.fields.latitude}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.dataCollector.form.longitude)}
+              name="longitude"
+              field={form.fields.longitude}
+            />
+          </Grid>
+          
           <GeoStructureSelect
             regions={props.regions}
             regionIdField={form.fields.regionId}
