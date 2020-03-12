@@ -356,7 +356,14 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public async Task ListDataCollector_WhenSuccessful_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.List(ProjectId);
+            var filters = new FiltersRequestDto
+            {
+                Area = null,
+                Sex = null,
+                SupervisorId = null,
+                TrainingStatus = null
+            };
+            var result = await _dataCollectorService.List(ProjectId, filters);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -374,6 +381,33 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var secondDataCollector = result.Value.Last();
             secondDataCollector.Id.ShouldBe(DataCollectorWithReportsId);
             secondDataCollector.Sex.ShouldBe(Sex.Female);
+        }
+
+        [Fact]
+        public async Task ListDataCollector_WhenFiltered_ShouldReturnFilteredList()
+        {
+            // Act
+            var filters = new FiltersRequestDto
+            {
+                Area = null,
+                Sex = SexDto.Male,
+                SupervisorId = null,
+                TrainingStatus = null
+            };
+            var result = await _dataCollectorService.List(ProjectId, filters);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Count().ShouldBe(1);
+            var dataCollector = result.Value.First();
+            dataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
+            dataCollector.DisplayName.ShouldBe("");
+            dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
+            dataCollector.Village.ShouldBe(Village);
+            dataCollector.District.ShouldBe("Layuna");
+            dataCollector.Name.ShouldBe("");
+            dataCollector.Sex.ShouldBe(Sex.Male);
+            dataCollector.Region.ShouldBe("Layuna");
         }
 
         [Fact(Skip = "EFCore Extension for BatchUpdate is not working with MockDbSet")]
