@@ -2,11 +2,15 @@
   margin-left: 8px !important;
 
   @media screen and (max-width: 600px) {
-    margin-left: unset;
+    margin-left: unset !important;
     margin-bottom: 8px !important;
   }
 }
 
 .progressIcon {
     position: absolute
+}
+
+.mobile {
+  display: none;
 }
