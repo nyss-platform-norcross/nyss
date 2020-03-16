@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
 using RX.Nyss.Common.Utils.DataContract;
@@ -12,6 +14,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         Task<string> GetConnectionString(string deviceName);
         Task RemoveDevice(string deviceName);
         Task<Result> Ping(string gatewayDeviceIotHubDeviceName);
+        Task<IEnumerable<string>> ListDevices();
     }
 
     public class IotHubService : IIotHubService
@@ -57,6 +60,20 @@ namespace RX.Nyss.Web.Features.SmsGateways
             }
 
             return Result.Error(response.GetPayloadAsJson());
+        }
+
+        public async Task<IEnumerable<string>> ListDevices()
+        {
+            var query = _registry.CreateQuery("select * from devices", 1000);
+            
+            var allDevices = new List<string>();
+            while (query.HasMoreResults)
+            {
+                var devices = await query.GetNextAsTwinAsync();
+                allDevices.AddRange(devices.Select(x => x.DeviceId));
+            }
+
+            return allDevices.AsEnumerable();
         }
     }
 }

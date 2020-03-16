@@ -25,6 +25,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         Task UpdateAuthorizedApiKeys();
         Task<Result> GetIotHubConnectionString(int smsGatewayId);
         Task<Result> PingIotHubDevice(int smsGatewayId);
+        Task<Result<IEnumerable<string>>> ListIotHubDevices();
     }
 
     public class SmsGatewayService : ISmsGatewayService
@@ -261,6 +262,20 @@ namespace RX.Nyss.Web.Features.SmsGateways
             }
 
             return await _iotHubService.Ping(gatewayDevice.IotHubDeviceName);
+        }
+
+        public async Task<Result<IEnumerable<string>>> ListIotHubDevices()
+        {
+            var allDevices = await _iotHubService.ListDevices();
+
+            var takenDevices = await _nyssContext.GatewaySettings
+                .Where(sg => !string.IsNullOrEmpty(sg.IotHubDeviceName))
+                .Select(sg => sg.IotHubDeviceName)
+                .ToListAsync();
+
+            var availableDevices = allDevices.Except(takenDevices);
+
+            return Success(availableDevices);
         }
 
         private async Task<string> CreateIotHubDevice(GatewaySetting gateway)
