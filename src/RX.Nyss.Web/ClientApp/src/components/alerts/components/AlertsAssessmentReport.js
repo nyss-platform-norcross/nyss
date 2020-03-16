@@ -32,7 +32,9 @@ const getReportIcon = (status) => {
 
 export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, resetReport, status, projectIsClosed }) => {
   const showActions = status !== assessmentStatus.closed && report.status === "Pending";
-  const showResetOption = report.status === "Accepted" || report.status === "Rejected";
+  const showResetOption = status !== assessmentStatus.closed
+    && status !== assessmentStatus.dismissed
+    && (report.status === "Accepted" || report.status === "Rejected");
 
   return (
     <ExpansionPanel>
