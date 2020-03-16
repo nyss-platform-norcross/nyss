@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 
@@ -35,7 +36,7 @@ namespace RX.Nyss.FuncApp.Services
 
             if (isWhitelisted)
             {
-                _logger.LogDebug($"Sending sms to phone number starting with '{message.PhoneNumber.Substring(0, Math.Min(message.PhoneNumber.Length, 4))}...' through IOT device {message.IotHubDeviceName}...");
+                _logger.LogDebug($"Sending sms to phone number ending with '{message.PhoneNumber.SubstringFromEnd(4)}...' through IOT device {message.IotHubDeviceName}...");
 
                 var cloudToDeviceMethod = new CloudToDeviceMethod("send_sms", TimeSpan.FromSeconds(30));
                 cloudToDeviceMethod.SetPayloadJson(JsonSerializer.Serialize(new

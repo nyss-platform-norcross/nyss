@@ -160,7 +160,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
                     {
                         var recipients = new List<string> { sender };
-                        await _queuePublisherService.SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, projectHealthRisk.FeedbackMessage);
+                        await _queuePublisherService.SendSms(recipients, gatewaySetting, projectHealthRisk.FeedbackMessage);
                     }
 
                     if (triggeredAlert != null)
@@ -210,7 +210,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 .Include(dc => dc.Village)
                 .Include(dc => dc.Zone)
                 .SingleOrDefaultAsync(dc => dc.PhoneNumber == phoneNumber ||
-                    (dc.AdditionalPhoneNumber != null && dc.AdditionalPhoneNumber == phoneNumber));
+                    dc.AdditionalPhoneNumber != null && dc.AdditionalPhoneNumber == phoneNumber);
 
             if (dataCollector == null)
             {
@@ -439,7 +439,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 }
 
                 var senderList = new List<string>(new[] { errorReport.Sender });
-                await _queuePublisherService.SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, senderList, feedbackMessage);
+                await _queuePublisherService.SendSms(senderList, gatewaySetting, feedbackMessage);
             }
         }
 

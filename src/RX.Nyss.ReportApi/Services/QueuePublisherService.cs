@@ -5,15 +5,16 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 
 namespace RX.Nyss.ReportApi.Services
 {
     public interface IQueuePublisherService
     {
-        Task SendSmsViaEmail(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body);
         Task QueueAlertCheck(int alertId);
-        Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody);
+        Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody, bool sendAsTextOnly = false);
+        Task SendSms(List<string> recipients, GatewaySetting gatewaySetting, string message);
     }
 
     public class QueuePublisherService : IQueuePublisherService
@@ -33,25 +34,15 @@ namespace RX.Nyss.ReportApi.Services
             _sendSmsEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendSmsQueue);
         }
 
-        public async Task SendSmsViaEmail(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body) =>
-            await Task.WhenAll(recipientPhoneNumbers.Select(recipientPhoneNumber =>
+        public async Task SendSms(List<string> recipients, GatewaySetting gatewaySetting, string message)
+        {
+            if (string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
             {
-                var sendEmail = new SendEmailMessage
-                {
-                    To = new Contact
-                    {
-                        Email = smsEagleEmailAddress,
-                        Name = smsEagleName
-                    },
-                    Body = body,
-                    Subject = recipientPhoneNumber,
-                    SendAsTextOnly = true
-                };
+                await SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, message);
+            }
 
-                var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi" };
-
-                return _sendEmailQueueClient.SendAsync(message);
-            }));
+            await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message);
+        }
 
         public async Task QueueAlertCheck(int alertId)
         {
@@ -64,7 +55,7 @@ namespace RX.Nyss.ReportApi.Services
             await _checkAlertQueueClient.SendAsync(message);
         }
 
-        public Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody)
+        public Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody, bool sendAsTextOnly = false)
         {
             var sendEmail = new SendEmailMessage
             {
@@ -74,13 +65,38 @@ namespace RX.Nyss.ReportApi.Services
                     Name = to.Name
                 },
                 Body = emailBody,
-                Subject = emailSubject
+                Subject = emailSubject,
+                SendAsTextOnly = sendAsTextOnly
             };
 
             var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.ReportApi" };
 
             return _sendEmailQueueClient.SendAsync(message);
         }
+
+        private async Task SendSmsViaEmail(string smsEagleEmailAddress, string smsEagleName, List<string> recipientPhoneNumbers, string body) =>
+            await Task.WhenAll(recipientPhoneNumbers.Select(recipientPhoneNumber =>
+                SendEmail((smsEagleName, smsEagleEmailAddress), recipientPhoneNumber, body, true))
+            );
+
+        private async Task SendSmsViaIotHub(string iotHubDeviceName, List<string> recipientPhoneNumbers, string smsMessage) =>
+            await Task.WhenAll(recipientPhoneNumbers.Select(recipientPhoneNumber =>
+            {
+                var sendSms = new SendSmsMessage
+                {
+                    IotHubDeviceName = iotHubDeviceName,
+                    PhoneNumber = recipientPhoneNumber,
+                    SmsMessage = smsMessage
+                };
+
+                var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
+                {
+                    Label = "RX.Nyss.ReportApi",
+                    UserProperties = { { "IoTHubDevice", iotHubDeviceName } }
+                };
+
+                return _sendSmsEmailQueueClient.SendAsync(message);
+            }));
     }
 
     public class SendEmailMessage
@@ -99,5 +115,14 @@ namespace RX.Nyss.ReportApi.Services
         public string Name { get; set; }
 
         public string Email { get; set; }
+    }
+
+    public class SendSmsMessage
+    {
+        public string IotHubDeviceName { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public string SmsMessage { get; set; }
     }
 }
