@@ -440,6 +440,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [InlineData(AlertStatus.Closed)]
         [InlineData(AlertStatus.Rejected)]
         [InlineData(AlertStatus.Dismissed)]
+        [InlineData(AlertStatus.Pending)]
         public async Task CloseAlert_WhenAlertIsNotPending_ShouldReturnError(AlertStatus status)
         {
             _alerts.First().Status = status;
@@ -448,29 +449,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlert.WrongStatus);
-        }
-
-        [Fact]
-        public async Task CloseAlert_WhenAlertHasPendingReports_ShouldReturnError()
-        {
-            _alerts.First().Status = AlertStatus.Pending;
-
-            var result = await _alertService.Close(TestData.AlertId, "");
-
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlert.HasPendingReports);
-        }
-
-        [Fact]
-        public async Task CloseAlert_WhenAlertIsPendingWithNoUncheckedReports_ShouldReturnSuccess()
-        {
-            _alerts.First().Status = AlertStatus.Pending;
-
-            _alerts.First().AlertReports = new List<AlertReport>();
-
-            var result = await _alertService.Close(TestData.AlertId, "");
-
-            result.IsSuccess.ShouldBeTrue();
         }
 
         [Fact]

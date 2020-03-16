@@ -285,18 +285,13 @@ namespace RX.Nyss.Web.Features.Alerts
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
                     NotificationEmails = alert.ProjectHealthRisk.Project.EmailAlertRecipients.Select(ar => ar.EmailAddress).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
-                    NumberOfPendingReports = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Pending)
+                    MaximumAcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted || r.Report.Status == ReportStatus.Pending)
                 })
                 .SingleAsync();
 
-            if (alertData.Alert.Status != AlertStatus.Escalated && alertData.Alert.Status != AlertStatus.Pending)
+            if (alertData.Alert.Status != AlertStatus.Escalated)
             {
                 return Error(ResultKey.Alert.CloseAlert.WrongStatus);
-            }
-
-            if (alertData.Alert.Status == AlertStatus.Pending && alertData.NumberOfPendingReports > 0)
-            {
-                return Error(ResultKey.Alert.CloseAlert.HasPendingReports);
             }
 
             alertData.Alert.Status = AlertStatus.Closed;
