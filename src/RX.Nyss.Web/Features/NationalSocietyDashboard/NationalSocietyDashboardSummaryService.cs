@@ -6,6 +6,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
+using RX.Nyss.Web.Services.GeographicalCoverage;
 using RX.Nyss.Web.Services.ReportsDashboard;
 
 namespace RX.Nyss.Web.Features.NationalSocietyDashboard
@@ -20,15 +21,18 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly IReportService _reportService;
         private readonly INyssContext _nyssContext;
         private readonly IReportsDashboardSummaryService _reportsDashboardSummaryService;
+        private readonly IGeographicalCoverageService _geographicalCoverageService;
 
         public NationalSocietyDashboardSummaryService(
             IReportService reportService,
             INyssContext nyssContext,
-            IReportsDashboardSummaryService reportsDashboardSummaryService)
+            IReportsDashboardSummaryService reportsDashboardSummaryService,
+            IGeographicalCoverageService geographicalCoverageService)
         {
             _reportService = reportService;
             _nyssContext = nyssContext;
             _reportsDashboardSummaryService = reportsDashboardSummaryService;
+            _geographicalCoverageService = geographicalCoverageService;
         }
 
         public async Task<NationalSocietySummaryResponseDto> GetData(ReportsFilter filters)
@@ -58,7 +62,13 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     ErrorReportCount = rawReportsWithDataCollector.Count() - successReports.Count(),
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
-                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters)
+                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
+                    NumberOfDistricts = filters.ProjectId.HasValue ?
+                        _geographicalCoverageService.GetNumberOfDistrictsByProject(filters.ProjectId.Value, filters.StartDate).Count()
+                        : _geographicalCoverageService.GetNumberOfDistrictsByNationalSociety(filters.NationalSocietyId.Value, filters.StartDate).Count(),
+                    NumberOfVillages = filters.ProjectId.HasValue ?
+                        _geographicalCoverageService.GetNumberOfVillagesByProject(filters.ProjectId.Value, filters.StartDate).Count()
+                        : _geographicalCoverageService.GetNumberOfVillagesByNationalSociety(filters.NationalSocietyId.Value, filters.StartDate).Count()
                 })
                 .FirstOrDefaultAsync();
         }

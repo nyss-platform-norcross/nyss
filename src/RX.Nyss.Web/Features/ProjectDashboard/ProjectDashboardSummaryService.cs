@@ -3,9 +3,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
+using RX.Nyss.Web.Services.GeographicalCoverage;
 using RX.Nyss.Web.Services.ReportsDashboard;
 
 namespace RX.Nyss.Web.Features.ProjectDashboard
@@ -20,15 +22,18 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         private readonly IReportService _reportService;
         private readonly INyssContext _nyssContext;
         private readonly IReportsDashboardSummaryService _reportsDashboardSummaryService;
+        private readonly IGeographicalCoverageService _geographicalCoverageService;
 
         public ProjectDashboardSummaryService(
             IReportService reportService,
             INyssContext nyssContext,
-            IReportsDashboardSummaryService reportsDashboardSummaryService)
+            IReportsDashboardSummaryService reportsDashboardSummaryService,
+            IGeographicalCoverageService geographicalCoverageService)
         {
             _reportService = reportService;
             _nyssContext = nyssContext;
             _reportsDashboardSummaryService = reportsDashboardSummaryService;
+            _geographicalCoverageService = geographicalCoverageService;
         }
 
         public async Task<ProjectSummaryResponseDto> GetData(ReportsFilter filters)
@@ -56,7 +61,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     ErrorReportCount = rawReportsWithDataCollector.Count() - validReports.Count(),
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
-                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters)
+                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
+                    NumberOfDistricts = _geographicalCoverageService.GetNumberOfDistrictsByProject(filters.ProjectId.Value, filters.StartDate).Count(),
+                    NumberOfVillages = _geographicalCoverageService.GetNumberOfVillagesByProject(filters.ProjectId.Value, filters.StartDate).Count()
                 })
                 .FirstOrDefaultAsync();
         }

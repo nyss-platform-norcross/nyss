@@ -14,5 +14,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
         public int ErrorReportCount { get; set; }
 
         public AlertsSummaryResponseDto AlertsSummary { get; set; } = new AlertsSummaryResponseDto();
+        public int NumberOfVillages { get; set; }
+        public int NumberOfDistricts { get; set; }
     }
 }
