@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Configuration
 
         public string Environment { get; set; }
 
-        public bool IsProduction => Environment == NyssEnvironments.Prod;
+        public bool IsProduction => Environment == NyssEnvironments.Prod || Environment == NyssEnvironments.Demo;
 
         public string SmsGatewayBlobContainerName { get; set; }
 

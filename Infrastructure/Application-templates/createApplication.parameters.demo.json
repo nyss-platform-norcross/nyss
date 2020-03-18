@@ -9,7 +9,7 @@
             "value": {
                 "Team": "CBS",
                 "System": "Nyss",
-                "Environment": "Production"
+                "Environment": "Demo"
             }
         },
         "hostingEnvironment": {
