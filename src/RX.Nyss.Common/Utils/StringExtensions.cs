@@ -10,8 +10,8 @@ namespace RX.Nyss.Common.Utils
 
         public static string SubstringFromEnd(this string s, int numberOfCharacters)
         {
-            var len = Math.Min(s.Length, numberOfCharacters);
-            return s.Substring(len - numberOfCharacters, numberOfCharacters);
+            var maxNumberOfChars = Math.Min(s.Length, numberOfCharacters);
+            return s.Substring(s.Length - maxNumberOfChars, maxNumberOfChars);
         }
     }
 }

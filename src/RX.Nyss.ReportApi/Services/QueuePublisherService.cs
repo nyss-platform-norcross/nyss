@@ -21,7 +21,7 @@ namespace RX.Nyss.ReportApi.Services
     {
         private readonly IQueueClient _sendEmailQueueClient;
         private readonly IQueueClient _checkAlertQueueClient;
-        private readonly IQueueClient _sendSmsEmailQueueClient;
+        private readonly IQueueClient _sendSmsQueueClient;
         private readonly INyssReportApiConfig _config;
         private readonly IDateTimeProvider _dateTimeProvider;
 
@@ -31,7 +31,7 @@ namespace RX.Nyss.ReportApi.Services
             _dateTimeProvider = dateTimeProvider;
             _sendEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
             _checkAlertQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.CheckAlertQueue);
-            _sendSmsEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendSmsQueue);
+            _sendSmsQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendSmsQueue);
         }
 
         public async Task SendSms(List<string> recipients, GatewaySetting gatewaySetting, string message)
@@ -40,8 +40,10 @@ namespace RX.Nyss.ReportApi.Services
             {
                 await SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, message);
             }
-
-            await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message);
+            else
+            {
+                await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message);
+            }
         }
 
         public async Task QueueAlertCheck(int alertId)
@@ -95,7 +97,7 @@ namespace RX.Nyss.ReportApi.Services
                     UserProperties = { { "IoTHubDevice", iotHubDeviceName } }
                 };
 
-                return _sendSmsEmailQueueClient.SendAsync(message);
+                return _sendSmsQueueClient.SendAsync(message);
             }));
     }
 
