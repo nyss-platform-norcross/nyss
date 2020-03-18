@@ -210,7 +210,8 @@ export const stringKeys = {
       update: "smsGateway.form.update",
       useIotHub: "smsGateway.form.useIotHub",
       iotHubDeviceName: "smsGateway.form.iotHubDeviceName",
-      ping: "smsGateway.form.ping"
+      ping: "smsGateway.form.ping",
+      pingIsRequired: "smsGateway.form.pingIsRequired"
     },
     create: {
       success: "smsGateway.create.success"

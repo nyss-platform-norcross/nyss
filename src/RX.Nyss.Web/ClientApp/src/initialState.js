@@ -75,7 +75,8 @@ export const initialState = {
     formFetching: false,
     formSaving: false,
     formData: null,
-    pinging: false
+    pinging: {},
+    availableIoTDevices: []
   },
   projects: {
     listFetching: false,

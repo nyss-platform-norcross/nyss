@@ -10,7 +10,7 @@ export function smsGatewaysReducer(state = initialState.smsGateways, action) {
       return { ...state, formData: null, formError: null }
 
     case actions.OPEN_SMS_GATEWAYS_LIST.INVOKE:
-        return { ...state, listStale: state.listStale || action.nationalSocietyId !== state.listNationalSocietyId };
+      return { ...state, listStale: state.listStale || action.nationalSocietyId !== state.listNationalSocietyId };
 
     case actions.OPEN_SMS_GATEWAYS_LIST.SUCCESS:
       return { ...state, listNationalSocietyId: action.nationalSocietyId };
@@ -19,7 +19,7 @@ export function smsGatewaysReducer(state = initialState.smsGateways, action) {
       return { ...state, listFetching: true, listData: [] };
 
     case actions.GET_SMS_GATEWAYS.SUCCESS:
-      return { ...state, listFetching: false, listData: action.list, listStale: false };
+      return { ...state, listFetching: false, listData: action.list, listStale: false, pinging: {}, availableIoTDevices: []};
 
     case actions.GET_SMS_GATEWAYS.FAILURE:
       return { ...state, listFetching: false, listData: [] };
@@ -64,16 +64,22 @@ export function smsGatewaysReducer(state = initialState.smsGateways, action) {
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
 
     case nationalSocietyActions.ARCHIVE_NATIONAL_SOCIETY.SUCCESS:
-        return { ...state, listStale: true };
+      return { ...state, listStale: true };
 
     case actions.PING_IOT_DEVICE.REQUEST:
-      return { ...state, pinging: true };
+      return { ...state, pinging: setProperty(state.pinging, action.iotDeviceId, { pending: true, result: null }) };
 
     case actions.PING_IOT_DEVICE.SUCCESS:
-      return { ...state, pinging: false };
+      return { ...state, pinging: setProperty(state.pinging, action.iotDeviceId, { pending: false, result: action.message }) };
 
     case actions.PING_IOT_DEVICE.FAILURE:
-      return { ...state, pinging: false, formError: action.message };
+      return { ...state, pinging: setProperty(state.pinging, action.iotDeviceId, { pending: false, result: action.message }) };
+
+    case actions.LIST_AVAILABLE_IOT_DEVICES.SUCCESS:
+      return { ...state, availableIoTDevices: action.list };
+
+    case actions.LIST_AVAILABLE_IOT_DEVICES.FAILURE:
+      return { ...state, availableIoTDevices: [], formError: action.message };
 
     default:
       return state;
