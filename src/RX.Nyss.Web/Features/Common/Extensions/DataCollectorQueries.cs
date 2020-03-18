@@ -12,19 +12,6 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<DataCollector> FilterByNationalSociety(this IQueryable<DataCollector> dataCollectors, int nationalSocietyId) =>
             dataCollectors.Where(dc => dc.Project.NationalSocietyId == nationalSocietyId);
 
-        public static IQueryable<DataCollector> FilterByDataCollectorType(this IQueryable<DataCollector> dataCollectors, DataCollectorType? dataCollectorType) =>
-            dataCollectorType switch
-            {
-                DataCollectorType.Human =>
-                dataCollectors.Where(dc => dc.DataCollectorType == DataCollectorType.Human),
-
-                DataCollectorType.CollectionPoint =>
-                dataCollectors.Where(dc => dc.DataCollectorType == DataCollectorType.CollectionPoint),
-
-                _ =>
-                dataCollectors
-            };
-
         public static IQueryable<DataCollector> FilterByType(this IQueryable<DataCollector> dataCollectors, DataCollectorType? dataCollectorType) =>
             dataCollectorType switch
             {

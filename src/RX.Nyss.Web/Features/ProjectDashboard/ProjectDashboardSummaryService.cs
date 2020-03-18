@@ -62,8 +62,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     ErrorReportCount = rawReportsWithDataCollector.Count() - validReports.Count(),
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
-                    NumberOfDistricts = _geographicalCoverageService.GetNumberOfDistrictsByProject(filters.ProjectId.Value, filters.StartDate).Count(),
-                    NumberOfVillages = _geographicalCoverageService.GetNumberOfVillagesByProject(filters.ProjectId.Value, filters.StartDate).Count()
+                    NumberOfDistricts = _geographicalCoverageService.GetNumberOfDistrictsByProject(filters.ProjectId.Value, filters).Count(),
+                    NumberOfVillages = _geographicalCoverageService.GetNumberOfVillagesByProject(filters.ProjectId.Value, filters).Count()
                 })
                 .FirstOrDefaultAsync();
         }

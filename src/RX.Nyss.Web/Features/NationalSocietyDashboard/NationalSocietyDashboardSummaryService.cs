@@ -64,11 +64,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
                     NumberOfDistricts = filters.ProjectId.HasValue ?
-                        _geographicalCoverageService.GetNumberOfDistrictsByProject(filters.ProjectId.Value, filters.StartDate).Count()
-                        : _geographicalCoverageService.GetNumberOfDistrictsByNationalSociety(filters.NationalSocietyId.Value, filters.StartDate).Count(),
+                        _geographicalCoverageService.GetNumberOfDistrictsByProject(filters.ProjectId.Value, filters).Count()
+                        : _geographicalCoverageService.GetNumberOfDistrictsByNationalSociety(filters.NationalSocietyId.Value, filters).Count(),
                     NumberOfVillages = filters.ProjectId.HasValue ?
-                        _geographicalCoverageService.GetNumberOfVillagesByProject(filters.ProjectId.Value, filters.StartDate).Count()
-                        : _geographicalCoverageService.GetNumberOfVillagesByNationalSociety(filters.NationalSocietyId.Value, filters.StartDate).Count()
+                        _geographicalCoverageService.GetNumberOfVillagesByProject(filters.ProjectId.Value, filters).Count()
+                        : _geographicalCoverageService.GetNumberOfVillagesByNationalSociety(filters.NationalSocietyId.Value, filters).Count()
                 })
                 .FirstOrDefaultAsync();
         }
