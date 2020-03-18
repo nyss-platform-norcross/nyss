@@ -52,23 +52,22 @@ namespace RX.Nyss.FuncApp.Tests
             await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true));
         }
 
-        [Theory]
-        [InlineData("user@example.com", false)]
-        [InlineData("donald.duck@example.com", false)]
-        [InlineData("scrooge.mc.duck@example.com", true)]
-        public async Task SendEmailWithMailjet_WhenSendToAllIsFalse_ShouldUseSandboxModeUnlessWhiteListed(string email, bool sandboxMode)
+        [Fact]
+        public async Task SendEmailWithMailjet_WhenSendToAllIsFalse_ShouldUseSandboxModeUnlessWhiteListed()
         {
             // Arrange
-            var whitelist = @"
-            user@example.com
-            donald.duck@example.com
-            some@email.no";
+            var whitelistedEmail = "whitelisted@email.com";
+            var notWhitelistedEmail = "not_whitelisted@email.com";
+            _whitelistValidator.IsWhitelistedEmailAddress(Arg.Any<string>(), whitelistedEmail).Returns(true);
+            _whitelistValidator.IsWhitelistedEmailAddress(Arg.Any<string>(), notWhitelistedEmail).Returns(false);
 
             // Act
-            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = whitelistedEmail } }, whitelist, "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = notWhitelistedEmail } }, whitelist, "");
 
             // Assert
-            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(sandboxMode));
+            await _emailClientMock.Received(1).SendEmail(Arg.Is<SendEmailMessage>(x => x.To.Email == notWhitelistedEmail), true);
+            await _emailClientMock.Received(1).SendEmail(Arg.Is<SendEmailMessage>(x => x.To.Email == whitelistedEmail), false);
         }
 
         [Theory]
@@ -98,6 +97,9 @@ namespace RX.Nyss.FuncApp.Tests
             // Arrange
             var whitelist = "user@example.com";
             var phoneNumberWhitelist = "+4712345678";
+
+            _whitelistValidator.IsWhitelistedEmailAddress(whitelist, email).Returns(true);
+            _whitelistValidator.IsWhiteListedPhoneNumber(phoneNumberWhitelist, phoneNumber).Returns(true);
 
             // Act
             await _emailService.SendEmail(new SendEmailMessage

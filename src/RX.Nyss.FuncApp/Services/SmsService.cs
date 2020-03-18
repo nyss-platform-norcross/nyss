@@ -32,7 +32,7 @@ namespace RX.Nyss.FuncApp.Services
 
         public async Task SendSms(SendSmsMessage message, string whitelistedPhoneNumbers)
         {
-            var isWhitelisted = _config.MailjetConfig.SendFeedbackSmsToAll || _whitelistValidator.IsWhiteListedPhoneNumber(message.PhoneNumber, whitelistedPhoneNumbers);
+            var isWhitelisted = _config.MailjetConfig.SendFeedbackSmsToAll || _whitelistValidator.IsWhiteListedPhoneNumber(whitelistedPhoneNumbers, message.PhoneNumber);
 
             if (isWhitelisted)
             {

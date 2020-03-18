@@ -42,6 +42,7 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly INyssContext _nyssContext;
         private readonly IEmailPublisherService _emailPublisherService;
         private readonly IEmailTextGeneratorService _emailTextGeneratorService;
+        private readonly ISmsPublisherService _smsPublisherService;
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
         private readonly INyssWebConfig _config;
         private readonly ILoggerAdapter _loggerAdapter;
@@ -56,7 +57,8 @@ namespace RX.Nyss.Web.Features.Alerts
             ISmsTextGeneratorService smsTextGeneratorService,
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            ISmsPublisherService smsPublisherService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
@@ -65,6 +67,7 @@ namespace RX.Nyss.Web.Features.Alerts
             _loggerAdapter = loggerAdapter;
             _dateTimeProvider = dateTimeProvider;
             _authorizationService = authorizationService;
+            _smsPublisherService = smsPublisherService;
             _config = config;
         }
 
@@ -480,20 +483,28 @@ namespace RX.Nyss.Web.Features.Alerts
         {
             try
             {
-                var lastUsedGatewaySettings = await _nyssContext.GatewaySettings.Where(gs => gs.ApiKey == lastReportApiKey).FirstOrDefaultAsync();
-                var gatewayEmail = lastUsedGatewaySettings?.EmailAddress ??
-                    (await _nyssContext.GatewaySettings.Where(gs => gs.NationalSocietyId == nationalSocietyId).FirstAsync()).EmailAddress;
+                var gatewaySetting = await _nyssContext.GatewaySettings
+                    .Where(gs => gs.ApiKey == lastReportApiKey || gs.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
+
+                if (gatewaySetting == null)
+                {
+                    throw new ArgumentException("SmsGateway not found!");
+                }
 
                 var text = await _smsTextGeneratorService.GenerateEscalatedAlertSms(languageCode);
-
                 text = text
                     .Replace("{{project}}", project)
                     .Replace("{{healthRisk}}", healthRisk)
                     .Replace("{{lastReportVillage}}", lastReportVillage);
 
-                foreach (var sms in notificationPhoneNumbers)
+                if (!string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
                 {
-                    await _emailPublisherService.SendEmail((gatewayEmail, gatewayEmail), sms, text, true);
+                    await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, notificationPhoneNumbers, text);
+                }
+                else
+                {
+                    await Task.WhenAll(notificationPhoneNumbers
+                        .Select(sms => _emailPublisherService.SendEmail((gatewaySetting.EmailAddress, gatewaySetting.EmailAddress), sms, text, true)));
                 }
             }
             catch (Exception e)

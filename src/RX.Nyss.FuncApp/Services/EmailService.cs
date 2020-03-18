@@ -33,7 +33,7 @@ namespace RX.Nyss.FuncApp.Services
             {
                 if (_config.MailConfig.EnableFeedbackSms)
                 {
-                    var sandboxMode = !(_config.MailConfig.SendFeedbackSmsToAll || _whitelistValidator.IsWhiteListedPhoneNumber(message.Subject, whitelistedPhoneNumbers));
+                    var sandboxMode = !(_config.MailConfig.SendFeedbackSmsToAll || _whitelistValidator.IsWhiteListedPhoneNumber(whitelistedPhoneNumbers, message.Subject));
                     await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
                 }
             }

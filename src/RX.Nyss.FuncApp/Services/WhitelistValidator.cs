@@ -7,7 +7,7 @@ namespace RX.Nyss.FuncApp.Services
     public interface IWhitelistValidator
     {
         bool IsWhitelistedEmailAddress(string whitelistedEmailAddresses, string email);
-        bool IsWhiteListedPhoneNumber(string phoneNumber, string whitelistedPhoneNumbers);
+        bool IsWhiteListedPhoneNumber(string whitelistedPhoneNumbers, string phoneNumber);
     }
 
     public class WhitelistValidator : IWhitelistValidator
@@ -40,7 +40,7 @@ namespace RX.Nyss.FuncApp.Services
             return isWhitelisted;
         }
 
-        public bool IsWhiteListedPhoneNumber(string phoneNumber, string whitelistedPhoneNumbers)
+        public bool IsWhiteListedPhoneNumber(string whitelistedPhoneNumbers, string phoneNumber)
         {
             if (string.IsNullOrWhiteSpace(whitelistedPhoneNumbers))
             {
