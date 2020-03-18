@@ -3,6 +3,5 @@
     public class GatewaySettingResponseDto : GatewaySettingRequestDto
     {
         public int Id { get; set; }
-        public string IotHubDeviceName { get; set; }
     }
 }

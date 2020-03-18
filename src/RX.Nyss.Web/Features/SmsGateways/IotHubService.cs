@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
+using Microsoft.Azure.Devices.Common.Exceptions;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Web.Configuration;
 
 namespace RX.Nyss.Web.Features.SmsGateways
 {
     public interface IIotHubService
     {
-        Task CreateDevice(string deviceName);
         Task<string> GetConnectionString(string deviceName);
-        Task RemoveDevice(string deviceName);
         Task<Result> Ping(string gatewayDeviceIotHubDeviceName);
         Task<IEnumerable<string>> ListDevices();
     }
@@ -22,20 +24,15 @@ namespace RX.Nyss.Web.Features.SmsGateways
         private readonly RegistryManager _registry;
         private readonly string _ioTHubHostName;
         private readonly ServiceClient _iotHubServiceClient;
+        private readonly ILoggerAdapter _loggerAdapter;
 
-        public IotHubService(INyssWebConfig config)
+        public IotHubService(INyssWebConfig config, ILoggerAdapter loggerAdapter)
         {
+            _loggerAdapter = loggerAdapter;
             _registry = RegistryManager.CreateFromConnectionString(config.ConnectionStrings.IotHubManagement);
             _iotHubServiceClient = ServiceClient.CreateFromConnectionString(config.ConnectionStrings.IotHubService);
 
             _ioTHubHostName = IotHubConnectionStringBuilder.Create(config.ConnectionStrings.IotHubManagement).HostName;
-        }
-
-        public async Task CreateDevice(string deviceName)
-        {
-            var device = new Device(deviceName) { Authentication = new AuthenticationMechanism { Type = AuthenticationType.Sas } };
-
-            await _registry.AddDeviceAsync(device);
         }
 
         public async Task<string> GetConnectionString(string deviceName)
@@ -46,26 +43,29 @@ namespace RX.Nyss.Web.Features.SmsGateways
             return $"HostName={_ioTHubHostName};DeviceId={deviceName};SharedAccessKey={key}";
         }
 
-        public async Task RemoveDevice(string deviceName) => await _registry.RemoveDeviceAsync(deviceName);
-
         public async Task<Result> Ping(string gatewayDeviceIotHubDeviceName)
         {
             var cloudToDeviceMethod = new CloudToDeviceMethod("ping_device", TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
 
-            var response = await _iotHubServiceClient.InvokeDeviceMethodAsync(gatewayDeviceIotHubDeviceName, cloudToDeviceMethod);
-
-            if (response.Status == 200)
+            try
             {
-                return Result.Success(response.GetPayloadAsJson());
+                var response = await _iotHubServiceClient.InvokeDeviceMethodAsync(gatewayDeviceIotHubDeviceName, cloudToDeviceMethod);
+                return response.Status == 200
+                    ? Result.Success(response.GetPayloadAsJson())
+                    : Result.Error(ResultKey.NationalSociety.SmsGateway.IoTHubPingFailed, response.GetPayloadAsJson());
             }
-
-            return Result.Error(response.GetPayloadAsJson());
+            // The `DeviceNotFoundException` is the one that is thrown for even the timeoutExceptions for some reasons..
+            catch (DeviceNotFoundException ex)
+            {
+                _loggerAdapter.Error(ex);
+                return Result.Error(ResultKey.NationalSociety.SmsGateway.IoTHubPingFailed);
+            }
         }
 
         public async Task<IEnumerable<string>> ListDevices()
         {
             var query = _registry.CreateQuery("select * from devices", 1000);
-            
+
             var allDevices = new List<string>();
             while (query.HasMoreResults)
             {

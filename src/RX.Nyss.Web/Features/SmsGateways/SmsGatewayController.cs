@@ -13,10 +13,12 @@ namespace RX.Nyss.Web.Features.SmsGateways
     public class SmsGatewayController : BaseController
     {
         private readonly ISmsGatewayService _smsGatewayService;
+        private readonly IIotHubService _iotHubService;
 
-        public SmsGatewayController(ISmsGatewayService smsGatewayService)
+        public SmsGatewayController(ISmsGatewayService smsGatewayService, IIotHubService iotHubService)
         {
             _smsGatewayService = smsGatewayService;
+            _iotHubService = iotHubService;
         }
 
         /// <summary>
@@ -82,13 +84,17 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <summary>
         /// Ping the IoT device the SMSGateway is set up to use.
         /// </summary>
-        /// <param name="smsGatewayId">SmsGateway identifier</param>
+        /// <param name="deviceId">IoT Hub device identifier</param>
         /// <returns></returns>
-        [HttpPost("{smsGatewayId:int}/ping")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
-        public Task<Result> PingGatewayDevice(int smsGatewayId) =>
-            _smsGatewayService.PingIotHubDevice(smsGatewayId);
+        [HttpPost("iotDevices/{deviceId}/ping")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
+        public Task<Result> PingGatewayDevice(string deviceId) =>
+            _iotHubService.Ping(deviceId);
 
+        /// <summary>
+        /// List available IoT Hub devices
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("iotDevices/list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
         public Task<Result<IEnumerable<string>>> ListIotHubDevices() =>
