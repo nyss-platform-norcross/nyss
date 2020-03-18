@@ -21,6 +21,10 @@
       "type": "String",
       "defaultValue": "testdb"
     },
+    "demoDatabaseName": {
+      "type": "String",
+      "defaultValue": "demodb"
+    },
     "tier": {
       "type": "String"
     },
@@ -71,6 +75,11 @@
       "type": "Object"
     },
     "testTagValues": {
+      "defaultValue": {
+      },
+      "type": "Object"
+    },
+    "demoTagValues": {
       "defaultValue": {
       },
       "type": "Object"
@@ -133,6 +142,32 @@
             "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
           ],
           "tags": "[parameters('testTagValues')]",
+          "sku": {
+            "name": "[parameters('skuName')]",
+            "tier": "[parameters('tier')]"
+          },
+          "properties": {
+            "collation": "[parameters('collation')]",
+            "maxSizeBytes": "[parameters('maxSizeBytes')]",
+            "sampleName": "[parameters('sampleName')]",
+            "zoneRedundant": "[parameters('zoneRedundant')]",
+            "licenseType": "[parameters('licenseType')]",
+            "readScale": "[parameters('readScaleOut')]",
+            "readReplicaCount": "[parameters('numberOfReplicas')]",
+            "minCapacity": "[parameters('minCapacity')]",
+            "autoPauseDelay": "[parameters('autoPauseDelay')]"
+          }
+        },
+        {
+          "type": "databases",
+          "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
+          "apiVersion": "2017-10-01-preview",
+          "name": "[parameters('demoDatabaseName')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+          ],
+          "tags": "[parameters('demoTagValues')]",
           "sku": {
             "name": "[parameters('skuName')]",
             "tier": "[parameters('tier')]"

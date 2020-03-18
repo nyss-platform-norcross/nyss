@@ -56,11 +56,11 @@ In a Powershell shell run:
 
 ```powershell
 # For testing that the template is working:
-.\provision-application-templates.ps1 -environment "<dev|test|production>" -test
+.\provision-application-templates.ps1 -environment "<dev|test|demo|production>" -test
 # For provisioning incrementally:
-.\provision-application-templates.ps1 -environment "<dev|test|production>"
+.\provision-application-templates.ps1 -environment "<dev|test|demo|production>"
 # ..or to do a complete deployment:
-.\provision-application-templates.ps1 -environment "<dev|test|production>" -complete
+.\provision-application-templates.ps1 -environment "<dev|test|demo|production>" -complete
 ```
 
 If you want to only deploy a specific resource:
@@ -70,6 +70,9 @@ If you want to only deploy a specific resource:
 
 For provisioning the DB resources:
 ```powershell
+# For testing that the template is working
+.\provision-db-templates.ps1 -environment "<dev|production>" -test
+# For incremental
 .\provision-db-templates.ps1 -environment "<dev|production>"
 # ..or complete
 .\provision-db-templates.ps1 -environment "<dev|production>" -complete
