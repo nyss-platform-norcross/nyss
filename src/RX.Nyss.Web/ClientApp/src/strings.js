@@ -761,7 +761,8 @@ export const stringKeys = {
     invalidInteger: "validation.invalidInteger",
     phoneNumberInvalid: "validation.phoneNumberInvalid",
     invalidModuloTen: "validation.invalidModuloTen",
-    valueCannotBeNegative: "validation.valueCannotBeNegative"
+    valueCannotBeNegative: "validation.valueCannotBeNegative",
+    inRange: "validation.valueMustBeInRange"
   },
   headManagerConsents: {
     title: "headManagerConsents.title",

@@ -80,7 +80,9 @@ const DataCollectorsCreatePageComponent = (props) => {
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
       villageId: [validators.required],
       districtId: [validators.required],
-      regionId: [validators.required]
+      regionId: [validators.required],
+      longitude: [validators.required, validators.integer, validators.inRange(-180, 180)],
+      latitude: [validators.required, validators.integer, validators.inRange(-90, 90)]
     };
 
     const newForm = createForm(fields, validation);
@@ -226,6 +228,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.latitude)}
               name="latitude"
               field={form.fields.latitude}
+              type="number"
             />
           </Grid>
           <Grid item xs={12}>
@@ -233,9 +236,10 @@ const DataCollectorsCreatePageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.longitude)}
               name="longitude"
               field={form.fields.longitude}
+              type="number"
             />
           </Grid>
-          
+
           <GeoStructureSelect
             regions={props.regions}
             regionIdField={form.fields.regionId}

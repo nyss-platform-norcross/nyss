@@ -3,6 +3,7 @@ import { Map, TileLayer, Marker, Popup } from 'react-leaflet'
 
 export const DataCollectorMap = ({ onChange, location, zoom }) => {
   const [markerLocation, setMarkerLocation] = useState(location);
+  const [zoomLevel, setZoomLevel] = useState(zoom || 13);
 
   useEffect(() => {
     setMarkerLocation(location);
@@ -29,8 +30,9 @@ export const DataCollectorMap = ({ onChange, location, zoom }) => {
       onClick={handleClick}
       onLocationfound={handleLocationFound}
       ref={mapRef}
-      zoom={zoom || 13}
+      zoom={zoomLevel}
       scrollWheelZoom={false}
+      onzoomend={(e) => setZoomLevel(e.target._zoom)}
     >
       <TileLayer
         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
