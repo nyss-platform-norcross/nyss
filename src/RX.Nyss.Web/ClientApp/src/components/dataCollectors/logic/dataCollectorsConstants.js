@@ -28,3 +28,5 @@ export const performanceStatus = {
   notReporting: "NotReporting",
   reportingWithErrors: "ReportingWithErrors",
 };
+
+export const trainingStatus = [ "All", "Trained", "InTraining"];

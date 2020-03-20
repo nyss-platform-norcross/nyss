@@ -44,7 +44,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
   ];
 
   return (
-    <TableContainer>
+    <TableContainer sticky>
       <Table>
         <TableHead>
           <TableRow>

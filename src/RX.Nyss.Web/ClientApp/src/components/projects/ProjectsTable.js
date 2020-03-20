@@ -42,7 +42,7 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
 
   return (
     <Fragment>
-      <TableContainer>
+      <TableContainer sticky>
         <Table>
           <TableHead>
             <TableRow>

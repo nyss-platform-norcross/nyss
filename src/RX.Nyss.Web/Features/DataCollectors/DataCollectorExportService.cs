@@ -16,8 +16,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 {
     public interface IDataCollectorExportService
     {
-        Task<byte[]> ExportAsCsv(int projectId);
-        Task<byte[]> ExportAsXls(int projectId);
+        Task<byte[]> ExportAsCsv(int projectId, FiltersRequestDto filtersDto);
+        Task<byte[]> ExportAsXls(int projectId, FiltersRequestDto filter);
     }
 
     public class DataCollectorExportService : IDataCollectorExportService
@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             _authorizationService = authorizationService;
         }
 
-        public async Task<byte[]> ExportAsCsv(int projectId)
+        public async Task<byte[]> ExportAsCsv(int projectId, FiltersRequestDto filtersDto)
         {
             var userName = _authorizationService.GetCurrentUserName();
             var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
@@ -49,12 +49,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
 
-            var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources);
+            var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources, filtersDto);
 
             return GetCsvData(dataCollectors, stringResources);
         }
 
-        public async Task<byte[]> ExportAsXls(int projectId)
+        public async Task<byte[]> ExportAsXls(int projectId, FiltersRequestDto filter)
         {
             var userName = _authorizationService.GetCurrentUserName();
             var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
 
-            var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources);
+            var dataCollectors = await GetDataCollectorsExportData(projectId, stringResources, filter);
 
             var excelSheet = GetExcelData(dataCollectors, stringResources);
             return excelSheet.GetAsByteArray();
@@ -174,9 +174,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return package;
         }
 
-        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, string> stringResources) => 
+        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, string> stringResources, FiltersRequestDto filter) => 
             await _nyssContext.DataCollectors
                 .FilterByProject(projectId)
+                .FilterByArea(filter.Area)
+                .FilterBySupervisor(filter.SupervisorId)
+                .FilterBySex(filter.Sex)
+                .FilterByTrainingMode(filter.TrainingStatus)
                 .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new ExportDataCollectorsResponseDto
                 {

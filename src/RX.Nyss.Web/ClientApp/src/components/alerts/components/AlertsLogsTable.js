@@ -10,7 +10,7 @@ import { TableContainer } from "@material-ui/core";
 
 export const AlertsLogsTable = ({ list }) => {
   return (
-    <TableContainer>
+    <TableContainer sticky>
       <Table>
         <TableHead>
           <TableRow>

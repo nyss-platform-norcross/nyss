@@ -55,7 +55,7 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
 
   return (
     <Fragment>
-      <TableContainer>
+      <TableContainer sticky>
         <Table>
           <TableHead>
             <TableRow>

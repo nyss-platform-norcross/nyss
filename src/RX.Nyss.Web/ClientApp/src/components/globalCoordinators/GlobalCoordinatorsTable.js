@@ -21,7 +21,7 @@ export const GlobalCoordinatorsTable = ({ isListFetching, isRemoving, goToEditio
   }
 
   return (
-    <TableContainer>
+    <TableContainer sticky>
       <Table>
         <TableHead>
           <TableRow>

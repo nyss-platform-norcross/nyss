@@ -154,7 +154,12 @@ export const initialState = {
     mapOverviewDetailsFetching: false,
     settingTrainingState: {},
     performanceListData: [],
-    performanceListFetching: false
+    performanceListFetching: false,
+    filtersData: {
+      supervisors: [],
+      nationalSocietyId: null
+    },
+    filters: null
   },
   headManagerConsents: {
     nationalSocieties: [],
