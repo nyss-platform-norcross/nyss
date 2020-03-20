@@ -249,6 +249,15 @@
               "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
               ]
+            },
+            {
+              "name": "nyss-agreements-container-demo",
+              "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
+              ]
             }
           ]
         }
