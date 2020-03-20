@@ -79,12 +79,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> ExportToExcel(int projectId) =>
-            File(await _dataCollectorExportService.ExportAsXls(projectId), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] FiltersRequestDto filtersDto) =>
+            File(await _dataCollectorExportService.ExportAsXls(projectId, filtersDto), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
         [HttpPost, Route("exportToCsv")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> ExportToCsv(int projectId) =>
-            File(await _dataCollectorExportService.ExportAsCsv(projectId), "text/csv");
+        public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] FiltersRequestDto filtersDto) =>
+            File(await _dataCollectorExportService.ExportAsCsv(projectId, filtersDto), "text/csv");
     }
 }

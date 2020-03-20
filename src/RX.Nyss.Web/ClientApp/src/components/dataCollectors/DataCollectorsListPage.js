@@ -18,7 +18,7 @@ const DataCollectorsListPageComponent = (props) => {
     props.openDataCollectorsList(props.projectId, props.filters);
   });
 
-  const handleFilterChange = (filters) => 
+  const handleFilterChange = (filters) =>
     props.getDataCollectorList(props.projectId, filters);
 
   return (
@@ -28,10 +28,10 @@ const DataCollectorsListPageComponent = (props) => {
           <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToExcel(props.projectId)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.exportExcel)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToCsv(props.projectId)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportToCsv(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.exportCsv)}
           </TableActionsButton>
         </TableActions>

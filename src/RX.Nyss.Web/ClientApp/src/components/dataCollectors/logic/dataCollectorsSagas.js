@@ -44,7 +44,7 @@ function* openDataCollectorsList({ projectId }) {
     if (listStale || listProjectId !== projectId) {
       yield call(getDataCollectors, { projectId, filters });
     }
-    
+
     yield put(actions.openList.success(projectId, filtersData.value));
   } catch (error) {
     yield put(actions.openList.failure(error.message));
@@ -71,10 +71,10 @@ function* openDataCollectorMapOverview({ projectId }) {
 
     const endDate = dayjs(new Date());
     const filters = (yield select(state => state.dataCollectors.mapOverviewFilters)) ||
-      {
-        startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
-        endDate: endDate.format('YYYY-MM-DD'),
-      };
+    {
+      startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
+      endDate: endDate.format('YYYY-MM-DD'),
+    };
 
     yield call(getDataCollectorMapOverview, { projectId, filters })
     yield put(actions.openMapOverview.success());
@@ -213,12 +213,13 @@ function* getDataCollectorsPerformance(projectId) {
   }
 };
 
-function* getExcelExportData({ projectId }) {
+function* getExcelExportData({ projectId, filters }) {
   yield put(actions.exportToExcel.request());
   try {
     yield downloadFile({
       url: `/api/dataCollector/exportToExcel?projectId=${projectId}`,
-      fileName: `dataCollectors.xlsx`
+      fileName: `dataCollectors.xlsx`,
+      data: filters
     });
 
     yield put(actions.exportToExcel.success());
@@ -227,12 +228,13 @@ function* getExcelExportData({ projectId }) {
   }
 };
 
-function* getCsvExportData({ projectId }) {
+function* getCsvExportData({ projectId, filters }) {
   yield put(actions.exportToCsv.request());
   try {
     yield downloadFile({
       url: `/api/dataCollector/exportToCsv?projectId=${projectId}`,
-      fileName: `dataCollectors.csv`
+      fileName: `dataCollectors.csv`,
+      data: filters
     });
 
     yield put(actions.exportToCsv.success());

@@ -22,7 +22,7 @@ export const downloadFile = ({ url, fileName, token , data}) =>
                     }
                 }
             };
-            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');            
+            xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
             xhr.send(JSON.stringify(data));
         } catch (e) {
             reject(e);

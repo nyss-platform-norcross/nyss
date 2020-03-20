@@ -189,6 +189,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterBySupervisor(filters.SupervisorId)
                 .FilterBySex(filters.Sex)
                 .FilterByTrainingMode(filters.TrainingStatus)
+                .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new DataCollectorResponseDto
                 {
                     Id = dc.Id,

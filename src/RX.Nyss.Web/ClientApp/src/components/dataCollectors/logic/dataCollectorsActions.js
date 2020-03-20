@@ -9,7 +9,6 @@ import {
   SET_DATA_COLLECTORS_TRAINING_STATE,
   OPEN_DATA_COLLECTORS_PERFORMANCE_LIST,
   GET_DATA_COLLECTORS_PERFORMANCE,
-  EXPORT_TO_EXCEL,
   EXPORT_DATA_COLLECTORS_TO_CSV,
   EXPORT_DATA_COLLECTORS_TO_EXCEL
 } from "./dataCollectorsConstants";
@@ -111,14 +110,14 @@ export const getDataCollectorsPerformanceList = {
 }
 
 export const exportToExcel = {
-  invoke: (projectId) => ({ type: EXPORT_DATA_COLLECTORS_TO_EXCEL.INVOKE, projectId }),
+  invoke: (projectId, filters) => ({ type: EXPORT_DATA_COLLECTORS_TO_EXCEL.INVOKE, projectId, filters }),
   request: () => ({ type: EXPORT_DATA_COLLECTORS_TO_EXCEL.REQUEST }),
   success: () => ({ type: EXPORT_DATA_COLLECTORS_TO_EXCEL.SUCCESS }),
   failure: (message) => ({ type: EXPORT_DATA_COLLECTORS_TO_EXCEL.FAILURE, message })
 };
 
 export const exportToCsv = {
-  invoke: (projectId) => ({ type: EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, projectId }),
+  invoke: (projectId, filters) => ({ type: EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, projectId, filters }),
   request: () => ({ type: EXPORT_DATA_COLLECTORS_TO_CSV.REQUEST }),
   success: () => ({ type: EXPORT_DATA_COLLECTORS_TO_CSV.SUCCESS }),
   failure: (message) => ({ type: EXPORT_DATA_COLLECTORS_TO_CSV.FAILURE, message })
