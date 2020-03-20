@@ -1,6 +1,6 @@
 import formStyles from "../forms/form/Form.module.scss";
 
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState, useReducer, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -27,6 +27,15 @@ const DataCollectorsEditPageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
 
+  const [location, dispatch] = useReducer((state, action) => {
+    switch (action.type) {
+      case "latitude": return { ...state, lat: action.value };
+      case "longitude": return { ...state, lng: action.value };
+      case "latlng": return { lat: action.lat, lng: action.lng };
+      default: return state;
+    }
+  }, null);
+
   useMount(() => {
     props.openEdition(props.dataCollectorId);
   });
@@ -36,6 +45,8 @@ const DataCollectorsEditPageComponent = (props) => {
       setForm(null);
       return;
     }
+
+    dispatch({ type: "latlng", lat: props.data.latitude, lng: props.data.longitude });
 
     const fields = {
       id: props.data.id,
@@ -64,10 +75,15 @@ const DataCollectorsEditPageComponent = (props) => {
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
       villageId: [validators.required],
       districtId: [validators.required],
-      regionId: [validators.required]
+      regionId: [validators.required],
+      longitude: [validators.required, validators.integer, validators.inRange(-180, 180)],
+      latitude: [validators.required, validators.integer, validators.inRange(-90, 90)]
     };
 
-    setForm(createForm(fields, validation));
+    const newForm = createForm(fields, validation);
+    newForm.fields.latitude.subscribe(({newValue}) => dispatch({ type: "latitude", value: newValue}));
+    newForm.fields.longitude.subscribe(({newValue}) => dispatch({ type: "longitude", value: newValue}));
+    setForm(newForm);
   }, [props.data, props.match]);
 
   const onLocationChange = (e) => {
@@ -186,12 +202,29 @@ const DataCollectorsEditPageComponent = (props) => {
             <div>Location</div>
             <DataCollectorMap
               onChange={onLocationChange}
-              location={props.data ? { lat: props.data.latitude, lng: props.data.longitude } : null}
+              location={location}
               zoom={15}
             />
           </Grid>
         </Grid>
         <Grid container spacing={3} className={formStyles.shrinked}>
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.dataCollector.form.latitude)}
+              name="latitude"
+              field={form.fields.latitude}
+              type="number"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.dataCollector.form.longitude)}
+              name="longitude"
+              field={form.fields.longitude}
+              type="number"
+            />
+          </Grid>
+
           <GeoStructureSelect
             regions={props.data.formData.regions}
             regionIdField={form.fields.regionId}

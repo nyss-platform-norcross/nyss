@@ -147,5 +147,6 @@ export const validators = {
   email: [() => strings(stringKeys.validation.invalidEmail), (value) => emailRegex.test(value)],
   emailWhen: (fieldGetter) => [() => strings(stringKeys.validation.invalidEmail), (value, fields) => !fieldGetter(fields) || emailRegex.test(value)],
   moduloTen: [() => strings(stringKeys.validation.invalidModuloTen), (value) => (Number(value) % 10 === 0)],
-  nonNegativeNumber: [() => strings(stringKeys.validation.valueCannotBeNegative), (value) => !value || (!isNaN(Number(value)) && Number(value) >= 0)]
+  nonNegativeNumber: [() => strings(stringKeys.validation.valueCannotBeNegative), (value) => !value || (!isNaN(Number(value)) && Number(value) >= 0)],
+  inRange: (min, max) => [() => stringsFormat(stringKeys.validation.inRange, { min, max }), (value) => !value || (!isNaN(Number(value)) && value >= min && value <= max)]
 };
