@@ -10,6 +10,8 @@ namespace RX.Nyss.Web.Features.AppData.Dto
 
         public bool? IsDevelopment { get; set; }
 
+        public bool? IsDemo { get; set; }
+
         public int AuthCookieExpiration { get; set; }
 
         public class ContentLanguageDto

@@ -7,5 +7,6 @@ export const EDIT_REPORT = action("EDIT_REPORT");
 export const EXPORT_TO_CSV = action("EXPORT_TO_CSV");
 export const EXPORT_TO_EXCEL = action("EXPORT_TO_EXCEL");
 export const MARK_AS_ERROR = action("MARK_AS_ERROR");
+export const SEND_REPORT = action("SEND_REPORT");
 
 export const DateColumnName = "date";

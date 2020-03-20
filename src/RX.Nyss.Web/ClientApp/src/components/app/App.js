@@ -52,6 +52,7 @@ import { AlertsLogsPage } from '../alerts/AlertsLogsPage';
 import { NationalSocietyDashboardPage } from '../nationalSocietyDashboard/NationalSocietyDashboardPage';
 import { TranslationsListPage } from '../translations/TranslationsListPage';
 import { NotFoundPage } from '../layout/NotFoundPage';
+import { SendReportPage } from '../reports/SendReportPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -117,6 +118,7 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/alerts/:alertId/logs' component={AlertsLogsPage} roles={accessMap.alerts.assess} />
 
           <AuthRoute exact path='/translations' component={TranslationsListPage} roles={accessMap.translations.list} />
+          <AuthRoute exact path='/sendReport' component={SendReportPage} roles={accessMap.reports.sendReport} />
 
           <Route component={NotFoundPage} />
         </Switch>

@@ -16,7 +16,8 @@ export const reportsSagas = () => [
   takeEvery(consts.EDIT_REPORT.INVOKE, editReport),
   takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExcelExportData),
   takeEvery(consts.EXPORT_TO_CSV.INVOKE, getCsvExportData),
-  takeEvery(consts.MARK_AS_ERROR.INVOKE, markAsError)
+  takeEvery(consts.MARK_AS_ERROR.INVOKE, markAsError),
+  takeEvery(consts.SEND_REPORT.INVOKE, sendReport)
 ];
 
 function* openReportsList({ projectId }) {
@@ -147,6 +148,18 @@ function* markAsError({ reportId }) {
     yield call(getReports, { projectId });
   } catch (error) {
     yield put(actions.markAsError.failure());
+  }
+};
+
+function* sendReport({ report }) {
+  yield put(actions.sendReport.request());
+  try {
+    yield call(http.post, `/api/report/sendReport`, report);
+    yield put(actions.sendReport.success());
+    yield put(appActions.showMessage(stringKeys.reports.sendReport.success));
+  } catch (error) {
+    yield put(actions.sendReport.failure());
+    yield put(appActions.showMessage(error.message));
   }
 };
 

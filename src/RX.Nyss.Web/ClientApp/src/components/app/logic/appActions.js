@@ -9,6 +9,7 @@ export const setAppReady = (status) => ({ type: actions.SET_APP_READY, status })
 export const toggleSideMenu = (value) => ({ type: actions.TOGGLE_SIDE_MENU, value });
 export const goToHeadManagerConsents = () => push(`/headManagerConsents`);
 export const goToTranslations = () => push(`/translations`);
+export const goToSendReport = () => push(`/sendReport`);
 export const pageFocused = () => ({ type: actions.PAGE_FOCUSED });
 
 export const initApplication = {
@@ -45,8 +46,8 @@ export const getAppData = {
   request: () =>
     ({ type: actions.GET_APP_DATA.REQUEST }),
 
-  success: (contentLanguages, countries, isDevelopment, authCookieExpiration) =>
-    ({ type: actions.GET_APP_DATA.SUCCESS, contentLanguages, countries, isDevelopment, authCookieExpiration }),
+  success: (contentLanguages, countries, isDevelopment, isDemo, authCookieExpiration) =>
+    ({ type: actions.GET_APP_DATA.SUCCESS, contentLanguages, countries, isDevelopment, isDemo, authCookieExpiration }),
 
   failure: (message) =>
     ({ type: actions.GET_APP_DATA.FAILURE, message })

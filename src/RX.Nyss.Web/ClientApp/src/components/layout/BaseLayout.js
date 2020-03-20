@@ -11,6 +11,7 @@ import { StringsSwitcher } from './StringsSwitcher';
 import { pageFocused } from '../app/logic/appActions';
 import { checkIsIOS, addMaximumScaleToMetaViewport } from '../../utils/disableFormZoom';
 import { useMount } from '../../utils/lifecycle';
+import { ReportSender } from './ReportSender';
 
 const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
   useEffect(() => {
@@ -57,6 +58,7 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
       )}
       {!moduleError && children}
       <StringsSwitcher />
+      <ReportSender />
     </div>
   );
 }

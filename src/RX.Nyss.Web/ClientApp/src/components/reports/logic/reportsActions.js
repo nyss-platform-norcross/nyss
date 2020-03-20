@@ -2,7 +2,7 @@ import { push } from "connected-react-router";
 import {
   OPEN_REPORTS_LIST, GET_REPORTS,
   OPEN_REPORT_EDITION, EDIT_REPORT,
-  EXPORT_TO_EXCEL, MARK_AS_ERROR, EXPORT_TO_CSV
+  EXPORT_TO_EXCEL, MARK_AS_ERROR, EXPORT_TO_CSV, SEND_REPORT
 } from "./reportsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/reports`);
@@ -56,3 +56,10 @@ export const markAsError = {
   success: () => ({ type: MARK_AS_ERROR.SUCCESS }),
   failure: (message) => ({ type: MARK_AS_ERROR.FAILURE, message })
 };
+
+export const sendReport = {
+  invoke: (report) => ({ type: SEND_REPORT.INVOKE, report }),
+  request: () => ({ type: SEND_REPORT.REQUEST }),
+  success: () => ({ type: SEND_REPORT.SUCCESS }),
+  failure: (message) => ({ type: SEND_REPORT.FAILURE, message })
+}
