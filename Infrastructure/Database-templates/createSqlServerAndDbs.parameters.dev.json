@@ -17,6 +17,9 @@
     "testDatabaseName": {
       "value": "nrx-cbs-nyss-sqldb-test"
     },
+    "demoDatabaseName": {
+      "value": "nrx-cbs-nyss-sqldb-demo"
+    },
     "tier": {
       "value": "Standard"
     },
@@ -65,6 +68,13 @@
         "Team": "CBS",
         "System": "Nyss",
         "Environment": "Test"
+      }
+    },
+    "DemoTagValues": {
+      "value": {
+        "Team": "CBS",
+        "System": "Nyss",
+        "Environment": "Demo"
       }
     }
   }

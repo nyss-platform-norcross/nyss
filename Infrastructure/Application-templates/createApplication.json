@@ -294,7 +294,7 @@
             "[resourceId('Microsoft.Web/sites/', variables('webAppName'))]"
           ],
           "properties": {
-            "enabled": "[not(equals(parameters('env'), 'prod'))]",
+            "enabled": "[and(not(equals(parameters('env'), 'prod')), not(equals(parameters('env'), 'demo')))]",
             "unauthenticatedClientAction": "RedirectToLoginPage",
             "tokenStoreEnabled": true,
             "defaultProvider": "AzureActiveDirectory",

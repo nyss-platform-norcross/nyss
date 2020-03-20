@@ -42,7 +42,7 @@ namespace RX.Nyss.Web
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
-            if (Configuration["Environment"] != NyssEnvironments.Prod)
+            if (Configuration["Environment"] != NyssEnvironments.Prod && Configuration["Environment"] != NyssEnvironments.Demo)
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nyss API V1"));
