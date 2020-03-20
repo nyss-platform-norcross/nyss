@@ -1,6 +1,7 @@
 import formStyles from "../forms/form/Form.module.scss";
+import styles from './DataCollectorsCreatePage.module.scss';
 
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, Fragment, useEffect, useReducer } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -24,12 +25,14 @@ import { DataCollectorMap } from './DataCollectorMap';
 import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { Radio, FormControlLabel } from "@material-ui/core";
-import { useReducer } from "react";
+import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import { retrieveGpsLocation } from "../../utils/map";
 
 const DataCollectorsCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
   const [type, setType] = useState(dataCollectorType.human);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
   const [location, dispatch] = useReducer((state, action) => {
     switch (action.type) {
@@ -96,6 +99,23 @@ const DataCollectorsCreatePageComponent = (props) => {
     form.fields.latitude.update(e.lat);
     form.fields.longitude.update(e.lng);
   }
+
+  const onRetrieveLocation = () => {
+    setIsFetchingLocation(true);
+    retrieveGpsLocation(location => {
+      if (location === null){
+        setIsFetchingLocation(false);
+        return;
+      }
+      const lat = location.coords.latitude;
+      const lng = location.coords.longitude;
+      form.fields.latitude.update(lat);
+      form.fields.longitude.update(lng);
+      dispatch({ type: "latlng", lat: lat, lng: lng });
+      setIsFetchingLocation(false);
+    });
+  }
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -221,8 +241,18 @@ const DataCollectorsCreatePageComponent = (props) => {
               zoom={6}
             />
           </Grid>
+
         </Grid>
         <Grid container spacing={3} className={formStyles.shrinked}>
+
+          <Grid item className={styles.locationButton}>
+            <TableActionsButton
+              onClick={onRetrieveLocation}
+              isFetching={isFetchingLocation}
+            >
+              {strings(stringKeys.dataCollector.form.retrieveLocation)}
+            </TableActionsButton>
+          </Grid>
           <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.latitude)}

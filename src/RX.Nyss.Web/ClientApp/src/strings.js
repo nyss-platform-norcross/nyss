@@ -466,7 +466,8 @@ export const stringKeys = {
       village: "dataCollectors.form.village",
       district: "dataCollectors.form.district",
       region: "dataCollectors.form.region",
-      zone: "dataCollectors.form.zone"
+      zone: "dataCollectors.form.zone",
+      retrieveLocation: "dataCollectors.form.retrieveLocation"
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",

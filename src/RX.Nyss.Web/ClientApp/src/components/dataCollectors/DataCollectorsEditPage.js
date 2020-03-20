@@ -1,4 +1,5 @@
 import formStyles from "../forms/form/Form.module.scss";
+import styles from './DataCollectorsEditPage.module.scss';
 
 import React, { useEffect, useState, useReducer, Fragment } from 'react';
 import { connect } from "react-redux";
@@ -22,10 +23,13 @@ import SelectField from '../forms/SelectField';
 import { getBirthDecades } from './logic/dataCollectorsService';
 import { DataCollectorMap } from './DataCollectorMap';
 import { ValidationMessage } from "../forms/ValidationMessage";
+import { TableActionsButton } from "../common/tableActions/TableActionsButton";
+import { retrieveGpsLocation } from "../../utils/map";
 
 const DataCollectorsEditPageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
 
   const [location, dispatch] = useReducer((state, action) => {
     switch (action.type) {
@@ -89,6 +93,22 @@ const DataCollectorsEditPageComponent = (props) => {
   const onLocationChange = (e) => {
     form.fields.latitude.update(e.lat);
     form.fields.longitude.update(e.lng);
+  }
+
+  const onRetrieveLocation = () => {
+    setIsFetchingLocation(true);
+    retrieveGpsLocation(location => {
+      if (location === null){
+        setIsFetchingLocation(false);
+        return;
+      }
+      const lat = location.coords.latitude;
+      const lng = location.coords.longitude;
+      form.fields.latitude.update(lat);
+      form.fields.longitude.update(lng);
+      dispatch({ type: "latlng", lat: lat, lng: lng });
+      setIsFetchingLocation(false);
+    });
   }
 
   const handleSubmit = (e) => {
@@ -208,6 +228,15 @@ const DataCollectorsEditPageComponent = (props) => {
           </Grid>
         </Grid>
         <Grid container spacing={3} className={formStyles.shrinked}>
+
+          <Grid item className={styles.locationButton}>
+            <TableActionsButton
+              onClick={onRetrieveLocation}
+              isFetching={isFetchingLocation}
+            >
+              {strings(stringKeys.dataCollector.form.retrieveLocation)}
+            </TableActionsButton>
+          </Grid>
           <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.dataCollector.form.latitude)}
