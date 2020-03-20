@@ -103,6 +103,10 @@ const DataCollectorsCreatePageComponent = (props) => {
   const onRetrieveLocation = () => {
     setIsFetchingLocation(true);
     retrieveGpsLocation(location => {
+      if (location === null){
+        setIsFetchingLocation(false);
+        return;
+      }
       const lat = location.coords.latitude;
       const lng = location.coords.longitude;
       form.fields.latitude.update(lat);
@@ -240,7 +244,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
         </Grid>
         <Grid container spacing={3} className={formStyles.shrinked}>
-          
+
           <Grid item className={styles.locationButton}>
             <TableActionsButton
               onClick={onRetrieveLocation}

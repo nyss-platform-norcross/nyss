@@ -26,5 +26,5 @@ export const retrieveGpsLocation = (callback) => {
     throw new Error("Geolocation is not supported by this browser");
   }
 
-  return navigator.geolocation.getCurrentPosition(callback);
+  return navigator.geolocation.getCurrentPosition(callback, (e) => { callback(null) });
 }
