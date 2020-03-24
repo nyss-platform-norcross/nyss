@@ -9,7 +9,7 @@ namespace RX.Nyss.FuncApp.Services
 {
     public interface IEmailService
     {
-        Task SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers);
+        Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers);
     }
 
     public class EmailService : IEmailService
@@ -25,7 +25,7 @@ namespace RX.Nyss.FuncApp.Services
             _emailClient = emailClient;
         }
 
-        public async Task SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers)
+        public async Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers)
         {
             if (message.SendAsTextOnly)
             {

@@ -17,12 +17,17 @@ namespace RX.Nyss.FuncApp.Contracts
     {
         public string Type { get; set; }
 
-        public string Content { get; set; }
+        public string Value { get; set; }
     }
 
     public class SendGridMailSettings
     {
-        public bool Sandbox_mode { get; set; }
+        public SendGridSandBoxMode Sandbox_mode { get; set; }
+    }
+
+    public class SendGridSandBoxMode
+    {
+        public bool Enable { get; set; }
     }
 
     public class SendGridPersonalizationsOptions

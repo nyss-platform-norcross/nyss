@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
@@ -18,7 +17,7 @@ namespace RX.Nyss.FuncApp.Services
         {
             _httpPostClient = httpPostClient;
             _config = config;
-            _basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailConfig.SendGrid.ApiKey}"));
+            _basicAuthHeader = $"Bearer {_config.MailConfig.SendGrid.ApiKey}";
             _sendGridSendMailUrl = new Uri(_config.MailConfig.SendGrid.SendMailUrl, UriKind.Absolute);
         }
 
@@ -64,10 +63,12 @@ namespace RX.Nyss.FuncApp.Services
                     new SendGridEmailContent
                     {
                         Type = contentType,
-                        Content = message.Body
+                        Value = message.Body
                     }
                 },
-                Mail_settings = new SendGridMailSettings { Sandbox_mode = sandboxMode }
+                Mail_settings = sandboxMode
+                    ? new SendGridMailSettings { Sandbox_mode = new SendGridSandBoxMode { Enable = true } }
+                    : null
             };
     }
 }

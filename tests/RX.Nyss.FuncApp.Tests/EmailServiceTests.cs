@@ -32,7 +32,7 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmailWithMailjet_WhenSendToAllFlagIsMissing_ShouldUseSandboxModeAndLogWarning(string email)
         {
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage { To = new Contact { Email = email } }, "hey@example.com", "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "hey@example.com", "");
 
             // Assert
             await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true));
@@ -43,7 +43,7 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmailWithMailjet_WhenSendToAllIsFalse_ShouldUseSandboxMode(string email)
         {
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage { To = new Contact { Email = email } }, "", "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "", "");
 
             // Assert
             await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true));
@@ -62,7 +62,7 @@ namespace RX.Nyss.FuncApp.Tests
             some@email.no";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
 
             // Assert
             await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(sandboxMode));
@@ -82,7 +82,7 @@ namespace RX.Nyss.FuncApp.Tests
             some@email.no";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
 
             // Assert
             await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), false);
@@ -97,7 +97,7 @@ namespace RX.Nyss.FuncApp.Tests
             var phoneNumberWhitelist = "+4712345678";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage
+            await _emailService.SendEmail(new SendEmailMessage
             {
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
@@ -121,7 +121,7 @@ namespace RX.Nyss.FuncApp.Tests
             var phoneNumberWhitelist = "+4712345678";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage
+            await _emailService.SendEmail(new SendEmailMessage
             {
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
@@ -142,7 +142,7 @@ namespace RX.Nyss.FuncApp.Tests
             var phoneNumberWhitelist = "+4712345678";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage
+            await _emailService.SendEmail(new SendEmailMessage
             {
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
