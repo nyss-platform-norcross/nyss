@@ -1,28 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 
 namespace RX.Nyss.FuncApp.Services
 {
-    public interface IMailjetEmailClient
+    public class MailjetEmailClient : IEmailClient
     {
-        Task SendEmail(SendEmailMessage message, bool sandboxMode);
-        Task SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode);
-    }
-
-    public class MailjetEmailClient : IMailjetEmailClient
-    {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpPostClient _httpPostClient;
         private readonly IConfig _config;
 
-        public MailjetEmailClient(IHttpClientFactory httpClientFactory, IConfig config)
+        public MailjetEmailClient(IHttpPostClient httpPostClient, IConfig config)
         {
-            _httpClientFactory = httpClientFactory;
+            _httpPostClient = httpPostClient;
             _config = config;
         }
 
@@ -45,8 +37,8 @@ namespace RX.Nyss.FuncApp.Services
                         },
                         From = new MailjetContact
                         {
-                            Email = _config.MailjetConfig.FromAddress,
-                            Name = _config.MailjetConfig.FromName
+                            Email = _config.MailConfig.FromAddress,
+                            Name = _config.MailConfig.FromName
                         },
                         Subject = message.Subject,
                         HTMLPart = message.Body
@@ -54,9 +46,9 @@ namespace RX.Nyss.FuncApp.Services
                 }
             };
 
-            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
+            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailConfig.Mailjet.ApiKey}:{_config.MailConfig.Mailjet.ApiSecret}"));
 
-            await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[] { ("Authorization", basicAuthHeader) });
+            await _httpPostClient.PostJsonAsync(new Uri(_config.MailConfig.Mailjet.SendMailUrl, UriKind.Absolute), mailjetRequest, new[] { ("Authorization", basicAuthHeader) });
         }
 
         public async Task SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode)
@@ -78,8 +70,8 @@ namespace RX.Nyss.FuncApp.Services
                         },
                         From = new MailjetContact
                         {
-                            Email = _config.MailjetConfig.FromAddress,
-                            Name = _config.MailjetConfig.FromName
+                            Email = _config.MailConfig.FromAddress,
+                            Name = _config.MailConfig.FromName
                         },
                         Subject = message.Subject,
                         TextPart = message.Body
@@ -87,30 +79,9 @@ namespace RX.Nyss.FuncApp.Services
                 }
             };
 
-            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailjetConfig.ApiKey}:{_config.MailjetConfig.ApiSecret}"));
+            var basicAuthHeader = "Basic " + Convert.ToBase64String(Encoding.ASCII.GetBytes($"{_config.MailConfig.Mailjet.ApiKey}:{_config.MailConfig.Mailjet.ApiSecret}"));
 
-            await PostJsonAsync(new Uri(_config.MailjetConfig.SendMailUrl, UriKind.Absolute), mailjetRequest, new[] { ("Authorization", basicAuthHeader) });
-        }
-
-        private async Task<HttpResponseMessage> PostJsonAsync<T>(Uri requestUri, T body, IEnumerable<(string key, string value)> headers = null)
-        {
-            var payload = JsonSerializer.Serialize(body);
-            var httpClient = _httpClientFactory.CreateClient();
-
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = new StringContent(payload, Encoding.UTF8, "application/json") };
-            if (headers != null)
-            {
-                foreach (var header in headers)
-                {
-                    request.Headers.Add(header.key, header.value);
-                }
-            }
-
-            var httpResponseMessage = await httpClient.SendAsync(request);
-
-            httpResponseMessage.EnsureSuccessStatusCode();
-
-            return httpResponseMessage;
+            await _httpPostClient.PostJsonAsync(new Uri(_config.MailConfig.Mailjet.SendMailUrl, UriKind.Absolute), mailjetRequest, new[] { ("Authorization", basicAuthHeader) });
         }
     }
 }

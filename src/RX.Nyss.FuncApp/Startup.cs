@@ -16,8 +16,6 @@ namespace RX.Nyss.FuncApp
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.AddConfiguration();
-            builder.Services.AddScoped<IEmailService, EmailService>();
-            builder.Services.AddScoped<IMailjetEmailClient, MailjetEmailClient>();
         }
     }
 
@@ -45,6 +43,17 @@ namespace RX.Nyss.FuncApp
             builder.Services.AddSingleton<IConfig>(nyssFuncAppConfig);
             builder.Services.AddHttpClient();
             builder.Services.AddLogging();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddSingleton<IHttpPostClient, HttpPostClient>();
+            
+            if (nyssFuncAppConfig.MailConfig.UseSendGrid)
+            {
+                builder.Services.AddSingleton<IEmailClient, SendGridEmailClient>();
+            }
+            else
+            {
+                builder.Services.AddSingleton<IEmailClient, MailjetEmailClient>();
+            }
         }
     }
 }
