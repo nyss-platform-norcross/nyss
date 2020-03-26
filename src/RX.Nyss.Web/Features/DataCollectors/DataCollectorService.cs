@@ -42,8 +42,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
     public class DataCollectorService : IDataCollectorService
     {
-        private const double DefaultLatitude = 11.5024338; // Africa
-        private const double DefaultLongitude = 17.7578122;
+        private const double DefaultLatitude = 59.90822188626548; // Oslo
+        private const double DefaultLongitude = 10.744628906250002;
 
         private readonly INyssContext _nyssContext;
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;

@@ -14,9 +14,10 @@ namespace RX.Nyss.Data.MigrationApp
         {
             var usersToCreate = new (string roleName, string id, string name, string phone)[]
             {
-                ("DataConsumer", "6be5c384-6675-a7be-4c45-3cba40f7cd13", "Jane Dataconsumer", "+1234561"),
-                ("GlobalCoordinator", "5f259e96-4200-0cbc-4fe6-90024dcb770a", "Kim Globalconsumer", "+1234562"),
+                ("DataConsumer", "6be5c384-6675-a7be-4c45-3cba40f7cd13", "Jane DataConsumer", "+1234561"),
+                ("GlobalCoordinator", "5f259e96-4200-0cbc-4fe6-90024dcb770a", "Kim GlobalCoordinator", "+1234562"),
                 ("Supervisor", "a076dd25-30d5-cbb2-4174-f73fda1524fa", "Bob Supervisor", "+1234563"),
+                ("Supervisor", "93485951-13fd-42e1-a98c-e5b54ce60073", "Simon Supervisor", "+1234566"),
                 ("TechnicalAdvisor", "7c2d7baf-4400-6baf-497a-997a7ca18597", "Todd TechnicalAdvisor", "+1234564"),
                 ("Manager", "9cfad185-f353-7c8f-4cf7-b2d3498eb715", "Mary Manager", "+1234565")
             };
@@ -36,18 +37,18 @@ namespace RX.Nyss.Data.MigrationApp
                 Id = user.id,
                 AccessFailedCount = 0,
                 ConcurrencyStamp = Guid.NewGuid().ToString(),
-                Email = $"{user.roleName}@example.com".ToLower(),
+                Email = $"{user.name.Replace(" ", "_")}@example.com".ToLower(),
                 EmailConfirmed = true,
                 LockoutEnabled = false,
                 LockoutEnd = null,
-                NormalizedEmail = $"{user.roleName}@example.com".ToUpper(),
-                NormalizedUserName = $"{user.roleName}@example.com".ToUpper(),
+                NormalizedEmail = $"{user.name.Replace(" ", "_")}@example.com".ToUpper(),
+                NormalizedUserName = $"{user.name.Replace(" ", "_")}@example.com".ToUpper(),
                 PasswordHash = hasher.HashPassword(null, password),
                 PhoneNumber = null,
                 PhoneNumberConfirmed = false,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 TwoFactorEnabled = false,
-                UserName = $"{user.roleName}@example.com".ToLower()
+                UserName = $"{user.name.Replace(" ", "_")}@example.com".ToLower()
             });
 
             using (var context = new ApplicationDbContext(optionsBuilder.Options))
@@ -148,11 +149,13 @@ namespace RX.Nyss.Data.MigrationApp
 
                 context.SaveChanges();
 
-                context.SupervisorUserProjects.Add(new SupervisorUserProject
-                {
-                    Project = context.Projects.First(),
-                    SupervisorUser = (SupervisorUser)context.Users.Single(u => u.Role == Role.Supervisor)
-                });
+                context.SupervisorUserProjects.AddRange(context.Users.Where(u => u.Role == Role.Supervisor)
+                    .Select(sup => new SupervisorUserProject
+                    {
+                        Project = context.Projects.First(),
+                        SupervisorUser = (SupervisorUser)sup
+                    })
+                );
 
                 context.UserNationalSocieties.AddRange(usersToCreate.Where(x => x.roleName != "GlobalCoordinator").Select(user => new UserNationalSociety
                 {
