@@ -160,8 +160,10 @@ namespace RX.Nyss.Data.MigrationApp
                 context.UserNationalSocieties.AddRange(usersToCreate.Where(x => x.roleName != "GlobalCoordinator").Select(user => new UserNationalSociety
                 {
                     NationalSocietyId = 1,
-                    UserId = context.Users.First(u => u.Name == user.name).Id
+                    UserId = context.Users.First(u => u.Name == user.name).Id,
                 }));
+
+                context.NationalSocieties.First().HeadManager = context.Users.First(u => u.Role == Role.Manager);
 
                 context.SaveChanges();
             }
