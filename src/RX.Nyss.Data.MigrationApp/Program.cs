@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Web.Data;
 
@@ -16,11 +17,19 @@ namespace RX.Nyss.Data.MigrationApp
             }
 
             var dbConnectionString = args[0];
+            var createDemoData = args.Any(a => a == "createDemoData");
+            var password = args.FirstOrDefault(a => a.StartsWith("password="))?.Split("=")[1];
 
             try
             {
                 MigrateNyssContext(dbConnectionString);
                 MigrateApplicationDbContext(dbConnectionString);
+
+                if (createDemoData)
+                {
+                    Console.WriteLine("About to add demo data...");
+                    DemoDataCreator.CreateDemoData(dbConnectionString, password);
+                }
             }
             catch (Exception ex)
             {
