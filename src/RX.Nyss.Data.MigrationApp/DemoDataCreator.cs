@@ -141,7 +141,7 @@ namespace RX.Nyss.Data.MigrationApp
                     nyssUser.PhoneNumber = phone;
                     nyssUser.IdentityUserId = id;
                     nyssUser.ApplicationLanguage = context.ApplicationLanguages.First();
-                    nyssUser.EmailAddress = $"{roleName}@example.com".ToLower();
+                    nyssUser.EmailAddress = $"{user.name.Replace(" ", "_")}@example.com".ToLower();
                     nyssUser.IsFirstLogin = false;
 
                     return nyssUser;
