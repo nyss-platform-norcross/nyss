@@ -13,18 +13,18 @@ namespace RX.Nyss.FuncApp.Tests
         private readonly IEmailService _emailService;
         private readonly ILogger<EmailService> _loggerMock;
         private readonly IConfig _configurationMock;
-        private readonly IMailjetEmailClient _mailjetEmailClientMock;
+        private readonly IEmailClient _emailClientMock;
 
         public EmailServiceTests()
         {
             _loggerMock = Substitute.For<ILogger<EmailService>>();
             _configurationMock = Substitute.For<IConfig>();
-            _configurationMock.MailjetConfig = new NyssFuncAppConfig.MailjetConfigOptions { EnableFeedbackSms = true };
-            _mailjetEmailClientMock = Substitute.For<IMailjetEmailClient>();
+            _configurationMock.MailConfig = new NyssFuncAppConfig.MailConfigOptions() { EnableFeedbackSms = true };
+            _emailClientMock = Substitute.For<IEmailClient>();
             _emailService = new EmailService(
                 _loggerMock,
                 _configurationMock,
-                _mailjetEmailClientMock);
+                _emailClientMock);
         }
 
         [Theory]
@@ -32,10 +32,10 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmailWithMailjet_WhenSendToAllFlagIsMissing_ShouldUseSandboxModeAndLogWarning(string email)
         {
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage { To = new Contact { Email = email } }, "hey@example.com", "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "hey@example.com", "");
 
             // Assert
-            await _mailjetEmailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true));
+            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true));
         }
 
         [Theory]
@@ -43,10 +43,10 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmailWithMailjet_WhenSendToAllIsFalse_ShouldUseSandboxMode(string email)
         {
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage { To = new Contact { Email = email } }, "", "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "", "");
 
             // Assert
-            await _mailjetEmailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true));
+            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(true));
         }
 
         [Theory]
@@ -62,10 +62,10 @@ namespace RX.Nyss.FuncApp.Tests
             some@email.no";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
 
             // Assert
-            await _mailjetEmailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(sandboxMode));
+            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), Arg.Is(sandboxMode));
         }
 
         [Theory]
@@ -75,17 +75,17 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmailWithMailjet_WhenSendToAllIsTrue_ShouldSendToAll(string email)
         {
             // Arrange
-            _configurationMock.MailjetConfig.SendToAll = true;
+            _configurationMock.MailConfig.SendToAll = true;
             var whitelist = @"
             user@example.com
             donald.duck@example.com
             some@email.no";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, whitelist, "");
 
             // Assert
-            await _mailjetEmailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), false);
+            await _emailClientMock.Received(1).SendEmail(Arg.Any<SendEmailMessage>(), false);
         }
 
         [Theory]
@@ -97,7 +97,7 @@ namespace RX.Nyss.FuncApp.Tests
             var phoneNumberWhitelist = "+4712345678";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage
+            await _emailService.SendEmail(new SendEmailMessage
             {
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
@@ -105,7 +105,7 @@ namespace RX.Nyss.FuncApp.Tests
             }, whitelist, phoneNumberWhitelist);
 
             // Assert
-            await _mailjetEmailClientMock.Received(1).SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
+            await _emailClientMock.Received(1).SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
         }
 
         [Theory]
@@ -113,7 +113,7 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmailWithMailjet_WhenPhoneNumberIsNotWhitelisted_ShouldNotSendEmail(string email, string phoneNumber)
         {
             // Arrange
-            _configurationMock.MailjetConfig.SendFeedbackSmsToAll = false;
+            _configurationMock.MailConfig.SendFeedbackSmsToAll = false;
             var whitelist = @"
             user@example.com
             donald.duck@example.com
@@ -121,7 +121,7 @@ namespace RX.Nyss.FuncApp.Tests
             var phoneNumberWhitelist = "+4712345678";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage
+            await _emailService.SendEmail(new SendEmailMessage
             {
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
@@ -129,7 +129,7 @@ namespace RX.Nyss.FuncApp.Tests
             }, whitelist, phoneNumberWhitelist);
 
             // Assert
-            await _mailjetEmailClientMock.DidNotReceive().SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
+            await _emailClientMock.DidNotReceive().SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
         }
 
         [Theory]
@@ -137,12 +137,12 @@ namespace RX.Nyss.FuncApp.Tests
         public async Task SendEmailWithMailjet_WhenSendFeedbackSmsToAllIsTrue_ShouldSendToAll(string email, string phoneNumber)
         {
             // Arrange
-            _configurationMock.MailjetConfig.SendFeedbackSmsToAll = true;
+            _configurationMock.MailConfig.SendFeedbackSmsToAll = true;
             var whitelist = "user@example.com";
             var phoneNumberWhitelist = "+4712345678";
 
             // Act
-            await _emailService.SendEmailWithMailjet(new SendEmailMessage
+            await _emailService.SendEmail(new SendEmailMessage
             {
                 To = new Contact { Email = email },
                 Subject = phoneNumber,
@@ -150,7 +150,7 @@ namespace RX.Nyss.FuncApp.Tests
             }, whitelist, phoneNumberWhitelist);
 
             // Assert
-            await _mailjetEmailClientMock.Received(1).SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
+            await _emailClientMock.Received(1).SendEmailAsTextOnly(Arg.Any<SendEmailMessage>(), Arg.Is(false));
         }
     }
 }

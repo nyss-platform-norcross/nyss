@@ -11,15 +11,22 @@
     "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses.txt",
     "WhitelistedPhoneNumbersBlobPath": "sms-gateway/whitelisted-phone-numbers.txt"
   },
-  "MailjetConfig": {
-    "ApiKey": "",
-    "ApiSecret": "",
+  "MailConfig": {
     "FromAddress": "",
     "FromName": "Nyss Platform",
-    "SendMailUrl": "https://api.mailjet.com/v3.1/send",
     "SendToAll": false,
     "SendFeedbackSmsToAll": false,
-    "EnableFeedbackSms": true
+    "EnableFeedbackSms": true,
+    "UseSendGrid": false,
+    "Mailjet": {
+      "SendMailUrl": "https://api.mailjet.com/v3.1/send",
+      "ApiKey": "",
+      "ApiSecret": ""
+    },
+    "SendGrid": {
+      "SendMailUrl": "https://api.sendgrid.com/v3/mail/send",
+      "ApiKey": ""
+    }
   },
   "Host": {
     "LocalHttpPort": 7070

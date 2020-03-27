@@ -9,36 +9,36 @@ namespace RX.Nyss.FuncApp.Services
 {
     public interface IEmailService
     {
-        Task SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers);
+        Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers);
     }
 
     public class EmailService : IEmailService
     {
         private readonly IConfig _config;
-        private readonly IMailjetEmailClient _emailClient;
+        private readonly IEmailClient _emailClient;
         private readonly ILogger<EmailService> _logger;
 
-        public EmailService(ILogger<EmailService> logger, IConfig config, IMailjetEmailClient emailClient)
+        public EmailService(ILogger<EmailService> logger, IConfig config, IEmailClient emailClient)
         {
             _logger = logger;
             _config = config;
             _emailClient = emailClient;
         }
 
-        public async Task SendEmailWithMailjet(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers)
+        public async Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers)
         {
             if (message.SendAsTextOnly)
             {
-                if (_config.MailjetConfig.EnableFeedbackSms)
+                if (_config.MailConfig.EnableFeedbackSms)
                 {
-                    var sandboxMode = !(_config.MailjetConfig.SendFeedbackSmsToAll || IsWhiteListedPhoneNumber(message.Subject, whitelistedPhoneNumbers));
+                    var sandboxMode = !(_config.MailConfig.SendFeedbackSmsToAll || IsWhiteListedPhoneNumber(message.Subject, whitelistedPhoneNumbers));
                     await _emailClient.SendEmailAsTextOnly(message, sandboxMode);
                 }
             }
             else
             {
                 var sandboxMode = false;
-                if (!_config.MailjetConfig.SendToAll)
+                if (!_config.MailConfig.SendToAll)
                 {
                     sandboxMode = !IsWhitelistedEmailAddress(whitelistedEmailAddresses, message.To.Email);
                 }

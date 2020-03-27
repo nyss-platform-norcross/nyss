@@ -20,6 +20,6 @@ namespace RX.Nyss.FuncApp
             [ServiceBusTrigger("%SERVICEBUS_SENDEMAILQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] SendEmailMessage message,
             [Blob("%WhitelistedPhoneNumbersBlobPath%", FileAccess.Read)] string whitelistedPhoneNumbers,
             [Blob("%WhitelistedEmailAddressesBlobPath%", FileAccess.Read)] string whitelistedEmailAddresses) =>
-            await _emailService.SendEmailWithMailjet(message, whitelistedEmailAddresses, whitelistedPhoneNumbers);
+            await _emailService.SendEmail(message, whitelistedEmailAddresses, whitelistedPhoneNumbers);
     }
 }
