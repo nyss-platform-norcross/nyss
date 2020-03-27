@@ -1,22 +1,38 @@
 import styles from './StringsSwitcher.module.scss';
 
-import React from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import * as appActions from '../app/logic/appActions';
 import Button from '@material-ui/core/Button';
+import { SendReportDialog } from '../reports/SendReportDialog'
+import * as reportsActions from '../reports/logic/reportsActions'
 
-const ReportSenderComponent = ({ isDemo, goToSendReport }) => {
-  if (!isDemo) {
+const ReportSenderComponent = (props) => {
+  if (!props.isDemo) {
     return null;
   }
 
+  const [open, setOpen] = useState(false);
+
+  const goToSendReport = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setOpen(true);
+  }
+
+
   return (
-    <div className={styles.stringSwitcher}>
-      <Button key="sendReportButton" variant="text" color="primary" onClick={() => goToSendReport()}>
-        Send report
-      </Button>
-    </div>
+    <Fragment>
+      <div className={styles.stringSwitcher}>
+        <Button key="sendReportButton" variant="text" color="primary" onClick={goToSendReport}>
+          Send report
+        </Button>
+      </div>
+
+      {open &&
+        <SendReportDialog close={(e) => { setOpen(false); }} props={props}/>
+      }
+    </Fragment>
   );
 }
 
@@ -26,11 +42,14 @@ ReportSenderComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  isDemo: state.appData.isDemo
+  isDemo: state.appData.isDemo,
+  isSaving: state.reports.formSaving,
+  data: state.reports.formData,
+  error: state.reports.formError
 });
 
 const mapDispatchToProps = {
-  goToSendReport: appActions.goToSendReport
+  sendReport: reportsActions.sendReport.invoke
 };
 
 export const ReportSender = connect(mapStateToProps, mapDispatchToProps)(ReportSenderComponent);
