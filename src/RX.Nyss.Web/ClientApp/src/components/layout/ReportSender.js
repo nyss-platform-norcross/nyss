@@ -6,20 +6,23 @@ import { connect } from "react-redux";
 import Button from '@material-ui/core/Button';
 import { SendReportDialog } from '../reports/SendReportDialog'
 import * as reportsActions from '../reports/logic/reportsActions'
+import * as roles from '../../authentication/roles'
 
 const ReportSenderComponent = (props) => {
-  if (!props.isDemo) {
+  const [open, setOpen] = useState(false);
+
+  const canSendReport = props.user && [roles.Administrator, roles.Manager, roles.TechnicalAdvisor]
+    .some(neededRole => props.user.roles.some(userRole => userRole === neededRole));
+
+  if (!props.isDemo || !canSendReport) {
     return null;
   }
-
-  const [open, setOpen] = useState(false);
 
   const goToSendReport = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setOpen(true);
   }
-
 
   return (
     <Fragment>
@@ -45,7 +48,7 @@ const mapStateToProps = state => ({
   isDemo: state.appData.isDemo,
   isSaving: state.reports.formSaving,
   data: state.reports.formData,
-  error: state.reports.formError
+  user: state.appData.user
 });
 
 const mapDispatchToProps = {

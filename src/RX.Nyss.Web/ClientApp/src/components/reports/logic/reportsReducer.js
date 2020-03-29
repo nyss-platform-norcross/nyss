@@ -56,6 +56,15 @@ export function reportsReducer(state = initialState.reports, action) {
     case actions.MARK_AS_ERROR.FAILURE:
       return { ...state, markingAsError: false, message: action.message };
 
+    case actions.SEND_REPORT.REQUEST:
+      return { ...state, formSaving: true };
+
+    case actions.SEND_REPORT.SUCCESS:
+      return { ...state, formSaving: false };
+
+    case actions.SEND_REPORT.FAILURE:
+      return { ...state, formSaving: false };
+
     default:
       return state;
   }

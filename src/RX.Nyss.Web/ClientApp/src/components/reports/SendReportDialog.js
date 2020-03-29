@@ -9,7 +9,6 @@ import TextInputField from '../forms/TextInputField';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { useTheme, Grid, Button } from "@material-ui/core"
-import { ValidationMessage } from '../forms/ValidationMessage';
 import dayjs from 'dayjs';
 import { Dialog } from "@material-ui/core";
 import DialogContent from '@material-ui/core/DialogContent';
@@ -63,7 +62,6 @@ export const SendReportDialog = ({ close, props }) => {
       <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
         <DialogTitle id="form-dialog-title">Send report</DialogTitle>
         <DialogContent style={{ width: 400 }}>
-          {props.error && <ValidationMessage message={props.error} />}
           <Form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
