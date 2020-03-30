@@ -480,8 +480,6 @@ export const stringKeys = {
       removalConfirmation: "dataCollectors.list.removalConfirmation",
       title: "dataCollectors.list.title",
       trainingStatus: "dataCollectors.list.trainingStatus",
-      isInTrainingMode: "dataCollectors.list.isInTrainingMode",
-      isNotInTrainingMode: "dataCollectors.list.isNotInTrainingMode",
       setToInTraining: "dataCollectors.list.setToInTraining",
       takeOutOfTraining: "dataCollectors.list.takeOutOfTraining",
       supervisor: "dataCollectors.list.supervisor"
@@ -520,6 +518,11 @@ export const stringKeys = {
       dataCollectorType: {
         "Human": "dataCollectors.dataCollectorType.human",
         "CollectionPoint": "dataCollectors.dataCollectorType.collectionPoint"
+      },
+      trainingStatus: {
+        "All": "dataCollectors.trainingStatus.all",
+        "InTraining": "dataCollectors.trainingStatus.inTraining",
+        "Trained": "dataCollectors.trainingStatus.trained"
       }
     },
     mapOverview: {
@@ -733,7 +736,7 @@ export const stringKeys = {
       status: "filters.report.status",
       success: "filters.report.success",
       error: "filters.report.error",
-      training: "filters.report.training",
+      reportType: "filters.report.reportType",
       trainingReports: "filters.report.trainingReports",
       nonTrainingReports: "filters.report.nonTrainingReports"
     }
