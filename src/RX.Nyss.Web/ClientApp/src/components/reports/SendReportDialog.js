@@ -10,6 +10,7 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { useTheme, Grid, Button } from "@material-ui/core"
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { Dialog } from "@material-ui/core";
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -20,6 +21,7 @@ export const SendReportDialog = ({ close, props }) => {
   const [form, setForm] = useState(null);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
+  dayjs.extend(utc);
 
   useEffect(() => {
     const fields = {
@@ -48,7 +50,7 @@ export const SendReportDialog = ({ close, props }) => {
     props.sendReport({
       sender: values.phoneNumber,
       text: values.message,
-      timestamp: dayjs(Date.UTC()).format("YYYYMMDDHHmmss"),
+      timestamp: dayjs.utc().format("YYYYMMDDHHmmss"),
       apiKey: values.apiKey
     });
   };
