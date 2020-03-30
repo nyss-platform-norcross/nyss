@@ -25,18 +25,19 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
         private readonly ISmsEagleHandler _smsEagleHandler;
         private readonly INyssContext _nyssContextMock;
         private readonly IDateTimeProvider _dateTimeProviderMock;
+        private readonly ILoggerAdapter _loggerAdapterMock;
 
         public SmsEagleHandlerTests()
         {
             var reportMessageServiceMock = Substitute.For<IReportMessageService>();
             _nyssContextMock = Substitute.For<INyssContext>();
-            var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
+            _loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _dateTimeProviderMock = Substitute.For<IDateTimeProvider>();
             var stringsResourcesServiceMock = Substitute.For<IStringsResourcesService>();
             var queuePublisherServiceMock = Substitute.For<IQueuePublisherService>();
             var alertServiceMock = Substitute.For<IAlertService>();
 
-            _smsEagleHandler = new SmsEagleHandler(reportMessageServiceMock, _nyssContextMock, loggerAdapterMock, _dateTimeProviderMock,
+            _smsEagleHandler = new SmsEagleHandler(reportMessageServiceMock, _nyssContextMock, _loggerAdapterMock, _dateTimeProviderMock,
                 stringsResourcesServiceMock, queuePublisherServiceMock, alertServiceMock);
         }
 
@@ -315,6 +316,24 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports.Handlers
         {
             // Act
             Should.Throw<ReportValidationException>(() => _smsEagleHandler.ParseTimestamp(timestamp));
+        }
+
+
+        [Theory]
+        [InlineData("20190101103456", "2019-01-01 09:36:56", "2019-01-01 09:34:56")]
+        [InlineData("20200615122233", "2020-06-15 11:22:33", "2020-06-15 11:22:33")]
+        [InlineData("20201126004510", "2020-11-25 23:45:10", "2020-11-25 23:45:10")]
+        public void ParseTimestamp_WhenTimeIsOneHourFromTheFuture_ShouldAdjustItToNow(string incomingTimestamp, string utcNow, string outgoingTimestamp)
+        {
+            // Arrange
+            _dateTimeProviderMock.UtcNow.Returns(DateTime.Parse(utcNow));
+
+            // Act
+            var parsedTimestamp = _smsEagleHandler.ParseTimestamp(incomingTimestamp);
+
+            // Assert
+            parsedTimestamp.ShouldBe(DateTime.Parse(outgoingTimestamp));
+            _loggerAdapterMock.ReceivedWithAnyArgs().Warn("Timestamp is 1 hour into the future, likely due to wrong timezone settings, please check eagle!");
         }
 
         [Fact]

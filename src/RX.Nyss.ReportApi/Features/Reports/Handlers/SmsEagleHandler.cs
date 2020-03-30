@@ -322,6 +322,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                 var parsedTimestampInUtc = DateTime.SpecifyKind(parsedTimestamp, DateTimeKind.Utc);
 
+                var diffToNow = parsedTimestampInUtc - _dateTimeProvider.UtcNow;
+                if (diffToNow > TimeSpan.FromMinutes(57) && diffToNow < TimeSpan.FromMinutes(63))
+                {
+                    _loggerAdapter.Warn($"Timestamp is {diffToNow.TotalHours:0.##} hour into the future, likely due to wrong timezone settings, please check eagle!");
+                    parsedTimestampInUtc = parsedTimestampInUtc.AddHours(-1);
+                }
+
                 return parsedTimestampInUtc;
             }
             catch (Exception e)
