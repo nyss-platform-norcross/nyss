@@ -5,8 +5,10 @@ namespace RX.Nyss.Web.Configuration
     public interface INyssWebConfig : IConfig
     {
         string BaseUrl { get; set; }
+        string FuncAppBaseUrl { get; set; }
         string Environment { get; set; }
         bool IsProduction { get; }
+        bool IsDemo { get; }
         string AuthorizedApiKeysBlobObjectName { get; set; }
         int PaginationRowsPerPage { get; set; }
         ConfigSingleton.AuthenticationOptions Authentication { get; set; }
@@ -18,9 +20,13 @@ namespace RX.Nyss.Web.Configuration
     {
         public string BaseUrl { get; set; }
 
+        public string FuncAppBaseUrl { get; set; }
+
         public string Environment { get; set; }
 
         public bool IsProduction => Environment == NyssEnvironments.Prod || Environment == NyssEnvironments.Demo;
+
+        public bool IsDemo => Environment == NyssEnvironments.Demo;
 
         public string SmsGatewayBlobContainerName { get; set; }
 

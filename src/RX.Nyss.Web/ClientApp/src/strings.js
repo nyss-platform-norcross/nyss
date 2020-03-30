@@ -588,7 +588,15 @@ export const stringKeys = {
       fromOtherVillagesCount: "reports.form.fromOtherVillagesCount",
       update: "reports.form.update"
     },
-    title: "reports.title"
+    title: "reports.title",
+    sendReport: {
+      phoneNumber: "reports.sendReport.phoneNumber",
+      message: "reports.sendReport.message",
+      apiKey: "reports.sendReport.apiKey",
+      sendReport: "reports.sendReport.sendReport",
+      goToReportList: "reports.sendReport.goToReportList",
+      success: "reports.sendReport.success"
+    }
   },
   nationalSocietyReports: {
     list: {

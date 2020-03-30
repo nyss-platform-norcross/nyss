@@ -13,10 +13,12 @@ namespace RX.Nyss.Web.Features.Reports
     public class ReportController : BaseController
     {
         private readonly IReportService _reportService;
+        private readonly IReportSenderService _reportSenderService;
 
-        public ReportController(IReportService reportService)
+        public ReportController(IReportService reportService, IReportSenderService reportSenderService)
         {
             _reportService = reportService;
+            _reportSenderService = reportSenderService;
         }
 
         /// <summary>
@@ -99,5 +101,14 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ReportAccess)]
         public async Task<Result> Edit(int reportId, [FromBody] ReportRequestDto reportRequestDto) =>
             await _reportService.Edit(reportId, reportRequestDto);
+
+        /// <summary>
+        /// Sends a report for testing purposes.
+        /// </summary>
+        /// <param name="report">The report to send</param>
+        [HttpPost("sendReport")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor)]
+        public async Task<Result> SendReport([FromBody]SendReportRequestDto report) =>
+            await _reportSenderService.SendReport(report);
     }
 }

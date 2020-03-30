@@ -47,6 +47,9 @@ namespace RX.Nyss.Web.Features.AppData
                 IsDevelopment = !_config.IsProduction
                     ? true
                     : (bool?)null,
+                IsDemo = _config.IsDemo
+                    ? true
+                    : (bool?)null,
                 AuthCookieExpiration = _config.Authentication.CookieExpirationTime
             });
     }

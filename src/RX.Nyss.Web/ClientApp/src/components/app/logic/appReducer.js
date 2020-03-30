@@ -66,7 +66,8 @@ export function appReducer(state = initialState.appData, action) {
         contentLanguages: action.contentLanguages,
         authCookieExpiration: action.authCookieExpiration,
         countries: action.countries,
-        isDevelopment: action.isDevelopment
+        isDevelopment: action.isDevelopment,
+        isDemo: action.isDemo
       }
 
     case actions.OPEN_MODULE.INVOKE:

@@ -156,6 +156,7 @@
         {
             public const string ProjectIsClosed = "report.projectIsClosed";
             public const string ReportNotFound = "report.reportNotFound";
+            public const string ReportSentSuccessfully = "report.sentSuccessfully";
 
             public static class Edit
             {
