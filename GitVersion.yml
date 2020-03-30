@@ -6,7 +6,8 @@ branches:
   master:
     increment: Patch
   hotfix:
+    regex: ^hotfix(es)?[/-]
     increment: Patch
-    tag: ""
+    tag: "hotfix"
 ignore:
   sha: []
