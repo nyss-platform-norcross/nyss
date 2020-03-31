@@ -21,7 +21,7 @@ az iot hub device-identity show-connection-string --device-id test-eagle-1 --hub
 ```
 
 ### 3. Connect the SMS Eagle to the hub
-We assume you want to connect an SMS Eagle to the Hub with the python script that we have made. This can be found in the [nyss-sms-gateway](https://github.com/nyss-platform-norcross/nyss-sms-gateway) repository. As of this writing, the latest version that should be used can be found in [this branch](https://github.com/nyss-platform-norcross/nyss-sms-gateway/tree/sms-eagle-iot-connection). Clone the repo or download the two files needed:
+We assume you want to connect an SMS Eagle to the Hub with the python script that we have made. This can be found in the [nyss-sms-gateway](https://github.com/nyss-platform-norcross/nyss-sms-gateway) repository. Clone the repo or download the two files needed:
 
 - [nyssIotBridge.py](https://raw.githubusercontent.com/nyss-platform-norcross/nyss-sms-gateway/sms-eagle-iot-connection/SMSEagleIOTBridge/nyssIotBridge.py)
 - [smsEagle-iot-hub-handler.py](https://raw.githubusercontent.com/nyss-platform-norcross/nyss-sms-gateway/sms-eagle-iot-connection/SMSEagleIOTBridge/smsEagle-iot-hub-handler.py)

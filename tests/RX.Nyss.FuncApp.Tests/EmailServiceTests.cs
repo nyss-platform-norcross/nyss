@@ -62,8 +62,8 @@ namespace RX.Nyss.FuncApp.Tests
             _whitelistValidator.IsWhitelistedEmailAddress(Arg.Any<string>(), notWhitelistedEmail).Returns(false);
 
             // Act
-            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = whitelistedEmail } }, whitelist, "");
-            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = notWhitelistedEmail } }, whitelist, "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = whitelistedEmail } }, whitelistedEmail, "");
+            await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = notWhitelistedEmail } }, whitelistedEmail, "");
 
             // Assert
             await _emailClientMock.Received(1).SendEmail(Arg.Is<SendEmailMessage>(x => x.To.Email == notWhitelistedEmail), true);
