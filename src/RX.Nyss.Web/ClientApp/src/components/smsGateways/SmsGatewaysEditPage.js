@@ -181,8 +181,8 @@ const SmsGatewaysEditPageComponent = (props) => {
                 {pingResult && (
                   <Typography variant="body1" display="inline">
                     {pingResult.isSuccess ?
-                      <Icon style={{ verticalAlign: "middle" }}>check</Icon> :
-                      <Icon style={{ verticalAlign: "middle" }}>error</Icon>} {pingResult.message}
+                      <Icon style={{ verticalAlign: "middle", color: '#004d13' }}>check</Icon> :
+                      <Icon style={{ verticalAlign: "middle", color: '#C02C2C' }}>error</Icon>} {pingResult.message}
                   </Typography>
                 )}
                 {pingIsRequired && <Typography variant="body1" display="inline">{pingIsRequired}</Typography>}
