@@ -46,7 +46,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var dataCollectors = GetFilteredDataCollectorsQuery(filters);
 
             return await _nyssContext.Projects
-                .Include(p => p.DataCollectors)
                 .Where(p => p.Id == filters.ProjectId.Value)
                 .Select(p => new
                 {
