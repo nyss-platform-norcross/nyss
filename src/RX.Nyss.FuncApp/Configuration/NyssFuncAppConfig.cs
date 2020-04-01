@@ -3,11 +3,14 @@
     public interface IConfig
     {
         NyssFuncAppConfig.MailConfigOptions MailConfig { get; set; }
+
+        NyssFuncAppConfig.ConnectionStringsOptions ConnectionStrings { get; set; }
     }
 
     public class NyssFuncAppConfig : IConfig
     {
         public MailConfigOptions MailConfig { get; set; }
+        public ConnectionStringsOptions ConnectionStrings { get; set; }
 
         public class MailConfigOptions
         {
@@ -31,6 +34,11 @@
                 public string SendMailUrl { get; set; }
                 public string ApiKey { get; set; }
             }
+        }
+
+        public class ConnectionStringsOptions
+        {
+            public string IotHubService { get; set; }
         }
     }
 }

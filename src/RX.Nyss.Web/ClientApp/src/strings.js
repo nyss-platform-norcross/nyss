@@ -207,7 +207,11 @@ export const stringKeys = {
       gatewayType: "smsGateway.form.gatewayType",
       emailAddress: "smsGateway.form.emailAddress",
       create: "smsGateway.form.create",
-      update: "smsGateway.form.update"
+      update: "smsGateway.form.update",
+      useIotHub: "smsGateway.form.useIotHub",
+      iotHubDeviceName: "smsGateway.form.iotHubDeviceName",
+      ping: "smsGateway.form.ping",
+      pingIsRequired: "smsGateway.form.pingIsRequired"
     },
     create: {
       success: "smsGateway.create.success"
@@ -222,7 +226,8 @@ export const stringKeys = {
       name: "smsGateway.list.name",
       apiKey: "smsGateway.list.apiKey",
       gatewayType: "smsGateway.list.gatewayType",
-      removalConfirmation: "smsGateway.list.removalConfirmation"
+      removalConfirmation: "smsGateway.list.removalConfirmation",
+      useIotHub: "smsGateway.list.useIotHub"
     },
   },
   project: {

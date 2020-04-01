@@ -128,7 +128,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var message = await CreateNotificationMessageForNewAlert(alert);
 
-            await _queuePublisherService.SendSMSesViaEagle(gatewaySetting.EmailAddress, gatewaySetting.Name, phoneNumbersOfSupervisorsInAlert, message);
+            await _queuePublisherService.SendSms(phoneNumbersOfSupervisorsInAlert, gatewaySetting, message);
             await _queuePublisherService.QueueAlertCheck(alert.Id);
         }
 

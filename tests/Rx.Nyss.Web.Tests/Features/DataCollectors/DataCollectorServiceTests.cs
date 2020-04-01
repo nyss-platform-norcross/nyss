@@ -356,7 +356,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public async Task ListDataCollector_WhenSuccessful_ShouldReturnSuccess()
         {
             // Act
-            var filters = new FiltersRequestDto
+            var filters = new DataCollectorsFiltersRequestDto
             {
                 Area = null,
                 Sex = null,
@@ -387,7 +387,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public async Task ListDataCollector_WhenFiltered_ShouldReturnFilteredList()
         {
             // Act
-            var filters = new FiltersRequestDto
+            var filters = new DataCollectorsFiltersRequestDto
             {
                 Area = null,
                 Sex = SexDto.Male,

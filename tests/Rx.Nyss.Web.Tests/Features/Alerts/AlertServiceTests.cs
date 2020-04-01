@@ -32,6 +32,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly IAuthorizationService _authorizationService;
         private readonly DateTime _now = DateTime.UtcNow;
         private readonly User _currentUser = new GlobalCoordinatorUser();
+        private readonly ISmsPublisherService _smsPublisherService;
+        private List<GatewaySetting> _gatewaySettings;
 
         public AlertServiceTests()
         {
@@ -44,15 +46,23 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _authorizationService = Substitute.For<IAuthorizationService>();
-            _alertService = new AlertService(_nyssContext, _emailPublisherService, emailTextGeneratorService, config, _smsTextGeneratorService, loggerAdapter, _dateTimeProvider,
-                _authorizationService);
+            _smsPublisherService = Substitute.For<ISmsPublisherService>();
+            _alertService = new AlertService(_nyssContext,
+                _emailPublisherService,
+                emailTextGeneratorService,
+                config,
+                _smsTextGeneratorService,
+                loggerAdapter,
+                _dateTimeProvider,
+                _authorizationService,
+                _smsPublisherService);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
             _nyssContext.Alerts.Returns(alertsDbSet);
 
-            var gatewaySettings = TestData.GetGatewaySettings();
-            var gatewaySettingsDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
+            _gatewaySettings = TestData.GetGatewaySettings();
+            var gatewaySettingsDbSet = _gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContext.GatewaySettings.Returns(gatewaySettingsDbSet);
 
             emailTextGeneratorService.GenerateEscalatedAlertEmail(TestData.ContentLanguageCode)
@@ -174,8 +184,52 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         }
 
         [Fact]
+        public async Task EscalateAlert_WhenGatewayIsIoTHubDevice_ShouldSendSmsThroughIotHub()
+        {
+            var emailAddress = "test@test.com";
+            var phonenumber = "+1234578";
+            var smsText = "hey";
+
+            _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
+            _gatewaySettings.First().IotHubDeviceName = "TestDevice";
+
+            _alerts.First().Status = AlertStatus.Pending;
+
+            _alerts.First().AlertReports = new List<AlertReport>
+            {
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted,
+                        RawReport = new RawReport
+                        {
+                            ApiKey = TestData.ApiKey,
+                            Village = new Village()
+                        }
+                    }
+                }
+            };
+
+            _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
+            _alerts.First().ProjectHealthRisk.Project.EmailAlertRecipients = new List<EmailAlertRecipient> { new EmailAlertRecipient { EmailAddress = emailAddress } };
+            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
+            
+            await _alertService.Escalate(TestData.AlertId);
+
+            await _emailPublisherService.ReceivedWithAnyArgs(1).SendEmail((null, null), null, null);
+
+            await _emailPublisherService.Received(1)
+                .SendEmail((emailAddress, emailAddress), TestData.EscalationEmailSubject, TestData.EscalationEmailBody);
+
+            await _smsPublisherService.Received(1)
+                .SendSms("TestDevice", Arg.Is<List<string>>(x => x.Contains(phonenumber)), smsText);
+        }
+
+        [Fact]
         public async Task EscalateAlert_WhenLastReportGatewayNotExists_ShouldSendSmsThroughFirstInSociety()
         {
+            // Arrange
             var phonenumber = "+1234578";
             var smsText = "hey";
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
@@ -201,8 +255,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
             _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
 
+            // Act
             await _alertService.Escalate(TestData.AlertId);
 
+            // Assert
             await _emailPublisherService.Received(1)
                 .SendEmail((TestData.GatewayEmail, TestData.GatewayEmail), phonenumber, smsText, true);
         }

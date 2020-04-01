@@ -13,10 +13,12 @@ namespace RX.Nyss.Web.Features.SmsGateways
     public class SmsGatewayController : BaseController
     {
         private readonly ISmsGatewayService _smsGatewayService;
+        private readonly IIotHubService _iotHubService;
 
-        public SmsGatewayController(ISmsGatewayService smsGatewayService)
+        public SmsGatewayController(ISmsGatewayService smsGatewayService, IIotHubService iotHubService)
         {
             _smsGatewayService = smsGatewayService;
+            _iotHubService = iotHubService;
         }
 
         /// <summary>
@@ -68,5 +70,34 @@ namespace RX.Nyss.Web.Features.SmsGateways
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
         public Task<Result> Delete(int smsGatewayId) =>
             _smsGatewayService.Delete(smsGatewayId);
+
+        /// <summary>
+        /// Get the connectionstring that the SMSGateway should use as a device in order to connect to the IotHub.
+        /// </summary>
+        /// <param name="smsGatewayId">SmsGateway identifier</param>
+        /// <returns></returns>
+        [HttpGet("{smsGatewayId:int}/getIotHubConnectionstring")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
+        public Task<Result> GetIotHubConnectionString(int smsGatewayId) =>
+            _smsGatewayService.GetIotHubConnectionString(smsGatewayId);
+
+        /// <summary>
+        /// Ping the IoT device the SMSGateway is set up to use.
+        /// </summary>
+        /// <param name="deviceId">IoT Hub device identifier</param>
+        /// <returns></returns>
+        [HttpPost("iotDevices/{deviceId}/ping")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
+        public Task<Result> PingGatewayDevice(string deviceId) =>
+            _iotHubService.Ping(deviceId);
+
+        /// <summary>
+        /// List available IoT Hub devices
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("iotDevices/list")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
+        public Task<Result<IEnumerable<string>>> ListIotHubDevices() =>
+            _smsGatewayService.ListIotHubDevices();
     }
 }

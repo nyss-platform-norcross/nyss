@@ -23,6 +23,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
         private readonly ISmsGatewayService _smsGatewayService;
         private readonly INyssContext _nyssContextMock;
         private readonly ISmsGatewayBlobProvider _smsGatewayBlobProviderMock;
+        private readonly IIotHubService _iotHubService;
 
         public SmsGatewayServiceTests()
         {
@@ -30,7 +31,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             var config = Substitute.For<INyssWebConfig>();
             _smsGatewayBlobProviderMock = Substitute.For<ISmsGatewayBlobProvider>();
-            _smsGatewayService = new SmsGatewayService(_nyssContextMock, loggerAdapterMock, _smsGatewayBlobProviderMock);
+            _iotHubService = Substitute.For<IIotHubService>();
+            _smsGatewayService = new SmsGatewayService(_nyssContextMock, loggerAdapterMock, _smsGatewayBlobProviderMock, _iotHubService);
         }
 
         [Fact]

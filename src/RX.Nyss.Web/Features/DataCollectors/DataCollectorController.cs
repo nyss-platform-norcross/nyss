@@ -34,8 +34,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, [FromBody] FiltersRequestDto filtersDto) =>
-            await _dataCollectorService.List(projectId, filtersDto);
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
+            await _dataCollectorService.List(projectId, dataCollectorsFiltersDto);
 
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
@@ -79,12 +79,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] FiltersRequestDto filtersDto) =>
-            File(await _dataCollectorExportService.ExportAsXls(projectId, filtersDto), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
+            File(await _dataCollectorExportService.ExportAsXls(projectId, dataCollectorsFiltersDto), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
         [HttpPost, Route("exportToCsv")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] FiltersRequestDto filtersDto) =>
-            File(await _dataCollectorExportService.ExportAsCsv(projectId, filtersDto), "text/csv");
+        public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
+            File(await _dataCollectorExportService.ExportAsCsv(projectId, dataCollectorsFiltersDto), "text/csv");
     }
 }

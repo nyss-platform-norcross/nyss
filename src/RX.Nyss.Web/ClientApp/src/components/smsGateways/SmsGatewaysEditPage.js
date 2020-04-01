@@ -17,18 +17,34 @@ import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import CheckboxField from '../forms/CheckboxField';
+import Icon from "@material-ui/core/Icon";
+import { Typography } from '@material-ui/core';
 
 const SmsGatewaysEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
+  const [useIotHub, setUseIotHub] = useState(null);
+  const [selectedIotDevice, setSelectedIotDevice] = useState(null);
+  const [pingIsRequired, setPingIsRequired] = useState(null);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyId, props.smsGatewayId);
   });
 
+  const  {availableIoTDevices, listAvailableIotDevices} = props;
+  useEffect(() => {
+    if (availableIoTDevices === undefined || availableIoTDevices.length === 0) {
+      listAvailableIotDevices();
+    }
+  }, [useIotHub, availableIoTDevices, listAvailableIotDevices]);
+
   useEffect(() => {
     if (!props.data) {
       return;
     }
+
+    setSelectedIotDevice(props.data && props.data.iotHubDeviceName);
+    setUseIotHub(props.data && props.data.iotHubDeviceName != null);
 
     const fields = {
       id: props.data.id,
@@ -36,16 +52,22 @@ const SmsGatewaysEditPageComponent = (props) => {
       apiKey: props.data.apiKey,
       gatewayType: props.data.gatewayType.toString(),
       emailAddress: props.data.emailAddress,
+      useIotHub: props.data.iotHubDeviceName != null,
+      iotHubDeviceName: props.data.iotHubDeviceName
     };
 
     const validation = {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
       apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
       gatewayType: [validators.required],
-      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle)]
+      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle && _.useIotHub === false)],
+      iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)]
     };
 
-    setForm(createForm(fields, validation));
+    const newForm = createForm(fields, validation)
+    newForm.fields.useIotHub.subscribe(({ newValue }) => setUseIotHub(newValue));
+    newForm.fields.iotHubDeviceName.subscribe(({ newValue }) => setSelectedIotDevice(newValue));
+    setForm(newForm);
   }, [props.data, props.match]);
 
   const handleSubmit = (e) => {
@@ -55,18 +77,32 @@ const SmsGatewaysEditPageComponent = (props) => {
       return;
     };
 
+    if (useIotHub && (!pingResult || !pingResult.isSuccess)) {
+      setPingIsRequired(strings(stringKeys.smsGateway.form.pingIsRequired))
+      return;
+    }
+
     const values = form.getValues();
     props.edit(props.nationalSocietyId, {
       id: values.id,
       name: values.name,
       apiKey: values.apiKey,
       gatewayType: values.gatewayType,
-      emailAddress: values.emailAddress
+      emailAddress: values.emailAddress,
+      iotHubDeviceName: values.useIotHub ? values.iotHubDeviceName : null
     });
   };
 
   if (props.isFetching || !form) {
     return <Loading />;
+  }
+
+  const pingResult = props.pinging[selectedIotDevice] &&
+    props.pinging[selectedIotDevice].result
+
+  const handlePing = () => {
+    setPingIsRequired(null);
+    props.pingIotDevice(form.fields.iotHubDeviceName.value);
   }
 
   return (
@@ -114,6 +150,46 @@ const SmsGatewaysEditPageComponent = (props) => {
               ))}
             </SelectInput>
           </Grid>
+          <Grid item xs={12}>
+            <CheckboxField
+              label={strings(stringKeys.smsGateway.form.useIotHub)}
+              name="useIotHub"
+              field={form.fields.useIotHub}>
+            </CheckboxField>
+          </Grid>
+
+          {form.fields.useIotHub.value && (
+            <Fragment>
+              <Grid item xs={12}>
+                <SelectInput
+                  label={strings(stringKeys.smsGateway.form.iotHubDeviceName)}
+                  name="iotHubDeviceName"
+                  field={form.fields.iotHubDeviceName}
+                >
+                  {(props.data && props.data.iotHubDeviceName ? [...props.availableIoTDevices, props.data.iotHubDeviceName] : props.availableIoTDevices).sort().map(deviceName => (
+                    <MenuItem
+                      key={`iotDevice${deviceName}`}
+                      value={deviceName}>
+                      {deviceName}
+                    </MenuItem>
+                  ))}
+                </SelectInput>
+              </Grid>
+              <Grid item xs>
+                <SubmitButton regular onClick={handlePing} isFetching={props.pinging[form.fields.iotHubDeviceName.value] && props.pinging[form.fields.iotHubDeviceName.value].pending}>
+                  {strings(stringKeys.smsGateway.form.ping)}
+                </SubmitButton>
+                {pingResult && (
+                  <Typography variant="body1" display="inline">
+                    {pingResult.isSuccess ?
+                      <Icon style={{ verticalAlign: "middle", color: '#004d13' }}>check</Icon> :
+                      <Icon style={{ verticalAlign: "middle", color: '#C02C2C' }}>error</Icon>} {pingResult.message}
+                  </Typography>
+                )}
+                {pingIsRequired && <Typography variant="body1" display="inline">{pingIsRequired}</Typography>}
+              </Grid>
+            </Fragment>
+          )}
         </Grid>
 
         <FormActions>
@@ -134,13 +210,17 @@ const mapStateToProps = (state, ownProps) => ({
   isFetching: state.smsGateways.formFetching,
   isSaving: state.smsGateways.formSaving,
   data: state.smsGateways.formData,
-  error: state.smsGateways.formError
+  error: state.smsGateways.formError,
+  pinging: state.smsGateways.pinging,
+  availableIoTDevices: state.smsGateways.availableIoTDevices
 });
 
 const mapDispatchToProps = {
   openEdition: smsGatewaysActions.openEdition.invoke,
   edit: smsGatewaysActions.edit.invoke,
-  goToList: smsGatewaysActions.goToList
+  goToList: smsGatewaysActions.goToList,
+  pingIotDevice: smsGatewaysActions.pingIotDevice.invoke,
+  listAvailableIotDevices: smsGatewaysActions.listAvailableIotDevices.invoke
 };
 
 export const SmsGatewaysEditPage = useLayout(

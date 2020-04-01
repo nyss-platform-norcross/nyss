@@ -12,7 +12,9 @@ export const smsGatewaysSagas = () => [
   takeEvery(consts.OPEN_SMS_GATEWAY_EDITION.INVOKE, openSmsGatewayEdition),
   takeEvery(consts.CREATE_SMS_GATEWAY.INVOKE, createSmsGateway),
   takeEvery(consts.EDIT_SMS_GATEWAY.INVOKE, editSmsGateway),
-  takeEvery(consts.REMOVE_SMS_GATEWAY.INVOKE, removeSmsGateway)
+  takeEvery(consts.REMOVE_SMS_GATEWAY.INVOKE, removeSmsGateway),
+  takeEvery(consts.PING_IOT_DEVICE.INVOKE, pingIotDevice),
+  takeEvery(consts.LIST_AVAILABLE_IOT_DEVICES.INVOKE, listAvailableIotDevices)
 ];
 
 function* openSmsGatewaysList({ nationalSocietyId }) {
@@ -96,6 +98,26 @@ function* getSmsGateways(nationalSocietyId) {
     yield put(actions.getList.failure(error.message));
   }
 };
+
+function* pingIotDevice({ iotDeviceId }) {
+  yield put(actions.pingIotDevice.request(iotDeviceId));
+  try {
+    const response = yield call(http.post, `api/smsGateway/iotDevices/${iotDeviceId}/ping`);
+    yield put(actions.pingIotDevice.success(iotDeviceId, { isSuccess: true, message: JSON.parse(response.value).data } ));
+  }catch (error) {
+    yield put(actions.pingIotDevice.failure(iotDeviceId, error.message));
+  }
+}
+
+function* listAvailableIotDevices(){
+  yield put(actions.listAvailableIotDevices.request());
+  try{
+    const availableGateways = yield call(http.get, `/api/smsGateway/iotDevices/list`);
+    yield put(actions.listAvailableIotDevices.success(availableGateways.value));
+  }catch (error) {
+    yield put(actions.listAvailableIotDevices.failure(error.message));
+  }
+}
 
 function* openSmsGatewaysModule(nationalSocietyId) {
   const nationalSociety = yield call(http.getCached, {

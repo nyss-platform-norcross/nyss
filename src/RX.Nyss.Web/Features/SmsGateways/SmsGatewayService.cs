@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
@@ -21,6 +23,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
         Task<Result> Edit(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto);
         Task<Result> Delete(int smsGatewayId);
         Task UpdateAuthorizedApiKeys();
+        Task<Result> GetIotHubConnectionString(int smsGatewayId);
+        Task<Result<IEnumerable<string>>> ListIotHubDevices();
     }
 
     public class SmsGatewayService : ISmsGatewayService
@@ -28,15 +32,17 @@ namespace RX.Nyss.Web.Features.SmsGateways
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly ISmsGatewayBlobProvider _smsGatewayBlobProvider;
+        private readonly IIotHubService _iotHubService;
 
         public SmsGatewayService(
             INyssContext nyssContext,
             ILoggerAdapter loggerAdapter,
-            ISmsGatewayBlobProvider smsGatewayBlobProvider)
+            ISmsGatewayBlobProvider smsGatewayBlobProvider, IIotHubService iotHubService)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _smsGatewayBlobProvider = smsGatewayBlobProvider;
+            _iotHubService = iotHubService;
         }
 
         public async Task<Result<GatewaySettingResponseDto>> Get(int smsGatewayId)
@@ -48,7 +54,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
                     Name = gs.Name,
                     ApiKey = gs.ApiKey,
                     GatewayType = gs.GatewayType,
-                    EmailAddress = gs.EmailAddress
+                    EmailAddress = gs.EmailAddress,
+                    IotHubDeviceName = gs.IotHubDeviceName
                 })
                 .FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
@@ -72,7 +79,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
                     Id = gs.Id,
                     Name = gs.Name,
                     ApiKey = gs.ApiKey,
-                    GatewayType = gs.GatewayType
+                    GatewayType = gs.GatewayType,
+                    IotHubDeviceName = gs.IotHubDeviceName
                 })
                 .ToListAsync();
 
@@ -85,9 +93,11 @@ namespace RX.Nyss.Web.Features.SmsGateways
         {
             try
             {
-                var nationalSocietyExists = await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId);
+                var nationalSociety = await _nyssContext.NationalSocieties
+                    .Include(x => x.Country)
+                    .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
-                if (!nationalSocietyExists)
+                if (nationalSociety == null)
                 {
                     return Error<int>(ResultKey.NationalSociety.SmsGateway.NationalSocietyDoesNotExist);
                 }
@@ -105,12 +115,13 @@ namespace RX.Nyss.Web.Features.SmsGateways
                     ApiKey = gatewaySettingRequestDto.ApiKey,
                     GatewayType = gatewaySettingRequestDto.GatewayType,
                     EmailAddress = gatewaySettingRequestDto.EmailAddress,
-                    NationalSocietyId = nationalSocietyId
+                    NationalSocietyId = nationalSocietyId,
+                    IotHubDeviceName = gatewaySettingRequestDto.IotHubDeviceName
                 };
 
                 await _nyssContext.GatewaySettings.AddAsync(gatewaySettingToAdd);
                 await _nyssContext.SaveChangesAsync();
-
+                
                 await UpdateAuthorizedApiKeys();
 
                 return Success(gatewaySettingToAdd.Id, ResultKey.NationalSociety.SmsGateway.SuccessfullyAdded);
@@ -126,7 +137,9 @@ namespace RX.Nyss.Web.Features.SmsGateways
         {
             try
             {
-                var gatewaySettingToUpdate = await _nyssContext.GatewaySettings.FindAsync(smsGatewayId);
+                var gatewaySettingToUpdate = await _nyssContext.GatewaySettings
+                    .Include(x => x.NationalSociety.Country)
+                    .SingleOrDefaultAsync(x => x.Id == smsGatewayId);
 
                 if (gatewaySettingToUpdate == null)
                 {
@@ -144,9 +157,9 @@ namespace RX.Nyss.Web.Features.SmsGateways
                 gatewaySettingToUpdate.ApiKey = gatewaySettingRequestDto.ApiKey;
                 gatewaySettingToUpdate.GatewayType = gatewaySettingRequestDto.GatewayType;
                 gatewaySettingToUpdate.EmailAddress = gatewaySettingRequestDto.EmailAddress;
+                gatewaySettingToUpdate.IotHubDeviceName = gatewaySettingRequestDto.IotHubDeviceName;
 
                 await _nyssContext.SaveChangesAsync();
-
                 await UpdateAuthorizedApiKeys();
 
                 return SuccessMessage(ResultKey.NationalSociety.SmsGateway.SuccessfullyUpdated);
@@ -170,10 +183,11 @@ namespace RX.Nyss.Web.Features.SmsGateways
                 }
 
                 _nyssContext.GatewaySettings.Remove(gatewaySettingToDelete);
+
                 await _nyssContext.SaveChangesAsync();
 
                 await UpdateAuthorizedApiKeys();
-
+                
                 return SuccessMessage(ResultKey.NationalSociety.SmsGateway.SuccessfullyDeleted);
             }
             catch (ResultException exception)
@@ -193,6 +207,34 @@ namespace RX.Nyss.Web.Features.SmsGateways
 
             var blobContentToUpload = string.Join(Environment.NewLine, authorizedApiKeys);
             await _smsGatewayBlobProvider.UpdateApiKeys(blobContentToUpload);
+        }
+
+        public async Task<Result> GetIotHubConnectionString(int smsGatewayId)
+        {
+            var gatewayDevice = await _nyssContext.GatewaySettings.FindAsync(smsGatewayId);
+
+            if (string.IsNullOrEmpty(gatewayDevice?.IotHubDeviceName))
+            {
+                return Error(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
+            }
+
+            var connectionString = await _iotHubService.GetConnectionString(gatewayDevice.IotHubDeviceName);
+
+            return Success(connectionString);
+        }
+        
+        public async Task<Result<IEnumerable<string>>> ListIotHubDevices()
+        {
+            var allDevices = await _iotHubService.ListDevices();
+
+            var takenDevices = await _nyssContext.GatewaySettings
+                .Where(sg => !string.IsNullOrEmpty(sg.IotHubDeviceName))
+                .Select(sg => sg.IotHubDeviceName)
+                .ToListAsync();
+
+            var availableDevices = allDevices.Except(takenDevices);
+
+            return Success(availableDevices);
         }
     }
 }

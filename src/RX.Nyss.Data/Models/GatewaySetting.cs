@@ -15,6 +15,9 @@ namespace RX.Nyss.Data.Models
         public string EmailAddress { get; set; }
 
         public int NationalSocietyId { get; set; }
+
         public virtual NationalSociety NationalSociety { get; set; }
+        
+        public string IotHubDeviceName { get; set; }
     }
 }

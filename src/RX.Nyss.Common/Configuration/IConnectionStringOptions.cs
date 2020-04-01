@@ -19,6 +19,8 @@ namespace RX.Nyss.Common.Configuration
     public interface IServiceConnectionStringOptions
     {
         string ServiceBus { get; set; }
+        string IotHubManagement { get; set; }
+        string IotHubService { get; set; }
     }
 
     public interface IExternalServicesConnectionStringOptions
@@ -34,5 +36,7 @@ namespace RX.Nyss.Common.Configuration
         public string SmsGatewayBlobContainer { get; set; }
         public string ServiceBus { get; set; }
         public string Nominatim { get; set; }
+        public string IotHubManagement { get; set; }
+        public string IotHubService { get; set; }
     }
 }

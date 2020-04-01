@@ -113,6 +113,7 @@
                 public const string ApiKeyAlreadyExists = "nationalSociety.smsGateway.apiKeyAlreadyExists";
                 public const string SettingDoesNotExist = "nationalSociety.smsGateway.settingDoesNotExist";
                 public const string NationalSocietyDoesNotExist = "nationalSociety.smsGateway.nationalSocietyDoesNotExist";
+                public const string IoTHubPingFailed = "nationalSociety.smsGateway.ioTHubPingFailed";
             }
 
             public static class SetHead
