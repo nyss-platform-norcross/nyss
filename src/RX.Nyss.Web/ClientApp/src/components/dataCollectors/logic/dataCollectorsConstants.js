@@ -29,4 +29,7 @@ export const performanceStatus = {
   reportingWithErrors: "ReportingWithErrors",
 };
 
-export const trainingStatus = [ "All", "Trained", "InTraining"];
+export const trainingStatusAll = "All";
+export const trainingStatusInTraining = "InTraining";
+export const trainingStatusTrained = "Trained";
+export const trainingStatus = [ trainingStatusAll, trainingStatusTrained, trainingStatusInTraining];

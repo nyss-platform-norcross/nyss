@@ -106,7 +106,7 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
               onChange={handleTrainingStatusChange}
               className={styles.filterRadioGroup}>
               {trainingStatus.map(status => (
-                <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={status} value={status} />
+                <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollector.constants.trainingStatus[status])} value={status} />
               ))}
             </RadioGroup>
           </Grid>

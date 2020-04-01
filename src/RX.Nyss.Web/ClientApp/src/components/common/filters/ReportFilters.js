@@ -117,7 +117,7 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
 
           {showTrainingFilter &&
             <Grid item>
-              <InputLabel className={styles.filterLabel}>{strings(stringKeys.filters.report.training)}</InputLabel>
+              <InputLabel className={styles.filterLabel}>{strings(stringKeys.filters.report.reportType)}</InputLabel>
               <RadioGroup
                 value={filters.isTraining}
                 onChange={handleIsTrainingChange}

@@ -16,6 +16,7 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { accessMap } from '../../authentication/accessMap';
+import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';
 
 export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isSettingTrainingState }) => {
   if (isListFetching) {
@@ -62,7 +63,7 @@ export const DataCollectorsTable = ({ isListFetching, isRemoving, goToEdition, r
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{row.sex}</TableCell>
               <TableCell>{row.region}, {row.district}, {row.village}</TableCell>
-              <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.list.isInTrainingMode) : strings(stringKeys.dataCollector.list.isNotInTrainingMode)}</TableCell>
+              <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusInTraining]) : strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusTrained])}</TableCell>
               <TableCell>{row.supervisor.name}</TableCell>
               <TableCell>
                 <TableRowActions>
