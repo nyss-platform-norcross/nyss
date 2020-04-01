@@ -85,7 +85,7 @@ const HeadManagerConsentsPageComponent = (props) => {
           <Grid container alignItems="center">
             {selectedDocumentUrl &&
               (<Grid item xs>
-                <a target="_blank" rel="noopener" href={selectedDocumentUrl}>{strings(stringKeys.headManagerConsents.downloadDirectly)}</a>
+                <a target="_blank" rel="noopener noreferrer" href={selectedDocumentUrl}>{strings(stringKeys.headManagerConsents.downloadDirectly)}</a>
               </Grid>
             )}
             <Grid item>

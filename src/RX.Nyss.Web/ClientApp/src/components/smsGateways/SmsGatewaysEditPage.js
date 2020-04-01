@@ -31,11 +31,12 @@ const SmsGatewaysEditPageComponent = (props) => {
     props.openEdition(props.nationalSocietyId, props.smsGatewayId);
   });
 
+  const  {availableIoTDevices, listAvailableIotDevices} = props;
   useEffect(() => {
-    if (props.availableIoTDevices === undefined || props.availableIoTDevices.length === 0) {
-      props.listAvailableIotDevices();
+    if (availableIoTDevices === undefined || availableIoTDevices.length === 0) {
+      listAvailableIotDevices();
     }
-  }, [useIotHub]);
+  }, [useIotHub, availableIoTDevices, listAvailableIotDevices]);
 
   useEffect(() => {
     if (!props.data) {
@@ -59,7 +60,7 @@ const SmsGatewaysEditPageComponent = (props) => {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
       apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
       gatewayType: [validators.required],
-      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle)],
+      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle && _.useIotHub === false)],
       iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)]
     };
 

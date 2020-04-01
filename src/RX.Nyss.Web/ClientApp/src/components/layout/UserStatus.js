@@ -8,10 +8,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import Icon from "@material-ui/core/Icon";
 import * as authActions from '../../authentication/authActions';
-import * as appActions from '../app/logic/appActions';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import { strings, stringKeys } from '../../strings';
-import * as roles from '../../authentication/roles';
 
 export const UserStatusComponent = ({ user, logout }) => {
   const [anchorEl, setAnchorEl] = useState();
