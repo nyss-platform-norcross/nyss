@@ -2,7 +2,7 @@ using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Dto
 {
-    public class FiltersRequestDto
+    public class DataCollectorsFiltersRequestDto
     {
         public AreaDto Area { get; set; }
 

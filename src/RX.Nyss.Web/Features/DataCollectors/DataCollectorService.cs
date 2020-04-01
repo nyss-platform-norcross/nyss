@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result> Delete(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
         Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId);
-        Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, FiltersRequestDto filters);
+        Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
@@ -175,7 +175,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success(filtersData);
         }
 
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, FiltersRequestDto filters)
+        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters)
         {
             var userIdentityName = _authorizationService.GetCurrentUserName();
             var dataCollectorsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
@@ -185,10 +185,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = await dataCollectorsQuery
                 .Where(dc => dc.DeletedAt == null)
                 .FilterByProject(projectId)
-                .FilterByArea(filters.Area)
-                .FilterBySupervisor(filters.SupervisorId)
-                .FilterBySex(filters.Sex)
-                .FilterByTrainingMode(filters.TrainingStatus)
+                .FilterByArea(dataCollectorsFilters.Area)
+                .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
+                .FilterBySex(dataCollectorsFilters.Sex)
+                .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
                 .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new DataCollectorResponseDto
                 {
