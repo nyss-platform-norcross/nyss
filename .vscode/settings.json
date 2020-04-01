@@ -19,6 +19,5 @@
     "**/dist": true,
     "**/node_modules": true
   },
-  "editor.detectIndentation": false,
   "eslint.workingDirectories": ["./src/RX.Nyss.Web/ClientApp/src"]
 }

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.ProjectDashboard;
 using RX.Nyss.Web.Features.Reports;
-using RX.Nyss.Web.Services.GeographicalCoverage;
 using RX.Nyss.Web.Services.ReportsDashboard;
 using Shouldly;
 using Xunit;
@@ -21,7 +18,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         private const int ProjectId = 1;
         private readonly ProjectDashboardSummaryService _projectDashboardDataService;
         private readonly IReportService _reportService;
-        private readonly IGeographicalCoverageService _geographicalCoverageService;
         private readonly List<DataCollector> _dataCollectors;
         private readonly List<Project> _projects;
         private readonly List<Village> _villages;
@@ -59,9 +55,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             _nyssContext.Villages.Returns(villagesDbSet);
             _nyssContext.Districts.Returns(districtsDbSet);
 
-            _geographicalCoverageService = new GeographicalCoverageService(_nyssContext);
             _reportService = Substitute.For<IReportService>();
-            _projectDashboardDataService = new ProjectDashboardSummaryService(_reportService, _nyssContext, reportsDashboardSummaryService, _geographicalCoverageService);
+            _projectDashboardDataService = new ProjectDashboardSummaryService(_reportService, _nyssContext, reportsDashboardSummaryService);
         }
 
         [Fact]

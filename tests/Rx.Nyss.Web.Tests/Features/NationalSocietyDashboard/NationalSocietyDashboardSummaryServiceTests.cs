@@ -7,7 +7,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.NationalSocietyDashboard;
 using RX.Nyss.Web.Features.Reports;
-using RX.Nyss.Web.Services.GeographicalCoverage;
 using RX.Nyss.Web.Services.ReportsDashboard;
 using Shouldly;
 using Xunit;
@@ -19,7 +18,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         private const int NationalSocietyId = 1;
         private readonly NationalSocietyDashboardSummaryService _nationalSocietyDashboardSummaryService;
         private readonly IReportService _reportService;
-        private readonly IGeographicalCoverageService _geographicalCoverageService;
         private readonly List<DataCollector> _dataCollectors;
         private readonly List<NationalSociety> _nationalSocieties;
         private readonly List<Village> _villages;
@@ -61,8 +59,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
             nyssContext.Districts.Returns(districtsDbSet);
 
             _reportService = Substitute.For<IReportService>();
-            _geographicalCoverageService = new GeographicalCoverageService(nyssContext);
-            _nationalSocietyDashboardSummaryService = new NationalSocietyDashboardSummaryService(_reportService, nyssContext, reportsDashboardSummaryService, _geographicalCoverageService);
+            _nationalSocietyDashboardSummaryService = new NationalSocietyDashboardSummaryService(_reportService, nyssContext, reportsDashboardSummaryService);
         }
 
         [Fact]
