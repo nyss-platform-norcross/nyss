@@ -189,7 +189,6 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     Alert = alert,
                     LastReportVillage = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.RawReport.Village.Name,
-                    LastReportGateway = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.RawReport.ApiKey,
                     HealthRisk = alert.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
@@ -222,7 +221,7 @@ namespace RX.Nyss.Web.Features.Alerts
             try
             {
                 await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-                await SendNotificationSmses(alertData.NationalSocietyId, alertData.LastReportGateway, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project,
+                await SendNotificationSmses(alertData.NationalSocietyId, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project,
                     alertData.HealthRisk, alertData.LastReportVillage);
             }
             catch (ResultException exception)
@@ -478,13 +477,13 @@ namespace RX.Nyss.Web.Features.Alerts
             }
         }
 
-        private async Task SendNotificationSmses(int nationalSocietyId, string lastReportApiKey, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk,
+        private async Task SendNotificationSmses(int nationalSocietyId, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk,
             string lastReportVillage)
         {
             try
             {
                 var gatewaySetting = await _nyssContext.GatewaySettings
-                    .Where(gs => gs.ApiKey == lastReportApiKey || gs.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
+                    .Where(gs => gs.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
 
                 if (gatewaySetting == null)
                 {

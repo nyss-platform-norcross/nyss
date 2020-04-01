@@ -38,7 +38,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
       apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
       gatewayType: [validators.required],
-      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle)],
+      emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle && _.useIotHub === false)],
       iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)]
     };
 
