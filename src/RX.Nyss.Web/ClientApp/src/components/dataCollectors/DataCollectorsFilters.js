@@ -1,5 +1,5 @@
 import styles from "./DataCollectorsFilters.module.scss";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -12,11 +12,6 @@ import { InputLabel, RadioGroup, FormControlLabel, Radio } from "@material-ui/co
 
 export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors, onChange }) => {
   const [value, setValue] = useState(filters);
-
-  useEffect(() => {
-    setValue(filters);
-  }, [filters]);
-
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
 
   const updateValue = (change) => {
@@ -94,15 +89,15 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
               {sexValues.map(sex => (
                 <MenuItem key={`datacollector_filter_${sex}`} value={sex}>
                 {strings(stringKeys.dataCollector.constants.sex[sex.toLowerCase()])}
-                </MenuItem>  
+                </MenuItem>
               ))}
             </TextField>
           </Grid>
-          
+
           <Grid item>
             <InputLabel>{strings(stringKeys.dataCollector.filters.trainingStatus)}</InputLabel>
             <RadioGroup
-              value={filters.trainingStatus}
+              value={value.trainingStatus}
               onChange={handleTrainingStatusChange}
               className={styles.filterRadioGroup}>
               {trainingStatus.map(status => (

@@ -26,7 +26,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
-        private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
 
         private readonly int _nationalSocietyId1 = 1;
