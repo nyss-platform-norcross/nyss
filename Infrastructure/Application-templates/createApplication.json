@@ -248,6 +248,7 @@
                 "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
                 "SERVICEBUS_REPORTQUEUE": "[variables('reportQueueName')]",
                 "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
+                "SERVICEBUS_SENDSMSQUEUE": "[variables('sendSmsQueueName')]",
                 "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleSbStaging'), variables('sbVersion')).primaryConnectionString]",
                 "AzureWebJobsSecretStorageType": "Blob"
               }
