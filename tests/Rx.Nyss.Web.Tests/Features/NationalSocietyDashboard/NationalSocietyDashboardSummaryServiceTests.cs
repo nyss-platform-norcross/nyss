@@ -20,23 +20,43 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         private readonly IReportService _reportService;
         private readonly List<DataCollector> _dataCollectors;
         private readonly List<NationalSociety> _nationalSocieties;
-
+        private readonly List<Village> _villages;
+        private readonly List<District> _districts;
+        private readonly List<Project> _projects;
         public NationalSocietyDashboardSummaryServiceTests()
         {
             _nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = NationalSocietyId } };
+            _projects = new List<Project> { new Project { Id = 1, NationalSociety = _nationalSocieties.First(), NationalSocietyId = NationalSocietyId } };
+            _districts = new List<District> { new District { Id = 1 } };
+            _villages = new List<Village> { new Village { Id = 1, District = _districts.First() } };
 
             var alerts = new List<Alert>();
-            _dataCollectors = new List<DataCollector>();
+            _dataCollectors = new List<DataCollector>()
+            {
+                new DataCollector
+                { 
+                    Id = 1,
+                    Village = _villages.First(),
+                    Project = _projects.First()
+                } 
+            };
 
             var nationalSocietiesDbSet = _nationalSocieties.AsQueryable().BuildMockDbSet();
+            var projectsDbSet = _projects.AsQueryable().BuildMockDbSet();
             var alertsDbSet = alerts.AsQueryable().BuildMockDbSet();
             var dataCollectorsDbSet = _dataCollectors.AsQueryable().BuildMockDbSet();
+            var districtsDbSet = _districts.AsQueryable().BuildMockDbSet();
+            var villagesDbSet = _villages.AsQueryable().BuildMockDbSet();
 
             var reportsDashboardSummaryService = Substitute.For<IReportsDashboardSummaryService>();
             var nyssContext = Substitute.For<INyssContext>();
             nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
+            nyssContext.Projects.Returns(projectsDbSet);
             nyssContext.Alerts.Returns(alertsDbSet);
             nyssContext.DataCollectors.Returns(dataCollectorsDbSet);
+            nyssContext.DataCollectors.Returns(dataCollectorsDbSet);
+            nyssContext.Villages.Returns(villagesDbSet);
+            nyssContext.Districts.Returns(districtsDbSet);
 
             _reportService = Substitute.For<IReportService>();
             _nationalSocietyDashboardSummaryService = new NationalSocietyDashboardSummaryService(_reportService, nyssContext, reportsDashboardSummaryService);
@@ -97,23 +117,21 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
             {
                 new DataCollector
                 {
-                    Id = 1,
-                    Project = new Project { NationalSociety = _nationalSocieties.First() }
-                },
-                new DataCollector
-                {
                     Id = 2,
-                    Project = new Project { NationalSociety = _nationalSocieties.First() }
+                    Project = _projects.First(),
+                    Village = _villages.First()
                 },
                 new DataCollector
                 {
                     Id = 3,
-                    Project = new Project { NationalSociety = _nationalSocieties.First() }
+                    Project = _projects.First(),
+                    Village = _villages.First()
                 },
                 new DataCollector
                 {
                     Id = 4,
-                    Project = new Project { NationalSociety = _nationalSocieties.First() }
+                    Project = _projects.First(),
+                    Village = _villages.First()
                 }
             });
 
@@ -121,7 +139,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
 
             var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
-            summaryData.ActiveDataCollectorCount.ShouldBe(2);
+            summaryData.InactiveDataCollectorCount.ShouldBe(2);
         }
 
         [Fact]
@@ -142,6 +160,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
             var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
             summaryData.ErrorReportCount.ShouldBe(expectedErrorReportsCount);
+        }
+
+        [Fact]
+        public async Task GetSummaryData_ReturnsCorrectGeographicalCoverageCount()
+        {
+            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+
+            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
+
+            summaryData.NumberOfVillages.ShouldBe(1);
+            summaryData.NumberOfDistricts.ShouldBe(1);
         }
     }
 }

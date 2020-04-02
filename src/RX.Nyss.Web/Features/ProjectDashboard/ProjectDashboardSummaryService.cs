@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
@@ -43,20 +45,22 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
 
             return await _nyssContext.Projects
-                .Where(ph => ph.Id == filters.ProjectId.Value)
-                .Select(ph => new
+                .Where(p => p.Id == filters.ProjectId.Value)
+                .Select(p => new
                 {
-                    allDataCollectorCount = AllDataCollectorCount(filters),
-                    activeDataCollectorCount = rawReportsWithDataCollector.Select(r => r.DataCollector.Id).Distinct().Count()
+                    AllDataCollectorCount = AllDataCollectorCount(filters),
+                    ActiveDataCollectorCount = rawReportsWithDataCollector.Select(r => r.DataCollector.Id).Distinct().Count()
                 })
                 .Select(data => new ProjectSummaryResponseDto
                 {
                     ReportCount = healthRiskEventReportsQuery.Sum(r => r.ReportedCaseCount),
-                    ActiveDataCollectorCount = data.activeDataCollectorCount,
-                    InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
+                    ActiveDataCollectorCount = data.ActiveDataCollectorCount,
+                    InactiveDataCollectorCount = data.AllDataCollectorCount - data.ActiveDataCollectorCount,
                     ErrorReportCount = rawReportsWithDataCollector.Count() - validReports.Count(),
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
-                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters)
+                    AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
+                    NumberOfDistricts = rawReportsWithDataCollector.Select(r => r.Village.District).Distinct().Count(),
+                    NumberOfVillages = rawReportsWithDataCollector.Select(r => r.Village).Distinct().Count()
                 })
                 .FirstOrDefaultAsync();
         }

@@ -15,5 +15,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
         public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; } = new DataCollectionPointsSummaryResponse();
 
         public int ErrorReportCount { get; set; }
+        public int NumberOfVillages { get; set; }
+        public int NumberOfDistricts { get; set; }
     }
 }

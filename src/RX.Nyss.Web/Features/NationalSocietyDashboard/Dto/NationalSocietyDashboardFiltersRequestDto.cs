@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 
         public DatesGroupingType GroupingType { get; set; }
 
-        public NationalSocietyReportsTypeDto NationalSocietyReportsType { get; set; }
+        public NationalSocietyReportsTypeDto ReportsType { get; set; }
 
         public bool IsTraining { get; set; }
     }

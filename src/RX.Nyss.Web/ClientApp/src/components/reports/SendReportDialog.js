@@ -62,7 +62,7 @@ export const SendReportDialog = ({ close, props }) => {
   return (
     <Fragment>
       <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
-        <DialogTitle id="form-dialog-title">Send report</DialogTitle>
+        <DialogTitle id="form-dialog-title">{strings(stringKeys.reports.sendReport.sendReport)}</DialogTitle>
         <DialogContent style={{ width: 400 }}>
           <Form onSubmit={handleSubmit}>
             <Grid container spacing={3}>

@@ -94,7 +94,9 @@ export const stringKeys = {
         closedAlerts: "nationalsociety.dashboard.numbers.closedAlerts",
         totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",
         totalErrorReportCount: "nationalsociety.dashboard.numbers.totalErrorReportCount",
-        totalReportCountTitle: "nationalsociety.dashboard.numbers.totalReportCountTitle"
+        totalReportCountTitle: "nationalsociety.dashboard.numbers.totalReportCountTitle",
+        numberOfVillages: "nationalsociety.dashboard.numbers.numberOfVillages",
+        numberOfDistricts: "nationalsociety.dashboard.numbers.numberOfDistricts"
       },
       filters: {
         startDate: "nationalsociety.dashboard.filters.startDate",
@@ -117,6 +119,7 @@ export const stringKeys = {
       dataCollectors: "nationalsociety.dashboard.dataCollectors",
       dataCollectionPoints: "nationalsociety.dashboard.dataCollectionPoints",
       healthRisks: "nationalsociety.dashboard.healthRisks",
+      geographicalCoverage: "nationalsociety.dashboard.geographicalCoverage",
       map: {
         reportCount: "nationalsociety.dashboard.map.reportCount",
         title: "nationalsociety.dashboard.map.title",
@@ -295,7 +298,9 @@ export const stringKeys = {
         totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle",
         dismissedAlerts: "project.dashboard.numbers.dismissedAlerts",
         escalatedAlerts: "project.dashboard.numbers.escalatedAlerts",
-        closedAlerts: "project.dashboard.numbers.closedAlerts"
+        closedAlerts: "project.dashboard.numbers.closedAlerts",
+        numberOfVillages: "project.dashboard.numbers.villages",
+        numberOfDistricts: "project.dashboard.numbers.districts"
       },
       filters: {
         startDate: "project.dashboard.filters.startDate",
@@ -360,6 +365,7 @@ export const stringKeys = {
       supervisorPhoneNumber: "project.dashboard.supervisorPhoneNumber",
       supervisorAdditionalPhoneNumber: "project.dashboard.supervisorAdditionalPhoneNumber",
       alertsSummary: "project.dashboard.alertsSummary",
+      geographicalCoverageSummary: "project.dashboard.geographicalCoverageSummary",
       map: {
         reportCount: "project.dashboard.map.reportCount",
         title: "project.dashboard.map.title",

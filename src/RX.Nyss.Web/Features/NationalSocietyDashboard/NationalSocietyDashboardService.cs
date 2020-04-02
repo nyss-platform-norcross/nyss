@@ -92,7 +92,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                         AreaType = filtersDto.Area.Type,
                         AreaId = filtersDto.Area.Id
                     },
-                DataCollectorType = MapToDataCollectorType(filtersDto.NationalSocietyReportsType),
+                DataCollectorType = MapToDataCollectorType(filtersDto.ReportsType),
                 IsTraining = filtersDto.IsTraining
             };
 

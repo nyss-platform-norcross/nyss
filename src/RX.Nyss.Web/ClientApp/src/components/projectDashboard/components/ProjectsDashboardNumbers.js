@@ -22,7 +22,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
 
   return (
     <Grid container spacing={3} data-printable={true}>
-      <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
+      <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.numbers.totalReportCountTitle)} />
           <CardContent>
@@ -32,7 +32,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
         </Card>
       </Grid>
 
-      <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
+      <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.dataCollectors)} />
           <CardContent>
@@ -42,7 +42,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
       </Grid>
 
       {reportsType === "dataCollectionPoint" && (
-        <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
+        <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
           <Card className={styles.card}>
             <CardHeader title={strings(stringKeys.project.dashboard.dataCollectionPoints)} />
             <CardContent>
@@ -55,7 +55,7 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
       )}
 
       {reportsType !== "dataCollectionPoint" && (
-        <Grid item sm={6} md={4} xs={12} className={styles.numberBox}>
+        <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
           <Card className={styles.card}>
             <CardHeader title={strings(stringKeys.project.dashboard.alertsSummary)} />
             <CardContent>
@@ -66,6 +66,16 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
           </Card>
         </Grid>
       )}
+
+      <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
+        <Card className={styles.card}>
+          <CardHeader title={strings(stringKeys.project.dashboard.geographicalCoverageSummary)} />
+          <CardContent>
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.numberOfVillages), projectSummary.numberOfVillages)}
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.numberOfDistricts), projectSummary.numberOfDistricts)}
+          </CardContent>
+        </Card>
+      </Grid>
     </Grid>
   );
 }
