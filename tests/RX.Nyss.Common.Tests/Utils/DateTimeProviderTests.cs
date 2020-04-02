@@ -28,7 +28,7 @@ namespace RX.Nyss.Common.Tests.Utils
         }
 
         [Theory, MemberData(nameof(TestData))]
-        public void GetEpiWeek_ShouldReturnCorrectWeekNumber(DateTime date, int weekNumber)
+        public void GetEpiWeek_ShouldReturnCorrectWeekNumber(DateTime date, int weekNumber, int year)
         {
             // act
             var result = _dateTimeProvider.GetEpiWeek(date);

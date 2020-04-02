@@ -28,17 +28,24 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         {
             _projects = new List<Project> { new Project { Id = ProjectId } };
             _districts = new List<District> { new District { Id = 1 } };
-            _villages = new List<Village> { new Village { Id = 1, District = _districts.First() } };
+            _villages = new List<Village>
+            {
+                new Village
+                {
+                    Id = 1,
+                    District = _districts.First()
+                }
+            };
 
             var alerts = new List<Alert>();
-            _dataCollectors = new List<DataCollector>()
+            _dataCollectors = new List<DataCollector>
             {
                 new DataCollector
-                { 
+                {
                     Id = 1,
                     Village = _villages.First(),
                     Project = _projects.First()
-                } 
+                }
             };
 
             var projectsDbSet = _projects.AsQueryable().BuildMockDbSet();
@@ -84,11 +91,31 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
             var rawReports = new List<RawReport>
             {
-                new RawReport { DataCollector = new DataCollector { Id = 1 } },
-                new RawReport { DataCollector = new DataCollector { Id = 1 } },
-                new RawReport { DataCollector = new DataCollector { Id = 2 } },
-                new RawReport { DataCollector = new DataCollector { Id = 2 } },
-                new RawReport { DataCollector = new DataCollector { Id = 3 } }
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Id = 1 },
+                    Village = new Village { District = new District() }
+                },
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Id = 1 },
+                    Village = new Village { District = new District() }
+                },
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Id = 2 },
+                    Village = new Village { District = new District() }
+                },
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Id = 2 },
+                    Village = new Village { District = new District() }
+                },
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Id = 3 },
+                    Village = new Village { District = new District() }
+                }
             };
 
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
@@ -105,9 +132,21 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
 
             var rawReports = new List<RawReport>
             {
-                new RawReport { DataCollector = _dataCollectors.First() },
-                new RawReport { DataCollector = new DataCollector { Id = 2 } },
-                new RawReport { DataCollector = new DataCollector { Id = 2 } }
+                new RawReport
+                {
+                    DataCollector = _dataCollectors.First(),
+                    Village = new Village { District = new District() }
+                },
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Id = 2 },
+                    Village = new Village { District = new District() }
+                },
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Id = 2 },
+                    Village = new Village { District = new District() }
+                }
             };
 
             _dataCollectors.AddRange(new[]
@@ -149,7 +188,11 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             var expectedErrorReportsCount = 1;
 
             var reports = Enumerable.Range(0, validReportsCount).Select(i => new Report());
-            var rawReports = Enumerable.Range(0, allReportsCount).Select(i => new RawReport { DataCollector = new DataCollector() });
+            var rawReports = Enumerable.Range(0, allReportsCount).Select(i => new RawReport
+            {
+                DataCollector = new DataCollector(),
+                Village = new Village { District = new District() }
+            });
 
             _reportService.GetSuccessReportsQuery(filters).Returns(reports.AsQueryable());
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
@@ -163,7 +206,16 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         public async Task GetSummaryData_ReturnsCorrectGeographicalCoverageCount()
         {
             var filters = new ReportsFilter { ProjectId = ProjectId };
+            var rawReports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    DataCollector = new DataCollector { Id = 1 },
+                    Village = _villages.First()
+                }
+            };
 
+            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
             var summaryData = await _projectDashboardDataService.GetData(filters);
 
             summaryData.NumberOfVillages.ShouldBe(1);
