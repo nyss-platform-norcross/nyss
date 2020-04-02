@@ -23,7 +23,7 @@ export const accessMap = {
     get: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
     showOverview: [Administrator, Manager, TechnicalAdvisor, Supervisor],
     showDashboard: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
-    list: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
+    list: [Administrator, Manager, TechnicalAdvisor, DataConsumer],
     add: [Administrator, Manager, TechnicalAdvisor],
     edit: [Administrator, Manager, TechnicalAdvisor],
     delete: [Administrator, Manager, TechnicalAdvisor]
@@ -62,7 +62,7 @@ export const accessMap = {
     sendReport: [Administrator, Manager, TechnicalAdvisor, Supervisor]
   },
   nationalSocietyReports: {
-    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    list: [Administrator, Manager, TechnicalAdvisor],
   },
   alerts: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
