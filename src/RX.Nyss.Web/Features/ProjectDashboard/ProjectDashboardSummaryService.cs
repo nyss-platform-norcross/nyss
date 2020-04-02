@@ -43,7 +43,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             var healthRiskEventReportsQuery = _reportService.GetHealthRiskEventReportsQuery(filters);
             var validReports = _reportService.GetSuccessReportsQuery(filters);
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
-            var dataCollectors = GetFilteredDataCollectorsQuery(filters);
 
             return await _nyssContext.Projects
                 .Where(p => p.Id == filters.ProjectId.Value)
@@ -60,19 +59,11 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     ErrorReportCount = rawReportsWithDataCollector.Count() - validReports.Count(),
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
-                    NumberOfDistricts = dataCollectors.Select(dc => dc.Village.District.Id).Distinct().Count(),
-                    NumberOfVillages = dataCollectors.Select(dc => dc.Village.Id).Distinct().Count()
+                    NumberOfDistricts = rawReportsWithDataCollector.Select(r => r.Village.District).Distinct().Count(),
+                    NumberOfVillages = rawReportsWithDataCollector.Select(r => r.Village).Distinct().Count()
                 })
                 .FirstOrDefaultAsync();
         }
-
-        private IQueryable<DataCollector> GetFilteredDataCollectorsQuery(ReportsFilter filters) =>
-            _nyssContext.DataCollectors
-                .FilterByProject(filters.ProjectId.Value)
-                .FilterByArea(filters.Area)
-                .FilterOnlyNotDeletedBefore(filters.StartDate)
-                .FilterByTrainingMode(filters.IsTraining)
-                .FilterByType(filters.DataCollectorType);
 
         private int AllDataCollectorCount(ReportsFilter filters) =>
             _nyssContext.DataCollectors

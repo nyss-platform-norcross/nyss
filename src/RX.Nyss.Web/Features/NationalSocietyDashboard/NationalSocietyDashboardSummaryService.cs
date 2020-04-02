@@ -44,7 +44,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
             var successReports = _reportService.GetSuccessReportsQuery(filters);
             var healthRiskEventReportsQuery = _reportService.GetHealthRiskEventReportsQuery(filters);
-            var dataCollectors = GetFilteredDataCollectorsQuery(filters);
 
             return await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
@@ -61,23 +60,11 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                     ErrorReportCount = rawReportsWithDataCollector.Count() - successReports.Count(),
                     DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
-                    NumberOfDistricts = filters.ProjectId.HasValue ?
-                        dataCollectors.Where(dc => dc.Project.Id == filters.ProjectId.Value).Select(dc => dc.Village.District.Id).Distinct().Count()
-                        : dataCollectors.Select(dc => dc.Village.District.Id).Distinct().Count(),
-                    NumberOfVillages = filters.ProjectId.HasValue ?
-                        dataCollectors.Where(dc => dc.Project.Id == filters.ProjectId.Value).Select(dc => dc.Village.Id).Distinct().Count()
-                        : dataCollectors.Select(dc => dc.Village.Id).Distinct().Count()
+                    NumberOfDistricts = rawReportsWithDataCollector.Select(r => r.Village.District).Distinct().Count(),
+                    NumberOfVillages = rawReportsWithDataCollector.Select(r => r.Village).Distinct().Count()
                 })
                 .FirstOrDefaultAsync();
         }
-
-        private IQueryable<DataCollector> GetFilteredDataCollectorsQuery(ReportsFilter filters) =>
-            _nyssContext.DataCollectors
-                .FilterByNationalSociety(filters.NationalSocietyId.Value)
-                .FilterByArea(filters.Area)
-                .FilterOnlyNotDeletedBefore(filters.StartDate)
-                .FilterByTrainingMode(filters.IsTraining)
-                .FilterByType(filters.DataCollectorType);
 
         private int AllDataCollectorCount(ReportsFilter filters, int nationalSocietyId) =>
             _nyssContext.DataCollectors
