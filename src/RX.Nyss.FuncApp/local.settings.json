@@ -12,6 +12,7 @@
     "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses.txt",
     "WhitelistedPhoneNumbersBlobPath": "sms-gateway/whitelisted-phone-numbers.txt"
   },
+  "ReleaseVersion":  "1.0.0.1", 
   "MailConfig": {
     "FromAddress": "",
     "FromName": "Nyss Platform",

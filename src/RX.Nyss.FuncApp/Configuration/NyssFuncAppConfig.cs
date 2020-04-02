@@ -3,14 +3,15 @@
     public interface IConfig
     {
         NyssFuncAppConfig.MailConfigOptions MailConfig { get; set; }
-
         NyssFuncAppConfig.ConnectionStringsOptions ConnectionStrings { get; set; }
+        string ReleaseVersion { get; set; }
     }
 
     public class NyssFuncAppConfig : IConfig
     {
         public MailConfigOptions MailConfig { get; set; }
         public ConnectionStringsOptions ConnectionStrings { get; set; }
+        public string ReleaseVersion { get; set; }
 
         public class MailConfigOptions
         {
