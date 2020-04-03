@@ -168,7 +168,13 @@
           "cors": {
             "allowedOrigins": [
             ]
-          }
+          },
+          "appSettings": [
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "1"
+            }
+          ]
         }
       },
       "resources": [
@@ -220,14 +226,14 @@
           "tags": "[parameters('tagValues')]",
           "properties": {
             "siteConfig": {
-              "autoSwapSlotName": "production",
-              "appSettings": [
-                {
-                  "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                  "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]"
-                }
-              ]
-            }
+              "autoSwapSlotName": "production"
+            },
+            "appSettings": [
+              {
+                "name": "WEBSITE_RUN_FROM_PACKAGE",
+                "value": "1"
+              }
+            ]
           },
           "resources": [
             {
@@ -236,7 +242,6 @@
               "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('funcAppName')))]",
               "type": "config",
               "dependsOn": [
-                "[resourceId('Microsoft.Web/sites/', variables('funcAppName'))]",
                 "[resourceId('Microsoft.Web/Sites/Slots', variables('funcAppName'), 'staging')]"
               ],
               "properties": {
@@ -457,7 +462,13 @@
         "httpsOnly": true,
         "redundancyMode": "None",
         "siteConfig": {
-          "alwaysOn": "[parameters('alwaysOn')]"
+          "alwaysOn": "[parameters('alwaysOn')]",
+          "appSettings": [
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "1"
+            }
+          ]
         }
       },
       "resources": [
