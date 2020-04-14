@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.ServiceBus;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
 
@@ -24,25 +25,31 @@ namespace RX.Nyss.ReportApi.Services
         private readonly IQueueClient _sendSmsQueueClient;
         private readonly INyssReportApiConfig _config;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ILoggerAdapter _loggerAdapter;
 
-        public QueuePublisherService(INyssReportApiConfig config, IDateTimeProvider dateTimeProvider)
+        public QueuePublisherService(INyssReportApiConfig config, IDateTimeProvider dateTimeProvider, ILoggerAdapter loggerAdapter, IQueueClientProvider queueClientProvider)
         {
             _config = config;
             _dateTimeProvider = dateTimeProvider;
-            _sendEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
-            _checkAlertQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.CheckAlertQueue);
-            _sendSmsQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendSmsQueue);
+            _loggerAdapter = loggerAdapter;
+            _sendEmailQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.SendEmailQueue);
+            _checkAlertQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.CheckAlertQueue);
+            _sendSmsQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.SendSmsQueue);
         }
 
         public async Task SendSms(List<string> recipients, GatewaySetting gatewaySetting, string message)
         {
-            if (string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
+            if (!string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
+            {
+                await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message);
+            }
+            else if (!string.IsNullOrEmpty(gatewaySetting.EmailAddress))
             {
                 await SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, message);
             }
             else
             {
-                await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message);
+                _loggerAdapter.Warn($"No email or IoT device found for gateway {gatewaySetting.Name}, not able to send feedback SMS!");
             }
         }
 

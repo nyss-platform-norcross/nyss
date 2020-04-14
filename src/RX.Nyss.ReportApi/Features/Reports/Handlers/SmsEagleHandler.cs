@@ -157,7 +157,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                 if (reportErrorData == null)
                 {
-                    if (!string.IsNullOrEmpty(gatewaySetting?.EmailAddress) && projectHealthRisk != null)
+                    if (projectHealthRisk != null)
                     {
                         var recipients = new List<string> { sender };
                         await _queuePublisherService.SendSms(recipients, gatewaySetting, projectHealthRisk.FeedbackMessage);
