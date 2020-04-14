@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
@@ -40,14 +39,19 @@ namespace RX.Nyss.FuncApp.Services
 
                 var cloudToDeviceMethod = new CloudToDeviceMethod("send_sms", TimeSpan.FromSeconds(30));
                 cloudToDeviceMethod.SetPayloadJson(JsonSerializer.Serialize(new
-                {
-                    To = message.PhoneNumber,
-                    Message = message.SmsMessage
-                }));
+                    {
+                        To = message.PhoneNumber,
+                        Message = message.SmsMessage
+                    },
+                    new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                        IgnoreNullValues = true
+                    }));
 
                 var response = await _iotHubServiceClient.InvokeDeviceMethodAsync(message.IotHubDeviceName, cloudToDeviceMethod);
 
-                if(response.Status != 200)
+                if (response.Status != 200)
                 {
                     throw new Exception($"Failed to send sms to device {message.IotHubDeviceName}, {response.GetPayloadAsJson()}");
                 }
