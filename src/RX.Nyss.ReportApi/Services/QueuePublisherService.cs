@@ -27,14 +27,14 @@ namespace RX.Nyss.ReportApi.Services
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ILoggerAdapter _loggerAdapter;
 
-        public QueuePublisherService(INyssReportApiConfig config, IDateTimeProvider dateTimeProvider, ILoggerAdapter loggerAdapter)
+        public QueuePublisherService(INyssReportApiConfig config, IDateTimeProvider dateTimeProvider, ILoggerAdapter loggerAdapter, IQueueClientProvider queueClientProvider)
         {
             _config = config;
             _dateTimeProvider = dateTimeProvider;
             _loggerAdapter = loggerAdapter;
-            _sendEmailQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendEmailQueue);
-            _checkAlertQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.CheckAlertQueue);
-            _sendSmsQueueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendSmsQueue);
+            _sendEmailQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.SendEmailQueue);
+            _checkAlertQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.CheckAlertQueue);
+            _sendSmsQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.SendSmsQueue);
         }
 
         public async Task SendSms(List<string> recipients, GatewaySetting gatewaySetting, string message)
