@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().Status = status;
 
-            var result = await _alertService.Escalate(TestData.AlertId);
+            var result = await _alertService.Escalate(TestData.AlertId, false);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlert.WrongStatus);
@@ -134,7 +134,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 3;
 
-            var result = await _alertService.Escalate(TestData.AlertId);
+            var result = await _alertService.Escalate(TestData.AlertId, false);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.EscalateAlert.ThresholdNotReached);
@@ -172,7 +172,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
 
 
-            await _alertService.Escalate(TestData.AlertId);
+            await _alertService.Escalate(TestData.AlertId, true);
 
             await _emailPublisherService.ReceivedWithAnyArgs(2).SendEmail((null, null), null, null);
 
@@ -215,7 +215,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().ProjectHealthRisk.Project.EmailAlertRecipients = new List<EmailAlertRecipient> { new EmailAlertRecipient { EmailAddress = emailAddress } };
             _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
             
-            await _alertService.Escalate(TestData.AlertId);
+            await _alertService.Escalate(TestData.AlertId, true);
 
             await _emailPublisherService.ReceivedWithAnyArgs(1).SendEmail((null, null), null, null);
 
@@ -256,7 +256,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
 
             // Act
-            await _alertService.Escalate(TestData.AlertId);
+            await _alertService.Escalate(TestData.AlertId, true);
 
             // Assert
             await _emailPublisherService.Received(1)
@@ -286,13 +286,42 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
 
-            var result = await _alertService.Escalate(TestData.AlertId);
+            var result = await _alertService.Escalate(TestData.AlertId, false);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Escalated);
             _alerts.First().EscalatedAt.ShouldBe(_now);
             _alerts.First().EscalatedBy.ShouldBe(_currentUser);
             await _nyssContext.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
+        }
+
+        [Fact]
+        public async Task EscalateAlert_WhenSendNotificationIsFalse_ShouldNotSendNotification()
+        {
+            _alerts.First().Status = AlertStatus.Pending;
+
+            _alerts.First().AlertReports = new List<AlertReport>
+            {
+                new AlertReport
+                {
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted,
+                        RawReport = new RawReport
+                        {
+                            ApiKey = TestData.ApiKey,
+                            Village = new Village()
+                        }
+                    }
+                }
+            };
+
+            _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
+
+            var result = await _alertService.Escalate(TestData.AlertId, false);
+
+            await _smsPublisherService.Received(0).SendSms(Arg.Any<string>(), Arg.Any<List<string>>(), Arg.Any<string>());
+            await _emailPublisherService.Received(0).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
         }
 
         [Fact]

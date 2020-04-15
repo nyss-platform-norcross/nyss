@@ -40,7 +40,7 @@ export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating,
           <Button onClick={close}>
             {strings(stringKeys.form.cancel)}
           </Button>
-          <SubmitButton isFetching={isEscalating} onClick={() => escalateAlert(alertId)}>
+          <SubmitButton isFetching={isEscalating} onClick={() => escalateAlert(alertId, true)}>
             {strings(stringKeys.alerts.assess.alert.escalate)}
           </SubmitButton>
         </FormActions>

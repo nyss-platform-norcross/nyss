@@ -108,12 +108,12 @@ function* dismissReport({ alertId, reportId }) {
   }
 };
 
-function* escalateAlert({ alertId }) {
+function* escalateAlert({ alertId, sendNotification }) {
   const projectId = yield select(state => state.appData.route.params.projectId);
 
   yield put(actions.escalateAlert.request());
   try {
-    const response = yield call(http.post, `/api/alert/${alertId}/escalate`);
+    const response = yield call(http.post, `/api/alert/${alertId}/escalate`, { sendNotification });
     yield put(actions.escalateAlert.success());
     yield put(actions.goToList(projectId))
     yield put(appActions.showMessage(response.value));
