@@ -7,6 +7,7 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports;
+using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Services.ReportsDashboard;
 using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 using static RX.Nyss.Common.Utils.DataContract.Result;

@@ -17,7 +17,6 @@ namespace RX.Nyss.Web.Services.Geolocation
     public interface IGeolocationService
     {
         Task<Result<LocationDto>> GetLocationFromCountry(string country);
-        Task<Result<LocationDto>> FetchLocationFromCountry(string country);
     }
 
     public class GeolocationService : IGeolocationService
@@ -46,7 +45,7 @@ namespace RX.Nyss.Web.Services.Geolocation
                 validFor: TimeSpan.FromDays(1),
                 value: () => FetchLocationFromCountry(country));
 
-        public async Task<Result<LocationDto>> FetchLocationFromCountry(string country)
+        private async Task<Result<LocationDto>> FetchLocationFromCountry(string country)
         {
             try
             {
