@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<Result<AlertAssessmentResponseDto>> Get(int alertId);
         Task<Result> Escalate(int alertId, bool sendNotification);
         Task<Result> Dismiss(int alertId);
-        Task<Result> Close(int alertId, string comments);
+        Task<Result> Close(int alertId, string comments, CloseAlertOptions closeOption);
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
         Task<Result<AlertLogResponseDto>> GetLogs(int alertId);
     }
@@ -128,6 +128,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     Status = a.Status,
                     CreatedAt = a.CreatedAt,
                     Comments = a.Comments,
+                    CloseOption = a.CloseOption,
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
@@ -165,6 +166,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 NotificationEmails = alert.NotificationEmails,
                 NotificationPhoneNumbers = alert.NotificationPhoneNumbers,
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
+                CloseOption = alert.CloseOption,
                 Reports = alert.Reports.Select(ar => new AlertAssessmentResponseDto.ReportDto
                 {
                     Id = ar.Id,
@@ -267,7 +269,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success();
         }
 
-        public async Task<Result> Close(int alertId, string comments)
+        public async Task<Result> Close(int alertId, string comments, CloseAlertOptions closeOption)
         {
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
@@ -291,6 +293,7 @@ namespace RX.Nyss.Web.Features.Alerts
             alertData.Alert.Status = AlertStatus.Closed;
             alertData.Alert.ClosedAt = _dateTimeProvider.UtcNow;
             alertData.Alert.ClosedBy = _authorizationService.GetCurrentUser();
+            alertData.Alert.CloseOption = closeOption;
             alertData.Alert.Comments = comments;
 
             FormattableString updateReportsCommand = $@"UPDATE Nyss.Reports SET Status = {ReportStatus.Closed.ToString()} WHERE Status = {ReportStatus.Pending.ToString()}
@@ -330,6 +333,8 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.EscalatedAt,
                     a.DismissedAt,
                     a.ClosedAt,
+                    a.CloseOption,
+                    a.Comments,
                     EscalatedBy = a.EscalatedBy.Name,
                     DismissedBy = a.DismissedBy.Name,
                     ClosedBy = a.ClosedBy.Name,
@@ -368,7 +373,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             if (alert.ClosedAt.HasValue)
             {
-                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.ApplyTimeZone(timeZone), alert.ClosedBy));
+                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.ApplyTimeZone(timeZone), alert.ClosedBy, new { alert.CloseOption, alert.Comments }));
             }
 
             foreach (var report in alert.Reports)

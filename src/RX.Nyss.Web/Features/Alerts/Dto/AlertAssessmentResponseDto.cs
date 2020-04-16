@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Alerts.Dto
 {
@@ -18,6 +19,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public DateTime CreatedAt { get; set; }
 
         public AlertAssessmentStatus AssessmentStatus { get; set; }
+
+        public CloseAlertOptions? CloseOption { get; set; }
 
         public string Comments { get; set; }
 

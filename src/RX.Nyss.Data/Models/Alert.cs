@@ -24,6 +24,8 @@ namespace RX.Nyss.Data.Models
 
         public virtual User ClosedBy { get; set; }
 
+        public CloseAlertOptions? CloseOption { get; set; }
+
         public string Comments { get; set; }
 
         public virtual ProjectHealthRisk ProjectHealthRisk { get; set; }
