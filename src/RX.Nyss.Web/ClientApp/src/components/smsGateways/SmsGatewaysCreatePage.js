@@ -53,12 +53,12 @@ const SmsGatewaysCreatePageComponent = (props) => {
     props.openCreation(props.nationalSocietyId);
   })
 
-  const  {availableIoTDevices, listAvailableIotDevices} = props;
+  const { listAvailableIotDevices } = props;
   useEffect(() => {
-    if (availableIoTDevices === undefined || availableIoTDevices.length === 0) {
+    if (useIotHub) {
       listAvailableIotDevices();
     }
-  }, [useIotHub, availableIoTDevices, listAvailableIotDevices]);
+  }, [useIotHub, listAvailableIotDevices]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

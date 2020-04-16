@@ -31,12 +31,12 @@ const SmsGatewaysEditPageComponent = (props) => {
     props.openEdition(props.nationalSocietyId, props.smsGatewayId);
   });
 
-  const  {availableIoTDevices, listAvailableIotDevices} = props;
+  const { listAvailableIotDevices } = props;
   useEffect(() => {
-    if (availableIoTDevices === undefined || availableIoTDevices.length === 0) {
+    if (useIotHub) {
       listAvailableIotDevices();
     }
-  }, [useIotHub, availableIoTDevices, listAvailableIotDevices]);
+  }, [useIotHub, listAvailableIotDevices]);
 
   useEffect(() => {
     if (!props.data) {
