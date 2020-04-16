@@ -7,5 +7,7 @@
         public int Dismissed { get; set; }
 
         public int Closed { get; set; }
+
+        public int Open { get; set; }
     }
 }

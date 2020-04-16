@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Reports;
@@ -31,7 +32,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             {
                 Escalated = alerts.Count(a => a.EscalatedAt.HasValue && a.EscalatedAt >= filter.StartDate && a.EscalatedAt <= filter.EndDate),
                 Dismissed = alerts.Count(a => a.DismissedAt.HasValue && a.DismissedAt >= filter.StartDate && a.DismissedAt <= filter.EndDate),
-                Closed = alerts.Count(a => a.ClosedAt.HasValue && a.ClosedAt >= filter.StartDate && a.ClosedAt <= filter.EndDate)
+                Closed = alerts.Count(a => a.ClosedAt.HasValue && a.ClosedAt >= filter.StartDate && a.ClosedAt <= filter.EndDate),
+                Open = alerts.Count(a => a.Status == AlertStatus.Pending)
             };
         }
 

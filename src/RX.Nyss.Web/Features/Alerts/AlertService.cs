@@ -88,6 +88,8 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.Id,
                     a.CreatedAt,
                     a.Status,
+                    a.CloseOption,
+                    a.Comments,
                     ReportCount = a.AlertReports.Count,
                     LastReportVillage = a.AlertReports.OrderByDescending(ar => ar.Report.Id).First().Report.RawReport.Village.Name,
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
@@ -110,6 +112,8 @@ namespace RX.Nyss.Web.Features.Alerts
                     Id = a.Id,
                     CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(a.CreatedAt, projectTimeZone),
                     Status = a.Status.ToString(),
+                    CloseOption = a.CloseOption,
+                    Comments = a.Comments,
                     ReportCount = a.ReportCount,
                     LastReportVillage = a.LastReportVillage,
                     HealthRisk = a.HealthRisk

@@ -1,4 +1,5 @@
 ﻿using System;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Alerts.Dto
 {
@@ -15,5 +16,9 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public string LastReportVillage { get; set; }
 
         public string Status { get; set; }
+
+        public CloseAlertOptions? CloseOption { get; set; }
+
+        public string Comments { get; set; }
     }
 }
