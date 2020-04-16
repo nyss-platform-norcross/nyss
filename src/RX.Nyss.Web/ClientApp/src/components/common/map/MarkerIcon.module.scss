@@ -3,11 +3,25 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  box-sizing: border-box;
+  background-color: #cc9595;
+  box-shadow: #949494 3px 0px 0px -1px;
+  transition: transform ease-out 0.5s;
+  opacity: 0.65;
+}
+
+.marker > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
   border: 2px solid #fff;
   box-sizing: border-box;
   background-color: #136bb7;
   box-shadow: #949494 3px 0px 0px -1px;
   transition: transform ease-out 0.5s;
+  width: 28px;
+  height: 28px;
 }
 
 .multiple {
