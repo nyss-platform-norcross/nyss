@@ -53,16 +53,19 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
   return (
     <Fragment>
       <div className={styles.form}>
-        <div className={styles.introduction}>
-          {strings(getAssessmentStatusInformation(data.assessmentStatus))}
-        </div>
+        <DisplayField
+            label={strings(getAssessmentStatusInformation(data.assessmentStatus))}
+            value={strings(stringKeys.alerts.constants.closeOptions[data.closeOption])}
+          />
 
         {data.assessmentStatus === assessmentStatus.closed && data.comments && (
           <DisplayField
-            label={strings(stringKeys.alerts.assess.comments)}
+            label={strings(stringKeys.alerts.assess.closeReason)}
             value={data.comments}
           />
         )}
+
+        <Divider />
 
         <DisplayField
           label={strings(stringKeys.alerts.assess.caseDefinition)}

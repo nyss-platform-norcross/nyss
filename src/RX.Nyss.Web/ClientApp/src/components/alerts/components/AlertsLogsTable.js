@@ -7,6 +7,15 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { stringKeys, strings, stringsFormat } from "../../../strings";
 import { TableContainer } from "@material-ui/core";
+import { logType, closeOptions } from '../logic/alertsConstants';
+
+const formatString = (row) => {
+  if (row.logType === logType.closedAlert && row.metadata.closeOption !== closeOptions.other) {
+    return `${stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata)} - ${strings(stringKeys.alerts.constants.closeOptions[row.metadata.closeOption])}`;
+  } else {
+    return stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata);
+  }
+}
 
 export const AlertsLogsTable = ({ list }) => {
   return (
@@ -21,9 +30,9 @@ export const AlertsLogsTable = ({ list }) => {
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={`log_item_${row.id}`} hover>
+            <TableRow key={`log_item_${row.date}`} hover>
               <TableCell>{dayjs(row.date).format("YYYY-MM-DD HH:mm")}</TableCell>
-              <TableCell>{stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata)}</TableCell>
+              <TableCell>{formatString(row)}</TableCell>
               <TableCell>{row.userName}</TableCell>
             </TableRow>
           ))}

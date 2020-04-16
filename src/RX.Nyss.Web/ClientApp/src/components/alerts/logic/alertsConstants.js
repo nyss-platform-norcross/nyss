@@ -19,3 +19,18 @@ export const assessmentStatus = {
   toDismiss: "ToDismiss",
   open: "Open"
 }
+
+export const logType = {
+  triggeredAlert: "TriggeredAlert",
+  escalatedAlert: "EscalatedAlert",
+  dismissedAlert: "DismissedAlert",
+  closedAlert: "ClosedAlert",
+  acceptedReport: "AcceptedReport",
+  rejectedReport: "RejectedReport"
+}
+
+export const closeOptions = {
+  dismissed: "Dismissed",
+  actionTaken: "ActionTaken",
+  other: "Other"
+}

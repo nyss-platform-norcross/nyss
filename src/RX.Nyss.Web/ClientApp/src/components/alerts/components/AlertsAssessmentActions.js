@@ -1,5 +1,3 @@
-import styles from "./AlertsAssessmentActions.module.scss";
-
 import React, { Fragment, useState } from 'react';
 import { stringKeys, strings } from "../../../strings";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
@@ -7,15 +5,14 @@ import FormActions from "../../forms/formActions/FormActions";
 import Button from "@material-ui/core/Button";
 import { AlertsEscalationDialog } from './AlertsEscalationDialog';
 import { assessmentStatus } from '../logic/alertsConstants';
-import { createForm, validators } from '../../../utils/forms';
-import Grid from '@material-ui/core/Grid';
-import TextInputField from '../../forms/TextInputField';
+import { AlertsCloseDialog } from "./AlertsCloseDialog";
 import { AlertsEscalationWithoutNotificationDialog } from "./AlertsEscalationWithoutNotificationDialog";
 import CheckboxField from "../../forms/CheckboxField";
 
 export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentStatus, ...props }) => {
   const [escalationDialogOpened, setEscalationDialogOpened] = useState(false);
   const [escalationWithoutNotificationDialogOpened, setEscalationWithoutNotificationDialogOpened] = useState(false);
+  const [closeDialogOpened, setCloseDialogOpened] = useState(false);
 
   const [form] = useState(() => {
     const fields = { 
@@ -97,9 +94,18 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
         )}
 
         {alertAssessmentStatus === assessmentStatus.escalated && (
-          <SubmitButton isFetching={props.isClosing} onClick={handleCloseAlert}>
-            {strings(stringKeys.alerts.assess.alert.close)}
-          </SubmitButton>
+          <Fragment>
+            <AlertsCloseDialog
+              alertId={alertId}
+              closeAlert={props.closeAlert}
+              isClosing={props.isClosing}
+              isOpened={closeDialogOpened}
+              close={() => setCloseDialogOpened(false)}
+            />
+            <SubmitButton onClick={() => setCloseDialogOpened(true)}>
+              {strings(stringKeys.alerts.assess.alert.close)}
+            </SubmitButton>
+          </Fragment>
         )}
       </FormActions>
     </Fragment>
