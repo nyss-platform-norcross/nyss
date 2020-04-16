@@ -38,19 +38,6 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
 
   return (
     <Fragment>
-      {alertAssessmentStatus === assessmentStatus.escalated && (
-        <Grid container spacing={3} className={styles.fields}>
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.alerts.assess.comments)}
-              name="comments"
-              multiline
-              field={form.fields.comments}
-            />
-          </Grid>
-        </Grid>
-      )}
-
       <FormActions>
         <Button onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</Button>
 
