@@ -8,7 +8,7 @@ export const SignIcon = ({ icon, className, size, multiple }) => L.divIcon({
 });
 
 export const TextIcon = ({ text, size, multiple }) => L.divIcon({
-  html: `<div>${text}</div>`,
+  html: `${text}`,
   className: `${styles.text} ${styles.marker} ${multiple ? styles.multiple : null}`,
   iconSize: L.point(size, size, true),
 });

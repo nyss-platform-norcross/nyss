@@ -4,23 +4,10 @@
   justify-content: center;
   border-radius: 50%;
   box-sizing: border-box;
-  background-color: #cc9595;
+  background-color: #136bb7af;
+  border: 2px solid #fff;
   box-shadow: #949494 3px 0px 0px -1px;
   transition: transform ease-out 0.5s;
-  opacity: 0.65 !important;
-}
-
-.marker > * {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  box-sizing: border-box;
-  background-color: #136bb7;
-  box-shadow: #949494 3px 0px 0px -1px;
-  transition: transform ease-out 0.5s;
-  width: 32px;
-  height: 32px;
 }
 
 .multiple {
@@ -28,10 +15,10 @@
   #949494 4px 0px 0px -1px,
   #ffffff 6px 0px 0px -1px,
   #949494 9px 0px 0px -2px,
-  #ffffff 10px 0px 0px -1px,
-  #949494 14px 0px 0px -3px;
 }
 
 .text {
   color: #fff;
+  font-size: 14px;
+  text-shadow: 1px 1px 2px black;
 }
