@@ -35,7 +35,7 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
       return;
     }
     setIsMapLoading(true); // used to remove the component from the view and clean the marker groups
-
+    
     setTimeout(() => {
       setBounds(data.length > 1 ? calculateBounds(data) : null)
       setCenter(data.length > 1 ? null : calculateCenter(data.map(l => ({ lat: l.location.latitude, lng: l.location.longitude }))));
@@ -64,7 +64,7 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
         <MarkerClusterGroup
           showCoverageOnHover={false}
           iconCreateFunction={createClusterIcon}>
-          {data.map(point =>
+          {data.filter(d => d.reportsCount > 0).map(point =>
             <Marker
               key={`marker_${point.location.latitude}_${point.location.longitude}`}
               position={{ lat: point.location.latitude, lng: point.location.longitude }}

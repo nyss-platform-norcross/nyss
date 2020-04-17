@@ -17,7 +17,6 @@ namespace RX.Nyss.Web.Services.Geolocation
     public interface IGeolocationService
     {
         Task<Result<LocationDto>> GetLocationFromCountry(string country);
-        Task<Result<LocationDto>> FetchLocationFromCountry(string country);
     }
 
     public class GeolocationService : IGeolocationService
@@ -27,6 +26,17 @@ namespace RX.Nyss.Web.Services.Geolocation
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssWebConfig _config;
         private readonly IInMemoryCache _inMemoryCache;
+
+        private readonly IReadOnlyDictionary<string, LocationDto> _knownFakeCountries = new Dictionary<string, LocationDto>
+        {
+            {
+                "Mandawi", new LocationDto
+                {
+                    Longitude = 10.744628906250002, // Oslo, Norway
+                    Latitude = 59.90822188626548
+                }
+            }
+        };
 
         public GeolocationService(
             IHttpClientFactory httpClientFactory,
@@ -46,10 +56,15 @@ namespace RX.Nyss.Web.Services.Geolocation
                 validFor: TimeSpan.FromDays(1),
                 value: () => FetchLocationFromCountry(country));
 
-        public async Task<Result<LocationDto>> FetchLocationFromCountry(string country)
+        private async Task<Result<LocationDto>> FetchLocationFromCountry(string country)
         {
             try
             {
+                if (_knownFakeCountries.ContainsKey(country))
+                {
+                    return Success(_knownFakeCountries[country]);
+                }
+
                 var value = await GetGeolocationResponse(country);
 
                 if (value == null || value.Count == 0)
