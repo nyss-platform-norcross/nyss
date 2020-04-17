@@ -70,11 +70,12 @@ namespace RX.Nyss.Web.Features.Alerts
         /// Escalates the alert
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
+        /// <param name="dto">A parameter enabling/disabling notifications</param>
         [HttpPost("{alertId:int}/escalate")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
-        public Task<Result> Escalate(int alertId) =>
-            _alertService.Escalate(alertId);
+        public Task<Result> Escalate(int alertId, [FromBody] EscalateAlertRequestDto dto) =>
+            _alertService.Escalate(alertId, dto.SendNotification);
 
         /// <summary>
         /// Dismisses the alert

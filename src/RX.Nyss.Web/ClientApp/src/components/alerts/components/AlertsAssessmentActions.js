@@ -10,18 +10,32 @@ import { assessmentStatus } from '../logic/alertsConstants';
 import { createForm, validators } from '../../../utils/forms';
 import Grid from '@material-ui/core/Grid';
 import TextInputField from '../../forms/TextInputField';
+import { AlertsEscalationWithoutNotificationDialog } from "./AlertsEscalationWithoutNotificationDialog";
+import CheckboxField from "../../forms/CheckboxField";
 
 export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentStatus, ...props }) => {
   const [escalationDialogOpened, setEscalationDialogOpened] = useState(false);
+  const [escalationWithoutNotificationDialogOpened, setEscalationWithoutNotificationDialogOpened] = useState(false);
 
   const [form] = useState(() => {
-    const fields = { comments: "" };
+    const fields = { 
+      comments: "",
+      escalateWithoutNotification: false
+    };
     const validation = { comments: [validators.maxLength(500)] };
     return createForm(fields, validation);
   })
 
   const handleCloseAlert = () => {
     props.closeAlert(alertId, form.fields.comments.value);
+  }
+
+  const handleEscalateAlert = () => {
+    if (form.fields.escalateWithoutNotification.value) {
+      setEscalationWithoutNotificationDialogOpened(true);
+    } else {
+      setEscalationDialogOpened(true);
+    }
   }
 
   return (
@@ -54,9 +68,25 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
               close={() => setEscalationDialogOpened(false)}
             />
 
-            <SubmitButton onClick={() => setEscalationDialogOpened(true)}>
-              {strings(stringKeys.alerts.assess.alert.escalate)}
-            </SubmitButton>
+            <AlertsEscalationWithoutNotificationDialog
+              alertId={alertId}
+              escalateAlert={props.escalateAlert}
+              isEscalating={props.isEscalating}
+              isOpened={escalationWithoutNotificationDialogOpened}
+              close={() => setEscalationWithoutNotificationDialogOpened(false)}
+            />
+
+            <div>
+              <CheckboxField
+                name="escalateWithoutNotification"
+                label={strings(stringKeys.alerts.assess.alert.escalateWithoutNotification)}
+                field={form.fields.escalateWithoutNotification}
+              />
+              
+              <SubmitButton onClick={handleEscalateAlert}>
+                {strings(stringKeys.alerts.assess.alert.escalate)}
+              </SubmitButton>
+            </div>
           </Fragment>
         )}
 

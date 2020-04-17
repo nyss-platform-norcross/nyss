@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Alerts
     {
         Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber);
         Task<Result<AlertAssessmentResponseDto>> Get(int alertId);
-        Task<Result> Escalate(int alertId);
+        Task<Result> Escalate(int alertId, bool sendNotification);
         Task<Result> Dismiss(int alertId);
         Task<Result> Close(int alertId, string comments);
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
@@ -181,7 +181,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(dto);
         }
 
-        public async Task<Result> Escalate(int alertId)
+        public async Task<Result> Escalate(int alertId, bool sendNotification)
         {
             var alertData = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
@@ -218,15 +218,18 @@ namespace RX.Nyss.Web.Features.Alerts
             alertData.Alert.EscalatedBy = _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
-            try
+            if (sendNotification)
             {
-                await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
-                await SendNotificationSmses(alertData.NationalSocietyId, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project,
-                    alertData.HealthRisk, alertData.LastReportVillage);
-            }
-            catch (ResultException exception)
-            {
-                return Success(exception.Result.Message.Key);
+                try
+                {
+                    await SendNotificationEmails(alertData.LanguageCode, alertData.NotificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
+                    await SendNotificationSmses(alertData.NationalSocietyId, alertData.LanguageCode, alertData.NotificationPhoneNumbers, alertData.Project,
+                        alertData.HealthRisk, alertData.LastReportVillage);
+                }
+                catch (ResultException exception)
+                {
+                    return Success(exception.Result.Message.Key);
+                }
             }
 
             return Success(ResultKey.Alert.EscalateAlert.Success);

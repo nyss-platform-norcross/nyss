@@ -51,7 +51,7 @@ export const dismissReport = {
 };
 
 export const escalateAlert = {
-  invoke: (alertId) => ({ type: ESCALATE_ALERT.INVOKE, alertId }),
+  invoke: (alertId, sendNotification) => ({ type: ESCALATE_ALERT.INVOKE, alertId, sendNotification }),
   request: () => ({ type: ESCALATE_ALERT.REQUEST }),
   success: () => ({ type: ESCALATE_ALERT.SUCCESS }),
   failure: (message) => ({ type: ESCALATE_ALERT.FAILURE, message })
