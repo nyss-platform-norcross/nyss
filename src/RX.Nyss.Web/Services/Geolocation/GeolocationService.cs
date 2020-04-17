@@ -27,6 +27,17 @@ namespace RX.Nyss.Web.Services.Geolocation
         private readonly INyssWebConfig _config;
         private readonly IInMemoryCache _inMemoryCache;
 
+        private readonly IReadOnlyDictionary<string, LocationDto> _knownFakeCountries = new Dictionary<string, LocationDto>
+        {
+            {
+                "Mandawi", new LocationDto
+                {
+                    Longitude = 10.744628906250002, // Oslo, Norway
+                    Latitude = 59.90822188626548
+                }
+            }
+        };
+
         public GeolocationService(
             IHttpClientFactory httpClientFactory,
             ILoggerAdapter loggerAdapter,
@@ -49,6 +60,11 @@ namespace RX.Nyss.Web.Services.Geolocation
         {
             try
             {
+                if (_knownFakeCountries.ContainsKey(country))
+                {
+                    return Success(_knownFakeCountries[country]);
+                }
+
                 var value = await GetGeolocationResponse(country);
 
                 if (value == null || value.Count == 0)
