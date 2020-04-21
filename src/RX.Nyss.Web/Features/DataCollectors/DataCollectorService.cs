@@ -517,6 +517,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterByArea(dataCollectorsFilters.Area)
                 .FilterByReportingStatus(reportingStatusFilter)
                 .Where(dc => dc.DeletedAt == null)
+                .FilterByReportsWithinTimeRange(from, to)
+                .FilterByReportingStatus(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting)
                 .Select(dc => new
                 {
                     DataCollectorName = dc.Name,
