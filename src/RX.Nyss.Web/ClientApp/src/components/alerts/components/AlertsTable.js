@@ -1,4 +1,5 @@
 import styles from '../../common/table/Table.module.scss';
+import alertTableStyles from './AlertsTable.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
@@ -12,6 +13,9 @@ import dayjs from "dayjs";
 import TablePager from '../../common/tablePagination/TablePager';
 import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
+import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
+import { assessmentStatus, closeOptions } from '../logic/alertsConstants';
+import { Tooltip } from '@material-ui/core';
 
 export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, getList, page, rowsPerPage, totalRows }) => {
 
@@ -21,6 +25,22 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
 
   if (!list.length) {
     return <TableNoData />;
+  }
+
+  const renderStatus = (alert) => {
+    if (alert.status === assessmentStatus.closed) {
+      const tooltipText = alert.closeOption === undefined || alert.closeOption === closeOptions.other ? alert.comments : strings(stringKeys.alerts.constants.closeOptions[alert.closeOption]);
+      return (
+        <>
+          {strings(stringKeys.alerts.constants.alertStatus[alert.status])}
+          <Tooltip title={tooltipText} arrow className={alertTableStyles.tooltip}>
+            <HelpOutlineOutlinedIcon fontSize="small" />
+          </Tooltip>
+        </>
+      );
+    } else {
+      return strings(stringKeys.alerts.constants.alertStatus[alert.status]);
+    }
   }
 
   return (
@@ -43,7 +63,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
               <TableCell>{row.healthRisk}</TableCell>
               <TableCell>{row.reportCount}</TableCell>
               <TableCell>{row.lastReportVillage}</TableCell>
-              <TableCell>{strings(stringKeys.alerts.constants.alertStatus[row.status])}</TableCell>
+              <TableCell>{renderStatus(row)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

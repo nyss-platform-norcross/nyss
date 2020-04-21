@@ -138,12 +138,12 @@ function* dismissAlert({ alertId }) {
   }
 };
 
-function* closeAlert({ alertId, comments }) {
+function* closeAlert({ alertId, comments, closeOption }) {
   const projectId = yield select(state => state.appData.route.params.projectId);
 
   yield put(actions.closeAlert.request());
   try {
-    yield call(http.post, `/api/alert/${alertId}/close`, { comments });
+    yield call(http.post, `/api/alert/${alertId}/close`, { comments, closeOption });
     yield put(actions.closeAlert.success());
     yield put(actions.goToList(projectId))
     yield put(appActions.showMessage(stringKeys.alerts.assess.alert.closedSuccessfully));

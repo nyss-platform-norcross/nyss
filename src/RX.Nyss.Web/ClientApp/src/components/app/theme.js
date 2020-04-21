@@ -226,6 +226,11 @@ export const theme = createMuiTheme({
         backgroundColor: "#f3f3f3"
       }
     },
+    MuiDialogTitle: {
+      root: {
+        paddingBottom: 0
+      }
+    },
     MuiRadio: {
       colorSecondary: {
         '&$checked': {

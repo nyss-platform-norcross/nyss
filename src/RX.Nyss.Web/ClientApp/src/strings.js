@@ -296,6 +296,7 @@ export const stringKeys = {
         totalReportCount: "project.dashboard.numbers.totalReportCount",
         totalErrorReportCount: "project.dashboard.numbers.totalErrorReportCount",
         totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle",
+        openAlerts: "project.dashboard.numbers.openAlerts",
         dismissedAlerts: "project.dashboard.numbers.dismissedAlerts",
         escalatedAlerts: "project.dashboard.numbers.escalatedAlerts",
         closedAlerts: "project.dashboard.numbers.closedAlerts",
@@ -659,14 +660,22 @@ export const stringKeys = {
       introduction: "alerts.assess.introduction",
       reports: "alerts.assess.reports",
       comments: "alerts.assess.comments",
+      closeReason: "alerts.assess.closeReason",
       statusDescription: {
         closed: "alerts.assess.statusDescription.closed",
         escalated: "alerts.assess.statusDescription.escalated",
         dismissed: "alerts.assess.statusDescription.dismissed",
         rejected: "alerts.assess.statusDescription.rejected"
       },
+      closeOptions: {
+        "Dismissed": "alerts.assess.closeOptions.dismiss",
+        "ActionTaken": "alerts.assess.closeOptions.actionTaken",
+        "Other": "alerts.assess.closeOptions.other"
+      },
       alert: {
         close: "alerts.assess.alert.close",
+        closeComments: "alerts.assess.alert.closeComments",
+        closeConfirmation: "alerts.assess.alert.closeConfirmation",
         escalate: "alerts.assess.alert.escalate",
         escalateConfirmation: "alerts.assess.alert.escalateConfirmation",
         escalateConfirmationInformDataCollectors: "alerts.assess.alert.escalateConfirmationInformDataCollectors",
@@ -680,7 +689,7 @@ export const stringKeys = {
         dismissalPossible: "alerts.assess.alert.dismissalPossible",
         escalatedSuccessfully: "alerts.assess.alert.escalatedSuccessfully",
         dismissedSuccessfully: "alerts.assess.alert.dismissedSuccessfully",
-        closedSuccessfully: "alerts.assess.alert.closedSuccessfully",
+        closedSuccessfully: "alerts.assess.alert.closedSuccessfully"
       },
       report: {
         accept: "alerts.assess.report.accept",
@@ -710,6 +719,11 @@ export const stringKeys = {
         "Dismissed": "alerts.alertStatus.dismissed",
         "Escalated": "alerts.alertStatus.escalated",
         "Closed": "alerts.alertStatus.closed"
+      },
+      closeOptions: {
+        "Dismissed": "alerts.closeOptions.dismissed",
+        "ActionTaken": "alerts.closeOptions.actionTaken",
+        "Other": "alerts.closeOptions.other"
       },
       reportStatus: {
         "Rejected": "alerts.reportStatus.rejected",
