@@ -1,3 +1,5 @@
+import styles from "./AlertsAssessmentActions.module.scss"
+
 import React, { Fragment, useState } from 'react';
 import { stringKeys, strings } from "../../../strings";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
@@ -8,6 +10,9 @@ import { assessmentStatus } from '../logic/alertsConstants';
 import { AlertsCloseDialog } from "./AlertsCloseDialog";
 import { AlertsEscalationWithoutNotificationDialog } from "./AlertsEscalationWithoutNotificationDialog";
 import CheckboxField from "../../forms/CheckboxField";
+import { validators, createForm } from '../../../utils/forms';
+import Grid from '@material-ui/core/Grid';
+import TextInputField from '../../forms/TextInputField';
 
 export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentStatus, ...props }) => {
   const [escalationDialogOpened, setEscalationDialogOpened] = useState(false);
@@ -15,17 +20,13 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
   const [closeDialogOpened, setCloseDialogOpened] = useState(false);
 
   const [form] = useState(() => {
-    const fields = { 
+    const fields = {
       comments: "",
       escalateWithoutNotification: false
     };
     const validation = { comments: [validators.maxLength(500)] };
     return createForm(fields, validation);
   })
-
-  const handleCloseAlert = () => {
-    props.closeAlert(alertId, form.fields.comments.value);
-  }
 
   const handleEscalateAlert = () => {
     if (form.fields.escalateWithoutNotification.value) {
@@ -79,7 +80,7 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
                 label={strings(stringKeys.alerts.assess.alert.escalateWithoutNotification)}
                 field={form.fields.escalateWithoutNotification}
               />
-              
+
               <SubmitButton onClick={handleEscalateAlert}>
                 {strings(stringKeys.alerts.assess.alert.escalate)}
               </SubmitButton>

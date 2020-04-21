@@ -20,7 +20,7 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
 
   const [form] = useState(() => {
     const fields = {
-      closeOption: closeOptions.dismissed, 
+      closeOption: closeOptions.dismissed,
       comments: ""
     };
 
@@ -37,7 +37,6 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
     if (!form.isValid()) {
       return;
     }
-    console.log(form.fields.closeOption);
     closeAlert(alertId, form.fields.comments.value, form.fields.closeOption.value);
   }
 
@@ -60,7 +59,7 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
 
             <Grid item xs={12}>
               <TextInputField
-                label={strings(stringKeys.alerts.assess.comments)}
+                label={strings(stringKeys.alerts.assess.alert.closeComments)}
                 name="comments"
                 multiline
                 field={form.fields.comments}

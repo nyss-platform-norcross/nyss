@@ -659,6 +659,7 @@ export const stringKeys = {
       caseDefinition: "alerts.assess.caseDefinition",
       introduction: "alerts.assess.introduction",
       reports: "alerts.assess.reports",
+      comments: "alerts.assess.comments",
       closeReason: "alerts.assess.closeReason",
       statusDescription: {
         closed: "alerts.assess.statusDescription.closed",
@@ -673,6 +674,7 @@ export const stringKeys = {
       },
       alert: {
         close: "alerts.assess.alert.close",
+        closeComments: "alerts.assess.alert.closeComments",
         closeConfirmation: "alerts.assess.alert.closeConfirmation",
         escalate: "alerts.assess.alert.escalate",
         escalateConfirmation: "alerts.assess.alert.escalateConfirmation",
