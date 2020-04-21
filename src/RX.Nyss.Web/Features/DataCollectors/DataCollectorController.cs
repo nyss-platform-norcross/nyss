@@ -78,10 +78,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
         public Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng) =>
             _dataCollectorService.MapOverviewDetails(projectId, from, to, lat, lng);
 
-        [HttpGet, Route("performance")]
+        [HttpPost, Route("performance")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId) =>
-            _dataCollectorService.Performance(projectId);
+        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, [FromBody] DataCollectorPerformanceFiltersRequestDto dataCollectorsFiltersDto) =>
+            await _dataCollectorService.Performance(projectId, dataCollectorsFiltersDto);
 
         [HttpPost, Route("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]

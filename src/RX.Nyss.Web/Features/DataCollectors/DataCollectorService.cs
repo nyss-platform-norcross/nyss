@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
-        Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId);
+        Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters);
         Task AnonymizeDataCollectorsWithReports(int projectId);
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
     }
@@ -179,7 +179,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         .Where(nsu => nsu.User == currentUser)
                         .Select(nsu => nsu.OrganizationId)
                         .FirstOrDefault()
-                })
+                        })
                 .SingleAsync();
 
             var filtersData = new DataCollectorFiltersReponseDto
@@ -505,10 +505,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 : ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
-        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId)
+        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters)
         {
             var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
-
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
 

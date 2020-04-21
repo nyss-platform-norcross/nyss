@@ -93,5 +93,53 @@ namespace RX.Nyss.Web.Features.Common.Extensions
 
         public static IQueryable<DataCollector> FilterByOrganization(this IQueryable<DataCollector> dataCollectors, Organization organization) =>
             organization == null ? dataCollectors : dataCollectors.Where(dc => dc.Supervisor.UserNationalSocieties.Any(uns => uns.Organization == organization));
+
+        public static IQueryable<DataCollector> FilterByReportingStatus(this IQueryable<DataCollector> dataCollectors, bool reportingCorrectly, bool reportingWithErrors, bool notReporting)
+        {
+            if (reportingCorrectly && reportingWithErrors && notReporting)
+            {
+                return dataCollectors;
+            }
+
+            if (reportingCorrectly)
+            {
+                if (reportingWithErrors && !notReporting)
+                {
+                    return dataCollectors
+                        .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value));
+                }
+                else if (!reportingWithErrors && notReporting)
+                {
+                    return dataCollectors
+                        .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
+                            || !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value));
+                }
+                else
+                {
+                    return dataCollectors
+                        .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
+                            && dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && r.ReportId.HasValue));
+                }
+            }
+            else
+            {
+                if (reportingWithErrors && !notReporting)
+                {
+                    return dataCollectors
+                        .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue));
+                }
+                else if (!reportingWithErrors && notReporting)
+                {
+                    return dataCollectors.Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value));
+                }
+                else
+                {
+                    return dataCollectors.Take(0);
+                }
+            }
+        }
+
+        public static IQueryable<DataCollector> FilterByReportsWithinTimeRange(this IQueryable<DataCollector> dataCollectors, DateTime from, DateTime to) =>
+            dataCollectors.Where(dc => dc.RawReports.Where(r => r.ReceivedAt >= from && r.ReceivedAt < to).Any());
     }
 }
