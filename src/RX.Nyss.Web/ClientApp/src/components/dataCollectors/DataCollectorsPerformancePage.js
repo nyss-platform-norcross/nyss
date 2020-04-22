@@ -26,8 +26,6 @@ const DataCollectorsPerformancePageComponent = (props) => {
   return (
     <Fragment>
       <DataCollectorsPerformanceFilters
-        filters={props.filters}
-        nationalSocietyId={props.nationalSocietyId}
         onChange={onFilterChange}
       />
       <DataCollectorsPerformanceTable
@@ -36,8 +34,6 @@ const DataCollectorsPerformancePageComponent = (props) => {
         isListFetching={props.isListFetching}
         projectId={props.projectId}
       />
-
-      <DataCollectorsPerformanceTableLegend />
     </Fragment>
   );
 }

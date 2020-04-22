@@ -1,19 +1,16 @@
-import styles from "./DataCollectorsPerformanceFilters.module.scss"
-
-import React, { useState } from 'react';
+import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from "../../strings";
 import { AreaFilter } from "../common/filters/AreaFilter";
-import CheckboxField from "../forms/CheckboxField";
 import { performanceStatus } from "./logic/dataCollectorsConstants";
-import { FormGroup, Card, CardContent, FormControlLabel, Checkbox } from "@material-ui/core";
-import { createForm } from "../../utils/forms";
+import { FormGroup, Card, CardContent } from "@material-ui/core";
 import { getIconFromStatus } from "./logic/dataCollectorsService";
-import CheckboxWithIconField from "../forms/CheckboxWithIconField";
+import CheckboxWithIconField from "../common/filters/CheckboxWithIconFilter";
 import { useSelector } from "react-redux";
 
-export const DataCollectorsPerformanceFilters = ({ filters, nationalSocietyId, onChange }) => {
+export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   const filtersValue = useSelector(state => state.dataCollectors.performanceListFilters);
+  const nationalSocietyId = useSelector(state => state.dataCollectors.filtersData.nationalSocietyId);
 
   const handleAreaChange = (item) => {
     onChange({ ...filtersValue, area: item ? { type: item.type, id: item.id, name: item.name } : null });
@@ -35,9 +32,9 @@ export const DataCollectorsPerformanceFilters = ({ filters, nationalSocietyId, o
   }
 
   return (
-    <Card className={styles.filters}>
+    <Card>
       <CardContent>
-        <Grid container spacing={3} className={styles.filters}>
+        <Grid container spacing={3}>
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}
