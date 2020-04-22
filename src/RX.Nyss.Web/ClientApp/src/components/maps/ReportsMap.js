@@ -3,16 +3,18 @@ import styles from "./ReportsMap.module.scss";
 import React, { useEffect, useState } from 'react';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { Map, TileLayer, Popup, Marker } from 'react-leaflet'
-import { calculateBounds, calculateCenter } from '../../utils/map';
+import { calculateBounds, calculateCenter, calculateIconSize } from '../../utils/map';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from "../../strings";
 import { TextIcon } from "../common/map/MarkerIcon";
+
+let totalReports = 0;
 
 const createClusterIcon = (cluster) => {
   const count = cluster.getAllChildMarkers().reduce((sum, item) => item.options.reportsCount + sum, 0);
 
   return new TextIcon({
-    size: 40,
+    size: calculateIconSize(count, totalReports),
     text: count,
     multiple: true
   });
@@ -20,7 +22,7 @@ const createClusterIcon = (cluster) => {
 
 const createIcon = (count) => {
   return new TextIcon({
-    size: 40,
+    size: calculateIconSize(count, totalReports),
     text: count
   });
 }
@@ -34,8 +36,10 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
     if (!data) {
       return;
     }
+
+    totalReports = data.reduce((a, d) => a + d.reportsCount, 0);
     setIsMapLoading(true); // used to remove the component from the view and clean the marker groups
-    
+
     setTimeout(() => {
       setBounds(data.length > 1 ? calculateBounds(data) : null)
       setCenter(data.length > 1 ? null : calculateCenter(data.map(l => ({ lat: l.location.latitude, lng: l.location.longitude }))));
@@ -62,6 +66,7 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
 
       {(data && !isMapLoading) && (
         <MarkerClusterGroup
+          maxClusterRadius={50}
           showCoverageOnHover={false}
           iconCreateFunction={createClusterIcon}>
           {data.filter(d => d.reportsCount > 0).map(point =>

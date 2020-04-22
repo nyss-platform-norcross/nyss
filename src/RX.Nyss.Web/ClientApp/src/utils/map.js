@@ -28,3 +28,16 @@ export const retrieveGpsLocation = (callback) => {
 
   return navigator.geolocation.getCurrentPosition(callback, (e) => { callback(null) });
 }
+
+export const calculateIconSize = (count, total) => {
+  const minSize = 30, maxSize = 130;
+  const size = Math.log10(count, total) * 40;
+
+  if (size < minSize) {
+    return minSize;
+  } else if (size > maxSize) {
+    return maxSize;
+  } else {
+    return size;
+  }
+}
