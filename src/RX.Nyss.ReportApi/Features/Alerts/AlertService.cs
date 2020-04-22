@@ -139,7 +139,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Include(r => r.ProjectHealthRisk)
                 .ThenInclude(phr => phr.AlertRule)
                 .Where(r => r.Id == reportId)
-                .SingleAsync();
+                .SingleOrDefaultAsync();
 
             if (report == null)
             {
