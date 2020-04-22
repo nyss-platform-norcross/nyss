@@ -207,8 +207,15 @@ function* openDataCollectorsPerformanceList({ projectId }) {
         notReporting: true
       };
 
+    let filtersData = yield select(state => state.dataCollectors.filtersData);
+
+    if (filtersData.nationalSocietyId == null) {
+      const fetchedFiltersData = yield call(http.get, `/api/dataCollector/filters?projectId=${projectId}`);
+      filtersData = fetchedFiltersData.value;
+    }
+
     yield call(getDataCollectorsPerformance, { projectId, filters });
-    yield put(actions.openDataCollectorsPerformanceList.success(projectId));
+    yield put(actions.openDataCollectorsPerformanceList.success(filtersData));
   } catch (error) {
     yield put(actions.openDataCollectorsPerformanceList.failure(error.message));
   }

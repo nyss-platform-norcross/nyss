@@ -14,12 +14,12 @@ const FormControlLabelWithIcon = withStyles({
   }
 })((props) => <FormControlLabel {...props} />);
 
-const CheckboxWithIconField = ({ error, name, label, value, icon, color, onChange, controlProps, customProps }) => {
+const CheckboxWithIconField = ({ error, name, label, value, icon, onChange, controlProps, customProps }) => {
   return (
     <Fragment>
       <FormControlLabelWithIcon
         control={
-          <Checkbox checked={value} onChange={onChange} color={color} {...controlProps} {...customProps} />
+          <Checkbox checked={value} onChange={onChange} {...controlProps} {...customProps} />
         }
         name={name}
         label={label}

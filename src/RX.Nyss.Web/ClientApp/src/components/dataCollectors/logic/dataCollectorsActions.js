@@ -102,7 +102,7 @@ export const setTrainingState = {
 export const openDataCollectorsPerformanceList = {
   invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, projectId }),
   request: () => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.REQUEST }),
-  success: (projectId) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS, projectId }),
+  success: (filtersData) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS, filtersData }),
   failure: (message) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.FAILURE, message })
 }
 

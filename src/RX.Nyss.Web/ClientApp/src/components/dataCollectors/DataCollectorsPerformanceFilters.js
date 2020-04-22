@@ -27,7 +27,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
     onChange({ ...filtersValue, notReporting: change.target.checked});
   }
 
-  if (filtersValue == null) {
+  if (filtersValue == null || nationalSocietyId == null) {
     return null;
   }
 
@@ -50,7 +50,6 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 name={performanceStatus.reportingCorrectly}
                 value={filtersValue.reportingCorrectly}
                 onChange={handleReportingCorrectlyChange}
-                color="primary"
               />
 
               <CheckboxWithIconField
@@ -58,7 +57,6 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 name={performanceStatus.reportingWithErrors}
                 value={filtersValue.reportingWithErrors}
                 onChange={handleReportingWithErrorsChange}
-                color="primary"
               />
 
               <CheckboxWithIconField
@@ -66,7 +64,6 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 name={performanceStatus.notReporting}
                 value={filtersValue.notReporting}
                 onChange={handleNotReportingChange}
-                color="primary"
               />
             </FormGroup>
           </Grid>
