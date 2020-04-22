@@ -134,7 +134,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 }
                 else
                 {
-                    return dataCollectors.Take(0);
+                    return dataCollectors.Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
+                        || !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value));
                 }
             }
         }
