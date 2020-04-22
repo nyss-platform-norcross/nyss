@@ -8,11 +8,16 @@ import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 import { Loading } from '../common/loading/Loading';
+import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 
 const DataCollectorsPerformancePageComponent = (props) => {
   useMount(() => {
-    props.openDataCollectorsPerformanceList(props.projectId);
+    props.openDataCollectorsPerformanceList(props.projectId, props.filters);
   });
+
+  const onFilterChange = (filters) => {
+    props.getDataCollectorPerformanceList(props.projectId, filters);
+  }
 
   if (props.isListFetching) {
     return <Loading />;
@@ -20,6 +25,11 @@ const DataCollectorsPerformancePageComponent = (props) => {
 
   return (
     <Fragment>
+      <DataCollectorsPerformanceFilters
+        filters={props.filters}
+        nationalSocietyId={props.nationalSocietyId}
+        onChange={onFilterChange}
+      />
       <DataCollectorsPerformanceTable
         list={props.list}
         goToDashboard={props.goToDashboard}
@@ -40,12 +50,15 @@ DataCollectorsPerformancePageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
+  nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
+  filters: state.dataCollectors.performanceListFilters,
   list: state.dataCollectors.performanceListData,
   isListFetching: state.dataCollectors.performanceListFetching,
 });
 
 const mapDispatchToProps = {
-  openDataCollectorsPerformanceList: dataCollectorActions.openDataCollectorsPerformanceList.invoke
+  openDataCollectorsPerformanceList: dataCollectorActions.openDataCollectorsPerformanceList.invoke,
+  getDataCollectorPerformanceList: dataCollectorActions.getDataCollectorsPerformanceList.invoke
 };
 
 export const DataCollectorsPerformancePage = useLayout(

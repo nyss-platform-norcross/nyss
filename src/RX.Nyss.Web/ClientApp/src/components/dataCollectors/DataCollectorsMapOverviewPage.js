@@ -6,7 +6,7 @@ import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
 import { DataCollectorsPerformanceMap } from './DataCollectorsPerformanceMap';
-import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
+import { DataCollectorsPerformanceMapFilters } from './DataCollectorsPerformanceMapFilters';
 import { DataCollectorsPerformanceMapLegend } from './DataCollectorsPerformanceMapLegend';
 
 const DataCollectorsMapOverviewPageComponent = (props) => {
@@ -24,7 +24,7 @@ const DataCollectorsMapOverviewPageComponent = (props) => {
 
   return (
     <Fragment>
-      <DataCollectorsPerformanceFilters
+      <DataCollectorsPerformanceMapFilters
         onChange={handleFiltersChange}
         filters={props.filters}
       />

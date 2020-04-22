@@ -107,9 +107,9 @@ export const openDataCollectorsPerformanceList = {
 }
 
 export const getDataCollectorsPerformanceList = {
-  invoke: (projectId) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.INVOKE, projectId }),
+  invoke: (projectId, filters) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.INVOKE, projectId, filters }),
   request: () => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.REQUEST }),
-  success: (list) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS, list }),
+  success: (list, filters) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS, list, filters }),
   failure: (message) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.FAILURE, message })
 }
 

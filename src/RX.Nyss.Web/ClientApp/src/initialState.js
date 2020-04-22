@@ -189,6 +189,7 @@ export const initialState = {
     settingTrainingState: {},
     performanceListData: [],
     performanceListFetching: false,
+    performanceListFilters: null,
     filtersData: {
       supervisors: [],
       nationalSocietyId: null

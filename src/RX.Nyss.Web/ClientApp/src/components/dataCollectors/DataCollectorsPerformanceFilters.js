@@ -3,44 +3,78 @@ import styles from "./DataCollectorsPerformanceFilters.module.scss"
 import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from "../../strings";
-import { DatePicker } from "../forms/DatePicker";
+import { AreaFilter } from "../common/filters/AreaFilter";
+import CheckboxField from "../forms/CheckboxField";
+import { performanceStatus } from "./logic/dataCollectorsConstants";
+import { FormGroup, Card, CardContent, FormControlLabel, Checkbox } from "@material-ui/core";
+import { createForm } from "../../utils/forms";
+import { getIconFromStatus } from "./logic/dataCollectorsService";
+import CheckboxWithIconField from "../forms/CheckboxWithIconField";
+import { useSelector } from "react-redux";
 
-export const DataCollectorsPerformanceFilters = ({ filters, onChange }) => {
-  const [value, setValue] = useState(filters);
+export const DataCollectorsPerformanceFilters = ({ filters, nationalSocietyId, onChange }) => {
+  const filtersValue = useSelector(state => state.dataCollectors.performanceListFilters);
 
-  const handleChange = (change) => {
-    const newValue = {
-      ...value,
-      ...change
-    }
+  const handleAreaChange = (item) => {
+    onChange({ ...filtersValue, area: item ? { type: item.type, id: item.id, name: item.name } : null });
+  }
+  const handleReportingCorrectlyChange = (change) => {
+    onChange({ ...filtersValue, reportingCorrectly: change.target.checked });
+  }
 
-    setValue(newValue);
-    onChange(newValue);
-  };
+  const handleReportingWithErrorsChange = (change) => {
+    onChange({ ...filtersValue, reportingWithErrors: change.target.checked});
+  }
 
-  const handleDateFromChange = date =>
-    handleChange({ startDate: date.format('YYYY-MM-DD') });
+  const handleNotReportingChange = (change) => {
+    onChange({ ...filtersValue, notReporting: change.target.checked});
+  }
 
-  const handleDateToChange = date =>
-    handleChange({ endDate: date.format('YYYY-MM-DD') });
+  if (filtersValue == null) {
+    return null;
+  }
 
   return (
-    <Grid container spacing={3} className={styles.filters}>
-      <Grid item>
-        <DatePicker
-          onChange={handleDateFromChange}
-          label={strings(stringKeys.project.dashboard.filters.startDate)}
-          value={value.startDate}
-        />
-      </Grid>
+    <Card className={styles.filters}>
+      <CardContent>
+        <Grid container spacing={3} className={styles.filters}>
+          <Grid item>
+            <AreaFilter
+              nationalSocietyId={nationalSocietyId}
+              selectedItem={filtersValue.area}
+              onChange={handleAreaChange}
+            />
+          </Grid>
 
-      <Grid item>
-        <DatePicker
-          onChange={handleDateToChange}
-          label={strings(stringKeys.project.dashboard.filters.endDate)}
-          value={value.endDate}
-        />
-      </Grid>
-    </Grid>
+          <Grid item>
+            <FormGroup>
+              <CheckboxWithIconField
+                label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.reportingCorrectly])}
+                name={performanceStatus.reportingCorrectly}
+                value={filtersValue.reportingCorrectly}
+                onChange={handleReportingCorrectlyChange}
+                color="primary"
+              />
+
+              <CheckboxWithIconField
+                label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.reportingWithErrors])}
+                name={performanceStatus.reportingWithErrors}
+                value={filtersValue.reportingWithErrors}
+                onChange={handleReportingWithErrorsChange}
+                color="primary"
+              />
+
+              <CheckboxWithIconField
+                label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.notReporting])}
+                name={performanceStatus.notReporting}
+                value={filtersValue.notReporting}
+                onChange={handleNotReportingChange}
+                color="primary"
+              />
+            </FormGroup>
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   );
 }
