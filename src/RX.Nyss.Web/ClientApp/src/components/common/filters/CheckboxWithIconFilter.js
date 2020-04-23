@@ -28,7 +28,7 @@ CheckboxWithIconField.propTypes = {
   label: PropTypes.string,
   controlProps: PropTypes.object,
   value: PropTypes.bool,
-  icon: PropTypes.string,
+  icon: PropTypes.object,
   name: PropTypes.string,
   onChange: PropTypes.func
 };
