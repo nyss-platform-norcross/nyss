@@ -1,30 +1,25 @@
+import styles from './CheckboxWithIconFilter.module.scss';
+
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Checkbox from "@material-ui/core/Checkbox";
-import { withStyles } from "@material-ui/core";
 
-const FormControlLabelWithIcon = withStyles({
-  label: {
-    '&:before': {
-      content: 'checked',
-      fontFamily: 'Material Icons'
-    }
-  }
-})((props) => <FormControlLabel {...props} />);
-
-const CheckboxWithIconField = ({ error, name, label, value, icon, onChange, controlProps, customProps }) => {
+const CheckboxWithIconField = ({ name, label, value, icon, onChange, controlProps, customProps }) => {
   return (
     <Fragment>
-      <FormControlLabelWithIcon
+      <FormControlLabel
         control={
           <Checkbox checked={value} onChange={onChange} {...controlProps} {...customProps} />
         }
         name={name}
-        label={label}
+        label={
+          <div className={styles.labelWrapper}>
+            {icon}
+            {label}
+          </div>
+        }
       />
-      {error && <FormHelperText>{error}</FormHelperText>}
     </Fragment>
   );
 };
@@ -35,7 +30,6 @@ CheckboxWithIconField.propTypes = {
   value: PropTypes.bool,
   icon: PropTypes.string,
   name: PropTypes.string,
-  error: PropTypes.string,
   onChange: PropTypes.func
 };
 

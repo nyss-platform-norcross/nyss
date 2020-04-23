@@ -6,7 +6,6 @@ import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
 import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
-import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 import { Loading } from '../common/loading/Loading';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 

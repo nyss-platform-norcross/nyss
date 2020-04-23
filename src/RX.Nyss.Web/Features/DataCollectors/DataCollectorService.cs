@@ -13,6 +13,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -483,8 +484,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         ? dc.DataCollector.DisplayName
                         : dc.DataCollector.Name,
                     Status = dc.ReportsInTimeRange.Any()
-                        ? dc.ReportsInTimeRange.All(r => r.Report != null) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
-                        : DataCollectorStatus.NotReporting
+                        ? dc.ReportsInTimeRange.All(r => r.Report != null) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
+                        : ReportingStatus.NotReporting
                 })
                 .ToListAsync();
 
@@ -510,8 +511,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
+            var reportingStatusFilter = MapToReportingStatusFilterType(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting);
 
             var dataCollectorsWithReports = await dataCollectors
+                .FilterOnlyNotDeletedBefore(from)
+                .FilterByArea(dataCollectorsFilters.Area)
+                .FilterByReportsWithinTimeRange(from, to)
+                .FilterByReportingStatus(reportingStatusFilter)
                 .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new
                 {
@@ -623,12 +629,48 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
 
-        private DataCollectorStatus GetDataCollectorStatus(int week, IEnumerable<IGrouping<int, RawReportData>> grouping)
+        private ReportingStatus GetDataCollectorStatus(int week, IEnumerable<IGrouping<int, RawReportData>> grouping)
         {
             var reports = grouping.Where(g => g.Key == week).SelectMany(g => g);
             return reports.Any()
-                ? reports.All(x => x.IsValid) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
-                : DataCollectorStatus.NotReporting;
+                ? reports.All(x => x.IsValid) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
+                : ReportingStatus.NotReporting;
+        }
+
+        private ReportingStatusFilterType MapToReportingStatusFilterType(bool reportingCorrectly, bool reportingWithErrors, bool notReporting)
+        {
+            if (reportingCorrectly && reportingWithErrors && notReporting)
+            {
+                return ReportingStatusFilterType.All;
+            }
+            else if (reportingCorrectly && !reportingWithErrors && !notReporting)
+            {
+                return ReportingStatusFilterType.Correct;
+            }
+            else if (reportingCorrectly && reportingWithErrors && !notReporting)
+            {
+                return ReportingStatusFilterType.CorrectAndError;
+            }
+            else if (reportingCorrectly && !reportingWithErrors && notReporting)
+            {
+                return ReportingStatusFilterType.CorrectAndNotReporting;
+            }
+            else if (!reportingCorrectly && reportingWithErrors && notReporting)
+            {
+                return ReportingStatusFilterType.ErrorAndNotReporting;
+            }
+            else if (!reportingCorrectly && reportingWithErrors && !notReporting)
+            {
+                return ReportingStatusFilterType.Error;
+            }
+            else if (!reportingCorrectly && !reportingWithErrors && notReporting)
+            {
+                return ReportingStatusFilterType.NotReporting;
+            }
+            else
+            {
+                return ReportingStatusFilterType.None;
+            }
         }
 
         private async Task<LocationDto> GetCountryLocationFromProject(int projectId)

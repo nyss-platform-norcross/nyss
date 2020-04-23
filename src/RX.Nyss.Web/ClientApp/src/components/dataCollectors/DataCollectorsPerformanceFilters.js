@@ -7,6 +7,7 @@ import { FormGroup, Card, CardContent } from "@material-ui/core";
 import { getIconFromStatus } from "./logic/dataCollectorsService";
 import CheckboxWithIconField from "../common/filters/CheckboxWithIconFilter";
 import { useSelector } from "react-redux";
+import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
 
 export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   const filtersValue = useSelector(state => state.dataCollectors.performanceListFilters);
@@ -50,6 +51,9 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 name={performanceStatus.reportingCorrectly}
                 value={filtersValue.reportingCorrectly}
                 onChange={handleReportingCorrectlyChange}
+                icon={
+                  <DataCollectorStatusIcon icon={getIconFromStatus(performanceStatus.reportingCorrectly)} status={performanceStatus.reportingCorrectly} />
+                }
               />
 
               <CheckboxWithIconField
@@ -57,6 +61,9 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 name={performanceStatus.reportingWithErrors}
                 value={filtersValue.reportingWithErrors}
                 onChange={handleReportingWithErrorsChange}
+                icon={
+                  <DataCollectorStatusIcon icon={getIconFromStatus(performanceStatus.reportingWithErrors)} status={performanceStatus.reportingWithErrors} />
+                }
               />
 
               <CheckboxWithIconField
@@ -64,6 +71,9 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 name={performanceStatus.notReporting}
                 value={filtersValue.notReporting}
                 onChange={handleNotReportingChange}
+                icon={
+                  <DataCollectorStatusIcon icon={getIconFromStatus(performanceStatus.notReporting)} status={performanceStatus.notReporting} />
+                }
               />
             </FormGroup>
           </Grid>

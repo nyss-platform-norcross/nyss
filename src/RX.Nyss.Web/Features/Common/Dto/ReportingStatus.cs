@@ -1,6 +1,6 @@
 namespace RX.Nyss.Web.Features.Common.Dto
 {
-    public enum DataCollectorStatus
+    public enum ReportingStatus
     {
         ReportingCorrectly,
         ReportingWithErrors,
