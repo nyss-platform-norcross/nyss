@@ -5,7 +5,7 @@ import { AreaFilter } from "../common/filters/AreaFilter";
 import { performanceStatus } from "./logic/dataCollectorsConstants";
 import { FormGroup, Card, CardContent } from "@material-ui/core";
 import { getIconFromStatus } from "./logic/dataCollectorsService";
-import CheckboxWithIconField from "../common/filters/CheckboxWithIconFilter";
+import CheckboxWithIcon from "../common/filters/CheckboxWithIcon";
 import { useSelector } from "react-redux";
 import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
 
@@ -46,7 +46,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
 
           <Grid item>
             <FormGroup>
-              <CheckboxWithIconField
+              <CheckboxWithIcon
                 label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.reportingCorrectly])}
                 name={performanceStatus.reportingCorrectly}
                 value={filtersValue.reportingCorrectly}
@@ -56,7 +56,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 }
               />
 
-              <CheckboxWithIconField
+              <CheckboxWithIcon
                 label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.reportingWithErrors])}
                 name={performanceStatus.reportingWithErrors}
                 value={filtersValue.reportingWithErrors}
@@ -66,7 +66,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 }
               />
 
-              <CheckboxWithIconField
+              <CheckboxWithIcon
                 label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.notReporting])}
                 name={performanceStatus.notReporting}
                 value={filtersValue.notReporting}

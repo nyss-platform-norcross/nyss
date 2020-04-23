@@ -1,11 +1,11 @@
-import styles from './CheckboxWithIconFilter.module.scss';
+import styles from './CheckboxWithIcon.module.scss';
 
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 
-const CheckboxWithIconField = ({ name, label, value, icon, onChange, controlProps, customProps }) => {
+const CheckboxWithIcon = ({ name, label, value, icon, onChange, controlProps, customProps }) => {
   return (
     <Fragment>
       <FormControlLabel
@@ -24,7 +24,7 @@ const CheckboxWithIconField = ({ name, label, value, icon, onChange, controlProp
   );
 };
 
-CheckboxWithIconField.propTypes = {
+CheckboxWithIcon.propTypes = {
   label: PropTypes.string,
   controlProps: PropTypes.object,
   value: PropTypes.bool,
@@ -33,4 +33,4 @@ CheckboxWithIconField.propTypes = {
   onChange: PropTypes.func
 };
 
-export default CheckboxWithIconField;
+export default CheckboxWithIcon;
