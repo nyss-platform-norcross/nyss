@@ -512,13 +512,14 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
             var reportingStatusFilter = MapToReportingStatusFilterType(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting);
+            
             var dataCollectorsWithReports = await dataCollectors
                 .FilterOnlyNotDeletedBefore(from)
                 .FilterByArea(dataCollectorsFilters.Area)
                 .FilterByReportingStatus(reportingStatusFilter)
                 .Where(dc => dc.DeletedAt == null)
                 .FilterByReportsWithinTimeRange(from, to)
-                .FilterByReportingStatus(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting)
+                .FilterByReportingStatus(reportingStatusFilter)
                 .Select(dc => new
                 {
                     DataCollectorName = dc.Name,
