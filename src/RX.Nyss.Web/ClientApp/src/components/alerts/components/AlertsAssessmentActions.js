@@ -11,8 +11,6 @@ import { AlertsCloseDialog } from "./AlertsCloseDialog";
 import { AlertsEscalationWithoutNotificationDialog } from "./AlertsEscalationWithoutNotificationDialog";
 import CheckboxField from "../../forms/CheckboxField";
 import { validators, createForm } from '../../../utils/forms';
-import Grid from '@material-ui/core/Grid';
-import TextInputField from '../../forms/TextInputField';
 
 export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentStatus, ...props }) => {
   const [escalationDialogOpened, setEscalationDialogOpened] = useState(false);
@@ -38,19 +36,6 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
 
   return (
     <Fragment>
-      {alertAssessmentStatus === assessmentStatus.escalated && (
-        <Grid container spacing={3} className={styles.fields}>
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.alerts.assess.comments)}
-              name="comments"
-              multiline
-              field={form.fields.comments}
-            />
-          </Grid>
-        </Grid>
-      )}
-
       <FormActions>
         <Button onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</Button>
 
@@ -74,8 +59,8 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
               close={() => setEscalationWithoutNotificationDialogOpened(false)}
             />
 
-            <div>
-              <CheckboxField
+            <div className={styles.escalateWithoutNotificationWrapper}>
+              <CheckboxField className={styles.escalateWithoutNotificationCheckbox}
                 name="escalateWithoutNotification"
                 label={strings(stringKeys.alerts.assess.alert.escalateWithoutNotification)}
                 field={form.fields.escalateWithoutNotification}

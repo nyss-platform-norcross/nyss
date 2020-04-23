@@ -20,13 +20,13 @@ export const AlertsEscalationWithoutNotificationDialog = ({ isOpened, close, ale
       <DialogTitle>{strings(stringKeys.alerts.assess.alert.escalateWithoutNotificationDialogTitle)}</DialogTitle>
       <DialogContent>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={3} style={{ alignItems: 'center'}}>
           <Grid item xs={2}>
-            <WarningIcon color="primary" style={{ fontSize: 40 }} />
+            <WarningIcon color="primary" style={{ fontSize: 40, marginLeft: '10px' }} />
           </Grid>
           <Grid item xs={10}>
             <Typography variant="body1">
-            {strings(stringKeys.alerts.assess.alert.escalateWithoutNotificationConfirmation)}
+              {strings(stringKeys.alerts.assess.alert.escalateWithoutNotificationConfirmation)}
             </Typography>      
           </Grid>
         </Grid>

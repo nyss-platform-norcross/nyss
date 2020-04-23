@@ -15,13 +15,23 @@ import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import { assessmentStatus, closeOptions } from '../logic/alertsConstants';
-import { Tooltip } from '@material-ui/core';
+import { Tooltip, withStyles } from '@material-ui/core';
+
+const StyledTooltip = withStyles({
+  tooltip: {
+    fontSize: '1rem',
+    padding: '8px'
+  }
+})((props) => <Tooltip {...props} />)
 
 export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, getList, page, rowsPerPage, totalRows }) => {
-
   const onChangePage = (event, page) => {
     getList(projectId, page);
   };
+
+  const handleTooltipClick = (event) => {
+    event.stopPropagation();
+  }
 
   if (!list.length) {
     return <TableNoData />;
@@ -31,12 +41,12 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
     if (alert.status === assessmentStatus.closed) {
       const tooltipText = alert.closeOption === undefined || alert.closeOption === closeOptions.other ? alert.comments : strings(stringKeys.alerts.constants.closeOptions[alert.closeOption]);
       return (
-        <>
+        <div className={alertTableStyles.closeStatus}>
           {strings(stringKeys.alerts.constants.alertStatus[alert.status])}
-          <Tooltip title={tooltipText} arrow className={alertTableStyles.tooltip}>
+          <StyledTooltip title={tooltipText} onClick={handleTooltipClick} arrow className={alertTableStyles.tooltip}>
             <HelpOutlineOutlinedIcon fontSize="small" />
-          </Tooltip>
-        </>
+          </StyledTooltip>
+        </div>
       );
     } else {
       return strings(stringKeys.alerts.constants.alertStatus[alert.status]);
