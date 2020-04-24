@@ -12,6 +12,7 @@ import dayjs from "dayjs";
 import Icon from "@material-ui/core/Icon";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import { assessmentStatus } from "../logic/alertsConstants";
+import { Button, CircularProgress } from "@material-ui/core";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>
@@ -96,9 +97,10 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
             
             {showResetOption && (
               <Fragment>
-                <SubmitButton onClick={() => resetReport(alertId, report.id)} isResetting={report.isResetting}>
+                <Button variant="text" onClick={() => resetReport(alertId, report.id)} disabled={report.isResetting}>
+                  {report.isResetting && <CircularProgress size={16} className={styles.progressIcon} />}
                   {strings(stringKeys.alerts.assess.report.reset)}
-                </SubmitButton>
+                </Button>
               </Fragment>
             )}
           </ExpansionPanelActions>
