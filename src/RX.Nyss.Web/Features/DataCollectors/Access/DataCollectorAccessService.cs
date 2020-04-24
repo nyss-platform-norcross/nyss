@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
@@ -11,6 +12,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
     public interface IDataCollectorAccessService
     {
         Task<bool> HasCurrentUserAccessToDataCollector(int dataCollectorId);
+        Task<bool> HasCurrentUserAccessToDataCollectors(IEnumerable<int> dataCollectorIds);
     }
 
     public class DataCollectorAccessService : IDataCollectorAccessService
@@ -29,22 +31,32 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
             _projectAccessService = projectAccessService;
         }
 
-        public async Task<bool> HasCurrentUserAccessToDataCollector(int dataCollectorId)
+        public Task<bool> HasCurrentUserAccessToDataCollector(int dataCollectorId) =>
+            HasCurrentUserAccessToDataCollectors(new[] { dataCollectorId });
+
+        public async Task<bool> HasCurrentUserAccessToDataCollectors(IEnumerable<int> dataCollectorIds)
         {
             var dataCollectorData = await _nyssContext.DataCollectors
-                .Where(dc => dc.Id == dataCollectorId)
+                .Where(dc => dataCollectorIds.Contains(dc.Id))
                 .Select(dc => new
                 {
                     ProjectId = dc.Project.Id,
                     SupervisorEmailAddress = dc.Supervisor.EmailAddress
                 })
-                .SingleAsync();
+                .Distinct()
+                .ToListAsync();
 
-            return await _projectAccessService.HasCurrentUserAccessToProject(dataCollectorData.ProjectId)
-                && VerifyIfUserIsSupervisor(dataCollectorData.SupervisorEmailAddress);
+            var projectId = dataCollectorData.Select(d => d.ProjectId).Distinct().Single();
+
+            return await _projectAccessService.HasCurrentUserAccessToProject(projectId)
+                && VerifyIfUserIsSupervisor(dataCollectorData.Select(dc => dc.SupervisorEmailAddress));
         }
 
-        private bool VerifyIfUserIsSupervisor(string supervisorEmailAddress) =>
-            !_authorizationService.IsCurrentUserInRole(Role.Supervisor) || supervisorEmailAddress == _authorizationService.GetCurrentUserName();
+        private bool VerifyIfUserIsSupervisor(IEnumerable<string> supervisorEmailAddresses)
+        {
+            var currentUserName = _authorizationService.GetCurrentUserName();
+
+            return !_authorizationService.IsCurrentUserInRole(Role.Supervisor) || supervisorEmailAddresses.All(e => e == currentUserName);
+        }
     }
 }

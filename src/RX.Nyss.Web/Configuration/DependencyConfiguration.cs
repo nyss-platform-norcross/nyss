@@ -184,6 +184,9 @@ namespace RX.Nyss.Web.Configuration
                 options.AddPolicy(Policy.DataCollectorAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<DataCollectorAccessHandler>.Requirement()));
 
+                options.AddPolicy(Policy.MultipleDataCollectorsAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceMultipleAccessHandler<MultipleDataCollectorsAccessHandler>.Requirement()));
+
                 options.AddPolicy(Policy.ProjectAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectAccessHandler>.Requirement()));
 
@@ -216,6 +219,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, SmsGatewayAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, SupervisorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, DataCollectorAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, MultipleDataCollectorsAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, HeadManagerAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ProjectAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, RegionAccessHandler>();
