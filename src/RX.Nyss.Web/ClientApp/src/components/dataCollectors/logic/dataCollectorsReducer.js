@@ -1,7 +1,7 @@
 import * as actions from "./dataCollectorsConstants";
 import * as projectsActions from "../../projects/logic/projectsConstants";
 import { initialState } from "../../../initialState";
-import { setProperty, removeProperty } from "../../../utils/immutable";
+import { setProperty, removeProperty, assignInArray } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";
 
 export function dataCollectorsReducer(state = initialState.dataCollectors, action) {
@@ -13,19 +13,29 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formData: null, formError: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null };
 
     case actions.OPEN_DATA_COLLECTORS_LIST.INVOKE:
-      return { ...state, filters: action.projectId === state.projectId ? state.filters : null };
+      return { ...state, filters: action.projectId === state.projectId ? state.filters : null, listData: action.projectId === state.projectId ? state.listData : [] };
 
     case actions.OPEN_DATA_COLLECTORS_LIST.SUCCESS:
       return { ...state, projectId: action.projectId, filtersData: action.filtersData };
 
     case actions.GET_DATA_COLLECTORS.REQUEST:
-      return { ...state, listFetching: true, listData: [] };
+      return { ...state, listFetching: true };
 
     case actions.GET_DATA_COLLECTORS.SUCCESS:
       return { ...state, listFetching: false, filters: action.filters, listData: action.list, listStale: false };
 
     case actions.GET_DATA_COLLECTORS.FAILURE:
-      return { ...state, listFetching: false, listData: [] };
+      return { ...state, listFetching: false };
+
+    case actions.SELECT_DATA_COLLECTOR:
+      return {
+        ...state,
+        listSelectedAll: action.value && state.listData.every(i => i.isSelected || (action.value && i.id === action.dataCollectorId)),
+        listData: assignInArray(state.listData, i => i.id === action.dataCollectorId, item => ({ ...item, isSelected: action.value }))
+      };
+
+    case actions.SELECT_ALL_DATA_COLLECTOR:
+      return { ...state, listSelectedAll: action.value, listData: assignInArray(state.listData, _ => true, item => ({ ...item, isSelected: action.value })) };
 
     case actions.OPEN_DATA_COLLECTOR_EDITION.INVOKE:
       return { ...state, formFetching: true, formData: null };
@@ -91,13 +101,13 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
 
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.REQUEST:
-      return { ...state, settingTrainingState: setProperty(state.settingTrainingState, action.dataCollectorId, true) };
+      return { ...state, settingTrainingState: action.dataCollectorIds.reduce((trainingState, id) => setProperty(trainingState, id, true), state.settingTrainingState) };
 
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.SUCCESS:
-      return { ...state, settingTrainingState: removeProperty(state.settingTrainingState, action.dataCollectorId), listStale: true };
+      return { ...state, settingTrainingState: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.settingTrainingState), listStale: true };
 
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE:
-      return { ...state, settingTrainingState: removeProperty(state.settingTrainingState, action.dataCollectorId) };
+      return { ...state, settingTrainingState: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.settingTrainingState) };
 
     case actions.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS:
       return { ...state, listProjectId: action.projectId };

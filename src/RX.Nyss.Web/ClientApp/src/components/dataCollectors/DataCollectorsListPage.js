@@ -53,6 +53,9 @@ const DataCollectorsListPageComponent = (props) => {
         projectId={props.projectId}
         setTrainingState={props.setTrainingState}
         isSettingTrainingState={props.isSettingTrainingState}
+        selectDataCollector={props.selectDataCollector}
+        selectAllDataCollectors={props.selectAllDataCollectors}
+        listSelectedAll={props.listSelectedAll}
       />
     </Fragment>
   );
@@ -75,6 +78,7 @@ const mapStateToProps = (state, ownProps) => ({
   isListFetching: state.dataCollectors.listFetching,
   isRemoving: state.dataCollectors.listRemoving,
   isSettingTrainingState: state.dataCollectors.settingTrainingState,
+  listSelectedAll: state.dataCollectors.listSelectedAll,
   supervisors: state.dataCollectors.filtersData.supervisors,
   nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
   filters: state.dataCollectors.filters
@@ -85,6 +89,8 @@ const mapDispatchToProps = {
   getDataCollectorList: dataCollectorsActions.getList.invoke,
   goToCreation: dataCollectorsActions.goToCreation,
   goToEdition: dataCollectorsActions.goToEdition,
+  selectDataCollector: dataCollectorsActions.selectDataCollector,
+  selectAllDataCollectors: dataCollectorsActions.selectAllDataCollectors,
   remove: dataCollectorsActions.remove.invoke,
   setTrainingState: dataCollectorsActions.setTrainingState.invoke,
   exportToExcel: dataCollectorsActions.exportToExcel.invoke,
