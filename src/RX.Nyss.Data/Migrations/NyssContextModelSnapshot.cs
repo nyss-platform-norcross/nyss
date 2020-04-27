@@ -2991,13 +2991,13 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUserAlertRecipient", b =>
                 {
-                    b.HasOne("RX.Nyss.Data.Models.SupervisorUser", "Supervisor")
+                    b.HasOne("RX.Nyss.Data.Models.AlertNotificationRecipient", "AlertNotificationRecipient")
                         .WithMany("SupervisorAlertRecipients")
                         .HasForeignKey("AlertNotificationRecipientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("RX.Nyss.Data.Models.AlertNotificationRecipient", "AlertNotificationRecipient")
+                    b.HasOne("RX.Nyss.Data.Models.SupervisorUser", "Supervisor")
                         .WithMany("SupervisorAlertRecipients")
                         .HasForeignKey("SupervisorId")
                         .OnDelete(DeleteBehavior.Restrict)

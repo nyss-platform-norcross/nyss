@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20200427093406_AddAlertNotificationRecipients")]
+    [Migration("20200506104527_AddAlertNotificationRecipients")]
     partial class AddAlertNotificationRecipients
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1186,7 +1186,7 @@ namespace RX.Nyss.Data.Migrations
                         {
                             Id = 5,
                             CountryCode = "AD",
-                            Name = "AndorrA"
+                            Name = "Andorra"
                         },
                         new
                         {
@@ -2087,6 +2087,31 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.Organization", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("NationalSocietyId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NationalSocietyId");
+
+                    b.HasIndex("Name", "NationalSocietyId")
+                        .IsUnique();
+
+                    b.ToTable("Organizations");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -2323,6 +2348,12 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("ReportedCaseCount")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("ResetAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ResetById")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
@@ -2345,6 +2376,8 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("RejectedById");
 
                     b.HasIndex("ReportGroupLabel");
+
+                    b.HasIndex("ResetById");
 
                     b.ToTable("Reports");
                 });
@@ -2445,9 +2478,14 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("NationalSocietyId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OrganizationId")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "NationalSocietyId");
 
                     b.HasIndex("NationalSocietyId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("UserNationalSocieties");
                 });
@@ -2512,6 +2550,13 @@ namespace RX.Nyss.Data.Migrations
                             PhoneNumber = "",
                             Role = "Administrator"
                         });
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.CoordinatorUser", b =>
+                {
+                    b.HasBaseType("RX.Nyss.Data.Models.User");
+
+                    b.HasDiscriminator().HasValue("Coordinator");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.DataConsumerUser", b =>
@@ -2726,6 +2771,15 @@ namespace RX.Nyss.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.Organization", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
+                        .WithMany("Organizations")
+                        .HasForeignKey("NationalSocietyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
@@ -2816,6 +2870,10 @@ namespace RX.Nyss.Data.Migrations
                         .HasForeignKey("RejectedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("RX.Nyss.Data.Models.User", "ResetBy")
+                        .WithMany()
+                        .HasForeignKey("ResetById");
+
                     b.OwnsOne("RX.Nyss.Data.Models.DataCollectionPointCase", "DataCollectionPointCase", b1 =>
                         {
                             b1.Property<int>("ReportId")
@@ -2897,13 +2955,13 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUserAlertRecipient", b =>
                 {
-                    b.HasOne("RX.Nyss.Data.Models.SupervisorUser", "Supervisor")
+                    b.HasOne("RX.Nyss.Data.Models.AlertNotificationRecipient", "AlertNotificationRecipient")
                         .WithMany("SupervisorAlertRecipients")
                         .HasForeignKey("AlertNotificationRecipientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("RX.Nyss.Data.Models.AlertNotificationRecipient", "AlertNotificationRecipient")
+                    b.HasOne("RX.Nyss.Data.Models.SupervisorUser", "Supervisor")
                         .WithMany("SupervisorAlertRecipients")
                         .HasForeignKey("SupervisorId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -2940,6 +2998,11 @@ namespace RX.Nyss.Data.Migrations
                         .HasForeignKey("NationalSocietyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.Organization", "Organization")
+                        .WithMany("NationalSocietyUsers")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.User", "User")
                         .WithMany("UserNationalSocieties")

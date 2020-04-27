@@ -2,6 +2,7 @@
 using FluentValidation;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Supervisors.Dto
@@ -14,12 +15,14 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public int? ProjectId { get; set; }
+        public int? OrganizationId { get; set; }
         public string Organization { get; set; }
         public IEnumerable<int> SupervisorAlertRecipients { get; set; }
+        public int NationalSocietyId { get; set; }
 
         public class EditSupervisorRequestValidator : AbstractValidator<EditSupervisorRequestDto>
         {
-            public EditSupervisorRequestValidator()
+            public EditSupervisorRequestValidator(IOrganizationService organizationService)
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.Sex).IsInEnum();

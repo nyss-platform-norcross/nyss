@@ -36,8 +36,8 @@ namespace RX.Nyss.Web.Features.Supervisors
         /// <returns></returns>
         [HttpGet("{supervisorId:int}/get")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]
-        public async Task<Result> Get(int supervisorId) =>
-            await _supervisorService.Get(supervisorId);
+        public async Task<Result> Get(int supervisorId, int nationalSocietyId) =>
+            await _supervisorService.Get(supervisorId, nationalSocietyId);
 
         /// <summary>
         /// Edit a supervisor.

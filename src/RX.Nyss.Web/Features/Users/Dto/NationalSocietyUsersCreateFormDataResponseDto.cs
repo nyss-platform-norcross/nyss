@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Alerts.Dto;
 
 namespace RX.Nyss.Web.Features.Users.Dto
 {
     public class NationalSocietyUsersCreateFormDataResponseDto
     {
-        public List<ListOpenProjectsResponseDto> OpenProjects { get; set; }
+        public List<ListOpenProjectsResponseDto> Projects { get; set; }
 
         public List<OrganizationsDto> Organizations { get; set; }
 
@@ -20,7 +21,7 @@ namespace RX.Nyss.Web.Features.Users.Dto
 
         public Role Role { get; set; }
 
-        public List<ListOpenProjectsResponseDto> OpenProjects { get; set; }
+        public List<ListOpenProjectsResponseDto> Projects { get; set; }
 
         public List<OrganizationsDto> Organizations { get; set; }
     }
@@ -36,5 +37,6 @@ namespace RX.Nyss.Web.Features.Users.Dto
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public List<AlertNotificationRecipientDto> AlertRecipients { get; set; }
     }
 }

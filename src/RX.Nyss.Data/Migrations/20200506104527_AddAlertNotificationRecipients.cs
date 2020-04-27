@@ -6,7 +6,6 @@ namespace RX.Nyss.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
             migrationBuilder.CreateTable(
                 name: "AlertNotificationRecipients",
                 schema: "nyss",
@@ -44,17 +43,17 @@ namespace RX.Nyss.Data.Migrations
                 {
                     table.PrimaryKey("PK_SupervisorUserAlertRecipients", x => new { x.SupervisorId, x.AlertNotificationRecipientId });
                     table.ForeignKey(
-                        name: "FK_SupervisorUserAlertRecipients_Users_AlertNotificationRecipientId",
+                        name: "FK_SupervisorUserAlertRecipients_AlertNotificationRecipients_AlertNotificationRecipientId",
                         column: x => x.AlertNotificationRecipientId,
                         principalSchema: "nyss",
-                        principalTable: "Users",
+                        principalTable: "AlertNotificationRecipients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_SupervisorUserAlertRecipients_AlertNotificationRecipients_SupervisorId",
+                        name: "FK_SupervisorUserAlertRecipients_Users_SupervisorId",
                         column: x => x.SupervisorId,
                         principalSchema: "nyss",
-                        principalTable: "AlertNotificationRecipients",
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -85,7 +84,6 @@ namespace RX.Nyss.Data.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
             migrationBuilder.CreateTable(
                 name: "EmailAlertRecipients",
                 schema: "nyss",

@@ -7,6 +7,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Users.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -67,13 +68,21 @@ namespace RX.Nyss.Web.Features.Users
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => new NationalSocietyUsersCreateFormDataResponseDto
                 {
-                    OpenProjects = _dataContext.Projects
+                    Projects = _dataContext.Projects
                         .Where(p => p.NationalSociety.Id == ns.Id)
                         .Where(p => p.State == ProjectState.Open)
                         .Select(p => new ListOpenProjectsResponseDto
                         {
                             Id = p.Id,
-                            Name = p.Name
+                            Name = p.Name,
+                            AlertRecipients = p.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipientDto
+                            {
+                                Id = anr.Id,
+                                Role = anr.Role,
+                                Organization = anr.Organization,
+                                Email = anr.Email,
+                                PhoneNumber = anr.PhoneNumber
+                            }).ToList()
                         }).ToList(),
                     Organizations = ns.Organizations.Select(o => new OrganizationsDto
                     {
@@ -96,13 +105,21 @@ namespace RX.Nyss.Web.Features.Users
                 {
                     Email = u.EmailAddress,
                     Role = u.Role,
-                    OpenProjects = _dataContext.Projects
+                    Projects = _dataContext.Projects
                         .Where(p => p.NationalSociety.Id == nationalSocietyId)
                         .Where(p => p.State == ProjectState.Open)
                         .Select(p => new ListOpenProjectsResponseDto
                         {
                             Id = p.Id,
-                            Name = p.Name
+                            Name = p.Name,
+                            AlertRecipients = u.Role == Role.Supervisor ? p.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipientDto
+                            {
+                                Id = anr.Id,
+                                Role = anr.Role,
+                                Organization = anr.Organization,
+                                Email = anr.Email,
+                                PhoneNumber = anr.PhoneNumber
+                            }).ToList() : null
                         }).ToList(),
                     Organizations = _dataContext.Organizations
                         .Where(o => o.NationalSociety.Id == nationalSocietyId)

@@ -306,6 +306,14 @@ export const stringKeys = {
       smsNotificationsSetion: "project.form.smsNotificationsSetion",
       overviewSmsNotificationsSection: "project.form.overviewSmsNotificationsSection",
       smsNotificationDescription: "project.form.smsNotificationDescription",
+      alertNotificationsSection: "project.form.alertNotificationsSection",
+      alertNotificationsDescription: "project.form.alertNotificationsDescription",
+      alertNotificationsSupervisorsExplanation: "project.form.alertNotificationsSupervisorExplanation",
+      alertNotificationsRole: "project.form.alertNotificationsRole",
+      alertNotificationsOrganization: "project.form.alertNotificationsOrganization",
+      alertNotificationsEmail: "project.form.alertNotificationsEmail",
+      alertNotificationsPhoneNumber: "project.form.alertNotificationsPhoneNumber",
+      addRecipient: "project.form.addRecipient",
       addEmail: "project.form.addEmail",
       addSms: "project.form.addSms",
       create: "project.form.create",
@@ -480,7 +488,8 @@ export const stringKeys = {
       create: "nationalSocietyUser.form.create",
       addExisting: "nationalSocietyUser.form.addExisting",
       projectIsClosed: "nationalSocietyUser.form.projectIsClosed",
-      update: "nationalSocietyUser.form.update"
+      update: "nationalSocietyUser.form.update",
+      alertRecipients: "nationalSocietyUser.form.alertRecipients"
     },
     create: {
       success: "nationalSocietyUser.create.success"

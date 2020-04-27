@@ -1,4 +1,4 @@
-namespace RX.Nyss.Web.Features.Organizations.Dto
+﻿namespace RX.Nyss.Web.Features.Organizations.Dto
 {
     public class OrganizationResponseDto
     {
