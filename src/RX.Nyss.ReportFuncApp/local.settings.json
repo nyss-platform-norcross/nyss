@@ -7,6 +7,7 @@
     "SERVICEBUS_CONNECTIONSTRING": "",
     "SERVICEBUS_REPORTQUEUE": "nrx-cbs-nyss-bus-report-queue-dev",
     "SERVICEBUS_REPORTDISMISSALQUEUE": "nrx-cbs-nyss-bus-report-dismissal-queue-dev",
+    "SERVICEBUS_REPORTRESETQUEUE": "nrx-cbs-nyss-bus-report-reset-queue-dev",
     "SERVICEBUS_CHECKALERTQUEUE": "nrx-cbs-nyss-bus-check-alert-queue-dev",
     "ReportApiBaseUrl": "https://localhost:5003/"
   },

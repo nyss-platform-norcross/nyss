@@ -17,6 +17,7 @@ export const alertsSagas = () => [
   takeEvery(consts.ESCALATE_ALERT.INVOKE, escalateAlert),
   takeEvery(consts.DISMISS_ALERT.INVOKE, dismissAlert),
   takeEvery(consts.CLOSE_ALERT.INVOKE, closeAlert),
+  takeEvery(consts.RESET_REPORT.INVOKE, resetReport)
 ];
 
 function* openAlertsList({ projectId }) {
@@ -105,6 +106,17 @@ function* dismissReport({ alertId, reportId }) {
     }
   } catch (error) {
     yield put(actions.dismissReport.failure(reportId, error.message));
+  }
+};
+
+function* resetReport({ alertId, reportId }) {
+  yield put(actions.resetReport.request(reportId));
+  try {
+    const response = yield call(http.post, `/api/alert/${alertId}/resetReport?reportId=${reportId}`);
+    const newAssessmentStatus = response.value.assessmentStatus;
+    yield put(actions.resetReport.success(reportId, newAssessmentStatus));
+  } catch (error) {
+    yield put(actions.resetReport.failure(reportId, error.message));
   }
 };
 

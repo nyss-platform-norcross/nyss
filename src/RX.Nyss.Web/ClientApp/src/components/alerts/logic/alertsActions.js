@@ -1,7 +1,7 @@
 import { push } from "connected-react-router";
 import {
   OPEN_ALERTS_LIST, GET_ALERTS, OPEN_ALERTS_ASSESSMENT,
-  ACCEPT_REPORT, DISMISS_REPORT, ESCALATE_ALERT,
+  ACCEPT_REPORT, DISMISS_REPORT, RESET_REPORT, ESCALATE_ALERT,
   DISMISS_ALERT, CLOSE_ALERT, OPEN_ALERTS_LOGS
 } from "./alertsConstants";
 
@@ -48,6 +48,13 @@ export const dismissReport = {
   request: (reportId) => ({ type: DISMISS_REPORT.REQUEST, reportId }),
   success: (reportId, assessmentStatus) => ({ type: DISMISS_REPORT.SUCCESS, reportId, assessmentStatus }),
   failure: (reportId, message) => ({ type: DISMISS_REPORT.FAILURE, reportId, message })
+};
+
+export const resetReport = {
+  invoke: (alertId, reportId) => ({ type: RESET_REPORT.INVOKE, alertId, reportId }),
+  request: (reportId) => ({ type: RESET_REPORT.REQUEST, reportId }),
+  success: (reportId, assessmentStatus) => ({ type: RESET_REPORT.SUCCESS, reportId, assessmentStatus }),
+  failure: (reportId, message) => ({ type: RESET_REPORT.FAILURE, reportId, message })
 };
 
 export const escalateAlert = {

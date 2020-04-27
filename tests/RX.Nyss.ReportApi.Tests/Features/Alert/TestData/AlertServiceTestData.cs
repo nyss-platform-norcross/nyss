@@ -256,6 +256,110 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(reportsToCreateAlertFor);
             });
 
+        public TestCaseData<ResetReportAdditionalData> WhenADismissedReportIsReset =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenADismissedReportIsReset), data =>
+            {
+                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
+                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
+                var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
+                projectHealthRiskWithCountThresholdOf3.Project = new Project
+                {
+                    NationalSociety = new NationalSociety
+                    {
+                        ContentLanguage = contentLanguage,
+                        HeadManager = new ManagerUser
+                        {
+                            EmailAddress = "test@example.com",
+                            Name = "HeadManager Name"
+                        }
+                    }
+                };
+
+                projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent> { new HealthRiskLanguageContent { ContentLanguage = contentLanguage } };
+
+                var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
+                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
+                    .AddReport(ReportStatus.Rejected, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                data.Reports = reportGroup.Reports;
+                
+                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
+
+                return new ResetReportAdditionalData
+                {
+                    ReportBeingReset = data.Reports.FirstOrDefault(r => r.Status == ReportStatus.Rejected),
+                    AlertRule = data.AlertRules.FirstOrDefault(ar => ar.CountThreshold == 3)
+                };
+            });
+
+        public TestCaseData<ResetReportAdditionalData> WhenAnAcceptedReportIsReset =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenAnAcceptedReportIsReset), data =>
+            {
+                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
+                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
+                var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
+                projectHealthRiskWithCountThresholdOf3.Project = new Project
+                {
+                    NationalSociety = new NationalSociety
+                    {
+                        ContentLanguage = contentLanguage,
+                        HeadManager = new ManagerUser
+                        {
+                            EmailAddress = "test@example.com",
+                            Name = "HeadManager Name"
+                        }
+                    }
+                };
+
+                projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent> { new HealthRiskLanguageContent { ContentLanguage = contentLanguage } };
+
+                var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
+                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
+                    .AddReport(ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                data.Reports = reportGroup.Reports;
+                
+                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
+
+                return new ResetReportAdditionalData
+                {
+                    ReportBeingReset = data.Reports.FirstOrDefault(r => r.Status == ReportStatus.Accepted),
+                    AlertRule = data.AlertRules.FirstOrDefault(ar => ar.CountThreshold == 3)
+                };
+            });
+
+        public TestCaseData<ResetReportAdditionalData> WhenResettingAReportInAlertWithStatusNotPending =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenResettingAReportInAlertWithStatusNotPending), data =>
+            {
+                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
+                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
+                var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
+                projectHealthRiskWithCountThresholdOf3.Project = new Project
+                {
+                    NationalSociety = new NationalSociety
+                    {
+                        ContentLanguage = contentLanguage,
+                        HeadManager = new ManagerUser
+                        {
+                            EmailAddress = "test@example.com",
+                            Name = "HeadManager Name"
+                        }
+                    }
+                };
+
+                projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent> { new HealthRiskLanguageContent { ContentLanguage = contentLanguage } };
+
+                var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
+                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
+                    .AddReport(ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                data.Reports = reportGroup.Reports;
+                
+                (data.Alerts, data.AlertReports) = _alertGenerator.AddEscalatedAlertForReports(data.Reports);
+
+                return new ResetReportAdditionalData
+                {
+                    ReportBeingReset = data.Reports.FirstOrDefault(r => r.Status == ReportStatus.Accepted)
+                };
+            });
+
         public AlertServiceTestData(INyssContext nyssContextMock)
         {
             _testCaseDataProvider = new TestCaseDataProvider(nyssContextMock);
@@ -266,6 +370,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             public Report ReportBeingDismissed { get; set; }
             public Data.Models.Alert AlertThatReceivedNewReports { get; set; }
             public List<Report> ReportsBeingMoved { get; set; }
+        }
+
+        public class ResetReportAdditionalData
+        {
+            public Report ReportBeingReset { get; set; }
+            public AlertRule AlertRule { get; set; }
         }
 
         public class SimpleTestCaseAdditionalData

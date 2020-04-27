@@ -11,6 +11,8 @@ import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
 import Icon from "@material-ui/core/Icon";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
+import { assessmentStatus } from "../logic/alertsConstants";
+import { Button, CircularProgress } from "@material-ui/core";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>
@@ -29,8 +31,11 @@ const getReportIcon = (status) => {
   }
 }
 
-export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, assessmentStatus, projectIsClosed }) => {
-  const showActions = assessmentStatus !== "Closed" && report.status === "Pending";
+export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, resetReport, status, projectIsClosed }) => {
+  const showActions = status !== assessmentStatus.closed && report.status === "Pending";
+  const showResetOption = status !== assessmentStatus.closed
+    && status !== assessmentStatus.dismissed
+    && (report.status === "Accepted" || report.status === "Rejected");
 
   return (
     <ExpansionPanel>
@@ -88,6 +93,15 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
 
             {!showActions && (
               <div className={styles.reportStatus}>{strings(stringKeys.alerts.constants.reportStatus[report.status])}</div>
+            )}
+            
+            {showResetOption && (
+              <Fragment>
+                <Button variant="text" onClick={() => resetReport(alertId, report.id)} disabled={report.isResetting}>
+                  {report.isResetting && <CircularProgress size={16} className={styles.progressIcon} />}
+                  {strings(stringKeys.alerts.assess.report.reset)}
+                </Button>
+              </Fragment>
             )}
           </ExpansionPanelActions>
         </Fragment>

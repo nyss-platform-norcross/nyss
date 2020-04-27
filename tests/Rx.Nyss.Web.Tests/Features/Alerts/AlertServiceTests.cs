@@ -639,6 +639,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                     Status = ReportStatus.Pending,
                                     AcceptedBy = DefaultUser,
                                     RejectedBy = DefaultUser,
+                                    ResetBy = DefaultUser,
                                     RawReport = new RawReport
                                     {
                                         ApiKey = ApiKey,

@@ -228,6 +228,12 @@
                 public const string WrongReportStatus = "alert.dismissReport.wrongReportStatus";
             }
 
+            public static class ResetReport
+            {
+                public const string WrongAlertStatus = "alert.resetReport.wrongAlertStatus";
+                public const string WrongReportStatus = "alert.resetReport.wrongReportStatus";
+            }
+
             public static class EscalateAlert
             {
                 public const string ThresholdNotReached = "alert.escalateAlert.thresholdNotReached";

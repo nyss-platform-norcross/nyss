@@ -20,6 +20,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
     {
         Task<Alert> ReportAdded(Report report);
         Task ReportDismissed(int reportId);
+        Task ReportReset(int reportId);
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
         Task CheckIfAlertHasBeenHandled(int alertId);
     }
@@ -113,6 +114,53 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             await RecalculateAlert(report, alertRule);
             await RejectAlertWhenRequirementsAreNotMet(reportId, alertRule, inspectedAlert);
+
+            await _nyssContext.SaveChangesAsync();
+            transactionScope.Complete();
+        }
+
+        public async Task ReportReset(int reportId)
+        {
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+            var inspectedAlert = await _nyssContext.AlertReports
+                .Where(ar => ar.ReportId == reportId)
+                .Where(ar => ar.Alert.Status == AlertStatus.Pending)
+                .Select(ar => ar.Alert)
+                .SingleOrDefaultAsync();
+
+            if (inspectedAlert == null)
+            {
+                _loggerAdapter.Warn($"The alert for report with id {reportId} does not exist or has status different than pending.");
+                return;
+            }
+
+            var report = await _nyssContext.Reports
+                .Include(r => r.ProjectHealthRisk)
+                .ThenInclude(phr => phr.AlertRule)
+                .Where(r => r.Id == reportId)
+                .SingleOrDefaultAsync();
+
+            if (report == null)
+            {
+                _loggerAdapter.Warn($"The report with id {reportId} does not exist.");
+                return;
+            }
+
+            var shouldBeRecalculated = report.Status == ReportStatus.Rejected;
+            
+            if (report.Status == ReportStatus.Accepted || report.Status == ReportStatus.Rejected)
+            {
+                report.Status = ReportStatus.Pending;
+            }
+
+            if (shouldBeRecalculated)
+            {
+                var alertRule = report.ProjectHealthRisk.AlertRule;
+
+                await RecalculateAlert(report, alertRule);
+                await RejectAlertWhenRequirementsAreNotMet(reportId, alertRule, inspectedAlert);
+            }
 
             await _nyssContext.SaveChangesAsync();
             transactionScope.Complete();

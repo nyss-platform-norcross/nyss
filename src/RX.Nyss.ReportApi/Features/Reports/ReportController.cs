@@ -26,5 +26,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
             await _reportService.DismissReport(reportId)
                 ? (StatusCodeResult)new OkResult()
                 : new BadRequestResult();
+
+        [HttpPost("reset")]
+        public async Task<IActionResult> Reset(int reportId) =>
+            await _reportService.ResetReport(reportId)
+                ? (StatusCodeResult)new OkResult()
+                : new BadRequestResult();
     }
 }
