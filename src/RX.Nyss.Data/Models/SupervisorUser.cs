@@ -9,5 +9,6 @@ namespace RX.Nyss.Data.Models
         public virtual ICollection<SupervisorUserProject> SupervisorUserProjects { get; set; } = new List<SupervisorUserProject>();
         public virtual Project CurrentProject { get; set; }
         public int DecadeOfBirth { get; set; }
+        public virtual ICollection<SupervisorUserAlertRecipient> SupervisorAlertRecipients { get; set; }
     }
 }

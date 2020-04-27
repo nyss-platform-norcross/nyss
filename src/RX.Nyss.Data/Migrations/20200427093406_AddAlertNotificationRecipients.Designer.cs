@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20200427093406_AddAlertNotificationRecipients")]
+    partial class AddAlertNotificationRecipients
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1184,7 +1186,7 @@ namespace RX.Nyss.Data.Migrations
                         {
                             Id = 5,
                             CountryCode = "AD",
-                            Name = "Andorra"
+                            Name = "AndorrA"
                         },
                         new
                         {
@@ -2085,31 +2087,6 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Notifications");
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.Organization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<int>("NationalSocietyId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NationalSocietyId");
-
-                    b.HasIndex("Name", "NationalSocietyId")
-                        .IsUnique();
-
-                    b.ToTable("Organizations");
-                });
-
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -2180,29 +2157,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectHealthRisks");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.ProjectOrganization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProjectId", "OrganizationId")
-                        .IsUnique();
-
-                    b.ToTable("ProjectOrganizations");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.RawReport", b =>
@@ -2369,12 +2323,6 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("ReportedCaseCount")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ResetAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("ResetById")
-                        .HasColumnType("int");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(20)")
@@ -2397,8 +2345,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("RejectedById");
 
                     b.HasIndex("ReportGroupLabel");
-
-                    b.HasIndex("ResetById");
 
                     b.ToTable("Reports");
                 });
@@ -2499,14 +2445,9 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("NationalSocietyId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrganizationId")
-                        .HasColumnType("int");
-
                     b.HasKey("UserId", "NationalSocietyId");
 
                     b.HasIndex("NationalSocietyId");
-
-                    b.HasIndex("OrganizationId");
 
                     b.ToTable("UserNationalSocieties");
                 });
@@ -2571,13 +2512,6 @@ namespace RX.Nyss.Data.Migrations
                             PhoneNumber = "",
                             Role = "Administrator"
                         });
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.CoordinatorUser", b =>
-                {
-                    b.HasBaseType("RX.Nyss.Data.Models.User");
-
-                    b.HasDiscriminator().HasValue("Coordinator");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.DataConsumerUser", b =>
@@ -2792,15 +2726,6 @@ namespace RX.Nyss.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.Organization", b =>
-                {
-                    b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
-                        .WithMany("Organizations")
-                        .HasForeignKey("NationalSocietyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
@@ -2825,21 +2750,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
                         .WithMany("ProjectHealthRisks")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.ProjectOrganization", b =>
-                {
-                    b.HasOne("RX.Nyss.Data.Models.Organization", "Organization")
-                        .WithMany("OrganizationProjects")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
-                        .WithMany("ProjectOrganizations")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2905,10 +2815,6 @@ namespace RX.Nyss.Data.Migrations
                         .WithMany()
                         .HasForeignKey("RejectedById")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("RX.Nyss.Data.Models.User", "ResetBy")
-                        .WithMany()
-                        .HasForeignKey("ResetById");
 
                     b.OwnsOne("RX.Nyss.Data.Models.DataCollectionPointCase", "DataCollectionPointCase", b1 =>
                         {
@@ -3034,11 +2940,6 @@ namespace RX.Nyss.Data.Migrations
                         .HasForeignKey("NationalSocietyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.Organization", "Organization")
-                        .WithMany("NationalSocietyUsers")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("RX.Nyss.Data.Models.User", "User")
                         .WithMany("UserNationalSocieties")

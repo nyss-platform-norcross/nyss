@@ -26,12 +26,10 @@ namespace RX.Nyss.Data.Models
 
         public virtual ICollection<DataCollector> DataCollectors { get; set; }
 
-        public virtual ICollection<EmailAlertRecipient> EmailAlertRecipients { get; set; }
-
-        public virtual ICollection<SmsAlertRecipient> SmsAlertRecipients { get; set; }
-
         public virtual ICollection<SupervisorUserProject> SupervisorUserProjects { get; set; }
 
+        public virtual ICollection<AlertNotificationRecipient> AlertNotificationRecipients { get; set; }
+        
         public virtual ICollection<ProjectOrganization> ProjectOrganizations { get; set; }
     }
 }

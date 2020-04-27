@@ -14,6 +14,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.StartDate).IsRequired();
             builder.Property(x => x.EndDate);
             builder.HasOne(x => x.NationalSociety).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(x => x.AlertNotificationRecipients).WithOne().HasForeignKey(anr => anr.ProjectId);
         }
     }
 }

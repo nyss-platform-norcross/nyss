@@ -11,8 +11,7 @@ namespace RX.Nyss.Data
     public interface INyssContext
     {
         DbSet<Alert> Alerts { get; set; }
-        DbSet<EmailAlertRecipient> EmailAlertRecipients { get; set; }
-        DbSet<SmsAlertRecipient> SmsAlertRecipients { get; set; }
+        DbSet<AlertNotificationRecipient> AlertNotificationRecipients { get; set; }
         DbSet<AlertReport> AlertReports { get; set; }
         DbSet<AlertRule> AlertRules { get; set; }
         DbSet<ApplicationLanguage> ApplicationLanguages { get; set; }
@@ -30,6 +29,7 @@ namespace RX.Nyss.Data
         DbSet<Notification> Notifications { get; set; }
         DbSet<Project> Projects { get; set; }
         DbSet<SupervisorUserProject> SupervisorUserProjects { get; set; }
+        DbSet<SupervisorUserAlertRecipient> SupervisorUserAlertRecipients { get; set; }
         DbSet<ProjectHealthRisk> ProjectHealthRisks { get; set; }
         DbSet<RawReport> RawReports { get; set; }
         DbSet<Region> Regions { get; set; }
