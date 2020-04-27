@@ -15,8 +15,7 @@ const createClusterIcon = (cluster) => {
 
   return new TextIcon({
     size: calculateIconSize(count, totalReports),
-    text: count,
-    multiple: true
+    text: count
   });
 }
 
