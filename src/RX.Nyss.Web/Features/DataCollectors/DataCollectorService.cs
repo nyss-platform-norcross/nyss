@@ -15,6 +15,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
+using RX.Nyss.Web.Features.DataCollectors.Access;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Services.Authorization;
@@ -36,8 +37,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
         Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId);
-        Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining);
         Task AnonymizeDataCollectorsWithReports(int projectId);
+        Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -500,19 +501,16 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success(result);
         }
 
-        public async Task<Result> SetTrainingState(int dataCollectorId, bool isInTraining)
+        public async Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto)
         {
-            var dataCollector = await _nyssContext.DataCollectors.FindAsync(dataCollectorId);
+            var dataCollectors = await _nyssContext.DataCollectors
+                .Where(dc => dto.DataCollectorIds.Contains(dc.Id))
+                .ToListAsync();
 
-            if (dataCollector == null)
-            {
-                return Error(ResultKey.DataCollector.DataCollectorNotFound);
-            }
-
-            dataCollector.IsInTrainingMode = isInTraining;
+            dataCollectors.ForEach(dc => dc.IsInTrainingMode = dto.InTraining);
             await _nyssContext.SaveChangesAsync();
 
-            return SuccessMessage(isInTraining
+            return SuccessMessage(dto.InTraining
                 ? ResultKey.DataCollector.SetInTrainingSuccess
                 : ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }

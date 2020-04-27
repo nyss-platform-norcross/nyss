@@ -10,13 +10,17 @@ import {
   OPEN_DATA_COLLECTORS_PERFORMANCE_LIST,
   GET_DATA_COLLECTORS_PERFORMANCE,
   EXPORT_DATA_COLLECTORS_TO_CSV,
-  EXPORT_DATA_COLLECTORS_TO_EXCEL
+  EXPORT_DATA_COLLECTORS_TO_EXCEL,
+  SELECT_DATA_COLLECTOR,
+  SELECT_ALL_DATA_COLLECTOR
 } from "./dataCollectorsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors/list`);
 export const goToOverview = (projectId) => push(`/projects/${projectId}/datacollectors/mapoverview`);
 export const goToCreation = (projectId) => push(`/projects/${projectId}/datacollectors/add`);
 export const goToEdition = (projectId, dataCollectorId) => push(`/projects/${projectId}/datacollectors/${dataCollectorId}/edit`);
+export const selectDataCollector = (dataCollectorId, value) => ({ type: SELECT_DATA_COLLECTOR, dataCollectorId, value })
+export const selectAllDataCollectors = (value) => ({ type: SELECT_ALL_DATA_COLLECTOR, value })
 
 export const openList = {
   invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_LIST.INVOKE, projectId }),
@@ -89,10 +93,10 @@ export const getMapDetails = {
 };
 
 export const setTrainingState = {
-  invoke: (dataCollectorId, inTraining) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, dataCollectorId, inTraining }),
-  request: (dataCollectorId) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.REQUEST, dataCollectorId }),
-  success: (dataCollectorId, inTraining) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.SUCCESS, dataCollectorId, inTraining }),
-  failure: (dataCollectorId) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE, dataCollectorId })
+  invoke: (dataCollectorIds, inTraining) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, dataCollectorIds, inTraining }),
+  request: (dataCollectorIds) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.REQUEST, dataCollectorIds }),
+  success: (dataCollectorIds, inTraining) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.SUCCESS, dataCollectorIds, inTraining }),
+  failure: (dataCollectorIds, message) => ({ type: SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE, dataCollectorIds, message })
 };
 
 export const openDataCollectorsPerformanceList = {

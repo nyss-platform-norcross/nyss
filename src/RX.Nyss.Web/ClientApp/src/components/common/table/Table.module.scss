@@ -28,6 +28,8 @@
   }
 
   th {
+    z-index: 1;
+
     @media screen and (min-width: 1280px) {
         top: 0px !important;
         position: sticky;

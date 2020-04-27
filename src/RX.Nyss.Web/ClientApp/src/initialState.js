@@ -144,6 +144,7 @@ export const initialState = {
     listRemoving: {},
     listStale: true,
     listData: [],
+    listSelectedAll: false,
     formRegions: [],
     formSupervisors: [],
     formFetching: false,

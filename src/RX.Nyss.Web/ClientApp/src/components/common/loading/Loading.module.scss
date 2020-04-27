@@ -19,4 +19,10 @@
       position: absolute;
     }
   }
+
+  &.top {
+    > svg {
+      top: 200px;
+    }
+  }
 }

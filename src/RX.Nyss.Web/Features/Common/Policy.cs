@@ -10,6 +10,7 @@
         TechnicalAdvisorAccess,
         SupervisorAccess,
         DataCollectorAccess,
+        MultipleDataCollectorsAccess,
         HeadManagerAccess,
         RegionAccess,
         DistrictAccess,

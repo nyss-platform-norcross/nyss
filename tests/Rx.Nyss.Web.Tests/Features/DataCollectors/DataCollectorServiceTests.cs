@@ -336,16 +336,14 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         }
 
         [Fact]
-        public void SetTrainingState_WhenDataCollectorDoesNotExist_ShouldThrowException()
-        {
-            Should.ThrowAsync<Exception>(() => _dataCollectorService.SetTrainingState(3, true));
-        }
-
-        [Fact]
         public async Task SetTrainingState_WhenDataCollectorExists_ShouldReturnSuccess()
         {
             // Act
-            var result = await _dataCollectorService.SetTrainingState(DataCollectorWithoutReportsId, true);
+            var result = await _dataCollectorService.SetTrainingState(new SetDataCollectorsTrainingStateRequestDto
+            {
+                DataCollectorIds = new [] { DataCollectorWithoutReportsId },
+                InTraining = true
+            });
 
             // Assert
             await _nyssContextMock.Received(1).SaveChangesAsync();
