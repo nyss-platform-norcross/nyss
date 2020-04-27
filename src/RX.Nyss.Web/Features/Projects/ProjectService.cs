@@ -80,15 +80,13 @@ namespace RX.Nyss.Web.Features.Projects
                         CaseDefinition = phr.CaseDefinition,
                         ContainsReports = phr.Reports.Any()
                     }),
-                    EmailAlertRecipients = p.EmailAlertRecipients.Select(ear => new EmailAlertRecipientDto
+                    AlertNotificationRecipients = p.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipientDto
                     {
-                        Id = ear.Id,
-                        Email = ear.EmailAddress
-                    }),
-                    SmsAlertRecipients = p.SmsAlertRecipients.Select(sar => new SmsAlertRecipientDto
-                    {
-                        Id = sar.Id,
-                        PhoneNumber = sar.PhoneNumber
+                        Id = anr.Id,
+                        Email = anr.Email,
+                        Organization = anr.Organization,
+                        PhoneNumber = anr.PhoneNumber,
+                        Role = anr.Role
                     }),
                     ContentLanguageId = p.NationalSociety.ContentLanguage.Id,
                     HasCoordinator = p.NationalSociety.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
@@ -223,6 +221,13 @@ namespace RX.Nyss.Web.Features.Projects
                             KilometersThreshold = phr.AlertRuleKilometersThreshold
                         }
                     }).ToList(),
+                    AlertNotificationRecipients = projectRequestDto.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipient
+                    {
+                        Role = anr.Role,
+                        Organization = anr.Organization,
+                        Email = anr.Email,
+                        PhoneNumber = anr.PhoneNumber
+                    }).ToList(),
                     ProjectOrganizations = organizationId.HasValue
                         ? new List<ProjectOrganization>
                         {
@@ -231,9 +236,7 @@ namespace RX.Nyss.Web.Features.Projects
                                 OrganizationId = organizationId.Value
                             }
                         }
-                        : new List<ProjectOrganization>(),
-                    EmailAlertRecipients = projectRequestDto.EmailAlertRecipients.Select(ar => new EmailAlertRecipient { EmailAddress = ar.Email }).ToList(),
-                    SmsAlertRecipients = projectRequestDto.SmsAlertRecipients.Select(ar => new SmsAlertRecipient { PhoneNumber = ar.PhoneNumber }).ToList()
+                        : new List<ProjectOrganization>()
                 };
 
                 await _nyssContext.Projects.AddAsync(projectToAdd);
@@ -255,8 +258,7 @@ namespace RX.Nyss.Web.Features.Projects
                 var projectToUpdate = await _nyssContext.Projects
                     .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.AlertRule)
-                    .Include(p => p.EmailAlertRecipients)
-                    .Include(p => p.SmsAlertRecipients)
+                    .Include(p => p.AlertNotificationRecipients)
                     .FirstOrDefaultAsync(p => p.Id == projectId);
 
                 if (projectToUpdate == null)
@@ -274,8 +276,7 @@ namespace RX.Nyss.Web.Features.Projects
 
                 await UpdateHealthRisks(projectToUpdate, projectRequestDto);
 
-                UpdateEmailAlertRecipients(projectToUpdate, projectRequestDto);
-                UpdateSmsAlertRecipients(projectToUpdate, projectRequestDto);
+                UpdateAlertNotificationRecipients(projectToUpdate, projectRequestDto);
 
                 await _nyssContext.SaveChangesAsync();
 
@@ -437,52 +438,36 @@ namespace RX.Nyss.Web.Features.Projects
             }
         }
 
-        private void UpdateEmailAlertRecipients(Project projectToUpdate, ProjectRequestDto projectRequestDto)
+        private void UpdateAlertNotificationRecipients(Project projectToUpdate, ProjectRequestDto projectRequestDto)
         {
-            var alertRecipientIdsFromDto = projectRequestDto.EmailAlertRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
-            var alertRecipientsToDelete = projectToUpdate.EmailAlertRecipients.Where(ar => !alertRecipientIdsFromDto.Contains(ar.Id));
-            _nyssContext.EmailAlertRecipients.RemoveRange(alertRecipientsToDelete);
+            var alertNotificationRecipientIdsFromDto = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
+            var alertRecipientsToDelete = projectToUpdate.AlertNotificationRecipients.Where(ar => !alertNotificationRecipientIdsFromDto.Contains(ar.Id));
+            _nyssContext.AlertNotificationRecipients.RemoveRange(alertRecipientsToDelete);
 
-            var alertRecipientsToAdd = projectRequestDto.EmailAlertRecipients.Where(ar => ar.Id == null);
-            foreach (var alertRecipient in alertRecipientsToAdd)
+            var alertNotificationRecipientsToAdd = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id == null);
+            foreach (var alertNotificationRecipient in alertNotificationRecipientsToAdd)
             {
-                var alertRecipientToAdd = new EmailAlertRecipient { EmailAddress = alertRecipient.Email };
-                projectToUpdate.EmailAlertRecipients.Add(alertRecipientToAdd);
-            }
-
-            var alertRecipientsToUpdate = projectRequestDto.EmailAlertRecipients.Where(ar => ar.Id.HasValue);
-            foreach (var alertRecipient in alertRecipientsToUpdate)
-            {
-                var alertRecipientToUpdate = projectToUpdate.EmailAlertRecipients.FirstOrDefault(ar => ar.Id == alertRecipient.Id.Value);
-
-                if (alertRecipientToUpdate != null)
+                var alertNotificationRecipientToAdd = new AlertNotificationRecipient
                 {
-                    alertRecipientToUpdate.EmailAddress = alertRecipient.Email;
-                }
-            }
-        }
-
-        private void UpdateSmsAlertRecipients(Project projectToUpdate, ProjectRequestDto projectRequestDto)
-        {
-            var alertRecipientIdsFromDto = projectRequestDto.SmsAlertRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
-            var alertRecipientsToDelete = projectToUpdate.SmsAlertRecipients.Where(ar => !alertRecipientIdsFromDto.Contains(ar.Id));
-            _nyssContext.SmsAlertRecipients.RemoveRange(alertRecipientsToDelete);
-
-            var alertRecipientsToAdd = projectRequestDto.SmsAlertRecipients.Where(ar => ar.Id == null);
-            foreach (var alertRecipient in alertRecipientsToAdd)
-            {
-                var alertRecipientToAdd = new SmsAlertRecipient { PhoneNumber = alertRecipient.PhoneNumber };
-                projectToUpdate.SmsAlertRecipients.Add(alertRecipientToAdd);
+                    Role = alertNotificationRecipient.Role,
+                    Organization = alertNotificationRecipient.Organization,
+                    Email = alertNotificationRecipient.Email,
+                    PhoneNumber = alertNotificationRecipient.PhoneNumber
+                };
+                projectToUpdate.AlertNotificationRecipients.Add(alertNotificationRecipientToAdd);
             }
 
-            var alertRecipientsToUpdate = projectRequestDto.SmsAlertRecipients.Where(ar => ar.Id.HasValue);
-            foreach (var alertRecipient in alertRecipientsToUpdate)
+            var alertNotificationRecipientsToUpdate = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id.HasValue);
+            foreach (var alertNotificationRecipient in alertNotificationRecipientsToUpdate)
             {
-                var alertRecipientToUpdate = projectToUpdate.SmsAlertRecipients.FirstOrDefault(ar => ar.Id == alertRecipient.Id.Value);
+                var alertNotificationRecipientToUpdate = projectToUpdate.AlertNotificationRecipients.FirstOrDefault(ar => ar.Id == alertNotificationRecipient.Id.Value);
 
-                if (alertRecipientToUpdate != null)
+                if (alertNotificationRecipientToUpdate != null)
                 {
-                    alertRecipientToUpdate.PhoneNumber = alertRecipient.PhoneNumber;
+                    alertNotificationRecipientToUpdate.Role = alertNotificationRecipient.Role;
+                    alertNotificationRecipientToUpdate.Organization = alertNotificationRecipient.Organization;
+                    alertNotificationRecipientToUpdate.PhoneNumber = alertNotificationRecipient.PhoneNumber;
+                    alertNotificationRecipientToUpdate.Email = alertNotificationRecipient.Email;
                 }
             }
         }

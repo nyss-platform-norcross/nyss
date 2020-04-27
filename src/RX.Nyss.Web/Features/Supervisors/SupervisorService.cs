@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -28,17 +29,17 @@ namespace RX.Nyss.Web.Features.Supervisors
     public class SupervisorService : ISupervisorService
     {
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly INyssContext _dataContext;
+        private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext dataContext,
+        public SupervisorService(IIdentityUserRegistrationService identityUserRegistrationService, INyssContext nyssContext,
             ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IDateTimeProvider dateTimeProvider)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
-            _dataContext = dataContext;
+            _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
             _deleteUserService = deleteUserService;
@@ -73,7 +74,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
         public async Task<Result<GetSupervisorResponseDto>> Get(int supervisorId)
         {
-            var supervisor = await _dataContext.Users.FilterAvailable()
+            var supervisor = await _nyssContext.Users.FilterAvailable()
                 .OfType<SupervisorUser>()
                 .Where(u => u.Id == supervisorId)
                 .Select(u => new GetSupervisorResponseDto
@@ -97,7 +98,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                     },
                     EditSupervisorFormData = new EditSupervisorFormDataDto
                     {
-                        AvailableProjects = _dataContext.Projects
+                        AvailableProjects = _nyssContext.Projects
                             .Where(p => p.NationalSociety.Id == u.UserNationalSocieties.Select(uns => uns.NationalSocietyId).Single())
                             .Where(p => p.State == ProjectState.Open)
                             .Select(p => new EditSupervisorFormDataDto.ListProjectsResponseDto
@@ -147,7 +148,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
                 await UpdateSupervisorProjectReferences(supervisorUser, supervisorUserData.CurrentProjectReference, editSupervisorRequestDto.ProjectId);
 
-                await _dataContext.SaveChangesAsync();
+                await _nyssContext.SaveChangesAsync();
                 return Success();
             }
             catch (ResultException e)
@@ -177,7 +178,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                 await _identityUserRegistrationService.DeleteIdentityUser(supervisorUserData.User.IdentityUserId);
                 supervisorUserData.User.IdentityUserId = null;
 
-                await _dataContext.SaveChangesAsync();
+                await _nyssContext.SaveChangesAsync();
                 transactionScope.Complete();
 
                 return Success();
@@ -190,7 +191,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
             async Task EnsureSupervisorHasNoDataCollectors(SupervisorUser supervisorUser)
             {
-                var dataCollectorInfo = await _dataContext.DataCollectors
+                var dataCollectorInfo = await _nyssContext.DataCollectors
                     .Where(dc => dc.Supervisor == supervisorUser)
                     .Select(dc => new
                     {
@@ -215,7 +216,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
         private async Task<SupervisorUser> CreateSupervisorUser(IdentityUser identityUser, int nationalSocietyId, CreateSupervisorRequestDto createSupervisorRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+            var nationalSociety = await _nyssContext.NationalSocieties.Include(ns => ns.ContentLanguage)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -228,7 +229,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                 throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
             }
 
-            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+            var defaultUserApplicationLanguage = await _nyssContext.ApplicationLanguages
                 .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
 
             var user = new SupervisorUser
@@ -246,10 +247,13 @@ namespace RX.Nyss.Web.Features.Supervisors
 
             await AddNewSupervisorToProject(user, createSupervisorRequestDto.ProjectId, nationalSocietyId);
 
+            var alertNotificationRecipients = await GetAlertNotificationRecipients(createSupervisorRequestDto.SupervisorAlertRecipients);
+            await AttachAlertRecipientsToSupervisor(user, alertNotificationRecipients);
+
             var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
 
-            await _dataContext.AddAsync(userNationalSociety);
-            await _dataContext.SaveChangesAsync();
+            await _nyssContext.AddAsync(userNationalSociety);
+            await _nyssContext.SaveChangesAsync();
             return user;
         }
 
@@ -257,7 +261,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         {
             if (projectId.HasValue)
             {
-                var project = await _dataContext.Projects
+                var project = await _nyssContext.Projects
                     .Where(p => p.State == ProjectState.Open)
                     .Where(p => p.NationalSociety.Id == nationalSocietyId)
                     .SingleOrDefaultAsync(p => p.Id == projectId.Value);
@@ -275,7 +279,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         {
             var newSupervisorUserProject = CreateSupervisorUserProjectReference(project, user);
             user.CurrentProject = project;
-            await _dataContext.AddAsync(newSupervisorUserProject);
+            await _nyssContext.AddAsync(newSupervisorUserProject);
         }
 
         private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
@@ -292,6 +296,35 @@ namespace RX.Nyss.Web.Features.Supervisors
                 SupervisorUser = supervisorUser
             };
 
+        private async Task AttachAlertRecipientsToSupervisor(SupervisorUser user, IEnumerable<AlertNotificationRecipient> alertNotificationRecipients)
+        {
+            foreach (var sar in alertNotificationRecipients)
+            {
+                var supervisorAlertRecipient = CreateSupervisorAlertRecipientReference(user, sar);
+                user.SupervisorAlertRecipients.Add(supervisorAlertRecipient);
+                await _nyssContext.SupervisorUserAlertRecipients.AddAsync(supervisorAlertRecipient);
+            }
+        }
+
+        private SupervisorUserAlertRecipient CreateSupervisorAlertRecipientReference(SupervisorUser user, AlertNotificationRecipient alertNotificationRecipient) => 
+            new SupervisorUserAlertRecipient
+            {
+                Supervisor = user,
+                SupervisorId = user.Id,
+                AlertNotificationRecipient = alertNotificationRecipient,
+                AlertNotificationRecipientId = alertNotificationRecipient.Id
+            };
+
+        private async Task<IEnumerable<AlertNotificationRecipient>> GetAlertNotificationRecipients(IEnumerable<int> alertNotificationRecipientIds)
+        {
+            var alertNotificationRecipients = new List<AlertNotificationRecipient>();
+            foreach (var id in alertNotificationRecipientIds)
+            {
+                alertNotificationRecipients.Add(await _nyssContext.AlertNotificationRecipients.FirstOrDefaultAsync(anr => anr.Id == id));
+            }
+            return alertNotificationRecipients;
+        }
+
         private async Task UpdateSupervisorProjectReferences(SupervisorUser user, SupervisorUserProject currentProjectReference, int? selectedProjectId)
         {
             var projectHasNotChanged = selectedProjectId.HasValue && selectedProjectId.Value == currentProjectReference?.ProjectId;
@@ -302,7 +335,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
             if (selectedProjectId.HasValue)
             {
-                var supervisorHasNotDeletedDataCollectors = await _dataContext.DataCollectors.Where(dc => dc.Supervisor == user)
+                var supervisorHasNotDeletedDataCollectors = await _nyssContext.DataCollectors.Where(dc => dc.Supervisor == user)
                     .AnyAsync(dc => dc.Project == dc.Supervisor.CurrentProject && !dc.DeletedAt.HasValue);
 
                 if (supervisorHasNotDeletedDataCollectors)
@@ -310,7 +343,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                     throw new ResultException(ResultKey.User.Supervisor.CannotChangeProjectSupervisorHasDataCollectors);
                 }
 
-                var project = await _dataContext.Projects
+                var project = await _nyssContext.Projects
                     .Where(p => p.State == ProjectState.Open)
                     .Where(p => user.UserNationalSocieties.Select(uns => uns.NationalSocietyId).Contains(p.NationalSociety.Id))
                     .SingleOrDefaultAsync(p => p.Id == selectedProjectId.Value);
@@ -330,7 +363,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         {
             if (existingProjectReference != null)
             {
-                _dataContext.SupervisorUserProjects.Remove(existingProjectReference);
+                _nyssContext.SupervisorUserProjects.Remove(existingProjectReference);
             }
         }
 
@@ -344,7 +377,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
         public async Task<SupervisorUserData> GetSupervisorUser(int supervisorUserId)
         {
-            var supervisorUserData = await _dataContext.Users.FilterAvailable()
+            var supervisorUserData = await _nyssContext.Users.FilterAvailable()
                 .OfType<SupervisorUser>()
                 .Include(u => u.UserNationalSocieties)
                 .Where(u => u.Id == supervisorUserId)
