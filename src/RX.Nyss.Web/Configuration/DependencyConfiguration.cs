@@ -210,6 +210,9 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.ReportAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectAccessHandler>.Requirement()));
+
+                options.AddPolicy(Policy.Coordinator.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<CoordinatorAccessHandler>.Requirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
@@ -228,6 +231,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, ZoneAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, AlertAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ReportAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, CoordinatorAccessHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

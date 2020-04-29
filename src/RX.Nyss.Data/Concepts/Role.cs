@@ -7,6 +7,7 @@
         TechnicalAdvisor,
         DataConsumer,
         Manager,
-        Supervisor
+        Supervisor,
+        Coordinator
     }
 }
