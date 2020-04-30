@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// </summary>
         /// <returns></returns>
         [HttpGet("{nationalSocietyId}/get")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<NationalSocietyResponseDto>> Get(int nationalSocietyId) =>
             await _nationalSocietyService.Get(nationalSocietyId);
 
@@ -33,7 +33,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// </summary>
         /// <returns></returns>
         [HttpGet("list")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.TechnicalAdvisor, Role.DataConsumer)]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.TechnicalAdvisor, Role.DataConsumer, Role.Coordinator)]
         public async Task<Result<List<NationalSocietyListResponseDto>>> List() =>
             await _nationalSocietyService.List();
 
@@ -54,7 +54,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// <param name="nationalSociety"></param>
         /// <returns></returns>
         [HttpPost("{nationalSocietyId}/edit")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Edit(int nationalSocietyId, [FromBody] EditNationalSocietyRequestDto nationalSociety) =>
             await _nationalSocietyService.Edit(nationalSocietyId, nationalSociety);
 

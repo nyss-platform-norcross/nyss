@@ -34,9 +34,7 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> List(int nationalSocietyId)
         {
-            var usersQuery = _authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator)
-                ? _dataContext.UserNationalSocieties.Where(u => u.User.Role != Role.Supervisor)
-                : _dataContext.UserNationalSocieties;
+            var usersQuery = GetFilteredUsersQuery();
 
             var users = await usersQuery
                 .FilterAvailableUsers()
@@ -58,6 +56,22 @@ namespace RX.Nyss.Web.Features.Users
                 .ToListAsync();
 
             return new Result<List<GetNationalSocietyUsersResponseDto>>(users, true);
+        }
+
+        private IQueryable<UserNationalSociety> GetFilteredUsersQuery()
+        {
+            if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
+            {
+                return _dataContext.UserNationalSocieties.Where(u => u.User.Role != Role.Supervisor);
+            }
+
+            if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
+            {
+                return _dataContext.UserNationalSocieties.Where(u => u.User.Role == Role.Coordinator || u.NationalSociety.HeadManager == u.User);
+            }
+
+            return _dataContext.UserNationalSocieties;
+            
         }
 
         public async Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId)
