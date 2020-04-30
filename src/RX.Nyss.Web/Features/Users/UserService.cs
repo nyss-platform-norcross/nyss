@@ -67,7 +67,8 @@ namespace RX.Nyss.Web.Features.Users
 
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
-                return _dataContext.UserNationalSocieties.Where(u => u.User.Role == Role.Coordinator || u.NationalSociety.HeadManager == u.User);
+                return _dataContext.UserNationalSocieties
+                    .Where(u => u.NationalSociety.HeadManager == u.User || u.NationalSociety.PendingHeadManager == u.User);
             }
 
             return _dataContext.UserNationalSocieties;

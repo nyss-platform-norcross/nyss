@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         [HttpGet("filters")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.GlobalCoordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<NationalSocietyDashboardFiltersResponseDto>> Filters(int nationalSocietyId) =>
             _nationalSocietyDashboardService.GetFiltersData(nationalSocietyId);
 
@@ -37,7 +37,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         /// <param name="dto">Filter</param>
         /// <returns>A summary of specified project</returns>
         [HttpPost("data")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.GlobalCoordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<NationalSocietyDashboardResponseDto>> Data(int nationalSocietyId, [FromBody] NationalSocietyDashboardFiltersRequestDto dto) =>
             _nationalSocietyDashboardService.GetData(nationalSocietyId, dto);
 
@@ -49,7 +49,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         /// <param name="longitude">Longitude of chosen location</param>
         /// <param name="filters">Filters</param>
         [HttpPost("reportHealthRisks")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.GlobalCoordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> ReportHealthRisks(int nationalSocietyId, double latitude, double longitude,
             [FromBody] NationalSocietyDashboardFiltersRequestDto filters) =>
             await _nationalSocietyDashboardService.GetReportHealthRisks(nationalSocietyId, latitude, longitude, filters);

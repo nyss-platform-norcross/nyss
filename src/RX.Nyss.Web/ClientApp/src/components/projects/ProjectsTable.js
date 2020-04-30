@@ -26,7 +26,7 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
     setRemoveConfirmationDialog({ isOpen: false })
   }
 
-  const userCanCloseProject = callingUserRoles.some(r => r === roles.Administrator) || isHeadManager;
+  const userCanCloseProject = callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) || isHeadManager;
 
   if (isListFetching) {
     return <Loading />;

@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.Users
         /// <param name="nationalSocietyId">The id of the national society to list the users from</param>
         /// <returns></returns>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> List(int nationalSocietyId) =>
             await _userService.List(nationalSocietyId);
 

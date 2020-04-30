@@ -1,39 +1,39 @@
-import { Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer, Supervisor } from "./roles";
+import { Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, Coordinator } from "./roles";
 
 export const accessMap = {
   nationalSocieties: {
-    showDashboard: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer],
+    showDashboard: [Administrator, GlobalCoordinator, Manager, Coordinator, TechnicalAdvisor, DataConsumer],
     list: [Administrator, GlobalCoordinator, TechnicalAdvisor, DataConsumer],
     add: [Administrator, GlobalCoordinator],
-    edit: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
+    edit: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, Coordinator],
     delete: [Administrator, GlobalCoordinator],
     archive: [Administrator, GlobalCoordinator],
-    get: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer],
+    get: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer, Coordinator],
   },
   nationalSocietyStructure: {
-    edit: [Administrator, Manager, TechnicalAdvisor]
+    edit: [Administrator, Manager, TechnicalAdvisor, Coordinator]
   },
   smsGateways: {
-    list: [Administrator, Manager, TechnicalAdvisor],
-    add: [Administrator, Manager, TechnicalAdvisor],
-    edit: [Administrator, Manager, TechnicalAdvisor],
-    delete: [Administrator, Manager, TechnicalAdvisor]
+    list: [Administrator, Manager, TechnicalAdvisor, Coordinator],
+    add: [Administrator, Manager, TechnicalAdvisor, Coordinator],
+    edit: [Administrator, Manager, TechnicalAdvisor, Coordinator],
+    delete: [Administrator, Manager, TechnicalAdvisor, Coordinator]
   },
   projects: {
-    get: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
-    showOverview: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    showDashboard: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor],
-    list: [Administrator, Manager, TechnicalAdvisor, DataConsumer],
-    add: [Administrator, Manager, TechnicalAdvisor],
-    edit: [Administrator, Manager, TechnicalAdvisor],
-    delete: [Administrator, Manager, TechnicalAdvisor]
+    get: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, Coordinator],
+    showOverview: [Administrator, Manager, TechnicalAdvisor, Supervisor, Coordinator],
+    showDashboard: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, Coordinator],
+    list: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Coordinator],
+    add: [Administrator, Manager, TechnicalAdvisor, Coordinator],
+    edit: [Administrator, Manager, TechnicalAdvisor, Coordinator],
+    delete: [Administrator, Manager, TechnicalAdvisor, Coordinator]
   },
   nationalSocietyUsers: {
-    list: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
-    add: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
-    edit: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
-    delete: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor],
-    headManagerAccess: [GlobalCoordinator, Administrator]
+    list: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, Coordinator],
+    add: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, Coordinator],
+    edit: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, Coordinator],
+    delete: [Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, Coordinator],
+    headManagerAccess: [GlobalCoordinator, Administrator, Coordinator]
   },
   globalCoordinators: {
     list: [Administrator, GlobalCoordinator],
@@ -65,7 +65,7 @@ export const accessMap = {
     list: [Administrator, Manager, TechnicalAdvisor],
   },
   alerts: {
-    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor, Coordinator],
     assess: [Administrator, Manager, TechnicalAdvisor, Supervisor],
   },
   translations: {

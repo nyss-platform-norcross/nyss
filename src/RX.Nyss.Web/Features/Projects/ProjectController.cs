@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="projectId">An identifier of a project</param>
         /// <returns>A project</returns>
         [HttpGet("{projectId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<ProjectResponseDto>> Get(int projectId) =>
             _projectService.Get(projectId);
 
@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns>A list of projects assigned to the national society</returns>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId) =>
             _projectService.List(nationalSocietyId);
 
@@ -46,7 +46,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="projectRequestDto">A project</param>
         /// <returns>An identifier of the created project</returns>
         [HttpPost("create")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<int>> Create(int nationalSocietyId, [FromBody] ProjectRequestDto projectRequestDto) =>
             _projectService.Create(nationalSocietyId, projectRequestDto);
 
@@ -57,7 +57,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="projectRequestDto">A project</param>
         /// <returns></returns>
         [HttpPost("{projectId:int}/edit")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result> Edit(int projectId, [FromBody] ProjectRequestDto projectRequestDto) =>
             _projectService.Edit(projectId, projectRequestDto);
 
@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns></returns>
         [HttpPost("{projectId:int}/close")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess), NeedsPolicy(Policy.HeadManagerAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess), NeedsPolicy(Policy.HeadManagerAccess)]
         public Task<Result> Close(int projectId, int nationalSocietyId) =>
             _projectService.Close(projectId);
 
@@ -78,7 +78,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="projectId">An identifier of a project</param>
         /// <returns>Basic information about a project</returns>
         [HttpGet("{projectId:int}/basicData")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId) =>
             await _projectService.GetBasicData(projectId);
 
@@ -98,7 +98,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="nationalSocietyId">The id of the national society</param>
         /// <returns>An object containing a list of health risks and a list of available timezones</returns>
         [HttpGet, Route("getFormData")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId) =>
             await _projectService.GetFormData(nationalSocietyId);
     }

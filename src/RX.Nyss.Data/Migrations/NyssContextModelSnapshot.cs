@@ -2514,6 +2514,13 @@ namespace RX.Nyss.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.CoordinatorUser", b =>
+                {
+                    b.HasBaseType("RX.Nyss.Data.Models.User");
+
+                    b.HasDiscriminator().HasValue("Coordinator");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.DataConsumerUser", b =>
                 {
                     b.HasBaseType("RX.Nyss.Data.Models.User");

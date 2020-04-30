@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Managers
         /// <param name="createManagerRequestDto">The manager to be created</param>
         /// <returns></returns>
         [HttpPost("create")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateManagerRequestDto createManagerRequestDto) =>
             await _managerService.Create(nationalSocietyId, createManagerRequestDto);
 

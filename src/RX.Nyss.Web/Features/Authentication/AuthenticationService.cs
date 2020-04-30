@@ -102,15 +102,16 @@ namespace RX.Nyss.Web.Features.Authentication
             userEntity switch
             {
                 SupervisorUser user => await GetProjectHomePage(user),
-                ManagerUser user => await GetNationalSocietyHomePage(user),
-                TechnicalAdvisorUser user => await GetNationalSocietyHomePage(user),
-                DataConsumerUser user => await GetNationalSocietyHomePage(user),
+                ManagerUser user => await GetNationalSocietyHomePage(user, HomePageType.ProjectList),
+                TechnicalAdvisorUser user => await GetNationalSocietyHomePage(user, HomePageType.ProjectList),
+                DataConsumerUser user => await GetNationalSocietyHomePage(user, HomePageType.ProjectList),
                 GlobalCoordinatorUser user => GetRootHomePage(),
                 AdministratorUser user => GetRootHomePage(),
+                CoordinatorUser user => await GetNationalSocietyHomePage(user, HomePageType.NationalSociety),
                 _ => GetRootHomePage()
             };
 
-        private async Task<StatusResponseDto.HomePageDto> GetNationalSocietyHomePage<T>(T user) where T : User
+        private async Task<StatusResponseDto.HomePageDto> GetNationalSocietyHomePage<T>(T user, HomePageType homePage) where T : User
         {
             var nationalSocietyIds = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == user.Id)
@@ -124,7 +125,7 @@ namespace RX.Nyss.Web.Features.Authentication
 
             return new StatusResponseDto.HomePageDto
             {
-                Page = HomePageType.ProjectList,
+                Page = homePage,
                 NationalSocietyId = nationalSocietyIds.Single()
             };
         }

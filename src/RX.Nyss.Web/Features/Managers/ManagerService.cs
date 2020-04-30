@@ -174,6 +174,11 @@ namespace RX.Nyss.Web.Features.Managers
 
             var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
 
+            if (createManagerRequestDto.SetAsHeadManager == true)
+            {
+                nationalSociety.PendingHeadManager = user;
+            }
+
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
             return user;

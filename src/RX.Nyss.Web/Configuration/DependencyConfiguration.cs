@@ -23,6 +23,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
 using RX.Nyss.Web.Features.Alerts.Access;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.Coordinators.Access;
 using RX.Nyss.Web.Features.DataCollectors.Access;
 using RX.Nyss.Web.Features.DataConsumers.Access;
 using RX.Nyss.Web.Features.Managers.Access;
@@ -211,7 +212,7 @@ namespace RX.Nyss.Web.Configuration
                 options.AddPolicy(Policy.ReportAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectAccessHandler>.Requirement()));
 
-                options.AddPolicy(Policy.Coordinator.ToString(),
+                options.AddPolicy(Policy.CoordinatorAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<CoordinatorAccessHandler>.Requirement()));
             });
 

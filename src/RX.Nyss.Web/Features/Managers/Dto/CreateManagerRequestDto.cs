@@ -10,6 +10,7 @@ namespace RX.Nyss.Web.Features.Managers.Dto
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public string Organization { get; set; }
+        public bool? SetAsHeadManager { get; set; }
 
         public class CreateManagerValidator : AbstractValidator<CreateManagerRequestDto>
         {

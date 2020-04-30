@@ -8,7 +8,7 @@ using RX.Nyss.Web.Utils;
 
 namespace RX.Nyss.Web.Features.Coordinators
 {
-    [Route("api/Coordinator")]
+    [Route("api/coordinator")]
     public class CoordinatorController : BaseController
     {
         private readonly ICoordinatorService _coordinatorService;
@@ -25,39 +25,39 @@ namespace RX.Nyss.Web.Features.Coordinators
         /// <param name="createCoordinatorRequestDto">The Coordinator to be created</param>
         /// <returns></returns>
         [HttpPost("create")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateCoordinatorRequestDto createCoordinatorRequestDto) =>
             await _coordinatorService.Create(nationalSocietyId, createCoordinatorRequestDto);
 
         /// <summary>
         /// Get a Coordinator.
         /// </summary>
-        /// <param name="CoordinatorId">The ID of the requested Coordinator</param>
+        /// <param name="coordinatorId">The ID of the requested Coordinator</param>
         /// <returns></returns>
-        [HttpGet("{CoordinatorId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator)]
-        public async Task<Result> Get(int CoordinatorId) =>
-            await _coordinatorService.Get(CoordinatorId);
+        [HttpGet("{coordinatorId:int}/get")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.CoordinatorAccess)]
+        public async Task<Result> Get(int coordinatorId) =>
+            await _coordinatorService.Get(coordinatorId);
 
         /// <summary>
         /// Update a Coordinator.
         /// </summary>
-        /// <param name="CoordinatorId">The id of the Coordinator to be edited</param>
+        /// <param name="coordinatorId">The id of the Coordinator to be edited</param>
         /// <param name="editCoordinatorRequestDto">The data used to update the specified Coordinator</param>
         /// <returns></returns>
-        [HttpPost("{CoordinatorId:int}/edit")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator)]
-        public async Task<Result> Edit(int CoordinatorId, [FromBody] EditCoordinatorRequestDto editCoordinatorRequestDto) =>
-            await _coordinatorService.Edit(CoordinatorId, editCoordinatorRequestDto);
+        [HttpPost("{coordinatorId:int}/edit")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.CoordinatorAccess)]
+        public async Task<Result> Edit(int coordinatorId, [FromBody] EditCoordinatorRequestDto editCoordinatorRequestDto) =>
+            await _coordinatorService.Edit(coordinatorId, editCoordinatorRequestDto);
 
         /// <summary>
         /// Delete a Coordinator.
         /// </summary>
-        /// <param name="CoordinatorId">The ID of the Coordinator to be deleted</param>
+        /// <param name="coordinatorId">The ID of the Coordinator to be deleted</param>
         /// <returns></returns>
-        [HttpPost("{CoordinatorId:int}/delete")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator)]
-        public async Task<Result> Delete(int CoordinatorId) =>
-            await _coordinatorService.Delete(CoordinatorId);
+        [HttpPost("{coordinatorId:int}/delete")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.CoordinatorAccess)]
+        public async Task<Result> Delete(int coordinatorId) =>
+            await _coordinatorService.Delete(coordinatorId);
     }
 }

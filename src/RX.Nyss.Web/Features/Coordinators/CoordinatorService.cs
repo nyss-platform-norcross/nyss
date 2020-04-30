@@ -11,6 +11,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Coordinators.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Coordinators
@@ -21,7 +22,6 @@ namespace RX.Nyss.Web.Features.Coordinators
         Task<Result<GetCoordinatorResponseDto>> Get(int coordinatorId);
         Task<Result> Edit(int coordinatorId, EditCoordinatorRequestDto editCoordinatorRequestDto);
         Task<Result> Delete(int coordinatorId);
-        Task DeleteIncludingHeadCoordinatorFlag(int coordinatorId);
     }
 
 
@@ -33,9 +33,10 @@ namespace RX.Nyss.Web.Features.Coordinators
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
+        private readonly IAuthorizationService _authorizationService;
 
         public CoordinatorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
-            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IAuthorizationService authorizationService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
@@ -43,6 +44,7 @@ namespace RX.Nyss.Web.Features.Coordinators
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
             _deleteUserService = deleteUserService;
+            _authorizationService = authorizationService;
         }
 
         public async Task<Result> Create(int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto)
@@ -139,13 +141,13 @@ namespace RX.Nyss.Web.Features.Coordinators
                 return e.Result;
             }
         }
-
-        public async Task DeleteIncludingHeadCoordinatorFlag(int coordinatorId) =>
-            await DeleteFromDb(coordinatorId, true);
-
+        
         private async Task<CoordinatorUser> CreateCoordinatorUser(IdentityUser identityUser, int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+            var nationalSociety = await _dataContext.NationalSocieties
+                .Include(ns => ns.NationalSocietyUsers)
+                .ThenInclude(nsu => nsu.User)
+                .Include(ns => ns.ContentLanguage)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -156,6 +158,15 @@ namespace RX.Nyss.Web.Features.Coordinators
             if (nationalSociety.IsArchived)
             {
                 throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
+            }
+
+            if (!_authorizationService.IsCurrentUserInRole(Role.Coordinator) && nationalSociety.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator))
+            {
+                throw new ResultException(ResultKey.User.Registration.NationalSocietyCoordinatorAlreadyExists);
+            }
+
+            if (_authorizationService.IsCurrentUserInAnyRole(new[] { Role.Manager, Role.TechnicalAdvisor }) && nationalSociety.HeadManager != _authorizationService.GetCurrentUser()){
+                throw new ResultException(ResultKey.User.Registration.NotHeadManager);
             }
 
             var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
@@ -189,30 +200,9 @@ namespace RX.Nyss.Web.Features.Coordinators
         private async Task DeleteFromDb(int coordinatorId, bool allowHeadCoordinatorDeletion = false)
         {
             var coordinator = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<CoordinatorUser>(coordinatorId);
-
-            await HandleHeadCoordinatorStatus(coordinator, allowHeadCoordinatorDeletion);
-
+            
             _nationalSocietyUserService.DeleteNationalSocietyUser(coordinator);
             await _identityUserRegistrationService.DeleteIdentityUser(coordinator.IdentityUserId);
-        }
-
-        private async Task HandleHeadCoordinatorStatus(CoordinatorUser coordinator, bool allowHeadCoordinatorDeletion)
-        {
-            var nationalSociety = await _dataContext.NationalSocieties.FindAsync(coordinator.UserNationalSocieties.Single().NationalSocietyId);
-            if (nationalSociety.PendingHeadCoordinator == coordinator)
-            {
-                nationalSociety.PendingHeadCoordinator = null;
-            }
-
-            if (nationalSociety.HeadCoordinator == coordinator)
-            {
-                if (!allowHeadCoordinatorDeletion)
-                {
-                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadCoordinator);
-                }
-
-                nationalSociety.HeadCoordinator = null;
-            }
         }
     }
 }

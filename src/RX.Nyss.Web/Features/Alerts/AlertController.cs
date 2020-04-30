@@ -29,7 +29,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="projectId">An identifier of a project</param>
         /// <param name="pageNumber">Page number</param>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber) =>
             _alertService.List(projectId, pageNumber);
@@ -39,7 +39,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         [HttpGet("{alertId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertAssessmentResponseDto>> Get(int alertId) =>
             _alertService.Get(alertId);

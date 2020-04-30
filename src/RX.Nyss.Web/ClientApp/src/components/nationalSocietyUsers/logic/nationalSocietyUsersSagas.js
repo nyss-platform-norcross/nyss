@@ -38,11 +38,14 @@ function* openNationalSocietyUsersList({ nationalSocietyId }) {
 };
 
 function* openNationalSocietyUserCreation({ nationalSocietyId }) {
+  const currentUserRoles = yield select(state => state.appData.user.roles);
   yield put(actions.openCreation.request());
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    const projects = yield call(http.get, `/api/project/listOpenedProjects?nationalSocietyId=${nationalSocietyId}`)
-    yield put(actions.openCreation.success(projects.value));
+    const projects = currentUserRoles.some((r) => r === roles.Coordinator) ?
+      [] :
+      (yield call(http.get, `/api/project/listOpenedProjects?nationalSocietyId=${nationalSocietyId}`)).value
+    yield put(actions.openCreation.success(projects));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }
@@ -132,7 +135,7 @@ function* getNationalSocietyUsers(nationalSocietyId) {
 function* setAsHeadManagerInNationalSociety({ nationalSocietyId, nationalSocietyUserId }) {
   yield put(actions.setAsHeadManager.request(nationalSocietyUserId));
   try {
-    yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/setHeadManager`, {userId: nationalSocietyUserId});
+    yield call(http.post, `/api/nationalSociety/${nationalSocietyId}/setHeadManager`, { userId: nationalSocietyUserId });
     yield put(actions.setAsHeadManager.success(nationalSocietyUserId));
     yield put(appActions.showMessage(stringKeys.headManagerConsents.setSuccessfully));
     yield call(getNationalSocietyUsers, nationalSocietyId);
@@ -151,6 +154,8 @@ function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
       return `/api/dataConsumer/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
       return `/api/supervisor/create?nationalSocietyId=${nationalSocietyId}`;
+    case roles.Coordinator:
+      return `/api/coordinator/create?nationalSocietyId=${nationalSocietyId}`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -166,6 +171,8 @@ function getSpecificRoleUserEditionUrl(userId, role) {
       return `/api/dataConsumer/${userId}/edit`;
     case roles.Supervisor:
       return `/api/supervisor/${userId}/edit`;
+    case roles.Coordinator:
+      return `/api/coordinator/${userId}/edit`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -181,6 +188,8 @@ function getSpecificRoleUserRetrievalUrl(userId, role) {
       return `/api/dataConsumer/${userId}/get`;
     case roles.Supervisor:
       return `/api/supervisor/${userId}/get`;
+    case roles.Coordinator:
+      return `/api/coordinator/${userId}/get`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -196,6 +205,8 @@ function getSpecificRoleUserRemovalUrl(userId, role, nationalSocietyId) {
       return `/api/dataConsumer/${userId}/delete?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
       return `/api/supervisor/${userId}/delete`;
+    case roles.Coordinator:
+      return `/api/coordinator/${userId}/delete`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
