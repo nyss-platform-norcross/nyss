@@ -6,9 +6,9 @@ import {
   REMOVE_ORGANIZATION
 } from "./organizationsConstants";
 
-export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/smsgateways`);
-export const goToCreation = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/smsgateways/add`);
-export const goToEdition = (nationalSocietyId, organizationId) => push(`/nationalsocieties/${nationalSocietyId}/smsgateways/${organizationId}/edit`);
+export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/organizations`);
+export const goToCreation = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/organizations/add`);
+export const goToEdition = (nationalSocietyId, organizationId) => push(`/nationalsocieties/${nationalSocietyId}/organizations/${organizationId}/edit`);
 
 export const openList = {
   invoke: (nationalSocietyId) => ({ type: OPEN_ORGANIZATIONS_LIST.INVOKE, nationalSocietyId }),

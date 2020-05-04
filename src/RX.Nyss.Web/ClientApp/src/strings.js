@@ -51,6 +51,7 @@ export const stringKeys = {
       creationTitle: "nationalSociety.form.creationTitle",
       editionTitle: "nationalSociety.form.editionTitle",
       name: "nationalSociety.form.name",
+      initialOrganizationName: "nationalSociety.form.initialOrganizationName",
       country: "nationalSociety.form.country",
       contentLanguage: "nationalSociety.form.contentLanguage",
       create: "nationalSociety.form.create",
