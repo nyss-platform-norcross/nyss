@@ -63,7 +63,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
 
         public async Task<bool> HasCurrentUserAccessAsHeadManager(int nationalSocietyId)
         {
-            if (_authorizationService.IsCurrentUserInAnyRole(_rolesWithAccessAsHeadManager))
+            if (!_authorizationService.IsCurrentUserInAnyRole(new []{ Role.Manager, Role.TechnicalAdvisor }))
             {
                 return true;
             }

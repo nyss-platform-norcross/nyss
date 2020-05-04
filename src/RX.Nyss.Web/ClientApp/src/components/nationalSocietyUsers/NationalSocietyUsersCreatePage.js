@@ -14,7 +14,7 @@ import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import { userRoles, globalCoordinatorUserRoles, sexValues } from './logic/nationalSocietyUsersConstants';
+import { userRoles, globalCoordinatorUserRoles, coordinatorUserRoles, sexValues } from './logic/nationalSocietyUsersConstants';
 import * as roles from '../../authentication/roles';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
@@ -72,13 +72,27 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     props.create(props.nationalSocietyId, {
       ...values,
       projectId: values.projectId ? parseInt(values.projectId) : null,
-      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null
+      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
+      setAsHeadManager: props.callingUserRoles.some(r => r === roles.Coordinator) ? true : null
     });
   };
 
-  const availableUserRoles = props.callingUserRoles.some(r => r === roles.GlobalCoordinator)
-    ? globalCoordinatorUserRoles
-    : userRoles;
+  const isCoordinator = () =>
+    props.callingUserRoles.some(r => r === roles.Coordinator);
+
+  const getAvailableUserRoles = () => {
+    if (props.callingUserRoles.some(r => r === roles.GlobalCoordinator || r === roles.Administrator)){
+      return globalCoordinatorUserRoles;
+    }
+
+    if (isCoordinator()) {
+      return coordinatorUserRoles;
+    }
+
+    return userRoles;
+  }
+
+  const availableUserRoles = getAvailableUserRoles();
 
   return (
     <Fragment>
@@ -105,7 +119,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 <MenuItem
                   key={`role${role}`}
                   value={role}>
-                  {strings(`role.${role.toLowerCase()}`)}
+                  {strings(`role.${((isCoordinator() && role === roles.Manager) ? "headManager" : role).toLowerCase()}`)}
                 </MenuItem>
               ))}
             </SelectInput>

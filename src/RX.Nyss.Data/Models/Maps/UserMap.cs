@@ -24,7 +24,8 @@ namespace RX.Nyss.Data.Models.Maps
                 .HasValue<AdministratorUser>(Role.Administrator)
                 .HasValue<GlobalCoordinatorUser>(Role.GlobalCoordinator)
                 .HasValue<DataConsumerUser>(Role.DataConsumer)
-                .HasValue<TechnicalAdvisorUser>(Role.TechnicalAdvisor);
+                .HasValue<TechnicalAdvisorUser>(Role.TechnicalAdvisor)
+                .HasValue<CoordinatorUser>(Role.Coordinator);
             builder.HasOne(u => u.ApplicationLanguage).WithMany().OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(u => u.EmailAddress);

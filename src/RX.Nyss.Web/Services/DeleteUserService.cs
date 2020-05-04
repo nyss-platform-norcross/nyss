@@ -55,9 +55,9 @@ namespace RX.Nyss.Web.Services
 
         public bool GetCanRoleDeleteRole(Role deletedUserRole, Role deletingUserRole)
         {
-            if (deletingUserRole == Role.Supervisor
-                || deletingUserRole == Role.DataConsumer
-                || _userRoleHierarchyDictionary[deletingUserRole] > _userRoleHierarchyDictionary[deletedUserRole])
+            var cannotDeleteAnyone = deletingUserRole == Role.Supervisor || deletingUserRole == Role.DataConsumer;
+
+            if (cannotDeleteAnyone || _userRoleHierarchyDictionary[deletingUserRole] > _userRoleHierarchyDictionary[deletedUserRole])
             {
                 return false;
             }
@@ -69,10 +69,11 @@ namespace RX.Nyss.Web.Services
         {
             _userRoleHierarchyDictionary[Role.Administrator] = 1;
             _userRoleHierarchyDictionary[Role.GlobalCoordinator] = 2;
-            _userRoleHierarchyDictionary[Role.DataConsumer] = 3;
-            _userRoleHierarchyDictionary[Role.Manager] = 3;
-            _userRoleHierarchyDictionary[Role.TechnicalAdvisor] = 3;
-            _userRoleHierarchyDictionary[Role.Supervisor] = 4;
+            _userRoleHierarchyDictionary[Role.Coordinator] = 3;
+            _userRoleHierarchyDictionary[Role.DataConsumer] = 4;
+            _userRoleHierarchyDictionary[Role.Manager] = 4;
+            _userRoleHierarchyDictionary[Role.TechnicalAdvisor] = 4;
+            _userRoleHierarchyDictionary[Role.Supervisor] = 5;
         }
     }
 }

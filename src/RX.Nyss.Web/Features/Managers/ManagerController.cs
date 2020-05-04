@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Managers
         /// <param name="createManagerRequestDto">The manager to be created</param>
         /// <returns></returns>
         [HttpPost("create")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Create(int nationalSocietyId, [FromBody] CreateManagerRequestDto createManagerRequestDto) =>
             await _managerService.Create(nationalSocietyId, createManagerRequestDto);
 
@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.Managers
         /// <param name="managerId">The ID of the requested manager</param>
         /// <returns></returns>
         [HttpGet("{managerId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Get(int managerId) =>
             await _managerService.Get(managerId);
 
@@ -46,7 +46,7 @@ namespace RX.Nyss.Web.Features.Managers
         /// <param name="editManagerRequestDto">The data used to update the specified manager</param>
         /// <returns></returns>
         [HttpPost("{managerId:int}/edit")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Edit(int managerId, [FromBody] EditManagerRequestDto editManagerRequestDto) =>
             await _managerService.Edit(managerId, editManagerRequestDto);
 
@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.Managers
         /// <param name="managerId">The ID of the manager to be deleted</param>
         /// <returns></returns>
         [HttpPost("{managerId:int}/delete")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ManagerAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ManagerAccess)]
         public async Task<Result> Delete(int managerId) =>
             await _managerService.Delete(managerId);
     }

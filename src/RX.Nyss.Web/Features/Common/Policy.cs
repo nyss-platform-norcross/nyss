@@ -17,6 +17,7 @@
         VillageAccess,
         ZoneAccess,
         AlertAccess,
-        ReportAccess
+        ReportAccess,
+        CoordinatorAccess
     }
 }

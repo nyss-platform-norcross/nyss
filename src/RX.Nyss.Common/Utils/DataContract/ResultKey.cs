@@ -33,6 +33,8 @@
                 public const string UserIsNotAssignedToThisNationalSociety = "user.registration.userIsNotAssignedToThisNationalSociety";
                 public const string UserIsAlreadyInThisNationalSociety = "user.registration.userIsAlreadyInThisNationalSociety";
                 public const string UnknownError = "user.registration.unknownError";
+                public const string NationalSocietyCoordinatorAlreadyExists = "user.registration.nationalSocietyCoordinatorAlreadyExists";
+                public const string NotHeadManager = "user.registration.notHeadManager";
             }
 
             public static class Supervisor

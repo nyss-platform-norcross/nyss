@@ -26,7 +26,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// </summary>
         /// <returns>A SMS Gateway</returns>
         [HttpGet("{smsGatewayId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.SmsGatewayAccess)]
         public Task<Result<GatewaySettingResponseDto>> Get(int smsGatewayId) =>
             _smsGatewayService.Get(smsGatewayId);
 
@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// </summary>
         /// <returns>A list of SMS Gateways assigned to the national society</returns>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<GatewaySettingResponseDto>>> List(int nationalSocietyId) =>
             _smsGatewayService.List(nationalSocietyId);
 
@@ -46,7 +46,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
         /// <returns>An identifier of the created SMS Gateway setting</returns>
         [HttpPost("create")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<int>> Create(int nationalSocietyId, [FromBody] GatewaySettingRequestDto gatewaySettingRequestDto) =>
             _smsGatewayService.Create(nationalSocietyId, gatewaySettingRequestDto);
 
@@ -57,7 +57,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
         /// <returns></returns>
         [HttpPost("{smsGatewayId:int}/edit")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.SmsGatewayAccess)]
         public Task<Result> Edit(int smsGatewayId, [FromBody] GatewaySettingRequestDto gatewaySettingRequestDto) =>
             _smsGatewayService.Edit(smsGatewayId, gatewaySettingRequestDto);
 
@@ -67,7 +67,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <param name="smsGatewayId">An identifier of SMS Gateway to be deleted</param>
         /// <returns></returns>
         [HttpPost("{smsGatewayId:int}/delete")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.SmsGatewayAccess)]
         public Task<Result> Delete(int smsGatewayId) =>
             _smsGatewayService.Delete(smsGatewayId);
 
@@ -77,7 +77,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <param name="smsGatewayId">SmsGateway identifier</param>
         /// <returns></returns>
         [HttpGet("{smsGatewayId:int}/getIotHubConnectionstring")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SmsGatewayAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.SmsGatewayAccess)]
         public Task<Result> GetIotHubConnectionString(int smsGatewayId) =>
             _smsGatewayService.GetIotHubConnectionString(smsGatewayId);
 
@@ -87,7 +87,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <param name="deviceId">IoT Hub device identifier</param>
         /// <returns></returns>
         [HttpPost("iotDevices/{deviceId}/ping")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator)]
         public Task<Result> PingGatewayDevice(string deviceId) =>
             _iotHubService.Ping(deviceId);
 
@@ -96,7 +96,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// </summary>
         /// <returns></returns>
         [HttpGet("iotDevices/list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator)]
         public Task<Result<IEnumerable<string>>> ListIotHubDevices() =>
             _smsGatewayService.ListIotHubDevices();
     }

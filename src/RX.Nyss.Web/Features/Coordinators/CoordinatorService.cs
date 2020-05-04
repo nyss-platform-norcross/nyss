@@ -9,23 +9,23 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
-using RX.Nyss.Web.Features.Managers.Dto;
+using RX.Nyss.Web.Features.Coordinators.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
-namespace RX.Nyss.Web.Features.Managers
+namespace RX.Nyss.Web.Features.Coordinators
 {
-    public interface IManagerService
+    public interface ICoordinatorService
     {
-        Task<Result> Create(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto);
-        Task<Result<GetManagerResponseDto>> Get(int managerId);
-        Task<Result> Edit(int managerId, EditManagerRequestDto editManagerRequestDto);
-        Task<Result> Delete(int managerId);
-        Task DeleteIncludingHeadManagerFlag(int managerId);
+        Task<Result> Create(int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto);
+        Task<Result<GetCoordinatorResponseDto>> Get(int coordinatorId);
+        Task<Result> Edit(int coordinatorId, EditCoordinatorRequestDto editCoordinatorRequestDto);
+        Task<Result> Delete(int coordinatorId);
     }
 
 
-    public class ManagerService : IManagerService
+    public class CoordinatorService : ICoordinatorService
     {
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssContext _dataContext;
@@ -33,9 +33,10 @@ namespace RX.Nyss.Web.Features.Managers
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
-            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
+        public CoordinatorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IAuthorizationService authorizationService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
@@ -43,20 +44,21 @@ namespace RX.Nyss.Web.Features.Managers
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
             _deleteUserService = deleteUserService;
+            _authorizationService = authorizationService;
         }
 
-        public async Task<Result> Create(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
+        public async Task<Result> Create(int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto)
         {
             try
             {
                 string securityStamp;
-                ManagerUser user;
+                CoordinatorUser user;
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createManagerRequestDto.Email, Role.Manager);
+                    var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createCoordinatorRequestDto.Email, Role.Coordinator);
                     securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
-                    user = await CreateManagerUser(identityUser, nationalSocietyId, createManagerRequestDto);
+                    user = await CreateCoordinatorUser(identityUser, nationalSocietyId, createCoordinatorRequestDto);
 
                     transactionScope.Complete();
                 }
@@ -71,12 +73,12 @@ namespace RX.Nyss.Web.Features.Managers
             }
         }
 
-        public async Task<Result<GetManagerResponseDto>> Get(int nationalSocietyUserId)
+        public async Task<Result<GetCoordinatorResponseDto>> Get(int nationalSocietyUserId)
         {
-            var manager = await _dataContext.Users.FilterAvailable()
-                .OfType<ManagerUser>()
+            var coordinator = await _dataContext.Users.FilterAvailable()
+                .OfType<CoordinatorUser>()
                 .Where(u => u.Id == nationalSocietyUserId)
-                .Select(u => new GetManagerResponseDto
+                .Select(u => new GetCoordinatorResponseDto
                 {
                     Id = u.Id,
                     Name = u.Name,
@@ -88,25 +90,25 @@ namespace RX.Nyss.Web.Features.Managers
                 })
                 .SingleOrDefaultAsync();
 
-            if (manager == null)
+            if (coordinator == null)
             {
-                _loggerAdapter.Debug($"Data manager with id {nationalSocietyUserId} was not found");
-                return Error<GetManagerResponseDto>(ResultKey.User.Common.UserNotFound);
+                _loggerAdapter.Debug($"Data coordinator with id {nationalSocietyUserId} was not found");
+                return Error<GetCoordinatorResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
-            return new Result<GetManagerResponseDto>(manager, true);
+            return new Result<GetCoordinatorResponseDto>(coordinator, true);
         }
 
-        public async Task<Result> Edit(int managerId, EditManagerRequestDto editManagerRequestDto)
+        public async Task<Result> Edit(int coordinatorId, EditCoordinatorRequestDto editCoordinatorRequestDto)
         {
             try
             {
-                var user = await _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(managerId);
+                var user = await _nationalSocietyUserService.GetNationalSocietyUser<CoordinatorUser>(coordinatorId);
 
-                user.Name = editManagerRequestDto.Name;
-                user.PhoneNumber = editManagerRequestDto.PhoneNumber;
-                user.Organization = editManagerRequestDto.Organization;
-                user.AdditionalPhoneNumber = editManagerRequestDto.AdditionalPhoneNumber;
+                user.Name = editCoordinatorRequestDto.Name;
+                user.PhoneNumber = editCoordinatorRequestDto.PhoneNumber;
+                user.Organization = editCoordinatorRequestDto.Organization;
+                user.AdditionalPhoneNumber = editCoordinatorRequestDto.AdditionalPhoneNumber;
 
                 await _dataContext.SaveChangesAsync();
                 return Success();
@@ -118,15 +120,15 @@ namespace RX.Nyss.Web.Features.Managers
             }
         }
 
-        public async Task<Result> Delete(int managerId)
+        public async Task<Result> Delete(int coordinatorId)
         {
             try
             {
-                await _deleteUserService.EnsureCanDeleteUser(managerId, Role.Manager);
+                await _deleteUserService.EnsureCanDeleteUser(coordinatorId, Role.Coordinator);
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                await DeleteFromDb(managerId);
+                await DeleteFromDb(coordinatorId);
 
                 await _dataContext.SaveChangesAsync();
 
@@ -139,13 +141,13 @@ namespace RX.Nyss.Web.Features.Managers
                 return e.Result;
             }
         }
-
-        public async Task DeleteIncludingHeadManagerFlag(int managerId) =>
-            await DeleteFromDb(managerId, true);
-
-        private async Task<ManagerUser> CreateManagerUser(IdentityUser identityUser, int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
+        
+        private async Task<CoordinatorUser> CreateCoordinatorUser(IdentityUser identityUser, int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+            var nationalSociety = await _dataContext.NationalSocieties
+                .Include(ns => ns.NationalSocietyUsers)
+                .ThenInclude(nsu => nsu.User)
+                .Include(ns => ns.ContentLanguage)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -158,26 +160,30 @@ namespace RX.Nyss.Web.Features.Managers
                 throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
             }
 
+            if (!_authorizationService.IsCurrentUserInRole(Role.Coordinator) && nationalSociety.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator))
+            {
+                throw new ResultException(ResultKey.User.Registration.NationalSocietyCoordinatorAlreadyExists);
+            }
+
+            if (_authorizationService.IsCurrentUserInAnyRole(new[] { Role.Manager, Role.TechnicalAdvisor }) && nationalSociety.HeadManager != _authorizationService.GetCurrentUser()){
+                throw new ResultException(ResultKey.User.Registration.NotHeadManager);
+            }
+
             var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
                 .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
 
-            var user = new ManagerUser
+            var user = new CoordinatorUser
             {
                 IdentityUserId = identityUser.Id,
                 EmailAddress = identityUser.Email,
-                Name = createManagerRequestDto.Name,
-                PhoneNumber = createManagerRequestDto.PhoneNumber,
-                AdditionalPhoneNumber = createManagerRequestDto.AdditionalPhoneNumber,
-                Organization = createManagerRequestDto.Organization,
+                Name = createCoordinatorRequestDto.Name,
+                PhoneNumber = createCoordinatorRequestDto.PhoneNumber,
+                AdditionalPhoneNumber = createCoordinatorRequestDto.AdditionalPhoneNumber,
+                Organization = createCoordinatorRequestDto.Organization,
                 ApplicationLanguage = defaultUserApplicationLanguage
             };
 
             var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
-
-            if (createManagerRequestDto.SetAsHeadManager == true)
-            {
-                nationalSociety.PendingHeadManager = user;
-            }
 
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
@@ -191,33 +197,12 @@ namespace RX.Nyss.Web.Features.Managers
                 User = user
             };
 
-        private async Task DeleteFromDb(int managerId, bool allowHeadManagerDeletion = false)
+        private async Task DeleteFromDb(int coordinatorId, bool allowHeadCoordinatorDeletion = false)
         {
-            var manager = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(managerId);
-
-            await HandleHeadManagerStatus(manager, allowHeadManagerDeletion);
-
-            _nationalSocietyUserService.DeleteNationalSocietyUser(manager);
-            await _identityUserRegistrationService.DeleteIdentityUser(manager.IdentityUserId);
-        }
-
-        private async Task HandleHeadManagerStatus(ManagerUser manager, bool allowHeadManagerDeletion)
-        {
-            var nationalSociety = await _dataContext.NationalSocieties.FindAsync(manager.UserNationalSocieties.Single().NationalSocietyId);
-            if (nationalSociety.PendingHeadManager == manager)
-            {
-                nationalSociety.PendingHeadManager = null;
-            }
-
-            if (nationalSociety.HeadManager == manager)
-            {
-                if (!allowHeadManagerDeletion)
-                {
-                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
-                }
-
-                nationalSociety.HeadManager = null;
-            }
+            var coordinator = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<CoordinatorUser>(coordinatorId);
+            
+            _nationalSocietyUserService.DeleteNationalSocietyUser(coordinator);
+            await _identityUserRegistrationService.DeleteIdentityUser(coordinator.IdentityUserId);
         }
     }
 }
