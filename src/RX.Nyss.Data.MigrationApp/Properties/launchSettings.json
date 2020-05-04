@@ -6,7 +6,7 @@
     },
     "Demo": {
       "commandName": "Project",
-      "commandLineArgs": "Server=(localdb)\\mssqllocaldb;Database=Rx.Nyss.DemoDb;Trusted_Connection=True; createDemoData password=P@ssw0rd"
+      "commandLineArgs": "Server=(localdb)\\mssqllocaldb;Database=Rx.Nyss.DemoDb2;Trusted_Connection=True; createDemoData password=P@ssw0rd"
     }
   }
 }

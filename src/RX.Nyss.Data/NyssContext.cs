@@ -48,6 +48,8 @@ namespace RX.Nyss.Data
 
         public DbSet<Notification> Notifications { get; set; }
 
+        public DbSet<Organization> Organizations { get; set; }
+
         public DbSet<Project> Projects { get; set; }
         public DbSet<SupervisorUserProject> SupervisorUserProjects { get; set; }
 

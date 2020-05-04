@@ -978,7 +978,7 @@ namespace RX.Nyss.Data
                 {
                     Id = 5,
                     CountryCode = "AD",
-                    Name = "AndorrA"
+                    Name = "Andorra"
                 },
                 new Country
                 {

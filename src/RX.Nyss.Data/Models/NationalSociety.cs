@@ -32,5 +32,7 @@ namespace RX.Nyss.Data.Models
         public virtual ICollection<UserNationalSociety> NationalSocietyUsers { get; set; }
 
         public virtual ICollection<RawReport> RawReports { get; set; }
+
+        public virtual ICollection<Organization> Organizations { get; set; }
     }
 }
