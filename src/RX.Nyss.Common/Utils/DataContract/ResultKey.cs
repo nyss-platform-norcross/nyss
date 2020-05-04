@@ -118,6 +118,15 @@
                 public const string IoTHubPingFailed = "nationalSociety.smsGateway.ioTHubPingFailed";
             }
 
+            public static class Organization
+            {
+                public const string SuccessfullyAdded = "nationalSociety.smsGateway.successfullyAdded";
+                public const string SuccessfullyUpdated = "nationalSociety.smsGateway.successfullyUpdated";
+                public const string SuccessfullyDeleted = "nationalSociety.smsGateway.successfullyDeleted";
+                public const string SettingDoesNotExist = "nationalSociety.smsGateway.settingDoesNotExist";
+                public const string NationalSocietyDoesNotExist = "nationalSociety.smsGateway.nationalSocietyDoesNotExist";
+            }
+
             public static class SetHead
             {
                 public const string NotAMemberOfSociety = "nationalSociety.setHead.notAMemberOfSociety";

@@ -39,6 +39,7 @@ namespace RX.Nyss.Data
         DbSet<Village> Villages { get; set; }
         DbSet<Zone> Zones { get; set; }
         DatabaseFacade Database { get; }
+        DbSet<Organization> Organizations { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;
