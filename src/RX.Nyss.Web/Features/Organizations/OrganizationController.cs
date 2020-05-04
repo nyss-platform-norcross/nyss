@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.Organizations
         /// <returns>A list of SMS Gateways assigned to the national society</returns>
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<List<OrganizationResponseDto>>> List(int nationalSocietyId) =>
+        public Task<Result<List<OrganizationListResponseDto>>> List(int nationalSocietyId) =>
             _organizationService.List(nationalSocietyId);
 
         /// <summary>

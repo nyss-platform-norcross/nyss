@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.Organizations
     public interface IOrganizationService
     {
         Task<Result<OrganizationResponseDto>> Get(int organizationId);
-        Task<Result<List<OrganizationResponseDto>>> List(int nationalSocietyId);
+        Task<Result<List<OrganizationListResponseDto>>> List(int nationalSocietyId);
         Task<Result<int>> Create(int nationalSocietyId, OrganizationRequestDto gatewaySettingRequestDto);
         Task<Result> Edit(int organizationId, OrganizationRequestDto gatewaySettingRequestDto);
         Task<Result> Delete(int organizationId);
@@ -53,15 +53,17 @@ namespace RX.Nyss.Web.Features.Organizations
             return result;
         }
 
-        public async Task<Result<List<OrganizationResponseDto>>> List(int nationalSocietyId)
+        public async Task<Result<List<OrganizationListResponseDto>>> List(int nationalSocietyId)
         {
             var gatewaySettings = await _nyssContext.Organizations
                 .Where(gs => gs.NationalSocietyId == nationalSocietyId)
                 .OrderBy(gs => gs.Id)
-                .Select(gs => new OrganizationResponseDto
+                .Select(gs => new OrganizationListResponseDto
                 {
                     Id = gs.Id,
                     Name = gs.Name,
+                    HeadManager = gs.NationalSociety.HeadManager.Name,
+                    Projects = "" // TODO
                 })
                 .ToListAsync();
 
@@ -131,14 +133,14 @@ namespace RX.Nyss.Web.Features.Organizations
         {
             try
             {
-                var gatewaySettingToDelete = await _nyssContext.Organizations.FindAsync(organizationId);
+                var organizationToDelete = await _nyssContext.Organizations.FindAsync(organizationId);
 
-                if (gatewaySettingToDelete == null)
+                if (organizationToDelete == null)
                 {
                     return Error(ResultKey.NationalSociety.Organization.SettingDoesNotExist);
                 }
-
-                _nyssContext.Organizations.Remove(gatewaySettingToDelete);
+                
+                _nyssContext.Organizations.Remove(organizationToDelete);
 
                 await _nyssContext.SaveChangesAsync();
                 

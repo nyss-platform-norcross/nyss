@@ -25,6 +25,8 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
         <TableHead>
           <TableRow>
             <TableCell>{strings(stringKeys.organization.list.name)}</TableCell>
+            <TableCell style={{ width: "20%", minWidth: 75 }}>{strings(stringKeys.organization.list.projects)}</TableCell>
+            <TableCell style={{ width: "20%", minWidth: 75 }}>{strings(stringKeys.organization.list.headManager)}</TableCell>
             <TableCell style={{ width: "10%" }} />
           </TableRow>
         </TableHead>
@@ -32,6 +34,8 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
           {list.map(row => (
             <TableRow key={row.id} hover onClick={() => goToEdition(nationalSocietyId, row.id)} className={styles.clickableRow}>
               <TableCell>{row.name}</TableCell>
+              <TableCell>{row.projects}</TableCell>
+                  <TableCell>{row.headManager}</TableCell>
               <TableCell>
                 <TableRowActions>
                   <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />

@@ -256,6 +256,8 @@ export const stringKeys = {
     },
     list: {
       name: "organization.list.name",
+      projects: "organization.list.projects",
+      headManager: "organization.list.headManager",
       removalConfirmation: "organization.list.removalConfirmation"
     },
   },
