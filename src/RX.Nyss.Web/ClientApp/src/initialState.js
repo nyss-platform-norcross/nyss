@@ -78,6 +78,16 @@ export const initialState = {
     pinging: {},
     availableIoTDevices: []
   },
+  organizations: {
+    listNationalSocietyId: null,
+    listFetching: false,
+    listRemoving: {},
+    listStale: true,
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formData: null
+  },
   projects: {
     listFetching: false,
     isClosing: {},

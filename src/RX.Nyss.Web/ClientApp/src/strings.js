@@ -234,6 +234,30 @@ export const stringKeys = {
       useIotHub: "smsGateway.list.useIotHub"
     },
   },
+  organization: {
+    title: "organization.title",
+    addNew: "organization.addNew",
+    form: {
+      creationTitle: "organization.form.creationTitle",
+      editionTitle: "organization.form.editionTitle",
+      name: "organization.form.name",
+      create: "organization.form.create",
+      update: "organization.form.update"
+    },
+    create: {
+      success: "organization.create.success"
+    },
+    edit: {
+      success: "organization.edit.success"
+    },
+    delete: {
+      success: "organization.delete.success"
+    },
+    list: {
+      name: "organization.list.name",
+      removalConfirmation: "organization.list.removalConfirmation"
+    },
+  },
   project: {
     title: "project.title",
     addNew: "project.addNew",

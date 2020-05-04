@@ -52,6 +52,9 @@ import { AlertsLogsPage } from '../alerts/AlertsLogsPage';
 import { NationalSocietyDashboardPage } from '../nationalSocietyDashboard/NationalSocietyDashboardPage';
 import { TranslationsListPage } from '../translations/TranslationsListPage';
 import { NotFoundPage } from '../layout/NotFoundPage';
+import { OrganizationsListPage } from '../organizations/OrganizationsListPage';
+import { OrganizationsCreatePage } from '../organizations/OrganizationsCreatePage';
+import { OrganizationsEditPage } from '../organizations/OrganizationsEditPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -80,6 +83,10 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways' component={SmsGatewaysListPage} roles={accessMap.smsGateways.list} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/add' component={SmsGatewaysCreatePage} roles={accessMap.smsGateways.add} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/smsgateways/:smsGatewayId/edit' component={SmsGatewaysEditPage} roles={accessMap.smsGateways.edit} />
+
+          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations' component={OrganizationsListPage} roles={accessMap.organizations.list} />
+          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/add' component={OrganizationsCreatePage} roles={accessMap.organizations.add} />
+          <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/organizations/:organizationId/edit' component={OrganizationsEditPage} roles={accessMap.organizations.edit} />
 
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard' component={ProjectDashboardPage} roles={accessMap.projects.showDashboard} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects' component={ProjectsListPage} roles={accessMap.projects.list} />

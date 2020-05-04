@@ -17,6 +17,7 @@ import { projectDashboardSagas } from "../components/projectDashboard/logic/proj
 import { alertsSagas } from "../components/alerts/logic/alertsSagas";
 import { nationalSocietyDashboardSagas } from "../components/nationalSocietyDashboard/logic/nationalSocietyDashboardSagas";
 import { translationsSagas } from "../components/translations/logic/translationsSagas";
+import { organizationsSagas } from "../components/organizations/logic/organizationsSagas";
 
 function* rootSaga() {
   yield all([
@@ -25,6 +26,7 @@ function* rootSaga() {
     ...nationalSocietiesSagas(),
     ...nationalSocietyStructureSagas(),
     ...smsGatewaysSagas(),
+    ...organizationsSagas(),
     ...projectsSagas(),
     ...projectDashboardSagas(),
     ...globalCoordinatorsSagas(),
