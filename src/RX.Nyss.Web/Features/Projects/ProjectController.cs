@@ -88,7 +88,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="nationalSocietyId">The ID of the national society</param>
         /// <returns>A list of opened projects</returns>
         [HttpGet("listOpenedProjects")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> ListOpenedProjects(int nationalSocietyId) =>
             await _projectService.ListOpenedProjects(nationalSocietyId);
 

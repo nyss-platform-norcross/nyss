@@ -58,23 +58,6 @@ namespace RX.Nyss.Web.Features.Users
             return new Result<List<GetNationalSocietyUsersResponseDto>>(users, true);
         }
 
-        private IQueryable<UserNationalSociety> GetFilteredUsersQuery()
-        {
-            if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
-            {
-                return _dataContext.UserNationalSocieties.Where(u => u.User.Role != Role.Supervisor);
-            }
-
-            if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
-            {
-                return _dataContext.UserNationalSocieties
-                    .Where(u => u.NationalSociety.HeadManager == u.User || u.NationalSociety.PendingHeadManager == u.User);
-            }
-
-            return _dataContext.UserNationalSocieties;
-            
-        }
-
         public async Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId)
         {
             var user = await _dataContext.Users.FilterAvailable()
@@ -141,5 +124,24 @@ namespace RX.Nyss.Web.Features.Users
                 .Where(u => u.EmailAddress == userIdentityName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
+
+        private IQueryable<UserNationalSociety> GetFilteredUsersQuery()
+        {
+            if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
+            {
+                return _dataContext.UserNationalSocieties.Where(u => u.User.Role != Role.Supervisor);
+            }
+
+            if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
+            {
+                return _dataContext.UserNationalSocieties
+                    .Where(u =>
+                        u.User.Role == Role.Coordinator ||
+                        u.NationalSociety.HeadManager == u.User ||
+                        u.NationalSociety.PendingHeadManager == u.User);
+            }
+
+            return _dataContext.UserNationalSocieties;
+        }
     }
 }

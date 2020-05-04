@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.Users
         /// <param name="nationalSocietyUserId">User Id</param>
         /// <returns></returns>
         [HttpGet("basicData")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
         public async Task<Result> GetBasicData(int nationalSocietyUserId) =>
             await _userService.GetBasicData(nationalSocietyUserId);
 
