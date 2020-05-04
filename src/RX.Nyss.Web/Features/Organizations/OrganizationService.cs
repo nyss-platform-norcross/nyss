@@ -133,14 +133,30 @@ namespace RX.Nyss.Web.Features.Organizations
         {
             try
             {
-                var organizationToDelete = await _nyssContext.Organizations.FindAsync(organizationId);
+                var organizationToDelete = await _nyssContext.Organizations.Where(o => o.Id == organizationId).Select(o =>
+                    new
+                    {
+                        Organization = o,
+                        AnyUsers = o.NationalSocietyUsers.Any(),
+                        IsLastOrganization = o.NationalSociety.Organizations.Count == 1
+                    }).SingleOrDefaultAsync();
 
                 if (organizationToDelete == null)
                 {
                     return Error(ResultKey.NationalSociety.Organization.SettingDoesNotExist);
                 }
-                
-                _nyssContext.Organizations.Remove(organizationToDelete);
+
+                if (organizationToDelete.AnyUsers)
+                {
+                    return Error(ResultKey.NationalSociety.Organization.Deletion.HasUsers);
+                }
+
+                if (organizationToDelete.IsLastOrganization)
+                {
+                    return Error(ResultKey.NationalSociety.Organization.Deletion.LastOrganization);
+                }
+
+                _nyssContext.Organizations.Remove(organizationToDelete.Organization);
 
                 await _nyssContext.SaveChangesAsync();
                 

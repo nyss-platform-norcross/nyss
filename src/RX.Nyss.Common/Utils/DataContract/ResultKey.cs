@@ -125,6 +125,12 @@
                 public const string SuccessfullyDeleted = "nationalSociety.smsGateway.successfullyDeleted";
                 public const string SettingDoesNotExist = "nationalSociety.smsGateway.settingDoesNotExist";
                 public const string NationalSocietyDoesNotExist = "nationalSociety.smsGateway.nationalSocietyDoesNotExist";
+
+                public static class Deletion
+                {
+                    public const string HasUsers = "nationalSociety.organization.deletion.hasUsers";
+                    public const string LastOrganization = "nationalSociety.organization.deletion.lastOrganization ";
+                }
             }
 
             public static class SetHead
