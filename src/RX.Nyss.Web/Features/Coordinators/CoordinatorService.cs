@@ -110,6 +110,14 @@ namespace RX.Nyss.Web.Features.Coordinators
                 user.Organization = editCoordinatorRequestDto.Organization;
                 user.AdditionalPhoneNumber = editCoordinatorRequestDto.AdditionalPhoneNumber;
 
+                var organization = await _dataContext.Organizations.FindAsync(editCoordinatorRequestDto.OrganizationId);
+
+                var userLink = await _dataContext.UserNationalSocieties
+                    .Where(un => un.UserId == coordinatorId && un.NationalSociety.Id == organization.NationalSocietyId)
+                    .SingleOrDefaultAsync();
+
+                userLink.Organization = await _dataContext.Organizations.FindAsync(editCoordinatorRequestDto.OrganizationId);
+
                 await _dataContext.SaveChangesAsync();
                 return Success();
             }
@@ -141,7 +149,7 @@ namespace RX.Nyss.Web.Features.Coordinators
                 return e.Result;
             }
         }
-        
+
         private async Task<CoordinatorUser> CreateCoordinatorUser(IdentityUser identityUser, int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto)
         {
             var nationalSociety = await _dataContext.NationalSocieties
@@ -183,24 +191,22 @@ namespace RX.Nyss.Web.Features.Coordinators
                 ApplicationLanguage = defaultUserApplicationLanguage
             };
 
-            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+            var userNationalSociety = new UserNationalSociety
+            {
+                NationalSociety = nationalSociety,
+                User = user,
+                Organization = await _dataContext.Organizations.FindAsync(createCoordinatorRequestDto.OrganizationId)
+            };
 
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
             return user;
         }
 
-        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
-            new UserNationalSociety
-            {
-                NationalSociety = nationalSociety,
-                User = user
-            };
-
         private async Task DeleteFromDb(int coordinatorId, bool allowHeadCoordinatorDeletion = false)
         {
             var coordinator = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<CoordinatorUser>(coordinatorId);
-            
+
             _nationalSocietyUserService.DeleteNationalSocietyUser(coordinator);
             await _identityUserRegistrationService.DeleteIdentityUser(coordinator.IdentityUserId);
         }

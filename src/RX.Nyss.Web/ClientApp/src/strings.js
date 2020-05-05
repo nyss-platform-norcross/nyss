@@ -452,6 +452,7 @@ export const stringKeys = {
       sex: "nationalSocietyUser.form.sex",
       email: "nationalSocietyUser.form.email",
       project: "nationalSocietyUser.form.project",
+        organization: "nationalSocietyUser.form.organization",
       phoneNumber: "nationalSocietyUser.form.phoneNumber",
       additionalPhoneNumber: "nationalSocietyUser.form.additionalPhoneNumber",
       organization: "nationalSocietyUser.form.organization",

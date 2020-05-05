@@ -42,10 +42,8 @@ function* openNationalSocietyUserCreation({ nationalSocietyId }) {
   yield put(actions.openCreation.request());
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    const projects = currentUserRoles.some((r) => r === roles.Coordinator) ?
-      [] :
-      (yield call(http.get, `/api/project/listOpenedProjects?nationalSocietyId=${nationalSocietyId}`)).value
-    yield put(actions.openCreation.success(projects));
+    const formData = yield call(http.get, `/api/user/createFormData?nationalSocietyId=${nationalSocietyId}`);
+    yield put(actions.openCreation.success(formData.value.projects, formData.value.organizations));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }
@@ -64,12 +62,11 @@ function* openNationalSocietyAddExistingUser({ nationalSocietyId }) {
 function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
   yield put(actions.openEdition.request());
   try {
-    const user = yield call(http.get, `/api/user/basicData?nationalSocietyUserId=${nationalSocietyUserId}`);
     const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
-    const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, user.value.role));
-    const projects = yield call(http.get, `/api/project/listOpenedProjects?nationalSocietyId=${nationalSocietyId}`)
+    const formData = yield call(http.get, `/api/user/editFormData?nationalSocietyUserId=${nationalSocietyUserId}&nationalSocietyId=${nationalSocietyId}`);
+    const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, formData.value.role));
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    yield put(actions.openEdition.success(response.value, projects.value));
+    yield put(actions.openEdition.success(response.value, formData.value.projects, formData.value.organizations));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }

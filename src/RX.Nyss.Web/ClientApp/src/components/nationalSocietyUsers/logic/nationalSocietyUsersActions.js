@@ -29,7 +29,7 @@ export const getList = {
 export const openCreation = {
   invoke: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.REQUEST }),
-  success: (projects) => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.SUCCESS, projects }),
+  success: (projects, organizations) => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.SUCCESS, projects, organizations }),
   failure: (message) => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.FAILURE, message })
 };
 
@@ -57,7 +57,7 @@ export const addExisting = {
 export const openEdition = {
   invoke: (nationalSocietyUserId, role) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.INVOKE, nationalSocietyUserId, role }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.REQUEST }),
-  success: (data, projects) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS, data, projects }),
+  success: (data, projects, organizations) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS, data, projects, organizations }),
   failure: (message) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.FAILURE, message })
 };
 

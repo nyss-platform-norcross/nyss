@@ -22,7 +22,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formFetching: true, formProjects: [] };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_CREATION.SUCCESS:
-      return { ...state, formFetching: false, formProjects: action.projects };
+      return { ...state, formFetching: false, formProjects: action.projects, formOrganizations: action.organizations };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_CREATION.FAILURE:
       return { ...state, formFetching: false };
@@ -31,7 +31,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formFetching: true, formData: null };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS:
-      return { ...state, formFetching: false, formData: action.data, formProjects: action.projects };
+      return { ...state, formFetching: false, formData: action.data, formProjects: action.projects, formOrganizations: action.organizations };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.FAILURE:
       return { ...state, formFetching: false };
@@ -47,10 +47,10 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
 
     case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.REQUEST:
       return { ...state, formSaving: true };
-    
+
     case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.SUCCESS:
         return { ...state, formSaving: false, listStale: true };
-  
+
     case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.FAILURE:
         return { ...state, formSaving: false, formError: action.message };
 

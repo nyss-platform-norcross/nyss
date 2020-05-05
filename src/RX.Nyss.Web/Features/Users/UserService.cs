@@ -16,9 +16,10 @@ namespace RX.Nyss.Web.Features.Users
     public interface IUserService
     {
         Task<Result<List<GetNationalSocietyUsersResponseDto>>> List(int nationalSocietyId);
-        Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId);
+        Task<Result<NationalSocietyUsersCreateFormDataResponseDto>> GetCreateFormData(int nationalSocietyId);
         Task<Result> AddExisting(int nationalSocietyId, string userEmail);
         Task<string> GetUserApplicationLanguageCode(string userIdentityName);
+        Task<Result<NationalSocietyUsersEditFormDataResponseDto>> GetEditFormData(int nationalSocietyUserId, int nationalSocietyId);
     }
 
     public class UserService : IUserService
@@ -58,16 +59,52 @@ namespace RX.Nyss.Web.Features.Users
             return new Result<List<GetNationalSocietyUsersResponseDto>>(users, true);
         }
 
-        public async Task<Result<NationalSocietyUsersBasicDataResponseDto>> GetBasicData(int nationalSocietyUserId)
+        public async Task<Result<NationalSocietyUsersCreateFormDataResponseDto>> GetCreateFormData(int nationalSocietyId)
+        {
+            var formData = await _dataContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => new NationalSocietyUsersCreateFormDataResponseDto
+                {
+                    OpenProjects = _dataContext.Projects
+                        .Where(p => p.NationalSociety.Id == ns.Id)
+                        .Where(p => p.State == ProjectState.Open)
+                        .Select(p => new ListOpenProjectsResponseDto
+                        {
+                            Id = p.Id,
+                            Name = p.Name
+                        }).ToList(),
+                    Organizations = ns.Organizations.Select(o => new OrganizationsDto
+                    {
+                        Id = o.Id,
+                        Name = o.Name
+                    }).ToList()
+                }).SingleAsync();
+
+            return Success(formData);
+        }
+        
+        public async Task<Result<NationalSocietyUsersEditFormDataResponseDto>> GetEditFormData(int nationalSocietyUserId, int nationalSocietyId)
         {
             var user = await _dataContext.Users.FilterAvailable()
                 .Where(u => u.Id == nationalSocietyUserId)
-                .Select(u => new NationalSocietyUsersBasicDataResponseDto
+                .Select(u => new NationalSocietyUsersEditFormDataResponseDto
                 {
                     Email = u.EmailAddress,
-                    Role = u.Role
-                })
-                .SingleOrDefaultAsync();
+                    Role = u.Role,
+                    OpenProjects = _dataContext.Projects
+                        .Where(p => p.NationalSociety.Id == nationalSocietyId)
+                        .Where(p => p.State == ProjectState.Open)
+                        .Select(p => new ListOpenProjectsResponseDto
+                        {
+                            Id = p.Id,
+                            Name = p.Name
+                        }).ToList(),
+                    Organizations = u.UserNationalSocieties.Single(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == nationalSocietyUserId).NationalSociety.Organizations.Select(o => new OrganizationsDto
+                    {
+                        Id = o.Id,
+                        Name = o.Name
+                    }).ToList()
+                }).SingleOrDefaultAsync();
 
             return Success(user);
         }
