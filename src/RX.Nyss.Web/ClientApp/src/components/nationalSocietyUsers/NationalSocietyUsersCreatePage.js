@@ -44,7 +44,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       email: [validators.required, validators.email, validators.maxLength(100)],
       phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
-      organization: [],
+      organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)],
@@ -156,9 +156,26 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
             />
           </Grid>
 
+
+          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
+           <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.organization)}
+                field={form.fields.organizationId}
+                name="organizationId"
+              >
+                {props.organizations.map(organization => (
+                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
+                    {organization.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
+
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.nationalSocietyUser.form.organization)}
+              label={strings(stringKeys.nationalSocietyUser.form.customOrganization)}
               name="organization"
               field={form.fields.organization}
             />
@@ -190,22 +207,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 {sexValues.map(type => (
                   <MenuItem key={`sex${type}`} value={type}>
                     {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          )}
-
-          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
-           <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.organization)}
-                field={form.fields.organizationId}
-                name="organizationId"
-              >
-                {props.organizations.map(organization => (
-                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
-                    {organization.name}
                   </MenuItem>
                 ))}
               </SelectField>

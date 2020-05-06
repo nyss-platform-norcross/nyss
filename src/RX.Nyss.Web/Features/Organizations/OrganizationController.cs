@@ -20,9 +20,9 @@ namespace RX.Nyss.Web.Features.Organizations
         }
 
         /// <summary>
-        /// Gets a organization.
+        /// Gets an organization.
         /// </summary>
-        /// <returns>A organization</returns>
+        /// <returns>An organization</returns>
         [HttpGet("{organizationId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
         public Task<Result<OrganizationResponseDto>> Get(int organizationId) =>
@@ -41,23 +41,23 @@ namespace RX.Nyss.Web.Features.Organizations
         /// Creates a new organization for a specified national society.
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
-        /// <param name="gatewaySettingRequestDto">A organization settings</param>
+        /// <param name="organizationRequestDto">Organization details</param>
         /// <returns>An identifier of the created organization setting</returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<int>> Create(int nationalSocietyId, [FromBody] OrganizationRequestDto gatewaySettingRequestDto) =>
-            _organizationService.Create(nationalSocietyId, gatewaySettingRequestDto);
+        public Task<Result<int>> Create(int nationalSocietyId, [FromBody] OrganizationRequestDto organizationRequestDto) =>
+            _organizationService.Create(nationalSocietyId, organizationRequestDto);
 
         /// <summary>
         /// Edits a specified organization.
         /// </summary>
         /// <param name="organizationId">An identifier of organization to be updated</param>
-        /// <param name="gatewaySettingRequestDto">A organization settings</param>
+        /// <param name="organizationRequestDto">Organization details</param>
         /// <returns></returns>
         [HttpPost("{organizationId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
-        public Task<Result> Edit(int organizationId, [FromBody] OrganizationRequestDto gatewaySettingRequestDto) =>
-            _organizationService.Edit(organizationId, gatewaySettingRequestDto);
+        public Task<Result> Edit(int organizationId, [FromBody] OrganizationRequestDto organizationRequestDto) =>
+            _organizationService.Edit(organizationId, organizationRequestDto);
 
         /// <summary>
         /// Deletes a specified organization.
