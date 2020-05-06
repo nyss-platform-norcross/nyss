@@ -22,7 +22,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, listFetching: true };
 
     case actions.GET_DATA_COLLECTORS.SUCCESS:
-      return { ...state, listFetching: false, filters: action.filters, listData: action.list, listStale: false };
+      return { ...state, listFetching: false, filters: action.filters, listData: action.list, listStale: false, listSelectedAll: false };
 
     case actions.GET_DATA_COLLECTORS.FAILURE:
       return { ...state, listFetching: false };
