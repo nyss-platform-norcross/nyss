@@ -9,6 +9,8 @@
             public static class Common
             {
                 public const string UserNotFound = "user.common.userNotFound";
+                public const string OnlyCoordinatorCanChangeTheOrganizationOfAnotherUser = "user.common.onlyCoordinatorCanChangeTheOrganizationOfAnotherUser";
+                public const string CoordinatorCanChangeTheOrganizationOnlyForHeadManager = "user.common.coordinatorCanChangeTheOrganizationOnlyForHeadManager";
             }
 
             public static class Deletion
@@ -62,6 +64,11 @@
                     public const string Failed = "user.verifyEmail.addPassword.failed";
                 }
             }
+        }
+
+        public static class Organization
+        {
+            public const string NotAccessToChangeOrganization = "organization.notAccessToChangeOrganization";
         }
 
         public static class Login

@@ -173,7 +173,7 @@ namespace RX.Nyss.Data.MigrationApp
                 {
                     NationalSocietyId = 1,
                     UserId = context.Users.First(u => u.Name == user.name).Id,
-                    Organization = context.Organizations.First()
+                    Organization = user.roleName == "DataConsumer" ? null : context.Organizations.First()
                 }));
 
                 context.NationalSocieties.First().HeadManager = context.Users.First(u => u.Role == Role.Manager);

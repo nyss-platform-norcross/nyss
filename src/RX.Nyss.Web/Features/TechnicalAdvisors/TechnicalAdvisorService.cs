@@ -9,8 +9,10 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.TechnicalAdvisors.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.TechnicalAdvisors
@@ -18,8 +20,8 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
     public interface ITechnicalAdvisorService
     {
         Task<Result> Create(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto);
-        Task<Result<GetTechnicalAdvisorResponseDto>> Get(int technicalAdvisorId);
-        Task<Result> Edit(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto);
+        Task<Result<GetTechnicalAdvisorResponseDto>> Get(int technicalAdvisorId, int nationalSocietyId);
+        Task<Result> Edit(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editDto);
         Task<Result> Delete(int nationalSocietyId, int technicalAdvisorId);
         Task DeleteIncludingHeadManagerFlag(int nationalSocietyId, int technicalAdvisorId);
     }
@@ -32,9 +34,11 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IOrganizationService _organizationService;
 
         public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
-            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IAuthorizationService authorizationService, IOrganizationService organizationService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _dataContext = dataContext;
@@ -42,6 +46,8 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             _nationalSocietyUserService = nationalSocietyUserService;
             _verificationEmailService = verificationEmailService;
             _deleteUserService = deleteUserService;
+            _authorizationService = authorizationService;
+            _organizationService = organizationService;
         }
 
         public async Task<Result> Create(int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
@@ -69,20 +75,22 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             }
         }
 
-        public async Task<Result<GetTechnicalAdvisorResponseDto>> Get(int nationalSocietyUserId)
+        public async Task<Result<GetTechnicalAdvisorResponseDto>> Get(int nationalSocietyUserId, int nationalSocietyId)
         {
-            var technicalAdvisor = await _dataContext.Users.FilterAvailable()
-                .OfType<TechnicalAdvisorUser>()
-                .Where(u => u.Id == nationalSocietyUserId)
+            var technicalAdvisor = await _dataContext.UserNationalSocieties
+                .FilterAvailable()
+                .Where(u => u.User.Role == Role.TechnicalAdvisor)
+                .Where(u => u.UserId == nationalSocietyUserId && u.NationalSocietyId == nationalSocietyId)
                 .Select(u => new GetTechnicalAdvisorResponseDto
                 {
-                    Id = u.Id,
-                    Name = u.Name,
-                    Role = u.Role,
-                    Email = u.EmailAddress,
-                    PhoneNumber = u.PhoneNumber,
-                    AdditionalPhoneNumber = u.AdditionalPhoneNumber,
-                    Organization = u.Organization
+                    Id = u.User.Id,
+                    Name = u.User.Name,
+                    Role = u.User.Role,
+                    Email = u.User.EmailAddress,
+                    OrganizationId = u.Organization.Id,
+                    PhoneNumber = u.User.PhoneNumber,
+                    AdditionalPhoneNumber = u.User.AdditionalPhoneNumber,
+                    Organization = u.User.Organization
                 })
                 .SingleOrDefaultAsync();
 
@@ -95,16 +103,35 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             return new Result<GetTechnicalAdvisorResponseDto>(technicalAdvisor, true);
         }
 
-        public async Task<Result> Edit(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editTechnicalAdvisorRequestDto)
+        public async Task<Result> Edit(int technicalAdvisorId, EditTechnicalAdvisorRequestDto editDto)
         {
             try
             {
                 var user = await _nationalSocietyUserService.GetNationalSocietyUser<TechnicalAdvisorUser>(technicalAdvisorId);
 
-                user.Name = editTechnicalAdvisorRequestDto.Name;
-                user.PhoneNumber = editTechnicalAdvisorRequestDto.PhoneNumber;
-                user.Organization = editTechnicalAdvisorRequestDto.Organization;
-                user.AdditionalPhoneNumber = editTechnicalAdvisorRequestDto.AdditionalPhoneNumber;
+                user.Name = editDto.Name;
+                user.PhoneNumber = editDto.PhoneNumber;
+                user.Organization = editDto.Organization;
+                user.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
+
+                if (editDto.OrganizationId.HasValue)
+                {
+                    var userLink = await _dataContext.UserNationalSocieties
+                        .Where(un => un.UserId == technicalAdvisorId && un.NationalSociety.Id == editDto.NationalSocietyId)
+                        .SingleOrDefaultAsync();
+
+                    if (editDto.OrganizationId.Value != userLink.OrganizationId)
+                    {
+                        var validationResult = await _organizationService.CheckAccessForOrganizationEdition(userLink);
+
+                        if (!validationResult.IsSuccess)
+                        {
+                            return validationResult;
+                        }
+
+                        userLink.Organization = await _dataContext.Organizations.FindAsync(editDto.OrganizationId.Value);
+                    }
+                }
 
                 await _dataContext.SaveChangesAsync();
                 return Success();
@@ -170,6 +197,22 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             };
 
             var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+
+            if (createTechnicalAdvisorRequestDto.OrganizationId.HasValue)
+            {
+                userNationalSociety.Organization = await _dataContext.Organizations
+                    .Where(o => o.Id == createTechnicalAdvisorRequestDto.OrganizationId.Value && o.NationalSocietyId == nationalSocietyId)
+                    .SingleAsync();
+            }
+            else
+            {
+                var currentUser = _authorizationService.GetCurrentUser();
+
+                userNationalSociety.Organization = await _dataContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                    .Select(uns => uns.Organization)
+                    .SingleAsync();
+            }
 
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();

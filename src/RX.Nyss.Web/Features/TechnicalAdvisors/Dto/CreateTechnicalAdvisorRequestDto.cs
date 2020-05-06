@@ -1,4 +1,6 @@
 ﻿using FluentValidation;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.TechnicalAdvisors.Dto
@@ -10,16 +12,20 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors.Dto
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public string Organization { get; set; }
+        public int? OrganizationId { get; set; }
 
         public class CreateTechnicalAdvisorValidator : AbstractValidator<CreateTechnicalAdvisorRequestDto>
         {
-            public CreateTechnicalAdvisorValidator()
+            public CreateTechnicalAdvisorValidator(IOrganizationService organizationService)
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.Email).NotEmpty().MaximumLength(100).EmailAddress();
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
                 RuleFor(m => m.Organization).MaximumLength(100);
+                RuleFor(m => m.OrganizationId)
+                    .Must(organizationId => !organizationId.HasValue || organizationService.ValidateAccessForAssigningOrganization())
+                    .WithMessage(ResultKey.Organization.NotAccessToChangeOrganization);
             }
         }
     }

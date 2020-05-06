@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Organizations.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Organizations
@@ -18,19 +20,25 @@ namespace RX.Nyss.Web.Features.Organizations
         Task<Result<int>> Create(int nationalSocietyId, OrganizationRequestDto gatewaySettingRequestDto);
         Task<Result> Edit(int organizationId, OrganizationRequestDto gatewaySettingRequestDto);
         Task<Result> Delete(int organizationId);
+        bool ValidateAccessForAssigningOrganization();
+        Task<bool> ValidateAccessForChangingOrganization(int userId);
+        Task<Result> CheckAccessForOrganizationEdition(UserNationalSociety userLink);
     }
 
     public class OrganizationService : IOrganizationService
     {
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
+        private readonly IAuthorizationService _authorizationService;
 
         public OrganizationService(
             INyssContext nyssContext,
-            ILoggerAdapter loggerAdapter)
+            ILoggerAdapter loggerAdapter,
+            IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
+            _authorizationService = authorizationService;
         }
 
         public async Task<Result<OrganizationResponseDto>> Get(int organizationId)
@@ -167,6 +175,51 @@ namespace RX.Nyss.Web.Features.Organizations
                 _loggerAdapter.Debug(exception);
                 return exception.Result;
             }
+        }
+
+        public bool ValidateAccessForAssigningOrganization() =>
+            _authorizationService.IsCurrentUserInAnyRole(new[]
+            {
+                Role.Coordinator, Role.GlobalCoordinator, Role.Administrator
+            });
+
+        public async Task<bool> ValidateAccessForChangingOrganization(int userId)
+        {
+            if (!_authorizationService.IsCurrentUserInRole(Role.Coordinator))
+            {
+                return false;
+            }
+
+            return await _nyssContext.NationalSocieties.AnyAsync(ns => ns.HeadManager.Id == userId || ns.PendingHeadManager.Id == userId);
+        }
+
+        public async Task<Result> CheckAccessForOrganizationEdition(UserNationalSociety userLink)
+        {
+            if (!_authorizationService.IsCurrentUserInAnyRole(new[] { Role.Administrator, Role.Coordinator }))
+            {
+                return Error(ResultKey.User.Common.OnlyCoordinatorCanChangeTheOrganizationOfAnotherUser);
+            }
+
+            if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
+            {
+                var currentUser = _authorizationService.GetCurrentUser();
+
+                var currentUserLink = await _nyssContext.UserNationalSocieties
+                    .Where(un => un.UserId == currentUser.Id)
+                    .SingleOrDefaultAsync();
+
+                if (currentUserLink.NationalSocietyId != userLink.NationalSocietyId)
+                {
+                    return Error(ResultKey.UnexpectedError);
+                }
+            }
+
+            if (!_authorizationService.IsCurrentUserInRole(Role.Administrator) && !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.HeadManager.Id == userLink.UserId || ns.PendingHeadManager.Id == userLink.UserId))
+            {
+                return Error<bool>(ResultKey.User.Common.CoordinatorCanChangeTheOrganizationOnlyForHeadManager);
+            }
+
+            return Success();
         }
     }
 }

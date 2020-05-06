@@ -10,7 +10,9 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Managers.Dto;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Managers
@@ -18,8 +20,8 @@ namespace RX.Nyss.Web.Features.Managers
     public interface IManagerService
     {
         Task<Result> Create(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto);
-        Task<Result<GetManagerResponseDto>> Get(int managerId);
-        Task<Result> Edit(int managerId, EditManagerRequestDto editManagerRequestDto);
+        Task<Result<GetManagerResponseDto>> Get(int managerId, int nationalSocietyId);
+        Task<Result> Edit(int managerId, EditManagerRequestDto editDto);
         Task<Result> Delete(int managerId);
         Task DeleteIncludingHeadManagerFlag(int managerId);
     }
@@ -33,9 +35,11 @@ namespace RX.Nyss.Web.Features.Managers
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
         private readonly IDeleteUserService _deleteUserService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IOrganizationService _organizationService;
 
         public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
-            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService)
+            ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IAuthorizationService authorizationService, IOrganizationService organizationService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
@@ -43,6 +47,8 @@ namespace RX.Nyss.Web.Features.Managers
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
             _deleteUserService = deleteUserService;
+            _authorizationService = authorizationService;
+            _organizationService = organizationService;
         }
 
         public async Task<Result> Create(int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
@@ -71,20 +77,22 @@ namespace RX.Nyss.Web.Features.Managers
             }
         }
 
-        public async Task<Result<GetManagerResponseDto>> Get(int nationalSocietyUserId)
+        public async Task<Result<GetManagerResponseDto>> Get(int nationalSocietyUserId, int nationalSocietyId)
         {
-            var manager = await _dataContext.Users.FilterAvailable()
-                .OfType<ManagerUser>()
-                .Where(u => u.Id == nationalSocietyUserId)
+            var manager = await _dataContext.UserNationalSocieties
+                .FilterAvailable()
+                .Where(u => u.User.Role == Role.Manager)
+                .Where(u => u.UserId == nationalSocietyUserId && u.NationalSocietyId == nationalSocietyId)
                 .Select(u => new GetManagerResponseDto
                 {
-                    Id = u.Id,
-                    Name = u.Name,
-                    Role = u.Role,
-                    Email = u.EmailAddress,
-                    PhoneNumber = u.PhoneNumber,
-                    AdditionalPhoneNumber = u.AdditionalPhoneNumber,
-                    Organization = u.Organization
+                    Id = u.User.Id,
+                    Name = u.User.Name,
+                    Role = u.User.Role,
+                    Email = u.User.EmailAddress,
+                    OrganizationId = u.Organization.Id,
+                    PhoneNumber = u.User.PhoneNumber,
+                    AdditionalPhoneNumber = u.User.AdditionalPhoneNumber,
+                    Organization = u.User.Organization
                 })
                 .SingleOrDefaultAsync();
 
@@ -97,16 +105,35 @@ namespace RX.Nyss.Web.Features.Managers
             return new Result<GetManagerResponseDto>(manager, true);
         }
 
-        public async Task<Result> Edit(int managerId, EditManagerRequestDto editManagerRequestDto)
+        public async Task<Result> Edit(int managerId, EditManagerRequestDto editDto)
         {
             try
             {
                 var user = await _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(managerId);
 
-                user.Name = editManagerRequestDto.Name;
-                user.PhoneNumber = editManagerRequestDto.PhoneNumber;
-                user.Organization = editManagerRequestDto.Organization;
-                user.AdditionalPhoneNumber = editManagerRequestDto.AdditionalPhoneNumber;
+                user.Name = editDto.Name;
+                user.PhoneNumber = editDto.PhoneNumber;
+                user.Organization = editDto.Organization;
+                user.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
+
+                if (editDto.OrganizationId.HasValue)
+                {
+                    var userLink = await _dataContext.UserNationalSocieties
+                        .Where(un => un.UserId == managerId && un.NationalSociety.Id == editDto.NationalSocietyId)
+                        .SingleOrDefaultAsync();
+
+                    if (editDto.OrganizationId.Value != userLink.OrganizationId)
+                    {
+                        var validationResult = await _organizationService.CheckAccessForOrganizationEdition(userLink);
+
+                        if (!validationResult.IsSuccess)
+                        {
+                            return validationResult;
+                        }
+
+                        userLink.Organization = await _dataContext.Organizations.FindAsync(editDto.OrganizationId.Value);
+                    }
+                }
 
                 await _dataContext.SaveChangesAsync();
                 return Success();
@@ -145,7 +172,8 @@ namespace RX.Nyss.Web.Features.Managers
 
         private async Task<ManagerUser> CreateManagerUser(IdentityUser identityUser, int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+            var nationalSociety = await _dataContext.NationalSocieties
+                .Include(ns => ns.ContentLanguage)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -172,7 +200,28 @@ namespace RX.Nyss.Web.Features.Managers
                 ApplicationLanguage = defaultUserApplicationLanguage
             };
 
-            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+            var userNationalSociety = new UserNationalSociety
+            {
+                NationalSociety = nationalSociety,
+                User = user
+            };
+
+            if (createManagerRequestDto.OrganizationId.HasValue)
+            {
+                userNationalSociety.Organization = await _dataContext.Organizations
+                    .Where(o => o.Id == createManagerRequestDto.OrganizationId.Value && o.NationalSocietyId == nationalSocietyId)
+                    .SingleAsync();
+            }
+            else
+            {
+                var currentUser = _authorizationService.GetCurrentUser();
+
+                userNationalSociety.Organization = await _dataContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                    .Select(uns => uns.Organization)
+                    .SingleAsync();
+            }
+
 
             if (createManagerRequestDto.SetAsHeadManager == true)
             {
@@ -183,13 +232,6 @@ namespace RX.Nyss.Web.Features.Managers
             await _dataContext.SaveChangesAsync();
             return user;
         }
-
-        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
-            new UserNationalSociety
-            {
-                NationalSociety = nationalSociety,
-                User = user
-            };
 
         private async Task DeleteFromDb(int managerId, bool allowHeadManagerDeletion = false)
         {

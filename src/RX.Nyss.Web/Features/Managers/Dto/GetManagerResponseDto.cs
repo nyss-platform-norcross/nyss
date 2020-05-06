@@ -11,5 +11,6 @@ namespace RX.Nyss.Web.Features.Managers.Dto
         public string AdditionalPhoneNumber { get; set; }
         public string Organization { get; set; }
         public Role Role { get; set; }
+        public int OrganizationId { get; set; }
     }
 }

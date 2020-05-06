@@ -97,6 +97,10 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
   const availableUserRoles = getAvailableUserRoles();
 
+  if (!props.organizations) {
+    return null;
+  }
+
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}
@@ -192,7 +196,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
             </Grid>
           )}
 
-          {(role === roles.Coordinator || role === roles.GlobalCoordinator || role === roles.Administrator) && (
+          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
            <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.organization)}

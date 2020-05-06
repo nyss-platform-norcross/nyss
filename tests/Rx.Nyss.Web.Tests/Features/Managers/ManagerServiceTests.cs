@@ -12,7 +12,9 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.Managers.Dto;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
 
@@ -31,6 +33,8 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         private readonly int _managerId = 2;
         private readonly int _nationalSocietyId = 1;
         private readonly IDeleteUserService _deleteUserService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IOrganizationService _organizationService;
 
 
         public ManagerServiceTests()
@@ -42,8 +46,9 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             _nationalSocietyUserService = Substitute.For<INationalSocietyUserService>();
             _deleteUserService = Substitute.For<IDeleteUserService>();
 
-            _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService);
-
+            _authorizationService = Substitute.For<IAuthorizationService>();
+            _organizationService = Substitute.For<IOrganizationService>();
+            _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService, _authorizationService, _organizationService);
 
             var nationalSocieties = new List<NationalSociety>
             {
@@ -54,24 +59,32 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 }
             };
             var applicationLanguages = new List<ApplicationLanguage>();
+
+            var administratorUser = new AdministratorUser
+            {
+                Id = _administratorId,
+                Role = Role.Administrator
+            };
+
+            var managerUser = new ManagerUser
+            {
+                Id = _managerId,
+                Role = Role.Manager,
+                EmailAddress = "emailTest1@domain.com",
+                Name = "emailTest1@domain.com",
+                Organization = "org org",
+                PhoneNumber = "123",
+                AdditionalPhoneNumber = "321"
+            };
+
             var users = new List<User>
             {
-                new AdministratorUser
-                {
-                    Id = _administratorId,
-                    Role = Role.Administrator
-                },
-                new ManagerUser
-                {
-                    Id = _managerId,
-                    Role = Role.Manager,
-                    EmailAddress = "emailTest1@domain.com",
-                    Name = "emailTest1@domain.com",
-                    Organization = "org org",
-                    PhoneNumber = "123",
-                    AdditionalPhoneNumber = "321"
-                }
+                administratorUser,
+                managerUser
             };
+
+            var organization = new Organization();
+
             var userNationalSocieties = new List<UserNationalSociety>
             {
                 new UserNationalSociety
@@ -79,10 +92,20 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                     User = users[1],
                     UserId = _managerId,
                     NationalSocietyId = _nationalSocietyId,
+                    NationalSociety = nationalSocieties[0],
+                    Organization = organization
+                },
+                new UserNationalSociety
+                {
+                    User = users[0],
+                    UserId = _administratorId,
+                    NationalSocietyId = _nationalSocietyId,
                     NationalSociety = nationalSocieties[0]
-                }
+                },
             };
             users[1].UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[0] };
+
+            _authorizationService.GetCurrentUser().Returns(managerUser);
 
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             var usersDbSet = users.AsQueryable().BuildMockDbSet();

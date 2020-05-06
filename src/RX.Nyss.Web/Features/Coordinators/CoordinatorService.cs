@@ -75,18 +75,20 @@ namespace RX.Nyss.Web.Features.Coordinators
 
         public async Task<Result<GetCoordinatorResponseDto>> Get(int nationalSocietyUserId)
         {
-            var coordinator = await _dataContext.Users.FilterAvailable()
-                .OfType<CoordinatorUser>()
-                .Where(u => u.Id == nationalSocietyUserId)
+            var coordinator = await _dataContext.UserNationalSocieties
+                .FilterAvailable()
+                .Where(u => u.User.Role == Role.Coordinator)
+                .Where(u => u.UserId == nationalSocietyUserId)
                 .Select(u => new GetCoordinatorResponseDto
                 {
-                    Id = u.Id,
-                    Name = u.Name,
-                    Role = u.Role,
-                    Email = u.EmailAddress,
-                    PhoneNumber = u.PhoneNumber,
-                    AdditionalPhoneNumber = u.AdditionalPhoneNumber,
-                    Organization = u.Organization
+                    Id = u.User.Id,
+                    Name = u.User.Name,
+                    Role = u.User.Role,
+                    Email = u.User.EmailAddress,
+                    PhoneNumber = u.User.PhoneNumber,
+                    OrganizationId = u.Organization.Id,
+                    AdditionalPhoneNumber = u.User.AdditionalPhoneNumber,
+                    Organization = u.User.Organization
                 })
                 .SingleOrDefaultAsync();
 

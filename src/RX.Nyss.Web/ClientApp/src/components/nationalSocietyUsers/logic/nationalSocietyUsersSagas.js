@@ -38,7 +38,6 @@ function* openNationalSocietyUsersList({ nationalSocietyId }) {
 };
 
 function* openNationalSocietyUserCreation({ nationalSocietyId }) {
-  const currentUserRoles = yield select(state => state.appData.user.roles);
   yield put(actions.openCreation.request());
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
@@ -64,7 +63,7 @@ function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
   try {
     const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
     const formData = yield call(http.get, `/api/user/editFormData?nationalSocietyUserId=${nationalSocietyUserId}&nationalSocietyId=${nationalSocietyId}`);
-    const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, formData.value.role));
+    const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, formData.value.role, nationalSocietyId));
     yield openNationalSocietyUsersModule(nationalSocietyId);
     yield put(actions.openEdition.success(response.value, formData.value.projects, formData.value.organizations));
   } catch (error) {
@@ -175,18 +174,18 @@ function getSpecificRoleUserEditionUrl(userId, role) {
   }
 };
 
-function getSpecificRoleUserRetrievalUrl(userId, role) {
+function getSpecificRoleUserRetrievalUrl(userId, role, nationalSocietyId) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/technicalAdvisor/${userId}/get`;
+      return `/api/technicalAdvisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Manager:
-      return `/api/manager/${userId}/get`;
+      return `/api/manager/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.DataConsumer:
-      return `/api/dataConsumer/${userId}/get`;
+      return `/api/dataConsumer/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
-      return `/api/supervisor/${userId}/get`;
+      return `/api/supervisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Coordinator:
-      return `/api/coordinator/${userId}/get`;
+      return `/api/coordinator/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }

@@ -36,6 +36,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
     const fields = {
       id: props.data.id,
+      nationalSocietyId: parseInt(props.nationalSocietyId),
       role: props.data.role,
       name: props.data.name,
       phoneNumber: props.data.phoneNumber,
@@ -61,7 +62,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
     setRole(props.data.role);
 
     setForm(createForm(fields, validation));
-  }, [props.data, props.match]);
+  }, [props.data, props.match, props.nationalSocietyId]);
 
   if (!props.data) {
     return null;
@@ -159,8 +160,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Grid>
           )}
 
-          {(role === roles.Coordinator || role === roles.GlobalCoordinator) && (
-           <Grid item xs={12}>
+          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
+            <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.organization)}
                 field={form.fields.organizationId}
@@ -184,9 +185,9 @@ const NationalSocietyUsersEditPageComponent = (props) => {
               >
                 {props.data.editSupervisorFormData.availableProjects.map(project => (
                   <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
-                    { project.isClosed
-                      ? stringsFormat(stringKeys.nationalSocietyUser.form.projectIsClosed, {projectName: project.name})
-                      : project.name }                     
+                    {project.isClosed
+                      ? stringsFormat(stringKeys.nationalSocietyUser.form.projectIsClosed, { projectName: project.name })
+                      : project.name}
                   </MenuItem>
                 ))}
               </SelectField>
@@ -214,6 +215,7 @@ const mapStateToProps = (state, ownProps) => ({
   isFetching: state.nationalSocietyUsers.formFetching,
   isSaving: state.nationalSocietyUsers.formSaving,
   data: state.nationalSocietyUsers.formData,
+  callingUserRoles: state.appData.user.roles,
   error: state.nationalSocietyUsers.formError
 });
 

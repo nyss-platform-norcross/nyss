@@ -85,8 +85,9 @@ namespace RX.Nyss.Web.Features.Users
         
         public async Task<Result<NationalSocietyUsersEditFormDataResponseDto>> GetEditFormData(int nationalSocietyUserId, int nationalSocietyId)
         {
-            var user = await _dataContext.Users.FilterAvailable()
-                .Where(u => u.Id == nationalSocietyUserId)
+            var user = await _dataContext.Users
+                .FilterAvailable()
+                .Where(u => u.Id == nationalSocietyUserId && u.UserNationalSocieties.Any(uns => uns.NationalSocietyId == nationalSocietyId))
                 .Select(u => new NationalSocietyUsersEditFormDataResponseDto
                 {
                     Email = u.EmailAddress,
@@ -99,11 +100,13 @@ namespace RX.Nyss.Web.Features.Users
                             Id = p.Id,
                             Name = p.Name
                         }).ToList(),
-                    Organizations = u.UserNationalSocieties.Single(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == nationalSocietyUserId).NationalSociety.Organizations.Select(o => new OrganizationsDto
-                    {
-                        Id = o.Id,
-                        Name = o.Name
-                    }).ToList()
+                    Organizations = _dataContext.Organizations
+                        .Where(o => o.NationalSociety.Id == nationalSocietyId)
+                        .Select(o => new OrganizationsDto
+                        {
+                            Id = o.Id,
+                            Name = o.Name
+                        }).ToList()
                 }).SingleOrDefaultAsync();
 
             return Success(user);

@@ -20,52 +20,52 @@ namespace RX.Nyss.Web.Features.Organizations
         }
 
         /// <summary>
-        /// Gets a SMS Gateway.
+        /// Gets a organization.
         /// </summary>
-        /// <returns>A SMS Gateway</returns>
+        /// <returns>A organization</returns>
         [HttpGet("{organizationId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
         public Task<Result<OrganizationResponseDto>> Get(int organizationId) =>
             _organizationService.Get(organizationId);
 
         /// <summary>
-        /// Lists SMS Gateways assigned to a specified national society.
+        /// Lists organizations assigned to a specified national society.
         /// </summary>
-        /// <returns>A list of SMS Gateways assigned to the national society</returns>
+        /// <returns>A list of organizations assigned to the national society</returns>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<OrganizationListResponseDto>>> List(int nationalSocietyId) =>
             _organizationService.List(nationalSocietyId);
 
         /// <summary>
-        /// Creates a new SMS Gateway for a specified national society.
+        /// Creates a new organization for a specified national society.
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
-        /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
-        /// <returns>An identifier of the created SMS Gateway setting</returns>
+        /// <param name="gatewaySettingRequestDto">A organization settings</param>
+        /// <returns>An identifier of the created organization setting</returns>
         [HttpPost("create")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<int>> Create(int nationalSocietyId, [FromBody] OrganizationRequestDto gatewaySettingRequestDto) =>
             _organizationService.Create(nationalSocietyId, gatewaySettingRequestDto);
 
         /// <summary>
-        /// Edits a specified SMS Gateway.
+        /// Edits a specified organization.
         /// </summary>
-        /// <param name="organizationId">An identifier of SMS Gateway to be updated</param>
-        /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
+        /// <param name="organizationId">An identifier of organization to be updated</param>
+        /// <param name="gatewaySettingRequestDto">A organization settings</param>
         /// <returns></returns>
         [HttpPost("{organizationId:int}/edit")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
         public Task<Result> Edit(int organizationId, [FromBody] OrganizationRequestDto gatewaySettingRequestDto) =>
             _organizationService.Edit(organizationId, gatewaySettingRequestDto);
 
         /// <summary>
-        /// Deletes a specified SMS Gateway.
+        /// Deletes a specified organization.
         /// </summary>
-        /// <param name="organizationId">An identifier of SMS Gateway to be deleted</param>
+        /// <param name="organizationId">An identifier of organization to be deleted</param>
         /// <returns></returns>
         [HttpPost("{organizationId:int}/delete")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
         public Task<Result> Delete(int organizationId) =>
             _organizationService.Delete(organizationId);
     }

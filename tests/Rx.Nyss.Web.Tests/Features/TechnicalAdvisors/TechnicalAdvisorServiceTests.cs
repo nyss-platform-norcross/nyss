@@ -10,9 +10,11 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Features.TechnicalAdvisors.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
 
@@ -27,6 +29,8 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
         private readonly IDeleteUserService _deleteUserService;
+        private IAuthorizationService _authorizationService;
+        private IOrganizationService _organizationService;
 
         public TechnicalAdvisorServiceTests()
         {
@@ -41,8 +45,9 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock,
-                _deleteUserService);
+            _authorizationService = Substitute.For<IAuthorizationService>();
+            _organizationService = Substitute.For<IOrganizationService>();
+            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService, _authorizationService, _organizationService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
             {
@@ -70,7 +75,6 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             return technicalAdvisor;
         }
 
-
         private User ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety()
         {
             var technicalAdvisor = ArrangeUsersDbSetWithOneTechnicalAdvisor();
@@ -82,7 +86,8 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
                     User = technicalAdvisor,
                     UserId = technicalAdvisor.Id,
                     NationalSocietyId = 1,
-                    NationalSociety = _nyssContext.NationalSocieties.Find(1)
+                    NationalSociety = _nyssContext.NationalSocieties.Find(1),
+                    Organization = new Organization()
                 }
             };
 
@@ -90,6 +95,30 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             technicalAdvisor.UserNationalSocieties = userNationalSocieties;
 
             return technicalAdvisor;
+        }
+
+        private void ArrangeManagerAsCurrentUser()
+        {
+            var managerUser = new ManagerUser
+            {
+                Id = 5
+            };
+
+            _authorizationService.GetCurrentUser().Returns(managerUser);
+
+            var userNationalSocieties = new List<UserNationalSociety>
+            {
+                new UserNationalSociety
+                {
+                    User = managerUser,
+                    UserId = managerUser.Id,
+                    NationalSocietyId = 1,
+                    NationalSociety = _nyssContext.NationalSocieties.Find(1),
+                    Organization = new Organization()
+                }
+            };
+
+            ArrangeUserNationalSocietiesFrom(userNationalSocieties);
         }
 
 
@@ -189,6 +218,8 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
         [Fact]
         public async Task RegisterTechnicalAdvisor_WhenIdentityUserCreationSuccessful_ShouldReturnSuccessResult()
         {
+            ArrangeManagerAsCurrentUser();
+
             var userEmail = "emailTest1@domain.com";
             var userName = "Mickey Mouse";
             var registerTechnicalAdvisorRequestDto = new CreateTechnicalAdvisorRequestDto
@@ -208,6 +239,10 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
         [Fact]
         public async Task RegisterTechnicalAdvisor_WhenIdentityUserCreationSuccessful_NyssContextAddIsCalledOnce()
         {
+            ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
+
+            ArrangeManagerAsCurrentUser();
+
             var userEmail = "emailTest1@domain.com";
             var registerTechnicalAdvisorRequestDto = new CreateTechnicalAdvisorRequestDto
             {
@@ -225,6 +260,8 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
         [Fact]
         public async Task RegisterTechnicalAdvisor_WhenIdentityUserCreationSuccessful_NyssContextSaveChangesIsCalledOnce()
         {
+            ArrangeManagerAsCurrentUser();
+
             var userEmail = "emailTest1@domain.com";
             var registerTechnicalAdvisorRequestDto = new CreateTechnicalAdvisorRequestDto
             {
