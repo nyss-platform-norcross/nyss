@@ -1,6 +1,6 @@
 import styles from './DataCollectorsTable.module.scss';
 import tableStyles from '../common/table/Table.module.scss';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -38,21 +38,25 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
     }
   ];
 
-  const getSelectedIds = () =>
-    list.filter(i => i.isSelected).map(i => i.id);
+  const getSelectedIds = useCallback(() =>
+    list.filter(i => i.isSelected).map(i => i.id), [list]);
 
-  const getMultipleSelectionMenu = () => [
-    {
-      title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
-      action: () => setTrainingState(getSelectedIds(), false),
-      roles: accessMap.dataCollectors.list
-    },
-    {
-      title: strings(stringKeys.dataCollector.list.setToInTraining),
-      action: () => setTrainingState(getSelectedIds(), true),
-      roles: accessMap.dataCollectors.list
-    }
-  ];
+  const multipleSelectionMenu = useMemo(() =>
+    isSelected
+      ? [
+        {
+          title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
+          action: () => setTrainingState(getSelectedIds(), false),
+          roles: accessMap.dataCollectors.list
+        },
+        {
+          title: strings(stringKeys.dataCollector.list.setToInTraining),
+          action: () => setTrainingState(getSelectedIds(), true),
+          roles: accessMap.dataCollectors.list
+        }
+      ]
+      : []
+    , [getSelectedIds, setTrainingState, isSelected]);
 
   const handleSelect = (e, id, value) => {
     e.stopPropagation();
@@ -81,11 +85,9 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
             <TableCell>{strings(stringKeys.dataCollector.list.trainingStatus)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollector.list.supervisor)}</TableCell>
             <TableCell>
-              {isSelected && (
-                <TableRowActions style={{ textAlign: "left" }}>
-                  <TableRowMenu icon={<MoreVertIcon />} items={getMultipleSelectionMenu()} />
-                </TableRowActions>
-              )}
+              <TableRowActions style={{ textAlign: "left" }}>
+                <TableRowMenu icon={<MoreVertIcon />} items={multipleSelectionMenu} alwaysShow />
+              </TableRowActions>
             </TableCell>
           </TableRow>
         </TableHead>

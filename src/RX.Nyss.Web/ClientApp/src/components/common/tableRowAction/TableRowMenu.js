@@ -5,12 +5,13 @@ import Menu from "@material-ui/core/Menu";
 import { useUser } from "../hasAccess/HasUser";
 import MenuItem from "@material-ui/core/MenuItem";
 
-const TableRowMenuComponent = ({ id, icon, items, isFetching, user }) => {
+const TableRowMenuComponent = ({ id, icon, items, isFetching, user, alwaysShow }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleDropdownClick = (e) => {
     e.stopPropagation();
-    setAnchorEl(e.currentTarget);
+
+    filteredItems.length !== 0 && setAnchorEl(e.currentTarget);
   }
 
   const handleDropdownClose = (e) => {
@@ -28,7 +29,7 @@ const TableRowMenuComponent = ({ id, icon, items, isFetching, user }) => {
     .filter(item => item.condition === undefined || item.condition)
     .filter(item => !item.roles || user.roles.some(role => item.roles.indexOf(role) > -1));
 
-  if (!filteredItems.length) {
+  if (!filteredItems.length && !alwaysShow) {
     return null;
   }
 
