@@ -133,7 +133,11 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 ContentLanguage = await GetLanguageById(dto.ContentLanguageId),
                 Country = await GetCountryById(dto.CountryId),
                 IsArchived = false,
-                StartDate = DateTime.UtcNow
+                StartDate = DateTime.UtcNow,
+                Organizations = new List<Organization>
+                {
+                    new Organization { Name = dto.InitialOrganizationName }
+                }
             };
 
             if (nationalSociety.ContentLanguage == null)

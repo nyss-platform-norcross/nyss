@@ -7,6 +7,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
         public string Name { get; set; }
         public int CountryId { get; set; }
         public int ContentLanguageId { get; set; }
+        public string InitialOrganizationName { get; set; }
 
         public class Validator : AbstractValidator<CreateNationalSocietyRequestDto>
         {
@@ -15,6 +16,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
                 RuleFor(r => r.Name).NotEmpty().MinimumLength(3);
                 RuleFor(r => r.ContentLanguageId).GreaterThan(0);
                 RuleFor(r => r.CountryId).GreaterThan(0);
+                RuleFor(r => r.InitialOrganizationName).NotEmpty().MaximumLength(100);
             }
         }
     }

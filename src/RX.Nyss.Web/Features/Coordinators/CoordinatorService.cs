@@ -75,18 +75,20 @@ namespace RX.Nyss.Web.Features.Coordinators
 
         public async Task<Result<GetCoordinatorResponseDto>> Get(int nationalSocietyUserId)
         {
-            var coordinator = await _dataContext.Users.FilterAvailable()
-                .OfType<CoordinatorUser>()
-                .Where(u => u.Id == nationalSocietyUserId)
+            var coordinator = await _dataContext.UserNationalSocieties
+                .FilterAvailable()
+                .Where(u => u.User.Role == Role.Coordinator)
+                .Where(u => u.UserId == nationalSocietyUserId)
                 .Select(u => new GetCoordinatorResponseDto
                 {
-                    Id = u.Id,
-                    Name = u.Name,
-                    Role = u.Role,
-                    Email = u.EmailAddress,
-                    PhoneNumber = u.PhoneNumber,
-                    AdditionalPhoneNumber = u.AdditionalPhoneNumber,
-                    Organization = u.Organization
+                    Id = u.User.Id,
+                    Name = u.User.Name,
+                    Role = u.User.Role,
+                    Email = u.User.EmailAddress,
+                    PhoneNumber = u.User.PhoneNumber,
+                    OrganizationId = u.Organization.Id,
+                    AdditionalPhoneNumber = u.User.AdditionalPhoneNumber,
+                    Organization = u.User.Organization
                 })
                 .SingleOrDefaultAsync();
 
@@ -109,6 +111,14 @@ namespace RX.Nyss.Web.Features.Coordinators
                 user.PhoneNumber = editCoordinatorRequestDto.PhoneNumber;
                 user.Organization = editCoordinatorRequestDto.Organization;
                 user.AdditionalPhoneNumber = editCoordinatorRequestDto.AdditionalPhoneNumber;
+
+                var organization = await _dataContext.Organizations.FindAsync(editCoordinatorRequestDto.OrganizationId);
+
+                var userLink = await _dataContext.UserNationalSocieties
+                    .Where(un => un.UserId == coordinatorId && un.NationalSociety.Id == organization.NationalSocietyId)
+                    .SingleOrDefaultAsync();
+
+                userLink.Organization = await _dataContext.Organizations.FindAsync(editCoordinatorRequestDto.OrganizationId);
 
                 await _dataContext.SaveChangesAsync();
                 return Success();
@@ -141,7 +151,7 @@ namespace RX.Nyss.Web.Features.Coordinators
                 return e.Result;
             }
         }
-        
+
         private async Task<CoordinatorUser> CreateCoordinatorUser(IdentityUser identityUser, int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto)
         {
             var nationalSociety = await _dataContext.NationalSocieties
@@ -183,24 +193,22 @@ namespace RX.Nyss.Web.Features.Coordinators
                 ApplicationLanguage = defaultUserApplicationLanguage
             };
 
-            var userNationalSociety = CreateUserNationalSocietyReference(nationalSociety, user);
+            var userNationalSociety = new UserNationalSociety
+            {
+                NationalSociety = nationalSociety,
+                User = user,
+                Organization = await _dataContext.Organizations.FindAsync(createCoordinatorRequestDto.OrganizationId)
+            };
 
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
             return user;
         }
 
-        private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
-            new UserNationalSociety
-            {
-                NationalSociety = nationalSociety,
-                User = user
-            };
-
         private async Task DeleteFromDb(int coordinatorId, bool allowHeadCoordinatorDeletion = false)
         {
             var coordinator = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<CoordinatorUser>(coordinatorId);
-            
+
             _nationalSocietyUserService.DeleteNationalSocietyUser(coordinator);
             await _identityUserRegistrationService.DeleteIdentityUser(coordinator.IdentityUserId);
         }

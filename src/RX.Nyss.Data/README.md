@@ -1,5 +1,6 @@
-﻿This project contains the `NyssContext` database model and its migrations. An updated ER diagram of the model can be found [here](./nyss-er-diagram.png).
+﻿This project contains the `NyssContext` database model and its migrations. This is the data model:
 
+![Data model ER Diagram](Nyss-Data-model.png)
 
 ## Migrations
 If you need to change the data model, you would need to create a new migration. A migration contains the sql scripts needed to alter the database schema to correspond with the model.

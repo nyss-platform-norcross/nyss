@@ -9,6 +9,8 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors.Dto
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public string Organization { get; set; }
+        public int? OrganizationId { get; set; }
+        public int NationalSocietyId { get; set; }
 
         public class EditTechnicalAdvisorValidator : AbstractValidator<EditTechnicalAdvisorRequestDto>
         {

@@ -33,11 +33,12 @@ namespace RX.Nyss.Web.Features.Managers
         /// Get a manager.
         /// </summary>
         /// <param name="managerId">The ID of the requested manager</param>
+        /// <param name="nationalSocietyId">The ID of the requested national society</param>
         /// <returns></returns>
         [HttpGet("{managerId:int}/get")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ManagerAccess)]
-        public async Task<Result> Get(int managerId) =>
-            await _managerService.Get(managerId);
+        public async Task<Result> Get(int managerId, int nationalSocietyId) =>
+            await _managerService.Get(managerId, nationalSocietyId);
 
         /// <summary>
         /// Update a manager.

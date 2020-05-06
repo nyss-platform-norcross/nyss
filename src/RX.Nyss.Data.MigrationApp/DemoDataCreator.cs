@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ namespace RX.Nyss.Data.MigrationApp
             {
                 ("DataConsumer", "6be5c384-6675-a7be-4c45-3cba40f7cd13", "Jane DataConsumer", "+1234561"),
                 ("GlobalCoordinator", "5f259e96-4200-0cbc-4fe6-90024dcb770a", "Kim GlobalCoordinator", "+1234562"),
+                ("Coordinator", "4f8cb17f-5851-4156-9997-e85324717129", "Corey Coordinator", "+123456278"),
                 ("Supervisor", "a076dd25-30d5-cbb2-4174-f73fda1524fa", "Bob Supervisor", "+1234563"),
                 ("Supervisor", "93485951-13fd-42e1-a98c-e5b54ce60073", "Simon Supervisor", "+1234566"),
                 ("TechnicalAdvisor", "7c2d7baf-4400-6baf-497a-997a7ca18597", "Todd TechnicalAdvisor", "+1234564"),
@@ -93,7 +95,14 @@ namespace RX.Nyss.Data.MigrationApp
                         CountryCode = "MI"
                     },
                     Name = "Mandawi example National Society",
-                    StartDate = DateTime.UtcNow
+                    StartDate = DateTime.UtcNow,
+                    Organizations = new List<Organization>
+                    {
+                        new Organization
+                        {
+                            Name = "Demo Organization"
+                        }
+                    }
                 });
                 context.SaveChanges();
 
@@ -129,6 +138,9 @@ namespace RX.Nyss.Data.MigrationApp
                         case "GlobalCoordinator":
                             nyssUser = new GlobalCoordinatorUser();
                             break;
+                        case "Coordinator":
+                            nyssUser = new CoordinatorUser();
+                            break;
                         case "Manager":
                             nyssUser = new ManagerUser();
                             break;
@@ -161,6 +173,7 @@ namespace RX.Nyss.Data.MigrationApp
                 {
                     NationalSocietyId = 1,
                     UserId = context.Users.First(u => u.Name == user.name).Id,
+                    Organization = user.roleName == "DataConsumer" ? null : context.Organizations.First()
                 }));
 
                 context.NationalSocieties.First().HeadManager = context.Users.First(u => u.Role == Role.Manager);

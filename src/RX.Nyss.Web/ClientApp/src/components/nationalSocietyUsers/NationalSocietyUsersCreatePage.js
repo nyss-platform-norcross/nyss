@@ -34,7 +34,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organization: "",
       decadeOfBirth: "",
       projectId: "",
-      sex: ""
+      sex: "",
+      organizationId: ""
     };
 
     const validation = {
@@ -46,7 +47,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)]
+      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)],
+      organizationId: [validators.requiredWhen(f => f.role === roles.Coordinator || f.role === roles.GlobalCoordinator)]
     };
 
     setRole(roles.Manager);
@@ -71,6 +73,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
     props.create(props.nationalSocietyId, {
       ...values,
+      organizationId: values.organizationId ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
       setAsHeadManager: props.callingUserRoles.some(r => r === roles.Coordinator) ? true : null
@@ -93,6 +96,10 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   }
 
   const availableUserRoles = getAvailableUserRoles();
+
+  if (!props.organizations) {
+    return null;
+  }
 
   return (
     <Fragment>
@@ -149,9 +156,26 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
             />
           </Grid>
 
+
+          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
+           <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.organization)}
+                field={form.fields.organizationId}
+                name="organizationId"
+              >
+                {props.organizations.map(organization => (
+                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
+                    {organization.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
+
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.nationalSocietyUser.form.organization)}
+              label={strings(stringKeys.nationalSocietyUser.form.customOrganization)}
               name="organization"
               field={form.fields.organization}
             />
@@ -215,12 +239,10 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   );
 }
 
-NationalSocietyUsersCreatePageComponent.propTypes = {
-};
-
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   projects: state.nationalSocietyUsers.formProjects,
+  organizations: state.nationalSocietyUsers.formOrganizations,
   isSaving: state.nationalSocietyUsers.formSaving,
   error: state.nationalSocietyUsers.formError,
   callingUserRoles: state.appData.user.roles

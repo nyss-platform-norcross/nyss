@@ -29,6 +29,7 @@ using RX.Nyss.Web.Features.DataConsumers.Access;
 using RX.Nyss.Web.Features.Managers.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Access;
+using RX.Nyss.Web.Features.Organizations.Access;
 using RX.Nyss.Web.Features.Projects.Access;
 using RX.Nyss.Web.Features.Reports.Access;
 using RX.Nyss.Web.Features.SmsGateways.Access;
@@ -179,6 +180,9 @@ namespace RX.Nyss.Web.Configuration
                 options.AddPolicy(Policy.SmsGatewayAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<SmsGatewayAccessHandler>.Requirement()));
 
+                options.AddPolicy(Policy.OrganizationAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<OrganizationAccessHandler>.Requirement()));
+
                 options.AddPolicy(Policy.SupervisorAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<SupervisorAccessHandler>.Requirement()));
 
@@ -221,6 +225,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, DataConsumerAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, TechnicalAdvisorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, SmsGatewayAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, OrganizationAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, SupervisorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, DataCollectorAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, MultipleDataCollectorsAccessHandler>();

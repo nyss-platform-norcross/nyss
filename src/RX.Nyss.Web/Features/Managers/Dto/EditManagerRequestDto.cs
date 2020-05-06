@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Managers.Dto
@@ -9,6 +10,8 @@ namespace RX.Nyss.Web.Features.Managers.Dto
         public string PhoneNumber { get; set; }
         public string AdditionalPhoneNumber { get; set; }
         public string Organization { get; set; }
+        public int? OrganizationId { get; set; }
+        public int NationalSocietyId { get; set; }
 
         public class EditManagerValidator : AbstractValidator<EditManagerRequestDto>
         {

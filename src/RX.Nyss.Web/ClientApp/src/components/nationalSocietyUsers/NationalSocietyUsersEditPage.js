@@ -36,6 +36,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
     const fields = {
       id: props.data.id,
+      nationalSocietyId: parseInt(props.nationalSocietyId),
       role: props.data.role,
       name: props.data.name,
       phoneNumber: props.data.phoneNumber,
@@ -43,6 +44,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       organization: props.data.organization,
       decadeOfBirth: props.data.decadeOfBirth ? props.data.decadeOfBirth.toString() : "",
       projectId: props.data.projectId ? props.data.projectId.toString() : "",
+      organizationId: props.data.organizationId ? props.data.organizationId.toString() : "",
       sex: props.data.sex ? props.data.sex : ""
     };
 
@@ -53,13 +55,14 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)]
+      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)],
+      organizationId: [validators.requiredWhen(f => f.role === roles.Coordinator || f.role === roles.GlobalCoordinator)]
     };
 
     setRole(props.data.role);
 
     setForm(createForm(fields, validation));
-  }, [props.data, props.match]);
+  }, [props.data, props.match, props.nationalSocietyId]);
 
   if (!props.data) {
     return null;
@@ -76,6 +79,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
     props.edit(props.nationalSocietyId, {
       ...values,
+      organizationId: values.organizationId ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null
     });
@@ -156,6 +160,22 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Grid>
           )}
 
+          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.organization)}
+                field={form.fields.organizationId}
+                name="organizationId"
+              >
+                {props.organizations.map(organization => (
+                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
+                    {organization.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
+
           {role === roles.Supervisor && (
             <Grid item xs={12}>
               <SelectField
@@ -165,9 +185,9 @@ const NationalSocietyUsersEditPageComponent = (props) => {
               >
                 {props.data.editSupervisorFormData.availableProjects.map(project => (
                   <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
-                    { project.isClosed
-                      ? stringsFormat(stringKeys.nationalSocietyUser.form.projectIsClosed, {projectName: project.name})
-                      : project.name }                     
+                    {project.isClosed
+                      ? stringsFormat(stringKeys.nationalSocietyUser.form.projectIsClosed, { projectName: project.name })
+                      : project.name}
                   </MenuItem>
                 ))}
               </SelectField>
@@ -190,9 +210,12 @@ NationalSocietyUsersEditPageComponent.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyUserId: ownProps.match.params.nationalSocietyUserId,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
+  organizations: state.nationalSocietyUsers.formOrganizations,
+  projects: state.nationalSocietyUsers.formProjects,
   isFetching: state.nationalSocietyUsers.formFetching,
   isSaving: state.nationalSocietyUsers.formSaving,
   data: state.nationalSocietyUsers.formData,
+  callingUserRoles: state.appData.user.roles,
   error: state.nationalSocietyUsers.formError
 });
 

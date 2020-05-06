@@ -13,6 +13,7 @@ import { headManagerConsentsSiteMap } from "./components/headManagerConsents/log
 import { alertsSiteMap } from "./components/alerts/logic/alertsSiteMap";
 import { nationalSocietyDashboardSiteMap } from "./components/nationalSocietyDashboard/logic/nationalSocietyDashboardSiteMap";
 import { translationsSiteMap } from "./components/translations/logic/translationsSiteMap";
+import { organizationsSiteMap } from "./components/organizations/logic/organizationsSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
@@ -20,6 +21,7 @@ export const siteMap = [
   ...nationalSocietyStructureSiteMap,
   ...nationalSocietyUsersSiteMap,
   ...smsGatewaysSiteMap,
+  ...organizationsSiteMap,
   ...healthRisksSiteMap,
   ...globalCoordinatorsSiteMap,
   ...projectsSiteMap,

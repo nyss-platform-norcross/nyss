@@ -31,12 +31,23 @@ namespace RX.Nyss.Web.Features.Users
         /// <summary>
         /// Gets basic data about the user
         /// </summary>
-        /// <param name="nationalSocietyUserId">User Id</param>
+        /// <param name="nationalSocietyId">User Id</param>
         /// <returns></returns>
-        [HttpGet("basicData")]
+        [HttpGet("createFormData")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
-        public async Task<Result> GetBasicData(int nationalSocietyUserId) =>
-            await _userService.GetBasicData(nationalSocietyUserId);
+        public async Task<Result> GetCreateFormData(int nationalSocietyId) =>
+            await _userService.GetCreateFormData(nationalSocietyId);
+
+        /// <summary>
+        /// Gets basic data about the user
+        /// </summary>
+        /// <param name="nationalSocietyUserId">User Id</param>
+        /// <param name="nationalSocietyId">National society Id</param>
+        /// <returns></returns>
+        [HttpGet("editFormData")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
+        public async Task<Result> GetEditFormData(int nationalSocietyUserId, int nationalSocietyId) =>
+            await _userService.GetEditFormData(nationalSocietyUserId, nationalSocietyId);
 
         /// <summary>
         /// Adds an existing technical advisor or a data consumer user to a national society.

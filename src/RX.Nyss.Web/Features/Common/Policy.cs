@@ -18,6 +18,7 @@
         ZoneAccess,
         AlertAccess,
         ReportAccess,
-        CoordinatorAccess
+        CoordinatorAccess,
+        OrganizationAccess
     }
 }

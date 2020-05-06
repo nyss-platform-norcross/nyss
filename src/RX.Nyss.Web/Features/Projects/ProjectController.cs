@@ -83,16 +83,6 @@ namespace RX.Nyss.Web.Features.Projects
             await _projectService.GetBasicData(projectId);
 
         /// <summary>
-        /// Get a list of all opened projects in the national society
-        /// </summary>
-        /// <param name="nationalSocietyId">The ID of the national society</param>
-        /// <returns>A list of opened projects</returns>
-        [HttpGet("listOpenedProjects")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> ListOpenedProjects(int nationalSocietyId) =>
-            await _projectService.ListOpenedProjects(nationalSocietyId);
-
-        /// <summary>
         /// Get the data required to build a "create new project" form
         /// </summary>
         /// <param name="nationalSocietyId">The id of the national society</param>

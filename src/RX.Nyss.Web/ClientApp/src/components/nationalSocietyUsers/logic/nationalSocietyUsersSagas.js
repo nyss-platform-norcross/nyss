@@ -38,14 +38,11 @@ function* openNationalSocietyUsersList({ nationalSocietyId }) {
 };
 
 function* openNationalSocietyUserCreation({ nationalSocietyId }) {
-  const currentUserRoles = yield select(state => state.appData.user.roles);
   yield put(actions.openCreation.request());
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    const projects = currentUserRoles.some((r) => r === roles.Coordinator) ?
-      [] :
-      (yield call(http.get, `/api/project/listOpenedProjects?nationalSocietyId=${nationalSocietyId}`)).value
-    yield put(actions.openCreation.success(projects));
+    const formData = yield call(http.get, `/api/user/createFormData?nationalSocietyId=${nationalSocietyId}`);
+    yield put(actions.openCreation.success(formData.value.projects, formData.value.organizations));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }
@@ -64,12 +61,11 @@ function* openNationalSocietyAddExistingUser({ nationalSocietyId }) {
 function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
   yield put(actions.openEdition.request());
   try {
-    const user = yield call(http.get, `/api/user/basicData?nationalSocietyUserId=${nationalSocietyUserId}`);
     const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
-    const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, user.value.role));
-    const projects = yield call(http.get, `/api/project/listOpenedProjects?nationalSocietyId=${nationalSocietyId}`)
+    const formData = yield call(http.get, `/api/user/editFormData?nationalSocietyUserId=${nationalSocietyUserId}&nationalSocietyId=${nationalSocietyId}`);
+    const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, formData.value.role, nationalSocietyId));
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    yield put(actions.openEdition.success(response.value, projects.value));
+    yield put(actions.openEdition.success(response.value, formData.value.projects, formData.value.organizations));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }
@@ -178,18 +174,18 @@ function getSpecificRoleUserEditionUrl(userId, role) {
   }
 };
 
-function getSpecificRoleUserRetrievalUrl(userId, role) {
+function getSpecificRoleUserRetrievalUrl(userId, role, nationalSocietyId) {
   switch (role) {
     case roles.TechnicalAdvisor:
-      return `/api/technicalAdvisor/${userId}/get`;
+      return `/api/technicalAdvisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Manager:
-      return `/api/manager/${userId}/get`;
+      return `/api/manager/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.DataConsumer:
-      return `/api/dataConsumer/${userId}/get`;
+      return `/api/dataConsumer/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Supervisor:
-      return `/api/supervisor/${userId}/get`;
+      return `/api/supervisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Coordinator:
-      return `/api/coordinator/${userId}/get`;
+      return `/api/coordinator/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }

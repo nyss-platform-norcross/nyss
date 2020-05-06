@@ -28,7 +28,6 @@ namespace RX.Nyss.Web.Features.Projects
         Task<Result> Edit(int projectId, ProjectRequestDto projectRequestDto);
         Task<Result> Close(int projectId);
         Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId);
-        Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes);
         Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName);
@@ -326,22 +325,7 @@ namespace RX.Nyss.Web.Features.Projects
 
             return Success(project);
         }
-
-        public async Task<Result<List<ListOpenProjectsResponseDto>>> ListOpenedProjects(int nationalSocietyId)
-        {
-            var projects = await _nyssContext.Projects
-                .Where(p => p.NationalSociety.Id == nationalSocietyId)
-                .Where(p => p.State == ProjectState.Open)
-                .Select(p => new ListOpenProjectsResponseDto
-                {
-                    Id = p.Id,
-                    Name = p.Name
-                })
-                .ToListAsync();
-
-            return Success(projects);
-        }
-
+        
         public async Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId)
         {
             try

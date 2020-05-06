@@ -22,12 +22,14 @@ const NationalSocietiesCreatePageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
       name: "",
+      initialOrganizationName: "",
       contentLanguageId: "",
       countryId: ""
     };
 
     const validation = {
       name: [validators.required, validators.minLength(1)],
+      initialOrganizationName: [validators.required, validators.maxLength(100)],
       contentLanguageId: [validators.required],
       countryId: [validators.required]
     };
@@ -49,6 +51,7 @@ const NationalSocietiesCreatePageComponent = (props) => {
     const values = form.getValues();
     props.create({
       name: values.name,
+      initialOrganizationName: values.initialOrganizationName,
       contentLanguageId: parseInt(values.contentLanguageId),
       countryId: parseInt(values.countryId)
     });
@@ -66,6 +69,14 @@ const NationalSocietiesCreatePageComponent = (props) => {
               name="name"
               field={form.fields.name}
               autoFocus
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextInputField
+              label={strings(stringKeys.nationalSociety.form.initialOrganizationName)}
+              name="initialOrganizationName"
+              field={form.fields.initialOrganizationName}
             />
           </Grid>
 

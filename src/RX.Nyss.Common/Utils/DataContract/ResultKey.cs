@@ -9,6 +9,8 @@
             public static class Common
             {
                 public const string UserNotFound = "user.common.userNotFound";
+                public const string OnlyCoordinatorCanChangeTheOrganizationOfAnotherUser = "user.common.onlyCoordinatorCanChangeTheOrganizationOfAnotherUser";
+                public const string CoordinatorCanChangeTheOrganizationOnlyForHeadManager = "user.common.coordinatorCanChangeTheOrganizationOnlyForHeadManager";
             }
 
             public static class Deletion
@@ -64,6 +66,11 @@
             }
         }
 
+        public static class Organization
+        {
+            public const string NotAccessToChangeOrganization = "organization.notAccessToChangeOrganization";
+        }
+
         public static class Login
         {
             public const string NotSucceeded = "login.notSucceeded";
@@ -116,6 +123,21 @@
                 public const string SettingDoesNotExist = "nationalSociety.smsGateway.settingDoesNotExist";
                 public const string NationalSocietyDoesNotExist = "nationalSociety.smsGateway.nationalSocietyDoesNotExist";
                 public const string IoTHubPingFailed = "nationalSociety.smsGateway.ioTHubPingFailed";
+            }
+
+            public static class Organization
+            {
+                public const string SuccessfullyAdded = "nationalSociety.smsGateway.successfullyAdded";
+                public const string SuccessfullyUpdated = "nationalSociety.smsGateway.successfullyUpdated";
+                public const string SuccessfullyDeleted = "nationalSociety.smsGateway.successfullyDeleted";
+                public const string SettingDoesNotExist = "nationalSociety.smsGateway.settingDoesNotExist";
+                public const string NationalSocietyDoesNotExist = "nationalSociety.smsGateway.nationalSocietyDoesNotExist";
+
+                public static class Deletion
+                {
+                    public const string HasUsers = "nationalSociety.organization.deletion.hasUsers";
+                    public const string LastOrganization = "nationalSociety.organization.deletion.lastOrganization ";
+                }
             }
 
             public static class SetHead

@@ -51,6 +51,7 @@ export const stringKeys = {
       creationTitle: "nationalSociety.form.creationTitle",
       editionTitle: "nationalSociety.form.editionTitle",
       name: "nationalSociety.form.name",
+      initialOrganizationName: "nationalSociety.form.initialOrganizationName",
       country: "nationalSociety.form.country",
       contentLanguage: "nationalSociety.form.contentLanguage",
       create: "nationalSociety.form.create",
@@ -232,6 +233,32 @@ export const stringKeys = {
       gatewayType: "smsGateway.list.gatewayType",
       removalConfirmation: "smsGateway.list.removalConfirmation",
       useIotHub: "smsGateway.list.useIotHub"
+    },
+  },
+  organization: {
+    title: "organization.title",
+    addNew: "organization.addNew",
+    form: {
+      creationTitle: "organization.form.creationTitle",
+      editionTitle: "organization.form.editionTitle",
+      name: "organization.form.name",
+      create: "organization.form.create",
+      update: "organization.form.update"
+    },
+    create: {
+      success: "organization.create.success"
+    },
+    edit: {
+      success: "organization.edit.success"
+    },
+    delete: {
+      success: "organization.delete.success"
+    },
+    list: {
+      name: "organization.list.name",
+      projects: "organization.list.projects",
+      headManager: "organization.list.headManager",
+      removalConfirmation: "organization.list.removalConfirmation"
     },
   },
   project: {
@@ -425,9 +452,10 @@ export const stringKeys = {
       sex: "nationalSocietyUser.form.sex",
       email: "nationalSocietyUser.form.email",
       project: "nationalSocietyUser.form.project",
+      organization: "nationalSocietyUser.form.organization",
       phoneNumber: "nationalSocietyUser.form.phoneNumber",
       additionalPhoneNumber: "nationalSocietyUser.form.additionalPhoneNumber",
-      organization: "nationalSocietyUser.form.organization",
+      customOrganization: "nationalSocietyUser.form.customOrganization",
       create: "nationalSocietyUser.form.create",
       addExisting: "nationalSocietyUser.form.addExisting",
       projectIsClosed: "nationalSocietyUser.form.projectIsClosed",
