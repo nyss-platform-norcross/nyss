@@ -120,9 +120,25 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             />
           </Grid>
 
+          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.organization)}
+                field={form.fields.organizationId}
+                name="organizationId"
+              >
+                {props.organizations.map(organization => (
+                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
+                    {organization.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
+
           <Grid item xs={12}>
             <TextInputField
-              label={strings(stringKeys.nationalSocietyUser.form.organization)}
+              label={strings(stringKeys.nationalSocietyUser.form.customOrganization)}
               name="organization"
               field={form.fields.organization}
             />
@@ -154,22 +170,6 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                 {sexValues.map(type => (
                   <MenuItem key={`sex${type}`} value={type}>
                     {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          )}
-
-          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.organization)}
-                field={form.fields.organizationId}
-                name="organizationId"
-              >
-                {props.organizations.map(organization => (
-                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
-                    {organization.name}
                   </MenuItem>
                 ))}
               </SelectField>
