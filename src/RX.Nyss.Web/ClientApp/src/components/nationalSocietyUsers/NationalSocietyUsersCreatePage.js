@@ -49,7 +49,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      organizationId: [validators.requiredWhen(f => f.role === roles.Coordinator || f.role === roles.GlobalCoordinator)]
+      organizationId: [validators.requiredWhen(f => canChangeOrganization())]
     };
 
     setRole(roles.Manager);
@@ -57,7 +57,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.nationalSocietyId]);
+  }, [props.data, props.nationalSocietyId, canChangeOrganization]);
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
@@ -81,6 +81,12 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     });
   };
 
+  const canChangeOrganization = () =>
+    props.data
+    && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator || ((r === roles.Manager || r === roles.TechnicalAdvisor) && props.data.isHeadManager))
+    && role !== roles.DataConsumer
+    && !props.data.hasCoordinator;
+
   const isCoordinator = () =>
     props.callingUserRoles.some(r => r === roles.Coordinator);
 
@@ -99,13 +105,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
     return userRoles;
   }
-
-  const canChangeOrganization = useMemo(() =>
-    props.data
-    && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator || ((r === roles.Manager || r === roles.TechnicalAdvisor) && props.data.isHeadManager))
-    && role !== roles.DataConsumer
-    && !props.data.hasCoordinator,
-    [role, props.callingUserRoles, props.data]);
 
   if (!props.data) {
     return null;
@@ -169,7 +168,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           </Grid>
 
 
-          {canChangeOrganization && (
+          {canChangeOrganization() && (
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.organization)}
@@ -232,7 +231,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 field={form.fields.projectId}
                 name="projectId"
               >
-                {props.data.projects.map(project => (
+                {props.data.openProjects.map(project => (
                   <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
                     {project.name}
                   </MenuItem>
