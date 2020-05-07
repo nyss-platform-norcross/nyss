@@ -1,4 +1,4 @@
-﻿This project contains the `NyssContext` database model and its migrations. This is the data model:
+﻿This project contains the `NyssContext` database model and its migrations. Below is a diagram of the data model. It can be viewed and edited in [here](https://app.diagrams.net/#Uhttps://raw.githubusercontent.com/nyss-platform-norcross/nyss/master/src/RX.Nyss.Data/Nyss-Data-model.png)
 
 ![Data model ER Diagram](Nyss-Data-model.png)
 

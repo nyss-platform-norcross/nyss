@@ -174,6 +174,8 @@ namespace RX.Nyss.Web.Features.Managers
         {
             var nationalSociety = await _dataContext.NationalSocieties
                 .Include(ns => ns.ContentLanguage)
+                .Include(ns => ns.HeadManager)
+                .Include(ns => ns.PendingHeadManager)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -226,6 +228,11 @@ namespace RX.Nyss.Web.Features.Managers
 
             if (createDto.SetAsHeadManager == true)
             {
+                if (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && (nationalSociety.HeadManager != null || nationalSociety.PendingHeadManager != null))
+                {
+                    throw new ResultException(ResultKey.User.Registration.HeadManagerAlreadyExists);
+                }
+
                 nationalSociety.PendingHeadManager = user;
             }
 
