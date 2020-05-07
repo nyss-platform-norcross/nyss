@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Common.Utils.DataContract
+﻿using System.Data;
+
+namespace RX.Nyss.Common.Utils.DataContract
 {
     public static class ResultKey
     {
@@ -37,6 +39,7 @@
                 public const string UnknownError = "user.registration.unknownError";
                 public const string NationalSocietyCoordinatorAlreadyExists = "user.registration.nationalSocietyCoordinatorAlreadyExists";
                 public const string NotHeadManager = "user.registration.notHeadManager";
+                public const string HeadManagerAlreadyExists = "user.registration.headManagerAlreadyExists";
             }
 
             public static class Supervisor
