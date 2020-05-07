@@ -21,7 +21,7 @@ class FieldBase extends PureComponent {
 
     handleChange = (e) => {
         const type = this.getElementType((e.nativeEvent && e.nativeEvent.target) || e);
-        const value = type === "checkbox" ? e.target.checked : type === "date" ? dayjs(e) : e.target.value;
+        const value = type === 'li' ? e.target.textContent : type === "checkbox" ? e.target.checked : type === "date" ? dayjs(e) : e.target.value;
         this.setState({ value: value });
         this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
     }

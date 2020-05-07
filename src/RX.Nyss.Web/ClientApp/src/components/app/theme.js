@@ -242,6 +242,11 @@ export const theme = createMuiTheme({
       root: {
         verticalAlign: "unset"
       }
+    },
+    MuiAutocomplete: {
+      input: {
+        padding: '10px !important'
+      }
     }
   },
 });

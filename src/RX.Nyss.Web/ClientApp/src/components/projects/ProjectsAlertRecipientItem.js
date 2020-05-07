@@ -7,8 +7,9 @@ import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import { IconButton, Icon } from '@material-ui/core';
+import AutocompleteTextInputField from '../forms/AutocompleteTextInputField';
 
-export const ProjectsAlertRecipientItem = ({ form, alertRecipient, alertRecipientNumber, onRemoveRecipient }) => {
+export const ProjectsAlertRecipientItem = ({ form, alertRecipient, alertRecipientNumber, onRemoveRecipient, organizations }) => {
   const [ready, setReady] = useState(false);
 
   useMount(() => {
@@ -17,7 +18,6 @@ export const ProjectsAlertRecipientItem = ({ form, alertRecipient, alertRecipien
     form.addField(`alertRecipientEmail${alertRecipientNumber}`, alertRecipient.email, [validators.emailWhen(_ => _[`alertRecipientPhone${alertRecipientNumber}`] === ''), validators.requiredWhen(_ => _[`alertRecipientPhone${alertRecipientNumber}`] === ''), validators.maxLength(100)]);
     form.addField(`alertRecipientPhone${alertRecipientNumber}`, alertRecipient.phoneNumber, [validators.requiredWhen(_ => _[`alertRecipientEmail${alertRecipientNumber}`] === ''), validators.maxLength(20), validators.phoneNumber]);
 
-    console.log(form);
     setReady(true);
 
     return () => {
@@ -34,37 +34,41 @@ export const ProjectsAlertRecipientItem = ({ form, alertRecipient, alertRecipien
 
   return (
     <Fragment key={`alertRecipient${alertRecipient}`}>
-      <Grid container spacing={3}>
+      <Grid container spacing={1}>
 
-        <Grid item lg={3}>
+        <Grid item xs={12} sm={6} lg={2}>
           <TextInputField
             label={strings(stringKeys.project.form.alertNotificationsRole)}
             name="role"
             field={form.fields[`alertRecipientRole${alertRecipientNumber}`]}
           />
         </Grid>
-        <Grid item lg={2}>
-          <TextInputField
+        <Grid item xs={12} sm={6} lg={3}>
+          <AutocompleteTextInputField
+            id="autocompleteOrganization"
             label={strings(stringKeys.project.form.alertNotificationsOrganization)}
             name="organization"
+            freeSolo
+            options={organizations}
+            defaultValue={alertRecipient.organization}
             field={form.fields[`alertRecipientOrganization${alertRecipientNumber}`]}
           />
         </Grid>
-        <Grid item lg={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <TextInputField
             label={strings(stringKeys.project.form.alertNotificationsEmail)}
             name="email"
             field={form.fields[`alertRecipientEmail${alertRecipientNumber}`]}
           />
         </Grid>
-        <Grid item lg={3}>
+        <Grid item xs={12} sm={6} lg={3}>
           <TextInputField
             label={strings(stringKeys.project.form.alertNotificationsPhoneNumber)}
             name="phoneNumber"
             field={form.fields[`alertRecipientPhone${alertRecipientNumber}`]}
           />
         </Grid>
-        <Grid item lg={1} className={styles.removeButtonContainer}>
+        <Grid item xs={12} sm={6} lg={1} className={styles.removeButtonContainer}>
           <IconButton onClick={() => onRemoveRecipient(alertRecipient)}>
             <Icon>delete</Icon>
           </IconButton>

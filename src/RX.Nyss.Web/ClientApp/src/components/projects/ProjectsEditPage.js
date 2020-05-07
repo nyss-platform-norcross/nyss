@@ -30,6 +30,7 @@ const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
   const [alertRecipients, setAlertRecipients] = useState([]);
+  const [organizations, setOrganizations] = useState([]);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyId, props.projectId);
@@ -65,6 +66,7 @@ const ProjectsEditPageComponent = (props) => {
       phoneNumber: anr.phoneNumber || ''
     }));
 
+    setOrganizations([ ...new Set(props.data.alertNotificationRecipients.map(anr => anr.organization)) ]);
     setSelectedHealthRisks(props.data.projectHealthRisks);
     setAlertRecipients(newAlertRecipients);
     return () => setForm(null);
@@ -183,6 +185,7 @@ const ProjectsEditPageComponent = (props) => {
                 alertRecipient={alertRecipient}
                 alertRecipientNumber={alertRecipientNumber}
                 form={form}
+                organizations={organizations}
                 onRemoveRecipient={onRemoveRecipient} />
             ))}
 
