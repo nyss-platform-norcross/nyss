@@ -152,8 +152,13 @@ namespace RX.Nyss.Web.Features.Coordinators
             }
         }
 
-        private async Task<CoordinatorUser> CreateCoordinatorUser(IdentityUser identityUser, int nationalSocietyId, CreateCoordinatorRequestDto createCoordinatorRequestDto)
+        private async Task<CoordinatorUser> CreateCoordinatorUser(IdentityUser identityUser, int nationalSocietyId, CreateCoordinatorRequestDto createDto)
         {
+            if (nationalSocietyId != createDto.NationalSocietyId)
+            {
+                throw new ResultException(ResultKey.UnexpectedError);
+            }
+
             var nationalSociety = await _dataContext.NationalSocieties
                 .Include(ns => ns.NationalSocietyUsers)
                 .ThenInclude(nsu => nsu.User)
@@ -170,15 +175,6 @@ namespace RX.Nyss.Web.Features.Coordinators
                 throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
             }
 
-            if (!_authorizationService.IsCurrentUserInRole(Role.Coordinator) && nationalSociety.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator))
-            {
-                throw new ResultException(ResultKey.User.Registration.NationalSocietyCoordinatorAlreadyExists);
-            }
-
-            if (_authorizationService.IsCurrentUserInAnyRole(new[] { Role.Manager, Role.TechnicalAdvisor }) && nationalSociety.HeadManager != _authorizationService.GetCurrentUser()){
-                throw new ResultException(ResultKey.User.Registration.NotHeadManager);
-            }
-
             var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
                 .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
 
@@ -186,10 +182,10 @@ namespace RX.Nyss.Web.Features.Coordinators
             {
                 IdentityUserId = identityUser.Id,
                 EmailAddress = identityUser.Email,
-                Name = createCoordinatorRequestDto.Name,
-                PhoneNumber = createCoordinatorRequestDto.PhoneNumber,
-                AdditionalPhoneNumber = createCoordinatorRequestDto.AdditionalPhoneNumber,
-                Organization = createCoordinatorRequestDto.Organization,
+                Name = createDto.Name,
+                PhoneNumber = createDto.PhoneNumber,
+                AdditionalPhoneNumber = createDto.AdditionalPhoneNumber,
+                Organization = createDto.Organization,
                 ApplicationLanguage = defaultUserApplicationLanguage
             };
 
@@ -197,8 +193,24 @@ namespace RX.Nyss.Web.Features.Coordinators
             {
                 NationalSociety = nationalSociety,
                 User = user,
-                Organization = await _dataContext.Organizations.FindAsync(createCoordinatorRequestDto.OrganizationId)
             };
+
+            if (createDto.OrganizationId.HasValue)
+            {
+                userNationalSociety.Organization = await _dataContext.Organizations
+                    .Where(o => o.Id == createDto.OrganizationId.Value && o.NationalSocietyId == nationalSocietyId)
+                    .SingleAsync();
+            }
+            else
+            {
+                var currentUser = _authorizationService.GetCurrentUser();
+
+                userNationalSociety.Organization = await _dataContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                    .Select(uns => uns.Organization)
+                    .SingleAsync();
+            }
+
 
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();

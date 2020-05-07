@@ -8,6 +8,10 @@ namespace RX.Nyss.Web.Features.Users.Dto
         public List<ListOpenProjectsResponseDto> OpenProjects { get; set; }
 
         public List<OrganizationsDto> Organizations { get; set; }
+
+        public bool HasCoordinator { get; set; }
+
+        public bool IsHeadManager { get; set; }
     }
 
     public class NationalSocietyUsersEditFormDataResponseDto

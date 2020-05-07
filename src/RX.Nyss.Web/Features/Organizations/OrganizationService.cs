@@ -20,7 +20,7 @@ namespace RX.Nyss.Web.Features.Organizations
         Task<Result<int>> Create(int nationalSocietyId, OrganizationRequestDto gatewaySettingRequestDto);
         Task<Result> Edit(int organizationId, OrganizationRequestDto gatewaySettingRequestDto);
         Task<Result> Delete(int organizationId);
-        bool ValidateAccessForAssigningOrganization();
+        Task<bool> ValidateAccessForAssigningOrganization(int nationalSocietyId);
         Task<bool> ValidateAccessForChangingOrganization(int userId);
         Task<Result> CheckAccessForOrganizationEdition(UserNationalSociety userLink);
     }
@@ -177,11 +177,34 @@ namespace RX.Nyss.Web.Features.Organizations
             }
         }
 
-        public bool ValidateAccessForAssigningOrganization() =>
-            _authorizationService.IsCurrentUserInAnyRole(new[]
+        public async Task<bool> ValidateAccessForAssigningOrganization(int nationalSocietyId)
+        {
+            if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator, Role.Manager, Role.TechnicalAdvisor))
             {
-                Role.Coordinator, Role.GlobalCoordinator, Role.Administrator
-            });
+                return false;
+            }
+
+            var nationalSociety = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => new
+                {
+                    HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
+                    HeadManagerId = (int?)ns.HeadManager.Id
+                })
+                .SingleAsync();
+
+            if (nationalSociety.HasCoordinator)
+            {
+                return false;
+            }
+
+            if (!_authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor))
+            {
+                return true;
+            }
+
+            return nationalSociety.HeadManagerId == _authorizationService.GetCurrentUser().Id;
+        }
 
         public async Task<bool> ValidateAccessForChangingOrganization(int userId)
         {
@@ -195,7 +218,7 @@ namespace RX.Nyss.Web.Features.Organizations
 
         public async Task<Result> CheckAccessForOrganizationEdition(UserNationalSociety userLink)
         {
-            if (!_authorizationService.IsCurrentUserInAnyRole(new[] { Role.Administrator, Role.Coordinator }))
+            if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
             {
                 return Error(ResultKey.User.Common.OnlyCoordinatorCanChangeTheOrganizationOfAnotherUser);
             }

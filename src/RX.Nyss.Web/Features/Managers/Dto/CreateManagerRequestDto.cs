@@ -14,6 +14,7 @@ namespace RX.Nyss.Web.Features.Managers.Dto
         public string Organization { get; set; }
         public bool? SetAsHeadManager { get; set; }
         public int? OrganizationId { get; set; }
+        public int NationalSocietyId { get; set; }
 
         public class CreateManagerValidator : AbstractValidator<CreateManagerRequestDto>
         {
@@ -25,7 +26,8 @@ namespace RX.Nyss.Web.Features.Managers.Dto
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
                 RuleFor(m => m.Organization).MaximumLength(100);
                 RuleFor(m => m.OrganizationId)
-                    .Must(organizationId => !organizationId.HasValue || organizationService.ValidateAccessForAssigningOrganization())
+                    .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganization(model.NationalSocietyId))
+                    .When(model => model.OrganizationId.HasValue)
                     .WithMessage(ResultKey.Organization.NotAccessToChangeOrganization);
             }
         }

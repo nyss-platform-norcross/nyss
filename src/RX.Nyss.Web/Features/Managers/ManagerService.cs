@@ -170,7 +170,7 @@ namespace RX.Nyss.Web.Features.Managers
         public async Task DeleteIncludingHeadManagerFlag(int managerId) =>
             await DeleteFromDb(managerId, true);
 
-        private async Task<ManagerUser> CreateManagerUser(IdentityUser identityUser, int nationalSocietyId, CreateManagerRequestDto createManagerRequestDto)
+        private async Task<ManagerUser> CreateManagerUser(IdentityUser identityUser, int nationalSocietyId, CreateManagerRequestDto createDto)
         {
             var nationalSociety = await _dataContext.NationalSocieties
                 .Include(ns => ns.ContentLanguage)
@@ -193,10 +193,10 @@ namespace RX.Nyss.Web.Features.Managers
             {
                 IdentityUserId = identityUser.Id,
                 EmailAddress = identityUser.Email,
-                Name = createManagerRequestDto.Name,
-                PhoneNumber = createManagerRequestDto.PhoneNumber,
-                AdditionalPhoneNumber = createManagerRequestDto.AdditionalPhoneNumber,
-                Organization = createManagerRequestDto.Organization,
+                Name = createDto.Name,
+                PhoneNumber = createDto.PhoneNumber,
+                AdditionalPhoneNumber = createDto.AdditionalPhoneNumber,
+                Organization = createDto.Organization,
                 ApplicationLanguage = defaultUserApplicationLanguage
             };
 
@@ -206,10 +206,10 @@ namespace RX.Nyss.Web.Features.Managers
                 User = user
             };
 
-            if (createManagerRequestDto.OrganizationId.HasValue)
+            if (createDto.OrganizationId.HasValue)
             {
                 userNationalSociety.Organization = await _dataContext.Organizations
-                    .Where(o => o.Id == createManagerRequestDto.OrganizationId.Value && o.NationalSocietyId == nationalSocietyId)
+                    .Where(o => o.Id == createDto.OrganizationId.Value && o.NationalSocietyId == nationalSocietyId)
                     .SingleAsync();
             }
             else
@@ -223,7 +223,7 @@ namespace RX.Nyss.Web.Features.Managers
             }
 
 
-            if (createManagerRequestDto.SetAsHeadManager == true)
+            if (createDto.SetAsHeadManager == true)
             {
                 nationalSociety.PendingHeadManager = user;
             }
