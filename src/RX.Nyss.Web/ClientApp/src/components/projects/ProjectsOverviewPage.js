@@ -72,7 +72,7 @@ const ProjectsOverviewPageComponent = (props) => {
         <Grid item xs={12}>
           <Typography variant="h3">
             <div className={styles.alertNotificationsHeader}>
-              {strings(stringKeys.project.form.alertNotificationsSection)}
+              {strings(stringKeys.project.form.overviewAlertNotificationsSection)}
 
               <Tooltip title={strings(stringKeys.project.form.alertNotificationsSupervisorsExplanation)} className={styles.helpIcon}>
                 <Icon>help_outline</Icon>
@@ -82,7 +82,7 @@ const ProjectsOverviewPageComponent = (props) => {
           <Typography variant="subtitle1">{strings(stringKeys.project.form.alertNotificationsDescription)}</Typography>
 
           {props.data.alertNotificationRecipients.map(ar => (
-            <ProjectsOverviewAlertRecipientItem alertRecipient={ar} key={ar.phoneNumber} />
+            <ProjectsOverviewAlertRecipientItem alertRecipient={ar} key={`alertRecipient_${ar.id}`} />
           ))}
 
         </Grid>

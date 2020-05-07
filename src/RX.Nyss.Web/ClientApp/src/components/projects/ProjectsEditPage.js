@@ -23,7 +23,8 @@ import { Loading } from '../common/loading/Loading';
 import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import { ValidationMessage } from '../forms/ValidationMessage';
-import { Tooltip, Icon, IconButton } from '@material-ui/core';
+import { Tooltip, Icon } from '@material-ui/core';
+import { ProjectsAlertRecipientItem } from './ProjectsAlertRecipientItem';
 
 const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -55,21 +56,17 @@ const ProjectsEditPageComponent = (props) => {
       timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)]
     };
 
-    const newForm = createForm(fields, validation);
-    console.log(props.data);
-    const newAlertRecipients = props.data.alertNotificationRecipients.map((ar, i) => i);
-
-    newAlertRecipients.forEach(ar => {
-      newForm.addField(`alertRecipientRole${ar}`, '', [validators.required, validators.maxLength(100)]);
-      newForm.addField(`alertRecipientOrganization${ar}`, '', [validators.required, validators.maxLength(100)]);
-      newForm.addField(`alertRecipientEmail${ar}`, '', [validators.emailWhen(_ => _[`alertRecipientPhone${ar}`] === ''), validators.maxLength(100)]);
-      newForm.addField(`alertRecipientPhone${ar}`, '', [validators.requiredWhen(_ => _[`alertRecipientEmail${ar}`] === ''), validators.maxLength(20)]);
-    })
-
-    setForm(newForm);
+    setForm(createForm(fields, validation));
+    const newAlertRecipients = props.data.alertNotificationRecipients.map(anr => ({
+      id: anr.id,
+      role: anr.role,
+      organization: anr.organization,
+      email: anr.email || '',
+      phoneNumber: anr.phoneNumber || ''
+    }));
 
     setSelectedHealthRisks(props.data.projectHealthRisks);
-
+    setAlertRecipients(newAlertRecipients);
     return () => setForm(null);
   }, [props.data]);
 
@@ -98,24 +95,18 @@ const ProjectsEditPageComponent = (props) => {
   }
 
   const onAlertRecipientAdd = () => {
-    const alertRecipientNumber = alertRecipients.length + 1;
     const newRecipients = alertRecipients.slice();
-    newRecipients.push(alertRecipientNumber);
+    newRecipients.push({
+      role: '',
+      organization: '',
+      email: '',
+      phoneNumber: ''
+    });
     setAlertRecipients(newRecipients);
-
-    form.addField(`alertRecipientRole${alertRecipientNumber}`, '', [validators.required, validators.maxLength(100)]);
-    form.addField(`alertRecipientOrganization${alertRecipientNumber}`, '', [validators.required, validators.maxLength(100)]);
-    form.addField(`alertRecipientEmail${alertRecipientNumber}`, '', [validators.emailWhen(_ => _[`alertRecipientPhone${alertRecipientNumber}`] === ''), validators.maxLength(100)]);
-    form.addField(`alertRecipientPhone${alertRecipientNumber}`, '', [validators.requiredWhen(_ => _[`alertRecipientEmail${alertRecipientNumber}`] === ''), validators.maxLength(20)]);
   }
 
   const onRemoveRecipient = (recipient) => {
     setAlertRecipients(alertRecipients.filter(ar => ar !== recipient));
-
-    form.removeField(`alertRecipientRole${recipient}`);
-    form.removeField(`alertRecipientOrganization${recipient}`);
-    form.removeField(`alertRecipientEmail${recipient}`);
-    form.removeField(`alertRecipientPhone${recipient}`);
   }
 
   if (props.isFetching || !form) {
@@ -187,49 +178,18 @@ const ProjectsEditPageComponent = (props) => {
             </Typography>
             <Typography variant="subtitle1">{strings(stringKeys.project.form.alertNotificationsDescription)}</Typography>
 
-            {alertRecipients.map(ar => (
-              <Grid container spacing={3} key={ar}>
-
-                <Grid item lg={3}>
-                  <TextInputField
-                    label={strings(stringKeys.project.form.alertNotificationsRole)}
-                    name="role"
-                    field={form.fields[`alertRecipientRole${ar}`]}
-                  />
-                </Grid>
-                <Grid item lg={2}>
-                  <TextInputField
-                    label={strings(stringKeys.project.form.alertNotificationsOrganization)}
-                    name="organization"
-                    field={form.fields[`alertRecipientOrganization${ar}`]}
-                  />
-                </Grid>
-                <Grid item lg={3}>
-                  <TextInputField
-                    label={strings(stringKeys.project.form.alertNotificationsEmail)}
-                    name="email"
-                    field={form.fields[`alertRecipientEmail${ar}`]}
-                  />
-                </Grid>
-                <Grid item lg={3}>
-                  <TextInputField
-                    label={strings(stringKeys.project.form.alertNotificationsPhoneNumber)}
-                    name="phoneNumber"
-                    field={form.fields[`alertRecipientPhone${ar}`]}
-                  />
-                </Grid>
-                <Grid item lg={1} className={styles.removeButtonContainer}>
-                  <IconButton onClick={() => onRemoveRecipient(ar)}>
-                    <Icon>delete</Icon>
-                  </IconButton>
-                </Grid>
-              </Grid>
+            {alertRecipients.map((alertRecipient, alertRecipientNumber) => (
+              <ProjectsAlertRecipientItem key={alertRecipientNumber}
+                alertRecipient={alertRecipient}
+                alertRecipientNumber={alertRecipientNumber}
+                form={form}
+                onRemoveRecipient={onRemoveRecipient} />
             ))}
 
-            <Grid item xs={12} sm={9}>
-              <Button startIcon={<AddIcon />} onClick={onAlertRecipientAdd}>{strings(stringKeys.project.form.addRecipient)}</Button>
-            </Grid>
+          </Grid>
 
+          <Grid item xs={12} sm={9}>
+            <Button startIcon={<AddIcon />} onClick={onAlertRecipientAdd}>{strings(stringKeys.project.form.addRecipient)}</Button>
           </Grid>
         </Grid>
 

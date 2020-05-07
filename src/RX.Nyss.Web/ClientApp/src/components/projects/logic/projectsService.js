@@ -11,10 +11,11 @@ export const getSaveFormModel = (values, healthRisks, alertRecipients) =>
             alertRuleDaysThreshold: parseInt(values[`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`]),
             alertRuleKilometersThreshold: parseInt(values[`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`])
         })),
-        alertNotificationRecipients: alertRecipients.map(ar => ({
-            role: values[`alertRecipientRole${ar}`],
-            organization: values[`alertRecipientOrganization${ar}`],
-            email: values[`alertRecipientEmail${ar}`],
-            phoneNumber: values[`alertRecipientPhone${ar}`]
+        alertNotificationRecipients: alertRecipients.map((ar, alertRecipientNumber) => ({
+            id: ar.id,
+            role: values[`alertRecipientRole${alertRecipientNumber}`],
+            organization: values[`alertRecipientOrganization${alertRecipientNumber}`],
+            email: values[`alertRecipientEmail${alertRecipientNumber}`],
+            phoneNumber: values[`alertRecipientPhone${alertRecipientNumber}`]
         }))
     });
