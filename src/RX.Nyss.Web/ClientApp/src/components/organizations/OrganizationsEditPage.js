@@ -8,24 +8,15 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
-import SelectInput from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
-import { organizationTypes, smsEagle } from "./logic/organizationTypes";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
 import { ValidationMessage } from '../forms/ValidationMessage';
-import CheckboxField from '../forms/CheckboxField';
-import Icon from "@material-ui/core/Icon";
-import { Typography } from '@material-ui/core';
 
 const OrganizationsEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
-  const [useIotHub, setUseIotHub] = useState(null);
-  const [selectedIotDevice, setSelectedIotDevice] = useState(null);
-  const [pingIsRequired, setPingIsRequired] = useState(null);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyId, props.organizationId);

@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Services.Authorization
         User GetCurrentUser();
         bool IsCurrentUserInRole(Role role);
         string GetCurrentUserName();
-        bool IsCurrentUserInAnyRole(IEnumerable<Role> roles);
+        bool IsCurrentUserInAnyRole(params Role[] roles);
     }
 
     public class AuthorizationService : IAuthorizationService
@@ -42,7 +42,7 @@ namespace RX.Nyss.Web.Services.Authorization
         public bool IsCurrentUserInRole(Role role) =>
             _httpContextAccessor.HttpContext.User.IsInRole(role.ToString());
 
-        public bool IsCurrentUserInAnyRole(IEnumerable<Role> roles) =>
+        public bool IsCurrentUserInAnyRole(params Role[] roles) =>
             _httpContextAccessor.HttpContext.User.GetRoles().Any(userRole => roles.Any(role => role.ToString() == userRole));
     }
 }

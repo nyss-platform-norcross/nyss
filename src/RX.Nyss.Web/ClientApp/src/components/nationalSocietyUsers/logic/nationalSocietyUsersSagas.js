@@ -42,7 +42,7 @@ function* openNationalSocietyUserCreation({ nationalSocietyId }) {
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
     const formData = yield call(http.get, `/api/user/createFormData?nationalSocietyId=${nationalSocietyId}`);
-    yield put(actions.openCreation.success(formData.value.projects, formData.value.organizations));
+    yield put(actions.openCreation.success(formData.value));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }

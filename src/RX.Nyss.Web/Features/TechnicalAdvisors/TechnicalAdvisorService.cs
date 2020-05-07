@@ -209,9 +209,10 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                 var currentUser = _authorizationService.GetCurrentUser();
 
                 userNationalSociety.Organization = await _dataContext.UserNationalSocieties
-                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
-                    .Select(uns => uns.Organization)
-                    .SingleAsync();
+                        .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                        .Select(uns => uns.Organization)
+                        .SingleOrDefaultAsync() ??
+                    await _dataContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
             }
 
             await _dataContext.AddAsync(userNationalSociety);

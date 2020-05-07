@@ -7,6 +7,8 @@ namespace RX.Nyss.Data.Models.Maps
     {
         public void Configure(EntityTypeBuilder<UserNationalSociety> builder)
         {
+            builder.HasQueryFilter(uns => !uns.User.DeletedAt.HasValue);
+
             builder.HasKey(uns => new
             {
                 uns.UserId,

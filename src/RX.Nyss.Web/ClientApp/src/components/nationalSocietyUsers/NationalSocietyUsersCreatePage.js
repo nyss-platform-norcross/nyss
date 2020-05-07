@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useMemo } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -14,7 +14,7 @@ import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import { userRoles, globalCoordinatorUserRoles, coordinatorUserRoles, sexValues } from './logic/nationalSocietyUsersConstants';
+import { userRoles, globalCoordinatorUserRoles, coordinatorUserRoles, headManagerRoles, sexValues } from './logic/nationalSocietyUsersConstants';
 import * as roles from '../../authentication/roles';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
@@ -24,8 +24,9 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [role, setRole] = useState(null);
 
-  const [form] = useState(() => {
+  const form = useMemo(() => {
     const fields = {
+      nationalSocietyId: parseInt(props.nationalSocietyId),
       role: roles.Manager,
       name: "",
       email: "",
@@ -48,7 +49,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      organizationId: [validators.requiredWhen(f => f.role === roles.Coordinator || f.role === roles.GlobalCoordinator)]
+      organizationId: [validators.requiredWhen(f => canChangeOrganization())]
     };
 
     setRole(roles.Manager);
@@ -56,7 +57,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  });
+  }, [props.data, props.nationalSocietyId, canChangeOrganization]);
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
@@ -80,26 +81,36 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     });
   };
 
+  const canChangeOrganization = () =>
+    props.data
+    && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator || ((r === roles.Manager || r === roles.TechnicalAdvisor) && props.data.isHeadManager))
+    && role !== roles.DataConsumer
+    && !props.data.hasCoordinator;
+
   const isCoordinator = () =>
     props.callingUserRoles.some(r => r === roles.Coordinator);
 
   const getAvailableUserRoles = () => {
-    if (props.callingUserRoles.some(r => r === roles.GlobalCoordinator || r === roles.Administrator)){
-      return globalCoordinatorUserRoles;
+    if (props.callingUserRoles.some(r => r === roles.GlobalCoordinator || r === roles.Administrator)) {
+      return globalCoordinatorUserRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
     }
 
     if (isCoordinator()) {
       return coordinatorUserRoles;
     }
 
+    if (props.data.isHeadManager) {
+      return headManagerRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
+    }
+
     return userRoles;
   }
 
-  const availableUserRoles = getAvailableUserRoles();
-
-  if (!props.organizations) {
+  if (!props.data) {
     return null;
   }
+
+  const availableUserRoles = getAvailableUserRoles();
 
   return (
     <Fragment>
@@ -157,14 +168,14 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           </Grid>
 
 
-          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
-           <Grid item xs={12}>
+          {canChangeOrganization() && (
+            <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.organization)}
                 field={form.fields.organizationId}
                 name="organizationId"
               >
-                {props.organizations.map(organization => (
+                {props.data.organizations.map(organization => (
                   <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
                     {organization.name}
                   </MenuItem>
@@ -220,7 +231,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 field={form.fields.projectId}
                 name="projectId"
               >
-                {props.projects.map(project => (
+                {props.data.openProjects.map(project => (
                   <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
                     {project.name}
                   </MenuItem>
@@ -241,8 +252,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
-  projects: state.nationalSocietyUsers.formProjects,
-  organizations: state.nationalSocietyUsers.formOrganizations,
+  data: state.nationalSocietyUsers.formAdditionalData,
   isSaving: state.nationalSocietyUsers.formSaving,
   error: state.nationalSocietyUsers.formError,
   callingUserRoles: state.appData.user.roles

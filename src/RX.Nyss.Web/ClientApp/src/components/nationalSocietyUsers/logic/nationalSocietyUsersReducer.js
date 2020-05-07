@@ -22,7 +22,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formFetching: true, formProjects: [] };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_CREATION.SUCCESS:
-      return { ...state, formFetching: false, formProjects: action.projects, formOrganizations: action.organizations };
+      return { ...state, formFetching: false, formAdditionalData: action.data };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_CREATION.FAILURE:
       return { ...state, formFetching: false };

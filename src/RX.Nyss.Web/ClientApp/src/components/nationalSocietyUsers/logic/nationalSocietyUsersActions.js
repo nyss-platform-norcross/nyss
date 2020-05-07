@@ -29,7 +29,7 @@ export const getList = {
 export const openCreation = {
   invoke: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.REQUEST }),
-  success: (projects, organizations) => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.SUCCESS, projects, organizations }),
+  success: (data) => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.SUCCESS, data }),
   failure: (message) => ({ type: OPEN_NATIONAL_SOCIETY_USER_CREATION.FAILURE, message })
 };
 

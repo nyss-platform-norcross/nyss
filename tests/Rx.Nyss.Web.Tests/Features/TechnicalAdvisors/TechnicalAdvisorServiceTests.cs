@@ -121,7 +121,6 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             ArrangeUserNationalSocietiesFrom(userNationalSocieties);
         }
 
-
         private User ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties()
         {
             var technicalAdvisor = ArrangeUsersDbSetWithOneTechnicalAdvisor();

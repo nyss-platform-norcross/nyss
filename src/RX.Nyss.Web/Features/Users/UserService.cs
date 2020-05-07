@@ -61,6 +61,8 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result<NationalSocietyUsersCreateFormDataResponseDto>> GetCreateFormData(int nationalSocietyId)
         {
+            var currentUser = _authorizationService.GetCurrentUser();
+
             var formData = await _dataContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => new NationalSocietyUsersCreateFormDataResponseDto
@@ -77,7 +79,9 @@ namespace RX.Nyss.Web.Features.Users
                     {
                         Id = o.Id,
                         Name = o.Name
-                    }).ToList()
+                    }).ToList(),
+                    HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
+                    IsHeadManager = ns.HeadManager == currentUser,
                 }).SingleAsync();
 
             return Success(formData);
