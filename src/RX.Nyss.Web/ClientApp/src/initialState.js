@@ -183,7 +183,7 @@ export const initialState = {
     },
     filters: null
   },
-  headManagerConsents: {
+  nationalSocietyConsents: {
     nationalSocieties: [],
     agreementDocuments: []
   },

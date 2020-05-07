@@ -74,7 +74,7 @@ namespace RX.Nyss.Web.Features.Authentication
                 return Error<StatusResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
-            var hasPendingHeadManagerConsents = await _nyssContext.NationalSocieties
+            var hasPendingNationalSocietyConsents = await _nyssContext.NationalSocieties
                 .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId).AnyAsync();
 
             var homePageData = await GetHomePageData(userEntity);
@@ -89,7 +89,7 @@ namespace RX.Nyss.Web.Features.Authentication
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),
-                        HasPendingHeadManagerConsents = hasPendingHeadManagerConsents,
+                        HasPendingNationalSocietyConsents = hasPendingNationalSocietyConsents,
                         HomePage = user.Identity.IsAuthenticated
                             ? homePageData
                             : null

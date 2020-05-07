@@ -1,6 +1,6 @@
-import { OPEN_HEAD_MANAGER_CONSENTS_PAGE, CONSENT_AS_HEAD_MANAGER } from "./headManagerConsentsConstants";
+import { OPEN_HEAD_MANAGER_CONSENTS_PAGE, CONSENT_AS_HEAD_MANAGER } from "./nationalSocietyConsentsConstants";
 
-export const openHeadManagerConsentsPage = {
+export const openNationalSocietyConsentsPage = {
   invoke: () => ({ type: OPEN_HEAD_MANAGER_CONSENTS_PAGE.INVOKE }),
   request: () => ({ type: OPEN_HEAD_MANAGER_CONSENTS_PAGE.REQUEST }),
   success: (pendingHeadManagerConsent) => ({ type: OPEN_HEAD_MANAGER_CONSENTS_PAGE.SUCCESS, pendingHeadManagerConsent }),

@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<Result> Archive(int nationalSocietyId);
         Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
         Task<Result> SetAsHeadManager(string languageCode);
-        Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents();
+        Task<Result<PendingHeadManagerConsentDto>> GetPendingNationalSocietyConsents();
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
         Task<Result> Reopen(int nationalSocietyId);
     }
@@ -234,7 +234,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
 
             // Set until date for the previous consent
-            await _nyssContext.HeadManagerConsents
+            await _nyssContext.NationalSocietyConsents
                 .Where(hmc => pendingSocieties.Select(ps => ps.Id).Contains(hmc.NationalSocietyId) && hmc.ConsentedUntil == null)
                 .ForEachAsync(hmc => hmc.ConsentedUntil = utcNow);
 
@@ -243,7 +243,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 nationalSociety.PendingHeadManager = null;
                 nationalSociety.HeadManager = user;
 
-                await _nyssContext.HeadManagerConsents.AddAsync(new HeadManagerConsent
+                await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent
                 {
                     ConsentedFrom = utcNow,
                     NationalSocietyId = nationalSociety.Id,
@@ -258,7 +258,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return Success();
         }
 
-        public async Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents()
+        public async Task<Result<PendingHeadManagerConsentDto>> GetPendingNationalSocietyConsents()
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 

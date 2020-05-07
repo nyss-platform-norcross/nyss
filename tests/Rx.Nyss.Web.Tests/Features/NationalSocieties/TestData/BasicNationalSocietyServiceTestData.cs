@@ -33,9 +33,9 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                 };
                 data.ContentLanguages = new List<ContentLanguage> { new ContentLanguage { Id = ContentLanguageId } };
                 data.Countries = new List<Country> { new Country { Id = CountryId } };
-                data.HeadManagerConsents = new List<HeadManagerConsent>
+                data.NationalSocietyConsents = new List<NationalSocietyConsent>
                 {
-                    new HeadManagerConsent
+                    new NationalSocietyConsent
                     {
                         Id = ConsentId,
                         NationalSocietyId = NationalSocietyId

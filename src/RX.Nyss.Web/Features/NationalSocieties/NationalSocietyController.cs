@@ -98,7 +98,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [HttpGet("pendingConsents")]
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
         public async Task<Result> GetPendingConsents() =>
-            await _nationalSocietyService.GetPendingHeadManagerConsents();
+            await _nationalSocietyService.GetPendingNationalSocietyConsents();
 
 
         /// <summary>

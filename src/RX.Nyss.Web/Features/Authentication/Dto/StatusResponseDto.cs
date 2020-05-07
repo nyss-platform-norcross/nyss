@@ -18,7 +18,7 @@
 
             public string LanguageCode { get; set; }
 
-            public bool HasPendingHeadManagerConsents { get; set; }
+            public bool HasPendingNationalSocietyConsents { get; set; }
 
             public HomePageDto HomePage { get; set; }
         }

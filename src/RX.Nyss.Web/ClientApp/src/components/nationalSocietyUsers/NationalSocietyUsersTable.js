@@ -38,7 +38,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
   const getRowMenu = (row) => [
     {
       condition: canBeSetAsHeadManager(row),
-      title: strings(stringKeys.headManagerConsents.setAsHeadManager),
+      title: strings(stringKeys.nationalSocietyConsents.setAsHeadManager),
       action: () => setAsHeadManager(nationalSocietyId, row.id)
     }
   ];
@@ -67,7 +67,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               <TableCell>{row.project}</TableCell>
               <TableCell align="center">{
                 (row.isHeadManager && <CheckIcon fontSize="small" />) ||
-                (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.headManagerConsents.pendingHeadManager)}><MoreHorizIcon fontSize="small" /></Tooltip>)
+                (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.nationalSocietyConsents.pendingHeadManager)}><MoreHorizIcon fontSize="small" /></Tooltip>)
               }
               </TableCell>
               <TableCell>

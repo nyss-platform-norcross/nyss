@@ -869,19 +869,19 @@ export const stringKeys = {
     valueCannotBeNegative: "validation.valueCannotBeNegative",
     inRange: "validation.valueMustBeInRange"
   },
-  headManagerConsents: {
-    title: "headManagerConsents.title",
-    consentText: "headManagerConsents.consentText",
-    nationalSociety: "headManagerConsents.nationalSociety",
-    nationalSocieties: "headManagerConsents.nationalSocieties",
-    agreeToContinue: "headManagerConsents.agreeToContinue",
-    submit: "headManagerConsents.submit",
-    iConsent: "headManagerConsents.iConsent",
-    setAsHeadManager: "headManagerConsents.setAsHeadManager",
-    pendingHeadManager: "headManagerConsents.pendingHeadManager",
-    setSuccessfully: "headManagerConsents.setSuccessfully",
-    selectLanguage: "headManagerConsents.selectLanguage",
-    downloadDirectly: "headManagerConsents.downloadDirectly"
+  nationalSocietyConsents: {
+    title: "nationalSocietyConsents.title",
+    consentText: "nationalSocietyConsents.consentText",
+    nationalSociety: "nationalSocietyConsents.nationalSociety",
+    nationalSocieties: "nationalSocietyConsents.nationalSocieties",
+    agreeToContinue: "nationalSocietyConsents.agreeToContinue",
+    submit: "nationalSocietyConsents.submit",
+    iConsent: "nationalSocietyConsents.iConsent",
+    setAsHeadManager: "nationalSocietyConsents.setAsHeadManager",
+    pendingHeadManager: "nationalSocietyConsents.pendingHeadManager",
+    setSuccessfully: "nationalSocietyConsents.setSuccessfully",
+    selectLanguage: "nationalSocietyConsents.selectLanguage",
+    downloadDirectly: "nationalSocietyConsents.downloadDirectly"
   },
   common: {
     boolean: {

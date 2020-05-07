@@ -9,7 +9,7 @@ import { reportsSiteMap } from "./components/reports/logic/reportsSiteMap";
 import { nationalSocietyReportsSiteMap } from "./components/nationalSocietyReports/logic/nationalSocietyReportsSiteMap";
 import { nationalSocietyStructureSiteMap } from "./components/nationalSocietyStructure/logic/nationalSocietyStructureSiteMap";
 import { projectDashboardSiteMap } from "./components/projectDashboard/logic/projectDashboardSiteMap";
-import { headManagerConsentsSiteMap } from "./components/headManagerConsents/logic/headManagerConsentsSiteMap";
+import { nationalSocietyConsentsSiteMap } from "./components/nationalSocietyConsents/logic/nationalSocietyConsentsSiteMap";
 import { alertsSiteMap } from "./components/alerts/logic/alertsSiteMap";
 import { nationalSocietyDashboardSiteMap } from "./components/nationalSocietyDashboard/logic/nationalSocietyDashboardSiteMap";
 import { translationsSiteMap } from "./components/translations/logic/translationsSiteMap";
@@ -31,7 +31,7 @@ export const siteMap = [
   ...dataCollectorsSiteMap,
   ...reportsSiteMap,
   ...nationalSocietyReportsSiteMap,
-  ...headManagerConsentsSiteMap,
+  ...nationalSocietyConsentsSiteMap,
   ...alertsSiteMap,
   ...translationsSiteMap
 ];

@@ -19,7 +19,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
         public List<DataCollector> DataCollectors { get; set; } = new List<DataCollector>();
         public List<District> Districts { get; set; } = new List<District>();
         public List<GatewaySetting> GatewaySettings { get; set; } = new List<GatewaySetting>();
-        public List<HeadManagerConsent> HeadManagerConsents { get; set; } = new List<HeadManagerConsent>();
+        public List<NationalSocietyConsent> NationalSocietyConsents { get; set; } = new List<NationalSocietyConsent>();
         public List<HealthRisk> HealthRisks { get; set; } = new List<HealthRisk>();
         public List<HealthRiskLanguageContent> HealthRiskLanguageContents { get; set; } = new List<HealthRiskLanguageContent>();
         public List<Localization> Localizations { get; set; } = new List<Localization>();
@@ -49,7 +49,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             DataCollectors.AddRange(otherData.DataCollectors);
             Districts.AddRange(otherData.Districts);
             GatewaySettings.AddRange(otherData.GatewaySettings);
-            HeadManagerConsents.AddRange(otherData.HeadManagerConsents);
+            NationalSocietyConsents.AddRange(otherData.NationalSocietyConsents);
             HealthRisks.AddRange(otherData.HealthRisks);
             HealthRiskLanguageContents.AddRange(otherData.HealthRiskLanguageContents);
             Localizations.AddRange(otherData.Localizations);

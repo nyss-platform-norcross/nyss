@@ -169,7 +169,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             // Assert
             result.IsSuccess.ShouldBeTrue();
             await _dataBlobServiceMock.Received(1).StorePlatformAgreement(sourceUri, Arg.Any<string>());
-            await _nyssContextMock.HeadManagerConsents.Received(1).AddAsync(Arg.Any<HeadManagerConsent>());
+            await _nyssContextMock.NationalSocietyConsents.Received(1).AddAsync(Arg.Any<NationalSocietyConsent>());
             await _nyssContextMock.Received(1).SaveChangesAsync();
         }
 

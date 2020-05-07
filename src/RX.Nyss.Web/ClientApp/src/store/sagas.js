@@ -9,7 +9,7 @@ import { globalCoordinatorsSagas } from "../components/globalCoordinators/logic/
 import { healthRisksSagas } from "../components/healthRisks/logic/healthRisksSagas";
 import { nationalSocietyUsersSagas } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersSagas";
 import { dataCollectorsSagas } from "../components/dataCollectors/logic/dataCollectorsSagas";
-import { headManagerConsentsSagas } from "../components/headManagerConsents/logic/headManagerConsentsSagas";
+import { nationalSocietyConsentsSagas } from "../components/nationalSocietyConsents/logic/nationalSocietyConsentsSagas";
 import { reportsSagas } from "../components/reports/logic/reportsSagas";
 import { nationalSocietyReportsSagas } from "../components/nationalSocietyReports/logic/nationalSocietyReportsSagas";
 import { nationalSocietyStructureSagas } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureSagas";
@@ -35,7 +35,7 @@ function* rootSaga() {
     ...healthRisksSagas(),
     ...nationalSocietyUsersSagas(),
     ...dataCollectorsSagas(),
-    ...headManagerConsentsSagas(),
+    ...nationalSocietyConsentsSagas(),
     ...reportsSagas(),
     ...nationalSocietyReportsSagas(),
     ...nationalSocietyDashboardSagas(),

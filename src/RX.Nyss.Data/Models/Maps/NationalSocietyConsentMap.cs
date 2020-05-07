@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace RX.Nyss.Data.Models.Maps
 {
-    public class HeadManagerConsentMap : IEntityTypeConfiguration<HeadManagerConsent>
+    public class NationalSocietyConsentMap : IEntityTypeConfiguration<NationalSocietyConsent>
     {
-        public void Configure(EntityTypeBuilder<HeadManagerConsent> builder)
+        public void Configure(EntityTypeBuilder<NationalSocietyConsent> builder)
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.NationalSocietyId).IsRequired();

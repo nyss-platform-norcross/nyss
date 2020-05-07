@@ -69,7 +69,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             AddToNyssContext(data.DataCollectors);
             AddToNyssContext(data.Districts);
             AddToNyssContext(data.GatewaySettings);
-            AddToNyssContext(data.HeadManagerConsents);
+            AddToNyssContext(data.NationalSocietyConsents);
             AddToNyssContext(data.HealthRisks);
             AddToNyssContext(data.HealthRiskLanguageContents);
             AddToNyssContext(data.Localizations);
