@@ -101,7 +101,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                     DecadeOfBirth = u.User.DecadeOfBirth,
                     ProjectId = u.User.CurrentProject.Id,
                     Organization = u.User.Organization,
-                    OrganizationId = (int)u.UserNationalSociety.OrganizationId,
+                    OrganizationId = u.UserNationalSociety.OrganizationId,
                     NationalSocietyId = u.UserNationalSociety.NationalSocietyId,
                     CurrentProject = new EditSupervisorFormDataDto.ListProjectsResponseDto
                     {

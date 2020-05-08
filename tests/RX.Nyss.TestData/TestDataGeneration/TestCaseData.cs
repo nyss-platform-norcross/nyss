@@ -60,8 +60,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
         protected void ConfiugureNyssContext(EntityData data)
         {
             AddToNyssContext(data.Alerts);
-            AddToNyssContext(data.EmailAlertRecipients);
-            AddToNyssContext(data.SmsAlertRecipients);
+            AddToNyssContext(data.AlertRecipients);
             AddToNyssContext(data.AlertReports);
             AddToNyssContext(data.AlertRules);
             AddToNyssContext(data.ApplicationLanguages);

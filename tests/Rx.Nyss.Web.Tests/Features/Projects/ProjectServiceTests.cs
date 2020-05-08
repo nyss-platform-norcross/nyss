@@ -93,8 +93,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     NationalSocietyId = 1,
                     NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 2 }, Organizations = new List<Organization>(), NationalSocietyUsers = new List<UserNationalSociety>( ) },
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
-                    EmailAlertRecipients = new List<EmailAlertRecipient>(),
-                    SmsAlertRecipients = new List<SmsAlertRecipient>()
+                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
                 },
                 new Project
                 {
@@ -134,20 +133,15 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             Reports = new[] { new Report() }
                         }
                     },
-                    EmailAlertRecipients = new[]
+                    AlertNotificationRecipients = new []
                     {
-                        new EmailAlertRecipient
+                        new AlertNotificationRecipient
                         {
                             Id = 1,
-                            EmailAddress = "user@domain.com"
-                        }
-                    },
-                    SmsAlertRecipients = new[]
-                    {
-                        new SmsAlertRecipient
-                        {
-                            Id = 1,
-                            PhoneNumber = "+48123456789"
+                            Role = "Head",
+                            Organization = "RC",
+                            Email = "head@example.com",
+                            PhoneNumber = "+47493284231"
                         }
                     }
                 }
@@ -180,12 +174,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             result.Value.ProjectHealthRisks.ElementAt(0).AlertRuleDaysThreshold.ShouldBe(2);
             result.Value.ProjectHealthRisks.ElementAt(0).AlertRuleKilometersThreshold.ShouldBe(3);
             result.Value.ProjectHealthRisks.ElementAt(0).ContainsReports.ShouldBe(true);
-            result.Value.EmailAlertRecipients.Count().ShouldBe(1);
-            result.Value.EmailAlertRecipients.ElementAt(0).Id.ShouldBe(1);
-            result.Value.EmailAlertRecipients.ElementAt(0).Email.ShouldBe("user@domain.com");
-            result.Value.SmsAlertRecipients.Count().ShouldBe(1);
-            result.Value.SmsAlertRecipients.ElementAt(0).Id.ShouldBe(1);
-            result.Value.SmsAlertRecipients.ElementAt(0).PhoneNumber.ShouldBe("+48123456789");
+            result.Value.AlertNotificationRecipients.Count().ShouldBe(1);
+            result.Value.AlertNotificationRecipients.ElementAt(0).Id.ShouldBe(1);
+            result.Value.AlertNotificationRecipients.ElementAt(0).Email.ShouldBe("head@example.com");
+            result.Value.AlertNotificationRecipients.ElementAt(0).PhoneNumber.ShouldBe("+47493284231");
         }
 
         [Fact]
@@ -200,8 +192,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = 1,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
-                    EmailAlertRecipients = new List<EmailAlertRecipient>(),
-                    SmsAlertRecipients = new List<SmsAlertRecipient>(),
+                    AlertNotificationRecipients = new List<AlertNotificationRecipient>(),
+                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 1 } }
                     NationalSociety = new NationalSociety
                     {
                         ContentLanguage = new ContentLanguage { Id = 1 },
@@ -283,8 +275,17 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         FeedbackMessage = "FeedbackMessage"
                     }
                 },
-                EmailAlertRecipients = new[] { new EmailAlertRecipientDto { Email = "user@domain.com" } },
-                SmsAlertRecipients = new[] { new SmsAlertRecipientDto { PhoneNumber = "+48123456789" } }
+                AlertNotificationRecipients = new[]
+                {
+                    new AlertNotificationRecipientDto
+                    {
+                        Id = 1,
+                        Role = "Head",
+                        Organization = "RC",
+                        Email = "head@example.com",
+                        PhoneNumber = "+47493284231"
+                    }
+                }
             };
 
             // Act
@@ -304,8 +305,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         phr.AlertRule.CountThreshold == 1 &&
                         phr.AlertRule.DaysThreshold == 2 &&
                         phr.AlertRule.KilometersThreshold == 3) &&
-                    p.EmailAlertRecipients.Any(ear => ear.EmailAddress == "user@domain.com") &&
-                    p.SmsAlertRecipients.Any(sar => sar.PhoneNumber == "+48123456789")));
+                    p.AlertNotificationRecipients.Any(anr => anr.Email == "head@example.com" && anr.PhoneNumber == "+47493284231")));
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyAdded);
@@ -501,30 +501,14 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             Reports = new List<Report>()
                         }
                     },
-                    EmailAlertRecipients = new List<EmailAlertRecipient>
+                    AlertNotificationRecipients = new []
                     {
-                        new EmailAlertRecipient
+                        new AlertNotificationRecipient
                         {
-                            Id = 1,
-                            EmailAddress = "user1@domain.com"
-                        },
-                        new EmailAlertRecipient
-                        {
-                            Id = 2,
-                            EmailAddress = "user2@domain.com"
-                        }
-                    },
-                    SmsAlertRecipients = new List<SmsAlertRecipient>
-                    {
-                        new SmsAlertRecipient
-                        {
-                            Id = 1,
-                            PhoneNumber = "+48111111111"
-                        },
-                        new SmsAlertRecipient
-                        {
-                            Id = 2,
-                            PhoneNumber = "+48222222222"
+                            Role = "Head",
+                            Organization = "RC",
+                            Email = "head@example.com",
+                            PhoneNumber = "+47493284231"
                         }
                     }
                 }
@@ -564,65 +548,32 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         AlertRuleKilometersThreshold = 5
                     }
                 },
-                EmailAlertRecipients = new List<EmailAlertRecipientDto>
+                AlertNotificationRecipients = new[]
                 {
-                    new EmailAlertRecipientDto
+                    new AlertNotificationRecipientDto
                     {
-                        Id = 2,
-                        Email = "user2-updated@domain.com"
-                    },
-                    new EmailAlertRecipientDto
-                    {
-                        Id = null,
-                        Email = "user3@domain.com"
-                    }
-                },
-                SmsAlertRecipients = new List<SmsAlertRecipientDto>
-                {
-                    new SmsAlertRecipientDto
-                    {
-                        Id = 2,
-                        PhoneNumber = "+48999999999"
-                    },
-                    new SmsAlertRecipientDto
-                    {
-                        Id = null,
-                        PhoneNumber = "+48000000000"
+                        Id = 1,
+                        Role = "Head",
+                        Organization = "RC",
+                        Email = "head@example.com",
+                        PhoneNumber = "+47493284231"
                     }
                 }
             };
 
-            var emailAlertRecipients = new List<EmailAlertRecipient>
+            var alertRecipients = new List<AlertNotificationRecipient>
             {
-                new EmailAlertRecipient
+                new AlertNotificationRecipient
                 {
                     Id = 1,
-                    EmailAddress = "user1@domain.com"
-                },
-                new EmailAlertRecipient
-                {
-                    Id = 2,
-                    EmailAddress = "user2@domain.com"
+                    Role = "Head",
+                    Organization = "RC",
+                    Email = "head@example.com",
+                    PhoneNumber = "+47493284231"
                 }
             };
-            var emailAlertRecipientsMockDbSet = emailAlertRecipients.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.EmailAlertRecipients.Returns(emailAlertRecipientsMockDbSet);
-
-            var smsAlertRecipients = new List<SmsAlertRecipient>
-            {
-                new SmsAlertRecipient
-                {
-                    Id = 1,
-                    PhoneNumber = "+48111111111"
-                },
-                new SmsAlertRecipient
-                {
-                    Id = 2,
-                    PhoneNumber = "+48222222222"
-                }
-            };
-            var smsAlertRecipientsMockDbSet = smsAlertRecipients.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.SmsAlertRecipients.Returns(smsAlertRecipientsMockDbSet);
+            var emailAlertRecipientsMockDbSet = alertRecipients.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.AlertNotificationRecipients.Returns(emailAlertRecipientsMockDbSet);
 
             // Act
             var result = await _projectService.Edit(projectId, projectRequestDto);
@@ -728,8 +679,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             Reports = new List<Report> { new Report() }
                         }
                     },
-                    EmailAlertRecipients = new List<EmailAlertRecipient>(),
-                    SmsAlertRecipients = new List<SmsAlertRecipient>()
+                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
                 }
             };
 
@@ -745,8 +695,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 Name = "Updated Project",
                 TimeZoneId = "Updated Time Zone",
                 HealthRisks = new List<ProjectHealthRiskRequestDto>(),
-                EmailAlertRecipients = new List<EmailAlertRecipientDto>(),
-                SmsAlertRecipients = new List<SmsAlertRecipientDto>()
+                AlertNotificationRecipients = new List<AlertNotificationRecipientDto>()
             };
 
             // Act
