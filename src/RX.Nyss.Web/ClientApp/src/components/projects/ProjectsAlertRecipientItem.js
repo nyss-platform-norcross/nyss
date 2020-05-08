@@ -49,6 +49,7 @@ export const ProjectsAlertRecipientItem = ({ form, alertRecipient, alertRecipien
             label={strings(stringKeys.project.form.alertNotificationsOrganization)}
             name="organization"
             freeSolo
+            autoSelect
             options={organizations}
             defaultValue={alertRecipient.organization}
             field={form.fields[`alertRecipientOrganization${alertRecipientNumber}`]}

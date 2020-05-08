@@ -4,14 +4,44 @@ import { createFieldComponent } from "./FieldBase";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-const AutocompleteTextInput = ({ error, name, label, value, options, freeSolo, controlProps, autoWidth, disabled, type }) => {
+const filter = (options, params) => {
+  if (params.inputValue !== '') {
+    const filtered = options.filter(o => o.title.toLowerCase().indexOf(params.inputValue.toLowerCase()) > -1);
+
+    filtered.push({
+      inputValue: params.inputValue,
+      title: `Add "${params.inputValue}"`,
+    });
+
+    return filtered;
+  }
+
+  return options;
+}
+
+const AutocompleteTextInput = ({ error, name, label, value, options, freeSolo, autoSelect, controlProps, autoWidth, disabled, type }) => {
   return (
     <Autocomplete
       name={name}
       value={value}
       freeSolo={freeSolo}
+      autoSelect={autoSelect}
       disabled={disabled}
       options={options}
+      filterOptions={(options, params) => filter(options, params)}
+      getOptionLabel={(option) => {
+        // Value selected with enter, right from the input
+        if (typeof option === 'string') {
+          return option;
+        }
+        // Add "xxx" option created dynamically
+        if (option.inputValue) {
+          return option.inputValue;
+        }
+        // Regular option
+        return option.title;
+      }}
+      renderOption={option => option.title}
       {...controlProps}
       renderInput={(params) => (
         <TextField

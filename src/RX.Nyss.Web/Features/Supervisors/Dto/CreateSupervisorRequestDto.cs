@@ -17,6 +17,7 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
         public string Email { get; set; }
         public int? ProjectId { get; set; }
         public int? OrganizationId { get; set; }
+        public int NationalSocietyId { get; set; }
         public string Organization { get; set; }
         public IEnumerable<int> SupervisorAlertRecipients { get; set; }
 
@@ -32,7 +33,8 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
                 RuleFor(s => s.SupervisorAlertRecipients).NotEmpty();
                 RuleFor(m => m.OrganizationId)
-                    .Must(organizationId => !organizationId.HasValue || organizationService.ValidateAccessForAssigningOrganization())
+                    .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganization(model.NationalSocietyId))
+                    .When(model => model.OrganizationId.HasValue)
                     .WithMessage(ResultKey.Organization.NotAccessToChangeOrganization);
             }
         }

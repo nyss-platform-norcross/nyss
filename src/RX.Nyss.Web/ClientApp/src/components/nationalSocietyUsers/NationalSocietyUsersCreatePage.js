@@ -14,7 +14,7 @@ import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import { userRoles, globalCoordinatorUserRoles, coordinatorUserRoles, headManagerRoles, allUserRoles sexValues } from './logic/nationalSocietyUsersConstants';
+import { userRoles, globalCoordinatorUserRoles, coordinatorUserRoles, headManagerRoles, sexValues } from './logic/nationalSocietyUsersConstants';
 import * as roles from '../../authentication/roles';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
@@ -69,7 +69,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   });
 
   const onProjectChange = (projectId) => {
-    const project = props.projects.filter(p => p.id === parseInt(projectId))[0];
+    const project = props.data.projects.filter(p => p.id === parseInt(projectId))[0];
     const newAlertRecipientsDataSource = [{ label: 'All recipients', value: 0, data: { id: 0 }}, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
     setAlertRecipientsDataSource(newAlertRecipientsDataSource);
   }
@@ -133,24 +133,29 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     });
   };
 
-  const canChangeOrganization = () =>
-    props.data
-    && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator || ((r === roles.Manager || r === roles.TechnicalAdvisor) && props.data.isHeadManager))
-    && role !== roles.DataConsumer
-    && !props.data.hasCoordinator;
+  const canChangeOrganization = () => {
+    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator) && role !== roles.DataConsumer) {
+      return true;
+    }
+
+    return props.data
+      && props.callingUserRoles.some(r => r === roles.Coordinator || ((r === roles.Manager || r === roles.TechnicalAdvisor) && props.data.isHeadManager))
+      && role !== roles.DataConsumer
+      && !props.data.hasCoordinator;
+  }
+    
 
   const isCoordinator = () =>
     props.callingUserRoles.some(r => r === roles.Coordinator);
 
   const getAvailableUserRoles = () => {
+    if (props.callingUserRoles.some(r => r === roles.Administrator)) {
+      return headManagerRoles;
+    }
+
     if (props.callingUserRoles.some(r => r === roles.GlobalCoordinator)) {
       return globalCoordinatorUserRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
     }
-
-    if (props.callingUserRoles.some(r => r === roles.Administrator)) {
-      return allUserRoles;
-    }
-
     if (isCoordinator()) {
       return coordinatorUserRoles;
     }
@@ -288,7 +293,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 name="projectId"
                 onChange={e => onProjectChange(e.target.value)}
               >
-                {props.projects.map(project => (
+                {props.data.projects.map(project => (
                   <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
                     {project.name}
                   </MenuItem>

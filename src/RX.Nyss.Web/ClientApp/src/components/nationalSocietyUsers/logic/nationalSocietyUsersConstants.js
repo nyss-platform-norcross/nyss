@@ -13,7 +13,6 @@ export const REMOVE_NATIONAL_SOCIETY_USER = action("REMOVE_NATIONAL_SOCIETY_USER
 export const SET_AS_HEAD_MANAGER = action("SET_AS_HEAD_MANAGER");
 
 export const userRoles = [ roles.Manager, roles.TechnicalAdvisor, roles.DataConsumer, roles.Supervisor ];
-export const allUserRoles = [roles.Manager, roles.TechnicalAdvisor, roles.DataConsumer, roles.Coordinator, roles.Supervisor ];
 export const globalCoordinatorUserRoles = [roles.Manager, roles.TechnicalAdvisor, roles.DataConsumer, roles.Coordinator ];
 export const coordinatorUserRoles = [ roles.Manager ];
 export const headManagerRoles = [roles.Manager, roles.TechnicalAdvisor, roles.DataConsumer, roles.Supervisor, roles.Coordinator ];
