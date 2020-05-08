@@ -9,5 +9,6 @@ namespace RX.Nyss.Data.Models
         public int NationalSocietyId { get; set; }
         public virtual NationalSociety NationalSociety { get; set; }
         public virtual ICollection<UserNationalSociety> NationalSocietyUsers { get; set; }
+        public virtual ICollection<ProjectOrganization> OrganizationProjects { get; set; }
     }
 }
