@@ -20,6 +20,8 @@ namespace RX.Nyss.Data.Models
 
         public int NationalSocietyId { get; set; }
 
+        public bool AllowMultipleOrganizations { get; set; }
+
         public virtual NationalSociety NationalSociety { get; set; }
 
         public virtual ICollection<ProjectHealthRisk> ProjectHealthRisks { get; set; }

@@ -1,6 +1,7 @@
 export const getSaveFormModel = (values, healthRisks, alertRecipients) =>
     ({
         name: values.name,
+        allowMultipleOrganizations: values.allowMultipleOrganizations,
         timeZoneId: values.timeZoneId,
         healthRisks: healthRisks.map(healthRisk => ({
             id: values[`healthRisk_${healthRisk.healthRiskId}_projectHealthRiskId`],

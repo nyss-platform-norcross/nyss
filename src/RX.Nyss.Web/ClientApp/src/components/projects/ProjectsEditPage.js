@@ -49,6 +49,7 @@ const ProjectsEditPageComponent = (props) => {
 
     let fields = {
       name: props.data.name,
+      allowMultipleOrganizations: props.data.allowMultipleOrganizations,
       timeZoneId: props.data.timeZoneId
     };
 
@@ -131,6 +132,14 @@ const ProjectsEditPageComponent = (props) => {
               label={strings(stringKeys.project.form.name)}
               name="name"
               field={form.fields.name}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={9}>
+            <TextInputField
+              label={strings(stringKeys.project.form.allowMultipleOrganizations)}
+              name="allowMultipleOrganizations"
+              field={form.fields.allowMultipleOrganizations}
             />
           </Grid>
 

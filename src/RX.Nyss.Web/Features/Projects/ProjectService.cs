@@ -63,6 +63,7 @@ namespace RX.Nyss.Web.Features.Projects
                     NationalSocietyId = p.NationalSocietyId,
                     Name = p.Name,
                     TimeZoneId = p.TimeZone,
+                    AllowMultipleOrganizations = p.AllowMultipleOrganizations,
                     State = p.State,
                     ProjectHealthRisks = p.ProjectHealthRisks.Select(phr => new ProjectHealthRiskResponseDto
                     {
@@ -203,6 +204,7 @@ namespace RX.Nyss.Web.Features.Projects
                 var projectToAdd = new Project
                 {
                     Name = projectRequestDto.Name,
+                    AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations,
                     TimeZone = projectRequestDto.TimeZoneId,
                     NationalSocietyId = nationalSocietyId,
                     State = ProjectState.Open,
@@ -274,6 +276,7 @@ namespace RX.Nyss.Web.Features.Projects
 
                 projectToUpdate.Name = projectRequestDto.Name;
                 projectToUpdate.TimeZone = projectRequestDto.TimeZoneId;
+                projectToUpdate.AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations;
 
                 await UpdateHealthRisks(projectToUpdate, projectRequestDto);
 

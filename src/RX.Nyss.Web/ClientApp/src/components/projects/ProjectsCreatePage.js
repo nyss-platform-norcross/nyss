@@ -39,6 +39,7 @@ const ProjectsCreatePageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
       name: "",
+      allowMultipleOrganizations: false,
       timeZoneId: ""
     };
 
@@ -105,6 +106,14 @@ const ProjectsCreatePageComponent = (props) => {
               name="name"
               field={form.fields.name}
               autoFocus
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={9}>
+            <TextInputField
+              label={strings(stringKeys.project.form.allowMultipleOrganizations)}
+              name="allowMultipleOrganizations"
+              field={form.fields.allowMultipleOrganizations}
             />
           </Grid>
 
