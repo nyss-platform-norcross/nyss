@@ -208,6 +208,14 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string HealthRiskContainsReports = "project.healthRiskContainsReports";
             public const string CannotAddProjectInArchivedNationalSociety = "project.cannotAddProjectInArchivedNationalSociety";
             public const string ProjectHasOpenOrEscalatedAlerts = "project.projectHasOpenOrEscalatedAlerts";
+            public const string OnlyCoordinatorCanAdministrateProjects = "project.onlyCoordinatorCanAdministrateProjects";
+        }
+
+        public class ProjectOrganization
+        {
+            public const string OrganizationAlreadyAdded = "projectOrganization.organizationAlreadyAdded";
+            public const string CannotRemoveLastOrganization = "projectOrganization.cannotRemoveLastOrganization";
+            public const string CannotRemoveOrganizationThatHasSupervisors = "projectOrganization.cannotRemoveOrganizationThatHasSupervisors";
         }
 
         public class SqlExceptions

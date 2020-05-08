@@ -19,6 +19,7 @@
         AlertAccess,
         ReportAccess,
         CoordinatorAccess,
-        OrganizationAccess
+        OrganizationAccess,
+        ProjectOrganizationAccess
     }
 }

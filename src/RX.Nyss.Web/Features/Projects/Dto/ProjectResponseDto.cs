@@ -23,5 +23,7 @@ namespace RX.Nyss.Web.Features.Projects.Dto
         public ProjectFormDataResponseDto FormData { get; set; }
 
         public int ContentLanguageId { get; set; }
+
+        public int NationalSocietyId { get; set; }
     }
 }
