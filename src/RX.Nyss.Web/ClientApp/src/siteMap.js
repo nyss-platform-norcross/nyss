@@ -14,6 +14,7 @@ import { alertsSiteMap } from "./components/alerts/logic/alertsSiteMap";
 import { nationalSocietyDashboardSiteMap } from "./components/nationalSocietyDashboard/logic/nationalSocietyDashboardSiteMap";
 import { translationsSiteMap } from "./components/translations/logic/translationsSiteMap";
 import { organizationsSiteMap } from "./components/organizations/logic/organizationsSiteMap";
+import { projectOrganizationsSiteMap } from "./components/projectOrganizations/logic/projectOrganizationsSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
@@ -26,6 +27,7 @@ export const siteMap = [
   ...globalCoordinatorsSiteMap,
   ...projectsSiteMap,
   ...projectDashboardSiteMap,
+  ...projectOrganizationsSiteMap,
   ...dataCollectorsSiteMap,
   ...reportsSiteMap,
   ...nationalSocietyReportsSiteMap,

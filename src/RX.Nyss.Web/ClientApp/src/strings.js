@@ -261,8 +261,29 @@ export const stringKeys = {
       removalConfirmation: "organization.list.removalConfirmation"
     },
   },
+  projectOrganization: {
+    title: "projectOrganization.title",
+    addNew: "projectOrganization.addNew",
+    form: {
+      creationTitle: "projectOrganization.form.creationTitle",
+      organization: "projectOrganization.form.organization",
+      create: "projectOrganization.form.create",
+      update: "projectOrganization.form.update"
+    },
+    create: {
+      success: "projectOrganization.create.success"
+    },
+    delete: {
+      success: "projectOrganization.delete.success"
+    },
+    list: {
+      name: "projectOrganization.list.name",
+      removalConfirmation: "projectOrganization.list.removalConfirmation"
+    },
+  },
   project: {
     title: "project.title",
+    settingsRootTitle: "project.settingsRootTitle",
     addNew: "project.addNew",
     edit: "project.edit",
     form: {
