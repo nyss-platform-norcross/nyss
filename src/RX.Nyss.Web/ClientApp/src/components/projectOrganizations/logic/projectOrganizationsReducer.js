@@ -45,9 +45,6 @@ export function projectOrganizationsReducer(state = initialState.projectOrganiza
     case actions.REMOVE_PROJECT_ORGANIZATION.FAILURE:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
 
-    case nationalSocietyActions.ARCHIVE_NATIONAL_SOCIETY.SUCCESS:
-      return { ...state, listStale: true };
-
     default:
       return state;
   }

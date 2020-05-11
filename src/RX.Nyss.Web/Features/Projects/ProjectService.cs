@@ -90,18 +90,14 @@ namespace RX.Nyss.Web.Features.Projects
                         Id = sar.Id,
                         PhoneNumber = sar.PhoneNumber
                     }),
-                    ContentLanguageId = p.NationalSociety.ContentLanguage.Id
+                    ContentLanguageId = p.NationalSociety.ContentLanguage.Id,
+                    HasCoordinator = p.NationalSociety.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
                 })
                 .FirstOrDefaultAsync(p => p.Id == projectId);
 
             if (project == null)
             {
                 return Error<ProjectResponseDto>(ResultKey.Project.ProjectDoesNotExist);
-            }
-
-            if (await CheckCoordinatorExistence(project.NationalSocietyId))
-            {
-                return Error<ProjectResponseDto>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
             }
 
             project.FormData = await GetFormDataDto(project.ContentLanguageId);
@@ -171,9 +167,17 @@ namespace RX.Nyss.Web.Features.Projects
         {
             try
             {
+                var currentUser = _authorizationService.GetCurrentUser();
+
                 var nationalSocietyData = await _nyssContext.NationalSocieties
                     .Where(ns => ns.Id == nationalSocietyId)
-                    .Select(ns => new { ns.IsArchived })
+                    .Select(ns => new
+                    {
+                        ns.IsArchived,
+                        OrganizationsCount = ns.Organizations.Count,
+                        FirstOrganizationId = (int?)ns.Organizations.Select(o => o.Id).FirstOrDefault(),
+                        UserOrganizationId = ns.NationalSocietyUsers.Where(nsu => nsu.User == currentUser).Select(nsu => nsu.OrganizationId).FirstOrDefault()
+                    })
                     .SingleOrDefaultAsync();
 
                 if (nationalSocietyData == null)
@@ -186,11 +190,6 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error<int>(ResultKey.Project.CannotAddProjectInArchivedNationalSociety);
                 }
 
-                if (await CheckCoordinatorExistence(nationalSocietyId))
-                {
-                    return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
-                }
-
                 var healthRiskIdsInDatabase = await _nyssContext.HealthRisks.Select(hr => hr.Id).ToListAsync();
                 var healthRiskIdsToAttach = projectRequestDto.HealthRisks.Select(hr => hr.HealthRiskId).ToList();
 
@@ -198,6 +197,10 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     return Error<int>(ResultKey.Project.HealthRiskDoesNotExist);
                 }
+
+                var organizationId = nationalSocietyData.OrganizationsCount == 1
+                    ? nationalSocietyData.FirstOrganizationId
+                    : nationalSocietyData.UserOrganizationId;
 
                 var projectToAdd = new Project
                 {
@@ -220,6 +223,15 @@ namespace RX.Nyss.Web.Features.Projects
                             KilometersThreshold = phr.AlertRuleKilometersThreshold
                         }
                     }).ToList(),
+                    ProjectOrganizations = organizationId.HasValue
+                        ? new List<ProjectOrganization>
+                        {
+                            new ProjectOrganization
+                            {
+                                OrganizationId = organizationId.Value
+                            }
+                        }
+                        : new List<ProjectOrganization>(),
                     EmailAlertRecipients = projectRequestDto.EmailAlertRecipients.Select(ar => new EmailAlertRecipient { EmailAddress = ar.Email }).ToList(),
                     SmsAlertRecipients = projectRequestDto.SmsAlertRecipients.Select(ar => new SmsAlertRecipient { PhoneNumber = ar.PhoneNumber }).ToList()
                 };
@@ -352,11 +364,6 @@ namespace RX.Nyss.Web.Features.Projects
         
         public async Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId)
         {
-            if (await CheckCoordinatorExistence(nationalSocietyId))
-            {
-                return Error<ProjectFormDataResponseDto>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
-            }
-
             var contentLanguageId = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => ns.ContentLanguage.Id)

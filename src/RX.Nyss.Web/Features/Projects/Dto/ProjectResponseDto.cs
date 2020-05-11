@@ -25,5 +25,7 @@ namespace RX.Nyss.Web.Features.Projects.Dto
         public int ContentLanguageId { get; set; }
 
         public int NationalSocietyId { get; set; }
+
+        public bool HasCoordinator { get; set; }
     }
 }
