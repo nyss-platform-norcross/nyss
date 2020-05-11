@@ -91,7 +91,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = 1,
                     NationalSocietyId = 1,
-                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 2 } },
+                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 2 }, Organizations = new List<Organization>(), NationalSocietyUsers = new List<UserNationalSociety>( ) },
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
                     EmailAlertRecipients = new List<EmailAlertRecipient>(),
                     SmsAlertRecipients = new List<SmsAlertRecipient>()
@@ -103,7 +103,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     State = ProjectState.Open,
                     NationalSocietyId = 2,
-                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 1 } },
+                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 1 }, Organizations = new List<Organization>(), NationalSocietyUsers = new List<UserNationalSociety>( ) },
                     ProjectHealthRisks = new[]
                     {
                         new ProjectHealthRisk
@@ -202,7 +202,12 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
                     EmailAlertRecipients = new List<EmailAlertRecipient>(),
                     SmsAlertRecipients = new List<SmsAlertRecipient>(),
-                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 1 } }
+                    NationalSociety = new NationalSociety
+                    {
+                        ContentLanguage = new ContentLanguage { Id = 1 },
+                        Organizations = new List<Organization>(),
+                        NationalSocietyUsers = new List<UserNationalSociety>()
+                    }
                 }
             };
 
@@ -228,7 +233,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 new NationalSociety
                 {
                     Id = nationalSocietyId,
-                    Name = "National Society"
+                    Name = "National Society",
+                    Organizations = new List<Organization>(),
+                    NationalSocietyUsers = new List<UserNationalSociety>()
                 }
             };
 
@@ -349,7 +356,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 new NationalSociety
                 {
                     Id = nationalSocietyId,
-                    Name = "National Society"
+                    Name = "National Society",
+                    Organizations = new List<Organization>(),
+                    NationalSocietyUsers = new List<UserNationalSociety>()
                 }
             };
 
@@ -443,7 +452,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 new NationalSociety
                 {
                     Id = 1,
-                    Name = "National Society"
+                    Name = "National Society",
+                    Organizations = new List<Organization>(),
+                    NationalSocietyUsers = new List<UserNationalSociety>()
                 }
             };
 
@@ -682,7 +693,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 new NationalSociety
                 {
                     Id = 1,
-                    Name = "National Society"
+                    Name = "National Society",
+                    Organizations = new List<Organization>(),
+                    NationalSocietyUsers = new List<UserNationalSociety>()
                 }
             };
 
@@ -817,6 +830,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             var dcMockDbSet = new List<DataCollector>().AsQueryable().BuildMockDbSet();
             _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
+            var nationalSocietiesMockDbSet = new[] { new NationalSociety() }.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             // Act
             var result = await _projectService.Close(existingProjectId);
@@ -945,6 +960,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             var dcMockDbSet = dataCollectorsToAnonymize.Union(dataCollectorsToDelete).AsQueryable().BuildMockDbSet();
             _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
+            var nationalSocietiesMockDbSet = new [] { new NationalSociety() }.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             // Act
             var result = await _projectService.Close(existingProjectId);
