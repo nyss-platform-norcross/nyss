@@ -66,7 +66,8 @@ const ProjectsEditPageComponent = (props) => {
       phoneNumber: anr.phoneNumber || ''
     }));
 
-    setOrganizations([ ...new Set(props.data.alertNotificationRecipients.map(anr => ({ title: anr.organization }))) ]);
+    const uniqueOrganizations = [...new Set(props.data.alertNotificationRecipients.map(anr => anr.organization))];
+    setOrganizations(uniqueOrganizations.map(org => ({ title: org })));
     setSelectedHealthRisks(props.data.projectHealthRisks);
     setAlertRecipients(newAlertRecipients);
     return () => setForm(null);

@@ -208,6 +208,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string HealthRiskContainsReports = "project.healthRiskContainsReports";
             public const string CannotAddProjectInArchivedNationalSociety = "project.cannotAddProjectInArchivedNationalSociety";
             public const string ProjectHasOpenOrEscalatedAlerts = "project.projectHasOpenOrEscalatedAlerts";
+            public const string CannotRemoveAlertRecipientWithSupervisorsAttached = "project.cannotRemoveAlertRecipientWithSupervisorsAttached";
             public const string OnlyCoordinatorCanAdministrateProjects = "project.onlyCoordinatorCanAdministrateProjects";
         }
 

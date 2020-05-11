@@ -70,8 +70,15 @@ namespace RX.Nyss.Data.Migrations
                 table: "SupervisorUserAlertRecipients",
                 column: "AlertNotificationRecipientId");
 
-            migrationBuilder.Sql("INSERT INTO [nyss].[AlertNotificationRecipients] ([Role], [Organization], [Email], [ProjectId]) SELECT [EmailAddress],[EmailAddress],[EmailAddress], [ProjectId] FROM [nyss].[EmailAlertRecipients]");
-            migrationBuilder.Sql("INSERT INTO [nyss].[AlertNotificationRecipients] ([Role], [Organization], [PhoneNumber], [ProjectId]) SELECT [PhoneNumber],[PhoneNumber],[PhoneNumber], [ProjectId] FROM [nyss].[SmsAlertRecipients]");
+            migrationBuilder.Sql("INSERT INTO [nyss].[AlertNotificationRecipients] ([Role], [Organization], [Email], [ProjectId]) SELECT 'Role not set','Organization not set',[EmailAddress], [ProjectId] FROM [nyss].[EmailAlertRecipients]");
+            migrationBuilder.Sql("INSERT INTO [nyss].[AlertNotificationRecipients] ([Role], [Organization], [PhoneNumber], [ProjectId]) SELECT 'Role not set','Organization not set',[PhoneNumber], [ProjectId] FROM [nyss].[SmsAlertRecipients]");
+                        
+            migrationBuilder.Sql(@"
+                INSERT INTO [nyssDemo].[nyss].SupervisorUserAlertRecipients (SupervisorId, AlertNotificationRecipientId)
+                SELECT users.Id, alertRecipient.Id FROM [nyssDemo].[nyss].[Users] as users
+                INNER JOIN [nyssDemo].[nyss].[AlertNotificationRecipients] as alertRecipient ON users.CurrentProjectId=alertRecipient.ProjectId
+                WHERE users.Role = 'Supervisor'
+            ");
 
             migrationBuilder.DropTable(
                 name: "EmailAlertRecipients",
@@ -142,7 +149,7 @@ namespace RX.Nyss.Data.Migrations
 
             migrationBuilder.Sql("INSERT INTO [nyss].[EmailAlertRecipients] ([EmailAddress], [ProjectId]) SELECT [Email], [ProjectId] FROM [nyss].[AlertNotificationRecipients] WHERE [Email] IS NOT NULL");
             migrationBuilder.Sql("INSERT INTO [nyss].[SmsAlertRecipients] ([PhoneNumber], [ProjectId]) SELECT [PhoneNumber], [ProjectId] FROM [nyss].[AlertNotificationRecipients] WHERE [PhoneNumber] IS NOT NULL");
-            
+
             migrationBuilder.DropTable(
                 name: "SupervisorUserAlertRecipients",
                 schema: "nyss");

@@ -259,6 +259,7 @@ namespace RX.Nyss.Web.Features.Projects
                     .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.AlertRule)
                     .Include(p => p.AlertNotificationRecipients)
+                    .ThenInclude(anr => anr.SupervisorAlertRecipients)
                     .FirstOrDefaultAsync(p => p.Id == projectId);
 
                 if (projectToUpdate == null)
@@ -442,6 +443,12 @@ namespace RX.Nyss.Web.Features.Projects
         {
             var alertNotificationRecipientIdsFromDto = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
             var alertRecipientsToDelete = projectToUpdate.AlertNotificationRecipients.Where(ar => !alertNotificationRecipientIdsFromDto.Contains(ar.Id));
+
+            if (alertRecipientsToDelete.Any(ar => ar.SupervisorAlertRecipients.Any()))
+            {
+                throw new ResultException(ResultKey.Project.CannotRemoveAlertRecipientWithSupervisorsAttached);
+            }
+
             _nyssContext.AlertNotificationRecipients.RemoveRange(alertRecipientsToDelete);
 
             var alertNotificationRecipientsToAdd = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id == null);
