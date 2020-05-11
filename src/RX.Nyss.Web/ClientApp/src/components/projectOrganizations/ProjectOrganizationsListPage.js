@@ -10,6 +10,7 @@ import ProjectOrganizationsTable from './ProjectOrganizationsTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { accessMap } from '../../authentication/accessMap';
 
 const ProjectOrganizationsListPageComponent = (props) => {
   useMount(() => {
@@ -20,7 +21,7 @@ const ProjectOrganizationsListPageComponent = (props) => {
     <Fragment>
       {!props.nationalSocietyIsArchived &&
       <TableActions>
-        <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
+        <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />} roles={accessMap.projectOrganizations.add}>
           {strings(stringKeys.projectOrganization.addNew)}
         </TableActionsButton>
       </TableActions>}

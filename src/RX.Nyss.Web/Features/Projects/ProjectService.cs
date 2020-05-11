@@ -269,7 +269,7 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error(ResultKey.Project.ProjectDoesNotExist);
                 }
 
-                if (await CheckCoordinatorExistence(projectToUpdate.NationalSocietyId))
+                if (projectToUpdate.AllowMultipleOrganizations && await CheckCoordinatorExistence(projectToUpdate.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
@@ -300,17 +300,17 @@ namespace RX.Nyss.Web.Features.Projects
                 var projectToClose = await _nyssContext.Projects
                     .Select(p => new
                     {
-                        p,
+                        Project = p,
                         AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
                     })
-                    .SingleOrDefaultAsync(x => x.p.Id == projectId);
+                    .SingleOrDefaultAsync(x => x.Project.Id == projectId);
 
                 if (projectToClose == null)
                 {
                     return Error(ResultKey.Project.ProjectDoesNotExist);
                 }
 
-                if (projectToClose.p.State == ProjectState.Closed)
+                if (projectToClose.Project.State == ProjectState.Closed)
                 {
                     return Error(ResultKey.Project.ProjectAlreadyClosed);
                 }
@@ -320,15 +320,15 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
                 }
 
-                if (await CheckCoordinatorExistence(projectToClose.p.NationalSocietyId))
+                if (projectToClose.Project.AllowMultipleOrganizations && await CheckCoordinatorExistence(projectToClose.Project.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    projectToClose.p.State = ProjectState.Closed;
-                    projectToClose.p.EndDate = _dateTimeProvider.UtcNow;
+                    projectToClose.Project.State = ProjectState.Closed;
+                    projectToClose.Project.EndDate = _dateTimeProvider.UtcNow;
                     var dataCollectorsToRemove = _nyssContext.DataCollectors.Where(dc => dc.Project.Id == projectId && !dc.RawReports.Any());
 
                     await _dataCollectorService.AnonymizeDataCollectorsWithReports(projectId);
