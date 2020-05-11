@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations
 
         public async Task<Result<List<ProjectOrganizationListResponseDto>>> List(int projectId)
         {
-            var gatewaySettings = await _nyssContext.ProjectOrganizations
+            var projectOrganizations = await _nyssContext.ProjectOrganizations
                 .Where(gs => gs.ProjectId == projectId)
                 .OrderBy(gs => gs.Id)
                 .Select(gs => new ProjectOrganizationListResponseDto
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations
                 })
                 .ToListAsync();
 
-            var result = Success(gatewaySettings);
+            var result = Success(projectOrganizations);
 
             return result;
         }
@@ -78,16 +78,16 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations
                 return Error<int>(ResultKey.ProjectOrganization.OrganizationAlreadyAdded);
             }
 
-            var gatewaySettingToAdd = new ProjectOrganization
+            var projectOrganizationToAdd = new ProjectOrganization
             {
                 OrganizationId = createDto.OrganizationId,
                 ProjectId = projectId
             };
 
-            await _nyssContext.ProjectOrganizations.AddAsync(gatewaySettingToAdd);
+            await _nyssContext.ProjectOrganizations.AddAsync(projectOrganizationToAdd);
             await _nyssContext.SaveChangesAsync();
             
-            return Success(gatewaySettingToAdd.Id);
+            return Success(projectOrganizationToAdd.Id);
         }
 
         public async Task<Result> Delete(int projectOrganizationId)
