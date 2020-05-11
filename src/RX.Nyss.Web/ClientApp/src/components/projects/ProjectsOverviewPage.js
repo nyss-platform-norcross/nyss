@@ -49,6 +49,13 @@ const ProjectsOverviewPageComponent = (props) => {
           </Typography>
 
           <Typography variant="h6">
+            {strings(stringKeys.project.form.allowMultipleOrganizations)}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            {strings(stringKeys.common.boolean[String(props.data.allowMultipleOrganizations)])}
+          </Typography>
+
+          <Typography variant="h6">
             {strings(stringKeys.project.form.healthRisks)}
           </Typography>
 

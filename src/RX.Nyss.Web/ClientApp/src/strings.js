@@ -883,6 +883,12 @@ export const stringKeys = {
     selectLanguage: "headManagerConsents.selectLanguage",
     downloadDirectly: "headManagerConsents.downloadDirectly"
   },
+  common: {
+    boolean: {
+      "true": "common.true",
+      "false": "common.false"
+    }
+  },
   translations: {
     title: "translations.title",
     list: {
