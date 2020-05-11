@@ -60,6 +60,7 @@ namespace RX.Nyss.Web.Features.Projects
                 .Select(p => new ProjectResponseDto
                 {
                     Id = p.Id,
+                    NationalSocietyId = p.NationalSocietyId,
                     Name = p.Name,
                     TimeZoneId = p.TimeZone,
                     State = p.State,
@@ -89,7 +90,8 @@ namespace RX.Nyss.Web.Features.Projects
                         Id = sar.Id,
                         PhoneNumber = sar.PhoneNumber
                     }),
-                    ContentLanguageId = p.NationalSociety.ContentLanguage.Id
+                    ContentLanguageId = p.NationalSociety.ContentLanguage.Id,
+                    HasCoordinator = p.NationalSociety.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
                 })
                 .FirstOrDefaultAsync(p => p.Id == projectId);
 
@@ -104,6 +106,9 @@ namespace RX.Nyss.Web.Features.Projects
 
             return result;
         }
+
+        private async Task<bool> CheckCoordinatorExistence(int nationalSocietyId) =>
+            !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator) && await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator));
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes) =>
             await _nyssContext.ProjectHealthRisks
@@ -162,9 +167,17 @@ namespace RX.Nyss.Web.Features.Projects
         {
             try
             {
+                var currentUser = _authorizationService.GetCurrentUser();
+
                 var nationalSocietyData = await _nyssContext.NationalSocieties
                     .Where(ns => ns.Id == nationalSocietyId)
-                    .Select(ns => new { ns.IsArchived })
+                    .Select(ns => new
+                    {
+                        ns.IsArchived,
+                        OrganizationsCount = ns.Organizations.Count,
+                        FirstOrganizationId = (int?)ns.Organizations.Select(o => o.Id).FirstOrDefault(),
+                        UserOrganizationId = ns.NationalSocietyUsers.Where(nsu => nsu.User == currentUser).Select(nsu => nsu.OrganizationId).FirstOrDefault()
+                    })
                     .SingleOrDefaultAsync();
 
                 if (nationalSocietyData == null)
@@ -184,6 +197,10 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     return Error<int>(ResultKey.Project.HealthRiskDoesNotExist);
                 }
+
+                var organizationId = nationalSocietyData.OrganizationsCount == 1
+                    ? nationalSocietyData.FirstOrganizationId
+                    : nationalSocietyData.UserOrganizationId;
 
                 var projectToAdd = new Project
                 {
@@ -206,6 +223,15 @@ namespace RX.Nyss.Web.Features.Projects
                             KilometersThreshold = phr.AlertRuleKilometersThreshold
                         }
                     }).ToList(),
+                    ProjectOrganizations = organizationId.HasValue
+                        ? new List<ProjectOrganization>
+                        {
+                            new ProjectOrganization
+                            {
+                                OrganizationId = organizationId.Value
+                            }
+                        }
+                        : new List<ProjectOrganization>(),
                     EmailAlertRecipients = projectRequestDto.EmailAlertRecipients.Select(ar => new EmailAlertRecipient { EmailAddress = ar.Email }).ToList(),
                     SmsAlertRecipients = projectRequestDto.SmsAlertRecipients.Select(ar => new SmsAlertRecipient { PhoneNumber = ar.PhoneNumber }).ToList()
                 };
@@ -236,6 +262,11 @@ namespace RX.Nyss.Web.Features.Projects
                 if (projectToUpdate == null)
                 {
                     return Error(ResultKey.Project.ProjectDoesNotExist);
+                }
+
+                if (await CheckCoordinatorExistence(projectToUpdate.NationalSocietyId))
+                {
+                    return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
                 projectToUpdate.Name = projectRequestDto.Name;
@@ -284,6 +315,11 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
                 }
 
+                if (await CheckCoordinatorExistence(projectToClose.p.NationalSocietyId))
+                {
+                    return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
+                }
+
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     projectToClose.p.State = ProjectState.Closed;
@@ -328,25 +364,13 @@ namespace RX.Nyss.Web.Features.Projects
         
         public async Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId)
         {
-            try
-            {
-                var nationalSociety = await _nyssContext.NationalSocieties
-                    .Include(x => x.ContentLanguage)
-                    .FirstOrDefaultAsync(x => x.Id == nationalSocietyId);
+            var contentLanguageId = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => ns.ContentLanguage.Id)
+                .SingleAsync();
 
-                if (nationalSociety == null)
-                {
-                    throw new ResultException(ResultKey.Project.NationalSocietyDoesNotExist);
-                }
-
-                var result = await GetFormDataDto(nationalSociety.ContentLanguage.Id);
-                return Success(result);
-            }
-            catch (ResultException exception)
-            {
-                _loggerAdapter.Debug(exception);
-                return exception.GetResult<ProjectFormDataResponseDto>();
-            }
+            var result = await GetFormDataDto(contentLanguageId);
+            return Success(result);
         }
 
         public async Task<IEnumerable<int>> GetSupervisorProjectIds(string supervisorIdentityName) =>

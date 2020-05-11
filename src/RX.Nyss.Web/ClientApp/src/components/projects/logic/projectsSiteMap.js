@@ -34,14 +34,23 @@ export const projectsSiteMap = [
   },
   {
     parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId",
-    path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/overview",
-    title: () => strings(stringKeys.project.settings),
-    access: accessMap.projects.showOverview,
+    path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
+    title: () => strings(stringKeys.project.settingsRootTitle),
     placeholder: placeholders.leftMenu,
+    access: accessMap.projects.showOverview,
     placeholderIndex: projectLeftMenuOrder.settings
   },
   {
-    parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/overview",
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
+    path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/overview",
+    title: () => strings(stringKeys.project.settings),
+    access: accessMap.projects.showOverview,
+    placeholder: placeholders.tabMenu,
+    placeholderIndex: 1,
+    middleStepOnly: true
+  },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
     path: "/nationalsocieties/:nationalSocietyId/projects/:projectId/edit",
     title: () => strings(stringKeys.project.edit),
     access: accessMap.projects.edit,

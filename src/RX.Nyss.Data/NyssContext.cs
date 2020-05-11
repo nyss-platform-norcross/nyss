@@ -51,6 +51,9 @@ namespace RX.Nyss.Data
         public DbSet<Organization> Organizations { get; set; }
 
         public DbSet<Project> Projects { get; set; }
+
+        public DbSet<ProjectOrganization> ProjectOrganizations { get; set; }
+
         public DbSet<SupervisorUserProject> SupervisorUserProjects { get; set; }
 
         public DbSet<ProjectHealthRisk> ProjectHealthRisks { get; set; }

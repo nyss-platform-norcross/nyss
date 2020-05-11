@@ -30,6 +30,7 @@ using RX.Nyss.Web.Features.Managers.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Access;
 using RX.Nyss.Web.Features.Organizations.Access;
+using RX.Nyss.Web.Features.ProjectOrganizations.Access;
 using RX.Nyss.Web.Features.Projects.Access;
 using RX.Nyss.Web.Features.Reports.Access;
 using RX.Nyss.Web.Features.SmsGateways.Access;
@@ -195,6 +196,9 @@ namespace RX.Nyss.Web.Configuration
                 options.AddPolicy(Policy.ProjectAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectAccessHandler>.Requirement()));
 
+                options.AddPolicy(Policy.ProjectOrganizationAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectOrganizationAccessHandler>.Requirement()));
+
                 options.AddPolicy(Policy.HeadManagerAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<HeadManagerAccessHandler>.Requirement()));
 
@@ -231,6 +235,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, MultipleDataCollectorsAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, HeadManagerAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ProjectAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, ProjectOrganizationAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, RegionAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, DistrictAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, VillageAccessHandler>();

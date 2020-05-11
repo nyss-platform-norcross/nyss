@@ -69,7 +69,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <returns></returns>
         [HttpPost("{projectId:int}/close")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess), NeedsPolicy(Policy.HeadManagerAccess)]
-        public Task<Result> Close(int projectId, int nationalSocietyId) =>
+        public Task<Result> Close(int projectId) =>
             _projectService.Close(projectId);
 
         /// <summary>

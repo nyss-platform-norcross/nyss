@@ -31,5 +31,7 @@ namespace RX.Nyss.Data.Models
         public virtual ICollection<SmsAlertRecipient> SmsAlertRecipients { get; set; }
 
         public virtual ICollection<SupervisorUserProject> SupervisorUserProjects { get; set; }
+
+        public virtual ICollection<ProjectOrganization> ProjectOrganizations { get; set; }
     }
 }

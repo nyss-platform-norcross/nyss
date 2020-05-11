@@ -55,6 +55,8 @@ import { NotFoundPage } from '../layout/NotFoundPage';
 import { OrganizationsListPage } from '../organizations/OrganizationsListPage';
 import { OrganizationsCreatePage } from '../organizations/OrganizationsCreatePage';
 import { OrganizationsEditPage } from '../organizations/OrganizationsEditPage';
+import { ProjectOrganizationsListPage } from '../projectOrganizations/ProjectOrganizationsListPage';
+import { ProjectOrganizationsCreatePage } from '../projectOrganizations/ProjectOrganizationsCreatePage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -92,6 +94,7 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects' component={ProjectsListPage} roles={accessMap.projects.list} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/add' component={ProjectsCreatePage} roles={accessMap.projects.add} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/edit' component={ProjectsEditPage} roles={accessMap.projects.edit} />
+          <Redirect exact from='/nationalsocieties/:nationalSocietyId/projects/:projectId/settings' to='/nationalsocieties/:nationalSocietyId/projects/:projectId/overview' roles={accessMap.projects.showOverview} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/projects/:projectId/overview' component={ProjectsOverviewPage} roles={accessMap.projects.showOverview} />
           <Redirect exact from='/nationalsocieties/:nationalSocietyId/projects/:projectId' to='/nationalsocieties/:nationalSocietyId/projects/:projectId/dashboard' />
 
@@ -115,6 +118,9 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/datacollectors/performance' component={DataCollectorsPerformancePage} roles={accessMap.dataCollectors.performanceList} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/add' component={DataCollectorsCreatePage} roles={accessMap.dataCollectors.add} />
           <AuthRoute exact path='/projects/:projectId/datacollectors/:dataCollectorId/edit' component={DataCollectorsEditPage} roles={accessMap.dataCollectors.edit} />
+
+          <AuthRoute exact path='/projects/:projectId/organizations' component={ProjectOrganizationsListPage} roles={accessMap.projectOrganizations.list} />
+          <AuthRoute exact path='/projects/:projectId/organizations/add' component={ProjectOrganizationsCreatePage} roles={accessMap.projectOrganizations.add} />
 
           <AuthRoute exact path='/projects/:projectId/reports' component={ReportsListPage} roles={accessMap.reports.list} />
           <AuthRoute exact path='/projects/:projectId/reports/:reportId/edit' component={ReportsEditPage} roles={accessMap.reports.edit} />
