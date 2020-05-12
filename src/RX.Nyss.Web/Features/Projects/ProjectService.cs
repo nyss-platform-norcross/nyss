@@ -106,8 +106,9 @@ namespace RX.Nyss.Web.Features.Projects
             return result;
         }
 
-        private async Task<bool> CheckCoordinatorExistence(int nationalSocietyId) =>
-            !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator) && await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator));
+        private async Task<bool> ValidateCoordinatorAccess(int nationalSocietyId) =>
+            _authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator) 
+            || !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator));
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes) =>
             await _nyssContext.ProjectHealthRisks
@@ -269,7 +270,7 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error(ResultKey.Project.ProjectDoesNotExist);
                 }
 
-                if (projectToUpdate.AllowMultipleOrganizations && await CheckCoordinatorExistence(projectToUpdate.NationalSocietyId))
+                if (projectToUpdate.AllowMultipleOrganizations && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
@@ -320,7 +321,7 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
                 }
 
-                if (projectToClose.Project.AllowMultipleOrganizations && await CheckCoordinatorExistence(projectToClose.Project.NationalSocietyId))
+                if (projectToClose.Project.AllowMultipleOrganizations && !await ValidateCoordinatorAccess(projectToClose.Project.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }

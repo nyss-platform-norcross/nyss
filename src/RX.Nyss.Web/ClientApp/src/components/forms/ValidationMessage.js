@@ -7,5 +7,6 @@ export const ValidationMessage = ({ message }) => (
   <SnackbarContent
     message={extractString(message)}
     ref={resetPageContentScroll}
+    style={{ marginBottom: 25 }}
   />
 );
