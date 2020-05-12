@@ -179,6 +179,11 @@ namespace RX.Nyss.Web.Features.Organizations
 
         public async Task<bool> ValidateAccessForAssigningOrganization(int nationalSocietyId)
         {
+            if (_authorizationService.IsCurrentUserInRole(Role.Administrator))
+            {
+                return true;
+            }
+
             if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator, Role.Manager, Role.TechnicalAdvisor))
             {
                 return false;

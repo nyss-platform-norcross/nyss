@@ -14,9 +14,7 @@ namespace RX.Nyss.Data
 
         public DbSet<Alert> Alerts { get; set; }
 
-        public DbSet<EmailAlertRecipient> EmailAlertRecipients { get; set; }
-
-        public DbSet<SmsAlertRecipient> SmsAlertRecipients { get; set; }
+        public DbSet<AlertNotificationRecipient> AlertNotificationRecipients { get; set; }
 
         public DbSet<AlertReport> AlertReports { get; set; }
 
@@ -55,6 +53,8 @@ namespace RX.Nyss.Data
         public DbSet<ProjectOrganization> ProjectOrganizations { get; set; }
 
         public DbSet<SupervisorUserProject> SupervisorUserProjects { get; set; }
+
+        public DbSet<SupervisorUserAlertRecipient> SupervisorUserAlertRecipients { get; set; }
 
         public DbSet<ProjectHealthRisk> ProjectHealthRisks { get; set; }
 

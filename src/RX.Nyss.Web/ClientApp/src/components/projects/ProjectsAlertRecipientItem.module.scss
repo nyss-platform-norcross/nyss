@@ -1,0 +1,7 @@
+.removeButtonContainer {
+  display: flex;
+
+  @media screen and (min-width: 1280px) {
+    margin-top: 25px !important;
+  }
+}

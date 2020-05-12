@@ -168,8 +168,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.EmailAlertRecipients = new List<EmailAlertRecipient> { new EmailAlertRecipient { EmailAddress = emailAddress } };
-            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
+            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> {
+                new AlertNotificationRecipient
+                {
+                    Email = emailAddress,
+                    PhoneNumber = phonenumber
+                }
+            };
 
 
             await _alertService.Escalate(TestData.AlertId, true);
@@ -212,8 +217,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.EmailAlertRecipients = new List<EmailAlertRecipient> { new EmailAlertRecipient { EmailAddress = emailAddress } };
-            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
+            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> {
+                new AlertNotificationRecipient
+                {
+                    Email = emailAddress,
+                    PhoneNumber = phonenumber
+                }
+            };
             
             await _alertService.Escalate(TestData.AlertId, true);
 
@@ -253,7 +263,12 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = phonenumber } };
+            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> {
+                new AlertNotificationRecipient
+                {
+                    PhoneNumber = phonenumber
+                }
+            };
 
             // Act
             await _alertService.Escalate(TestData.AlertId, true);
@@ -668,8 +683,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Project = new Project
                             {
                                 TimeZone = TimeZoneName,
-                                EmailAlertRecipients = new List<EmailAlertRecipient> { new EmailAlertRecipient { EmailAddress = "aaa@aaa.com" } },
-                                SmsAlertRecipients = new List<SmsAlertRecipient> { new SmsAlertRecipient { PhoneNumber = "+12345678" } },
+                                AlertNotificationRecipients = new List<AlertNotificationRecipient> {
+                                    new AlertNotificationRecipient
+                                    {
+                                        Email = "aaaa@example.com",
+                                        PhoneNumber = "+423423223"
+                                    }
+                                },
                                 NationalSociety = new NationalSociety
                                 {
                                     Id = NationalSocietyId,

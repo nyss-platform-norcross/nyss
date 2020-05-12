@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20200509104527_AddAlertNotificationRecipients")]
+    partial class AddAlertNotificationRecipients
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2182,29 +2184,6 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("ProjectHealthRisks");
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.ProjectOrganization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProjectId", "OrganizationId")
-                        .IsUnique();
-
-                    b.ToTable("ProjectOrganizations");
-                });
-
             modelBuilder.Entity("RX.Nyss.Data.Models.RawReport", b =>
                 {
                     b.Property<int>("Id")
@@ -2825,21 +2804,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
                         .WithMany("ProjectHealthRisks")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.ProjectOrganization", b =>
-                {
-                    b.HasOne("RX.Nyss.Data.Models.Organization", "Organization")
-                        .WithMany("OrganizationProjects")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
-                        .WithMany("ProjectOrganizations")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();

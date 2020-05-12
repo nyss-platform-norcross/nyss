@@ -19,9 +19,12 @@ class FieldBase extends PureComponent {
         });
     };
 
-    handleChange = (e) => {
+    setAutoCompleteValue = (value) => 
+        value !== null ? value.inputValue ? value.inputValue : value.title : '';
+
+    handleChange = (e, val) => {
         const type = this.getElementType((e.nativeEvent && e.nativeEvent.target) || e);
-        const value = type === "checkbox" ? e.target.checked : type === "date" ? dayjs(e) : e.target.value;
+        const value = val !== undefined ? this.setAutoCompleteValue(val) : type === "checkbox" ? e.target.checked : type === "date" ? dayjs(e) : e.target.value;
         this.setState({ value: value });
         this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
     }

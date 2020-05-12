@@ -1,3 +1,5 @@
+import styles from './ProjectsEditPage.module.scss';
+
 import React, { useState, Fragment, useEffect } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
@@ -16,19 +18,19 @@ import Grid from '@material-ui/core/Grid';
 import AddIcon from '@material-ui/icons/Add';
 import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
-import { ProjectEmailNotificationItem } from './ProjectEmailNotificationItem';
-import { ProjectSmsNotificationItem } from './ProjectSmsNotificationItem';
 import { getSaveFormModel } from './logic/projectsService';
 import { Loading } from '../common/loading/Loading';
 import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import { ValidationMessage } from '../forms/ValidationMessage';
+import { Tooltip, Icon } from '@material-ui/core';
+import { ProjectsAlertRecipientItem } from './ProjectsAlertRecipientItem';
 
 const ProjectsEditPageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
-  const [emailNotifications, setEmailNotifications] = useState([]);
-  const [smsNotifications, setSmsNotifications] = useState([]);
+  const [alertRecipients, setAlertRecipients] = useState([]);
+  const [organizations, setOrganizations] = useState([]);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyId, props.projectId);
@@ -56,10 +58,18 @@ const ProjectsEditPageComponent = (props) => {
     };
 
     setForm(createForm(fields, validation));
-    setSelectedHealthRisks(props.data.projectHealthRisks);
-    setEmailNotifications(props.data.emailAlertRecipients.map(ear => ({ id: ear.id, email: ear.email, key: ear.id })));
-    setSmsNotifications(props.data.smsAlertRecipients.map(sar => ({ id: sar.id, phoneNumber: sar.phoneNumber, key: sar.id })));
+    const newAlertRecipients = props.data.alertNotificationRecipients.map(anr => ({
+      id: anr.id,
+      role: anr.role,
+      organization: anr.organization,
+      email: anr.email || '',
+      phoneNumber: anr.phoneNumber || ''
+    }));
 
+    const uniqueOrganizations = [...new Set(props.data.alertNotificationRecipients.map(anr => anr.organization))];
+    setOrganizations(uniqueOrganizations.map(org => ({ title: org })));
+    setSelectedHealthRisks(props.data.projectHealthRisks);
+    setAlertRecipients(newAlertRecipients);
     return () => setForm(null);
   }, [props.data]);
 
@@ -74,7 +84,7 @@ const ProjectsEditPageComponent = (props) => {
       return;
     };
 
-    props.edit(props.nationalSocietyId, props.projectId, getSaveFormModel(form.getValues(), selectedHealthRisks, emailNotifications, smsNotifications));
+    props.edit(props.nationalSocietyId, props.projectId, getSaveFormModel(form.getValues(), selectedHealthRisks, alertRecipients));
   };
 
   const onHealthRiskChange = (value, eventData) => {
@@ -87,33 +97,24 @@ const ProjectsEditPageComponent = (props) => {
     }
   }
 
-  const onEmailNotificationAdd = () => {
-    setEmailNotifications([
-      ...emailNotifications,
-      {
-        key: new Date().getTime(),
-        id: null,
-        email: ""
-      }
-    ])
+  const onAlertRecipientAdd = () => {
+    const newRecipients = alertRecipients.slice();
+    newRecipients.push({
+      role: '',
+      organization: '',
+      email: '',
+      phoneNumber: ''
+    });
+    setAlertRecipients(newRecipients);
   }
 
-  const onEmailNotificationRemove = (key) =>
-    setEmailNotifications(emailNotifications.filter(e => e.key !== key));
-
-  const onSmsNotificationAdd = () => {
-    setSmsNotifications([
-      ...smsNotifications,
-      {
-        key: new Date().getTime(),
-        id: null,
-        phoneNumber: ""
-      }
-    ])
+  const onRemoveRecipient = (recipient) => {
+    setAlertRecipients(alertRecipients.filter(ar => ar !== recipient));
   }
 
-  const onSmsNotificationRemove = (key) =>
-    setSmsNotifications(smsNotifications.filter(e => e.key !== key));
+  const onAddOrganization = (organization) => {
+    setOrganizations([...new Set([...organizations, { title: organization }])]);
+  }
 
   if (props.isFetching || !form) {
     return <Loading />;
@@ -172,40 +173,32 @@ const ProjectsEditPageComponent = (props) => {
             />
           ))}
 
-          <Grid item xs={12} sm={9}>
-            <Typography variant="h3">{strings(stringKeys.project.form.emailNotificationsSection)}</Typography>
-            <Typography variant="subtitle1">{strings(stringKeys.project.form.emailNotificationDescription)}</Typography>
+          <Grid item xs={12}>
+            <Typography variant="h3">
+              <div className={styles.alertNotificationsHeader}>
+                {strings(stringKeys.project.form.alertNotificationsSection)}
 
-            {emailNotifications.map(emailNotification => (
-              <ProjectEmailNotificationItem
-                key={`projectEmailNotificationItem_${emailNotification.key}`}
-                itemKey={emailNotification.key}
+                <Tooltip title={strings(stringKeys.project.form.alertNotificationsSupervisorsExplanation)} className={styles.helpIcon}>
+                  <Icon>help_outline</Icon>
+                </Tooltip>
+              </div>
+            </Typography>
+            <Typography variant="subtitle1">{strings(stringKeys.project.form.alertNotificationsDescription)}</Typography>
+
+            {alertRecipients.map((alertRecipient, alertRecipientNumber) => (
+              <ProjectsAlertRecipientItem key={alertRecipientNumber}
+                alertRecipient={alertRecipient}
+                alertRecipientNumber={alertRecipientNumber}
                 form={form}
-                emailNotification={emailNotification}
-                onRemove={() => onEmailNotificationRemove(emailNotification.key)}
-              />
+                organizations={organizations}
+                onAddOrganization={onAddOrganization}
+                onRemoveRecipient={onRemoveRecipient} />
             ))}
-          </Grid>
-          <Grid item xs={12} sm={9}>
-            <Button startIcon={<AddIcon />} onClick={onEmailNotificationAdd}>{strings(stringKeys.project.form.addEmail)}</Button>
+
           </Grid>
 
           <Grid item xs={12} sm={9}>
-            <Typography variant="h3">{strings(stringKeys.project.form.smsNotificationsSetion)}</Typography>
-            <Typography variant="subtitle1">{strings(stringKeys.project.form.smsNotificationDescription)}</Typography>
-
-            {smsNotifications.map(smsNotification => (
-              <ProjectSmsNotificationItem
-                key={`projectSmsNotificationItem_${smsNotification.key}`}
-                itemKey={smsNotification.key}
-                form={form}
-                smsNotification={smsNotification}
-                onRemove={() => onSmsNotificationRemove(smsNotification.key)}
-              />
-            ))}
-          </Grid>
-          <Grid item xs={12} sm={9}>
-            <Button startIcon={<AddIcon />} onClick={onSmsNotificationAdd}>{strings(stringKeys.project.form.addSms)}</Button>
+            <Button startIcon={<AddIcon />} onClick={onAlertRecipientAdd}>{strings(stringKeys.project.form.addRecipient)}</Button>
           </Grid>
         </Grid>
 

@@ -19,11 +19,16 @@ import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import MenuItem from "@material-ui/core/MenuItem";
 import { sexValues } from './logic/nationalSocietyUsersConstants';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import { MultiSelect } from '../forms/MultiSelect';
 
 const NationalSocietyUsersEditPageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
   const [role, setRole] = useState(null);
+  const [alertRecipientsDataSource, setAlertRecipientsDataSource] = useState([]);
+  const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
+  const [alertRecipientsFieldTouched, setAlertRecipientsFieldTouched] = useState(false);
+  const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyUserId);
@@ -61,11 +66,49 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
     setRole(props.data.role);
 
+    if (props.data.role === roles.Supervisor && props.data.projectId !== null) {
+      const currentAlertRecipients = props.data.currentProject.alertRecipients;
+      const allAlertRecipientsForProject = props.data.editSupervisorFormData.availableProjects.filter(p => p.id === props.data.projectId)[0].alertRecipients;
+      const allRecipients = { label: 'All recipients', value: 0, data: { id: 0 }};
+
+      setAlertRecipientsDataSource([allRecipients, ...allAlertRecipientsForProject.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))]);
+
+      setSelectedAlertRecipients(currentAlertRecipients.length === allAlertRecipientsForProject.length ? [allRecipients.data] : currentAlertRecipients);
+    }
+
     setForm(createForm(fields, validation));
   }, [props.data, props.match, props.nationalSocietyId]);
 
   if (!props.data) {
     return null;
+  }
+
+  const onProjectChange = (projectId) => {
+    const project = props.projects.filter(p => p.id === parseInt(projectId))[0];
+    const newAlertRecipientsDataSource = [{ label: 'All recipients', value: 0, data: { id: 0 }}, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
+    setAlertRecipientsDataSource(newAlertRecipientsDataSource);
+  }
+
+  const onAlertRecipientsChange = (value, eventData) => {
+    let newAlertRecipients = [];
+    if (eventData.action === "select-option") {
+      newAlertRecipients = [...selectedAlertRecipients, eventData.option.data];
+      setSelectedAlertRecipients([...selectedAlertRecipients, eventData.option.data]);
+    } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
+      newAlertRecipients = selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value);
+      setSelectedAlertRecipients(selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value));
+    } else if (eventData.action === "clear") {
+      setSelectedAlertRecipients([]);
+    }
+
+    const allRecipientsChosen = newAlertRecipients.filter(ar => ar.id === 0).length > 0;
+    if (newAlertRecipients.length === 0) {
+      setAlertRecipientsFieldError('Field is required');
+    } else if (allRecipientsChosen && newAlertRecipients.length > 1) {
+      setAlertRecipientsFieldError('"All recipients" cannot be selected in addition to other recipients');
+    } else {
+      setAlertRecipientsFieldError(null);
+    }
   }
 
   const handleSubmit = (e) => {
@@ -75,13 +118,24 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       return;
     };
 
+    if (role === roles.Supervisor) {
+      if (alertRecipientsFieldError !== null) {
+        return;
+      }
+      if (!alertRecipientsFieldTouched) {
+        setAlertRecipientsFieldError("Value is reqired");
+        return;
+      }
+    }
+
     const values = form.getValues();
 
     props.edit(props.nationalSocietyId, {
       ...values,
       organizationId: values.organizationId ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
-      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null
+      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
+      supervisorAlertRecipients: selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id)
     });
   };
 
@@ -182,6 +236,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                 label={strings(stringKeys.nationalSocietyUser.form.project)}
                 field={form.fields.projectId}
                 name="projectId"
+                onChange={e => onProjectChange(e.target.value)}
               >
                 {props.data.editSupervisorFormData.availableProjects.map(project => (
                   <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
@@ -191,6 +246,19 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                   </MenuItem>
                 ))}
               </SelectField>
+            </Grid>
+          )}
+
+          {role === roles.Supervisor && (
+            <Grid item xs={12}>
+              <MultiSelect
+                label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
+                options={alertRecipientsDataSource}
+                defaultValue={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
+                onChange={onAlertRecipientsChange}
+                onBlur={e => setAlertRecipientsFieldTouched(true)}
+                error={alertRecipientsFieldError}
+              />
             </Grid>
           )}
         </Grid>

@@ -10,8 +10,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
         public Action<INyssContext> NyssContextMockedMethods { get; set; }
 
         public List<Alert> Alerts { get; set; } = new List<Alert>();
-        public List<EmailAlertRecipient> EmailAlertRecipients { get; set; } = new List<EmailAlertRecipient>();
-        public List<SmsAlertRecipient> SmsAlertRecipients { get; set; } = new List<SmsAlertRecipient>();
+        public List<AlertNotificationRecipient> AlertRecipients { get; set; } = new List<AlertNotificationRecipient>();
         public List<AlertReport> AlertReports { get; set; } = new List<AlertReport>();
         public List<AlertRule> AlertRules { get; set; } = new List<AlertRule>();
         public List<ApplicationLanguage> ApplicationLanguages { get; set; } = new List<ApplicationLanguage>();
@@ -41,8 +40,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
         public void Include(EntityData otherData)
         {
             Alerts.AddRange(otherData.Alerts);
-            EmailAlertRecipients.AddRange(otherData.EmailAlertRecipients);
-            SmsAlertRecipients.AddRange(otherData.SmsAlertRecipients);
+            AlertRecipients.AddRange(otherData.AlertRecipients);
             AlertReports.AddRange(otherData.AlertReports);
             AlertRules.AddRange(otherData.AlertRules);
             ApplicationLanguages.AddRange(otherData.ApplicationLanguages);

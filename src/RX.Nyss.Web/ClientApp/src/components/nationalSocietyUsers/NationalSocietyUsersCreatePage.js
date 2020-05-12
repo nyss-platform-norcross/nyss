@@ -19,10 +19,15 @@ import * as roles from '../../authentication/roles';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import { MultiSelect } from '../forms/MultiSelect';
 
 const NationalSocietyUsersCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [role, setRole] = useState(null);
+  const [alertRecipientsDataSource, setAlertRecipientsDataSource] = useState([]);
+  const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
+  const [alertRecipientsFieldTouched, setAlertRecipientsFieldTouched] = useState(false);
+  const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
 
   const form = useMemo(() => {
     const fields = {
@@ -61,7 +66,43 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
-  })
+  });
+
+  const onProjectChange = (projectId) => {
+    const project = props.data.projects.filter(p => p.id === parseInt(projectId))[0];
+    const newAlertRecipientsDataSource = [{ label: 'All recipients', value: 0, data: { id: 0 }}, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
+    setAlertRecipientsDataSource(newAlertRecipientsDataSource);
+  }
+
+  const onAlertRecipientsChange = (value, eventData) => {
+    let newAlertRecipients = [];
+    if (eventData.action === "select-option") {
+      newAlertRecipients = [...selectedAlertRecipients, eventData.option.data];
+      setSelectedAlertRecipients([...selectedAlertRecipients, eventData.option.data]);
+    } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
+      newAlertRecipients = selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value);
+      setSelectedAlertRecipients(selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value));
+    } else if (eventData.action === "clear") {
+      setSelectedAlertRecipients([]);
+    }
+
+    const allRecipientsChosen = newAlertRecipients.filter(ar => ar.id === 0).length > 0;
+    if (newAlertRecipients.length === 0) {
+      setAlertRecipientsFieldError('Field is required');
+    } else if (allRecipientsChosen && newAlertRecipients.length > 1) {
+      setAlertRecipientsFieldError('"All recipients" cannot be selected in addition to other recipients');
+    } else {
+      setAlertRecipientsFieldError(null);
+    }
+  }
+
+  const setSupervisorAlertRecipients = (role) => {
+    if (role !== roles.Supervisor) {
+      return null;
+    }
+
+    return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -70,6 +111,16 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       return;
     };
 
+    if (role === roles.Supervisor) {
+      if (alertRecipientsFieldError !== null) {
+        return;
+      }
+      if (!alertRecipientsFieldTouched) {
+        setAlertRecipientsFieldError("Value is reqired");
+        return;
+      }
+    }
+
     const values = form.getValues();
 
     props.create(props.nationalSocietyId, {
@@ -77,24 +128,34 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organizationId: values.organizationId ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
-      setAsHeadManager: props.callingUserRoles.some(r => r === roles.Coordinator) ? true : null
+      setAsHeadManager: props.callingUserRoles.some(r => r === roles.Coordinator) ? true : null,
+      supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
     });
   };
 
-  const canChangeOrganization = () =>
-    props.data
-    && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator || ((r === roles.Manager || r === roles.TechnicalAdvisor) && props.data.isHeadManager))
-    && role !== roles.DataConsumer
-    && !props.data.hasCoordinator;
+  const canChangeOrganization = () => {
+    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator) && role !== roles.DataConsumer) {
+      return true;
+    }
+
+    return props.data
+      && props.callingUserRoles.some(r => r === roles.Coordinator || ((r === roles.Manager || r === roles.TechnicalAdvisor) && props.data.isHeadManager))
+      && role !== roles.DataConsumer
+      && !props.data.hasCoordinator;
+  }
+    
 
   const isCoordinator = () =>
     props.callingUserRoles.some(r => r === roles.Coordinator);
 
   const getAvailableUserRoles = () => {
-    if (props.callingUserRoles.some(r => r === roles.GlobalCoordinator || r === roles.Administrator)) {
-      return globalCoordinatorUserRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
+    if (props.callingUserRoles.some(r => r === roles.Administrator)) {
+      return headManagerRoles;
     }
 
+    if (props.callingUserRoles.some(r => r === roles.GlobalCoordinator)) {
+      return globalCoordinatorUserRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
+    }
     if (isCoordinator()) {
       return coordinatorUserRoles;
     }
@@ -230,13 +291,26 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 label={strings(stringKeys.nationalSocietyUser.form.project)}
                 field={form.fields.projectId}
                 name="projectId"
+                onChange={e => onProjectChange(e.target.value)}
               >
-                {props.data.openProjects.map(project => (
+                {props.data.projects.map(project => (
                   <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
                     {project.name}
                   </MenuItem>
                 ))}
               </SelectField>
+            </Grid>
+          )}
+
+          {role === roles.Supervisor && (
+            <Grid item xs={12}>
+              <MultiSelect
+                label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
+                options={alertRecipientsDataSource}
+                onChange={onAlertRecipientsChange}
+                onBlur={e => setAlertRecipientsFieldTouched(true)}
+                error={alertRecipientsFieldError}
+              />
             </Grid>
           )}
         </Grid>

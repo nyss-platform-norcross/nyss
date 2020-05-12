@@ -12,9 +12,11 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.Supervisors;
 using RX.Nyss.Web.Features.Supervisors.Dto;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
 
@@ -27,7 +29,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationServiceMock;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
-
+        private readonly IOrganizationService _organizationServiceMock;
+        private readonly IAuthorizationService _authorizationServiceMock;
         private readonly int _nationalSocietyId1 = 1;
         private readonly int _nationalSocietyId2 = 2;
         private readonly int _projectId1 = 1;
@@ -51,13 +54,15 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             _identityUserRegistrationServiceMock = Substitute.For<IIdentityUserRegistrationService>();
             _verificationEmailServiceMock = Substitute.For<IVerificationEmailService>();
             _deleteUserService = Substitute.For<IDeleteUserService>();
+            _organizationServiceMock = Substitute.For<IOrganizationService>();
+            _authorizationServiceMock = Substitute.For<IAuthorizationService>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
             var applicationLanguages = new List<ApplicationLanguage>();
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
 
-            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nyssContext, _loggerAdapter, _verificationEmailServiceMock,
-                _deleteUserService, dateTimeProvider);
+            _supervisorService = new SupervisorService(_identityUserRegistrationServiceMock, _nyssContext, _organizationServiceMock, _loggerAdapter, _verificationEmailServiceMock,
+                _deleteUserService, dateTimeProvider, _authorizationServiceMock);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
             {
@@ -80,6 +85,17 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 }
             };
 
+            var organizations = new List<Organization>
+            {
+                new Organization
+                {
+                    Id = 1,
+                    Name = "RC",
+                    NationalSociety = nationalSocieties[0],
+                    NationalSocietyId = _nationalSocietyId1
+                }
+            };
+
             var projects = new List<Project>
             {
                 new Project
@@ -87,35 +103,40 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                     Id = _projectId1,
                     NationalSociety = nationalSocieties[0],
                     Name = "project 1",
-                    State = ProjectState.Open
+                    State = ProjectState.Open,
+                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
                 },
                 new Project
                 {
                     Id = _projectId2,
                     NationalSociety = nationalSocieties[0],
                     Name = "project 2",
-                    State = ProjectState.Open
+                    State = ProjectState.Open,
+                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
                 },
                 new Project
                 {
                     Id = _projectId3,
                     NationalSociety = nationalSocieties[0],
                     Name = "project 3",
-                    State = ProjectState.Closed
+                    State = ProjectState.Closed,
+                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
                 },
                 new Project
                 {
                     Id = _projectId4,
                     NationalSociety = nationalSocieties[1],
                     Name = "project 4",
-                    State = ProjectState.Open
+                    State = ProjectState.Open,
+                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
                 },
                 new Project
                 {
                     Id = _projectId5,
                     NationalSociety = nationalSocieties[1],
                     Name = "project 5",
-                    State = ProjectState.Open
+                    State = ProjectState.Open,
+                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
                 }
             };
 
@@ -214,7 +235,9 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                     NationalSociety = nationalSocieties[0],
                     NationalSocietyId = _nationalSocietyId1,
                     User = supervisorWithDataCollectors,
-                    UserId = _supervisorWithDataCollectorsId
+                    UserId = _supervisorWithDataCollectorsId,
+                    Organization = organizations[0],
+                    OrganizationId = organizations[0].Id
                 },
                 new UserNationalSociety
                 {
@@ -231,9 +254,12 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                     UserId = _supervisorWithDeletedDataCollectorsId
                 }
             };
+            supervisorWithDataCollectors.SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>();
             supervisorWithDataCollectors.UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[0] };
             supervisorWithoutDataCollectors.UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[1] };
+            supervisorWithoutDataCollectors.SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>();
             supervisorWithDeletedDataCollectors.UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[2] };
+            supervisorWithDeletedDataCollectors.SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>();
 
             var dataCollectors = new List<DataCollector>
             {
@@ -250,13 +276,17 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 }
             };
 
+            var supervisorAlertRecipients = new List<SupervisorUserAlertRecipient>();
+
 
             var supervisorUserProjectsDbSet = supervisorUserProjects.AsQueryable().BuildMockDbSet();
+            var supervisorAlertRecipientsDbSet = supervisorAlertRecipients.AsQueryable().BuildMockDbSet();
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var projectsDbSet = projects.AsQueryable().BuildMockDbSet();
             var usersDbSet = users.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             var dataCollectorsDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
+            var organizationsDbSet = organizations.AsQueryable().BuildMockDbSet();
 
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContext.Projects.Returns(projectsDbSet);
@@ -264,6 +294,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             _nyssContext.SupervisorUserProjects.Returns(supervisorUserProjectsDbSet);
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
             _nyssContext.DataCollectors.Returns(dataCollectorsDbSet);
+            _nyssContext.SupervisorUserAlertRecipients.Returns(supervisorAlertRecipientsDbSet);
+            _nyssContext.Organizations.Returns(organizationsDbSet);
 
 
             _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSocieties[0]);
@@ -279,7 +311,9 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var registerSupervisorRequestDto = new CreateSupervisorRequestDto
             {
                 Name = userName,
-                Email = userEmail
+                Email = userEmail,
+                SupervisorAlertRecipients = new List<int>(),
+                OrganizationId = 1
             };
 
             var nationalSocietyId = 1;
@@ -297,7 +331,9 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var registerSupervisorRequestDto = new CreateSupervisorRequestDto
             {
                 Name = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                SupervisorAlertRecipients = new List<int>(),
+                OrganizationId = 1
             };
 
             var nationalSocietyId = 1;
@@ -314,7 +350,9 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var registerSupervisorRequestDto = new CreateSupervisorRequestDto
             {
                 Name = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                SupervisorAlertRecipients = new List<int>(),
+                OrganizationId = 1
             };
 
             var nationalSocietyId = 1;
@@ -335,7 +373,9 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var registerSupervisorRequestDto = new CreateSupervisorRequestDto
             {
                 Name = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                SupervisorAlertRecipients = new List<int>(),
+                OrganizationId = 1
             };
 
             var nationalSocietyId = 1;
@@ -356,7 +396,9 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var registerSupervisorRequestDto = new CreateSupervisorRequestDto
             {
                 Name = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                SupervisorAlertRecipients = new List<int>(),
+                OrganizationId = 1
             };
 
             var nationalSocietyId = 1;
@@ -371,7 +413,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var registerSupervisorRequestDto = new CreateSupervisorRequestDto
             {
                 Name = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act
@@ -392,7 +435,9 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userEmail,
                 Email = userEmail,
-                ProjectId = 1
+                ProjectId = 1,
+                SupervisorAlertRecipients = new List<int>(),
+                OrganizationId = 1
             };
 
             //Act
@@ -411,7 +456,9 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var registerSupervisorRequestDto = new CreateSupervisorRequestDto
             {
                 Name = userEmail,
-                Email = userEmail
+                Email = userEmail,
+                SupervisorAlertRecipients = new List<int>(),
+                OrganizationId = 1
             };
 
             //Act
@@ -430,7 +477,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userEmail,
                 Email = userEmail,
-                ProjectId = 666
+                ProjectId = 666,
+                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act
@@ -450,7 +498,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userEmail,
                 Email = userEmail,
-                ProjectId = _projectId5
+                ProjectId = _projectId5,
+                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act
@@ -465,7 +514,10 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            var result = await _supervisorService.Edit(999, new EditSupervisorRequestDto());
+            var result = await _supervisorService.Edit(999, new EditSupervisorRequestDto
+            {
+                SupervisorAlertRecipients = new List<int>()
+            });
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -473,7 +525,10 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingUserThatIsNotSupervisor_ReturnsErrorResult()
         {
-            var result = await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto());
+            var result = await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto
+            {
+                SupervisorAlertRecipients = new List<int>()
+            });
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -481,7 +536,10 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingUserThatIsNotSupervisor_SaveChangesShouldNotBeCalled()
         {
-            await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto());
+            await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto
+            {
+                SupervisorAlertRecipients = new List<int>()
+            });
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -490,7 +548,10 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingExistingSupervisor_ReturnsSuccess()
         {
-            var result = await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto());
+            var result = await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto
+            {
+                SupervisorAlertRecipients = new List<int>()
+            });
 
             result.IsSuccess.ShouldBeTrue();
         }
@@ -498,7 +559,10 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingExistingSupervisor_SaveChangesAsyncIsCalled()
         {
-            await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto());
+            await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto
+            {
+                SupervisorAlertRecipients = new List<int>()
+            });
 
             await _nyssContext.Received().SaveChangesAsync();
         }
@@ -515,7 +579,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 PhoneNumber = "432432",
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
-                AdditionalPhoneNumber = "123123"
+                AdditionalPhoneNumber = "123123",
+                SupervisorAlertRecipients = new List<int>()
             };
 
             await _supervisorService.Edit(_supervisorWithDataCollectorsId, editRequest);
@@ -541,7 +606,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
                 AdditionalPhoneNumber = "123123",
-                ProjectId = null
+                ProjectId = null,
+                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act
@@ -562,7 +628,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
                 AdditionalPhoneNumber = "123123",
-                ProjectId = 2
+                ProjectId = 2,
+                SupervisorAlertRecipients = new List<int>()
             };
             var projectReferenceToBeRemoved = _nyssContext.SupervisorUserProjects.Single(x => x.ProjectId == _projectId1 && x.SupervisorUserId == _supervisorWithDataCollectorsId);
 
@@ -587,7 +654,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
                 AdditionalPhoneNumber = "123123",
-                ProjectId = 1
+                ProjectId = 1,
+                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act
@@ -610,7 +678,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
                 AdditionalPhoneNumber = "123123",
-                ProjectId = 4
+                ProjectId = 4,
+                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act
@@ -637,7 +706,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         public async Task Get_IfSupervisorExists_ReturnSupervisor()
         {
             //Act
-            var result = await _supervisorService.Get(_supervisorWithDataCollectorsId);
+            var result = await _supervisorService.Get(_supervisorWithDataCollectorsId, _nationalSocietyId1);
 
             //Assert
             result.IsSuccess.ShouldBeTrue();
@@ -656,7 +725,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         public async Task Get_IfSupervisorDoesntExists_ReturnError()
         {
             //Act
-            var result = await _supervisorService.Get(999);
+            var result = await _supervisorService.Get(999, _nationalSocietyId1);
 
             //Assert
             result.IsSuccess.ShouldBeFalse();

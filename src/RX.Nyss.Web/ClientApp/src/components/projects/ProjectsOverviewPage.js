@@ -14,6 +14,8 @@ import { ProjectsOverviewHealthRiskItem } from "./ProjectsOverviewHealthRiskItem
 import { accessMap } from '../../authentication/accessMap';
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import Chip from "@material-ui/core/Chip";
+import { Tooltip, Icon } from "@material-ui/core";
+import { ProjectsOverviewAlertRecipientItem } from "./ProjectsOverviewAlertRecipientsItem";
 import { Coordinator } from "../../authentication/roles";
 
 const ProjectsOverviewPageComponent = (props) => {
@@ -67,26 +69,20 @@ const ProjectsOverviewPageComponent = (props) => {
           </Grid>
         </Grid>
 
-        <Grid item xs={9}>
-          <Typography variant="h3">{strings(stringKeys.project.form.overviewEmailNotificationsSection)}</Typography>
-          <Typography variant="subtitle1" gutterBottom>{strings(stringKeys.project.form.emailNotificationDescription)}</Typography>
+        <Grid item xs={12}>
+          <Typography variant="h3">
+            <div className={styles.alertNotificationsHeader}>
+              {strings(stringKeys.project.form.overviewAlertNotificationsSection)}
 
-          {props.data.emailAlertRecipients.map(emailRecipient => (
-            <Typography variant="body1" key={`projectEmailNotificationItem_${emailRecipient.id}`}>
-              {emailRecipient.email}
-            </Typography>
-          ))}
+              <Tooltip title={strings(stringKeys.project.form.alertNotificationsSupervisorsExplanation)} className={styles.helpIcon}>
+                <Icon>help_outline</Icon>
+              </Tooltip>
+            </div>
+          </Typography>
+          <Typography variant="subtitle1">{strings(stringKeys.project.form.alertNotificationsDescription)}</Typography>
 
-        </Grid>
-
-        <Grid item xs={9}>
-          <Typography variant="h3">{strings(stringKeys.project.form.overviewSmsNotificationsSection)}</Typography>
-          <Typography variant="subtitle1" gutterBottom >{strings(stringKeys.project.form.smsNotificationDescription)}</Typography>
-
-          {props.data.smsAlertRecipients.map(smsRecipient => (
-            <Typography variant="body1" key={`projectSmsNotificationItem_${smsRecipient.id}`}>
-              {smsRecipient.phoneNumber}
-            </Typography>
+          {props.data.alertNotificationRecipients.map(ar => (
+            <ProjectsOverviewAlertRecipientItem alertRecipient={ar} key={`alertRecipient_${ar.id}`} />
           ))}
 
         </Grid>
