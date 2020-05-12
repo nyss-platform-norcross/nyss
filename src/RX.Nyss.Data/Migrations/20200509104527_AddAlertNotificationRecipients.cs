@@ -74,9 +74,9 @@ namespace RX.Nyss.Data.Migrations
             migrationBuilder.Sql("INSERT INTO [nyss].[AlertNotificationRecipients] ([Role], [Organization], [PhoneNumber], [ProjectId]) SELECT 'Role not set','Organization not set',[PhoneNumber], [ProjectId] FROM [nyss].[SmsAlertRecipients]");
                         
             migrationBuilder.Sql(@"
-                INSERT INTO [nyssDemo].[nyss].SupervisorUserAlertRecipients (SupervisorId, AlertNotificationRecipientId)
-                SELECT users.Id, alertRecipient.Id FROM [nyssDemo].[nyss].[Users] as users
-                INNER JOIN [nyssDemo].[nyss].[AlertNotificationRecipients] as alertRecipient ON users.CurrentProjectId=alertRecipient.ProjectId
+                INSERT INTO [nyss].SupervisorUserAlertRecipients (SupervisorId, AlertNotificationRecipientId)
+                SELECT users.Id, alertRecipient.Id FROM [nyss].[Users] as users
+                INNER JOIN [nyss].[AlertNotificationRecipients] as alertRecipient ON users.CurrentProjectId=alertRecipient.ProjectId
                 WHERE users.Role = 'Supervisor'
             ");
 

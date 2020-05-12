@@ -193,7 +193,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     Id = 1,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
                     AlertNotificationRecipients = new List<AlertNotificationRecipient>(),
-                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 1 } }
                     NationalSociety = new NationalSociety
                     {
                         ContentLanguage = new ContentLanguage { Id = 1 },
@@ -508,7 +507,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             Role = "Head",
                             Organization = "RC",
                             Email = "head@example.com",
-                            PhoneNumber = "+47493284231"
+                            PhoneNumber = "+47493284231",
+                            SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
                         }
                     }
                 }

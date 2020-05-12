@@ -1,5 +1,5 @@
 import styles from './ProjectsAlertRecipientItem.module.scss';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { validators } from '../../utils/forms';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
@@ -9,7 +9,7 @@ import Divider from '@material-ui/core/Divider';
 import { IconButton, Icon } from '@material-ui/core';
 import AutocompleteTextInputField from '../forms/AutocompleteTextInputField';
 
-export const ProjectsAlertRecipientItem = ({ form, alertRecipient, alertRecipientNumber, onRemoveRecipient, organizations }) => {
+export const ProjectsAlertRecipientItem = ({ form, alertRecipient, onAddOrganization, alertRecipientNumber, onRemoveRecipient, organizations }) => {
   const [ready, setReady] = useState(false);
 
   useMount(() => {
@@ -27,6 +27,18 @@ export const ProjectsAlertRecipientItem = ({ form, alertRecipient, alertRecipien
       form.removeField(`alertRecipientPhone${alertRecipientNumber}`);
     };
   })
+
+  useEffect(() => {
+    const organizationSubscription = form.fields[`alertRecipientOrganization${alertRecipientNumber}`].subscribe(({ newValue }) => {
+      if (!organizations.some(o => o.title === newValue)) {
+        onAddOrganization(newValue);
+      }
+    });
+
+    return () => {
+      organizationSubscription.unsubscribe();
+    };
+  }, [form, organizations, alertRecipientNumber, onAddOrganization])
 
   if (!ready) {
     return null;

@@ -442,7 +442,7 @@ namespace RX.Nyss.Web.Features.Projects
         private void UpdateAlertNotificationRecipients(Project projectToUpdate, ProjectRequestDto projectRequestDto)
         {
             var alertNotificationRecipientIdsFromDto = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
-            var alertRecipientsToDelete = projectToUpdate.AlertNotificationRecipients.Where(ar => !alertNotificationRecipientIdsFromDto.Contains(ar.Id));
+            var alertRecipientsToDelete = projectToUpdate.AlertNotificationRecipients.Where(ar => !alertNotificationRecipientIdsFromDto.Contains(ar.Id)).ToList();
 
             if (alertRecipientsToDelete.Any(ar => ar.SupervisorAlertRecipients.Any()))
             {

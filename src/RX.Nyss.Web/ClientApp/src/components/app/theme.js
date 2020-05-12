@@ -246,6 +246,9 @@ export const theme = createMuiTheme({
     MuiAutocomplete: {
       input: {
         padding: '10px !important'
+      },
+      inputRoot: {
+        paddingRight: 16
       }
     }
   },

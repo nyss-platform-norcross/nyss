@@ -112,6 +112,10 @@ const ProjectsEditPageComponent = (props) => {
     setAlertRecipients(alertRecipients.filter(ar => ar !== recipient));
   }
 
+  const onAddOrganization = (organization) => {
+    setOrganizations([...new Set([...organizations, { title: organization }])]);
+  }
+
   if (props.isFetching || !form) {
     return <Loading />;
   }
@@ -187,6 +191,7 @@ const ProjectsEditPageComponent = (props) => {
                 alertRecipientNumber={alertRecipientNumber}
                 form={form}
                 organizations={organizations}
+                onAddOrganization={onAddOrganization}
                 onRemoveRecipient={onRemoveRecipient} />
             ))}
 

@@ -2,11 +2,6 @@
   display: flex;
 
   @media screen and (min-width: 1280px) {
-    margin-top: 25px !important;    
+    margin-top: 25px !important;
   }
-}
-
-.inputField {
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
