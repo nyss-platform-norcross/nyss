@@ -36,11 +36,9 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> List(int nationalSocietyId)
         {
-            var usersQuery = GetFilteredUsersQuery();
+            var usersQuery = GetFilteredUsersQuery(nationalSocietyId);
 
             var users = await usersQuery
-                .FilterAvailableUsers()
-                .Where(uns => uns.NationalSocietyId == nationalSocietyId)
                 .Select(uns => new GetNationalSocietyUsersResponseDto
                 {
                     Id = uns.User.Id,
@@ -186,23 +184,32 @@ namespace RX.Nyss.Web.Features.Users
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
 
-        private IQueryable<UserNationalSociety> GetFilteredUsersQuery()
+        private IQueryable<UserNationalSociety> GetFilteredUsersQuery(int nationalSocietyId)
         {
+            var query = _dataContext.UserNationalSocieties
+                .Where(uns => uns.NationalSocietyId == nationalSocietyId);
+
+            if (_authorizationService.IsCurrentUserInRole(Role.Administrator))
+            {
+                return query;
+            }
+
             if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
             {
-                return _dataContext.UserNationalSocieties.Where(u => u.User.Role != Role.Supervisor);
+                return query
+                    .Where(u => u.User.Role == Role.Coordinator || u.NationalSociety.HeadManager == u.User || u.NationalSociety.PendingHeadManager == u.User);
             }
 
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
-                return _dataContext.UserNationalSocieties
-                    .Where(u =>
-                        u.User.Role == Role.Coordinator ||
-                        u.NationalSociety.HeadManager == u.User ||
-                        u.NationalSociety.PendingHeadManager == u.User);
+                return query
+                    .Where(u => u.NationalSociety.HeadManager == u.User || u.NationalSociety.PendingHeadManager == u.User);
             }
 
-            return _dataContext.UserNationalSocieties;
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            return query
+                .Where(uns => uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId).FirstOrDefault());
         }
     }
 }
