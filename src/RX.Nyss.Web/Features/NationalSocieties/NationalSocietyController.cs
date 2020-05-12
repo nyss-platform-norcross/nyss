@@ -87,7 +87,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// <param name="languageCode">The selected language the user has chosen to see the agreement in</param>
         /// <returns></returns>
         [HttpPost("consentAsHeadManager")]
-        [NeedsRole(Role.Manager, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
         public async Task<Result> ConsentAsHeadManager(string languageCode) =>
             await _nationalSocietyService.SetAsHeadManager(languageCode);
 
@@ -96,7 +96,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// </summary>
         /// <returns></returns>
         [HttpGet("pendingConsents")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
         public async Task<Result> GetPendingConsents() =>
             await _nationalSocietyService.GetPendingNationalSocietyConsents();
 

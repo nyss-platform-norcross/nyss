@@ -8,6 +8,7 @@ using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties;
@@ -155,15 +156,17 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.Remove.Success);
         }
 
-        [Fact]
-        public async Task SetAsHead_WhenOk_ShouldBeOk()
+        [Theory]
+        [InlineData(Role.Coordinator)]
+        [InlineData(Role.Manager)]
+        public async Task SetAsHead_WhenOk_ShouldBeOk(Role role)
         {
             // Arrange
             var sourceUri = "https://yo.example.com";
             _generalBlobProviderMock.GetPlatformAgreementUrl("en").Returns(sourceUri);
+            _testData.BasicData.WhenNoConsentsAndRole(role).GenerateData().AddToDbContext();
 
             // Act
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
             var result = await _nationalSocietyService.SetAsHeadManager("en");
 
             // Assert
