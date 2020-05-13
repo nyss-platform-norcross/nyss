@@ -12,6 +12,7 @@ namespace RX.Nyss.Web.Features.Projects.Access
     public interface IProjectAccessService
     {
         Task<bool> HasCurrentUserAccessToProject(int projectId);
+        bool HasCurrentUserAccessToAssignOrganizationToProject();
     }
 
     public class ProjectAccessService : IProjectAccessService
@@ -44,6 +45,9 @@ namespace RX.Nyss.Web.Features.Projects.Access
 
             return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { nationalSocietyId });
         }
+
+        public bool HasCurrentUserAccessToAssignOrganizationToProject() =>
+            _authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator);
 
         private async Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId) =>
             await _nyssContext.SupervisorUserProjects.FilterAvailableUsers().AnyAsync(sup => sup.SupervisorUser.EmailAddress == supervisorIdentityName && sup.ProjectId == projectId);

@@ -9,10 +9,10 @@ export function projectOrganizationsReducer(state = initialState.projectOrganiza
       return { ...state, formData: null, formError: null }
 
     case actions.OPEN_PROJECT_ORGANIZATIONS_LIST.INVOKE:
-      return { ...state, listStale: state.listStale || action.nationalSocietyId !== state.listNationalSocietyId };
+      return { ...state, listStale: state.listStale || action.projectId !== state.listProjectId };
 
     case actions.OPEN_PROJECT_ORGANIZATIONS_LIST.SUCCESS:
-      return { ...state, listNationalSocietyId: action.nationalSocietyId };
+      return { ...state, listProjectId: action.projectId };
 
     case actions.GET_PROJECT_ORGANIZATIONS.REQUEST:
       return { ...state, listFetching: true, listData: [] };

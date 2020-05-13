@@ -36,7 +36,7 @@ function* openProjectCreation({ nationalSocietyId }) {
   try {
     const formData = yield call(http.get, `/api/project/getFormData?nationalSocietyId=${nationalSocietyId}`);
     yield openProjectsModule(nationalSocietyId);
-    yield put(actions.openCreation.success(formData.value.healthRisks, formData.value.timeZones));
+    yield put(actions.openCreation.success(formData.value));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }

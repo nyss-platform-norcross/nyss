@@ -323,6 +323,7 @@ export const stringKeys = {
       editionTitle: "project.form.editionTitle",
       name: "project.form.name",
       allowMultipleOrganizations: "project.form.allowMultipleOrganizations",
+      organization: "project.form.organization",
       timeZone: "project.form.timeZone",
       healthRisks: "project.form.healthRisks",
       healthRisksSetion: "project.form.healthRisksSetion",

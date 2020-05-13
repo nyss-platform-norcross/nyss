@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useEffect } from 'react';
+import React, { useState, Fragment, useEffect, useMemo, useCallback } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -20,6 +20,7 @@ import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
+import * as roles from '../../authentication/roles';
 
 const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
@@ -27,23 +28,30 @@ const ProjectsCreatePageComponent = (props) => {
   const [healthRisksFieldTouched, setHealthRisksFieldTouched] = useState(false);
 
   useEffect(() => {
-    setHealthRiskDataSource(props.healthRisks.map(hr => ({ label: hr.healthRiskName, value: hr.healthRiskId, data: hr })));
-  }, [props.healthRisks])
+    props.data && setHealthRiskDataSource(props.data.healthRisks.map(hr => ({ label: hr.healthRiskName, value: hr.healthRiskId, data: hr })));
+  }, [props.data])
 
-  const [form] = useState(() => {
+  const canChangeOrganization = useCallback(
+    () => props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator),
+    [props.callingUserRoles]
+  );
+
+  const form = useMemo(() => {
     const fields = {
       name: "",
       allowMultipleOrganizations: false,
+      organizationId: "",
       timeZoneId: ""
     };
 
     const validation = {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)]
+      timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)],
+      organizationId: [validators.requiredWhen(f => canChangeOrganization())]
     };
 
     return createForm(fields, validation);
-  });
+  }, [canChangeOrganization]);
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
@@ -73,6 +81,9 @@ const ProjectsCreatePageComponent = (props) => {
     }
   }
 
+    
+  if (!props.data) {
+    return null;
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}
@@ -94,7 +105,7 @@ const ProjectsCreatePageComponent = (props) => {
               field={form.fields.timeZoneId}
               name="timeZoneId"
             >
-              {props.timeZones.map(timeZone => (
+              {props.data.timeZones.map(timeZone => (
                 <MenuItem key={timeZone.id} value={timeZone.id}>
                   {timeZone.displayName}
                 </MenuItem>
@@ -109,6 +120,22 @@ const ProjectsCreatePageComponent = (props) => {
               field={form.fields.allowMultipleOrganizations}
             />
           </Grid>
+          
+          {canChangeOrganization() && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.project.form.organization)}
+                field={form.fields.organizationId}
+                name="organizationId"
+              >
+                {props.data.organizations.map(organization => (
+                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
+                    {organization.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
 
           <Grid item xs={12}>
             <MultiSelect
@@ -149,11 +176,11 @@ ProjectsCreatePageComponent.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => ({
-  healthRisks: state.projects.formHealthRisks,
-  timeZones: state.projects.formTimeZones,
+  data: state.projects.formData,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isSaving: state.projects.formSaving,
-  error: state.projects.formError
+  error: state.projects.formError,
+  callingUserRoles: state.appData.user.roles
 });
 
 const mapDispatchToProps = {

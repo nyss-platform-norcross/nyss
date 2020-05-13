@@ -47,7 +47,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <returns>An identifier of the created project</returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<int>> Create(int nationalSocietyId, [FromBody] ProjectRequestDto projectRequestDto) =>
+        public Task<Result<int>> Create(int nationalSocietyId, [FromBody] CreateProjectRequestDto projectRequestDto) =>
             _projectService.Create(nationalSocietyId, projectRequestDto);
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <returns></returns>
         [HttpPost("{projectId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result> Edit(int projectId, [FromBody] ProjectRequestDto projectRequestDto) =>
+        public Task<Result> Edit(int projectId, [FromBody] EditProjectRequestDto projectRequestDto) =>
             _projectService.Edit(projectId, projectRequestDto);
 
         /// <summary>

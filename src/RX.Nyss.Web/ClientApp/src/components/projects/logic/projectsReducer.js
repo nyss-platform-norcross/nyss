@@ -18,13 +18,13 @@ export function projectsReducer(state = initialState.projects, action) {
       return { ...state, listFetching: false, listData: [] };
 
     case actions.OPEN_PROJECT_CREATION.INVOKE:
-      return { ...state, formFetching: true, formHealthRisks: [] , formTimeZones: []};
+      return { ...state, formFetching: true, formData: null };
 
     case actions.OPEN_PROJECT_CREATION.REQUEST:
-      return { ...state, formFetching: true, formHealthRisks: [], formTimeZones: [] };
+      return { ...state, formFetching: true, formData: null };
 
     case actions.OPEN_PROJECT_CREATION.SUCCESS:
-      return { ...state, formFetching: false, formHealthRisks: action.healthRisks, formTimeZones: action.timeZones};
+      return { ...state, formFetching: false, formData: action.data};
 
     case actions.OPEN_PROJECT_CREATION.FAILURE:
       return { ...state, formFetching: false };
