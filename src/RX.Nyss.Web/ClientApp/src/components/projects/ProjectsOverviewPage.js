@@ -16,7 +16,7 @@ import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import Chip from "@material-ui/core/Chip";
 import { Tooltip, Icon } from "@material-ui/core";
 import { ProjectsOverviewAlertRecipientItem } from "./ProjectsOverviewAlertRecipientsItem";
-import { Coordinator } from "../../authentication/roles";
+import * as roles from "../../authentication/roles";
 
 const ProjectsOverviewPageComponent = (props) => {
   useMount(() => {
@@ -90,7 +90,7 @@ const ProjectsOverviewPageComponent = (props) => {
 
       {!props.isClosed && (
         <FormActions>
-          {props.data.hasCoordinator && props.callingUserRoles.some(r => r === Coordinator) && (
+          {(!props.data.hasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)) && (
             <TableActionsButton variant="outlined" color="primary" onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)} roles={accessMap.projects.edit}>
               {strings(stringKeys.project.edit)}
             </TableActionsButton>
