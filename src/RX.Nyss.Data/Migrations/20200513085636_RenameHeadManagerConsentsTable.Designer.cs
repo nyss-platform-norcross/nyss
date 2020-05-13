@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20200513085636_RenameHeadManagerConsentsTable")]
+    partial class RenameHeadManagerConsentsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2116,9 +2118,6 @@ namespace RX.Nyss.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("AllowMultipleOrganizations")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
