@@ -81,7 +81,8 @@ const ProjectsCreatePageComponent = (props) => {
     }
   }
 
-    
+  }
+
   if (!props.data) {
     return null;
   return (
@@ -120,7 +121,7 @@ const ProjectsCreatePageComponent = (props) => {
               field={form.fields.allowMultipleOrganizations}
             />
           </Grid>
-          
+
           {canChangeOrganization() && (
             <Grid item xs={12}>
               <SelectField

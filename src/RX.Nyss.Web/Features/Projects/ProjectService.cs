@@ -196,7 +196,7 @@ namespace RX.Nyss.Web.Features.Projects
                 var projectToAdd = new Project
                 {
                     Name = dto.Name,
-                    AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations,
+                    AllowMultipleOrganizations = dto.AllowMultipleOrganizations,
                     TimeZone = dto.TimeZoneId,
                     NationalSocietyId = nationalSocietyId,
                     State = ProjectState.Open,
@@ -266,7 +266,7 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
-                if (projectRequestDto.AllowMultipleOrganizations && !projectToUpdate.AllowMultipleOrganizations
+                if (dto.AllowMultipleOrganizations && !projectToUpdate.AllowMultipleOrganizations
                     && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
@@ -274,7 +274,7 @@ namespace RX.Nyss.Web.Features.Projects
 
                 projectToUpdate.Name = dto.Name;
                 projectToUpdate.TimeZone = dto.TimeZoneId;
-                projectToUpdate.AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations;
+                projectToUpdate.AllowMultipleOrganizations = dto.AllowMultipleOrganizations;
 
                 await UpdateHealthRisks(projectToUpdate, dto.HealthRisks.ToList());
 

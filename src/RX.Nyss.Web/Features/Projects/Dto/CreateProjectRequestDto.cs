@@ -18,6 +18,8 @@ namespace RX.Nyss.Web.Features.Projects.Dto
 
         public IEnumerable<AlertNotificationRecipientDto> AlertNotificationRecipients { get; set; }
 
+        public bool AllowMultipleOrganizations { get; set; }
+
         public class Validator : AbstractValidator<CreateProjectRequestDto>
         {
             public Validator(IProjectAccessService projectAccessService)
