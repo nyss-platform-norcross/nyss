@@ -12,7 +12,7 @@ namespace RX.Nyss.Data.Models
         public virtual ICollection<ProjectOrganization> OrganizationProjects { get; set; }
         public int? HeadManagerId { get; set; }
         public virtual User HeadManager { get; set; }
-        public int? PendingHeadMangerId { get; set; }
+        public int? PendingHeadManagerId { get; set; }
         public virtual User PendingHeadManager { get; set; }
     }
 }
