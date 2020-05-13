@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                     NationalSociety = nationalSociety
                 };
                 nationalSociety.NationalSocietyUsers = new List<UserNationalSociety> { userNationalSociety };
-                nationalSociety.HeadManager = headManagerUser;
+                nationalSociety.DefaultOrganization = new Organization { HeadManager = headManagerUser };
                 headManagerUser.UserNationalSocieties = new List<UserNationalSociety> { userNationalSociety };
 
                 data.Users.Add(headManagerUser);

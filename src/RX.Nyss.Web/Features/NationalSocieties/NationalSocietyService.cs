@@ -73,8 +73,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             var nationalSocietiesQuery = await GetNationalSocietiesQuery();
 
             var list = await nationalSocietiesQuery
-                .Include(x => x.HeadManager)
-                .Include(x => x.PendingHeadManager)
+                .Include(x => x.DefaultOrganization.HeadManager)
+                .Include(x => x.DefaultOrganization.PendingHeadManager)
                 .Select(n => new NationalSocietyListResponseDto
                 {
                     Id = n.Id,
@@ -82,8 +82,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     Name = n.Name,
                     Country = n.Country.Name,
                     StartDate = n.StartDate,
-                    HeadManagerName = n.HeadManager.Name,
-                    PendingHeadManagerName = n.PendingHeadManager.Name,
+                    HeadManagerName = n.DefaultOrganization.HeadManager.Name,
+                    PendingHeadManagerName = n.DefaultOrganization.PendingHeadManager.Name,
                     TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.AsQueryable()
                         .Where(UserNationalSocietyQueries.IsNotDeletedUser)
                         .Where(u => u.User.Role == Role.TechnicalAdvisor)
@@ -108,7 +108,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     Name = n.Name,
                     CountryId = n.Country.Id,
                     CountryName = n.Country.Name,
-                    HeadManagerId = n.HeadManager.Id,
+                    HeadManagerId = n.DefaultOrganization.HeadManager.Id,
                     IsArchived = n.IsArchived
                 })
                 .FirstOrDefaultAsync(n => n.Id == id);
@@ -201,7 +201,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             }
 
             var ns = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
-            ns.PendingHeadManager = user;
+            ns.DefaultOrganization.PendingHeadManager = user;
             await _nyssContext.SaveChangesAsync();
 
             return Success();
@@ -230,8 +230,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             {
                 if (user.Role == Role.Manager)
                 {
-                    nationalSociety.PendingHeadManager = null;
-                    nationalSociety.HeadManager = user;
+                    nationalSociety.DefaultOrganization.PendingHeadManager = null;
+                    nationalSociety.DefaultOrganization.HeadManager = user;
                 }
 
                 await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent
@@ -320,13 +320,13 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     NationalSociety = ns,
                     HasRegisteredUsers = ns.NationalSocietyUsers.AsQueryable()
                         .Where(UserNationalSocietyQueries.IsNotDeletedUser)
-                        .Any(uns => uns.UserId != ns.HeadManager.Id),
+                        .Any(uns => uns.UserId != ns.DefaultOrganization.HeadManager.Id),
                     HasOpenedProjects = openedProjectsQuery.Any(p => p.NationalSocietyId == ns.Id),
-                    HeadManagerId = ns.HeadManager != null
-                        ? (int?)ns.HeadManager.Id
+                    HeadManagerId = ns.DefaultOrganization.HeadManager != null
+                        ? (int?)ns.DefaultOrganization.HeadManager.Id
                         : null,
-                    HeadManagerRole = ns.HeadManager != null
-                        ? (Role?)ns.HeadManager.Role
+                    HeadManagerRole = ns.DefaultOrganization.HeadManager != null
+                        ? (Role?)ns.DefaultOrganization.HeadManager.Role
                         : null
                 })
                 .SingleAsync();
@@ -387,7 +387,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             return userEntity.Role switch
             {
-                Role.Manager => notConsentedNationalSocieties.Where(ns => ns.HeadManager == userEntity || ns.PendingHeadManager == userEntity),
+                Role.Manager => notConsentedNationalSocieties.Where(ns => ns.DefaultOrganization.HeadManager == userEntity || ns.DefaultOrganization.PendingHeadManager == userEntity),
                 Role.Coordinator => notConsentedNationalSocieties.Where(x => x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id)),
                 _ => Enumerable.Empty<NationalSociety>().AsQueryable(),
             };

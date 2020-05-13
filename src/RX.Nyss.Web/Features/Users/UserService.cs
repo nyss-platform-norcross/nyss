@@ -49,8 +49,8 @@ namespace RX.Nyss.Web.Features.Users
                     Project = uns.User is SupervisorUser
                         ? ((SupervisorUser)uns.User).CurrentProject != null ? ((SupervisorUser)uns.User).CurrentProject.Name : null
                         : null,
-                    IsHeadManager = uns.NationalSociety.HeadManager != null && uns.NationalSociety.HeadManager.Id == uns.User.Id,
-                    IsPendingHeadManager = uns.NationalSociety.PendingHeadManager != null && uns.NationalSociety.PendingHeadManager.Id == uns.User.Id
+                    IsHeadManager = uns.NationalSociety.DefaultOrganization.HeadManager != null && uns.NationalSociety.DefaultOrganization.HeadManager.Id == uns.User.Id,
+                    IsPendingHeadManager = uns.NationalSociety.DefaultOrganization.PendingHeadManager != null && uns.NationalSociety.DefaultOrganization.PendingHeadManager.Id == uns.User.Id
                 })
                 .OrderByDescending(u => u.IsHeadManager).ThenBy(u => u.Name)
                 .ToListAsync();
@@ -88,7 +88,7 @@ namespace RX.Nyss.Web.Features.Users
                         Name = o.Name
                     }).ToList(),
                     HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
-                    IsHeadManager = ns.HeadManager == currentUser,
+                    IsHeadManager = ns.DefaultOrganization.HeadManager == currentUser,
                 }).SingleAsync();
 
             return Success(formData);
@@ -202,8 +202,11 @@ namespace RX.Nyss.Web.Features.Users
 
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
-                return query
-                    .Where(u => u.NationalSociety.HeadManager == u.User || u.NationalSociety.PendingHeadManager == u.User);
+                return _dataContext.UserNationalSocieties
+                    .Where(u =>
+                        u.User.Role == Role.Coordinator ||
+                        u.NationalSociety.DefaultOrganization.HeadManager == u.User ||
+                        u.NationalSociety.DefaultOrganization.PendingHeadManager == u.User);
             }
 
             var currentUser = _authorizationService.GetCurrentUser();

@@ -237,10 +237,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     NationalSociety = new NationalSociety
                     {
                         ContentLanguage = contentLanguage,
-                        HeadManager = new ManagerUser
+                        DefaultOrganization = new Organization
                         {
-                            EmailAddress = "test@example.com",
-                            Name = "HeadManager Name"
+                            HeadManager = new ManagerUser
+                            {
+                                EmailAddress = "test@example.com",
+                                Name = "HeadManager Name"
+                            }
                         }
                     }
                 };
@@ -267,10 +270,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     NationalSociety = new NationalSociety
                     {
                         ContentLanguage = contentLanguage,
-                        HeadManager = new ManagerUser
+                        DefaultOrganization = new Organization
                         {
-                            EmailAddress = "test@example.com",
-                            Name = "HeadManager Name"
+                            HeadManager = new ManagerUser
+                            {
+                                EmailAddress = "test@example.com",
+                                Name = "HeadManager Name"
+                            }
                         }
                     }
                 };
@@ -302,10 +308,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     NationalSociety = new NationalSociety
                     {
                         ContentLanguage = contentLanguage,
-                        HeadManager = new ManagerUser
+                        DefaultOrganization = new Organization
                         {
-                            EmailAddress = "test@example.com",
-                            Name = "HeadManager Name"
+                            HeadManager = new ManagerUser
+                            {
+                                EmailAddress = "test@example.com",
+                                Name = "HeadManager Name"
+                            }
                         }
                     }
                 };
@@ -337,10 +346,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     NationalSociety = new NationalSociety
                     {
                         ContentLanguage = contentLanguage,
-                        HeadManager = new ManagerUser
+                        DefaultOrganization = new Organization
                         {
-                            EmailAddress = "test@example.com",
-                            Name = "HeadManager Name"
+                            HeadManager = new ManagerUser
+                            {
+                                EmailAddress = "test@example.com",
+                                Name = "HeadManager Name"
+                            }
                         }
                     }
                 };

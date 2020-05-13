@@ -36,21 +36,20 @@ namespace RX.Nyss.Web.Tests.Features.Users
 
         private void ArrangeNationalSocieties()
         {
+            var defaultOrg = new Organization { };
             var nationalSocieties = new List<NationalSociety>
             {
                 new NationalSociety
                 {
                     Id = 1,
                     Name = "National society 1",
-                    PendingHeadManager = null,
-                    HeadManager = null
+                    DefaultOrganization = defaultOrg
                 },
                 new NationalSociety
                 {
                     Id = 2,
                     Name = "National society 2",
-                    PendingHeadManager = null,
-                    HeadManager = null
+                    DefaultOrganization = defaultOrg
                 }
             };
 

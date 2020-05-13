@@ -36,6 +36,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
         public List<UserNationalSociety> UserNationalSocieties { get; set; } = new List<UserNationalSociety>();
         public List<Village> Villages { get; set; } = new List<Village>();
         public List<Zone> Zones { get; set; } = new List<Zone>();
+        public List<Organization> Organizations{ get; set; }
 
         public void Include(EntityData otherData)
         {
@@ -66,6 +67,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             UserNationalSocieties.AddRange(otherData.UserNationalSocieties);
             Villages.AddRange(otherData.Villages);
             Zones.AddRange(otherData.Zones);
+            Organizations.AddRange(otherData.Organizations);
         }
     }
 }

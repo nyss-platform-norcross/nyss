@@ -303,13 +303,13 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             //arrange
             var manager = _nyssContext.Users.Single(x => x.Id == _managerId);
             var nationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == _nationalSocietyId);
-            nationalSociety.PendingHeadManager = manager;
+            nationalSociety.DefaultOrganization.PendingHeadManager = manager;
 
             //act
             await _managerService.Delete(_managerId);
 
             //assert
-            nationalSociety.PendingHeadManager.ShouldBe(null);
+            nationalSociety.DefaultOrganization.PendingHeadManager.ShouldBe(null);
         }
     }
 }

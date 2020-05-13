@@ -86,7 +86,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             AddToNyssContext(data.UserNationalSocieties);
             AddToNyssContext(data.Villages);
             AddToNyssContext(data.Zones);
-
+            AddToNyssContext(data.Organizations);
             data.NyssContextMockedMethods?.Invoke(_nyssContextMock);
         }
 

@@ -71,7 +71,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
             var userName = _authorizationService.GetCurrentUserName();
 
             return await _nyssContext.NationalSocieties
-                .AnyAsync(ns => ns.Id == nationalSocietyId && ns.HeadManager.EmailAddress == userName);
+                .AnyAsync(ns => ns.Id == nationalSocietyId && ns.DefaultOrganization.HeadManager.EmailAddress == userName);
         }
 
         public async Task<List<int>> GetCurrentUserNationalSocietyIds()

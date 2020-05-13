@@ -22,14 +22,13 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
             _testCaseDataProvider.GetOrCreate(nameof(Data), data =>
             {
                 data.Users = new List<User> { new ManagerUser { EmailAddress = "yo" } };
-
                 data.NationalSocieties = new List<NationalSociety>
                 {
                     new NationalSociety
                     {
                         Id = _nationalSocietyNumerator.Next,
                         Name = ExistingNationalSocietyName,
-                        PendingHeadManager = data.Users[0]
+                        DefaultOrganization = data.Organizations[0]
                     }
                 };
                 data.ContentLanguages = new List<ContentLanguage> { new ContentLanguage { Id = ContentLanguageId } };
@@ -60,7 +59,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                     {
                         Id = _nationalSocietyNumerator.Next,
                         Name = ExistingNationalSocietyName,
-                        PendingHeadManager = data.Users[0],
+                        DefaultOrganization = data.Organizations[0],
                         NationalSocietyUsers = new List<UserNationalSociety>
                         {
                             new UserNationalSociety{ User = data.Users[0] }

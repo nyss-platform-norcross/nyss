@@ -174,8 +174,8 @@ namespace RX.Nyss.Web.Features.Managers
         {
             var nationalSociety = await _dataContext.NationalSocieties
                 .Include(ns => ns.ContentLanguage)
-                .Include(ns => ns.HeadManager)
-                .Include(ns => ns.PendingHeadManager)
+                .Include(ns => ns.DefaultOrganization.HeadManager)
+                .Include(ns => ns.DefaultOrganization.PendingHeadManager)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -228,12 +228,12 @@ namespace RX.Nyss.Web.Features.Managers
 
             if (createDto.SetAsHeadManager == true)
             {
-                if (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && (nationalSociety.HeadManager != null || nationalSociety.PendingHeadManager != null))
+                if (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && (nationalSociety.DefaultOrganization.HeadManager != null || nationalSociety.DefaultOrganization.PendingHeadManager != null))
                 {
                     throw new ResultException(ResultKey.User.Registration.HeadManagerAlreadyExists);
                 }
 
-                nationalSociety.PendingHeadManager = user;
+                nationalSociety.DefaultOrganization.PendingHeadManager = user;
             }
 
             await _dataContext.AddAsync(userNationalSociety);
@@ -254,19 +254,19 @@ namespace RX.Nyss.Web.Features.Managers
         private async Task HandleHeadManagerStatus(ManagerUser manager, bool allowHeadManagerDeletion)
         {
             var nationalSociety = await _dataContext.NationalSocieties.FindAsync(manager.UserNationalSocieties.Single().NationalSocietyId);
-            if (nationalSociety.PendingHeadManager == manager)
+            if (nationalSociety.DefaultOrganization.PendingHeadManager == manager)
             {
-                nationalSociety.PendingHeadManager = null;
+                nationalSociety.DefaultOrganization.PendingHeadManager = null;
             }
 
-            if (nationalSociety.HeadManager == manager)
+            if (nationalSociety.DefaultOrganization.HeadManager == manager)
             {
                 if (!allowHeadManagerDeletion)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
 
-                nationalSociety.HeadManager = null;
+                nationalSociety.DefaultOrganization.HeadManager = null;
             }
         }
     }

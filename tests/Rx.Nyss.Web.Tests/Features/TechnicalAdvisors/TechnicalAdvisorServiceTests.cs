@@ -512,13 +512,13 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
             var technicalAdvisor = _nyssContext.Users.Single(x => x.Id == 123);
             var nationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1);
-            nationalSociety.PendingHeadManager = technicalAdvisor;
+            nationalSociety.DefaultOrganization.PendingHeadManager = technicalAdvisor;
 
             //act
             await _technicalAdvisorService.Delete(1, 123);
 
             //assert
-            nationalSociety.PendingHeadManager.ShouldBe(null);
+            nationalSociety.DefaultOrganization.PendingHeadManager.ShouldBe(null);
         }
 
         [Fact]
@@ -528,13 +528,13 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInTwoNationalSocieties();
             var technicalAdvisor = _nyssContext.Users.Single(x => x.Id == 123);
             var nationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == 1);
-            nationalSociety.PendingHeadManager = technicalAdvisor;
+            nationalSociety.DefaultOrganization.PendingHeadManager = technicalAdvisor;
 
             //act
             await _technicalAdvisorService.Delete(1, 123);
 
             //assert
-            nationalSociety.PendingHeadManager.ShouldBe(null);
+            nationalSociety.DefaultOrganization.PendingHeadManager.ShouldBe(null);
         }
     }
 }

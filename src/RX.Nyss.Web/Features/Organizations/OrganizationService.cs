@@ -70,7 +70,7 @@ namespace RX.Nyss.Web.Features.Organizations
                 {
                     Id = gs.Id,
                     Name = gs.Name,
-                    HeadManager = gs.NationalSociety.HeadManager.Name,
+                    HeadManager = gs.NationalSociety.DefaultOrganization.HeadManager.Name,
                     Projects = "" // TODO
                 })
                 .ToListAsync();
@@ -194,7 +194,7 @@ namespace RX.Nyss.Web.Features.Organizations
                 .Select(ns => new
                 {
                     HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
-                    HeadManagerId = (int?)ns.HeadManager.Id
+                    HeadManagerId = (int?)ns.DefaultOrganization.HeadManager.Id
                 })
                 .SingleAsync();
 
@@ -218,7 +218,7 @@ namespace RX.Nyss.Web.Features.Organizations
                 return false;
             }
 
-            return await _nyssContext.NationalSocieties.AnyAsync(ns => ns.HeadManager.Id == userId || ns.PendingHeadManager.Id == userId);
+            return await _nyssContext.NationalSocieties.AnyAsync(ns => ns.DefaultOrganization.HeadManager.Id == userId || ns.DefaultOrganization.PendingHeadManager.Id == userId);
         }
 
         public async Task<Result> CheckAccessForOrganizationEdition(UserNationalSociety userLink)
@@ -242,7 +242,7 @@ namespace RX.Nyss.Web.Features.Organizations
                 }
             }
 
-            if (!_authorizationService.IsCurrentUserInRole(Role.Administrator) && !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.HeadManager.Id == userLink.UserId || ns.PendingHeadManager.Id == userLink.UserId))
+            if (!_authorizationService.IsCurrentUserInRole(Role.Administrator) && !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.DefaultOrganization.HeadManager.Id == userLink.UserId || ns.DefaultOrganization.PendingHeadManager.Id == userLink.UserId))
             {
                 return Error<bool>(ResultKey.User.Common.CoordinatorCanChangeTheOrganizationOnlyForHeadManager);
             }

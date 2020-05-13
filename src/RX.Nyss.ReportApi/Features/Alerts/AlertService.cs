@@ -188,7 +188,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     {
                         a.Status,
                         a.CreatedAt,
-                        a.ProjectHealthRisk.Project.NationalSociety.HeadManager,
+                        a.ProjectHealthRisk.Project.NationalSociety.DefaultOrganization.HeadManager,
                         Supervisors = a.AlertReports.Select(x => x.Report.DataCollector.Supervisor.Name),
                         HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents.First().Name,
                         VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
