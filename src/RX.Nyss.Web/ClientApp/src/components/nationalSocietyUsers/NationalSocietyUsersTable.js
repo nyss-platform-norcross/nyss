@@ -39,7 +39,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
     {
       condition: canBeSetAsHeadManager(row),
       title: strings(stringKeys.nationalSocietyConsents.setAsHeadManager),
-      action: () => setAsHeadManager(nationalSocietyId, row.id)
+      action: () => setAsHeadManager(row.organizationId, row.id)
     }
   ];
 

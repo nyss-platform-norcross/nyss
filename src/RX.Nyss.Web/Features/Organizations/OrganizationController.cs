@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.NationalSocieties.Dto;
 using RX.Nyss.Web.Features.Organizations.Dto;
 using RX.Nyss.Web.Utils;
 
@@ -68,5 +69,26 @@ namespace RX.Nyss.Web.Features.Organizations
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
         public Task<Result> Delete(int organizationId) =>
             _organizationService.Delete(organizationId);
+
+        /// <summary>
+        /// Sets a user as the pending Head Manager for the organization.
+        /// </summary>
+        /// <param name="organizationId"></param>
+        /// <param name="requestDto"></param>
+        /// <returns></returns>
+        [HttpPost("{organizationId:int}/setHeadManager")]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.HeadManagerAccess)]
+        public async Task<Result> SetHeadManager(int organizationId, [FromBody] SetAsHeadManagerRequestDto requestDto) =>
+            await _organizationService.SetPendingHeadManager(organizationId, requestDto.UserId);
+
+        /// <summary>
+        /// Will set the current user as the head manager for the organization he or she is pending as.
+        /// </summary>
+        /// <param name="languageCode">The selected language the user has chosen to see the agreement in</param>
+        /// <returns></returns>
+        [HttpPost("consentAsHeadManager")]
+        [NeedsRole(Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
+        public async Task<Result> ConsentAsHeadManager(string languageCode) =>
+            await _organizationService.SetAsHeadManager(languageCode);
     }
 }

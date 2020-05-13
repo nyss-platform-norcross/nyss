@@ -49,8 +49,10 @@ namespace RX.Nyss.Web.Features.Users
                     Project = uns.User is SupervisorUser
                         ? ((SupervisorUser)uns.User).CurrentProject != null ? ((SupervisorUser)uns.User).CurrentProject.Name : null
                         : null,
-                    IsHeadManager = uns.NationalSociety.DefaultOrganization.HeadManager != null && uns.NationalSociety.DefaultOrganization.HeadManager.Id == uns.User.Id,
-                    IsPendingHeadManager = uns.NationalSociety.DefaultOrganization.PendingHeadManager != null && uns.NationalSociety.DefaultOrganization.PendingHeadManager.Id == uns.User.Id
+                    OrganizationName = uns.Organization.Name,
+                    OrganizationId = uns.Organization.Id,
+                    IsHeadManager = uns.Organization.HeadManager!= null && uns.Organization.HeadManager.Id == uns.User.Id,
+                    IsPendingHeadManager = uns.Organization.PendingHeadManager != null && uns.Organization.PendingHeadManager.Id == uns.User.Id
                 })
                 .OrderByDescending(u => u.IsHeadManager).ThenBy(u => u.Name)
                 .ToListAsync();

@@ -9,6 +9,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Authentication.Dto;
 using RX.Nyss.Web.Features.NationalSocieties;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
@@ -26,15 +27,16 @@ namespace RX.Nyss.Web.Features.Authentication
     {
         private readonly INyssContext _nyssContext;
         private readonly IUserIdentityService _userIdentityService;
-        private readonly INationalSocietyService _nationalSocietyService;
+        private readonly IOrganizationService _organizationService;
 
         public AuthenticationService(
             IUserIdentityService userIdentityService,
-            INyssContext nyssContext, INationalSocietyService nationalSocietyService)
+            INyssContext nyssContext,
+            IOrganizationService organizationService)
         {
             _userIdentityService = userIdentityService;
             _nyssContext = nyssContext;
-            _nationalSocietyService = nationalSocietyService;
+            _organizationService = organizationService;
         }
 
         public async Task<Result> Login(LoginRequestDto dto)
@@ -102,7 +104,7 @@ namespace RX.Nyss.Web.Features.Authentication
 
         private async Task<bool> GetHasPendingNationalSocietyConsents(User userEntity)
         {
-            var pendingOnes = await _nationalSocietyService.GetNationalSocietiesWithPendingAgreementsForUserQuery(userEntity)
+            var pendingOnes = await _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(userEntity)
                 .ToListAsync();
 
             return pendingOnes.Any();

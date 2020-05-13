@@ -10,5 +10,7 @@
         public string Project { get; set; }
         public bool IsHeadManager { get; set; }
         public bool IsPendingHeadManager { get; set; }
+        public string OrganizationName { get; set; }
+        public int OrganizationId { get; set; }
     }
 }
