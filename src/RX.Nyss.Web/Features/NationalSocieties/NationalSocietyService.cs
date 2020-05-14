@@ -338,7 +338,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             foreach (var nationalSociety in pendingSocieties)
             {
-                if (user.Role == Role.Manager)
+                if (user.Role == Role.Manager || user.Role == Role.TechnicalAdvisor)
                 {
                     nationalSociety.DefaultOrganization.PendingHeadManager = null;
                     nationalSociety.DefaultOrganization.HeadManager = user;

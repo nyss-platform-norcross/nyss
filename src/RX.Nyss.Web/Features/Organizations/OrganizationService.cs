@@ -286,7 +286,7 @@ namespace RX.Nyss.Web.Features.Organizations
 
             return notConsentedNationalSocieties.Where(x =>
                 userEntity.Role == Role.Coordinator && x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id) ||
-                userEntity.Role == Role.Manager && x.DefaultOrganization.HeadManager == userEntity || x.DefaultOrganization.PendingHeadManager == userEntity);
+                (userEntity.Role == Role.Manager || userEntity.Role == Role.TechnicalAdvisor) && x.DefaultOrganization.HeadManager == userEntity || x.DefaultOrganization.PendingHeadManager == userEntity);
         }
     }
 }
