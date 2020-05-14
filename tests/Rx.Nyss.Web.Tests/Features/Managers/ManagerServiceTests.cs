@@ -32,6 +32,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         private readonly int _administratorId = 1;
         private readonly int _managerId = 2;
         private readonly int _nationalSocietyId = 1;
+        private readonly int _organizationId = 1;
         private readonly IDeleteUserService _deleteUserService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IOrganizationService _organizationService;
@@ -83,7 +84,14 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 managerUser
             };
 
-            var organization = new Organization();
+            var organizations = new List<Organization>
+            {
+                new Organization
+                {
+                    Id = _organizationId,
+                    Name = "test org 1",
+                }
+            };
 
             var userNationalSocieties = new List<UserNationalSociety>
             {
@@ -93,14 +101,17 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                     UserId = _managerId,
                     NationalSocietyId = _nationalSocietyId,
                     NationalSociety = nationalSocieties[0],
-                    Organization = organization
+                    OrganizationId = _organizationId,
+                    Organization = organizations[0]
                 },
                 new UserNationalSociety
                 {
                     User = users[0],
                     UserId = _administratorId,
                     NationalSocietyId = _nationalSocietyId,
-                    NationalSociety = nationalSocieties[0]
+                    NationalSociety = nationalSocieties[0],
+                    OrganizationId = _organizationId,
+                    Organization = organizations[0]
                 },
             };
             users[1].UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[0] };
@@ -111,18 +122,21 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             var usersDbSet = users.AsQueryable().BuildMockDbSet();
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
+            var organizationsDbSet = organizations.AsQueryable().BuildMockDbSet();
 
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
             _nyssContext.Users.Returns(usersDbSet);
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
+            _nyssContext.Organizations.Returns(organizationsDbSet);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
             {
                 Id = "123",
                 Email = (string)ci[0]
             });
-            _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSocieties[0]);
+            _nyssContext.NationalSocieties.FindAsync(_nationalSocietyId).Returns(nationalSocieties[0]);
+            _nyssContext.Organizations.FindAsync(_organizationId).Returns(organizations[0]);
 
             _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>(Arg.Any<int>()).Returns(ci =>
             {
@@ -136,6 +150,8 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             });
 
             _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<ManagerUser>(Arg.Any<int>())
+                .Returns(ci => _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>((int)ci[0]));
+            _nationalSocietyUserService.GetNationalSocietyUserIncludingOrganizations<ManagerUser>(Arg.Any<int>())
                 .Returns(ci => _nationalSocietyUserService.GetNationalSocietyUser<ManagerUser>((int)ci[0]));
         }
 
@@ -302,14 +318,14 @@ namespace RX.Nyss.Web.Tests.Features.Managers
         {
             //arrange
             var manager = _nyssContext.Users.Single(x => x.Id == _managerId);
-            var nationalSociety = _nyssContext.NationalSocieties.Single(x => x.Id == _nationalSocietyId);
-            nationalSociety.DefaultOrganization.PendingHeadManager = manager;
+            var organization = _nyssContext.Organizations.Single(x => x.Id == _organizationId);
+            organization.PendingHeadManager = manager;
 
             //act
             await _managerService.Delete(_managerId);
 
             //assert
-            nationalSociety.DefaultOrganization.PendingHeadManager.ShouldBe(null);
+            organization.PendingHeadManager.ShouldBe(null);
         }
     }
 }

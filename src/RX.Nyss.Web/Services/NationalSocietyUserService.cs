@@ -18,6 +18,7 @@ namespace RX.Nyss.Web.Services
         Task<T> GetNationalSocietyUser<T>(int nationalSocietyUserId) where T : User;
         void DeleteNationalSocietyUser<T>(T nationalSocietyUser) where T : User;
         Task<T> GetNationalSocietyUserIncludingNationalSocieties<T>(int nationalSocietyUserId) where T : User;
+        Task<T> GetNationalSocietyUserIncludingOrganizations<T>(int nationalSocietyUserId) where T : User;
     }
 
     public class NationalSocietyUserService : INationalSocietyUserService
@@ -56,6 +57,22 @@ namespace RX.Nyss.Web.Services
         {
             var nationalSocietyUser = await _dataContext.Users.FilterAvailable()
                 .Include(u => u.UserNationalSocieties)
+                .OfType<T>()
+                .Where(u => u.Id == nationalSocietyUserId)
+                .SingleOrDefaultAsync();
+
+            if (nationalSocietyUser == null)
+            {
+                _loggerAdapter.Warn($"User with id {nationalSocietyUserId} and the role {typeof(T)} was not found");
+                throw new ResultException(ResultKey.User.Common.UserNotFound);
+            }
+
+            return nationalSocietyUser;
+        }
+        public async Task<T> GetNationalSocietyUserIncludingOrganizations<T>(int nationalSocietyUserId) where T : User
+        {
+            var nationalSocietyUser = await _dataContext.Users.FilterAvailable()
+                .Include(u => u.Organization)
                 .OfType<T>()
                 .Where(u => u.Id == nationalSocietyUserId)
                 .SingleOrDefaultAsync();
