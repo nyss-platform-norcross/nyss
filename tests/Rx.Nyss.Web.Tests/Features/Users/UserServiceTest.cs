@@ -36,32 +36,44 @@ namespace RX.Nyss.Web.Tests.Features.Users
 
         private void ArrangeNationalSocieties()
         {
-            var defaultOrg = new Organization { };
+            var organizations = new List<Organization>
+            {
+                new Organization { Id = 1, Name = "first org"},
+                new Organization { Id = 2, Name = "another org" }
+            };
+
             var nationalSocieties = new List<NationalSociety>
             {
                 new NationalSociety
                 {
                     Id = 1,
                     Name = "National society 1",
-                    DefaultOrganization = defaultOrg
+                    DefaultOrganization = organizations[0]
                 },
                 new NationalSociety
                 {
                     Id = 2,
                     Name = "National society 2",
-                    DefaultOrganization = defaultOrg
+                    DefaultOrganization = organizations[1]
                 }
             };
 
             SetupNationalSocietiesFrom(nationalSocieties);
-            ArrangeUsers(nationalSocieties);
+            SetupOrgsFrom(organizations);
+            ArrangeUsers(nationalSocieties, organizations);
         }
-
 
         private void SetupNationalSocietiesFrom(List<NationalSociety> nationalSocieties)
         {
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
+        }
+
+        
+        private void SetupOrgsFrom(List<Organization> orgs)
+        {
+            var orgsDbSet = orgs.AsQueryable().BuildMockDbSet();
+            _nyssContext.Organizations.Returns(orgsDbSet);
         }
 
 
@@ -120,7 +132,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             users.Value.ShouldAllBe(u => u.Role != Role.Supervisor.ToString());
         }
 
-        private void ArrangeUsers(List<NationalSociety> nationalSocieties)
+        private void ArrangeUsers(List<NationalSociety> nationalSocieties, List<Organization> organizations)
         {
             var users = new List<User>
             {
@@ -206,28 +218,38 @@ namespace RX.Nyss.Web.Tests.Features.Users
                 User = u,
                 UserId = u.Id,
                 NationalSocietyId = 1,
-                NationalSociety = nationalSocieties[0]
+                NationalSociety = nationalSocieties[0],
+                OrganizationId = 1,
+                Organization = organizations[0]
             });
+
             var userNationalSocieties2 = users.Where(u => u.Name == NationalSociety2Tag).Select(u => new UserNationalSociety
             {
                 User = u,
                 UserId = u.Id,
                 NationalSocietyId = 2,
-                NationalSociety = nationalSocieties[1]
+                NationalSociety = nationalSocieties[1],
+                OrganizationId = 2,
+                Organization = organizations[1]
             });
+
             var userNationalSocieties1And2 = users.Where(u => u.Name == NationalSociety1And2Tag).Select(u => new UserNationalSociety
                 {
                     User = u,
                     UserId = u.Id,
                     NationalSocietyId = 1,
-                    NationalSociety = nationalSocieties[0]
-                })
+                    NationalSociety = nationalSocieties[0],
+                    OrganizationId = 1,
+                    Organization = organizations[0]
+            })
                 .Concat(users.Where(u => u.Name == NationalSociety1And2Tag).Select(u => new UserNationalSociety
                 {
                     User = u,
                     UserId = u.Id,
                     NationalSocietyId = 2,
-                    NationalSociety = nationalSocieties[1]
+                    NationalSociety = nationalSocieties[1],
+                    OrganizationId = 2,
+                    Organization = organizations[1]
                 }));
 
             ArrangeUsersFrom(users);

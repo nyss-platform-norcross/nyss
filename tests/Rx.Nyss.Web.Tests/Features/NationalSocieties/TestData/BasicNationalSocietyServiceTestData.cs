@@ -21,6 +21,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
         public TestCaseData Data =>
             _testCaseDataProvider.GetOrCreate(nameof(Data), data =>
             {
+                data.Organizations = new List<Organization>{ new Organization{ Id = 1, Name = "Org 1"}};
                 data.Users = new List<User> { new ManagerUser { EmailAddress = "yo" } };
                 data.NationalSocieties = new List<NationalSociety>
                 {
@@ -28,7 +29,9 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                     {
                         Id = _nationalSocietyNumerator.Next,
                         Name = ExistingNationalSocietyName,
-                        DefaultOrganization = data.Organizations[0]
+                        DefaultOrganizationId = 1,
+                        DefaultOrganization = data.Organizations[0],
+                        Organizations = new[] { data.Organizations[0] }
                     }
                 };
                 data.ContentLanguages = new List<ContentLanguage> { new ContentLanguage { Id = ContentLanguageId } };
@@ -52,13 +55,15 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
             _testCaseDataProvider.GetOrCreate(nameof(WhenNoConsentsAndRole), data =>
             {
                 data.Users = new List<User> { new ManagerUser { EmailAddress = "yo", Role = role } };
-
+                data.Organizations = new List<Organization> { new Organization { Id = 1, Name = "Org 1" } };
                 data.NationalSocieties = new List<NationalSociety>
                 {
                     new NationalSociety
                     {
                         Id = _nationalSocietyNumerator.Next,
                         Name = ExistingNationalSocietyName,
+                        Organizations = new[] { data.Organizations[0] },
+                        DefaultOrganizationId = 1,
                         DefaultOrganization = data.Organizations[0],
                         NationalSocietyUsers = new List<UserNationalSociety>
                         {

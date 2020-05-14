@@ -23,10 +23,18 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
         public TestCaseData<ArchiveNationalSocietyAdditionalData> ArchiveWhenHasProjects =>
             _testCaseDataProvider.GetOrCreate(nameof(ArchiveWhenHasProjects), data =>
             {
+                var organizations = new List<Organization>
+                {
+                    new Organization{ Id = 1, Name = "Org 1"},
+                    new Organization{ Id = 2, Name = "Org 2"}
+                };
                 var nationalSocietyWithProjects = new NationalSociety
                 {
                     Id = _nationalSocietyNumerator.Next,
-                    NationalSocietyUsers = new List<UserNationalSociety>()
+                    NationalSocietyUsers = new List<UserNationalSociety>(),
+                    Organizations = new[] { organizations[0] },
+                    DefaultOrganizationId = 1,
+                    DefaultOrganization = organizations[0]
                 };
                 data.NationalSocieties.Add(nationalSocietyWithProjects);
                 data.Projects.Add(new Project
@@ -34,6 +42,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                     NationalSociety = nationalSocietyWithProjects,
                     NationalSocietyId = nationalSocietyWithProjects.Id
                 });
+                data.Organizations = organizations;
 
                 return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSocietyWithProjects };
             });

@@ -97,5 +97,16 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Reopen(int nationalSocietyId) =>
             await _nationalSocietyService.Reopen(nationalSocietyId);
+
+
+        /// <summary>
+        /// Will set the current user as the head manager for the organization he or she is pending as.
+        /// </summary>
+        /// <param name="languageCode">The selected language the user has chosen to see the agreement in</param>
+        /// <returns></returns>
+        [HttpPost("consentToAgreement")]
+        [NeedsRole(Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
+        public async Task<Result> ConsentAsHeadManager(string languageCode) =>
+            await _nationalSocietyService.ConsentToNationalSocietyAgreement(languageCode);
     }
 }

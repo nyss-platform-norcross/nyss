@@ -50,6 +50,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             _smsGatewayServiceMock = Substitute.For<ISmsGatewayService>();
             _generalBlobProviderMock = Substitute.For<IGeneralBlobProvider>();
             _organizationServiceMock = Substitute.For<IOrganizationService>();
+            _dataBlobServiceMock = Substitute.For<IDataBlobService>();
 
             _nationalSocietyService = new NationalSocietyService(
                 _nyssContextMock,
@@ -60,9 +61,27 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 _technicalAdvisorServiceMock,
                 _smsGatewayServiceMock,
                 _generalBlobProviderMock,
-                _organizationServiceMock);
+                _organizationServiceMock,
+                _dataBlobServiceMock);
 
             _testData = new NationalSocietyServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
+        }
+        
+        [Fact]
+        public async Task ConsentToNationalSocietyAgreement_WhenUserNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            _testData.BasicData.Data.GenerateData().AddToDbContext();
+            var users = new List<User> { new ManagerUser { EmailAddress = "no-yo" } };
+            var mockDbSet = users.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Users.Returns(mockDbSet);
+
+            // Act
+            var result = await _nationalSocietyService.ConsentToNationalSocietyAgreement("fr");
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
         }
 
         [Fact]

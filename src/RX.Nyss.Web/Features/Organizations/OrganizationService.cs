@@ -1,15 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Organizations.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -27,7 +24,6 @@ namespace RX.Nyss.Web.Features.Organizations
         Task<bool> ValidateAccessForChangingOrganization(int userId);
         Task<Result> CheckAccessForOrganizationEdition(UserNationalSociety userLink);
         Task<Result> SetPendingHeadManager(int organizationId, int userId);
-        Task<Result> SetAsHeadManager(string languageCode);
         IQueryable<NationalSociety> GetNationalSocietiesWithPendingAgreementsForUserQuery(User userEntity);
     }
 
@@ -36,19 +32,15 @@ namespace RX.Nyss.Web.Features.Organizations
         private readonly INyssContext _nyssContext;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IGeneralBlobProvider _generalBlobProvider;
-        private readonly IDataBlobService _dataBlobService;
 
         public OrganizationService(
             INyssContext nyssContext,
             ILoggerAdapter loggerAdapter,
-            IAuthorizationService authorizationService, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService)
+            IAuthorizationService authorizationService)
         {
             _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _authorizationService = authorizationService;
-            _generalBlobProvider = generalBlobProvider;
-            _dataBlobService = dataBlobService;
         }
 
         public async Task<Result<OrganizationResponseDto>> Get(int organizationId)
@@ -284,54 +276,13 @@ namespace RX.Nyss.Web.Features.Organizations
             return Success();
         }
 
-        public async Task<Result> SetAsHeadManager(string languageCode)
-        {
-            var identityUserName = _authorizationService.GetCurrentUserName();
-
-            var user = await _nyssContext.Users.FilterAvailable()
-                .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
-
-            if (user == null)
-            {
-                return Error(ResultKey.User.Common.UserNotFound);
-            }
-
-            var pendingSocieties = GetNationalSocietiesWithPendingAgreementsForUserQuery(user);
-            var utcNow = DateTime.UtcNow;
-
-            var consentDocumentFileName = Guid.NewGuid() + ".pdf";
-            var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
-            await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
-
-            foreach (var nationalSociety in pendingSocieties)
-            {
-                if (user.Role == Role.Manager)
-                {
-                    nationalSociety.DefaultOrganization.PendingHeadManager = null;
-                    nationalSociety.DefaultOrganization.HeadManager = user;
-                }
-
-                await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent
-                {
-                    ConsentedFrom = utcNow,
-                    NationalSocietyId = nationalSociety.Id,
-                    UserEmailAddress = user.EmailAddress,
-                    UserPhoneNumber = user.PhoneNumber,
-                    ConsentDocument = consentDocumentFileName
-                });
-            }
-
-            await _nyssContext.SaveChangesAsync();
-
-            return Success();
-        }
-
         public IQueryable<NationalSociety> GetNationalSocietiesWithPendingAgreementsForUserQuery(User userEntity)
         {
             var notConsentedNationalSocieties = _nyssContext.NationalSocieties
                 .Where(ns => !_nyssContext.NationalSocietyConsents
-                    .Where(nsc => !nsc.ConsentedUntil.HasValue)
-                    .Select(x => x.NationalSocietyId).Distinct().Contains(ns.Id));
+                    .Where(nsc => !nsc.ConsentedUntil.HasValue && nsc.UserEmailAddress == userEntity.EmailAddress)
+                    .Select(x => x.NationalSocietyId).Distinct()
+                    .Contains(ns.Id));
 
             return notConsentedNationalSocieties.Where(x =>
                 userEntity.Role == Role.Coordinator && x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id) ||

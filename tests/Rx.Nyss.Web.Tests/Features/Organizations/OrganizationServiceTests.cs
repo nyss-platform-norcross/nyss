@@ -27,7 +27,6 @@ namespace RX.Nyss.Web.Tests.Features.Organizations
 
         private readonly INyssContext _nyssContextMock;
         private readonly ISmsGatewayService _smsGatewayServiceMock;
-
         private readonly IManagerService _managerServiceMock;
         private readonly ITechnicalAdvisorService _technicalAdvisorServiceMock;
         private readonly IGeneralBlobProvider _generalBlobProviderMock;
@@ -46,46 +45,9 @@ namespace RX.Nyss.Web.Tests.Features.Organizations
             _generalBlobProviderMock = Substitute.For<IGeneralBlobProvider>();
             _dataBlobServiceMock = Substitute.For<IDataBlobService>();
 
-            _nationalSocietyService = new OrganizationService(_nyssContextMock, loggerAdapterMock, authorizationService, _generalBlobProviderMock, _dataBlobServiceMock);
+            _nationalSocietyService = new OrganizationService(_nyssContextMock, loggerAdapterMock, authorizationService);
 
             _testData = new OrganizationServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
-        }
-
-        [Theory]
-        [InlineData(Role.Coordinator)]
-        [InlineData(Role.Manager)]
-        public async Task SetAsHead_WhenOk_ShouldBeOk(Role role)
-        {
-            // Arrange
-            var sourceUri = "https://yo.example.com";
-            _generalBlobProviderMock.GetPlatformAgreementUrl("en").Returns(sourceUri);
-            _testData.BasicData.WhenNoConsentsAndRole(role).GenerateData().AddToDbContext();
-
-            // Act
-            var result = await _nationalSocietyService.SetAsHeadManager("en");
-
-            // Assert
-            result.IsSuccess.ShouldBeTrue();
-            await _dataBlobServiceMock.Received(1).StorePlatformAgreement(sourceUri, Arg.Any<string>());
-            await _nyssContextMock.NationalSocietyConsents.Received(1).AddAsync(Arg.Any<NationalSocietyConsent>());
-            await _nyssContextMock.Received(1).SaveChangesAsync();
-        }
-
-        [Fact]
-        public async Task SetAsHead_WhenUserNotFound_ShouldReturnNotFound()
-        {
-            // Arrange
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var users = new List<User> { new ManagerUser { EmailAddress = "no-yo" } };
-            var mockDbSet = users.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Users.Returns(mockDbSet);
-
-            // Act
-            var result = await _nationalSocietyService.SetAsHeadManager("fr");
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
         }
     }
 }

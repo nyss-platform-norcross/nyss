@@ -23,7 +23,7 @@ function* getPendingConsents() {
 function* consentAsHeadManager({ selectedLanguage }) {
   yield put(actions.consentAsHeadManager.request());
   try {
-    yield call(http.post, `/api/nationalSociety/consentAsHeadManager?languageCode=${selectedLanguage}`);
+    yield call(http.post, `/api/nationalSociety/consentToAgreement?languageCode=${selectedLanguage}`);
     yield put(actions.consentAsHeadManager.success());
     window.location.href = "/";
   } catch (error) {

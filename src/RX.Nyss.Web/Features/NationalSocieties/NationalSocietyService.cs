@@ -34,6 +34,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<Result<PendingConsentDto>> GetPendingNationalSocietyConsents();
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
         Task<Result> Reopen(int nationalSocietyId);
+        Task<Result> ConsentToNationalSocietyAgreement(string languageCode);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -47,6 +48,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         private readonly ISmsGatewayService _smsGatewayService;
         private readonly IGeneralBlobProvider _generalBlobProvider;
         private readonly IOrganizationService _organizationService;
+        private readonly IDataBlobService _dataBlobService;
 
         public NationalSocietyService(
             INyssContext context,
@@ -54,7 +56,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService,
             IManagerService managerService, ITechnicalAdvisorService technicalAdvisorService,
             ISmsGatewayService smsGatewayService, IGeneralBlobProvider generalBlobProvider,
-            IOrganizationService organizationService)
+            IOrganizationService organizationService, IDataBlobService dataBlobService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
@@ -65,6 +67,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             _smsGatewayService = smsGatewayService;
             _generalBlobProvider = generalBlobProvider;
             _organizationService = organizationService;
+            _dataBlobService = dataBlobService;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> List()
@@ -312,7 +315,50 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             await _nyssContext.SaveChangesAsync();
             return SuccessMessage(ResultKey.NationalSociety.Archive.ReopenSuccess);
         }
-        
+
+        public async Task<Result> ConsentToNationalSocietyAgreement(string languageCode)
+        {
+            var identityUserName = _authorizationService.GetCurrentUserName();
+
+            var user = await _nyssContext.Users.FilterAvailable()
+                .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
+
+            if (user == null)
+            {
+                return Error(ResultKey.User.Common.UserNotFound);
+            }
+
+            var pendingSocieties = await _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(user)
+                .Include(x => x.DefaultOrganization).ToListAsync();
+            var utcNow = DateTime.UtcNow;
+
+            var consentDocumentFileName = Guid.NewGuid() + ".pdf";
+            var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
+            await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
+
+            foreach (var nationalSociety in pendingSocieties)
+            {
+                if (user.Role == Role.Manager)
+                {
+                    nationalSociety.DefaultOrganization.PendingHeadManager = null;
+                    nationalSociety.DefaultOrganization.HeadManager = user;
+                }
+
+                await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent
+                {
+                    ConsentedFrom = utcNow,
+                    NationalSocietyId = nationalSociety.Id,
+                    UserEmailAddress = user.EmailAddress,
+                    UserPhoneNumber = user.PhoneNumber,
+                    ConsentDocument = consentDocumentFileName
+                });
+            }
+
+            await _nyssContext.SaveChangesAsync();
+
+            return Success();
+        }
+
         public async Task<ContentLanguage> GetLanguageById(int id) =>
             await _nyssContext.ContentLanguages.FindAsync(id);
 

@@ -51,8 +51,8 @@ namespace RX.Nyss.Web.Features.Users
                         : null,
                     OrganizationName = uns.Organization.Name,
                     OrganizationId = uns.Organization.Id,
-                    IsHeadManager = uns.Organization.HeadManager!= null && uns.Organization.HeadManager.Id == uns.User.Id,
-                    IsPendingHeadManager = uns.Organization.PendingHeadManager != null && uns.Organization.PendingHeadManager.Id == uns.User.Id
+                    IsHeadManager = uns.Organization.HeadManagerId.HasValue && uns.Organization.HeadManagerId == uns.User.Id,
+                    IsPendingHeadManager = uns.Organization.PendingHeadManagerId.HasValue && uns.Organization.PendingHeadManagerId == uns.User.Id
                 })
                 .OrderByDescending(u => u.IsHeadManager).ThenBy(u => u.Name)
                 .ToListAsync();
@@ -207,8 +207,8 @@ namespace RX.Nyss.Web.Features.Users
                 return _dataContext.UserNationalSocieties
                     .Where(u =>
                         u.User.Role == Role.Coordinator ||
-                        u.NationalSociety.DefaultOrganization.HeadManager == u.User ||
-                        u.NationalSociety.DefaultOrganization.PendingHeadManager == u.User);
+                        u.Organization.HeadManager == u.User ||
+                        u.Organization.PendingHeadManager == u.User);
             }
 
             var currentUser = _authorizationService.GetCurrentUser();

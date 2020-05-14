@@ -80,15 +80,5 @@ namespace RX.Nyss.Web.Features.Organizations
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.HeadManagerAccess)]
         public async Task<Result> SetHeadManager(int organizationId, [FromBody] SetAsHeadManagerRequestDto requestDto) =>
             await _organizationService.SetPendingHeadManager(organizationId, requestDto.UserId);
-
-        /// <summary>
-        /// Will set the current user as the head manager for the organization he or she is pending as.
-        /// </summary>
-        /// <param name="languageCode">The selected language the user has chosen to see the agreement in</param>
-        /// <returns></returns>
-        [HttpPost("consentAsHeadManager")]
-        [NeedsRole(Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
-        public async Task<Result> ConsentAsHeadManager(string languageCode) =>
-            await _organizationService.SetAsHeadManager(languageCode);
     }
 }
