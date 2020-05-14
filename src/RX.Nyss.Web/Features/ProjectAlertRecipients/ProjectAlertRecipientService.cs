@@ -37,8 +37,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
         public async Task<Result<List<ProjectAlertRecipientListResponseDto>>> List(int nationalSocietyId, int projectId)
         {
             var alertRecipientsQuery = _nyssContext.AlertNotificationRecipients
-                .Where(anr => anr.ProjectId == projectId)
-                .OrderBy(anr => anr.Id);
+                .Where(anr => anr.ProjectId == projectId);
 
             if (!_authorizationService.IsCurrentUserInRole(Role.Administrator))
             {
@@ -48,10 +47,11 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                     .Select(uns => uns.OrganizationId)
                     .SingleOrDefault();
 
-                alertRecipientsQuery.Where(anr => anr.ProjectOrganizationId == organizationId);
+                alertRecipientsQuery = alertRecipientsQuery.Where(anr => anr.ProjectOrganizationId == organizationId);
             }
 
             var alertRecipients = await alertRecipientsQuery
+                .OrderBy(anr => anr.Id)
                 .Select(anr => new ProjectAlertRecipientListResponseDto
                 {
                     Id = anr.Id,
@@ -153,7 +153,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
         {
             var alertRecipient = await _nyssContext.AlertNotificationRecipients
                 .Where(anr => anr.Id == alertRecipientId)
-                .SingleAsync();
+                .SingleOrDefaultAsync();
 
             if (alertRecipient == null)
             {
