@@ -15,6 +15,7 @@ import { nationalSocietyDashboardSiteMap } from "./components/nationalSocietyDas
 import { translationsSiteMap } from "./components/translations/logic/translationsSiteMap";
 import { organizationsSiteMap } from "./components/organizations/logic/organizationsSiteMap";
 import { projectOrganizationsSiteMap } from "./components/projectOrganizations/logic/projectOrganizationsSiteMap";
+import { projectAlertRecipientsSiteMap } from "./components/projectAlertRecipients/logic/projectAlertRecipientsSiteMap";
 
 export const siteMap = [
   ...nationalSocietiesSiteMap,
@@ -28,6 +29,7 @@ export const siteMap = [
   ...projectsSiteMap,
   ...projectDashboardSiteMap,
   ...projectOrganizationsSiteMap,
+  ...projectAlertRecipientsSiteMap,
   ...dataCollectorsSiteMap,
   ...reportsSiteMap,
   ...nationalSocietyReportsSiteMap,

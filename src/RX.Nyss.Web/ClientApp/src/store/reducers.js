@@ -20,6 +20,7 @@ import { nationalSocietyDashboardReducer } from "../components/nationalSocietyDa
 import { translationsReducer } from "../components/translations/logic/translationsReducer";
 import { organizationsReducer } from "../components/organizations/logic/organizationsReducer";
 import { projectOrganizationsReducer } from "../components/projectOrganizations/logic/projectOrganizationsReducer";
+import { projectAlertRecipientsReducer } from "../components/projectAlertRecipients/logic/projectAlertRecipientsReducer";
 
 export const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -33,6 +34,7 @@ export const createRootReducer = (history) => combineReducers({
   projects: projectsReducer,
   projectDashboard: projectDashboardReducer,
   projectOrganizations: projectOrganizationsReducer,
+  projectAlertRecipients: projectAlertRecipientsReducer,
   globalCoordinators: globalCoordinatorsReducer,
   healthRisks: healthRisksReducer,
   nationalSocietyUsers: nationalSocietyUsersReducer,
