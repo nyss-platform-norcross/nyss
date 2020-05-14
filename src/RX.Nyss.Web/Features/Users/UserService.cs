@@ -7,7 +7,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
-using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 using RX.Nyss.Web.Features.Users.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -75,7 +75,7 @@ namespace RX.Nyss.Web.Features.Users
                         {
                             Id = p.Id,
                             Name = p.Name,
-                            AlertRecipients = p.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipientDto
+                            AlertRecipients = p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
                             {
                                 Id = anr.Id,
                                 Role = anr.Role,
@@ -112,16 +112,14 @@ namespace RX.Nyss.Web.Features.Users
                         {
                             Id = p.Id,
                             Name = p.Name,
-                            AlertRecipients = u.Role == Role.Supervisor
-                                ? p.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipientDto
-                                {
-                                    Id = anr.Id,
-                                    Role = anr.Role,
-                                    Organization = anr.Organization,
-                                    Email = anr.Email,
-                                    PhoneNumber = anr.PhoneNumber
-                                }).ToList()
-                                : null
+                            AlertRecipients = u.Role == Role.Supervisor ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
+                            {
+                                Id = anr.Id,
+                                Role = anr.Role,
+                                Organization = anr.Organization,
+                                Email = anr.Email,
+                                PhoneNumber = anr.PhoneNumber
+                            }).ToList() : null
                         }).ToList(),
                     Organizations = _dataContext.Organizations
                         .Where(o => o.NationalSociety.Id == nationalSocietyId)

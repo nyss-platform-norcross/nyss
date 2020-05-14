@@ -81,14 +81,6 @@ namespace RX.Nyss.Web.Features.Projects
                         CaseDefinition = phr.CaseDefinition,
                         ContainsReports = phr.Reports.Any()
                     }),
-                    AlertNotificationRecipients = p.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipientDto
-                    {
-                        Id = anr.Id,
-                        Email = anr.Email,
-                        Organization = anr.Organization,
-                        PhoneNumber = anr.PhoneNumber,
-                        Role = anr.Role
-                    }),
                     ContentLanguageId = p.NationalSociety.ContentLanguage.Id,
                     HasCoordinator = p.NationalSociety.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
                 })
@@ -224,13 +216,6 @@ namespace RX.Nyss.Web.Features.Projects
                             KilometersThreshold = phr.AlertRuleKilometersThreshold
                         }
                     }).ToList(),
-                    AlertNotificationRecipients = projectRequestDto.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipient
-                    {
-                        Role = anr.Role,
-                        Organization = anr.Organization,
-                        Email = anr.Email,
-                        PhoneNumber = anr.PhoneNumber
-                    }).ToList(),
                     ProjectOrganizations = organizationId.HasValue
                         ? new List<ProjectOrganization>
                         {
@@ -286,8 +271,6 @@ namespace RX.Nyss.Web.Features.Projects
                 projectToUpdate.AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations;
 
                 await UpdateHealthRisks(projectToUpdate, projectRequestDto);
-
-                UpdateAlertNotificationRecipients(projectToUpdate, projectRequestDto);
 
                 await _nyssContext.SaveChangesAsync();
 
@@ -445,46 +428,6 @@ namespace RX.Nyss.Web.Features.Projects
                     projectHealthRiskToUpdate.AlertRule.CountThreshold = projectHealthRisk.AlertRuleCountThreshold ?? 0;
                     projectHealthRiskToUpdate.AlertRule.DaysThreshold = projectHealthRisk.AlertRuleDaysThreshold;
                     projectHealthRiskToUpdate.AlertRule.KilometersThreshold = projectHealthRisk.AlertRuleKilometersThreshold;
-                }
-            }
-        }
-
-        private void UpdateAlertNotificationRecipients(Project projectToUpdate, ProjectRequestDto projectRequestDto)
-        {
-            var alertNotificationRecipientIdsFromDto = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
-            var alertRecipientsToDelete = projectToUpdate.AlertNotificationRecipients.Where(ar => !alertNotificationRecipientIdsFromDto.Contains(ar.Id)).ToList();
-
-            if (alertRecipientsToDelete.Any(ar => ar.SupervisorAlertRecipients.Any()))
-            {
-                throw new ResultException(ResultKey.Project.CannotRemoveAlertRecipientWithSupervisorsAttached);
-            }
-
-            _nyssContext.AlertNotificationRecipients.RemoveRange(alertRecipientsToDelete);
-
-            var alertNotificationRecipientsToAdd = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id == null);
-            foreach (var alertNotificationRecipient in alertNotificationRecipientsToAdd)
-            {
-                var alertNotificationRecipientToAdd = new AlertNotificationRecipient
-                {
-                    Role = alertNotificationRecipient.Role,
-                    Organization = alertNotificationRecipient.Organization,
-                    Email = alertNotificationRecipient.Email,
-                    PhoneNumber = alertNotificationRecipient.PhoneNumber
-                };
-                projectToUpdate.AlertNotificationRecipients.Add(alertNotificationRecipientToAdd);
-            }
-
-            var alertNotificationRecipientsToUpdate = projectRequestDto.AlertNotificationRecipients.Where(ar => ar.Id.HasValue);
-            foreach (var alertNotificationRecipient in alertNotificationRecipientsToUpdate)
-            {
-                var alertNotificationRecipientToUpdate = projectToUpdate.AlertNotificationRecipients.FirstOrDefault(ar => ar.Id == alertNotificationRecipient.Id.Value);
-
-                if (alertNotificationRecipientToUpdate != null)
-                {
-                    alertNotificationRecipientToUpdate.Role = alertNotificationRecipient.Role;
-                    alertNotificationRecipientToUpdate.Organization = alertNotificationRecipient.Organization;
-                    alertNotificationRecipientToUpdate.PhoneNumber = alertNotificationRecipient.PhoneNumber;
-                    alertNotificationRecipientToUpdate.Email = alertNotificationRecipient.Email;
                 }
             }
         }

@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.Organizations
 
         public async Task<Result<OrganizationResponseDto>> Get(int organizationId)
         {
-            var gatewaySetting = await _nyssContext.Organizations
+            var organization = await _nyssContext.Organizations
                 .Select(gs => new OrganizationResponseDto
                 {
                     Id = gs.Id,
@@ -53,12 +53,12 @@ namespace RX.Nyss.Web.Features.Organizations
                 })
                 .FirstOrDefaultAsync(gs => gs.Id == organizationId);
 
-            if (gatewaySetting == null)
+            if (organization == null)
             {
                 return Error<OrganizationResponseDto>(ResultKey.NationalSociety.Organization.SettingDoesNotExist);
             }
 
-            var result = Success(gatewaySetting);
+            var result = Success(organization);
 
             return result;
         }
@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Features.Organizations
             return result;
         }
 
-        public async Task<Result<int>> Create(int nationalSocietyId, OrganizationRequestDto gatewaySettingRequestDto)
+        public async Task<Result<int>> Create(int nationalSocietyId, OrganizationRequestDto organizationRequestDto)
         {
             try
             {
@@ -97,16 +97,16 @@ namespace RX.Nyss.Web.Features.Organizations
                     return Error<int>(ResultKey.NationalSociety.Organization.NationalSocietyDoesNotExist);
                 }
 
-                var gatewaySettingToAdd = new Organization
+                var organizationToAdd = new Organization
                 {
-                    Name = gatewaySettingRequestDto.Name,
+                    Name = organizationRequestDto.Name,
                     NationalSocietyId = nationalSocietyId
                 };
 
-                await _nyssContext.Organizations.AddAsync(gatewaySettingToAdd);
+                await _nyssContext.Organizations.AddAsync(organizationToAdd);
                 await _nyssContext.SaveChangesAsync();
                 
-                return Success(gatewaySettingToAdd.Id, ResultKey.NationalSociety.Organization.SuccessfullyAdded);
+                return Success(organizationToAdd.Id, ResultKey.NationalSociety.Organization.SuccessfullyAdded);
             }
             catch (ResultException exception)
             {
@@ -115,7 +115,7 @@ namespace RX.Nyss.Web.Features.Organizations
             }
         }
 
-        public async Task<Result> Edit(int organizationId, OrganizationRequestDto gatewaySettingRequestDto)
+        public async Task<Result> Edit(int organizationId, OrganizationRequestDto organizationRequestDto)
         {
             try
             {
@@ -128,7 +128,7 @@ namespace RX.Nyss.Web.Features.Organizations
                     return Error(ResultKey.NationalSociety.Organization.SettingDoesNotExist);
                 }
 
-                entity.Name = gatewaySettingRequestDto.Name;
+                entity.Name = organizationRequestDto.Name;
 
                 await _nyssContext.SaveChangesAsync();
 

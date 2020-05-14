@@ -220,6 +220,14 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string CannotRemoveOrganizationThatHasSupervisors = "projectOrganization.cannotRemoveOrganizationThatHasSupervisors";
         }
 
+        public static class AlertRecipient
+        {
+            public const string AlertRecipientAlreadyAdded = "alertRecipient.alertRecipientAlreadyAdded";
+            public const string AlertRecipientDoesNotExist = "alertRecipient.alertRecipientDoesNotExist";
+            public const string AlertRecipientSuccessfullyEdited = "alertRecipient.alertRecipientSuccessfullyEdited";
+            public const string CurrentUserMustBeTiedToAnOrganization = "alertRecipient.currentUserMustBeTiedToAnOrganization";
+        }
+
         public class SqlExceptions
         {
             public const string GeneralError = "error.sql.general";

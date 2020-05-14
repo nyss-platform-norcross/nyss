@@ -11,7 +11,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
-using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.Supervisors.Dto;
 using RX.Nyss.Web.Features.Supervisors.Models;
@@ -108,7 +108,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Id = u.User.CurrentProject.Id,
                         Name = u.User.CurrentProject.Name,
                         IsClosed = u.User.CurrentProject.State == ProjectState.Closed,
-                        AlertRecipients = u.User.SupervisorAlertRecipients.Select(anr => new AlertNotificationRecipientDto
+                        AlertRecipients = u.User.SupervisorAlertRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
                         {
                             Id = anr.AlertNotificationRecipientId,
                             Role = anr.AlertNotificationRecipient.Role,
@@ -125,12 +125,14 @@ namespace RX.Nyss.Web.Features.Supervisors
                                 Id = p.Id,
                                 Name = p.Name,
                                 IsClosed = p.State == ProjectState.Closed,
-                                AlertRecipients = p.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipientDto
-                                {
-                                    Id = anr.Id,
-                                    Role = anr.Role,
-                                    Organization = anr.Organization
-                                }).ToList()
+                                AlertRecipients = p.AlertNotificationRecipients
+                                    .Where(anr => anr.ProjectOrganizationId == u.UserNationalSociety.OrganizationId)
+                                    .Select(anr => new ProjectAlertRecipientListResponseDto
+                                    {
+                                        Id = anr.Id,
+                                        Role = anr.Role,
+                                        Organization = anr.Organization
+                                    }).ToList()
                             })
                             .ToList()
                     }
