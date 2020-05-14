@@ -95,6 +95,10 @@ const ProjectsCreatePageComponent = (props) => {
     setAlertRecipients(alertRecipients.filter(ar => ar !== recipient));
   }
 
+  const onAddOrganization = (organization) => {
+    setOrganizations([...new Set([...organizations, { title: organization }])]);
+  }
+
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}
@@ -175,6 +179,7 @@ const ProjectsCreatePageComponent = (props) => {
                 alertRecipientNumber={alertRecipientNumber}
                 form={form}
                 organizations={organizations}
+                onAddOrganization={onAddOrganization}
                 onRemoveRecipient={onRemoveRecipient} />
             ))}
 

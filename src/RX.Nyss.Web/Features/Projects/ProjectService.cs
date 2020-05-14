@@ -275,6 +275,12 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
+                if (projectRequestDto.AllowMultipleOrganizations && !projectToUpdate.AllowMultipleOrganizations
+                    && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
+                {
+                    return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
+                }
+
                 projectToUpdate.Name = projectRequestDto.Name;
                 projectToUpdate.TimeZone = projectRequestDto.TimeZoneId;
                 projectToUpdate.AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations;
