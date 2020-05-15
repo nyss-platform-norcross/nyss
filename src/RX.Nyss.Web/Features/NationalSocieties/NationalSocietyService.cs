@@ -130,6 +130,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
             }
 
+            var initialOrganization = new Organization { Name = dto.InitialOrganizationName };
+
             var nationalSociety = new NationalSociety
             {
                 Name = dto.Name,
@@ -137,7 +139,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 Country = await GetCountryById(dto.CountryId),
                 IsArchived = false,
                 StartDate = DateTime.UtcNow,
-                Organizations = new List<Organization> { new Organization { Name = dto.InitialOrganizationName } }
+                Organizations = new List<Organization> { initialOrganization },
+                DefaultOrganization = initialOrganization
             };
 
             if (nationalSociety.ContentLanguage == null)
