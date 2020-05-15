@@ -20,7 +20,7 @@ class FieldBase extends PureComponent {
   };
 
   setAutoCompleteValue = (value) =>
-    value !== null ? value.inputValue ? value.inputValue : value.title : '';
+    value ? (value.inputValue || value.title) : '';
 
   handleChange = (e, val) => {
     const type = this.getElementType((e.nativeEvent && e.nativeEvent.target) || e);
