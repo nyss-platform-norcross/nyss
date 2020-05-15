@@ -12,6 +12,12 @@ namespace RX.Nyss.Data.Migrations
                 table: "AlertNotificationRecipients",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.Sql(@"
+                UPDATE AlertRecipient SET AlertRecipient.ProjectOrganizationId = 
+                (SELECT TOP(1) Id FROM nyss.ProjectOrganizations po WHERE AlertRecipient.ProjectId=po.ProjectId)
+                FROM nyss.AlertNotificationRecipients AlertRecipient
+            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

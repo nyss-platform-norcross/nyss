@@ -91,14 +91,6 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
         public async Task<Result<int>> Create(int nationalSocietyId, int projectId, ProjectAlertRecipientRequestDto createDto)
         {
-            var alertRecipient = await _nyssContext.AlertNotificationRecipients
-                .AnyAsync(anr => anr.Email == createDto.Email && anr.PhoneNumber == createDto.PhoneNumber);
-
-            if (alertRecipient)
-            {
-                return Error<int>(ResultKey.AlertRecipient.AlertRecipientAlreadyAdded);
-            }
-
             var currentUser = _authorizationService.GetCurrentUser();
 
             var organizationId = createDto.ProjectOrganizationId.HasValue ? createDto.ProjectOrganizationId.Value
@@ -111,6 +103,15 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             {
                 return Error<int>(ResultKey.AlertRecipient.CurrentUserMustBeTiedToAnOrganization);
             }
+
+            var alertRecipientExistsForCurrentOrganization = await _nyssContext.AlertNotificationRecipients
+                .AnyAsync(anr => anr.Email == createDto.Email && anr.PhoneNumber == createDto.PhoneNumber && anr.ProjectOrganizationId == organizationId);
+
+            if (alertRecipientExistsForCurrentOrganization)
+            {
+                return Error<int>(ResultKey.AlertRecipient.AlertRecipientAlreadyAdded);
+            }
+
 
             var alertRecipientToAdd = new AlertNotificationRecipient
             {

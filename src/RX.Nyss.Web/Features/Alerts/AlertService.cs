@@ -239,10 +239,10 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     var notificationEmails = alertData.NotificationRecipients
                         .Where(nr => !string.IsNullOrEmpty(nr.Email))
-                        .Select(nr => nr.Email).ToList();
+                        .Select(nr => nr.Email).Distinct().ToList();
                     var notificationPhoneNumbers = alertData.NotificationRecipients
                         .Where(nr => !string.IsNullOrEmpty(nr.PhoneNumber))
-                        .Select(nr => nr.PhoneNumber).ToList();
+                        .Select(nr => nr.PhoneNumber).Distinct().ToList();
                         
                     await SendNotificationEmails(alertData.LanguageCode, notificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
                     await SendNotificationSmses(alertData.NationalSocietyId, alertData.LanguageCode, notificationPhoneNumbers, alertData.Project,
