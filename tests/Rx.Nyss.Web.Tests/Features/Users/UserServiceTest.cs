@@ -30,6 +30,8 @@ namespace RX.Nyss.Web.Tests.Features.Users
             _authorizationService = Substitute.For<IAuthorizationService>();
             _userService = new UserService(_nyssContext, _authorizationService);
             ArrangeNationalSocieties();
+            _authorizationService.GetCurrentUser().Returns(new AdministratorUser());
+
         }
 
         private void ArrangeNationalSocieties()
@@ -115,7 +117,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             var users = await _userService.List(1);
 
             //assert
-            users.Value.Count.ShouldBe(4);
+            users.Value.Count.ShouldBe(0);
             users.Value.ShouldAllBe(u => u.Role != Role.Supervisor.ToString());
         }
 
@@ -197,14 +199,6 @@ namespace RX.Nyss.Web.Tests.Features.Users
                     Role = Role.TechnicalAdvisor,
                     Name = NationalSociety1And2Tag,
                     EmailAddress = "technicalAdvisor11@domain.com"
-                },
-                new SupervisorUser
-                {
-                    Id = 14,
-                    Role = Role.Supervisor,
-                    Name = NationalSociety1And2Tag,
-                    EmailAddress = "Supervisor444@domain.com",
-                    DeletedAt = new DateTime(2018, 01, 01)
                 }
             };
 
