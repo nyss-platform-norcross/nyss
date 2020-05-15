@@ -28,7 +28,7 @@ class FieldBase extends PureComponent {
       ? e.target.checked
       : (type === "date"
         ? dayjs(e)
-        : e.target.value || this.setAutoCompleteValue(val));
+        : this.setAutoCompleteValue(val) || e.target.value);
 
     this.setState({ value: value });
     this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
