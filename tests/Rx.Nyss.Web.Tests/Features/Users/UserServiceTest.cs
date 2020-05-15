@@ -30,7 +30,6 @@ namespace RX.Nyss.Web.Tests.Features.Users
             _authorizationService = Substitute.For<IAuthorizationService>();
             _userService = new UserService(_nyssContext, _authorizationService);
             ArrangeNationalSocieties();
-            _authorizationService.GetCurrentUser().Returns(new AdministratorUser());
 
         }
 
@@ -257,6 +256,8 @@ namespace RX.Nyss.Web.Tests.Features.Users
 
             ArrangeProjects();
             ArrangeSupervisorUserProjects();
+
+            _authorizationService.GetCurrentUser().Returns(users[2]);
         }
 
         private void ArrangeSupervisorUserProjects()
