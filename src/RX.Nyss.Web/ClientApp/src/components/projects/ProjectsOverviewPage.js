@@ -15,6 +15,7 @@ import { accessMap } from '../../authentication/accessMap';
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import Chip from "@material-ui/core/Chip";
 import { Tooltip, Icon } from "@material-ui/core";
+import { Coordinator, Administrator } from "../../authentication/roles";
 import { ProjectsOverviewAlertRecipientItem } from "./ProjectsOverviewAlertRecipientsItem";
 import * as roles from "../../authentication/roles";
 
@@ -46,6 +47,13 @@ const ProjectsOverviewPageComponent = (props) => {
           </Typography>
           <Typography variant="body1" gutterBottom>
             {selectedTimeZone.displayName}
+          </Typography>
+
+          <Typography variant="h6">
+            {strings(stringKeys.project.form.allowMultipleOrganizations)}
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            {strings(stringKeys.common.boolean[String(props.data.allowMultipleOrganizations)])}
           </Typography>
 
           <Typography variant="h6">
@@ -90,7 +98,7 @@ const ProjectsOverviewPageComponent = (props) => {
 
       {!props.isClosed && (
         <FormActions>
-          {(!props.data.hasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)) && (
+          {(!props.data.allowMultipleOrganizations || (props.data.hasCoordinator && props.callingUserRoles.some(r => r === Coordinator || r === Administrator))) && (
             <TableActionsButton variant="outlined" color="primary" onClick={() => props.openEdition(props.nationalSocietyId, props.projectId)} roles={accessMap.projects.edit}>
               {strings(stringKeys.project.edit)}
             </TableActionsButton>

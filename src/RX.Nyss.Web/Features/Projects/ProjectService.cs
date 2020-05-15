@@ -63,6 +63,7 @@ namespace RX.Nyss.Web.Features.Projects
                     NationalSocietyId = p.NationalSocietyId,
                     Name = p.Name,
                     TimeZoneId = p.TimeZone,
+                    AllowMultipleOrganizations = p.AllowMultipleOrganizations,
                     State = p.State,
                     ProjectHealthRisks = p.ProjectHealthRisks.Select(phr => new ProjectHealthRiskResponseDto
                     {
@@ -105,8 +106,9 @@ namespace RX.Nyss.Web.Features.Projects
             return result;
         }
 
-        private async Task<bool> CheckCoordinatorExistence(int nationalSocietyId) =>
-            !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator) && await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator));
+        private async Task<bool> ValidateCoordinatorAccess(int nationalSocietyId) =>
+            _authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator) 
+            || !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator));
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes) =>
             await _nyssContext.ProjectHealthRisks
@@ -203,6 +205,7 @@ namespace RX.Nyss.Web.Features.Projects
                 var projectToAdd = new Project
                 {
                     Name = projectRequestDto.Name,
+                    AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations,
                     TimeZone = projectRequestDto.TimeZoneId,
                     NationalSocietyId = nationalSocietyId,
                     State = ProjectState.Open,
@@ -267,13 +270,20 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error(ResultKey.Project.ProjectDoesNotExist);
                 }
 
-                if (await CheckCoordinatorExistence(projectToUpdate.NationalSocietyId))
+                if (projectToUpdate.AllowMultipleOrganizations && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
+                {
+                    return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
+                }
+
+                if (projectRequestDto.AllowMultipleOrganizations && !projectToUpdate.AllowMultipleOrganizations
+                    && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
                 projectToUpdate.Name = projectRequestDto.Name;
                 projectToUpdate.TimeZone = projectRequestDto.TimeZoneId;
+                projectToUpdate.AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations;
 
                 await UpdateHealthRisks(projectToUpdate, projectRequestDto);
 
@@ -297,17 +307,17 @@ namespace RX.Nyss.Web.Features.Projects
                 var projectToClose = await _nyssContext.Projects
                     .Select(p => new
                     {
-                        p,
+                        Project = p,
                         AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
                     })
-                    .SingleOrDefaultAsync(x => x.p.Id == projectId);
+                    .SingleOrDefaultAsync(x => x.Project.Id == projectId);
 
                 if (projectToClose == null)
                 {
                     return Error(ResultKey.Project.ProjectDoesNotExist);
                 }
 
-                if (projectToClose.p.State == ProjectState.Closed)
+                if (projectToClose.Project.State == ProjectState.Closed)
                 {
                     return Error(ResultKey.Project.ProjectAlreadyClosed);
                 }
@@ -317,15 +327,15 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
                 }
 
-                if (await CheckCoordinatorExistence(projectToClose.p.NationalSocietyId))
+                if (projectToClose.Project.AllowMultipleOrganizations && !await ValidateCoordinatorAccess(projectToClose.Project.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    projectToClose.p.State = ProjectState.Closed;
-                    projectToClose.p.EndDate = _dateTimeProvider.UtcNow;
+                    projectToClose.Project.State = ProjectState.Closed;
+                    projectToClose.Project.EndDate = _dateTimeProvider.UtcNow;
                     var dataCollectorsToRemove = _nyssContext.DataCollectors.Where(dc => dc.Project.Id == projectId && !dc.RawReports.Any());
 
                     await _dataCollectorService.AnonymizeDataCollectorsWithReports(projectId);

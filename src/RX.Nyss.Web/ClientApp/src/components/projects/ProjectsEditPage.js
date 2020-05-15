@@ -24,6 +24,7 @@ import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import { ValidationMessage } from '../forms/ValidationMessage';
 import { Tooltip, Icon } from '@material-ui/core';
+import CheckboxField from '../forms/CheckboxField';
 import { ProjectsAlertRecipientItem } from './ProjectsAlertRecipientItem';
 
 const ProjectsEditPageComponent = (props) => {
@@ -49,6 +50,7 @@ const ProjectsEditPageComponent = (props) => {
 
     let fields = {
       name: props.data.name,
+      allowMultipleOrganizations: props.data.allowMultipleOrganizations,
       timeZoneId: props.data.timeZoneId
     };
 
@@ -146,6 +148,14 @@ const ProjectsEditPageComponent = (props) => {
                 </MenuItem>
               ))}
             </SelectField>
+          </Grid>
+
+          <Grid item xs={12} sm={9}>
+            <CheckboxField
+              label={strings(stringKeys.project.form.allowMultipleOrganizations)}
+              name="allowMultipleOrganizations"
+              field={form.fields.allowMultipleOrganizations}
+            />
           </Grid>
 
           <Grid item xs={12}>

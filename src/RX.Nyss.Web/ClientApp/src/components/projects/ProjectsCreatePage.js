@@ -23,6 +23,7 @@ import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import { ValidationMessage } from '../forms/ValidationMessage';
 import { Tooltip, Icon } from '@material-ui/core';
+import CheckboxField from '../forms/CheckboxField';
 import { ProjectsAlertRecipientItem } from './ProjectsAlertRecipientItem';
 
 const ProjectsCreatePageComponent = (props) => {
@@ -39,6 +40,7 @@ const ProjectsCreatePageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
       name: "",
+      allowMultipleOrganizations: false,
       timeZoneId: ""
     };
 
@@ -93,6 +95,10 @@ const ProjectsCreatePageComponent = (props) => {
     setAlertRecipients(alertRecipients.filter(ar => ar !== recipient));
   }
 
+  const onAddOrganization = (organization) => {
+    setOrganizations([...new Set([...organizations, { title: organization }])]);
+  }
+
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}
@@ -120,6 +126,14 @@ const ProjectsCreatePageComponent = (props) => {
                 </MenuItem>
               ))}
             </SelectField>
+          </Grid>
+
+          <Grid item xs={12} sm={9}>
+            <CheckboxField
+              label={strings(stringKeys.project.form.allowMultipleOrganizations)}
+              name="allowMultipleOrganizations"
+              field={form.fields.allowMultipleOrganizations}
+            />
           </Grid>
 
           <Grid item xs={12}>
@@ -165,6 +179,7 @@ const ProjectsCreatePageComponent = (props) => {
                 alertRecipientNumber={alertRecipientNumber}
                 form={form}
                 organizations={organizations}
+                onAddOrganization={onAddOrganization}
                 onRemoveRecipient={onRemoveRecipient} />
             ))}
 

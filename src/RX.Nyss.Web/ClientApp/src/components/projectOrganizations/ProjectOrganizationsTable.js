@@ -11,6 +11,7 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
+import { accessMap } from '../../authentication/accessMap';
 
 export const ProjectOrganizationsTable = ({ isListFetching, isRemoving, remove, list, projectId }) => {
   if (isListFetching) {
@@ -32,7 +33,13 @@ export const ProjectOrganizationsTable = ({ isListFetching, isRemoving, remove, 
               <TableCell>{row.name}</TableCell>
               <TableCell>
                 <TableRowActions>
-                  <TableRowAction onClick={() => remove(projectId, row.id)} confirmationText={strings(stringKeys.projectOrganization.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                  <TableRowAction
+                    roles={accessMap.projectOrganizations.delete}
+                    onClick={() => remove(projectId, row.id)}
+                    confirmationText={strings(stringKeys.projectOrganization.list.removalConfirmation)}
+                    icon={<ClearIcon />}
+                    title={"Delete"}
+                    isFetching={isRemoving[row.id]} />
                 </TableRowActions>
               </TableCell>
             </TableRow>

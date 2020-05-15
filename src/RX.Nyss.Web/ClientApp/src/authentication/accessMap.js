@@ -62,7 +62,7 @@ export const accessMap = {
     export: [Administrator, Manager, TechnicalAdvisor]
   },
   projectOrganizations: {
-    list: [Administrator, Coordinator],
+    list: [Administrator, Coordinator, Manager, TechnicalAdvisor],
     add: [Administrator, Coordinator],
     delete: [Administrator, Coordinator]
   },

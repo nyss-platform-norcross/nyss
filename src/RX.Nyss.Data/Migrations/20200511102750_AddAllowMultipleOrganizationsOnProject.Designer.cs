@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20200511102750_AddAllowMultipleOrganizationsOnProject")]
+    partial class AddAllowMultipleOrganizationsOnProject
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,41 +83,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("Alerts");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.AlertNotificationRecipient", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("Organization")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("AlertNotificationRecipients");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertReport", b =>
@@ -1810,6 +1777,28 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Districts");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.EmailAlertRecipient", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("EmailAlertRecipients");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.GatewaySetting", b =>
                 {
                     b.Property<int>("Id")
@@ -2185,29 +2174,6 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("ProjectHealthRisks");
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.ProjectOrganization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProjectId", "OrganizationId")
-                        .IsUnique();
-
-                    b.ToTable("ProjectOrganizations");
-                });
-
             modelBuilder.Entity("RX.Nyss.Data.Models.RawReport", b =>
                 {
                     b.Property<int>("Id")
@@ -2406,19 +2372,26 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("Reports");
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUserAlertRecipient", b =>
+            modelBuilder.Entity("RX.Nyss.Data.Models.SmsAlertRecipient", b =>
                 {
-                    b.Property<int>("SupervisorId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AlertNotificationRecipientId")
-                        .HasColumnType("int");
+                    b.HasKey("Id");
 
-                    b.HasKey("SupervisorId", "AlertNotificationRecipientId");
+                    b.HasIndex("ProjectId");
 
-                    b.HasIndex("AlertNotificationRecipientId");
-
-                    b.ToTable("SupervisorUserAlertRecipients");
+                    b.ToTable("SmsAlertRecipients");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUserProject", b =>
@@ -2655,15 +2628,6 @@ namespace RX.Nyss.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.AlertNotificationRecipient", b =>
-                {
-                    b.HasOne("RX.Nyss.Data.Models.Project", null)
-                        .WithMany("AlertNotificationRecipients")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertReport", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Alert", "Alert")
@@ -2709,6 +2673,15 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.Region", "Region")
                         .WithMany("Districts")
                         .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.EmailAlertRecipient", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
+                        .WithMany("EmailAlertRecipients")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -2828,21 +2801,6 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
                         .WithMany("ProjectHealthRisks")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.ProjectOrganization", b =>
-                {
-                    b.HasOne("RX.Nyss.Data.Models.Organization", "Organization")
-                        .WithMany("OrganizationProjects")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
-                        .WithMany("ProjectOrganizations")
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -2992,18 +2950,12 @@ namespace RX.Nyss.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUserAlertRecipient", b =>
+            modelBuilder.Entity("RX.Nyss.Data.Models.SmsAlertRecipient", b =>
                 {
-                    b.HasOne("RX.Nyss.Data.Models.AlertNotificationRecipient", "AlertNotificationRecipient")
-                        .WithMany("SupervisorAlertRecipients")
-                        .HasForeignKey("AlertNotificationRecipientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.SupervisorUser", "Supervisor")
-                        .WithMany("SupervisorAlertRecipients")
-                        .HasForeignKey("SupervisorId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
+                        .WithMany("SmsAlertRecipients")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

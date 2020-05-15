@@ -214,6 +214,7 @@ namespace RX.Nyss.Common.Utils.DataContract
 
         public class ProjectOrganization
         {
+            public const string ProjectDoesNotAllowAddingMultipleOrganizations = "projectOrganization.projectDoesNotAllowAddingMultipleOrganizations";
             public const string OrganizationAlreadyAdded = "projectOrganization.organizationAlreadyAdded";
             public const string CannotRemoveLastOrganization = "projectOrganization.cannotRemoveLastOrganization";
             public const string CannotRemoveOrganizationThatHasSupervisors = "projectOrganization.cannotRemoveOrganizationThatHasSupervisors";

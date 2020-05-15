@@ -70,12 +70,25 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations
 
         public async Task<Result<int>> Create(int projectId, ProjectOrganizationRequestDto createDto)
         {
-            var project = await _nyssContext.ProjectOrganizations
-                .AnyAsync(po => po.ProjectId == projectId && po.OrganizationId == createDto.OrganizationId);
+            var projectData = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => new
+                {
+                    p.AllowMultipleOrganizations,
+                    OrganiationsCount = p.ProjectOrganizations.Count,
+                    HasSameOrganization = p.ProjectOrganizations
+                        .Any(po => po.ProjectId == projectId && po.OrganizationId == createDto.OrganizationId)
+                })
+                .SingleAsync();
 
-            if (project)
+            if (projectData.HasSameOrganization)
             {
                 return Error<int>(ResultKey.ProjectOrganization.OrganizationAlreadyAdded);
+            }
+
+            if (projectData.OrganiationsCount > 0 && !projectData.AllowMultipleOrganizations)
+            {
+                return Error<int>(ResultKey.ProjectOrganization.ProjectDoesNotAllowAddingMultipleOrganizations);
             }
 
             var projectOrganizationToAdd = new ProjectOrganization

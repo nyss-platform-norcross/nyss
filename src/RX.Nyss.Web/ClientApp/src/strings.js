@@ -290,6 +290,7 @@ export const stringKeys = {
       creationTitle: "project.form.creationTitle",
       editionTitle: "project.form.editionTitle",
       name: "project.form.name",
+      allowMultipleOrganizations: "project.form.allowMultipleOrganizations",
       timeZone: "project.form.timeZone",
       healthRisks: "project.form.healthRisks",
       healthRisksSetion: "project.form.healthRisksSetion",
@@ -881,6 +882,12 @@ export const stringKeys = {
     setSuccessfully: "headManagerConsents.setSuccessfully",
     selectLanguage: "headManagerConsents.selectLanguage",
     downloadDirectly: "headManagerConsents.downloadDirectly"
+  },
+  common: {
+    boolean: {
+      "true": "common.true",
+      "false": "common.false"
+    }
   },
   translations: {
     title: "translations.title",

@@ -3,93 +3,98 @@ import PropTypes from "prop-types";
 import dayjs from "dayjs";
 
 class FieldBase extends PureComponent {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            value: props.field.value === undefined ? "" : props.field.value,
-            error: props.field.error
-        };
-
-        this.subscription = props.field.subscribe(({ newValue, field }) => {
-            this.setState({
-                value: newValue,
-                error: field.error
-            });
-        });
+    this.state = {
+      value: props.field.value === undefined ? "" : props.field.value,
+      error: props.field.error
     };
 
-    setAutoCompleteValue = (value) => 
-        value !== null ? value.inputValue ? value.inputValue : value.title : '';
+    this.subscription = props.field.subscribe(({ newValue, field }) => {
+      this.setState({
+        value: newValue,
+        error: field.error
+      });
+    });
+  };
 
-    handleChange = (e, val) => {
-        const type = this.getElementType((e.nativeEvent && e.nativeEvent.target) || e);
-        const value = val !== undefined ? this.setAutoCompleteValue(val) : type === "checkbox" ? e.target.checked : type === "date" ? dayjs(e) : e.target.value;
-        this.setState({ value: value });
-        this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
+  setAutoCompleteValue = (value) =>
+    value !== null ? value.inputValue ? value.inputValue : value.title : '';
+
+  handleChange = (e, val) => {
+    const type = this.getElementType((e.nativeEvent && e.nativeEvent.target) || e);
+    const value = type === "checkbox"
+      ? e.target.checked
+      : (type === "date"
+        ? dayjs(e)
+        : e.target.value || this.setAutoCompleteValue(val));
+
+    this.setState({ value: value });
+    this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
+  }
+
+  handleBlur = () => {
+    this.props.field.touched = true;
+    this.props.field.update(this.props.field.value);
+  }
+
+  getElementType = (element) => {
+    if (typeof element.toISOString === "function") {
+      return "date";
     }
 
-    handleBlur = () => {
-        this.props.field.touched = true;
-        this.props.field.update(this.props.field.value);
+    if (element && element.type) {
+      switch (element.type.toLowerCase()) {
+        case "checkbox": return "checkbox";
+        case "text": return "textbox";
+        case "password": return "textbox";
+        default:
+      }
     }
 
-    getElementType = (element) => {
-        if (typeof element.toISOString === "function") {
-            return "date";
-        }
+    return element.tagName.toLowerCase();
+  }
 
-        if (element && element.type) {
-            switch (element.type.toLowerCase()) {
-                case "checkbox": return "checkbox";
-                case "text": return "textbox";
-                case "password": return "textbox";
-                default:
-            }
-        }
+  componentWillUnmount() {
+    this.subscription.unsubscribe();
+  }
 
-        return element.tagName.toLowerCase();
-    }
+  render() {
+    const { label, field, Component, ...rest } = this.props;
 
-    componentWillUnmount() {
-        this.subscription.unsubscribe();
-    }
-
-    render() {
-        const { label, field, Component, ...rest } = this.props;
-
-        return (
-            <Component
-                error={field.error}
-                name={field.name}
-                label={label}
-                value={this.state.value}
-                controlProps={{
-                    onChange: this.handleChange,
-                    onBlur: this.handleBlur
-                }}
-                customProps={rest}
-                {...rest}
-            />
-        );
-    }
+    return (
+      <Component
+        error={field.error}
+        name={field.name}
+        label={label}
+        value={this.state.value}
+        controlProps={{
+          onChange: this.handleChange,
+          onBlur: this.handleBlur
+        }}
+        customProps={rest}
+        {...rest}
+      />
+    );
+  }
 };
 
 FieldBase.propTypes = {
-    Component: PropTypes.func,
-    field: PropTypes.shape({
-        subscribe: PropTypes.func,
-        update: PropTypes.func,
-        value: PropTypes.any,
-        name: PropTypes.string,
-        error: PropTypes.any
-    })
+  Component: PropTypes.func,
+  field: PropTypes.shape({
+    subscribe: PropTypes.func,
+    update: PropTypes.func,
+    value: PropTypes.any,
+    name: PropTypes.string,
+    error: PropTypes.any
+  })
 };
 
 export const createFieldComponent = (Component) => (props) => (
-    <FieldBase
-        {...props}
-        Component={Component}
-    />);
+  <FieldBase
+    {...props}
+    Component={Component}
+  />);
 
 export default FieldBase;

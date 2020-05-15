@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations
         /// </summary>
         /// <returns>A list of project organizations assigned to the project</returns>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<List<ProjectOrganizationListResponseDto>>> List(int projectId) =>
             _projectOrganizationService.List(projectId);
 

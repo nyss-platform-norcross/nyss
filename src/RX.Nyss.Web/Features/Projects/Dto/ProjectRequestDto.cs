@@ -8,6 +8,8 @@ namespace RX.Nyss.Web.Features.Projects.Dto
     {
         public string Name { get; set; }
 
+        public bool AllowMultipleOrganizations { get; set; }
+
         public string TimeZoneId { get; set; }
 
         public IEnumerable<ProjectHealthRiskRequestDto> HealthRisks { get; set; }
