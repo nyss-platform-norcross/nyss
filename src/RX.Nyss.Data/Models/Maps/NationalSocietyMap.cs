@@ -19,7 +19,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasOne(ns => ns.ContentLanguage).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(ns => ns.Country).WithMany().OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(ns => ns.RawReports).WithOne(rr => rr.NationalSociety).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(ns => ns.DefaultOrganization).WithMany().HasForeignKey(x => x.DefaultOrganizationId).IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(ns => ns.DefaultOrganization).WithMany().HasForeignKey(x => x.DefaultOrganizationId).OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(ns => ns.IsArchived);
             builder.HasIndex(ns => ns.StartDate);

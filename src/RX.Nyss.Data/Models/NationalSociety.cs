@@ -31,8 +31,8 @@ namespace RX.Nyss.Data.Models
 
         public virtual ICollection<Organization> Organizations { get; set; }
 
-        public int DefaultOrganizationId { get; set; }
+        public int? DefaultOrganizationId { get; set; }
 
-        public Organization DefaultOrganization { get; set; }
+        public virtual Organization DefaultOrganization { get; set; }
     }
 }

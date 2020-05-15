@@ -258,7 +258,8 @@ export const stringKeys = {
       name: "organization.list.name",
       projects: "organization.list.projects",
       headManager: "organization.list.headManager",
-      removalConfirmation: "organization.list.removalConfirmation"
+      removalConfirmation: "organization.list.removalConfirmation",
+      isDefaultOrganization: "organization.list.isDefaultOrganization"
     },
   },
   projectOrganization: {
@@ -503,7 +504,8 @@ export const stringKeys = {
       role: "nationalSocietyUser.list.role",
       project: "nationalSocietyUser.list.project",
       removalConfirmation: "nationalSocietyUser.list.removalConfirmation",
-      headManager: "nationalSocietyUser.list.headManager"
+      headManager: "nationalSocietyUser.list.headManager",
+      organization: "nationalSocietyUser.list.organization",
     },
     messages: {
       creationSuccessful: "nationalSocietyUser.messages.creationSuccessful",

@@ -9,5 +9,7 @@
         public string Projects { get; set; }
 
         public string HeadManager { get; set; }
+
+        public bool IsDefaultOrganization { get; set; }
     }
 }

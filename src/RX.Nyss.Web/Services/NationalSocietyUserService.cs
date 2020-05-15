@@ -71,8 +71,9 @@ namespace RX.Nyss.Web.Services
         }
         public async Task<T> GetNationalSocietyUserIncludingOrganizations<T>(int nationalSocietyUserId) where T : User
         {
-            var nationalSocietyUser = await _dataContext.Users.FilterAvailable()
-                .Include(u => u.Organization)
+            var nationalSocietyUser = await _dataContext.Users
+                .Include(u => u.UserNationalSocieties)
+                .FilterAvailable()
                 .OfType<T>()
                 .Where(u => u.Id == nationalSocietyUserId)
                 .SingleOrDefaultAsync();

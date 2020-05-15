@@ -174,6 +174,7 @@ namespace RX.Nyss.Web.Features.Managers
         {
             var nationalSociety = await _dataContext.NationalSocieties
                 .Include(ns => ns.ContentLanguage)
+                .Include(ns => ns.DefaultOrganization)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -217,22 +218,27 @@ namespace RX.Nyss.Web.Features.Managers
                 var currentUser = _authorizationService.GetCurrentUser();
 
                 userNationalSociety.Organization = await _dataContext.UserNationalSocieties
-                        .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
-                        .Select(uns => uns.Organization)
-                        .SingleOrDefaultAsync() ??
-                    // Todo: Use default Ns defaultOrg flag?
-                    await _dataContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
+                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                    .Select(uns => uns.Organization)
+                    .SingleOrDefaultAsync() ?? nationalSociety.DefaultOrganization;
             }
 
 
             if (createDto.SetAsHeadManager == true)
             {
-                if (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && (userNationalSociety.OrganizationId.HasValue || userNationalSociety.Organization.PendingHeadManagerId.HasValue))
+                if (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && (userNationalSociety.Organization.HeadManagerId.HasValue || userNationalSociety.Organization.PendingHeadManagerId.HasValue))
                 {
                     throw new ResultException(ResultKey.User.Registration.HeadManagerAlreadyExists);
                 }
 
-                userNationalSociety.Organization.PendingHeadManager = user;
+                if (nationalSociety.DefaultOrganization == userNationalSociety.Organization)
+                {
+                    userNationalSociety.Organization.PendingHeadManager = user;
+                }
+                else
+                {
+                    userNationalSociety.Organization.HeadManager = user;
+                }
             }
 
             await _dataContext.AddAsync(userNationalSociety);
@@ -252,7 +258,17 @@ namespace RX.Nyss.Web.Features.Managers
 
         private async Task HandleHeadManagerStatus(ManagerUser manager, bool allowHeadManagerDeletion)
         {
-            var organization = await _dataContext.Organizations.FindAsync(manager.UserNationalSocieties.Single().OrganizationId);
+            var organization = await _dataContext.Organizations
+                .Include(o => o.PendingHeadManager)
+                .Include(o => o.HeadManager)
+                .Where(o => o.HeadManager == manager || o.PendingHeadManager == manager)
+                .SingleOrDefaultAsync();
+
+            if (organization == null)
+            {
+                return;
+            }
+
             if (organization.PendingHeadManager == manager)
             {
                 organization.PendingHeadManager = null;

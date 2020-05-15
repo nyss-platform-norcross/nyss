@@ -130,19 +130,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
             }
 
-            var initialOrganization = new Organization { Name = dto.InitialOrganizationName };
-
             var nationalSociety = new NationalSociety
             {
                 Name = dto.Name,
                 ContentLanguage = await GetLanguageById(dto.ContentLanguageId),
                 Country = await GetCountryById(dto.CountryId),
                 IsArchived = false,
-                StartDate = DateTime.UtcNow,
-                Organizations = new List<Organization> { initialOrganization },
-                DefaultOrganization = initialOrganization
+                StartDate = DateTime.UtcNow
             };
-
+            
             if (nationalSociety.ContentLanguage == null)
             {
                 return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotFound);
@@ -155,6 +151,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             await _nyssContext.AddAsync(nationalSociety);
             await _nyssContext.SaveChangesAsync();
+
+            nationalSociety.DefaultOrganization = new Organization
+            {
+                Name = dto.InitialOrganizationName,
+                NationalSociety = nationalSociety
+            };
+
+            await _nyssContext.SaveChangesAsync();
+
             _loggerAdapter.Info($"A national society {nationalSociety} was created");
             return Success(nationalSociety.Id);
         }

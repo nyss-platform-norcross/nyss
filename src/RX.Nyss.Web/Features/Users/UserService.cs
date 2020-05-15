@@ -209,7 +209,7 @@ namespace RX.Nyss.Web.Features.Users
 
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
-                return _dataContext.UserNationalSocieties
+                return query
                     .Where(u =>
                         u.User.Role == Role.Coordinator ||
                         u.Organization.HeadManager == u.User ||

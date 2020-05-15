@@ -134,9 +134,10 @@ function* setAsHeadManagerInOrganization({ organizationId, nationalSocietyUserId
     yield call(http.post, `/api/organization/${organizationId}/setHeadManager`, { userId: nationalSocietyUserId });
     yield put(actions.setAsHeadManager.success(nationalSocietyUserId));
     yield put(appActions.showMessage(stringKeys.nationalSocietyConsents.setSuccessfully));
-    yield call(getNationalSocietyUsers, organizationId);
+    const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
+    yield call(getNationalSocietyUsers, nationalSocietyId);
   } catch (error) {
-    yield put(actions.setAsHeadManager.failure(nationalSocietyUserId));
+    yield put(actions.setAsHeadManager.failure(nationalSocietyUserId, error.message));
   }
 };
 

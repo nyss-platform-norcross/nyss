@@ -52,6 +52,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             <TableCell>{strings(stringKeys.nationalSocietyUser.form.email)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.phoneNumber)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.role)}</TableCell>
+            <TableCell>{strings(stringKeys.nationalSocietyUser.list.organization)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.project)}</TableCell>
             <TableCell align="center">{strings(stringKeys.nationalSocietyUser.list.headManager)}</TableCell>
             <TableCell style={{ width: "16%" }} />
@@ -64,6 +65,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               <TableCell>{row.email}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{strings(`role.${row.role.toLowerCase()}`)}</TableCell>
+              <TableCell>{row.organizationName}</TableCell>
               <TableCell>{row.project}</TableCell>
               <TableCell align="center">{
                 (row.isHeadManager && <CheckIcon fontSize="small" />) ||

@@ -65,19 +65,21 @@ namespace RX.Nyss.Web.Features.Organizations
 
         public async Task<Result<List<OrganizationListResponseDto>>> List(int nationalSocietyId)
         {
-            var gatewaySettings = await _nyssContext.Organizations
-                .Where(gs => gs.NationalSocietyId == nationalSocietyId)
-                .OrderBy(gs => gs.Id)
-                .Select(gs => new OrganizationListResponseDto
+            var organizations = await _nyssContext.Organizations
+                .Where(o => o.NationalSocietyId == nationalSocietyId)
+                .OrderByDescending(o => o.NationalSociety.DefaultOrganization == o)
+                .ThenBy(o => o.Id)
+                .Select(o => new OrganizationListResponseDto
                 {
-                    Id = gs.Id,
-                    Name = gs.Name,
-                    HeadManager = gs.NationalSociety.DefaultOrganization.HeadManager.Name,
-                    Projects = "" // TODO
+                    Id = o.Id,
+                    Name = o.Name,
+                    HeadManager = o.HeadManager.Name,
+                    Projects = string.Join(", ", o.OrganizationProjects.Select(op => op.Project.Name)),
+                    IsDefaultOrganization = o.NationalSociety.DefaultOrganization == o
                 })
                 .ToListAsync();
 
-            var result = Success(gatewaySettings);
+            var result = Success(organizations);
 
             return result;
         }
@@ -200,7 +202,7 @@ namespace RX.Nyss.Web.Features.Organizations
                 })
                 .SingleAsync();
 
-            if (nationalSociety.HasCoordinator)
+            if (!nationalSociety.HasCoordinator)
             {
                 return false;
             }
@@ -254,10 +256,9 @@ namespace RX.Nyss.Web.Features.Organizations
 
         public async Task<Result> SetPendingHeadManager(int organizationId, int userId)
         {
-            // Todo: Should we still also check nationalSocietyId?
             var userNationalSocieties = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.OrganizationId == organizationId && uns.UserId == userId)
-                .Select(x => new { x.Organization, x.User })
+                .Select(x => new { x.Organization, x.User, IsDefaultOrganization = x.NationalSociety.DefaultOrganization == x.Organization })
                 .SingleOrDefaultAsync();
 
             if (userNationalSocieties == null)
@@ -270,7 +271,15 @@ namespace RX.Nyss.Web.Features.Organizations
                 return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
             }
 
-            userNationalSocieties.Organization.PendingHeadManager = userNationalSocieties.User;
+            if (userNationalSocieties.IsDefaultOrganization)
+            {
+                userNationalSocieties.Organization.PendingHeadManager = userNationalSocieties.User;
+            }
+            else
+            {
+                userNationalSocieties.Organization.HeadManager = userNationalSocieties.User;
+            }
+            
             await _nyssContext.SaveChangesAsync();
 
             return Success();
