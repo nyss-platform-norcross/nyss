@@ -119,13 +119,13 @@ namespace RX.Nyss.Web.Features.Supervisors
 
             if (supervisor == null)
             {
-                _loggerAdapter.Debug($"Data manager with id {supervisorId} was not found");
+                _loggerAdapter.Debug($"Supervisor with id {supervisorId} was not found");
                 return Error<GetSupervisorResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
             supervisor.EditSupervisorFormData = new EditSupervisorFormDataDto
             {
-                AvailableProjects = _nyssContext.Projects
+                AvailableProjects = await _nyssContext.Projects
                     .Where(p => p.NationalSociety.Id == nationalSocietyId)
                     .Where(p => p.State == ProjectState.Open)
                     .Select(p => new EditSupervisorFormDataDto.ListProjectsResponseDto
@@ -134,7 +134,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Name = p.Name,
                         IsClosed = p.State == ProjectState.Closed,
                         AlertRecipients = p.AlertNotificationRecipients
-                            .Where(anr => anr.OrganizationId == u.UserNationalSociety.OrganizationId)
+                            .Where(anr => anr.OrganizationId == supervisor.OrganizationId)
                             .Select(anr => new ProjectAlertRecipientListResponseDto
                             {
                                 Id = anr.Id,
@@ -142,7 +142,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                                 Organization = anr.Organization
                             }).ToList()
                     })
-                    .ToList()
+                    .ToListAsync()
             };
 
             if (supervisor.CurrentProject != null && supervisor.CurrentProject.IsClosed)

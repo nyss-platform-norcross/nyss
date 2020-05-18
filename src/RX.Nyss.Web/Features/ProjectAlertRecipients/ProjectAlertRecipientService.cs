@@ -80,7 +80,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                     PhoneNumber = anr.PhoneNumber
                 })
                 .SingleOrDefaultAsync();
-            
+
             if (alertRecipient == null)
             {
                 return Error<ProjectAlertRecipientListResponseDto>(ResultKey.AlertRecipient.AlertRecipientDoesNotExist);
@@ -125,7 +125,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
             await _nyssContext.AlertNotificationRecipients.AddAsync(alertRecipientToAdd);
             await _nyssContext.SaveChangesAsync();
-            
+
             return Success(alertRecipientToAdd.Id);
         }
 
@@ -146,19 +146,25 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             alertRecipient.PhoneNumber = editDto.PhoneNumber;
 
             await _nyssContext.SaveChangesAsync();
-            
+
             return SuccessMessage(ResultKey.AlertRecipient.AlertRecipientSuccessfullyEdited);
         }
 
         public async Task<Result> Delete(int alertRecipientId)
         {
             var alertRecipient = await _nyssContext.AlertNotificationRecipients
+                .Include(anr => anr.SupervisorAlertRecipients)
                 .Where(anr => anr.Id == alertRecipientId)
                 .SingleOrDefaultAsync();
 
             if (alertRecipient == null)
             {
                 return Error<int>(ResultKey.AlertRecipient.AlertRecipientDoesNotExist);
+            }
+
+            if (alertRecipient.SupervisorAlertRecipients.Any())
+            {
+                return Error<int>(ResultKey.AlertRecipient.CannotDeleteAlertRecipientTiedToSupervisors);
             }
 
             _nyssContext.AlertNotificationRecipients.Remove(alertRecipient);

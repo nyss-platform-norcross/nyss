@@ -69,7 +69,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                     Email = "test@example.com",
                     PhoneNumber = "+123456",
                     OrganizationId = 1,
-                    ProjectId = 1
+                    ProjectId = 1,
+                    SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
                 }
             };
 

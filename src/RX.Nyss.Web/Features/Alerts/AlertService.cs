@@ -150,11 +150,11 @@ namespace RX.Nyss.Web.Features.Alerts
                         ReportedCase = ar.Report.ReportedCase,
                         Status = ar.Report.Status
                     }),
-                    AlertRecipients = a.ProjectHealthRisk.Project.AlertNotificationRecipients.Select(anr => new
+                    AlertRecipients = a.AlertReports.SelectMany(ar => ar.Report.DataCollector.Supervisor.SupervisorAlertRecipients.Select(sar => new
                     {
-                        Email = anr.Email,
-                        PhoneNumber = anr.PhoneNumber
-                    }).ToList()
+                        Email = sar.AlertNotificationRecipient.Email,
+                        PhoneNumber = sar.AlertNotificationRecipient.PhoneNumber
+                    })).ToList()
                 })
                 .AsNoTracking()
                 .SingleAsync();
@@ -207,11 +207,11 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Single(),
                     Project = alert.ProjectHealthRisk.Project.Name,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationRecipients = alert.ProjectHealthRisk.Project.AlertNotificationRecipients.Select(anr => new
+                    NotificationRecipients = alert.AlertReports.SelectMany(ar => ar.Report.DataCollector.Supervisor.SupervisorAlertRecipients.Select(sar => new
                     {
-                        Email = anr.Email,
-                        PhoneNumber = anr.PhoneNumber
-                    }).ToList(),
+                        Email = sar.AlertNotificationRecipient.Email,
+                        PhoneNumber = sar.AlertNotificationRecipient.PhoneNumber
+                    })).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
                     AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted),
                     NationalSocietyId = alert.ProjectHealthRisk.Project.NationalSociety.Id
@@ -243,7 +243,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     var notificationPhoneNumbers = alertData.NotificationRecipients
                         .Where(nr => !string.IsNullOrEmpty(nr.PhoneNumber))
                         .Select(nr => nr.PhoneNumber).Distinct().ToList();
-                        
+
                     await SendNotificationEmails(alertData.LanguageCode, notificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
                     await SendNotificationSmses(alertData.NationalSocietyId, alertData.LanguageCode, notificationPhoneNumbers, alertData.Project,
                         alertData.HealthRisk, alertData.LastReportVillage);

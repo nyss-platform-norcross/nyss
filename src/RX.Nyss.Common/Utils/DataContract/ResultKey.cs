@@ -226,6 +226,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string AlertRecipientDoesNotExist = "alertRecipient.alertRecipientDoesNotExist";
             public const string AlertRecipientSuccessfullyEdited = "alertRecipient.alertRecipientSuccessfullyEdited";
             public const string CurrentUserMustBeTiedToAnOrganization = "alertRecipient.currentUserMustBeTiedToAnOrganization";
+            public const string CannotDeleteAlertRecipientTiedToSupervisors = "alertRecipient.cannotDeleteAlertRecipientTiedToSupervisors";
         }
 
         public class SqlExceptions
