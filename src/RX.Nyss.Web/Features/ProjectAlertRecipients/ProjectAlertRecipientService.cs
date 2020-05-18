@@ -47,7 +47,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                     .Select(uns => uns.OrganizationId)
                     .SingleOrDefault();
 
-                alertRecipientsQuery = alertRecipientsQuery.Where(anr => anr.ProjectOrganizationId == organizationId);
+                alertRecipientsQuery = alertRecipientsQuery.Where(anr => anr.OrganizationId == organizationId);
             }
 
             var alertRecipients = await alertRecipientsQuery
@@ -105,7 +105,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             }
 
             var alertRecipientExistsForCurrentOrganization = await _nyssContext.AlertNotificationRecipients
-                .AnyAsync(anr => anr.Email == createDto.Email && anr.PhoneNumber == createDto.PhoneNumber && anr.ProjectOrganizationId == organizationId);
+                .AnyAsync(anr => anr.Email == createDto.Email && anr.PhoneNumber == createDto.PhoneNumber && anr.OrganizationId == organizationId);
 
             if (alertRecipientExistsForCurrentOrganization)
             {
@@ -120,7 +120,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 Email = createDto.Email,
                 PhoneNumber = createDto.PhoneNumber,
                 ProjectId = projectId,
-                ProjectOrganizationId = organizationId.Value
+                OrganizationId = organizationId.Value
             };
 
             await _nyssContext.AlertNotificationRecipients.AddAsync(alertRecipientToAdd);

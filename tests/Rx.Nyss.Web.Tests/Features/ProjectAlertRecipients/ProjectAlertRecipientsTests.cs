@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                     Organization = "RCRC",
                     Email = "test@example.com",
                     PhoneNumber = "+123456",
-                    ProjectOrganizationId = 1,
+                    OrganizationId = 1,
                     ProjectId = 1
                 }
             };

@@ -10,7 +10,7 @@ namespace RX.Nyss.Data.Models
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
         public int ProjectId { get; set; }
-        public int ProjectOrganizationId { get; set; }
+        public int OrganizationId { get; set; }
         public virtual ICollection<SupervisorUserAlertRecipient> SupervisorAlertRecipients { get; set; }
     }
 }

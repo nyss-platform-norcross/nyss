@@ -13,7 +13,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(anr => anr.Organization).HasMaxLength(100).IsRequired();
             builder.Property(anr => anr.Role).HasMaxLength(100).IsRequired();
             builder.Property(anr => anr.ProjectId).IsRequired();
-            builder.Property(anr => anr.ProjectOrganizationId).IsRequired();
+            builder.Property(anr => anr.OrganizationId).IsRequired();
         }
     }
 }
