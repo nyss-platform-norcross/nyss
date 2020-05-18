@@ -12,8 +12,8 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20200513065751_AddProjectOrgnaizationToAlertRecipient")]
-    partial class AddProjectOrgnaizationToAlertRecipient
+    [Migration("20200516065751_AddProjectOrganizationToAlertRecipient")]
+    partial class AddProjectOrganizationToAlertRecipient
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Data.Migrations
 {
-    public partial class AddProjectOrgnaizationToAlertRecipient : Migration
+    public partial class AddProjectOrganizationToAlertRecipient : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
