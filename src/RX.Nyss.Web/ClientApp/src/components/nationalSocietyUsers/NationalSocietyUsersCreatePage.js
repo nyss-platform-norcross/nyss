@@ -70,7 +70,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
   const onProjectChange = (projectId) => {
     const project = props.data.projects.filter(p => p.id === parseInt(projectId))[0];
-    const newAlertRecipientsDataSource = [{ label: 'All recipients', value: 0, data: { id: 0 }}, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
+    const newAlertRecipientsDataSource = [{ label: 'All recipients', value: 0, data: { id: 0 } }, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
     setAlertRecipientsDataSource(newAlertRecipientsDataSource);
   }
 
@@ -134,16 +134,10 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   };
 
   const canChangeOrganization = () => {
-    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator) && role !== roles.DataConsumer) {
+    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) && role !== roles.DataConsumer) {
       return true;
     }
-
-    return props.data
-      && props.callingUserRoles.some(r => r === roles.Coordinator || ((r === roles.Manager || r === roles.TechnicalAdvisor) && props.data.isHeadManager))
-      && role !== roles.DataConsumer
-      && !props.data.hasCoordinator;
   }
-    
 
   const isCoordinator = () =>
     props.callingUserRoles.some(r => r === roles.Coordinator);

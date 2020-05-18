@@ -135,9 +135,17 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       organizationId: values.organizationId ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
-      supervisorAlertRecipients: selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id)
+      supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
     });
   };
+
+  const setSupervisorAlertRecipients = (role) => {
+    if (role !== roles.Supervisor) {
+      return null;
+    }
+
+    return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
+  }
 
   if (props.isFetching || !form) {
     return <Loading />;

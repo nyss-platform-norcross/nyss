@@ -32,7 +32,7 @@ namespace RX.Nyss.Data
 
         public DbSet<GatewaySetting> GatewaySettings { get; set; }
 
-        public DbSet<HeadManagerConsent> HeadManagerConsents { get; set; }
+        public DbSet<NationalSocietyConsent> NationalSocietyConsents { get; set; }
 
         public DbSet<HealthRisk> HealthRisks { get; set; }
 

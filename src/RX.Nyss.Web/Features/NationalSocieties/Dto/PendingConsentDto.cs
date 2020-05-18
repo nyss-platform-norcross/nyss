@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace RX.Nyss.Web.Features.NationalSocieties.Dto
 {
-    public class PendingHeadManagerConsentDto
+    public class PendingConsentDto
     {
         public List<PendingNationalSocietyConsentDto> NationalSocieties { get; set; }
         public IEnumerable<AgreementDocument> AgreementDocuments { get; set; }

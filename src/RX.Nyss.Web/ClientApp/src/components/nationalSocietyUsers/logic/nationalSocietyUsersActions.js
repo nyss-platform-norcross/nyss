@@ -76,7 +76,7 @@ export const remove = {
 };
 
 export const setAsHeadManager = {
-  invoke: (nationalSocietyId, nationalSocietyUserId) => ({ type: SET_AS_HEAD_MANAGER.INVOKE, nationalSocietyId, nationalSocietyUserId }),
+  invoke: (organizationId, nationalSocietyUserId) => ({ type: SET_AS_HEAD_MANAGER.INVOKE, organizationId, nationalSocietyUserId }),
   request: (id) => ({ type: SET_AS_HEAD_MANAGER.REQUEST, id }),
   success: (id) => ({ type: SET_AS_HEAD_MANAGER.SUCCESS, id }),
   failure: (id, message) => ({ type: SET_AS_HEAD_MANAGER.FAILURE, id, message })

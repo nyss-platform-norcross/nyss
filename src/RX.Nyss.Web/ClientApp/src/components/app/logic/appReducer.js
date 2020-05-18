@@ -55,7 +55,7 @@ export function appReducer(state = initialState.appData, action) {
             roles: action.user.roles,
             languageCode: action.user.languageCode,
             homePage: action.user.homePage,
-            hasPendingHeadManagerConsents: action.user.hasPendingHeadManagerConsents
+            hasPendingNationalSocietyConsents: action.user.hasPendingNationalSocietyConsents
           }
           : null
       }

@@ -5,9 +5,9 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.TestData.TestDataGeneration;
 
-namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
+namespace RX.Nyss.Web.Tests.Features.Organizations.TestData
 {
-    public class BasicNationalSocietyServiceTestData
+    public class BasicOrganizationServiceTestData
     {
         public const string NationalSocietyName = "Norway";
         public const string ExistingNationalSocietyName = "Poland";
@@ -21,7 +21,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
         public TestCaseData Data =>
             _testCaseDataProvider.GetOrCreate(nameof(Data), data =>
             {
-                data.Organizations = new List<Organization>{ new Organization{ Id = 1, Name = "Org 1"}};
                 data.Users = new List<User> { new ManagerUser { EmailAddress = "yo" } };
                 data.NationalSocieties = new List<NationalSociety>
                 {
@@ -29,9 +28,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                     {
                         Id = _nationalSocietyNumerator.Next,
                         Name = ExistingNationalSocietyName,
-                        DefaultOrganizationId = 1,
-                        DefaultOrganization = data.Organizations[0],
-                        Organizations = new[] { data.Organizations[0] }
+                        DefaultOrganization = data.Organizations[0]
                     }
                 };
                 data.ContentLanguages = new List<ContentLanguage> { new ContentLanguage { Id = ContentLanguageId } };
@@ -55,15 +52,13 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
             _testCaseDataProvider.GetOrCreate(nameof(WhenNoConsentsAndRole), data =>
             {
                 data.Users = new List<User> { new ManagerUser { EmailAddress = "yo", Role = role } };
-                data.Organizations = new List<Organization> { new Organization { Id = 1, Name = "Org 1" } };
+
                 data.NationalSocieties = new List<NationalSociety>
                 {
                     new NationalSociety
                     {
                         Id = _nationalSocietyNumerator.Next,
                         Name = ExistingNationalSocietyName,
-                        Organizations = new[] { data.Organizations[0] },
-                        DefaultOrganizationId = 1,
                         DefaultOrganization = data.Organizations[0],
                         NationalSocietyUsers = new List<UserNationalSociety>
                         {
@@ -82,7 +77,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                 };
             });
 
-        public BasicNationalSocietyServiceTestData(INyssContext nyssContext, EntityNumerator nationalSocietyNumerator)
+        public BasicOrganizationServiceTestData(INyssContext nyssContext, EntityNumerator nationalSocietyNumerator)
         {
             _nationalSocietyNumerator = nationalSocietyNumerator;
             _testCaseDataProvider = new TestCaseDataProvider(nyssContext);

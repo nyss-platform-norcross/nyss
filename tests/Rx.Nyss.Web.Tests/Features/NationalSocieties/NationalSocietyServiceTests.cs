@@ -8,11 +8,13 @@ using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.SmsGateways;
 using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Services.Authorization;
@@ -34,6 +36,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         private readonly ITechnicalAdvisorService _technicalAdvisorServiceMock;
         private IGeneralBlobProvider _generalBlobProviderMock;
         private IDataBlobService _dataBlobServiceMock;
+        private readonly IOrganizationService _organizationServiceMock;
 
 
         public NationalSocietyServiceTests()
@@ -46,6 +49,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             _technicalAdvisorServiceMock = Substitute.For<ITechnicalAdvisorService>();
             _smsGatewayServiceMock = Substitute.For<ISmsGatewayService>();
             _generalBlobProviderMock = Substitute.For<IGeneralBlobProvider>();
+            _organizationServiceMock = Substitute.For<IOrganizationService>();
             _dataBlobServiceMock = Substitute.For<IDataBlobService>();
 
             _nationalSocietyService = new NationalSocietyService(
@@ -57,9 +61,27 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 _technicalAdvisorServiceMock,
                 _smsGatewayServiceMock,
                 _generalBlobProviderMock,
+                _organizationServiceMock,
                 _dataBlobServiceMock);
 
             _testData = new NationalSocietyServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
+        }
+        
+        [Fact]
+        public async Task ConsentToNationalSocietyAgreement_WhenUserNotFound_ShouldReturnNotFound()
+        {
+            // Arrange
+            _testData.BasicData.Data.GenerateData().AddToDbContext();
+            var users = new List<User> { new ManagerUser { EmailAddress = "no-yo" } };
+            var mockDbSet = users.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Users.Returns(mockDbSet);
+
+            // Act
+            var result = await _nationalSocietyService.ConsentToNationalSocietyAgreement("fr");
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
         }
 
         [Fact]
@@ -153,41 +175,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             // Assert
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.Remove.Success);
-        }
-
-        [Fact]
-        public async Task SetAsHead_WhenOk_ShouldBeOk()
-        {
-            // Arrange
-            var sourceUri = "https://yo.example.com";
-            _generalBlobProviderMock.GetPlatformAgreementUrl("en").Returns(sourceUri);
-
-            // Act
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var result = await _nationalSocietyService.SetAsHeadManager("en");
-
-            // Assert
-            result.IsSuccess.ShouldBeTrue();
-            await _dataBlobServiceMock.Received(1).StorePlatformAgreement(sourceUri, Arg.Any<string>());
-            await _nyssContextMock.HeadManagerConsents.Received(1).AddAsync(Arg.Any<HeadManagerConsent>());
-            await _nyssContextMock.Received(1).SaveChangesAsync();
-        }
-
-        [Fact]
-        public async Task SetAsHead_WhenUserNotFound_ShouldReturnNotFound()
-        {
-            // Arrange
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var users = new List<User> { new ManagerUser { EmailAddress = "no-yo" } };
-            var mockDbSet = users.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Users.Returns(mockDbSet);
-
-            // Act
-            var result = await _nationalSocietyService.SetAsHeadManager("fr");
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
         }
 
         [Fact]

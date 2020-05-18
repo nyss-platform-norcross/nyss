@@ -23,6 +23,8 @@ namespace RX.Nyss.Web.Features.Organizations
         Task<bool> ValidateAccessForAssigningOrganization(int nationalSocietyId);
         Task<bool> ValidateAccessForChangingOrganization(int userId);
         Task<Result> CheckAccessForOrganizationEdition(UserNationalSociety userLink);
+        Task<Result> SetPendingHeadManager(int organizationId, int userId);
+        IQueryable<NationalSociety> GetNationalSocietiesWithPendingAgreementsForUserQuery(User userEntity);
     }
 
     public class OrganizationService : IOrganizationService
@@ -63,19 +65,21 @@ namespace RX.Nyss.Web.Features.Organizations
 
         public async Task<Result<List<OrganizationListResponseDto>>> List(int nationalSocietyId)
         {
-            var gatewaySettings = await _nyssContext.Organizations
-                .Where(gs => gs.NationalSocietyId == nationalSocietyId)
-                .OrderBy(gs => gs.Id)
-                .Select(gs => new OrganizationListResponseDto
+            var organizations = await _nyssContext.Organizations
+                .Where(o => o.NationalSocietyId == nationalSocietyId)
+                .OrderByDescending(o => o.NationalSociety.DefaultOrganization == o)
+                .ThenBy(o => o.Id)
+                .Select(o => new OrganizationListResponseDto
                 {
-                    Id = gs.Id,
-                    Name = gs.Name,
-                    HeadManager = gs.NationalSociety.HeadManager.Name,
-                    Projects = "" // TODO
+                    Id = o.Id,
+                    Name = o.Name,
+                    HeadManager = o.HeadManager.Name,
+                    Projects = string.Join(", ", o.OrganizationProjects.Select(op => op.Project.Name)),
+                    IsDefaultOrganization = o.NationalSociety.DefaultOrganization == o
                 })
                 .ToListAsync();
 
-            var result = Success(gatewaySettings);
+            var result = Success(organizations);
 
             return result;
         }
@@ -194,11 +198,11 @@ namespace RX.Nyss.Web.Features.Organizations
                 .Select(ns => new
                 {
                     HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
-                    HeadManagerId = (int?)ns.HeadManager.Id
+                    HeadManagerId = (int?)ns.DefaultOrganization.HeadManager.Id
                 })
                 .SingleAsync();
 
-            if (nationalSociety.HasCoordinator)
+            if (!nationalSociety.HasCoordinator)
             {
                 return false;
             }
@@ -218,7 +222,7 @@ namespace RX.Nyss.Web.Features.Organizations
                 return false;
             }
 
-            return await _nyssContext.NationalSocieties.AnyAsync(ns => ns.HeadManager.Id == userId || ns.PendingHeadManager.Id == userId);
+            return await _nyssContext.NationalSocieties.AnyAsync(ns => ns.DefaultOrganization.HeadManager.Id == userId || ns.DefaultOrganization.PendingHeadManager.Id == userId);
         }
 
         public async Task<Result> CheckAccessForOrganizationEdition(UserNationalSociety userLink)
@@ -242,12 +246,56 @@ namespace RX.Nyss.Web.Features.Organizations
                 }
             }
 
-            if (!_authorizationService.IsCurrentUserInRole(Role.Administrator) && !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.HeadManager.Id == userLink.UserId || ns.PendingHeadManager.Id == userLink.UserId))
+            if (!_authorizationService.IsCurrentUserInRole(Role.Administrator) && !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.DefaultOrganization.HeadManager.Id == userLink.UserId || ns.DefaultOrganization.PendingHeadManager.Id == userLink.UserId))
             {
                 return Error<bool>(ResultKey.User.Common.CoordinatorCanChangeTheOrganizationOnlyForHeadManager);
             }
 
             return Success();
+        }
+
+        public async Task<Result> SetPendingHeadManager(int organizationId, int userId)
+        {
+            var userNationalSocieties = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.OrganizationId == organizationId && uns.UserId == userId)
+                .Select(x => new { x.Organization, x.User, IsDefaultOrganization = x.NationalSociety.DefaultOrganization == x.Organization })
+                .SingleOrDefaultAsync();
+
+            if (userNationalSocieties == null)
+            {
+                return Error(ResultKey.NationalSociety.SetHead.NotAMemberOfSociety);
+            }
+
+            if (!(userNationalSocieties.User is ManagerUser || userNationalSocieties.User is TechnicalAdvisorUser))
+            {
+                return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
+            }
+
+            if (userNationalSocieties.IsDefaultOrganization)
+            {
+                userNationalSocieties.Organization.PendingHeadManager = userNationalSocieties.User;
+            }
+            else
+            {
+                userNationalSocieties.Organization.HeadManager = userNationalSocieties.User;
+            }
+            
+            await _nyssContext.SaveChangesAsync();
+
+            return Success();
+        }
+
+        public IQueryable<NationalSociety> GetNationalSocietiesWithPendingAgreementsForUserQuery(User userEntity)
+        {
+            var notConsentedNationalSocieties = _nyssContext.NationalSocieties
+                .Where(ns => !_nyssContext.NationalSocietyConsents
+                    .Where(nsc => !nsc.ConsentedUntil.HasValue && nsc.UserEmailAddress == userEntity.EmailAddress)
+                    .Select(x => x.NationalSocietyId).Distinct()
+                    .Contains(ns.Id));
+
+            return notConsentedNationalSocieties.Where(x =>
+                userEntity.Role == Role.Coordinator && x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id) ||
+                (userEntity.Role == Role.Manager || userEntity.Role == Role.TechnicalAdvisor) && x.DefaultOrganization.HeadManager == userEntity || x.DefaultOrganization.PendingHeadManager == userEntity);
         }
     }
 }

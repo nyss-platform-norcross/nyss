@@ -6,29 +6,29 @@ import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import styles from './HeadManagerConsentsPage.module.scss';
+import styles from './NationalSocietyConsentsPage.module.scss';
 import Icon from "@material-ui/core/Icon";
 import { strings, stringKeys } from '../../strings';
-import * as headManagerConsentsActions from './logic/headManagerConsentsActions';
+import * as nationalSocietyConsentsActions from './logic/nationalSocietyConsentsActions';
 import { useMount } from '../../utils/lifecycle';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardMedia from '@material-ui/core/CardMedia';
 import { MenuItem, Grid, FormControl, InputLabel, Select, Snackbar } from '@material-ui/core';
 
-const HeadManagerConsentsPageComponent = (props) => {
+const NationalSocietyConsentsPageComponent = (props) => {
   const [hasConsented, setHasConsented] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [validationMessage, setValidationMessage] = useState(null);
 
   useMount(() => {
-    props.openHeadManagerConsentsPage();
+    props.openNationalSocietyConsentsPage();
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!hasConsented) {
-      setValidationMessage(strings(stringKeys.headManagerConsents.agreeToContinue));
+      setValidationMessage(strings(stringKeys.nationalSocietyConsents.agreeToContinue));
       return;
     };
 
@@ -47,17 +47,17 @@ const HeadManagerConsentsPageComponent = (props) => {
         <div className={styles.aboveDocument}>
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Typography variant="h2">{strings(stringKeys.headManagerConsents.title)}</Typography>
+              <Typography variant="h2">{strings(stringKeys.nationalSocietyConsents.title)}</Typography>
 
               <Typography variant="h6" gutterBottom>
                 {props.nationalSocieties.length > 1 ?
-                  strings(stringKeys.headManagerConsents.nationalSocieties) :
-                  strings(stringKeys.headManagerConsents.nationalSociety)
+                  strings(stringKeys.nationalSocietyConsents.nationalSocieties) :
+                  strings(stringKeys.nationalSocietyConsents.nationalSociety)
                 }: {props.nationalSocieties.map(ns => ns.nationalSocietyName).join(", ")}
               </Typography>
 
               <Typography variant="body1" >
-                {strings(stringKeys.headManagerConsents.consentText)}
+                {strings(stringKeys.nationalSocietyConsents.consentText)}
               </Typography>
             </Grid>
 
@@ -65,7 +65,7 @@ const HeadManagerConsentsPageComponent = (props) => {
               (
                 <Grid item xs={12} sm={4} lg={4}>
                   <FormControl fullWidth>
-                    <InputLabel shrink>{strings(stringKeys.headManagerConsents.selectLanguage)}</InputLabel>
+                    <InputLabel shrink>{strings(stringKeys.nationalSocietyConsents.selectLanguage)}</InputLabel>
                     <Select
                       onChange={handleDocChange}
                       value={selectedLanguage}>
@@ -85,7 +85,7 @@ const HeadManagerConsentsPageComponent = (props) => {
           <Grid container alignItems="center">
             {selectedDocumentUrl &&
               (<Grid item xs>
-                <a target="_blank" rel="noopener noreferrer" href={selectedDocumentUrl}>{strings(stringKeys.headManagerConsents.downloadDirectly)}</a>
+                <a target="_blank" rel="noopener noreferrer" href={selectedDocumentUrl}>{strings(stringKeys.nationalSocietyConsents.downloadDirectly)}</a>
               </Grid>
             )}
             <Grid item>
@@ -100,9 +100,9 @@ const HeadManagerConsentsPageComponent = (props) => {
                     color="primary"
                   />
                 }
-                label={strings(stringKeys.headManagerConsents.iConsent)}
+                label={strings(stringKeys.nationalSocietyConsents.iConsent)}
               />
-              <SubmitButton onClick={handleSubmit} isFetching={props.submitting}>{strings(stringKeys.headManagerConsents.submit)}</SubmitButton>
+              <SubmitButton onClick={handleSubmit} isFetching={props.submitting}>{strings(stringKeys.nationalSocietyConsents.submit)}</SubmitButton>
             </Grid>
           </Grid>
         </div>
@@ -119,22 +119,22 @@ const HeadManagerConsentsPageComponent = (props) => {
   );
 }
 
-HeadManagerConsentsPageComponent.propTypes = {
+NationalSocietyConsentsPageComponent.propTypes = {
   consentAsHeadManager: PropTypes.func,
 };
 
 const mapStateToProps = state => ({
-  nationalSocieties: state.headManagerConsents.nationalSocieties,
-  agreementDocuments: state.headManagerConsents.agreementDocuments,
-  submitting: state.headManagerConsents.submitting
+  nationalSocieties: state.nationalSocietyConsents.nationalSocieties,
+  agreementDocuments: state.nationalSocietyConsents.agreementDocuments,
+  submitting: state.nationalSocietyConsents.submitting
 });
 
 const mapDispatchToProps = {
-  openHeadManagerConsentsPage: headManagerConsentsActions.openHeadManagerConsentsPage.invoke,
-  consentAsHeadManager: headManagerConsentsActions.consentAsHeadManager.invoke
+  openNationalSocietyConsentsPage: nationalSocietyConsentsActions.openNationalSocietyConsentsPage.invoke,
+  consentAsHeadManager: nationalSocietyConsentsActions.consentAsHeadManager.invoke
 };
 
-export const HeadManagerConsentsPage = useLayout(
+export const NationalSocietyConsentsPage = useLayout(
   AnonymousLayout,
-  connect(mapStateToProps, mapDispatchToProps)(HeadManagerConsentsPageComponent)
+  connect(mapStateToProps, mapDispatchToProps)(NationalSocietyConsentsPageComponent)
 );

@@ -1,7 +1,7 @@
-import * as actions from "./headManagerConsentsConstants";
+import * as actions from "./nationalSocietyConsentsConstants";
 import { initialState } from "../../../initialState";
 
-export function headManagerConsentsReducer(state = initialState.headManagerConsents, action) {
+export function nationalSocietyConsentsReducer(state = initialState.nationalSocietyConsents, action) {
   switch (action.type) {
 
     case actions.OPEN_HEAD_MANAGER_CONSENTS_PAGE.REQUEST:

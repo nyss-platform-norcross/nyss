@@ -11,6 +11,8 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication;
 using RX.Nyss.Web.Features.Authentication.Dto;
+using RX.Nyss.Web.Features.NationalSocieties;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
 using Shouldly;
 using Xunit;
@@ -26,18 +28,21 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
         private readonly INyssContext _nyssContext;
         private readonly AuthenticationService _authenticationService;
         private readonly AdministratorUser _user;
+        private readonly IOrganizationService _organizationService;
 
         public AuthenticationServiceTests()
         {
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
+            _organizationService = Substitute.For<IOrganizationService>();
+
             _user = new AdministratorUser
             {
                 EmailAddress = UserEmail,
                 Name = UserName
             };
             _nyssContext.Users = new List<User> { _user }.AsQueryable().BuildMockDbSet();
-            _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
+            _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext, _organizationService);
         }
 
         [Fact]
@@ -96,8 +101,8 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
             const string languageCode = "en";
             const string role = "Administrator";
             var nationalSocietiesDbSet = new List<NationalSociety>().AsQueryable().BuildMockDbSet();
-            _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _user.ApplicationLanguage = new ApplicationLanguage { LanguageCode = languageCode };
+            _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(Arg.Any<User>()).Returns(nationalSocietiesDbSet);
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {

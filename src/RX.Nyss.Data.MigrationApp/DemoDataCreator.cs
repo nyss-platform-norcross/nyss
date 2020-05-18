@@ -176,7 +176,7 @@ namespace RX.Nyss.Data.MigrationApp
                     Organization = user.roleName == "DataConsumer" ? null : context.Organizations.First()
                 }));
 
-                context.NationalSocieties.First().HeadManager = context.Users.First(u => u.Role == Role.Manager);
+                context.NationalSocieties.First().DefaultOrganization.HeadManager = context.Users.First(u => u.Role == Role.Manager);
 
                 context.SaveChanges();
             }

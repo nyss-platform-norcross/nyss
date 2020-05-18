@@ -26,8 +26,8 @@ function* initApplication() {
     yield call(getStrings, user ? user.languageCode : "en");
     yield put(actions.initApplication.success());
 
-    if (user && user.hasPendingHeadManagerConsents){
-      yield put(actions.goToHeadManagerConsents())
+    if (user && user.hasPendingNationalSocietyConsents){
+      yield put(actions.goToNationalSocietyConsents())
     }
 
     storeUser(user);

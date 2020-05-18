@@ -67,38 +67,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId) =>
             await _nationalSocietyService.Delete(nationalSocietyId);
-
-        /// <summary>
-        /// Sets a user as the pending Head Manager for the National Society. Next time this user logs in, the person will get a
-        /// consent form, and if the user consents the user
-        /// will be the next Head Manager
-        /// </summary>
-        /// <param name="nationalSocietyId"></param>
-        /// <param name="requestDto"></param>
-        /// <returns></returns>
-        [HttpPost("{nationalSocietyId}/setHeadManager")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.HeadManagerAccess), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public async Task<Result> SetHeadManager(int nationalSocietyId, [FromBody] SetAsHeadManagerRequestDto requestDto) =>
-            await _nationalSocietyService.SetPendingHeadManager(nationalSocietyId, requestDto.UserId);
-
-        /// <summary>
-        /// Will set the current user as the head manager for the national societies he or she is pending as.
-        /// </summary>
-        /// <param name="languageCode">The selected language the user has chosen to see the agreement in</param>
-        /// <returns></returns>
-        [HttpPost("consentAsHeadManager")]
-        [NeedsRole(Role.Manager, Role.TechnicalAdvisor)]
-        public async Task<Result> ConsentAsHeadManager(string languageCode) =>
-            await _nationalSocietyService.SetAsHeadManager(languageCode);
-
+        
         /// <summary>
         /// Get the current user's list of national societies that he is assigned as pending head manager
         /// </summary>
         /// <returns></returns>
         [HttpGet("pendingConsents")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
         public async Task<Result> GetPendingConsents() =>
-            await _nationalSocietyService.GetPendingHeadManagerConsents();
+            await _nationalSocietyService.GetPendingNationalSocietyConsents();
 
 
         /// <summary>
@@ -120,5 +97,16 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Reopen(int nationalSocietyId) =>
             await _nationalSocietyService.Reopen(nationalSocietyId);
+
+
+        /// <summary>
+        /// Will set the current user as the head manager for the organization he or she is pending as.
+        /// </summary>
+        /// <param name="languageCode">The selected language the user has chosen to see the agreement in</param>
+        /// <returns></returns>
+        [HttpPost("consentToAgreement")]
+        [NeedsRole(Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
+        public async Task<Result> ConsentAsHeadManager(string languageCode) =>
+            await _nationalSocietyService.ConsentToNationalSocietyAgreement(languageCode);
     }
 }

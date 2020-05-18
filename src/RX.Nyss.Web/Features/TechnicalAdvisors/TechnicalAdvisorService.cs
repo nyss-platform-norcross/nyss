@@ -254,19 +254,19 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         private async Task HandleHeadManagerStatus(TechnicalAdvisorUser technicalAdvisor, UserNationalSociety nationalSocietyReferenceToRemove, bool allowHeadManagerDeletion)
         {
             var nationalSociety = await _dataContext.NationalSocieties.FindAsync(nationalSocietyReferenceToRemove.NationalSocietyId);
-            if (nationalSociety.PendingHeadManager == technicalAdvisor)
+            if (nationalSociety.DefaultOrganization.PendingHeadManager == technicalAdvisor)
             {
-                nationalSociety.PendingHeadManager = null;
+                nationalSociety.DefaultOrganization.PendingHeadManager = null;
             }
 
-            if (nationalSociety.HeadManager == technicalAdvisor)
+            if (nationalSociety.DefaultOrganization.HeadManager == technicalAdvisor)
             {
                 if (!allowHeadManagerDeletion)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
 
-                nationalSociety.HeadManager = null;
+                nationalSociety.DefaultOrganization.HeadManager = null;
             }
         }
     }

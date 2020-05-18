@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
         bool HasCurrentUserAccessToAllNationalSocieties();
         Task<bool> HasCurrentUserAccessToUserNationalSocieties(int userId);
         Task<bool> HasCurrentUserAccessToNationalSocieties(IEnumerable<int> providedNationalSocietyIds);
-        Task<bool> HasCurrentUserAccessAsHeadManager(int nationalSocietyId);
+        Task<bool> HasCurrentUserAccessAsHeadManager(int organizationId);
         Task<List<int>> GetCurrentUserNationalSocietyIds();
     }
 
@@ -61,7 +61,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
             return providedNationalSocietyIds.Intersect(userNationalSocieties).Any();
         }
 
-        public async Task<bool> HasCurrentUserAccessAsHeadManager(int nationalSocietyId)
+        public async Task<bool> HasCurrentUserAccessAsHeadManager(int organizationId)
         {
             if (!_authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor))
             {
@@ -70,8 +70,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
 
             var userName = _authorizationService.GetCurrentUserName();
 
-            return await _nyssContext.NationalSocieties
-                .AnyAsync(ns => ns.Id == nationalSocietyId && ns.HeadManager.EmailAddress == userName);
+            return await _nyssContext.Organizations
+                .AnyAsync(o => o.Id == organizationId && o.HeadManager.EmailAddress == userName);
         }
 
         public async Task<List<int>> GetCurrentUserNationalSocietyIds()

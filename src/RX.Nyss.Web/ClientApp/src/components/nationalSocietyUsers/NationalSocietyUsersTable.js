@@ -38,8 +38,8 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
   const getRowMenu = (row) => [
     {
       condition: canBeSetAsHeadManager(row),
-      title: strings(stringKeys.headManagerConsents.setAsHeadManager),
-      action: () => setAsHeadManager(nationalSocietyId, row.id)
+      title: strings(stringKeys.nationalSocietyConsents.setAsHeadManager),
+      action: () => setAsHeadManager(row.organizationId, row.id)
     }
   ];
 
@@ -52,6 +52,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
             <TableCell>{strings(stringKeys.nationalSocietyUser.form.email)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.phoneNumber)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.role)}</TableCell>
+            <TableCell>{strings(stringKeys.nationalSocietyUser.list.organization)}</TableCell>
             <TableCell>{strings(stringKeys.nationalSocietyUser.list.project)}</TableCell>
             <TableCell align="center">{strings(stringKeys.nationalSocietyUser.list.headManager)}</TableCell>
             <TableCell style={{ width: "16%" }} />
@@ -64,10 +65,11 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               <TableCell>{row.email}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{strings(`role.${row.role.toLowerCase()}`)}</TableCell>
+              <TableCell>{row.organizationName}</TableCell>
               <TableCell>{row.project}</TableCell>
               <TableCell align="center">{
                 (row.isHeadManager && <CheckIcon fontSize="small" />) ||
-                (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.headManagerConsents.pendingHeadManager)}><MoreHorizIcon fontSize="small" /></Tooltip>)
+                (row.isPendingHeadManager && <Tooltip title={strings(stringKeys.nationalSocietyConsents.pendingHeadManager)}><MoreHorizIcon fontSize="small" /></Tooltip>)
               }
               </TableCell>
               <TableCell>

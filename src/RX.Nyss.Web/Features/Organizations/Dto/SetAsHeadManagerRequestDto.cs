@@ -1,4 +1,4 @@
-namespace RX.Nyss.Web.Features.NationalSocieties.Dto
+namespace RX.Nyss.Web.Features.Organizations.Dto
 {
     public class SetAsHeadManagerRequestDto
     {

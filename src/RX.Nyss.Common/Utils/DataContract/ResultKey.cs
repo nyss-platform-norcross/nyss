@@ -291,5 +291,9 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string WrongStatus = "alert.closeAlert.wrongStatus";
             }
         }
+        public static class Consent
+        {
+            public const string NoPendingConsent = "consent.noPendingConsent";
+        }
     }
 }

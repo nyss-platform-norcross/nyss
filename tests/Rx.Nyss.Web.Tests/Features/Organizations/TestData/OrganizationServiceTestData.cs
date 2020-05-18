@@ -8,9 +8,9 @@ using RX.Nyss.TestData.TestDataGeneration;
 using RX.Nyss.Web.Features.SmsGateways;
 using RX.Nyss.Web.Features.SmsGateways.Dto;
 
-namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
+namespace RX.Nyss.Web.Tests.Features.Organizations.TestData
 {
-    public class NationalSocietyServiceTestData
+    public class OrganizationServiceTestData
     {
         private readonly ISmsGatewayService _smsGatewayServiceMock;
 
@@ -18,23 +18,15 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
         private readonly EntityNumerator _nationalSocietyNumerator = new EntityNumerator();
         private readonly EntityNumerator _userNumerator = new EntityNumerator();
 
-        public BasicNationalSocietyServiceTestData BasicData { get; set; }
+        public BasicOrganizationServiceTestData BasicData { get; set; }
 
         public TestCaseData<ArchiveNationalSocietyAdditionalData> ArchiveWhenHasProjects =>
             _testCaseDataProvider.GetOrCreate(nameof(ArchiveWhenHasProjects), data =>
             {
-                var organizations = new List<Organization>
-                {
-                    new Organization{ Id = 1, Name = "Org 1"},
-                    new Organization{ Id = 2, Name = "Org 2"}
-                };
                 var nationalSocietyWithProjects = new NationalSociety
                 {
                     Id = _nationalSocietyNumerator.Next,
-                    NationalSocietyUsers = new List<UserNationalSociety>(),
-                    Organizations = new[] { organizations[0] },
-                    DefaultOrganizationId = 1,
-                    DefaultOrganization = organizations[0]
+                    NationalSocietyUsers = new List<UserNationalSociety>()
                 };
                 data.NationalSocieties.Add(nationalSocietyWithProjects);
                 data.Projects.Add(new Project
@@ -42,7 +34,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                     NationalSociety = nationalSocietyWithProjects,
                     NationalSocietyId = nationalSocietyWithProjects.Id
                 });
-                data.Organizations = organizations;
 
                 return new ArchiveNationalSocietyAdditionalData { NationalSocietyBeingArchived = nationalSocietyWithProjects };
             });
@@ -168,12 +159,12 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                 return new RestoreNationalSocietyAdditionalData { NationalSocietyBeingReopened = nationalSociety };
             });
 
-        public NationalSocietyServiceTestData(INyssContext nyssContextMock, ISmsGatewayService smsGatewayServiceMock)
+        public OrganizationServiceTestData(INyssContext nyssContextMock, ISmsGatewayService smsGatewayServiceMock)
         {
             _smsGatewayServiceMock = smsGatewayServiceMock;
             _testCaseDataProvider = new TestCaseDataProvider(nyssContextMock);
 
-            BasicData = new BasicNationalSocietyServiceTestData(nyssContextMock, _nationalSocietyNumerator);
+            BasicData = new BasicOrganizationServiceTestData(nyssContextMock, _nationalSocietyNumerator);
         }
 
         public struct ArchiveNationalSocietyAdditionalData

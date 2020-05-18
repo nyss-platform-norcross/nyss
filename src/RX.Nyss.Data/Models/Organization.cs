@@ -10,5 +10,9 @@ namespace RX.Nyss.Data.Models
         public virtual NationalSociety NationalSociety { get; set; }
         public virtual ICollection<UserNationalSociety> NationalSocietyUsers { get; set; }
         public virtual ICollection<ProjectOrganization> OrganizationProjects { get; set; }
+        public int? HeadManagerId { get; set; }
+        public virtual User HeadManager { get; set; }
+        public int? PendingHeadManagerId { get; set; }
+        public virtual User PendingHeadManager { get; set; }
     }
 }

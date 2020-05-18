@@ -15,6 +15,7 @@ using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
+using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.SmsGateways;
 using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Services.Authorization;
@@ -30,11 +31,10 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto nationalSociety);
         Task<Result> Delete(int id);
         Task<Result> Archive(int nationalSocietyId);
-        Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId);
-        Task<Result> SetAsHeadManager(string languageCode);
-        Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents();
+        Task<Result<PendingConsentDto>> GetPendingNationalSocietyConsents();
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
         Task<Result> Reopen(int nationalSocietyId);
+        Task<Result> ConsentToNationalSocietyAgreement(string languageCode);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -47,6 +47,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         private readonly ITechnicalAdvisorService _technicalAdvisorService;
         private readonly ISmsGatewayService _smsGatewayService;
         private readonly IGeneralBlobProvider _generalBlobProvider;
+        private readonly IOrganizationService _organizationService;
         private readonly IDataBlobService _dataBlobService;
 
         public NationalSocietyService(
@@ -54,7 +55,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             INationalSocietyAccessService nationalSocietyAccessService,
             ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService,
             IManagerService managerService, ITechnicalAdvisorService technicalAdvisorService,
-            ISmsGatewayService smsGatewayService, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService)
+            ISmsGatewayService smsGatewayService, IGeneralBlobProvider generalBlobProvider,
+            IOrganizationService organizationService, IDataBlobService dataBlobService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
@@ -64,6 +66,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             _technicalAdvisorService = technicalAdvisorService;
             _smsGatewayService = smsGatewayService;
             _generalBlobProvider = generalBlobProvider;
+            _organizationService = organizationService;
             _dataBlobService = dataBlobService;
         }
 
@@ -72,8 +75,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             var nationalSocietiesQuery = await GetNationalSocietiesQuery();
 
             var list = await nationalSocietiesQuery
-                .Include(x => x.HeadManager)
-                .Include(x => x.PendingHeadManager)
+                .Include(x => x.DefaultOrganization.HeadManager)
+                .Include(x => x.DefaultOrganization.PendingHeadManager)
                 .Select(n => new NationalSocietyListResponseDto
                 {
                     Id = n.Id,
@@ -81,8 +84,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     Name = n.Name,
                     Country = n.Country.Name,
                     StartDate = n.StartDate,
-                    HeadManagerName = n.HeadManager.Name,
-                    PendingHeadManagerName = n.PendingHeadManager.Name,
+                    HeadManagerName = n.DefaultOrganization.HeadManager.Name,
+                    PendingHeadManagerName = n.DefaultOrganization.PendingHeadManager.Name,
                     TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.AsQueryable()
                         .Where(UserNationalSocietyQueries.IsNotDeletedUser)
                         .Where(u => u.User.Role == Role.TechnicalAdvisor)
@@ -107,7 +110,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     Name = n.Name,
                     CountryId = n.Country.Id,
                     CountryName = n.Country.Name,
-                    HeadManagerId = n.HeadManager.Id,
+                    HeadManagerId = n.DefaultOrganization.HeadManager.Id,
                     IsArchived = n.IsArchived
                 })
                 .FirstOrDefaultAsync(n => n.Id == id);
@@ -133,13 +136,9 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 ContentLanguage = await GetLanguageById(dto.ContentLanguageId),
                 Country = await GetCountryById(dto.CountryId),
                 IsArchived = false,
-                StartDate = DateTime.UtcNow,
-                Organizations = new List<Organization>
-                {
-                    new Organization { Name = dto.InitialOrganizationName }
-                }
+                StartDate = DateTime.UtcNow
             };
-
+            
             if (nationalSociety.ContentLanguage == null)
             {
                 return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotFound);
@@ -152,6 +151,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             await _nyssContext.AddAsync(nationalSociety);
             await _nyssContext.SaveChangesAsync();
+
+            nationalSociety.DefaultOrganization = new Organization
+            {
+                Name = dto.InitialOrganizationName,
+                NationalSociety = nationalSociety
+            };
+
+            await _nyssContext.SaveChangesAsync();
+
             _loggerAdapter.Info($"A national society {nationalSociety} was created");
             return Success(nationalSociety.Id);
         }
@@ -187,78 +195,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             return SuccessMessage(ResultKey.NationalSociety.Remove.Success);
         }
 
-        public async Task<Result> SetPendingHeadManager(int nationalSocietyId, int userId)
-        {
-            var userNationalSocieties = await _nyssContext.UserNationalSocieties.FilterAvailableUsers()
-                .Where(uns => uns.NationalSocietyId == nationalSocietyId).ToListAsync();
-            if (userNationalSocieties.Count == 0 || userNationalSocieties.All(x => x.UserId != userId))
-            {
-                return Error(ResultKey.NationalSociety.SetHead.NotAMemberOfSociety);
-            }
-
-            var user = await _nyssContext.Users.FilterAvailable().Include(u => u.UserNationalSocieties).FirstOrDefaultAsync(u => u.Id == userId);
-            if (!(user is ManagerUser || user is TechnicalAdvisorUser))
-            {
-                return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
-            }
-
-            var ns = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
-            ns.PendingHeadManager = user;
-            await _nyssContext.SaveChangesAsync();
-
-            return Success();
-        }
-
-        public async Task<Result> SetAsHeadManager(string languageCode)
-        {
-            var identityUserName = _authorizationService.GetCurrentUserName();
-
-            var user = await _nyssContext.Users.FilterAvailable()
-                .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
-
-            if (user == null)
-            {
-                return Error(ResultKey.User.Common.UserNotFound);
-            }
-
-            if (!(user is ManagerUser || user is TechnicalAdvisorUser))
-            {
-                return Error(ResultKey.NationalSociety.SetHead.NotApplicableUserRole);
-            }
-
-            var pendingSocieties = _nyssContext.NationalSocieties.Where(x => x.PendingHeadManager.Id == user.Id);
-            var utcNow = DateTime.UtcNow;
-
-            var consentDocumentFileName = Guid.NewGuid() + ".pdf";
-            var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
-            await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
-
-            // Set until date for the previous consent
-            await _nyssContext.HeadManagerConsents
-                .Where(hmc => pendingSocieties.Select(ps => ps.Id).Contains(hmc.NationalSocietyId) && hmc.ConsentedUntil == null)
-                .ForEachAsync(hmc => hmc.ConsentedUntil = utcNow);
-
-            foreach (var nationalSociety in pendingSocieties)
-            {
-                nationalSociety.PendingHeadManager = null;
-                nationalSociety.HeadManager = user;
-
-                await _nyssContext.HeadManagerConsents.AddAsync(new HeadManagerConsent
-                {
-                    ConsentedFrom = utcNow,
-                    NationalSocietyId = nationalSociety.Id,
-                    UserEmailAddress = user.EmailAddress,
-                    UserPhoneNumber = user.PhoneNumber,
-                    ConsentDocument = consentDocumentFileName
-                });
-            }
-
-            await _nyssContext.SaveChangesAsync();
-
-            return Success();
-        }
-
-        public async Task<Result<PendingHeadManagerConsentDto>> GetPendingHeadManagerConsents()
+        public async Task<Result<PendingConsentDto>> GetPendingNationalSocietyConsents()
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
@@ -268,11 +205,10 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             if (userEntity == null)
             {
-                return Error<PendingHeadManagerConsentDto>(ResultKey.User.Common.UserNotFound);
+                return Error<PendingConsentDto>(ResultKey.User.Common.UserNotFound);
             }
 
-            var pendingSocieties = await _nyssContext.NationalSocieties
-                .Where(ns => ns.PendingHeadManager.IdentityUserId == userEntity.IdentityUserId)
+            var pendingSocieties = await _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(userEntity)
                 .Select(ns => new PendingNationalSocietyConsentDto
                 {
                     NationalSocietyName = ns.Name,
@@ -280,6 +216,11 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     NationalSocietyId = ns.Id
                 })
                 .ToListAsync();
+
+            if (!pendingSocieties.Any())
+            {
+                return Error<PendingConsentDto>(ResultKey.Consent.NoPendingConsent);
+            }
 
             var applicationLanguages = await _nyssContext.ApplicationLanguages.ToListAsync();
             var docs = applicationLanguages.Select(apl => new AgreementDocument
@@ -289,7 +230,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 AgreementDocumentUrl = _generalBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower())
             }).Where(d => d.AgreementDocumentUrl != null);
 
-            var pendingSociety = new PendingHeadManagerConsentDto
+            var pendingSociety = new PendingConsentDto
             {
                 AgreementDocuments = docs,
                 NationalSocieties = pendingSocieties
@@ -325,13 +266,13 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     NationalSociety = ns,
                     HasRegisteredUsers = ns.NationalSocietyUsers.AsQueryable()
                         .Where(UserNationalSocietyQueries.IsNotDeletedUser)
-                        .Any(uns => uns.UserId != ns.HeadManager.Id),
+                        .Any(uns => uns.UserId != ns.DefaultOrganization.HeadManager.Id),
                     HasOpenedProjects = openedProjectsQuery.Any(p => p.NationalSocietyId == ns.Id),
-                    HeadManagerId = ns.HeadManager != null
-                        ? (int?)ns.HeadManager.Id
+                    HeadManagerId = ns.DefaultOrganization.HeadManager != null
+                        ? (int?)ns.DefaultOrganization.HeadManager.Id
                         : null,
-                    HeadManagerRole = ns.HeadManager != null
-                        ? (Role?)ns.HeadManager.Role
+                    HeadManagerRole = ns.DefaultOrganization.HeadManager != null
+                        ? (Role?)ns.DefaultOrganization.HeadManager.Role
                         : null
                 })
                 .SingleAsync();
@@ -381,6 +322,49 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             nationalSociety.IsArchived = false;
             await _nyssContext.SaveChangesAsync();
             return SuccessMessage(ResultKey.NationalSociety.Archive.ReopenSuccess);
+        }
+
+        public async Task<Result> ConsentToNationalSocietyAgreement(string languageCode)
+        {
+            var identityUserName = _authorizationService.GetCurrentUserName();
+
+            var user = await _nyssContext.Users.FilterAvailable()
+                .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
+
+            if (user == null)
+            {
+                return Error(ResultKey.User.Common.UserNotFound);
+            }
+
+            var pendingSocieties = await _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(user)
+                .Include(x => x.DefaultOrganization).ToListAsync();
+            var utcNow = DateTime.UtcNow;
+
+            var consentDocumentFileName = Guid.NewGuid() + ".pdf";
+            var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
+            await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
+
+            foreach (var nationalSociety in pendingSocieties)
+            {
+                if (user.Role == Role.Manager || user.Role == Role.TechnicalAdvisor)
+                {
+                    nationalSociety.DefaultOrganization.PendingHeadManager = null;
+                    nationalSociety.DefaultOrganization.HeadManager = user;
+                }
+
+                await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent
+                {
+                    ConsentedFrom = utcNow,
+                    NationalSocietyId = nationalSociety.Id,
+                    UserEmailAddress = user.EmailAddress,
+                    UserPhoneNumber = user.PhoneNumber,
+                    ConsentDocument = consentDocumentFileName
+                });
+            }
+
+            await _nyssContext.SaveChangesAsync();
+
+            return Success();
         }
 
         public async Task<ContentLanguage> GetLanguageById(int id) =>

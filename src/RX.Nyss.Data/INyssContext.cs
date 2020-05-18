@@ -20,7 +20,7 @@ namespace RX.Nyss.Data
         DbSet<DataCollector> DataCollectors { get; set; }
         DbSet<District> Districts { get; set; }
         DbSet<GatewaySetting> GatewaySettings { get; set; }
-        DbSet<HeadManagerConsent> HeadManagerConsents { get; set; }
+        DbSet<NationalSocietyConsent> NationalSocietyConsents { get; set; }
         DbSet<HealthRisk> HealthRisks { get; set; }
         DbSet<HealthRiskLanguageContent> HealthRiskLanguageContents { get; set; }
         DbSet<Localization> Localizations { get; set; }

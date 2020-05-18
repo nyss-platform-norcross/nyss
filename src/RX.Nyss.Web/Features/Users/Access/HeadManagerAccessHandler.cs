@@ -10,12 +10,12 @@ namespace RX.Nyss.Web.Features.Users.Access
         private readonly INationalSocietyAccessService _nationalSocietyAccessService;
 
         public HeadManagerAccessHandler(IHttpContextAccessor httpContextAccessor, INationalSocietyAccessService nationalSocietyAccessService)
-            : base("nationalSocietyId", httpContextAccessor)
+            : base("organizationId", httpContextAccessor)
         {
             _nationalSocietyAccessService = nationalSocietyAccessService;
         }
 
-        protected override Task<bool> HasAccess(int nationalSocietyId) =>
-            _nationalSocietyAccessService.HasCurrentUserAccessAsHeadManager(nationalSocietyId);
+        protected override Task<bool> HasAccess(int organizationId) =>
+            _nationalSocietyAccessService.HasCurrentUserAccessAsHeadManager(organizationId);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Data.Models
 {
-    public class HeadManagerConsent
+    public class NationalSocietyConsent
     {
         public int Id { get; set; }
 

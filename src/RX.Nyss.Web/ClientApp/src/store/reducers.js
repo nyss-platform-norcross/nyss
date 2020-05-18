@@ -10,7 +10,7 @@ import { globalCoordinatorsReducer } from "../components/globalCoordinators/logi
 import { healthRisksReducer } from "../components/healthRisks/logic/healthRisksReducer";
 import { nationalSocietyUsersReducer } from "../components/nationalSocietyUsers/logic/nationalSocietyUsersReducer";
 import { dataCollectorsReducer } from "../components/dataCollectors/logic/dataCollectorsReducer";
-import { headManagerConsentsReducer } from "../components/headManagerConsents/logic/headManagerConsentsReducer";
+import { nationalSocietyConsentsReducer } from "../components/nationalSocietyConsents/logic/nationalSocietyConsentsReducer";
 import { reportsReducer } from "../components/reports/logic/reportsReducer";
 import { nationalSocietyReportsReducer } from "../components/nationalSocietyReports/logic/nationalSocietyReportsReducer";
 import { nationalSocietyStructureReducer } from "../components/nationalSocietyStructure/logic/nationalSocietyStructureReducer";
@@ -37,7 +37,7 @@ export const createRootReducer = (history) => combineReducers({
   healthRisks: healthRisksReducer,
   nationalSocietyUsers: nationalSocietyUsersReducer,
   dataCollectors: dataCollectorsReducer,
-  headManagerConsents: headManagerConsentsReducer,
+  nationalSocietyConsents: nationalSocietyConsentsReducer,
   reports: reportsReducer,
   nationalSocietyReports: nationalSocietyReportsReducer,
   nationalSocietyDashboard: nationalSocietyDashboardReducer,
