@@ -1,5 +1,3 @@
-import styles from './ProjectsCreatePage.module.scss';
-
 import React, { useState, Fragment, useEffect } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
@@ -15,23 +13,18 @@ import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import AddIcon from '@material-ui/icons/Add';
 import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { getSaveFormModel } from './logic/projectsService';
 import SelectField from '../forms/SelectField';
 import MenuItem from "@material-ui/core/MenuItem";
 import { ValidationMessage } from '../forms/ValidationMessage';
-import { Tooltip, Icon } from '@material-ui/core';
 import CheckboxField from '../forms/CheckboxField';
-import { ProjectsAlertRecipientItem } from './ProjectsAlertRecipientItem';
 
 const ProjectsCreatePageComponent = (props) => {
   const [healthRiskDataSource, setHealthRiskDataSource] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
-  const [alertRecipients, setAlertRecipients] = useState([]);
   const [healthRisksFieldTouched, setHealthRisksFieldTouched] = useState(false);
-  const [organizations, setOrganizations] = useState([]);
 
   useEffect(() => {
     setHealthRiskDataSource(props.healthRisks.map(hr => ({ label: hr.healthRiskName, value: hr.healthRiskId, data: hr })));
@@ -67,7 +60,7 @@ const ProjectsCreatePageComponent = (props) => {
       return;
     };
 
-    props.create(props.nationalSocietyId, getSaveFormModel(form.getValues(), selectedHealthRisks, alertRecipients));
+    props.create(props.nationalSocietyId, getSaveFormModel(form.getValues(), selectedHealthRisks));
   };
 
   const onHealthRiskChange = (value, eventData) => {
@@ -78,25 +71,6 @@ const ProjectsCreatePageComponent = (props) => {
     } else if (eventData.action === "clear") {
       setSelectedHealthRisks([]);
     }
-  }
-
-  const onAlertRecipientAdd = () => {
-    const newRecipients = alertRecipients.slice();
-    newRecipients.push({
-      role: '',
-      organization: '',
-      email: '',
-      phoneNumber: ''
-    });
-    setAlertRecipients(newRecipients);
-  }
-
-  const onRemoveRecipient = (recipient) => {
-    setAlertRecipients(alertRecipients.filter(ar => ar !== recipient));
-  }
-
-  const onAddOrganization = (organization) => {
-    setOrganizations([...new Set([...organizations, { title: organization }])]);
   }
 
   return (
@@ -160,34 +134,6 @@ const ProjectsCreatePageComponent = (props) => {
               healthRisk={selectedHealthRisk}
             />
           ))}
-
-          <Grid item xs={12}>
-            <Typography variant="h3">
-              <div className={styles.alertNotificationsHeader}>
-                {strings(stringKeys.project.form.alertNotificationsSection)}
-
-                <Tooltip title={strings(stringKeys.project.form.alertNotificationsSupervisorsExplanation)} className={styles.helpIcon}>
-                  <Icon>help_outline</Icon>
-                </Tooltip>
-              </div>
-            </Typography>
-            <Typography variant="subtitle1">{strings(stringKeys.project.form.alertNotificationsDescription)}</Typography>
-
-            {alertRecipients.map((alertRecipient, alertRecipientNumber) => (
-              <ProjectsAlertRecipientItem key={alertRecipientNumber}
-                alertRecipient={alertRecipient}
-                alertRecipientNumber={alertRecipientNumber}
-                form={form}
-                organizations={organizations}
-                onAddOrganization={onAddOrganization}
-                onRemoveRecipient={onRemoveRecipient} />
-            ))}
-
-            <Grid item xs={12} sm={9}>
-              <Button startIcon={<AddIcon />} onClick={onAlertRecipientAdd}>{strings(stringKeys.project.form.addRecipient)}</Button>
-            </Grid>
-
-          </Grid>
         </Grid>
 
         <FormActions>

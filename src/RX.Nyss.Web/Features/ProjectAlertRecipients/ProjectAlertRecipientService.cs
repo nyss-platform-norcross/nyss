@@ -93,11 +93,11 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
         {
             var currentUser = _authorizationService.GetCurrentUser();
 
-            var organizationId = createDto.ProjectOrganizationId.HasValue ? createDto.ProjectOrganizationId.Value
-                : _nyssContext.UserNationalSocieties
+            var organizationId = createDto.OrganizationId.HasValue ? createDto.OrganizationId.Value
+                : await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                     .Select(uns => uns.OrganizationId)
-                    .SingleOrDefault();
+                    .SingleOrDefaultAsync();
 
             if (!organizationId.HasValue)
             {

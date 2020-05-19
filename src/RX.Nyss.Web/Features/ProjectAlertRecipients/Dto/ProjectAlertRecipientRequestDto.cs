@@ -13,7 +13,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
         public string Role { get; set; }
 
         public string Organization { get; set; }
-        public int? ProjectOrganizationId { get; set; }
+        public int? OrganizationId { get; set; }
 
         public class Validator : AbstractValidator<ProjectAlertRecipientRequestDto>
         {

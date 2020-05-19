@@ -219,6 +219,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                 await EnsureSupervisorHasNoDataCollectors(supervisorUserData.User);
 
                 RemoveExistingProjectReference(supervisorUserData.CurrentProjectReference);
+                RemoveAlertRecipientsReferences(supervisorUserData.User);
 
                 AnonymizeSupervisor(supervisorUserData.User);
                 supervisorUserData.User.DeletedAt = _dateTimeProvider.UtcNow;
@@ -384,6 +385,12 @@ namespace RX.Nyss.Web.Features.Supervisors
                     });
                 }
             }
+        }
+
+        private void RemoveAlertRecipientsReferences(SupervisorUser user)
+        {
+            var alertRecipients = user.SupervisorAlertRecipients.ToList();
+            _nyssContext.SupervisorUserAlertRecipients.RemoveRange(alertRecipients);
         }
 
         private SupervisorUserAlertRecipient CreateSupervisorAlertRecipientReference(SupervisorUser user, AlertNotificationRecipient alertNotificationRecipient) =>
