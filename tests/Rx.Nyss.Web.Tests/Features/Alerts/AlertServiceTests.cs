@@ -103,6 +103,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             ApiKey = TestData.ApiKey,
                             Village = new Village()
+                        },
+                        DataCollector = new DataCollector
+                        {
+                            Supervisor = new SupervisorUser
+                            {
+                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
+                            }
                         }
                     }
                 },
@@ -115,6 +122,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             ApiKey = TestData.ApiKey,
                             Village = new Village()
+                        },
+                        DataCollector = new DataCollector
+                        {
+                            Supervisor = new SupervisorUser
+                            {
+                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
+                            }
                         }
                     }
                 },
@@ -127,6 +141,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             ApiKey = TestData.ApiKey,
                             Village = new Village()
+                        },
+                        DataCollector = new DataCollector
+                        {
+                            Supervisor = new SupervisorUser
+                            {
+                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
+                            }
                         }
                     }
                 }
@@ -162,6 +183,23 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             ApiKey = TestData.ApiKey,
                             Village = new Village()
+                        },
+                        DataCollector = new DataCollector
+                        {
+                            Supervisor = new SupervisorUser
+                            {
+                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>
+                                {
+                                    new SupervisorUserAlertRecipient
+                                    {
+                                        AlertNotificationRecipient = new AlertNotificationRecipient
+                                        {
+                                            Email = emailAddress,
+                                            PhoneNumber = phonenumber
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -224,7 +262,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                     PhoneNumber = phonenumber
                 }
             };
-            
+
             await _alertService.Escalate(TestData.AlertId, true);
 
             await _emailPublisherService.ReceivedWithAnyArgs(1).SendEmail((null, null), null, null);
@@ -294,6 +332,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             ApiKey = TestData.ApiKey,
                             Village = new Village()
+                        },
+                        DataCollector = new DataCollector
+                        {
+                            Supervisor = new SupervisorUser
+                            {
+                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
+                            }
                         }
                     }
                 }
@@ -659,6 +704,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                     {
                                         ApiKey = ApiKey,
                                         Village = new Village()
+                                    },
+                                    DataCollector = new DataCollector
+                                    {
+                                        Supervisor = new SupervisorUser
+                                        {
+                                            SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
+                                        }
                                     }
                                 }
                             }
