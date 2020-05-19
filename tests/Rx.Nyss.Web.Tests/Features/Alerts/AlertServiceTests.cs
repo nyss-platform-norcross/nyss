@@ -249,6 +249,23 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             ApiKey = TestData.ApiKey,
                             Village = new Village()
+                        },
+                        DataCollector = new DataCollector
+                        {
+                            Supervisor = new SupervisorUser
+                            {
+                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>
+                                {
+                                    new SupervisorUserAlertRecipient
+                                    {
+                                        AlertNotificationRecipient = new AlertNotificationRecipient
+                                        {
+                                            Email = emailAddress,
+                                            PhoneNumber = phonenumber
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -295,6 +312,22 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             ApiKey = "Some_missing_key",
                             Village = new Village()
+                        },
+                        DataCollector = new DataCollector
+                        {
+                            Supervisor = new SupervisorUser
+                            {
+                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>
+                                {
+                                    new SupervisorUserAlertRecipient
+                                    {
+                                        AlertNotificationRecipient = new AlertNotificationRecipient
+                                        {
+                                            PhoneNumber = phonenumber
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -371,6 +404,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             ApiKey = TestData.ApiKey,
                             Village = new Village()
+                        },
+                        DataCollector = new DataCollector
+                        {
+                            Supervisor = new SupervisorUser
+                            {
+                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
+                            }
                         }
                     }
                 }
