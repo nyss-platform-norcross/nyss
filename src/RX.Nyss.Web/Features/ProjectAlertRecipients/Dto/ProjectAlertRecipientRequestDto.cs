@@ -1,8 +1,8 @@
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace RX.Nyss.Web.Features.Alerts.Dto
+namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
 {
-    public class AlertNotificationRecipientDto
+    public class ProjectAlertRecipientRequestDto
     {
         public int? Id { get; set; }
 
@@ -13,9 +13,9 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public string Role { get; set; }
 
         public string Organization { get; set; }
+        public int? OrganizationId { get; set; }
 
-
-        public class Validator : AbstractValidator<AlertNotificationRecipientDto>
+        public class Validator : AbstractValidator<ProjectAlertRecipientRequestDto>
         {
             public Validator()
             {

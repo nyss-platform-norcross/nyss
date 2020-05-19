@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20200516065751_AddProjectOrganizationToAlertRecipient")]
+    partial class AddProjectOrganizationToAlertRecipient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,7 +108,7 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrganizationId")
+                    b.Property<int>("ProjectOrganizationId")
                         .HasColumnType("int");
 
                     b.Property<string>("Role")
@@ -1856,6 +1858,41 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("GatewaySettings");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.HeadManagerConsent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ConsentDocument")
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.Property<DateTime>("ConsentedFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ConsentedUntil")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("NationalSocietyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserEmailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
+
+                    b.Property<string>("UserPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)")
+                        .HasMaxLength(20);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("HeadManagerConsents");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRisk", b =>
                 {
                     b.Property<int>("Id")
@@ -1967,12 +2004,12 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int?>("CountryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("DefaultOrganizationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("DistrictCustomName")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
+
+                    b.Property<int?>("HeadManagerId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsArchived")
                         .HasColumnType("bit");
@@ -1980,6 +2017,9 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
+
+                    b.Property<int?>("PendingHeadManagerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("RegionCustomName")
                         .HasColumnType("nvarchar(100)")
@@ -2002,7 +2042,7 @@ namespace RX.Nyss.Data.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.HasIndex("DefaultOrganizationId");
+                    b.HasIndex("HeadManagerId");
 
                     b.HasIndex("IsArchived");
 
@@ -2010,44 +2050,11 @@ namespace RX.Nyss.Data.Migrations
                         .IsUnique()
                         .HasFilter("[Name] IS NOT NULL");
 
+                    b.HasIndex("PendingHeadManagerId");
+
                     b.HasIndex("StartDate");
 
                     b.ToTable("NationalSocieties");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.NationalSocietyConsent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ConsentDocument")
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.Property<DateTime>("ConsentedFrom")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ConsentedUntil")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("NationalSocietyId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserEmailAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("UserPhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(20)")
-                        .HasMaxLength(20);
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NationalSocietyConsents");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Notification", b =>
@@ -2090,9 +2097,6 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("HeadManagerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
@@ -2101,16 +2105,9 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("NationalSocietyId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PendingHeadManagerId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("HeadManagerId");
-
                     b.HasIndex("NationalSocietyId");
-
-                    b.HasIndex("PendingHeadManagerId");
 
                     b.HasIndex("Name", "NationalSocietyId")
                         .IsUnique();
@@ -2124,9 +2121,6 @@ namespace RX.Nyss.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("AllowMultipleOrganizations")
-                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -2783,9 +2777,14 @@ namespace RX.Nyss.Data.Migrations
                         .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("RX.Nyss.Data.Models.Organization", "DefaultOrganization")
+                    b.HasOne("RX.Nyss.Data.Models.User", "HeadManager")
                         .WithMany()
-                        .HasForeignKey("DefaultOrganizationId")
+                        .HasForeignKey("HeadManagerId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("RX.Nyss.Data.Models.User", "PendingHeadManager")
+                        .WithMany()
+                        .HasForeignKey("PendingHeadManagerId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
@@ -2800,21 +2799,11 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Organization", b =>
                 {
-                    b.HasOne("RX.Nyss.Data.Models.User", "HeadManager")
-                        .WithMany()
-                        .HasForeignKey("HeadManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany("Organizations")
                         .HasForeignKey("NationalSocietyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.User", "PendingHeadManager")
-                        .WithMany()
-                        .HasForeignKey("PendingHeadManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.Project", b =>

@@ -11,7 +11,6 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.DataCollectors;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Projects.Dto;
@@ -92,8 +91,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     Id = 1,
                     NationalSocietyId = 1,
                     NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 2 }, Organizations = new List<Organization>(), NationalSocietyUsers = new List<UserNationalSociety>( ) },
-                    ProjectHealthRisks = new List<ProjectHealthRisk>(),
-                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
+                    ProjectHealthRisks = new List<ProjectHealthRisk>()
                 },
                 new Project
                 {
@@ -132,17 +130,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             },
                             Reports = new[] { new Report() }
                         }
-                    },
-                    AlertNotificationRecipients = new []
-                    {
-                        new AlertNotificationRecipient
-                        {
-                            Id = 1,
-                            Role = "Head",
-                            Organization = "RC",
-                            Email = "head@example.com",
-                            PhoneNumber = "+47493284231"
-                        }
                     }
                 }
             };
@@ -174,10 +161,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             result.Value.ProjectHealthRisks.ElementAt(0).AlertRuleDaysThreshold.ShouldBe(2);
             result.Value.ProjectHealthRisks.ElementAt(0).AlertRuleKilometersThreshold.ShouldBe(3);
             result.Value.ProjectHealthRisks.ElementAt(0).ContainsReports.ShouldBe(true);
-            result.Value.AlertNotificationRecipients.Count().ShouldBe(1);
-            result.Value.AlertNotificationRecipients.ElementAt(0).Id.ShouldBe(1);
-            result.Value.AlertNotificationRecipients.ElementAt(0).Email.ShouldBe("head@example.com");
-            result.Value.AlertNotificationRecipients.ElementAt(0).PhoneNumber.ShouldBe("+47493284231");
         }
 
         [Fact]
@@ -273,17 +256,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         CaseDefinition = "CaseDefinition",
                         FeedbackMessage = "FeedbackMessage"
                     }
-                },
-                AlertNotificationRecipients = new[]
-                {
-                    new AlertNotificationRecipientDto
-                    {
-                        Id = 1,
-                        Role = "Head",
-                        Organization = "RC",
-                        Email = "head@example.com",
-                        PhoneNumber = "+47493284231"
-                    }
                 }
             };
 
@@ -303,8 +275,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         phr.FeedbackMessage == "FeedbackMessage" &&
                         phr.AlertRule.CountThreshold == 1 &&
                         phr.AlertRule.DaysThreshold == 2 &&
-                        phr.AlertRule.KilometersThreshold == 3) &&
-                    p.AlertNotificationRecipients.Any(anr => anr.Email == "head@example.com" && anr.PhoneNumber == "+47493284231")));
+                        phr.AlertRule.KilometersThreshold == 3)));
             await _nyssContextMock.Received(1).SaveChangesAsync();
             result.IsSuccess.ShouldBeTrue();
             result.Message.Key.ShouldBe(ResultKey.Project.SuccessfullyAdded);
@@ -499,17 +470,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             },
                             Reports = new List<Report>()
                         }
-                    },
-                    AlertNotificationRecipients = new []
-                    {
-                        new AlertNotificationRecipient
-                        {
-                            Role = "Head",
-                            Organization = "RC",
-                            Email = "head@example.com",
-                            PhoneNumber = "+47493284231",
-                            SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
-                        }
                     }
                 }
             };
@@ -547,33 +507,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         AlertRuleDaysThreshold = 4,
                         AlertRuleKilometersThreshold = 5
                     }
-                },
-                AlertNotificationRecipients = new[]
-                {
-                    new AlertNotificationRecipientDto
-                    {
-                        Id = 1,
-                        Role = "Head",
-                        Organization = "RC",
-                        Email = "head@example.com",
-                        PhoneNumber = "+47493284231"
-                    }
                 }
             };
-
-            var alertRecipients = new List<AlertNotificationRecipient>
-            {
-                new AlertNotificationRecipient
-                {
-                    Id = 1,
-                    Role = "Head",
-                    Organization = "RC",
-                    Email = "head@example.com",
-                    PhoneNumber = "+47493284231"
-                }
-            };
-            var emailAlertRecipientsMockDbSet = alertRecipients.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.AlertNotificationRecipients.Returns(emailAlertRecipientsMockDbSet);
 
             // Act
             var result = await _projectService.Edit(projectId, projectRequestDto);
@@ -678,8 +613,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                             },
                             Reports = new List<Report> { new Report() }
                         }
-                    },
-                    AlertNotificationRecipients = new List<AlertNotificationRecipient>()
+                    }
                 }
             };
 
@@ -694,8 +628,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             {
                 Name = "Updated Project",
                 TimeZoneId = "Updated Time Zone",
-                HealthRisks = new List<ProjectHealthRiskRequestDto>(),
-                AlertNotificationRecipients = new List<AlertNotificationRecipientDto>()
+                HealthRisks = new List<ProjectHealthRiskRequestDto>()
             };
 
             // Act

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 
 namespace RX.Nyss.Web.Features.Users.Dto
 {
@@ -37,6 +37,6 @@ namespace RX.Nyss.Web.Features.Users.Dto
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<AlertNotificationRecipientDto> AlertRecipients { get; set; }
+        public List<ProjectAlertRecipientListResponseDto> AlertRecipients { get; set; }
     }
 }

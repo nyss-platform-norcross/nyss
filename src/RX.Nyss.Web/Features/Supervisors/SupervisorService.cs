@@ -11,7 +11,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
-using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.Supervisors.Dto;
 using RX.Nyss.Web.Features.Supervisors.Models;
@@ -81,10 +81,9 @@ namespace RX.Nyss.Web.Features.Supervisors
 
         public async Task<Result<GetSupervisorResponseDto>> Get(int supervisorId, int nationalSocietyId)
         {
-            
             var supervisor = await _nyssContext.UserNationalSocieties.FilterAvailable()
                 .Where(un => un.UserId == supervisorId && un.NationalSocietyId == nationalSocietyId)
-                .Select(un => new 
+                .Select(un => new
                 {
                     User = (SupervisorUser)un.User,
                     UserNationalSociety = un
@@ -108,40 +107,43 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Id = u.User.CurrentProject.Id,
                         Name = u.User.CurrentProject.Name,
                         IsClosed = u.User.CurrentProject.State == ProjectState.Closed,
-                        AlertRecipients = u.User.SupervisorAlertRecipients.Select(anr => new AlertNotificationRecipientDto
+                        AlertRecipients = u.User.SupervisorAlertRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
                         {
                             Id = anr.AlertNotificationRecipientId,
                             Role = anr.AlertNotificationRecipient.Role,
                             Organization = anr.AlertNotificationRecipient.Organization
                         }).ToList()
-                    },
-                    EditSupervisorFormData = new EditSupervisorFormDataDto
-                    {
-                        AvailableProjects = _nyssContext.Projects
-                            .Where(p => p.NationalSociety.Id == nationalSocietyId)
-                            .Where(p => p.State == ProjectState.Open)
-                            .Select(p => new EditSupervisorFormDataDto.ListProjectsResponseDto
-                            {
-                                Id = p.Id,
-                                Name = p.Name,
-                                IsClosed = p.State == ProjectState.Closed,
-                                AlertRecipients = p.AlertNotificationRecipients.Select(anr => new AlertNotificationRecipientDto
-                                {
-                                    Id = anr.Id,
-                                    Role = anr.Role,
-                                    Organization = anr.Organization
-                                }).ToList()
-                            })
-                            .ToList()
                     }
                 })
                 .SingleOrDefaultAsync();
 
             if (supervisor == null)
             {
-                _loggerAdapter.Debug($"Data manager with id {supervisorId} was not found");
+                _loggerAdapter.Debug($"Supervisor with id {supervisorId} was not found");
                 return Error<GetSupervisorResponseDto>(ResultKey.User.Common.UserNotFound);
             }
+
+            supervisor.EditSupervisorFormData = new EditSupervisorFormDataDto
+            {
+                AvailableProjects = await _nyssContext.Projects
+                    .Where(p => p.NationalSociety.Id == nationalSocietyId)
+                    .Where(p => p.State == ProjectState.Open)
+                    .Select(p => new EditSupervisorFormDataDto.ListProjectsResponseDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        IsClosed = p.State == ProjectState.Closed,
+                        AlertRecipients = p.AlertNotificationRecipients
+                            .Where(anr => anr.OrganizationId == supervisor.OrganizationId)
+                            .Select(anr => new ProjectAlertRecipientListResponseDto
+                            {
+                                Id = anr.Id,
+                                Role = anr.Role,
+                                Organization = anr.Organization
+                            }).ToList()
+                    })
+                    .ToListAsync()
+            };
 
             if (supervisor.CurrentProject != null && supervisor.CurrentProject.IsClosed)
             {
@@ -172,7 +174,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                 supervisorUser.Organization = editSupervisorRequestDto.Organization;
 
                 await UpdateSupervisorProjectReferences(supervisorUser, supervisorUserData.CurrentProjectReference, editSupervisorRequestDto.ProjectId);
-                
+
                 await UpdateAlertRecipientsReferences(supervisorUser, editSupervisorRequestDto.SupervisorAlertRecipients);
 
                 if (editSupervisorRequestDto.OrganizationId.HasValue)
@@ -217,6 +219,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                 await EnsureSupervisorHasNoDataCollectors(supervisorUserData.User);
 
                 RemoveExistingProjectReference(supervisorUserData.CurrentProjectReference);
+                RemoveAlertRecipientsReferences(supervisorUserData.User);
 
                 AnonymizeSupervisor(supervisorUserData.User);
                 supervisorUserData.User.DeletedAt = _dateTimeProvider.UtcNow;
@@ -384,7 +387,13 @@ namespace RX.Nyss.Web.Features.Supervisors
             }
         }
 
-        private SupervisorUserAlertRecipient CreateSupervisorAlertRecipientReference(SupervisorUser user, AlertNotificationRecipient alertNotificationRecipient) => 
+        private void RemoveAlertRecipientsReferences(SupervisorUser user)
+        {
+            var alertRecipients = user.SupervisorAlertRecipients.ToList();
+            _nyssContext.SupervisorUserAlertRecipients.RemoveRange(alertRecipients);
+        }
+
+        private SupervisorUserAlertRecipient CreateSupervisorAlertRecipientReference(SupervisorUser user, AlertNotificationRecipient alertNotificationRecipient) =>
             new SupervisorUserAlertRecipient
             {
                 Supervisor = user,

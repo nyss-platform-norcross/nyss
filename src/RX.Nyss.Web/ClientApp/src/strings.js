@@ -282,6 +282,37 @@ export const stringKeys = {
       removalConfirmation: "projectOrganization.list.removalConfirmation"
     },
   },
+  projectAlertRecipient: {
+    title: "projectAlertRecipient.title",
+    addNew: "projectAlertRecipient.addNew",
+    form: {
+      creationTitle: "projectAlertRecipient.form.creationTitle",
+      editionTitle: "projectAlertRecipient.form.editionTitle",
+      role: "projectAlertRecipient.form.role",
+      organization: "projectAlertRecipient.form.organization",
+      projectOrganization: "projectAlertRecipient.form.projectOrganization",
+      email: "projectAlertRecipient.form.email",
+      phoneNumber: "projectAlertRecipient.form.phoneNumber",
+      create: "projectAlertRecipient.form.create",
+      update: "projectAlertRecipient.form.update"
+    },
+    create: {
+      success: "projectAlertRecipient.create.success"
+    },
+    edit: {
+      success: "projectAlertRecipient.edit.success"
+    },
+    delete: {
+      success: "projectAlertRecipient.delete.success"
+    },
+    list: {
+      role: "projectAlertRecipient.list.role",
+      organization: "projectAlertRecipient.list.organization",
+      email: "projectAlertRecipient.list.email",
+      phoneNumber: "projectAlertRecipient.list.phoneNumber",
+      removalConfirmation: "projectAlertRecipient.list.removalConfirmation"
+    },
+  },
   project: {
     title: "project.title",
     settingsRootTitle: "project.settingsRootTitle",

@@ -33,6 +33,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         /// Get a supervisor.
         /// </summary>
         /// <param name="supervisorId">The ID of the requested supervisor</param>
+        /// <param name="nationalSocietyId">The ID of the national society</param>
         /// <returns></returns>
         [HttpGet("{supervisorId:int}/get")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]

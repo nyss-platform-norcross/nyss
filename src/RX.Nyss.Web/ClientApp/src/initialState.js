@@ -98,6 +98,16 @@ export const initialState = {
     formSaving: false,
     formData: null
   },
+  projectAlertRecipients: {
+    listProjectId: null,
+    listFetching: false,
+    listRemoving: {},
+    listStale: true,
+    listData: [],
+    formFetching: false,
+    formSaving: false,
+    formData: null
+  },
   projects: {
     listFetching: false,
     isClosing: {},

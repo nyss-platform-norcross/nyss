@@ -1,5 +1,4 @@
 import * as actions from "./projectOrganizationsConstants";
-import * as nationalSocietyActions from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { initialState } from "../../../initialState";
 import { setProperty } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";

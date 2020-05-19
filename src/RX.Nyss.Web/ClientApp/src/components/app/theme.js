@@ -250,6 +250,12 @@ export const theme = createMuiTheme({
       inputRoot: {
         paddingRight: 16
       }
+    },
+    MuiTooltip: {
+      tooltip: {
+        fontSize: '1rem',
+        padding: '8px'
+      }
     }
   },
 });

@@ -15,14 +15,7 @@ import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import { assessmentStatus, closeOptions } from '../logic/alertsConstants';
-import { Tooltip, withStyles } from '@material-ui/core';
-
-const StyledTooltip = withStyles({
-  tooltip: {
-    fontSize: '1rem',
-    padding: '8px'
-  }
-})((props) => <Tooltip {...props} />)
+import { Tooltip } from '@material-ui/core';
 
 export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, getList, page, rowsPerPage, totalRows }) => {
   const onChangePage = (event, page) => {
@@ -43,9 +36,9 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
       return (
         <div className={alertTableStyles.closeStatus}>
           {strings(stringKeys.alerts.constants.alertStatus[alert.status])}
-          <StyledTooltip title={tooltipText} onClick={handleTooltipClick} arrow className={alertTableStyles.tooltip}>
+          <Tooltip title={tooltipText} onClick={handleTooltipClick} arrow className={alertTableStyles.tooltip}>
             <HelpOutlineOutlinedIcon fontSize="small" />
-          </StyledTooltip>
+          </Tooltip>
         </div>
       );
     } else {

@@ -21,6 +21,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Web.Data;
+using RX.Nyss.Web.Features.ProjectAlertRecipients.Access;
 using RX.Nyss.Web.Features.Alerts.Access;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Coordinators.Access;
@@ -217,6 +218,9 @@ namespace RX.Nyss.Web.Configuration
                 options.AddPolicy(Policy.AlertAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<AlertAccessHandler>.Requirement()));
 
+                options.AddPolicy(Policy.AlertRecipientAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectAlertRecipientAccessHandler>.Requirement()));
+
                 options.AddPolicy(Policy.ReportAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<ProjectAccessHandler>.Requirement()));
 
@@ -241,6 +245,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, VillageAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ZoneAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, AlertAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, ProjectAlertRecipientAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ReportAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, CoordinatorAccessHandler>();
         }

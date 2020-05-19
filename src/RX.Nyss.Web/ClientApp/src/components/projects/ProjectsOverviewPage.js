@@ -16,7 +16,6 @@ import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import Chip from "@material-ui/core/Chip";
 import { Tooltip, Icon } from "@material-ui/core";
 import { Coordinator, Administrator } from "../../authentication/roles";
-import { ProjectsOverviewAlertRecipientItem } from "./ProjectsOverviewAlertRecipientsItem";
 import * as roles from "../../authentication/roles";
 
 const ProjectsOverviewPageComponent = (props) => {
@@ -75,24 +74,6 @@ const ProjectsOverviewPageComponent = (props) => {
               />
             )}
           </Grid>
-        </Grid>
-
-        <Grid item xs={12}>
-          <Typography variant="h3">
-            <div className={styles.alertNotificationsHeader}>
-              {strings(stringKeys.project.form.overviewAlertNotificationsSection)}
-
-              <Tooltip title={strings(stringKeys.project.form.alertNotificationsSupervisorsExplanation)} className={styles.helpIcon}>
-                <Icon>help_outline</Icon>
-              </Tooltip>
-            </div>
-          </Typography>
-          <Typography variant="subtitle1">{strings(stringKeys.project.form.alertNotificationsDescription)}</Typography>
-
-          {props.data.alertNotificationRecipients.map(ar => (
-            <ProjectsOverviewAlertRecipientItem alertRecipient={ar} key={`alertRecipient_${ar.id}`} />
-          ))}
-
         </Grid>
       </Grid>
 
