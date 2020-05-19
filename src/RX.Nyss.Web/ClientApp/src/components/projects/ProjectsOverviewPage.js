@@ -14,9 +14,7 @@ import { ProjectsOverviewHealthRiskItem } from "./ProjectsOverviewHealthRiskItem
 import { accessMap } from '../../authentication/accessMap';
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import Chip from "@material-ui/core/Chip";
-import { Tooltip, Icon } from "@material-ui/core";
 import { Coordinator, Administrator } from "../../authentication/roles";
-import * as roles from "../../authentication/roles";
 
 const ProjectsOverviewPageComponent = (props) => {
   useMount(() => {

@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -35,8 +37,14 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private readonly INationalSocietyService _nationalSocietyService;
         private readonly IAuthorizationService _authorizationService;
 
-        public NationalSocietyReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INationalSocietyService nationalSocietyService, INyssWebConfig config,
-            IAuthorizationService authorizationService)
+        public NationalSocietyReportService(
+            INyssContext nyssContext,
+            IUserService userService,
+            IProjectService projectService, 
+            INationalSocietyService nationalSocietyService, 
+            INyssWebConfig config,
+            IAuthorizationService authorizationService
+            )
         {
             _nyssContext = nyssContext;
             _userService = userService;
@@ -51,19 +59,33 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
             var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(_authorizationService.GetCurrentUserName());
             var rowsPerPage = _config.PaginationRowsPerPage;
+            var currentRole = _authorizationService.GetCurrentUser().Role;
+
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var currentUserOrganizationId = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.NationalSocietyId == nationalSocietyId && uns.User == currentUser)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
 
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
                 .Where(r =>
-                    filter.ReportsType == NationalSocietyReportListType.FromDcp ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint :
-                    filter.ReportsType == NationalSocietyReportListType.Main ? r.DataCollector.DataCollectorType == DataCollectorType.Human :
-                    r.DataCollector == null)
+                    filter.ReportsType == NationalSocietyReportListType.FromDcp
+                        ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                        : (filter.ReportsType == NationalSocietyReportListType.Main 
+                            ? r.DataCollector.DataCollectorType == DataCollectorType.Human
+                            : r.DataCollector == null
+                        )
+                )
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
                 .Where(r => filter.Status
                     ? r.Report != null && !r.Report.MarkedAsError
                     : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
                 .FilterByArea(MapToArea(filter.Area));
+
+
 
             if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
             {
@@ -78,6 +100,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
                     IsValid = r.Report != null,
                     IsMarkedAsError = r.Report.MarkedAsError,
+                    IsAnonymized = currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
+                        nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
+                    OrganizationName = r.NationalSociety.NationalSocietyUsers
+                        .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
+                        .Select(nsu => nsu.Organization.Name)
+                        .FirstOrDefault(),
                     ProjectName = r.Report != null
                         ? r.Report.ProjectHealthRisk.Project.Name
                         : r.DataCollector.Project.Name,
@@ -106,9 +134,22 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync();
 
-            foreach (var report in result.Where(r => r.ProjectTimeZone != null))
+            foreach (var report in result)
             {
-                report.DateTime = TimeZoneInfo.ConvertTimeFromUtc(report.DateTime, TimeZoneInfo.FindSystemTimeZoneById(report.ProjectTimeZone));
+                if (report.ProjectTimeZone != null)
+                {
+                    report.DateTime = TimeZoneInfo.ConvertTimeFromUtc(report.DateTime, TimeZoneInfo.FindSystemTimeZoneById(report.ProjectTimeZone));
+                }
+
+                if (report.IsAnonymized)
+                {
+                    report.DataCollectorDisplayName = report.OrganizationName;
+                    report.PhoneNumber = report.PhoneNumber.Length > 4 ? "***" + report.PhoneNumber.SubstringFromEnd(4) : "***";
+                    report.Region = "";
+                    report.Zone = "";
+                    report.District = "";
+                    report.Village = "";
+                }
             }
 
             return Success(result.AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));

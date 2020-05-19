@@ -1,6 +1,6 @@
 import styles from "./AlertsAssessmentActions.module.scss"
 
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState } from 'react';
 import { stringKeys, strings } from "../../../strings";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import FormActions from "../../forms/formActions/FormActions";

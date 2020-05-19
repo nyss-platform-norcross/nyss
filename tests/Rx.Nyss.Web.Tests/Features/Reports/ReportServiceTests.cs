@@ -66,13 +66,21 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
             _authorizationService.IsCurrentUserInRole(Role.Supervisor).Returns(false);
             _authorizationService.GetCurrentUserName().Returns("admin@domain.com");
+            _authorizationService.GetCurrentUser().Returns(new AdministratorUser { Role = Role.Administrator});
             ArrangeData();
         }
 
 
         private void ArrangeData()
         {
-            var nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = 1 } };
+            var nationalSocieties = new List<NationalSociety>
+            {
+                new NationalSociety
+                {
+                    Id = 1,
+                    NationalSocietyUsers = new List<UserNationalSociety>()
+                }
+            };
 
             var alertRules = new List<AlertRule> { new AlertRule { Id = 1 } };
 
@@ -188,7 +196,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
                     ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 1).ToList(),
-                    TimeZone = "UTC"
+                    TimeZone = "UTC",
                 },
                 new Project
                 {
@@ -226,16 +234,16 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             };
 
             var reports1 = BuildReports(dataCollectors[0], _reportIdsFromProject1, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0]);
-            var rawReports1 = BuildRawReports(reports1, villages[0], zones[1]);
+            var rawReports1 = BuildRawReports(reports1, villages[0], zones[1], nationalSocieties[0]);
 
             var reports2 = BuildReports(dataCollectors[1], _reportIdsFromProject2, dataCollectors[1].Project.ProjectHealthRisks.ToList()[0]);
-            var rawReports2 = BuildRawReports(reports2, villages[0], zones[0]);
+            var rawReports2 = BuildRawReports(reports2, villages[0], zones[0], nationalSocieties[0]);
 
             var trainingReports = BuildReports(dataCollectors[0], _trainingReportIds, dataCollectors[0].Project.ProjectHealthRisks.ToList()[0], isTraining: true);
-            var trainingRawReports = BuildRawReports(trainingReports, villages[0], zones[0]);
+            var trainingRawReports = BuildRawReports(trainingReports, villages[0], zones[0], nationalSocieties[0]);
 
             var dcpReports = BuildReports(dataCollectors[2], _dcpReportIds, dataCollectors[2].Project.ProjectHealthRisks.ToList()[0]);
-            var dcpRawReports = BuildRawReports(dcpReports, villages[0], zones[0]);
+            var dcpRawReports = BuildRawReports(dcpReports, villages[0], zones[0], nationalSocieties[0]);
 
             var reports = reports1.Concat(reports2).Concat(trainingReports).Concat(dcpReports).ToList();
             var rawReports = rawReports1.Concat(rawReports2).Concat(trainingRawReports).Concat(dcpRawReports).ToList();
@@ -306,7 +314,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             return reports;
         }
 
-        private static List<RawReport> BuildRawReports(List<Report> reports, Village village, Zone zone) =>
+        private static List<RawReport> BuildRawReports(List<Report> reports, Village village, Zone zone, NationalSociety nationalSociety) =>
             reports.Select(r => new RawReport
                 {
                     Id = r.Id,
@@ -317,7 +325,8 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     ReceivedAt = r.ReceivedAt,
                     IsTraining = r.IsTraining,
                     Village = village,
-                    Zone = zone
+                    Zone = zone,
+                    NationalSociety = nationalSociety
                 })
                 .ToList();
 

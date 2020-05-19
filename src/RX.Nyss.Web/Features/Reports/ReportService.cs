@@ -94,14 +94,82 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter)
         {
-            var (baseQuery, reportsQuery) = await GetReportQueries(projectId, filter);
+            var currentUserName = _authorizationService.GetCurrentUserName();
+            var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
+            var currentUserId = await _nyssContext.Users.FilterAvailable()
+                .Where(u => u.EmailAddress == currentUserName)
+                .Select(u => u.Id)
+                .SingleAsync();
+
+            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
+
+            var baseQuery = _nyssContext.RawReports
+                .FilterByProject(projectId)
+                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByTrainingMode(filter.IsTraining)
+                .FilterByDataCollectorType(filter.ReportsType == ReportListType.FromDcp ? DataCollectorType.CollectionPoint : DataCollectorType.Human)
+                .FilterByArea(MapToArea(filter.Area))
+                .Where(r => filter.Status
+                    ? r.Report != null && !r.Report.MarkedAsError
+                    : r.Report == null || r.Report.MarkedAsError);
+
+
+            var currentUserOrganizationId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
+                .Where(uns => uns.User.Id == currentUserId)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
+
+            var currentRole = _authorizationService.GetCurrentUser().Role;
+
+            var result = baseQuery.Select(r => new ReportListResponseDto
+            {
+                Id = r.Id,
+                IsAnonymized = currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
+                        nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
+                OrganizationName = r.NationalSociety.NationalSocietyUsers
+                        .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
+                        .Select(nsu => nsu.Organization.Name)
+                        .FirstOrDefault(),
+                DateTime = r.ReceivedAt,
+                HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
+                        .Select(lc => lc.Name)
+                        .Single(),
+                IsValid = r.Report != null,
+                Region = r.Village.District.Region.Name,
+                District = r.Village.District.Name,
+                Village = r.Village.Name,
+                Zone = r.Zone.Name,
+                DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                        ? r.DataCollector.Name
+                        : r.DataCollector.DisplayName,
+                PhoneNumber = r.Sender,
+                IsMarkedAsError = r.Report.MarkedAsError,
+                UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
+                IsInAlert = r.Report.ReportAlerts.Any(),
+                ReportId = r.ReportId,
+                ReportType = r.Report.ReportType,
+                Message = r.Text,
+                CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
+                CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
+                CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
+                CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
+                ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
+                DeathCount = r.Report.DataCollectionPointCase.DeathCount,
+                FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
+            })
+                //ToDo: order base on filter.OrderBy property
+                .OrderBy(r => r.DateTime, filter.SortAscending);
 
             var rowsPerPage = _config.PaginationRowsPerPage;
-            var reports = await reportsQuery
+            var reports = await result
                 .Page(pageNumber, rowsPerPage)
-                .ToListAsync();
-
+                .ToListAsync<IReportListResponseDto>();
+            
             await UpdateTimeZoneInReports(projectId, reports);
+            AnonymizeCrossOrganizationReports(reports);
 
             return Success(reports.Cast<ReportListResponseDto>().AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
         }
@@ -136,6 +204,17 @@ namespace RX.Nyss.Web.Features.Reports
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
+            var currentRole = _authorizationService.GetCurrentUser().Role;
+
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var currentUserOrganizationId = await _nyssContext
+                .Projects
+                .Where(p => p.Id == projectId)
+                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
+                .Where(uns => uns.User.Id == currentUser.Id)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
 
             var reportsQuery = _nyssContext.RawReports
                 .FilterByProject(projectId)
@@ -155,6 +234,12 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(lc => lc.Name)
                         .Single(),
                     IsValid = r.Report != null,
+                    IsAnonymized = currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
+                        nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
+                    OrganizationName = r.NationalSociety.NationalSocietyUsers
+                        .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
+                        .Select(nsu => nsu.Organization.Name)
+                        .FirstOrDefault(),
                     Status = GetReportStatus(r.Report != null, r.Report.MarkedAsError, stringResources),
                     MarkedAsError = r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
@@ -185,6 +270,7 @@ namespace RX.Nyss.Web.Features.Reports
             var reports = await reportsQuery.ToListAsync<IReportListResponseDto>();
 
             await UpdateTimeZoneInReports(projectId, reports);
+            AnonymizeCrossOrganizationReports(reports);
 
             if (useExcelFormat)
             {
@@ -211,6 +297,11 @@ namespace RX.Nyss.Web.Features.Reports
                 report.ReportType != ReportType.DataCollectionPoint)
             {
                 return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskCannotBeEdited);
+            }
+
+            if (!await HasAccessToReport(reportId))
+            {
+                return Error(ResultKey.Report.NoAccess);
             }
 
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
@@ -275,7 +366,43 @@ namespace RX.Nyss.Web.Features.Reports
             GetSuccessReportsQuery(filters)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
-        public async Task<Result> MarkAsError(int reportId) => await SetMarkedAsError(reportId, true);
+        public async Task<Result> MarkAsError(int reportId)
+        {
+            var report = await _nyssContext.Reports
+                .Where(r => !r.ReportAlerts.Any())
+                .Include(r => r.ProjectHealthRisk.Project)
+                .FirstOrDefaultAsync(r => r.Id == reportId);
+
+            if (!await HasAccessToReport(reportId))
+            {
+                return Error(ResultKey.Report.NoAccess);
+            }
+
+            if (report.ProjectHealthRisk.Project.State != ProjectState.Open)
+            {
+                return Error(ResultKey.Report.ProjectIsClosed);
+            }
+
+            report.MarkedAsError = true;
+            await _nyssContext.SaveChangesAsync();
+
+            return Success();
+        }
+
+        private async Task<bool> HasAccessToReport(int reportId)
+        {
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var currentUserOrganizationId = await _nyssContext.Reports
+                .Where(p => p.Id == reportId)
+                .SelectMany(p => p.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers)
+                .Where(uns => uns.User == currentUser)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
+
+            return currentUser.Role == Role.Administrator || _nyssContext.Reports.Any(r => r.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers.Any(
+                nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId));
+        }
 
         private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, string> stringResources)
         {
@@ -342,64 +469,6 @@ namespace RX.Nyss.Web.Features.Reports
                     : GetStringResource(stringResources, "reports.list.error")
             };
 
-        private async Task<(IQueryable<RawReport> baseQuery, IQueryable<IReportListResponseDto> result)> GetReportQueries(int projectId, ReportListFilterRequestDto filter)
-        {
-            var currentUserName = _authorizationService.GetCurrentUserName();
-            var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
-            var currentUserId = await _nyssContext.Users.FilterAvailable()
-                .Where(u => u.EmailAddress == currentUserName)
-                .Select(u => u.Id)
-                .SingleAsync();
-
-            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
-
-            var baseQuery = _nyssContext.RawReports
-                .FilterByProject(projectId)
-                .FilterByHealthRisk(filter.HealthRiskId)
-                .FilterByTrainingMode(filter.IsTraining)
-                .FilterByDataCollectorType(filter.ReportsType == ReportListType.FromDcp ? DataCollectorType.CollectionPoint : DataCollectorType.Human)
-                .FilterByArea(MapToArea(filter.Area))
-                .Where(r => filter.Status
-                    ? r.Report != null && !r.Report.MarkedAsError
-                    : r.Report == null || r.Report.MarkedAsError);
-
-            var result = baseQuery.Select(r => new ReportListResponseDto
-                {
-                    Id = r.Id,
-                    DateTime = r.ReceivedAt,
-                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
-                        .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
-                        .Select(lc => lc.Name)
-                        .Single(),
-                    IsValid = r.Report != null,
-                    Region = r.Village.District.Region.Name,
-                    District = r.Village.District.Name,
-                    Village = r.Village.Name,
-                    Zone = r.Zone.Name,
-                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
-                        ? r.DataCollector.Name
-                        : r.DataCollector.DisplayName,
-                    PhoneNumber = r.Sender,
-                    IsMarkedAsError = r.Report.MarkedAsError,
-                    UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
-                    IsInAlert = r.Report.ReportAlerts.Any(),
-                    ReportId = r.ReportId,
-                    ReportType = r.Report.ReportType,
-                    Message = r.Text,
-                    CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
-                    CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
-                    CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
-                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
-                    ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
-                    DeathCount = r.Report.DataCollectionPointCase.DeathCount,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
-                })
-                //ToDo: order base on filter.OrderBy property
-                .OrderBy(r => r.DateTime, filter.SortAscending);
-
-            return (baseQuery, result);
-        }
-
         private List<string> GetColumnLabels(IDictionary<string, string> stringResources) =>
             new List<string>
             {
@@ -433,30 +502,26 @@ namespace RX.Nyss.Web.Features.Reports
                 ? stringResources[key]
                 : key;
 
-        private async Task<Result> SetMarkedAsError(int reportId, bool markedAsError)
-        {
-            var report = await _nyssContext.Reports
-                .Where(r => !r.ReportAlerts.Any())
-                .Include(r => r.ProjectHealthRisk.Project)
-                .FirstOrDefaultAsync(r => r.Id == reportId);
-
-            if (report.ProjectHealthRisk.Project.State != ProjectState.Open)
-            {
-                return Error(ResultKey.Report.ProjectIsClosed);
-            }
-
-            report.MarkedAsError = markedAsError;
-            await _nyssContext.SaveChangesAsync();
-
-            return Success();
-        }
-
         private async Task UpdateTimeZoneInReports(int projectId, List<IReportListResponseDto> reports)
         {
             var project = await _nyssContext.Projects.FindAsync(projectId);
             var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
             reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
         }
+
+        private void AnonymizeCrossOrganizationReports(IEnumerable<IReportListResponseDto> reports) =>
+            reports
+                .Where(r => r.IsAnonymized)
+                .ToList()
+                .ForEach(x =>
+                {
+                    x.DataCollectorDisplayName = x.OrganizationName;
+                    x.PhoneNumber = x.PhoneNumber.Length > 4 ? "***" + x.PhoneNumber.SubstringFromEnd(4) : "***";
+                    x.Region = "";
+                    x.Zone = "";
+                    x.District = "";
+                    x.Village = "";
+                });
 
         private static Area MapToArea(AreaDto area) =>
             area == null
