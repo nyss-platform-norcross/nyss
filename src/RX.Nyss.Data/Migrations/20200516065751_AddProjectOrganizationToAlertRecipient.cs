@@ -21,8 +21,8 @@ namespace RX.Nyss.Data.Migrations
 
             migrationBuilder.Sql(@"
                 DELETE sar
-                FROM [nyssDemo].[nyss].[SupervisorUserAlertRecipients] sar
-                INNER JOIN [nyssDemo].[nyss].[Users] as u ON sar.SupervisorId=u.Id
+                FROM nyss.SupervisorUserAlertRecipients sar
+                INNER JOIN nyss.Users as u ON sar.SupervisorId=u.Id
                 WHERE u.DeletedAt IS NOT NULL
             ");
         }
