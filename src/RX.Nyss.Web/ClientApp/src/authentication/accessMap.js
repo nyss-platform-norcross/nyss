@@ -83,7 +83,7 @@ export const accessMap = {
   },
   alerts: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor, Coordinator],
-    assess: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    assess: [Administrator, Manager, TechnicalAdvisor, Supervisor, Coordinator],
   },
   translations: {
     list: [Administrator, GlobalCoordinator]

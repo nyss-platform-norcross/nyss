@@ -265,19 +265,21 @@ namespace RX.Nyss.Common.Utils.DataContract
             {
                 public const string WrongAlertStatus = "alert.acceptReport.wrongAlertStatus";
                 public const string WrongReportStatus = "alert.acceptReport.wrongReportStatus";
-                public const string AlertNoLongerValid = "alert.acceptReport.alertNoLongerValid";
+                public const string NoPermission = "alert.acceptReport.noPermission";
             }
 
             public static class DismissReport
             {
                 public const string WrongAlertStatus = "alert.dismissReport.wrongAlertStatus";
                 public const string WrongReportStatus = "alert.dismissReport.wrongReportStatus";
+                public const string NoPermission = "alert.dismissReport.noPermission";
             }
 
             public static class ResetReport
             {
                 public const string WrongAlertStatus = "alert.resetReport.wrongAlertStatus";
                 public const string WrongReportStatus = "alert.resetReport.wrongReportStatus";
+                public const string NoPermission = "alert.resetReport.noPermission";
             }
 
             public static class EscalateAlert
@@ -287,17 +289,20 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string EmailNotificationFailed = "alert.escalateAlert.emailNotifcationFailed";
                 public const string SmsNotificationFailed = "alert.escalateAlert.smsNotifcationFailed";
                 public const string Success = "alert.escalateAlert.success";
+                public const string NoPermission = "alert.escalateAlert.noPermission";
             }
 
             public static class DismissAlert
             {
                 public const string WrongStatus = "alert.dismissAlert.wrongStatus";
                 public const string PossibleEscalation = "alert.dismissAlert.possibleEscalation";
+                public const string NoPermission = "alert.dismissAlert.noPermission";
             }
 
             public static class CloseAlert
             {
                 public const string WrongStatus = "alert.closeAlert.wrongStatus";
+                public const string NoPermission = "alert.closeAlert.noPermission";
             }
         }
         public static class Consent

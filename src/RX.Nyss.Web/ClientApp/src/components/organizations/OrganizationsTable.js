@@ -33,7 +33,7 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
         <TableBody>
           {list.map(row => (
             <TableRow key={row.id} hover onClick={() => goToEdition(nationalSocietyId, row.id)} className={styles.clickableRow}>
-              <TableCell>{row.name} {row.isDefaultOrganization && '⭐'}</TableCell>
+              <TableCell>{row.name} {row.isDefaultOrganization && strings(stringKeys.organization.list.isDefaultOrganization)}</TableCell>
               <TableCell>{row.projects}</TableCell>
               <TableCell>{row.headManager}</TableCell>
               <TableCell>

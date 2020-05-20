@@ -125,12 +125,12 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<AlertAssessmentResponseDto>> Get(int alertId)
         {
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
 
-            var userOrganization = await _nyssContext.UserNationalSocieties
+            var userOrganizations = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == currentUser.Id)
                 .Select(uns => uns.Organization)
-                .SingleOrDefaultAsync();
+                .ToListAsync();
 
             var alert = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
@@ -172,6 +172,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             var acceptedReports = alert.Reports.Count(r => r.Status == ReportStatus.Accepted);
             var pendingReports = alert.Reports.Count(r => r.Status == ReportStatus.Pending);
+            var currentUserCanSeeEveryoneData = _authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator);
 
             var dto = new AlertAssessmentResponseDto
             {
@@ -186,26 +187,25 @@ namespace RX.Nyss.Web.Features.Alerts
                 }),
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 CloseOption = alert.CloseOption,
-                Reports = alert.Reports.Select(ar =>
-                    (currentUser.Role == Role.Administrator || ar.OrganizationId == userOrganization.Id)
-                        ? new AlertAssessmentResponseDto.ReportDto
-                        {
-                            Id = ar.Id,
-                            DataCollector = ar.DataCollector,
-                            ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
-                            PhoneNumber = ar.PhoneNumber,
-                            Status = ar.Status.ToString(),
-                            Village = ar.Village,
-                            Sex = GetSex(ar.ReportedCase),
-                            Age = GetAge(ar.ReportedCase)
-                        }
-                        : new AlertAssessmentResponseDto.ReportDto
-                        {
-                            Id = ar.Id,
-                            ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
-                            Status = ar.Status.ToString(),
-                            Organization = ar.OrganizationName
-                        }).ToList()
+                Reports = alert.Reports.Select(ar => (currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id))
+                    ? new AlertAssessmentResponseDto.ReportDto
+                    {
+                        Id = ar.Id,
+                        DataCollector = ar.DataCollector,
+                        ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
+                        PhoneNumber = ar.PhoneNumber,
+                        Status = ar.Status.ToString(),
+                        Village = ar.Village,
+                        Sex = GetSex(ar.ReportedCase),
+                        Age = GetAge(ar.ReportedCase)
+                    }
+                    : new AlertAssessmentResponseDto.ReportDto
+                    {
+                        Id = ar.Id,
+                        ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
+                        Status = ar.Status.ToString(),
+                        Organization = ar.OrganizationName
+                    }).ToList()
             };
 
             return Success(dto);
@@ -213,6 +213,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result> Escalate(int alertId, bool sendNotification)
         {
+            if (!await HasCurrentUserAlertEditAccess(alertId))
+            {
+                return Error(ResultKey.Alert.EscalateAlert.NoPermission);
+            }
+
             var alertData = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
                 .Select(alert => new
@@ -277,6 +282,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result> Dismiss(int alertId)
         {
+            if (!await HasCurrentUserAlertEditAccess(alertId))
+            {
+                return Error(ResultKey.Alert.DismissAlert.NoPermission);
+            }
+
             var alertData = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
                 .Select(alert => new
@@ -309,6 +319,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result> Close(int alertId, string comments, CloseAlertOptions closeOption)
         {
+            if (!await HasCurrentUserAlertEditAccess(alertId))
+            {
+                return Error(ResultKey.Alert.CloseAlert.NoPermission);
+            }
+
             using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
             var alertData = await _nyssContext.Alerts
@@ -444,6 +459,25 @@ namespace RX.Nyss.Web.Features.Alerts
                 CreatedAt = alert.CreatedAt.ApplyTimeZone(timeZone),
                 Items = list.OrderBy(x => x.Date).ToList()
             });
+        }
+
+        private async Task<bool> HasCurrentUserAlertEditAccess(int alertId)
+        {
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+
+            var userOrganization = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.UserId == currentUser.Id)
+                .Select(uns => uns.Organization)
+                .SingleOrDefaultAsync();
+
+            var organizationHasReportsInAlert = await _nyssContext.AlertReports
+                .Where(ar =>
+                    ar.AlertId == alertId
+                    && (currentUser.Role == Role.Administrator
+                        || ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId == userOrganization.Id))
+                .AnyAsync();
+
+            return organizationHasReportsInAlert;
         }
 
         private static AlertAssessmentStatus GetAssessmentStatus(AlertStatus alertStatus, int acceptedReports, int pendingReports, int countThreshold) =>

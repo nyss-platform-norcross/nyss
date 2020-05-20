@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -15,6 +17,7 @@ namespace RX.Nyss.Web.Services.Authorization
         bool IsCurrentUserInRole(Role role);
         string GetCurrentUserName();
         bool IsCurrentUserInAnyRole(params Role[] roles);
+        Task<User> GetCurrentUserAsync();
     }
 
     public class AuthorizationService : IAuthorizationService
@@ -34,6 +37,12 @@ namespace RX.Nyss.Web.Services.Authorization
         {
             var userName = GetCurrentUserName();
             return _nyssContext.Users.FilterAvailable().SingleOrDefault(u => u.EmailAddress == userName);
+        }
+
+        public async Task<User> GetCurrentUserAsync()
+        {
+            var userName = GetCurrentUserName();
+            return await _nyssContext.Users.FilterAvailable().SingleOrDefaultAsync(u => u.EmailAddress == userName);
         }
 
         public string GetCurrentUserName() =>
