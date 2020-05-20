@@ -160,11 +160,11 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(uns => uns.Organization.Id)
                 .ToListAsync();
 
-            var canAssess = await _nyssContext.Reports
+            var canAssess = await _nyssContext.AlertReports
                 .Where(ar =>
-                    ar.Id == reportId
+                    ar.ReportId == reportId
                     && (currentUser.Role == Role.Administrator
-                        || userOrganizations.Contains(ar.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value)))
+                        || userOrganizations.Contains(ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value)))
                 .AnyAsync();
             return canAssess;
         }

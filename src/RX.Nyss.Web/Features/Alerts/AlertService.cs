@@ -465,17 +465,16 @@ namespace RX.Nyss.Web.Features.Alerts
         {
             var currentUser = await _authorizationService.GetCurrentUserAsync();
 
-            var userOrganization = await _nyssContext.UserNationalSocieties
+            var currentUserOrgs = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == currentUser.Id)
-                .Select(uns => uns.Organization)
-                .SingleOrDefaultAsync();
+                .Select(uns => uns.Organization.Id)
+                .ToListAsync();
 
-            var organizationHasReportsInAlert = await _nyssContext.AlertReports
-                .Where(ar =>
-                    ar.AlertId == alertId
+            var organizationHasReportsInAlert = await _nyssContext.Alerts
+                .Where(a => a.Id == alertId
                     && (currentUser.Role == Role.Administrator
-                        || ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId == userOrganization.Id))
-                .AnyAsync();
+                        || a.AlertReports.Any(ar => currentUserOrgs.Contains(ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value))
+                )).AnyAsync();
 
             return organizationHasReportsInAlert;
         }
