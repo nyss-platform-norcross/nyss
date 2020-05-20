@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
@@ -47,6 +48,24 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
+
+            var nationalSocieties = new[]
+            {
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                    NationalSocietyUsers = new List<UserNationalSociety>
+                    {
+                        new UserNationalSociety
+                        {
+                            User = new AdministratorUser()
+                        }
+                    }
+                }
+            };
+
+            var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             var currentDate = new DateTime(2019, 1, 1);
             _dateTimeProvider.UtcNow.Returns(currentDate);

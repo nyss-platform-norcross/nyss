@@ -126,8 +126,31 @@ namespace RX.Nyss.Web.Features.Projects
                     .Select(x => x.Project)
                 : _nyssContext.Projects;
 
-            var projects = await projectsQuery
-                .Where(p => p.NationalSocietyId == nationalSocietyId)
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var nationalSocietyData = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => new
+                {
+                    CurrentUserOrganizationId = ns.NationalSocietyUsers
+                        .Where(uns => uns.User == currentUser)
+                        .Select(uns => uns.OrganizationId)
+                        .SingleOrDefault(),
+                    HasCoordinator = ns.NationalSocietyUsers
+                        .Any(uns => uns.User.Role == Role.Coordinator)
+                })
+                .SingleAsync();
+
+            var query = projectsQuery
+                .Where(p => p.NationalSocietyId == nationalSocietyId);
+
+            if (nationalSocietyData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
+            {
+                query = query
+                    .Where(p => p.ProjectOrganizations.Any(po => po.OrganizationId == nationalSocietyData.CurrentUserOrganizationId));
+            }
+
+            var projects = await query
                 .OrderByDescending(p => p.State)
                 .ThenByDescending(p => p.EndDate)
                 .ThenByDescending(p => p.StartDate)
