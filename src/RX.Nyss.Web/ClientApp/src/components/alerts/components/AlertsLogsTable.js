@@ -19,7 +19,7 @@ const formatString = (row) => {
 
 export const AlertsLogsTable = ({ list }) => {
   return (
-    <TableContainer sticky>
+    <TableContainer sticky={true}>
       <Table>
         <TableHead>
           <TableRow>

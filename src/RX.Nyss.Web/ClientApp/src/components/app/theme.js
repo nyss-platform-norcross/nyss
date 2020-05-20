@@ -213,7 +213,10 @@ export const theme = createMuiTheme({
     },
     MuiExpansionPanel: {
       root: {
-        border: "2px solid #f3f3f3"
+        border: "2px solid #f3f3f3",
+        "&$disabled": {
+          backgroundColor: "#FAFAFA"
+        }
       }
     },
     MuiExpansionPanelActions: {

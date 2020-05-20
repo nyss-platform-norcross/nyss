@@ -125,6 +125,13 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<AlertAssessmentResponseDto>> Get(int alertId)
         {
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var userOrganization = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.UserId == currentUser.Id)
+                .Select(uns => uns.Organization)
+                .SingleOrDefaultAsync();
+
             var alert = await _nyssContext.Alerts
                 .Where(a => a.Id == alertId)
                 .Select(a => new
@@ -144,6 +151,8 @@ namespace RX.Nyss.Web.Features.Alerts
                     {
                         Id = ar.Report.Id,
                         DataCollector = ar.Report.DataCollector.DisplayName,
+                        OrganizationId = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId,
+                        OrganizationName = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().Organization.Name,
                         ReceivedAt = ar.Report.ReceivedAt,
                         PhoneNumber = ar.Report.PhoneNumber,
                         Village = ar.Report.RawReport.Village.Name,
@@ -177,17 +186,26 @@ namespace RX.Nyss.Web.Features.Alerts
                 }),
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 CloseOption = alert.CloseOption,
-                Reports = alert.Reports.Select(ar => new AlertAssessmentResponseDto.ReportDto
-                {
-                    Id = ar.Id,
-                    DataCollector = ar.DataCollector,
-                    ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
-                    PhoneNumber = ar.PhoneNumber,
-                    Status = ar.Status.ToString(),
-                    Village = ar.Village,
-                    Sex = GetSex(ar.ReportedCase),
-                    Age = GetAge(ar.ReportedCase)
-                }).ToList()
+                Reports = alert.Reports.Select(ar =>
+                    (currentUser.Role == Role.Administrator || ar.OrganizationId == userOrganization.Id)
+                        ? new AlertAssessmentResponseDto.ReportDto
+                        {
+                            Id = ar.Id,
+                            DataCollector = ar.DataCollector,
+                            ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
+                            PhoneNumber = ar.PhoneNumber,
+                            Status = ar.Status.ToString(),
+                            Village = ar.Village,
+                            Sex = GetSex(ar.ReportedCase),
+                            Age = GetAge(ar.ReportedCase)
+                        }
+                        : new AlertAssessmentResponseDto.ReportDto
+                        {
+                            Id = ar.Id,
+                            ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
+                            Status = ar.Status.ToString(),
+                            Organization = ar.OrganizationName
+                        }).ToList()
             };
 
             return Success(dto);
@@ -395,7 +413,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
             if (alert.ClosedAt.HasValue)
             {
-                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.ApplyTimeZone(timeZone), alert.ClosedBy, new { alert.CloseOption, alert.Comments }));
+                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.ApplyTimeZone(timeZone), alert.ClosedBy, new
+                {
+                    alert.CloseOption,
+                    alert.Comments
+                }));
             }
 
             foreach (var report in alert.Reports)

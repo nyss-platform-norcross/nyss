@@ -45,6 +45,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
             public string DataCollector { get; set; }
 
             public string Age { get; set; }
+
+            public string Organization { get; set; }
         }
     }
 }
