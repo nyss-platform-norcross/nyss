@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Extensions;
@@ -65,11 +66,16 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var gatewaySettingsDbSet = _gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContext.GatewaySettings.Returns(gatewaySettingsDbSet);
 
+            var userNationalSociety = new List<UserNationalSociety> { new UserNationalSociety { Organization = new Organization { Id = 1 } } };
+            var unsDbSet = userNationalSociety.AsQueryable().BuildMockDbSet();
+            _nyssContext.UserNationalSocieties.Returns(unsDbSet);
+
             emailTextGeneratorService.GenerateEscalatedAlertEmail(TestData.ContentLanguageCode)
                 .Returns((TestData.EscalationEmailSubject, TestData.EscalationEmailBody));
 
             _dateTimeProvider.UtcNow.Returns(_now);
             _authorizationService.GetCurrentUser().Returns(_currentUser);
+            _authorizationService.GetCurrentUserAsync().Returns(_currentUser);
         }
 
         [Theory]

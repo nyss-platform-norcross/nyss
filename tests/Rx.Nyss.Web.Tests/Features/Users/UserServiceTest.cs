@@ -258,6 +258,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             ArrangeSupervisorUserProjects();
 
             _authorizationService.GetCurrentUser().Returns(users[2]);
+            _authorizationService.GetCurrentUserAsync().Returns(users[2]);
         }
 
         private void ArrangeSupervisorUserProjects()

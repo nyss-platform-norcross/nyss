@@ -112,14 +112,16 @@ namespace RX.Nyss.Web.Features.Users
                         {
                             Id = p.Id,
                             Name = p.Name,
-                            AlertRecipients = u.Role == Role.Supervisor ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
-                            {
-                                Id = anr.Id,
-                                Role = anr.Role,
-                                Organization = anr.Organization,
-                                Email = anr.Email,
-                                PhoneNumber = anr.PhoneNumber
-                            }).ToList() : null
+                            AlertRecipients = u.Role == Role.Supervisor
+                                ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
+                                {
+                                    Id = anr.Id,
+                                    Role = anr.Role,
+                                    Organization = anr.Organization,
+                                    Email = anr.Email,
+                                    PhoneNumber = anr.PhoneNumber
+                                }).ToList()
+                                : null
                         }).ToList(),
                     Organizations = _dataContext.Organizations
                         .Where(o => o.NationalSociety.Id == nationalSocietyId)
@@ -169,12 +171,19 @@ namespace RX.Nyss.Web.Features.Users
                 return Error(ResultKey.User.Registration.CannotAddExistingUsersToArchivedNationalSociety);
             }
 
-
             var userNationalSociety = new UserNationalSociety
             {
                 NationalSocietyId = nationalSocietyId,
                 UserId = userData.Id
             };
+
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            userNationalSociety.Organization = await _dataContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                    .Select(uns => uns.Organization)
+                    .SingleOrDefaultAsync() ??
+                await _dataContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
+
             await _dataContext.UserNationalSocieties.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
             return Success();

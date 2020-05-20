@@ -49,8 +49,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             config.ServiceBusQueues.Returns(new ServiceBusQueuesOptions { ReportDismissalQueue = TestData.ReportDismissalQueue });
 
+            var userNationalSociety = new List<UserNationalSociety> { new UserNationalSociety { Organization = new Organization { Id = 1 } } };
+            var unsDbSet = userNationalSociety.AsQueryable().BuildMockDbSet();
+            _nyssContext.UserNationalSocieties.Returns(unsDbSet);
+                
             _dateTimeProvider.UtcNow.Returns(_now);
             _authorizationService.GetCurrentUser().Returns(_currentUser);
+            _authorizationService.GetCurrentUserAsync().Returns(_currentUser);
         }
 
         [Fact]

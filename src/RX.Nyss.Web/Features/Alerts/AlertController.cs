@@ -114,7 +114,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         [HttpGet("{alertId:int}/getLogs")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertLogResponseDto>> GetLogs(int alertId) =>
             _alertService.GetLogs(alertId);

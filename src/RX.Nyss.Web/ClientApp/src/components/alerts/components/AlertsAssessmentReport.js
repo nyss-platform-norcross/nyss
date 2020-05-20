@@ -37,16 +37,15 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
     && status !== assessmentStatus.dismissed
     && (report.status === "Accepted" || report.status === "Rejected");
 
+  const fromOtherOrg = report.dataCollector == null;
   return (
-    <ExpansionPanel>
-      <ExpansionPanelSummary
-        expandIcon={<ExpandMoreIcon />}
-      >
+    <ExpansionPanel disabled={fromOtherOrg}>
+      <ExpansionPanelSummary expandIcon={!fromOtherOrg && <ExpandMoreIcon />}>
         {getReportIcon(report.status)}
         <span className={styles.time}>{dayjs(report.receivedAt).format('YYYY-MM-DD HH:mm')}</span>
         <div className={styles.senderContainer}>
           <span className={styles.senderLabel}>{strings(stringKeys.alerts.assess.report.sender)}</span>
-          <span className={styles.sender}>{report.dataCollector}</span>
+          <span className={styles.sender}>{report.dataCollector || report.organization}</span>
         </div>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={styles.form}>
@@ -94,7 +93,7 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
             {!showActions && (
               <div className={styles.reportStatus}>{strings(stringKeys.alerts.constants.reportStatus[report.status])}</div>
             )}
-            
+
             {showResetOption && (
               <Fragment>
                 <Button variant="text" onClick={() => resetReport(alertId, report.id)} disabled={report.isResetting}>

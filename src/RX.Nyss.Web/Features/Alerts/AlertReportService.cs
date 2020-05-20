@@ -48,6 +48,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId)
         {
+            if (!await HasCurrentUserReportAssessAccess(reportId))
+            {
+                return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReport.NoPermission);
+            }
+
             var alertReport = await _nyssContext.AlertReports
                 .Include(ar => ar.Alert)
                 .Include(ar => ar.Report)
@@ -76,6 +81,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId)
         {
+            if (!await HasCurrentUserReportAssessAccess(reportId))
+            {
+                return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReport.NoPermission);
+            }
+
             var alertReport = await _nyssContext.AlertReports
                 .Include(ar => ar.Alert)
                 .Include(ar => ar.Report)
@@ -107,6 +117,11 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<ResetReportResponseDto>> ResetReport(int alertId, int reportId)
         {
+            if (!await HasCurrentUserReportAssessAccess(reportId))
+            {
+                return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.NoPermission);
+            }
+
             var alertReport = await _nyssContext.AlertReports
                 .Include(ar => ar.Alert)
                 .Include(ar => ar.Report)
@@ -134,6 +149,24 @@ namespace RX.Nyss.Web.Features.Alerts
             var response = new ResetReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
 
             return Success(response);
+        }
+
+        private async Task<bool> HasCurrentUserReportAssessAccess(int reportId)
+        {
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+
+            var userOrganizations = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.UserId == currentUser.Id)
+                .Select(uns => uns.Organization.Id)
+                .ToListAsync();
+
+            var canAssess = await _nyssContext.AlertReports
+                .Where(ar =>
+                    ar.ReportId == reportId
+                    && (currentUser.Role == Role.Administrator
+                        || userOrganizations.Contains(ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value)))
+                .AnyAsync();
+            return canAssess;
         }
 
         private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
