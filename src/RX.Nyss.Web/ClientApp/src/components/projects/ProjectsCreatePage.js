@@ -81,10 +81,10 @@ const ProjectsCreatePageComponent = (props) => {
     }
   }
 
-  }
-
   if (!props.data) {
     return null;
+  }
+
   return (
     <Fragment>
       {props.error && <ValidationMessage message={props.error} />}

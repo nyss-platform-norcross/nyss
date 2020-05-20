@@ -16,8 +16,6 @@ namespace RX.Nyss.Web.Features.Projects.Dto
 
         public IEnumerable<ProjectHealthRiskRequestDto> HealthRisks { get; set; }
 
-        public IEnumerable<AlertNotificationRecipientDto> AlertNotificationRecipients { get; set; }
-
         public bool AllowMultipleOrganizations { get; set; }
 
         public class Validator : AbstractValidator<CreateProjectRequestDto>
@@ -27,9 +25,7 @@ namespace RX.Nyss.Web.Features.Projects.Dto
                 RuleFor(p => p.Name).NotEmpty().MaximumLength(200);
                 RuleFor(p => p.Name).MaximumLength(50);
                 RuleFor(p => p.HealthRisks).NotNull();
-                RuleForEach(p => p.AlertNotificationRecipients).NotNull();
                 RuleForEach(p => p.HealthRisks).SetValidator(new ProjectHealthRiskRequestDto.Validator());
-                RuleForEach(p => p.AlertNotificationRecipients).SetValidator(new AlertNotificationRecipientDto.Validator());
 
                 RuleFor(m => m.OrganizationId)
                     .Must((model, _, t) => projectAccessService.HasCurrentUserAccessToAssignOrganizationToProject())
