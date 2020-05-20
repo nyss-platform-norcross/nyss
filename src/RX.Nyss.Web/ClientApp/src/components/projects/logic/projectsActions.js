@@ -30,7 +30,7 @@ export const getList = {
 export const openCreation = {
   invoke: (nationalSocietyId) => ({ type: OPEN_PROJECT_CREATION.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_PROJECT_CREATION.REQUEST }),
-  success: (healthRisks, timeZones) => ({ type: OPEN_PROJECT_CREATION.SUCCESS, healthRisks, timeZones }),
+  success: (data) => ({ type: OPEN_PROJECT_CREATION.SUCCESS, data }),
   failure: (message) => ({ type: OPEN_PROJECT_CREATION.FAILURE, message })
 };
 

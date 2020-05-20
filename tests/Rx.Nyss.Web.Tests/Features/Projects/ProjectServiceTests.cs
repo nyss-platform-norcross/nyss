@@ -84,13 +84,34 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int existingProjectId = 2;
 
+            var nationalSociety1 = new NationalSociety
+            {
+                Id = 1,
+                ContentLanguage = new ContentLanguage { Id = 2 },
+                Organizations = new List<Organization>(),
+                NationalSocietyUsers = new List<UserNationalSociety>( )
+            };
+
+            var nationalSociety2 = new NationalSociety
+            {
+                Id = 2,
+                ContentLanguage = new ContentLanguage { Id = 1 },
+                Organizations = new List<Organization>(),
+                NationalSocietyUsers = new List<UserNationalSociety>()
+            };
+
+            var nationalSocieties = new[]
+            {
+                nationalSociety1, nationalSociety2
+            };
+
             var project = new[]
             {
                 new Project
                 {
                     Id = 1,
                     NationalSocietyId = 1,
-                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 2 }, Organizations = new List<Organization>(), NationalSocietyUsers = new List<UserNationalSociety>( ) },
+                    NationalSociety = nationalSociety1,
                     ProjectHealthRisks = new List<ProjectHealthRisk>()
                 },
                 new Project
@@ -100,7 +121,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     State = ProjectState.Open,
                     NationalSocietyId = 2,
-                    NationalSociety = new NationalSociety { ContentLanguage = new ContentLanguage { Id = 1 }, Organizations = new List<Organization>(), NationalSocietyUsers = new List<UserNationalSociety>( ) },
+                    NationalSociety = nationalSociety2,
                     ProjectHealthRisks = new[]
                     {
                         new ProjectHealthRisk
@@ -140,6 +161,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var healthRisks = Array.Empty<HealthRisk>();
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
+
+            var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             // Act
             var result = await _projectService.Get(existingProjectId);
@@ -241,7 +265,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto
+            var projectRequestDto = new CreateProjectRequestDto
             {
                 Name = "New Project",
                 TimeZoneId = "Time Zone",
@@ -299,7 +323,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto
+            var projectRequestDto = new CreateProjectRequestDto
             {
                 Name = "New Project",
                 TimeZoneId = "Time Zone"
@@ -342,7 +366,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto
+            var projectRequestDto = new CreateProjectRequestDto
             {
                 Name = "New Project",
                 TimeZoneId = "Time Zone",
@@ -392,7 +416,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto
+            var projectRequestDto = new CreateProjectRequestDto
             {
                 Name = "New Project",
                 TimeZoneId = "Time Zone"
@@ -481,7 +505,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectHealthRisksMockDbSet = project.SelectMany(p => p.ProjectHealthRisks).AsQueryable().BuildMockDbSet();
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto
+            var projectRequestDto = new EditProjectRequestDto
             {
                 Name = "Updated Project",
                 TimeZoneId = "Updated Time Zone",
@@ -553,7 +577,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(nonExistentProjectId).ReturnsNull();
 
-            var projectRequestDto = new ProjectRequestDto
+            var projectRequestDto = new EditProjectRequestDto
             {
                 Name = "Updated Project",
                 TimeZoneId = "Updated Time Zone"
@@ -624,7 +648,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectHealthRisksMockDbSet = project.SelectMany(p => p.ProjectHealthRisks).AsQueryable().BuildMockDbSet();
             _nyssContextMock.ProjectHealthRisks.Returns(projectHealthRisksMockDbSet);
 
-            var projectRequestDto = new ProjectRequestDto
+            var projectRequestDto = new EditProjectRequestDto
             {
                 Name = "Updated Project",
                 TimeZoneId = "Updated Time Zone",
@@ -674,7 +698,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             _nyssContextMock.Projects.FindAsync(projectId).Returns(project[0]);
 
-            var projectRequestDto = new ProjectRequestDto
+            var projectRequestDto = new EditProjectRequestDto
             {
                 Name = "Updated Project",
                 TimeZoneId = "Updated Time Zone"

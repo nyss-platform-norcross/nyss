@@ -24,8 +24,8 @@ namespace RX.Nyss.Web.Features.Projects
     {
         Task<Result<ProjectResponseDto>> Get(int projectId);
         Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId);
-        Task<Result<int>> Create(int nationalSocietyId, ProjectRequestDto projectRequestDto);
-        Task<Result> Edit(int projectId, ProjectRequestDto projectRequestDto);
+        Task<Result<int>> Create(int nationalSocietyId, CreateProjectRequestDto dto);
+        Task<Result> Edit(int projectId, EditProjectRequestDto dto);
         Task<Result> Close(int projectId);
         Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId);
         Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId);
@@ -91,7 +91,7 @@ namespace RX.Nyss.Web.Features.Projects
                 return Error<ProjectResponseDto>(ResultKey.Project.ProjectDoesNotExist);
             }
 
-            project.FormData = await GetFormDataDto(project.ContentLanguageId);
+            project.FormData = await GetFormDataDto(project.NationalSocietyId, project.ContentLanguageId);
 
             var result = Success(project);
 
@@ -155,13 +155,13 @@ namespace RX.Nyss.Web.Features.Projects
             return result;
         }
 
-        public async Task<Result<int>> Create(int nationalSocietyId, ProjectRequestDto projectRequestDto)
+        public async Task<Result<int>> Create(int nationalSocietyId, CreateProjectRequestDto dto)
         {
             try
             {
                 var currentUser = _authorizationService.GetCurrentUser();
 
-                var nationalSocietyData = await _nyssContext.NationalSocieties
+                var data = await _nyssContext.NationalSocieties
                     .Where(ns => ns.Id == nationalSocietyId)
                     .Select(ns => new
                     {
@@ -172,38 +172,37 @@ namespace RX.Nyss.Web.Features.Projects
                     })
                     .SingleOrDefaultAsync();
 
-                if (nationalSocietyData == null)
+                if (data == null)
                 {
                     return Error<int>(ResultKey.Project.NationalSocietyDoesNotExist);
                 }
 
-                if (nationalSocietyData.IsArchived)
+                if (data.IsArchived)
                 {
                     return Error<int>(ResultKey.Project.CannotAddProjectInArchivedNationalSociety);
                 }
 
                 var healthRiskIdsInDatabase = await _nyssContext.HealthRisks.Select(hr => hr.Id).ToListAsync();
-                var healthRiskIdsToAttach = projectRequestDto.HealthRisks.Select(hr => hr.HealthRiskId).ToList();
+                var healthRiskIdsToAttach = dto.HealthRisks.Select(hr => hr.HealthRiskId).ToList();
 
                 if (!healthRiskIdsToAttach.All(healthRiskId => healthRiskIdsInDatabase.Contains(healthRiskId)))
                 {
                     return Error<int>(ResultKey.Project.HealthRiskDoesNotExist);
                 }
 
-                var organizationId = nationalSocietyData.OrganizationsCount == 1
-                    ? nationalSocietyData.FirstOrganizationId
-                    : nationalSocietyData.UserOrganizationId;
+                var organizationId = dto.OrganizationId
+                    ?? (data.OrganizationsCount == 1 ? data.FirstOrganizationId : data.UserOrganizationId);
 
                 var projectToAdd = new Project
                 {
-                    Name = projectRequestDto.Name,
-                    AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations,
-                    TimeZone = projectRequestDto.TimeZoneId,
+                    Name = dto.Name,
+                    AllowMultipleOrganizations = dto.AllowMultipleOrganizations,
+                    TimeZone = dto.TimeZoneId,
                     NationalSocietyId = nationalSocietyId,
                     State = ProjectState.Open,
                     StartDate = _dateTimeProvider.UtcNow,
                     EndDate = null,
-                    ProjectHealthRisks = projectRequestDto.HealthRisks.Select(phr => new ProjectHealthRisk
+                    ProjectHealthRisks = dto.HealthRisks.Select(phr => new ProjectHealthRisk
                     {
                         FeedbackMessage = phr.FeedbackMessage,
                         CaseDefinition = phr.CaseDefinition,
@@ -239,7 +238,7 @@ namespace RX.Nyss.Web.Features.Projects
             }
         }
 
-        public async Task<Result> Edit(int projectId, ProjectRequestDto projectRequestDto)
+        public async Task<Result> Edit(int projectId, EditProjectRequestDto dto)
         {
             try
             {
@@ -260,17 +259,17 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
-                if (projectRequestDto.AllowMultipleOrganizations && !projectToUpdate.AllowMultipleOrganizations
+                if (dto.AllowMultipleOrganizations && !projectToUpdate.AllowMultipleOrganizations
                     && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
-                projectToUpdate.Name = projectRequestDto.Name;
-                projectToUpdate.TimeZone = projectRequestDto.TimeZoneId;
-                projectToUpdate.AllowMultipleOrganizations = projectRequestDto.AllowMultipleOrganizations;
+                projectToUpdate.Name = dto.Name;
+                projectToUpdate.TimeZone = dto.TimeZoneId;
+                projectToUpdate.AllowMultipleOrganizations = dto.AllowMultipleOrganizations;
 
-                await UpdateHealthRisks(projectToUpdate, projectRequestDto);
+                await UpdateHealthRisks(projectToUpdate, dto.HealthRisks.ToList());
 
                 await _nyssContext.SaveChangesAsync();
 
@@ -364,7 +363,7 @@ namespace RX.Nyss.Web.Features.Projects
                 .Select(ns => ns.ContentLanguage.Id)
                 .SingleAsync();
 
-            var result = await GetFormDataDto(contentLanguageId);
+            var result = await GetFormDataDto(nationalSocietyId, contentLanguageId);
             return Success(result);
         }
 
@@ -375,9 +374,9 @@ namespace RX.Nyss.Web.Features.Projects
                 .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
                 .ToListAsync();
 
-        private async Task UpdateHealthRisks(Project projectToUpdate, ProjectRequestDto projectRequestDto)
+        private async Task UpdateHealthRisks(Project projectToUpdate, ICollection<ProjectHealthRiskRequestDto> healthRisks)
         {
-            var projectHealthRiskIdsFromDto = projectRequestDto.HealthRisks.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
+            var projectHealthRiskIdsFromDto = healthRisks.Where(ar => ar.Id.HasValue).Select(ar => ar.Id.Value).ToList();
 
             var projectHealthRisksToDelete = await _nyssContext.ProjectHealthRisks
                 .Where(phr => phr.Project.Id == projectToUpdate.Id && !projectHealthRiskIdsFromDto.Contains(phr.Id))
@@ -395,7 +394,7 @@ namespace RX.Nyss.Web.Features.Projects
 
             _nyssContext.ProjectHealthRisks.RemoveRange(projectHealthRisksToDelete.Select(phr => phr.ProjectHealthRisk));
 
-            var projectHealthRisksToAdd = projectRequestDto.HealthRisks.Where(ar => ar.Id == null);
+            var projectHealthRisksToAdd = healthRisks.Where(ar => ar.Id == null);
             foreach (var projectHealthRisk in projectHealthRisksToAdd)
             {
                 var projectHealthRiskToAdd = new ProjectHealthRisk
@@ -415,7 +414,7 @@ namespace RX.Nyss.Web.Features.Projects
                 projectToUpdate.ProjectHealthRisks.Add(projectHealthRiskToAdd);
             }
 
-            var projectHealthRisksToUpdate = projectRequestDto.HealthRisks.Where(ar => ar.Id.HasValue);
+            var projectHealthRisksToUpdate = healthRisks.Where(ar => ar.Id.HasValue);
             foreach (var projectHealthRisk in projectHealthRisksToUpdate)
             {
                 var projectHealthRiskToUpdate = projectToUpdate.ProjectHealthRisks.FirstOrDefault(ar => ar.Id == projectHealthRisk.Id.Value);
@@ -432,41 +431,51 @@ namespace RX.Nyss.Web.Features.Projects
             }
         }
 
-        private async Task<ProjectFormDataResponseDto> GetFormDataDto(int contentLanguageId)
+        private async Task<ProjectFormDataResponseDto> GetFormDataDto(int nationalSocietyId, int contentLanguageId)
         {
-            var projectHealthRisks = await _nyssContext.HealthRisks
-                .Include(hr => hr.LanguageContents)
-                .Select(hr => new ProjectHealthRiskResponseDto
+            var data = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => new 
                 {
-                    Id = null,
-                    HealthRiskId = hr.Id,
-                    HealthRiskCode = hr.HealthRiskCode,
-                    HealthRiskName = hr.LanguageContents
-                        .Where(lc => lc.ContentLanguage.Id == contentLanguageId)
-                        .Select(lc => lc.Name)
-                        .FirstOrDefault(),
-                    AlertRuleCountThreshold = hr.AlertRule.CountThreshold,
-                    AlertRuleDaysThreshold = hr.AlertRule.DaysThreshold,
-                    AlertRuleKilometersThreshold = hr.AlertRule.KilometersThreshold,
-                    FeedbackMessage = hr.LanguageContents
-                        .Where(lc => lc.ContentLanguage.Id == contentLanguageId)
-                        .Select(lc => lc.FeedbackMessage)
-                        .FirstOrDefault(),
-                    CaseDefinition = hr.LanguageContents
-                        .Where(lc => lc.ContentLanguage.Id == contentLanguageId)
-                        .Select(lc => lc.CaseDefinition)
-                        .FirstOrDefault(),
-                    ContainsReports = false
+                    HealthRisks = _nyssContext.HealthRisks
+                        .Include(hr => hr.LanguageContents)
+                        .Select(hr => new ProjectHealthRiskResponseDto
+                        {
+                            Id = null,
+                            HealthRiskId = hr.Id,
+                            HealthRiskCode = hr.HealthRiskCode,
+                            HealthRiskName = hr.LanguageContents
+                                .Where(lc => lc.ContentLanguage.Id == contentLanguageId)
+                                .Select(lc => lc.Name)
+                                .FirstOrDefault(),
+                            AlertRuleCountThreshold = hr.AlertRule.CountThreshold,
+                            AlertRuleDaysThreshold = hr.AlertRule.DaysThreshold,
+                            AlertRuleKilometersThreshold = hr.AlertRule.KilometersThreshold,
+                            FeedbackMessage = hr.LanguageContents
+                                .Where(lc => lc.ContentLanguage.Id == contentLanguageId)
+                                .Select(lc => lc.FeedbackMessage)
+                                .FirstOrDefault(),
+                            CaseDefinition = hr.LanguageContents
+                                .Where(lc => lc.ContentLanguage.Id == contentLanguageId)
+                                .Select(lc => lc.CaseDefinition)
+                                .FirstOrDefault(),
+                            ContainsReports = false
+                        })
+                        .OrderBy(hr => hr.HealthRiskCode)
+                        .ToList(),
+                    Organizations = ns.Organizations.Select(o => new ProjectFormDataResponseDto.Organization
+                    {
+                        Id = o.Id,
+                        Name = o.Name
+                    }).ToList()
                 })
-                .OrderBy(hr => hr.HealthRiskCode)
-                .ToListAsync();
-
-            var timeZones = GetTimeZones();
+                .SingleAsync();
 
             return new ProjectFormDataResponseDto
             {
-                TimeZones = timeZones,
-                HealthRisks = projectHealthRisks
+                Organizations = data.Organizations,
+                HealthRisks = data.HealthRisks,
+                TimeZones = GetTimeZones()
             };
         }
 

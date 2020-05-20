@@ -4,7 +4,7 @@ using RX.Nyss.Web.Features.Alerts.Dto;
 
 namespace RX.Nyss.Web.Features.Projects.Dto
 {
-    public class ProjectRequestDto
+    public class EditProjectRequestDto
     {
         public string Name { get; set; }
 
@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.Projects.Dto
 
         public IEnumerable<ProjectHealthRiskRequestDto> HealthRisks { get; set; }
 
-        public class Validator : AbstractValidator<ProjectRequestDto>
+        public class Validator : AbstractValidator<EditProjectRequestDto>
         {
             public Validator()
             {
