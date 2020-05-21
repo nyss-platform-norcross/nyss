@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useMemo } from 'react';
+import React, { useState, Fragment, useMemo, useCallback } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -28,6 +28,12 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
   const [alertRecipientsFieldTouched, setAlertRecipientsFieldTouched] = useState(false);
   const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
+
+  const canChangeOrganization = useCallback(() => {
+    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) && role !== roles.DataConsumer) {
+      return true;
+    }
+  }, [props.callingUserRoles, props.data, role]);
 
   const form = useMemo(() => {
     const fields = {
@@ -62,7 +68,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.data, props.nationalSocietyId, canChangeOrganization]);
+  }, [props.nationalSocietyId, canChangeOrganization]);
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
@@ -132,12 +138,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
     });
   };
-
-  const canChangeOrganization = () => {
-    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) && role !== roles.DataConsumer) {
-      return true;
-    }
-  }
 
   const isCoordinator = () =>
     props.callingUserRoles.some(r => r === roles.Coordinator);

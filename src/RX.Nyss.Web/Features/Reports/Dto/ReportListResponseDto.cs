@@ -6,6 +6,14 @@ namespace RX.Nyss.Web.Features.Reports.Dto
     public interface IReportListResponseDto
     {
         DateTime DateTime { get; set; }
+        string Region { get; set; }
+        string District { get; set; }
+        string Village { get; set; }
+        string Zone { get; set; }
+        string DataCollectorDisplayName { get; set; }
+        string PhoneNumber { get; set; }
+        bool IsAnonymized { get; set; }
+        string OrganizationName { get; set; }
     }
 
     public class ReportListResponseDto : IReportListResponseDto
@@ -33,5 +41,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int? ReportId { get; set; }
         public ReportType? ReportType { get; set; }
         public DateTime DateTime { get; set; }
+        public bool IsAnonymized { get; set; }
+        public string OrganizationName { get; set; }
     }
 }

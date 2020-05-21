@@ -184,6 +184,7 @@ namespace RX.Nyss.Common.Utils.DataContract
         {
             public const string ProjectIsClosed = "report.projectIsClosed";
             public const string ReportNotFound = "report.reportNotFound";
+            public const string NoAccess = "report.noAccess";
             public const string ReportSentSuccessfully = "report.sentSuccessfully";
 
             public static class Edit
