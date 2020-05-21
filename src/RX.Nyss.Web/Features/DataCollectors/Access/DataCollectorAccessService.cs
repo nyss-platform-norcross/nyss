@@ -12,7 +12,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
     public interface IDataCollectorAccessService
     {
         Task<bool> HasCurrentUserAccessToDataCollector(int dataCollectorId);
-        Task<bool> HasCurrentUserAccessToDataCollectors(IEnumerable<int> dataCollectorIds);
+        Task<bool> HasCurrentUserAccessToDataCollectors(IReadOnlyCollection<int> dataCollectorIds);
     }
 
     public class DataCollectorAccessService : IDataCollectorAccessService
@@ -34,15 +34,38 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
         public Task<bool> HasCurrentUserAccessToDataCollector(int dataCollectorId) =>
             HasCurrentUserAccessToDataCollectors(new[] { dataCollectorId });
 
-        public async Task<bool> HasCurrentUserAccessToDataCollectors(IEnumerable<int> dataCollectorIds)
+        public async Task<bool> HasCurrentUserAccessToDataCollectors(IReadOnlyCollection<int> dataCollectorIds)
         {
-            var dataCollectorData = await _nyssContext.DataCollectors
+            if (!dataCollectorIds.Any())
+            {
+                return true;
+            }
+
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var query = _nyssContext.DataCollectors
                 .Where(dc => dataCollectorIds.Contains(dc.Id))
                 .Select(dc => new
                 {
+                    DataCollectorOrganizationId = dc.Supervisor.UserNationalSocieties
+                        .Where(uns => uns.NationalSociety == dc.Project.NationalSociety)
+                        .Select(uns => uns.OrganizationId)
+                        .Single(),
+                    CurrentUserOrganizationId = dc.Project.NationalSociety.NationalSocietyUsers
+                        .Where(uns => uns.User == currentUser)
+                        .Select(uns => uns.OrganizationId)
+                        .Single(),
                     ProjectId = dc.Project.Id,
                     SupervisorEmailAddress = dc.Supervisor.EmailAddress
-                })
+                });
+
+            if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator))
+            {
+                query = query
+                    .Where(p => p.CurrentUserOrganizationId == p.DataCollectorOrganizationId);
+            }
+
+            var dataCollectorData = await query
                 .Distinct()
                 .ToListAsync();
 
