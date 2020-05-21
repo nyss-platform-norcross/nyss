@@ -6,7 +6,6 @@ using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
@@ -59,7 +58,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
             var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(_authorizationService.GetCurrentUserName());
             var rowsPerPage = _config.PaginationRowsPerPage;
-            var currentRole = _authorizationService.GetCurrentUser().Role;
 
             var currentUser = _authorizationService.GetCurrentUser();
 
@@ -100,7 +98,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
                     IsValid = r.Report != null,
                     IsMarkedAsError = r.Report.MarkedAsError,
-                    IsAnonymized = currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
+                    IsAnonymized = currentUser.Role != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
                         nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
                     OrganizationName = r.NationalSociety.NationalSocietyUsers
                         .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
