@@ -83,8 +83,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
                 .FilterByArea(MapToArea(filter.Area));
 
-
-
             if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
             {
                 baseQuery = baseQuery

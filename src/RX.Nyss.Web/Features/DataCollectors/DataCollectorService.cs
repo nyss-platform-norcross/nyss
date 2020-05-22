@@ -178,10 +178,30 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters)
         {
-            var userIdentityName = _authorizationService.GetCurrentUserName();
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var projectData = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => new
+                {
+                    CurrentUserOrganizationId = p.NationalSociety.NationalSocietyUsers
+                        .Where(uns => uns.User == currentUser)
+                        .Select(uns => uns.OrganizationId)
+                        .SingleOrDefault(),
+                    HasCoordinator = p.NationalSociety.NationalSocietyUsers
+                        .Any(uns => uns.User.Role == Role.Coordinator)
+                })
+                .SingleAsync();
+
             var dataCollectorsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
-                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == currentUser.EmailAddress)
                 : _nyssContext.DataCollectors;
+
+            if (projectData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
+            {
+                dataCollectorsQuery = dataCollectorsQuery
+                    .Where(p => p.Supervisor.UserNationalSocieties.Any(uns => uns.OrganizationId == projectData.CurrentUserOrganizationId));
+            }
 
             var dataCollectors = await dataCollectorsQuery
                 .Where(dc => dc.DeletedAt == null)

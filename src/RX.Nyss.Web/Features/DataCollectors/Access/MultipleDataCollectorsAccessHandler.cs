@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using RX.Nyss.Web.Utils;
@@ -16,6 +17,6 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
         }
 
         protected override Task<bool> HasAccess(IEnumerable<int> dataCollectorIds) =>
-            _dataCollectorAccessService.HasCurrentUserAccessToDataCollectors(dataCollectorIds);
+            _dataCollectorAccessService.HasCurrentUserAccessToDataCollectors(dataCollectorIds.ToList());
     }
 }

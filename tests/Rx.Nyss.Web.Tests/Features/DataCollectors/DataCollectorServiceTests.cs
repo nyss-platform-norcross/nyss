@@ -70,6 +70,9 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                     NationalSocietyId = NationalSocietyId
                 }
             };
+
+            nationalSocieties[0].NationalSocietyUsers = usersNationalSocieties;
+
             var projects = new List<Project>
             {
                 new Project
