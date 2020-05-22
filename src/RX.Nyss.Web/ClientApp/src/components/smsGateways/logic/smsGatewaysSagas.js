@@ -129,6 +129,7 @@ function* openSmsGatewaysModule(nationalSocietyId) {
     nationalSocietyId: nationalSociety.value.id,
     nationalSocietyName: nationalSociety.value.name,
     nationalSocietyCountry: nationalSociety.value.countryName,
-    nationalSocietyIsArchived: nationalSociety.value.isArchived
+    nationalSocietyIsArchived: nationalSociety.value.isArchived,
+    nationalSocietyHasCoordinator: nationalSociety.value.hasCoordinator
   }));
 }

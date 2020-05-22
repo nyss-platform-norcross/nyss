@@ -13,8 +13,10 @@ import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
+import { accessMap } from '../../authentication/accessMap';
+import * as roles from '../../authentication/roles';
 
-export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
+export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, nationalSocietyHasCoordinator, callingUserRoles }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -32,20 +34,41 @@ export const SmsGatewaysTable = ({ isListFetching, isRemoving, goToEdition, remo
           </TableRow>
         </TableHead>
         <TableBody>
-          {list.map(row => (
-            <TableRow key={row.id} hover onClick={() => goToEdition(nationalSocietyId, row.id)} className={styles.clickableRow}>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.apiKey}</TableCell>
-              <TableCell>{strings(`smsGateway.type.${row.gatewayType.toLowerCase()}`)}</TableCell>
-              <TableCell>{row.iotHubDeviceName}</TableCell>
-              <TableCell>
-                <TableRowActions>
-                  <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.smsGateway.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
-                </TableRowActions>
-              </TableCell>
-            </TableRow>
-          ))}
+          {list.map(row => {
+            const canModify = !nationalSocietyHasCoordinator || callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator);
+
+            return (
+              <TableRow
+                key={row.id}
+                hover
+                onClick={canModify ? () => goToEdition(nationalSocietyId, row.id) : null}
+                className={canModify ? styles.clickableRow : null}
+              >
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.apiKey}</TableCell>
+                <TableCell>{strings(`smsGateway.type.${row.gatewayType.toLowerCase()}`)}</TableCell>
+                <TableCell>{row.iotHubDeviceName}</TableCell>
+                <TableCell>
+                  <TableRowActions>
+                    <TableRowAction
+                      onClick={() => goToEdition(nationalSocietyId, row.id)}
+                      icon={<EditIcon />}
+                      roles={accessMap.smsGateways.edit}
+                      condition={canModify}
+                      title={"Edit"} />
+                    <TableRowAction
+                      onClick={() => remove(nationalSocietyId, row.id)}
+                      confirmationText={strings(stringKeys.smsGateway.list.removalConfirmation)}
+                      icon={<ClearIcon />}
+                      title={"Delete"}
+                      roles={accessMap.smsGateways.delete}
+                      condition={canModify}
+                      isFetching={isRemoving[row.id]} />
+                  </TableRowActions>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableContainer>
