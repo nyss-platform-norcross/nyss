@@ -135,6 +135,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 Id = "123",
                 Email = (string)ci[0]
             });
+            nationalSocieties[0].NationalSocietyUsers = userNationalSocieties;
             _nyssContext.NationalSocieties.FindAsync(_nationalSocietyId).Returns(nationalSocieties[0]);
             _nyssContext.Organizations.FindAsync(_organizationId).Returns(organizations[0]);
 

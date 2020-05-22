@@ -29,11 +29,11 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const [alertRecipientsFieldTouched, setAlertRecipientsFieldTouched] = useState(false);
   const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
 
-  const canChangeOrganization = useCallback(() => {
+  const canChangeOrganization = () => {
     if (props.data && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) && role !== roles.DataConsumer) {
       return true;
     }
-  }, [props.callingUserRoles, props.data, role]);
+  }
 
   const form = useMemo(() => {
     const fields = {
@@ -68,7 +68,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.nationalSocietyId, canChangeOrganization]);
+  }, [props.nationalSocietyId]);
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
@@ -134,7 +134,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organizationId: values.organizationId ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
-      setAsHeadManager: props.callingUserRoles.some(r => r === roles.Coordinator) ? true : null,
+      setAsHeadManager: props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.GlobalCoordinator) ? true : null,
       supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
     });
   };
@@ -142,14 +142,18 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const isCoordinator = () =>
     props.callingUserRoles.some(r => r === roles.Coordinator);
 
+  const isGlobalCoordinator = () =>
+    props.callingUserRoles.some(r => r === roles.GlobalCoordinator);
+
   const getAvailableUserRoles = () => {
     if (props.callingUserRoles.some(r => r === roles.Administrator)) {
       return headManagerRoles;
     }
 
-    if (props.callingUserRoles.some(r => r === roles.GlobalCoordinator)) {
+    if (isGlobalCoordinator()) {
       return globalCoordinatorUserRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
     }
+
     if (isCoordinator()) {
       return coordinatorUserRoles;
     }
@@ -192,7 +196,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 <MenuItem
                   key={`role${role}`}
                   value={role}>
-                  {strings(`role.${((isCoordinator() && role === roles.Manager) ? "headManager" : role).toLowerCase()}`)}
+                  {strings(`role.${(((isCoordinator() || isGlobalCoordinator()) && role === roles.Manager) ? "headManager" : role).toLowerCase()}`)}
                 </MenuItem>
               ))}
             </SelectInput>
