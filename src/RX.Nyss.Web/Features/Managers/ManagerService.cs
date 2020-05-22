@@ -175,20 +175,26 @@ namespace RX.Nyss.Web.Features.Managers
             var nationalSociety = await _dataContext.NationalSocieties
                 .Include(ns => ns.ContentLanguage)
                 .Include(ns => ns.DefaultOrganization)
-                .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns  => new
+                {
+                    NationalSociety = ns,
+                    HasCoordinator = ns.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
+                })
+                .SingleOrDefaultAsync();
 
             if (nationalSociety == null)
             {
                 throw new ResultException(ResultKey.User.Registration.NationalSocietyDoesNotExist);
             }
 
-            if (nationalSociety.IsArchived)
+            if (nationalSociety.NationalSociety.IsArchived)
             {
                 throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
             }
 
             var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
-                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
+                .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.NationalSociety.ContentLanguage.LanguageCode);
 
             var user = new ManagerUser
             {
@@ -203,7 +209,7 @@ namespace RX.Nyss.Web.Features.Managers
 
             var userNationalSociety = new UserNationalSociety
             {
-                NationalSociety = nationalSociety,
+                NationalSociety = nationalSociety.NationalSociety,
                 User = user
             };
 
@@ -220,18 +226,23 @@ namespace RX.Nyss.Web.Features.Managers
                 userNationalSociety.Organization = await _dataContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                     .Select(uns => uns.Organization)
-                    .SingleOrDefaultAsync() ?? nationalSociety.DefaultOrganization;
+                    .SingleOrDefaultAsync() ?? nationalSociety.NationalSociety.DefaultOrganization;
             }
 
 
             if (createDto.SetAsHeadManager == true)
             {
-                if (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && (userNationalSociety.Organization.HeadManagerId.HasValue || userNationalSociety.Organization.PendingHeadManagerId.HasValue))
+                if (_authorizationService.IsCurrentUserInAnyRole(Role.Coordinator) && (userNationalSociety.Organization.HeadManagerId.HasValue || userNationalSociety.Organization.PendingHeadManagerId.HasValue))
                 {
                     throw new ResultException(ResultKey.User.Registration.HeadManagerAlreadyExists);
                 }
 
-                if (nationalSociety.DefaultOrganization == userNationalSociety.Organization)
+                if (_authorizationService.IsCurrentUserInAnyRole(Role.GlobalCoordinator) && nationalSociety.HasCoordinator)
+                {
+                    throw new ResultException(ResultKey.User.Registration.CoordinatorExists);
+                }
+
+                if (nationalSociety.NationalSociety.DefaultOrganization == userNationalSociety.Organization)
                 {
                     userNationalSociety.Organization.PendingHeadManager = user;
                 }
