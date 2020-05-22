@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Features.Managers
     public class ManagerService : IManagerService
     {
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly INyssContext _dataContext;
+        private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
@@ -38,12 +38,12 @@ namespace RX.Nyss.Web.Features.Managers
         private readonly IAuthorizationService _authorizationService;
         private readonly IOrganizationService _organizationService;
 
-        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
+        public ManagerService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext nyssContext,
             ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IAuthorizationService authorizationService, IOrganizationService organizationService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
             _nationalSocietyUserService = nationalSocietyUserService;
-            _dataContext = dataContext;
+            _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _verificationEmailService = verificationEmailService;
             _deleteUserService = deleteUserService;
@@ -79,7 +79,7 @@ namespace RX.Nyss.Web.Features.Managers
 
         public async Task<Result<GetManagerResponseDto>> Get(int nationalSocietyUserId, int nationalSocietyId)
         {
-            var manager = await _dataContext.UserNationalSocieties
+            var manager = await _nyssContext.UserNationalSocieties
                 .FilterAvailable()
                 .Where(u => u.User.Role == Role.Manager)
                 .Where(u => u.UserId == nationalSocietyUserId && u.NationalSocietyId == nationalSocietyId)
@@ -118,7 +118,7 @@ namespace RX.Nyss.Web.Features.Managers
 
                 if (editDto.OrganizationId.HasValue)
                 {
-                    var userLink = await _dataContext.UserNationalSocieties
+                    var userLink = await _nyssContext.UserNationalSocieties
                         .Where(un => un.UserId == managerId && un.NationalSociety.Id == editDto.NationalSocietyId)
                         .SingleOrDefaultAsync();
 
@@ -131,11 +131,11 @@ namespace RX.Nyss.Web.Features.Managers
                             return validationResult;
                         }
 
-                        userLink.Organization = await _dataContext.Organizations.FindAsync(editDto.OrganizationId.Value);
+                        userLink.Organization = await _nyssContext.Organizations.FindAsync(editDto.OrganizationId.Value);
                     }
                 }
 
-                await _dataContext.SaveChangesAsync();
+                await _nyssContext.SaveChangesAsync();
                 return Success();
             }
             catch (ResultException e)
@@ -151,11 +151,14 @@ namespace RX.Nyss.Web.Features.Managers
             {
                 await _deleteUserService.EnsureCanDeleteUser(managerId, Role.Manager);
 
+                var currentUser = await _authorizationService.GetCurrentUserAsync();
+                var canDeleteHeadManager = currentUser.Role == Role.Administrator || currentUser.Role == Role.Coordinator;
+
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
-                await DeleteFromDb(managerId);
+                await DeleteFromDb(managerId, canDeleteHeadManager);
 
-                await _dataContext.SaveChangesAsync();
+                await _nyssContext.SaveChangesAsync();
 
                 transactionScope.Complete();
                 return Success();
@@ -172,7 +175,7 @@ namespace RX.Nyss.Web.Features.Managers
 
         private async Task<ManagerUser> CreateManagerUser(IdentityUser identityUser, int nationalSocietyId, CreateManagerRequestDto createDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties
+            var nationalSociety = await _nyssContext.NationalSocieties
                 .Include(ns => ns.ContentLanguage)
                 .Include(ns => ns.DefaultOrganization)
                 .Where(ns => ns.Id == nationalSocietyId)
@@ -193,7 +196,7 @@ namespace RX.Nyss.Web.Features.Managers
                 throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
             }
 
-            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+            var defaultUserApplicationLanguage = await _nyssContext.ApplicationLanguages
                 .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.NationalSociety.ContentLanguage.LanguageCode);
 
             var user = new ManagerUser
@@ -215,7 +218,7 @@ namespace RX.Nyss.Web.Features.Managers
 
             if (createDto.OrganizationId.HasValue)
             {
-                userNationalSociety.Organization = await _dataContext.Organizations
+                userNationalSociety.Organization = await _nyssContext.Organizations
                     .Where(o => o.Id == createDto.OrganizationId.Value && o.NationalSocietyId == nationalSocietyId)
                     .SingleAsync();
             }
@@ -223,7 +226,7 @@ namespace RX.Nyss.Web.Features.Managers
             {
                 var currentUser = _authorizationService.GetCurrentUser();
 
-                userNationalSociety.Organization = await _dataContext.UserNationalSocieties
+                userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                     .Select(uns => uns.Organization)
                     .SingleOrDefaultAsync() ?? nationalSociety.NationalSociety.DefaultOrganization;
@@ -252,8 +255,8 @@ namespace RX.Nyss.Web.Features.Managers
                 }
             }
 
-            await _dataContext.AddAsync(userNationalSociety);
-            await _dataContext.SaveChangesAsync();
+            await _nyssContext.AddAsync(userNationalSociety);
+            await _nyssContext.SaveChangesAsync();
             return user;
         }
 
@@ -269,30 +272,43 @@ namespace RX.Nyss.Web.Features.Managers
 
         private async Task HandleHeadManagerStatus(ManagerUser manager, bool allowHeadManagerDeletion)
         {
-            var organization = await _dataContext.Organizations
+            var organizationData = await _nyssContext.Organizations
                 .Include(o => o.PendingHeadManager)
                 .Include(o => o.HeadManager)
                 .Where(o => o.HeadManager == manager || o.PendingHeadManager == manager)
+                .Select(o => new
+                {
+                    Organization = o,
+                    o.NationalSocietyId
+                })
                 .SingleOrDefaultAsync();
 
-            if (organization == null)
+            if (organizationData.Organization == null)
             {
                 return;
             }
 
-            if (organization.PendingHeadManager == manager)
+            if (organizationData.Organization.PendingHeadManager == manager)
             {
-                organization.PendingHeadManager = null;
+                organizationData.Organization.PendingHeadManager = null;
             }
 
-            if (organization.HeadManager == manager)
+            if (organizationData.Organization.HeadManager == manager)
             {
                 if (!allowHeadManagerDeletion)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
 
-                organization.HeadManager = null;
+                var organizationHasUsers = _nyssContext.UserNationalSocieties.Any(uns =>
+                    uns.NationalSocietyId == organizationData.NationalSocietyId && uns.OrganizationId == organizationData.Organization.Id && uns.UserId != manager.Id);
+
+                if (organizationHasUsers)
+                {
+                    throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManagerWithUsers);
+                }
+
+                organizationData.Organization.HeadManager = null;
             }
         }
     }
