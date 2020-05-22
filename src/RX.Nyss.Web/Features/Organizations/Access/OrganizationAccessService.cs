@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Features.Organizations.Access
                 .Select(s => s.NationalSociety.Id)
                 .SingleAsync();
 
-            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { nationalSocietyId });
+            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSociety(nationalSocietyId);
         }
     }
 }

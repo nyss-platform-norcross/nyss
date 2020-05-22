@@ -72,9 +72,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> List()
         {
-            var nationalSocietiesQuery = await GetNationalSocietiesQuery();
-
-            var list = await nationalSocietiesQuery
+            var list = await GetNationalSocietiesQuery()
                 .Include(x => x.DefaultOrganization.HeadManager)
                 .Include(x => x.DefaultOrganization.PendingHeadManager)
                 .Select(n => new NationalSocietyListResponseDto
@@ -395,15 +393,17 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         public async Task<Country> GetCountryById(int id) =>
             await _nyssContext.Countries.FindAsync(id);
 
-        private async Task<IQueryable<NationalSociety>> GetNationalSocietiesQuery()
+        private IQueryable<NationalSociety> GetNationalSocietiesQuery()
         {
             if (_nationalSocietyAccessService.HasCurrentUserAccessToAllNationalSocieties())
             {
                 return _nyssContext.NationalSocieties;
             }
 
-            var availableNationalSocieties = await _nationalSocietyAccessService.GetCurrentUserNationalSocietyIds();
-            return _nyssContext.NationalSocieties.Where(ns => availableNationalSocieties.Contains(ns.Id));
+            var userName = _authorizationService.GetCurrentUserName();
+
+            return _nyssContext.NationalSocieties
+                .Where(ns => ns.NationalSocietyUsers.Any(u => u.User.EmailAddress == userName));
         }
 
         private async Task RemoveApiKeys(int nationalSocietyId)

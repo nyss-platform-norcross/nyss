@@ -16,6 +16,6 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors.Access
         }
 
         protected override Task<bool> HasAccess(int technicalAdvisorId) =>
-            _nationalSocietyAccessService.HasCurrentUserAccessToUserNationalSocieties(technicalAdvisorId);
+            _nationalSocietyAccessService.HasCurrentUserAccessToAnyNationalSocietiesOfGivenUser(technicalAdvisorId);
     }
 }

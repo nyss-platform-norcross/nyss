@@ -15,6 +15,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
         }
 
         protected override Task<bool> HasAccess(int nationalSocietyId) =>
-            _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { nationalSocietyId });
+            _nationalSocietyAccessService.HasCurrentUserAccessToNationalSociety(nationalSocietyId);
     }
 }

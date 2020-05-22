@@ -28,7 +28,7 @@ namespace RX.Nyss.Web.Features.Managers.Access
 
         public async Task<bool> HasCurrentUserAccessToManager(int managerId)
         {
-            if (!await _nationalSocietyAccessService.HasCurrentUserAccessToUserNationalSocieties(managerId))
+            if (!await _nationalSocietyAccessService.HasCurrentUserAccessToAnyNationalSocietiesOfGivenUser(managerId))
             {
                 return false;
             } 

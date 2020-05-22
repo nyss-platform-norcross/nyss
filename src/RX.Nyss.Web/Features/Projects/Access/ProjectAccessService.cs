@@ -60,7 +60,7 @@ namespace RX.Nyss.Web.Features.Projects.Access
                 return false;
             }
 
-            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { data.NationalSocietyId });
+            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSociety(nationalSocietyId);
         }
 
         public bool HasCurrentUserAccessToAssignOrganizationToProject() =>

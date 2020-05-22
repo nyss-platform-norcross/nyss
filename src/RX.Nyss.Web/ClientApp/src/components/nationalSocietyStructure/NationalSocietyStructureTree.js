@@ -9,6 +9,7 @@ import { StructureTreeItem } from "./NationalSocietyStructureTreeItem";
 import { strings, stringKeys } from "../../strings";
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
 import Icon from "@material-ui/core/Icon";
+import * as roles from "../../authentication/roles";
 
 const AddPanel = ({ placeholder, onSave }) => {
   return (
@@ -29,87 +30,132 @@ export const NationalSocietyStructureTree = (props) => {
     return <Loading />;
   }
 
-  const renderRegions = (regions) =>
-    <Fragment>
-      {regions.map(region => (
-        <StructureTreeItem
-          key={`region_${region.id}`}
-          itemKey="region"
-          item={region}
-          onRemove={props.removeRegion}
-          onEdit={props.editRegion}
-          nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
-        >
-          {renderDistricts(region.id)}
-        </StructureTreeItem>
-      ))}
-      {!props.nationalSocietyIsArchived &&
-      <AddPanel
-        placeholder={strings(stringKeys.nationalSociety.structure.addRegion, true)}
-        onSave={name => props.createRegion(nationalSocietyId, name)}
-      />}
-    </Fragment>
+  const canModify =
+    !props.nationalSocietyIsArchived
+    && (
+      !props.nationalSocietyHasCoordinator
+      || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)
+    );
 
-  const renderDistricts = (regionId) =>
-    <Fragment>
-      {props.districts.filter(d => d.regionId === regionId).map(district => (
-        <StructureTreeItem
-          key={`district_${district.id}`}
-          itemKey="district"
-          item={district}
-          onRemove={props.removeDistrict}
-          onEdit={props.editDistrict}
-          nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
-        >
-          {renderVillages(district.id)}
-        </StructureTreeItem>
-      ))}
-      {!props.nationalSocietyIsArchived &&
-      <AddPanel
-        placeholder={strings(stringKeys.nationalSociety.structure.addDistrict, true)}
-        onSave={name => props.createDistrict(regionId, name)}
-      />}
-    </Fragment>
+  const renderRegions = (regions) => {
+    if (!regions.length && !canModify) {
+      return null;
+    }
 
-  const renderVillages = (districtId) =>
-    <Fragment>
-      {props.villages.filter(d => d.districtId === districtId).map(village => (
-        <StructureTreeItem
-          key={`village_${village.id}`}
-          itemKey="village"
-          item={village}
-          onRemove={props.removeVillage}
-          onEdit={props.editVillage}
-          nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
-        >
-          {renderZones(village.id)}
-        </StructureTreeItem>
-      ))}
-      {!props.nationalSocietyIsArchived &&
-      <AddPanel
-        placeholder={strings(stringKeys.nationalSociety.structure.addVillage, true)}
-        onSave={name => props.createVillage(districtId, name)}
-      />}
-    </Fragment>
+    return (
+      <Fragment>
+        {regions.map(region => (
+          <StructureTreeItem
+            key={`region_${region.id}`}
+            itemKey="region"
+            item={region}
+            onRemove={props.removeRegion}
+            onEdit={props.editRegion}
+            canModify={canModify}
+          >
+            {renderDistricts(region.id)}
+          </StructureTreeItem>
+        ))}
+        {canModify && (
+          <AddPanel
+            placeholder={strings(stringKeys.nationalSociety.structure.addRegion, true)}
+            onSave={name => props.createRegion(nationalSocietyId, name)}
+          />
+        )}
+      </Fragment>
+    );
+  }
 
-  const renderZones = (villageId) =>
-    <Fragment>
-      {props.zones.filter(d => d.villageId === villageId).map(zone => (
-        <StructureTreeItem
-          key={`zone_${zone.id}`}
-          itemKey="zone"
-          item={zone}
-          onRemove={props.removeZone}
-          onEdit={props.editZone}
-          nationalSocietyIsArchived = {props.nationalSocietyIsArchived}
-        />
-      ))}
-      {!props.nationalSocietyIsArchived &&
-      <AddPanel
-        placeholder={strings(stringKeys.nationalSociety.structure.addZone, true)}
-        onSave={name => props.createZone(villageId, name)}
-      />}
-    </Fragment>
+  const renderDistricts = (regionId) => {
+    const list = props.districts.filter(d => d.regionId === regionId);
+
+    if (!list.length && !canModify) {
+      return null;
+    }
+
+    return (
+      <Fragment>
+        {list.map(district => (
+          <StructureTreeItem
+            key={`district_${district.id}`}
+            itemKey="district"
+            item={district}
+            onRemove={props.removeDistrict}
+            onEdit={props.editDistrict}
+            canModify={canModify}
+          >
+            {renderVillages(district.id)}
+          </StructureTreeItem>
+        ))}
+        {canModify && (
+          <AddPanel
+            placeholder={strings(stringKeys.nationalSociety.structure.addDistrict, true)}
+            onSave={name => props.createDistrict(regionId, name)}
+          />
+        )}
+      </Fragment>
+    );
+  }
+
+  const renderVillages = (districtId) => {
+    const list = props.villages.filter(d => d.districtId === districtId);
+
+    if (!list.length && !canModify) {
+      return null;
+    }
+
+    return (
+      <Fragment>
+        {list.map(village => (
+          <StructureTreeItem
+            key={`village_${village.id}`}
+            itemKey="village"
+            item={village}
+            onRemove={props.removeVillage}
+            onEdit={props.editVillage}
+            canModify={canModify}
+          >
+            {renderZones(village.id)}
+          </StructureTreeItem>
+        ))}
+        {canModify && (
+          <AddPanel
+            placeholder={strings(stringKeys.nationalSociety.structure.addVillage, true)}
+            onSave={name => props.createVillage(districtId, name)}
+          />
+        )}
+      </Fragment>
+    );
+  }
+
+  const renderZones = (villageId) => {
+    const list = props.zones.filter(d => d.villageId === villageId);
+
+    if (!list.length && !canModify) {
+      return null;
+    }
+
+    return (
+      <Fragment>
+        {list.map(zone => (
+          <StructureTreeItem
+            key={`zone_${zone.id}`}
+            itemKey="zone"
+            item={zone}
+            onRemove={props.removeZone}
+            onEdit={props.editZone}
+            canModify={canModify}
+          />
+        ))}
+        {canModify && (
+          <AddPanel
+            placeholder={strings(stringKeys.nationalSociety.structure.addZone, true)}
+            onSave={name => props.createZone(villageId, name)}
+          />
+        )}
+      </Fragment>
+    );
+  }
 
   return (
     <TreeView

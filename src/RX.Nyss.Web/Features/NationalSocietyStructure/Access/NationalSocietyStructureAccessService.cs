@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure.Access
                 .Select(r => r.NationalSociety.Id)
                 .FirstOrDefaultAsync();
 
-            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { nationalSocietyId });
+            return await _nationalSocietyAccessService.HasCurrentUserAccessToModifyNationalSociety(nationalSocietyId);
         }
 
         public async Task<bool> HasCurrentUserAccessToDistrict(int districtId)
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure.Access
                 .Select(r => r.Region.NationalSociety.Id)
                 .FirstOrDefaultAsync();
 
-            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { nationalSocietyId });
+            return await _nationalSocietyAccessService.HasCurrentUserAccessToModifyNationalSociety(nationalSocietyId);
         }
 
         public async Task<bool> HasCurrentUserAccessToVillage(int villageId)
@@ -54,7 +54,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure.Access
                 .Select(r => r.District.Region.NationalSociety.Id)
                 .FirstOrDefaultAsync();
 
-            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { nationalSocietyId });
+            return await _nationalSocietyAccessService.HasCurrentUserAccessToModifyNationalSociety(nationalSocietyId);
         }
 
         public async Task<bool> HasCurrentUserAccessToZone(int zoneId)
@@ -64,7 +64,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure.Access
                 .Select(r => r.Village.District.Region.NationalSociety.Id)
                 .FirstOrDefaultAsync();
 
-            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { nationalSocietyId });
+            return await _nationalSocietyAccessService.HasCurrentUserAccessToModifyNationalSociety(nationalSocietyId);
         }
     }
 }
