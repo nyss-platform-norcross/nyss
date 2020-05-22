@@ -218,9 +218,17 @@ namespace RX.Nyss.Web.Features.Coordinators
             return user;
         }
 
-        private async Task DeleteFromDb(int coordinatorId, bool allowHeadCoordinatorDeletion = false)
+        private async Task DeleteFromDb(int coordinatorId)
         {
             var coordinator = await _nationalSocietyUserService.GetNationalSocietyUserIncludingNationalSocieties<CoordinatorUser>(coordinatorId);
+            var usersInNs = await _dataContext.UserNationalSocieties
+                .Where(uns => uns.NationalSocietyId == coordinator.UserNationalSocieties.Single().NationalSocietyId)
+                .CountAsync();
+
+            if (usersInNs > 1 && !_authorizationService.IsCurrentUserInRole(Role.Administrator))
+            {
+                throw new ResultException(ResultKey.User.Deletion.MoreUsersExists);
+            }
 
             _nationalSocietyUserService.DeleteNationalSocietyUser(coordinator);
             await _identityUserRegistrationService.DeleteIdentityUser(coordinator.IdentityUserId);
