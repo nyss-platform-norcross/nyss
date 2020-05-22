@@ -38,12 +38,29 @@ namespace RX.Nyss.Web.Features.Projects.Access
                 return await HasSupervisorAccessToProject(_authorizationService.GetCurrentUserName(), projectId);
             }
 
-            var nationalSocietyId = await _nyssContext.Projects
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var data = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
-                .Select(p => p.NationalSocietyId)
+                .Select(p => new
+                {
+                    p.NationalSocietyId,
+                    HasCoordinator = p.NationalSociety.NationalSocietyUsers.Any(uns => uns.User.Role == Role.Coordinator),
+                    HasSameOrganization = p.ProjectOrganizations.Any(po =>
+                        po.OrganizationId == p.NationalSociety.NationalSocietyUsers
+                                                .Where(uns => uns.User == currentUser)
+                                                .Select(uns => uns.OrganizationId)
+                                                .FirstOrDefault()
+                    )
+                })
                 .SingleAsync();
 
-            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { nationalSocietyId });
+            if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator) && data.HasCoordinator && !data.HasSameOrganization)
+            {
+                return false;
+            }
+
+            return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSocieties(new[] { data.NationalSocietyId });
         }
 
         public bool HasCurrentUserAccessToAssignOrganizationToProject() =>

@@ -5,6 +5,7 @@ namespace RX.Nyss.Common.Utils.DataContract
     public static class ResultKey
     {
         public const string UnexpectedError = "error.unexpected";
+        public const string Unauthorized = "error.unauthorized";
 
         public static class User
         {

@@ -67,7 +67,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="projectId">An identifier of project to be closed</param>
         /// <returns></returns>
         [HttpPost("{projectId:int}/close")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess), NeedsPolicy(Policy.HeadManagerAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result> Close(int projectId) =>
             _projectService.Close(projectId);
 

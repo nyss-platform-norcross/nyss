@@ -26,15 +26,16 @@ namespace RX.Nyss.Web.Tests.Features.Projects
         private readonly INyssContext _nyssContextMock;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IDataCollectorService _dataCollectorService;
+        private readonly IAuthorizationService _authorizationService;
 
         public ProjectServiceTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
-            var authorizationService = Substitute.For<IAuthorizationService>();
+            _authorizationService = Substitute.For<IAuthorizationService>();
             _dataCollectorService = Substitute.For<IDataCollectorService>();
-            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, authorizationService, _dataCollectorService);
+            _projectService = new ProjectService(_nyssContextMock, loggerAdapterMock, _dateTimeProvider, _authorizationService, _dataCollectorService);
         }
 
         [Fact]
@@ -47,6 +48,24 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
+
+            var nationalSocieties = new[]
+            {
+                new NationalSociety
+                {
+                    Id = nationalSocietyId,
+                    NationalSocietyUsers = new List<UserNationalSociety>
+                    {
+                        new UserNationalSociety
+                        {
+                            User = new AdministratorUser()
+                        }
+                    }
+                }
+            };
+
+            var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             var currentDate = new DateTime(2019, 1, 1);
             _dateTimeProvider.UtcNow.Returns(currentDate);
@@ -728,9 +747,12 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
-                    ProjectHealthRisks = new List<ProjectHealthRisk>()
+                    ProjectHealthRisks = new List<ProjectHealthRisk>(),
+                    ProjectOrganizations = new List<ProjectOrganization>()
                 }
             };
+
+            _authorizationService.IsCurrentUserInAnyRole(Role.Coordinator, Role.Administrator).Returns(true);
 
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
@@ -766,7 +788,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Closed,
-                    ProjectHealthRisks = new List<ProjectHealthRisk>()
+                    ProjectHealthRisks = new List<ProjectHealthRisk>(),
+                    ProjectOrganizations = new List<ProjectOrganization>()
                 }
             };
 
@@ -803,7 +826,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
-                    ProjectHealthRisks = new[] { new ProjectHealthRisk { Alerts = new[] { new Alert { Status = alertStatus } } } }
+                    ProjectHealthRisks = new[] { new ProjectHealthRisk { Alerts = new[] { new Alert { Status = alertStatus } } } },
+                    ProjectOrganizations = new List<ProjectOrganization>()
                 }
             };
 
@@ -828,6 +852,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             // Arrange
             const int existingProjectId = 1;
 
+            _authorizationService.IsCurrentUserInAnyRole(Role.Coordinator, Role.Administrator).Returns(true);
+
             var project = new[]
             {
                 new Project
@@ -837,7 +863,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
-                    ProjectHealthRisks = new List<ProjectHealthRisk>()
+                    ProjectHealthRisks = new List<ProjectHealthRisk>(),
+                    ProjectOrganizations = new List<ProjectOrganization>()
                 }
             };
             var dataCollectorsToAnonymize = new List<DataCollector>
@@ -895,7 +922,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
-                    ProjectHealthRisks = new List<ProjectHealthRisk>()
+                    ProjectHealthRisks = new List<ProjectHealthRisk>(),
+                    ProjectOrganizations = new List<ProjectOrganization>()
                 }
             };
 

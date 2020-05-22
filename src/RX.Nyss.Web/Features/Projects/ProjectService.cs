@@ -126,8 +126,31 @@ namespace RX.Nyss.Web.Features.Projects
                     .Select(x => x.Project)
                 : _nyssContext.Projects;
 
-            var projects = await projectsQuery
-                .Where(p => p.NationalSocietyId == nationalSocietyId)
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var nationalSocietyData = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .Select(ns => new
+                {
+                    CurrentUserOrganizationId = ns.NationalSocietyUsers
+                        .Where(uns => uns.User == currentUser)
+                        .Select(uns => uns.OrganizationId)
+                        .SingleOrDefault(),
+                    HasCoordinator = ns.NationalSocietyUsers
+                        .Any(uns => uns.User.Role == Role.Coordinator)
+                })
+                .SingleAsync();
+
+            var query = projectsQuery
+                .Where(p => p.NationalSocietyId == nationalSocietyId);
+
+            if (nationalSocietyData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
+            {
+                query = query
+                    .Where(p => p.ProjectOrganizations.Any(po => po.OrganizationId == nationalSocietyData.CurrentUserOrganizationId));
+            }
+
+            var projects = await query
                 .OrderByDescending(p => p.State)
                 .ThenByDescending(p => p.EndDate)
                 .ThenByDescending(p => p.StartDate)
@@ -284,56 +307,56 @@ namespace RX.Nyss.Web.Features.Projects
 
         public async Task<Result> Close(int projectId)
         {
-            try
+            var currentUserName = _authorizationService.GetCurrentUserName();
+
+            var projectToClose = await _nyssContext.Projects
+                .Select(p => new
+                {
+                    Project = p,
+                    HasAccessAsHeadManager = p.ProjectOrganizations.Any(po => po.Organization.HeadManager.EmailAddress == currentUserName),
+                    AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
+                })
+                .SingleOrDefaultAsync(x => x.Project.Id == projectId);
+
+            if (projectToClose == null)
             {
-                var projectToClose = await _nyssContext.Projects
-                    .Select(p => new
-                    {
-                        Project = p,
-                        AnyOpenAlerts = p.ProjectHealthRisks.Any(phr => phr.Alerts.Any(a => a.Status == AlertStatus.Escalated || a.Status == AlertStatus.Pending))
-                    })
-                    .SingleOrDefaultAsync(x => x.Project.Id == projectId);
-
-                if (projectToClose == null)
-                {
-                    return Error(ResultKey.Project.ProjectDoesNotExist);
-                }
-
-                if (projectToClose.Project.State == ProjectState.Closed)
-                {
-                    return Error(ResultKey.Project.ProjectAlreadyClosed);
-                }
-
-                if (projectToClose.AnyOpenAlerts)
-                {
-                    return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
-                }
-
-                if (projectToClose.Project.AllowMultipleOrganizations && !await ValidateCoordinatorAccess(projectToClose.Project.NationalSocietyId))
-                {
-                    return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
-                }
-
-                using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
-                {
-                    projectToClose.Project.State = ProjectState.Closed;
-                    projectToClose.Project.EndDate = _dateTimeProvider.UtcNow;
-                    var dataCollectorsToRemove = _nyssContext.DataCollectors.Where(dc => dc.Project.Id == projectId && !dc.RawReports.Any());
-
-                    await _dataCollectorService.AnonymizeDataCollectorsWithReports(projectId);
-                    _nyssContext.DataCollectors.RemoveRange(dataCollectorsToRemove);
-
-                    await _nyssContext.SaveChangesAsync();
-                    transactionScope.Complete();
-                }
-
-                return SuccessMessage(ResultKey.Project.SuccessfullyClosed);
+                return Error(ResultKey.Project.ProjectDoesNotExist);
             }
-            catch (ResultException exception)
+
+            if (projectToClose.Project.State == ProjectState.Closed)
             {
-                _loggerAdapter.Debug(exception);
-                return exception.Result;
+                return Error(ResultKey.Project.ProjectAlreadyClosed);
             }
+
+            if (projectToClose.AnyOpenAlerts)
+            {
+                return Error(ResultKey.Project.ProjectHasOpenOrEscalatedAlerts);
+            }
+
+            if (projectToClose.Project.AllowMultipleOrganizations && !await ValidateCoordinatorAccess(projectToClose.Project.NationalSocietyId))
+            {
+                return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
+            }
+
+            if (!projectToClose.Project.AllowMultipleOrganizations && !projectToClose.HasAccessAsHeadManager && !_authorizationService.IsCurrentUserInAnyRole(Role.Coordinator, Role.Administrator))
+            {
+                return Error(ResultKey.Unauthorized);
+            }
+
+            using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                projectToClose.Project.State = ProjectState.Closed;
+                projectToClose.Project.EndDate = _dateTimeProvider.UtcNow;
+                var dataCollectorsToRemove = _nyssContext.DataCollectors.Where(dc => dc.Project.Id == projectId && !dc.RawReports.Any());
+
+                await _dataCollectorService.AnonymizeDataCollectorsWithReports(projectId);
+                _nyssContext.DataCollectors.RemoveRange(dataCollectorsToRemove);
+
+                await _nyssContext.SaveChangesAsync();
+                transactionScope.Complete();
+            }
+
+            return SuccessMessage(ResultKey.Project.SuccessfullyClosed);
         }
 
         public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId)
