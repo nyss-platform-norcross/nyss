@@ -643,34 +643,31 @@ namespace RX.Nyss.Web.Features.DataCollectors
             {
                 return ReportingStatusFilterType.All;
             }
-            else if (reportingCorrectly && !reportingWithErrors && !notReporting)
+            if (reportingCorrectly && !reportingWithErrors && !notReporting)
             {
                 return ReportingStatusFilterType.Correct;
             }
-            else if (reportingCorrectly && reportingWithErrors && !notReporting)
+            if (reportingCorrectly && reportingWithErrors && !notReporting)
             {
                 return ReportingStatusFilterType.CorrectAndError;
             }
-            else if (reportingCorrectly && !reportingWithErrors && notReporting)
+            if (reportingCorrectly && !reportingWithErrors && notReporting)
             {
                 return ReportingStatusFilterType.CorrectAndNotReporting;
             }
-            else if (!reportingCorrectly && reportingWithErrors && notReporting)
+            if (!reportingCorrectly && reportingWithErrors && notReporting)
             {
                 return ReportingStatusFilterType.ErrorAndNotReporting;
             }
-            else if (!reportingCorrectly && reportingWithErrors && !notReporting)
+            if (!reportingCorrectly && reportingWithErrors && !notReporting)
             {
                 return ReportingStatusFilterType.Error;
             }
-            else if (!reportingCorrectly && !reportingWithErrors && notReporting)
+            if (!reportingCorrectly && !reportingWithErrors && notReporting)
             {
                 return ReportingStatusFilterType.NotReporting;
             }
-            else
-            {
-                return ReportingStatusFilterType.None;
-            }
+            return ReportingStatusFilterType.None;
         }
 
         private async Task<LocationDto> GetCountryLocationFromProject(int projectId)

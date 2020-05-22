@@ -21,11 +21,11 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   }
 
   const handleReportingWithErrorsChange = (change) => {
-    onChange({ ...filtersValue, reportingWithErrors: change.target.checked});
+    onChange({ ...filtersValue, reportingWithErrors: change.target.checked });
   }
 
   const handleNotReportingChange = (change) => {
-    onChange({ ...filtersValue, notReporting: change.target.checked});
+    onChange({ ...filtersValue, notReporting: change.target.checked });
   }
 
   if (filtersValue == null || nationalSocietyId == null) {
@@ -36,14 +36,6 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
     <Card>
       <CardContent>
         <Grid container spacing={3}>
-          <Grid item>
-            <AreaFilter
-              nationalSocietyId={nationalSocietyId}
-              selectedItem={filtersValue.area}
-              onChange={handleAreaChange}
-            />
-          </Grid>
-
           <Grid item>
             <FormGroup>
               <CheckboxWithIcon
@@ -76,6 +68,14 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 }
               />
             </FormGroup>
+          </Grid>
+
+          <Grid item>
+            <AreaFilter
+              nationalSocietyId={nationalSocietyId}
+              selectedItem={filtersValue.area}
+              onChange={handleAreaChange}
+            />
           </Grid>
         </Grid>
       </CardContent>
