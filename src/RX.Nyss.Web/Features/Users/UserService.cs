@@ -208,11 +208,12 @@ namespace RX.Nyss.Web.Features.Users
 
             if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
             {
-                return query
-                    .Where(u =>
-                        u.User.Role == Role.Coordinator ||
-                        u.NationalSociety.DefaultOrganization.HeadManager == u.User ||
-                        u.NationalSociety.DefaultOrganization.PendingHeadManager == u.User);
+                return query.Any(uns => uns.User.Role == Role.Coordinator) ?
+                    query.Where(uns => uns.User.Role == Role.Coordinator)
+                    : query.Where(uns =>
+                        uns.User.Role == Role.Coordinator ||
+                        uns.NationalSociety.DefaultOrganization.HeadManager == uns.User ||
+                        uns.NationalSociety.DefaultOrganization.PendingHeadManager == uns.User);
             }
 
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))

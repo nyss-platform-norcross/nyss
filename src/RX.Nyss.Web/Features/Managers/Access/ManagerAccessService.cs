@@ -33,6 +33,19 @@ namespace RX.Nyss.Web.Features.Managers.Access
                 return false;
             }
 
+            if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
+            {
+                var nationalSocietyId = await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == managerId)
+                    .Select(uns => uns.NationalSocietyId)
+                    .SingleOrDefaultAsync();
+                var nationalSocietyHasCoordinator = _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.NationalSocietyId == nationalSocietyId)
+                    .Any(uns => uns.User.Role == Role.Coordinator);
+
+                return !nationalSocietyHasCoordinator;
+            }
+
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
                 var isHeadManager = await _nyssContext.Organizations
