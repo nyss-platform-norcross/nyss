@@ -232,12 +232,12 @@ namespace RX.Nyss.Web.Features.Managers
 
             if (createDto.SetAsHeadManager == true)
             {
-                if (_authorizationService.IsCurrentUserInAnyRole(Role.Coordinator) && (userNationalSociety.Organization.HeadManagerId.HasValue || userNationalSociety.Organization.PendingHeadManagerId.HasValue))
+                if (userNationalSociety.Organization.HeadManagerId.HasValue || userNationalSociety.Organization.PendingHeadManagerId.HasValue)
                 {
                     throw new ResultException(ResultKey.User.Registration.HeadManagerAlreadyExists);
                 }
 
-                if (_authorizationService.IsCurrentUserInAnyRole(Role.GlobalCoordinator) && nationalSociety.HasCoordinator)
+                if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator) && nationalSociety.HasCoordinator)
                 {
                     throw new ResultException(ResultKey.User.Registration.CoordinatorExists);
                 }
