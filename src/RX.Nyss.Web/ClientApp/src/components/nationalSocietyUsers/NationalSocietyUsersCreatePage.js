@@ -29,11 +29,11 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const [alertRecipientsFieldTouched, setAlertRecipientsFieldTouched] = useState(false);
   const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
 
-  const canChangeOrganization = useCallback(() => {
+  const canChangeOrganization = () => {
     if (props.data && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) && role !== roles.DataConsumer) {
       return true;
     }
-  }, [props.callingUserRoles, props.data, role]);
+  }
 
   const form = useMemo(() => {
     const fields = {
@@ -68,7 +68,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.nationalSocietyId, canChangeOrganization]);
+  }, [props.nationalSocietyId]);
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
