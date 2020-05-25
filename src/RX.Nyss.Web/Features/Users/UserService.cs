@@ -112,8 +112,6 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result<NationalSocietyUsersEditFormDataResponseDto>> GetEditFormData(int nationalSocietyUserId, int nationalSocietyId)
         {
-            var currentUser = _authorizationService.GetCurrentUser();
-
             var user = await _nyssContext.Users
                 .FilterAvailable()
                 .Where(u => u.Id == nationalSocietyUserId && u.UserNationalSocieties.Any(uns => uns.NationalSocietyId == nationalSocietyId))
@@ -126,16 +124,6 @@ namespace RX.Nyss.Web.Features.Users
                 {
                     Email = u.User.EmailAddress,
                     Role = u.User.Role,
-                    Projects = _nyssContext.Projects
-                        .Where(p => p.NationalSociety.Id == nationalSocietyId)
-                        .Where(p => p.State == ProjectState.Open)
-                        .Include(p => p.AlertNotificationRecipients)
-                        .Select(p => new ListOpenProjectsResponseDto
-                        {
-                            Id = p.Id,
-                            Name = p.Name,
-                            AlertRecipients = u.User.Role == Role.Supervisor ? GetEditAlertRecipientsFormData(p, u.UserNationalSociety.OrganizationId.Value, currentUser.Role) : null
-                        }).ToList(),
                     Organizations = _nyssContext.Organizations
                         .Where(o => o.NationalSociety.Id == nationalSocietyId)
                         .Select(o => new OrganizationsDto
@@ -207,26 +195,6 @@ namespace RX.Nyss.Web.Features.Users
                 .Where(u => u.EmailAddress == userIdentityName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
-
-        private static List<ProjectAlertRecipientListResponseDto> GetEditAlertRecipientsFormData(Project project, int organizationId, Role currentUserRole) =>
-            currentUserRole == Role.Administrator
-                ? project.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
-                {
-                    Id = anr.Id,
-                    Role = anr.Role,
-                    Organization = anr.Organization,
-                    Email = anr.Email,
-                    PhoneNumber = anr.PhoneNumber
-                }).ToList()
-                : project.AlertNotificationRecipients.Where(anr => anr.OrganizationId == organizationId)
-                    .Select(anr => new ProjectAlertRecipientListResponseDto
-                    {
-                        Id = anr.Id,
-                        Role = anr.Role,
-                        Organization = anr.Organization,
-                        Email = anr.Email,
-                        PhoneNumber = anr.PhoneNumber
-                    }).ToList();
 
         private IQueryable<UserNationalSociety> GetFilteredUsersQuery(int nationalSocietyId)
         {

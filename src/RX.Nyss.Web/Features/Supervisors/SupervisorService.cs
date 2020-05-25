@@ -81,6 +81,8 @@ namespace RX.Nyss.Web.Features.Supervisors
 
         public async Task<Result<GetSupervisorResponseDto>> Get(int supervisorId, int nationalSocietyId)
         {
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+
             var supervisor = await _nyssContext.UserNationalSocieties.FilterAvailable()
                 .Where(un => un.UserId == supervisorId && un.NationalSocietyId == nationalSocietyId)
                 .Select(un => new
@@ -134,7 +136,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Name = p.Name,
                         IsClosed = p.State == ProjectState.Closed,
                         AlertRecipients = p.AlertNotificationRecipients
-                            .Where(anr => anr.OrganizationId == supervisor.OrganizationId)
+                            .Where(anr => currentUser.Role == Role.Administrator || anr.OrganizationId == supervisor.OrganizationId)
                             .Select(anr => new ProjectAlertRecipientListResponseDto
                             {
                                 Id = anr.Id,

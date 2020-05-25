@@ -65,7 +65,7 @@ function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
     const formData = yield call(http.get, `/api/user/editFormData?nationalSocietyUserId=${nationalSocietyUserId}&nationalSocietyId=${nationalSocietyId}`);
     const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, formData.value.role, nationalSocietyId));
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    yield put(actions.openEdition.success(response.value, formData.value.projects, formData.value.organizations));
+    yield put(actions.openEdition.success(response.value, formData.value.organizations));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }
