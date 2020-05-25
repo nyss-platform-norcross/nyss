@@ -266,6 +266,7 @@ namespace RX.Nyss.Web.Features.Projects
             try
             {
                 var projectToUpdate = await _nyssContext.Projects
+                    .Include(p => p.ProjectOrganizations)
                     .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.AlertRule)
                     .Include(p => p.AlertNotificationRecipients)
@@ -277,15 +278,22 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error(ResultKey.Project.ProjectDoesNotExist);
                 }
 
-                if (projectToUpdate.AllowMultipleOrganizations && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
+                if (projectToUpdate.AllowMultipleOrganizations
+                    && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
-                if (dto.AllowMultipleOrganizations && !projectToUpdate.AllowMultipleOrganizations
+                if (!projectToUpdate.AllowMultipleOrganizations && dto.AllowMultipleOrganizations
                     && !await ValidateCoordinatorAccess(projectToUpdate.NationalSocietyId))
                 {
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
+                }
+
+                if (projectToUpdate.AllowMultipleOrganizations && !dto.AllowMultipleOrganizations
+                    && projectToUpdate.ProjectOrganizations.Count > 1)
+                {
+                    return Error<int>(ResultKey.Project.AllowMultipleOrganizationsFlagCannotBeRemoved);
                 }
 
                 projectToUpdate.Name = dto.Name;
