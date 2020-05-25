@@ -214,6 +214,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string ProjectHasOpenOrEscalatedAlerts = "project.projectHasOpenOrEscalatedAlerts";
             public const string CannotRemoveAlertRecipientWithSupervisorsAttached = "project.cannotRemoveAlertRecipientWithSupervisorsAttached";
             public const string OnlyCoordinatorCanAdministrateProjects = "project.onlyCoordinatorCanAdministrateProjects";
+            public const string AllowMultipleOrganizationsFlagCannotBeRemoved = "project.allowMultipleOrganizationsFlagCannotBeRemoved";
         }
 
         public class ProjectOrganization
