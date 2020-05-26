@@ -133,7 +133,8 @@ function* removeDataCollector({ dataCollectorId }) {
     yield call(http.post, `/api/dataCollector/${dataCollectorId}/delete`);
     yield put(actions.remove.success(dataCollectorId));
     const projectId = yield select(state => state.appData.route.params.projectId);
-    yield call(getDataCollectors, projectId);
+    const filters = yield select(state => state.dataCollectors.filters);
+    yield call(getDataCollectors, { projectId, filters });
     yield put(appActions.showMessage(stringKeys.dataCollector.messages.deletionSuccessful));
   } catch (error) {
     yield put(actions.remove.failure(dataCollectorId, error.message));
