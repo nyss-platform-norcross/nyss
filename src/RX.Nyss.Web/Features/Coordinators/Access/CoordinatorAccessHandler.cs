@@ -16,6 +16,6 @@ namespace RX.Nyss.Web.Features.Coordinators.Access
         }
 
         protected override Task<bool> HasAccess(int coordinatorId) =>
-            _nationalSocietyAccessService.HasCurrentUserAccessToUserNationalSocieties(coordinatorId);
+            _nationalSocietyAccessService.HasCurrentUserAccessToAnyNationalSocietiesOfGivenUser(coordinatorId);
     }
 }

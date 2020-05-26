@@ -20,10 +20,10 @@ export const accessMap = {
     delete: [Administrator, Manager, TechnicalAdvisor, Coordinator]
   },
   organizations: {
-    list: [Administrator, GlobalCoordinator, Coordinator],
-    add: [Administrator, GlobalCoordinator, Coordinator],
-    edit: [Administrator, GlobalCoordinator, Coordinator],
-    delete: [Administrator, GlobalCoordinator, Coordinator]
+    list: [Administrator, Coordinator],
+    add: [Administrator, Coordinator],
+    edit: [Administrator, Coordinator],
+    delete: [Administrator, Coordinator]
   },
   projects: {
     get: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, Coordinator],

@@ -31,7 +31,14 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                         Name = ExistingNationalSocietyName,
                         DefaultOrganizationId = 1,
                         DefaultOrganization = data.Organizations[0],
-                        Organizations = new[] { data.Organizations[0] }
+                        Organizations = new[] { data.Organizations[0] },
+                        NationalSocietyUsers = new List<UserNationalSociety>
+                        {
+                            new UserNationalSociety
+                            {
+                                User = new AdministratorUser()
+                            }
+                        }
                     }
                 };
                 data.ContentLanguages = new List<ContentLanguage> { new ContentLanguage { Id = ContentLanguageId } };

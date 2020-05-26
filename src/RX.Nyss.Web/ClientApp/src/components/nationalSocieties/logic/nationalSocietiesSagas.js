@@ -60,7 +60,8 @@ function* openNationalSocietyOverview({ path, params }) {
       nationalSocietyCountry: response.value.countryName,
       nationalSocietyName: response.value.name,
       nationalSocietyId: response.value.id,
-      nationalSocietyIsArchived: response.value.isArchived
+      nationalSocietyIsArchived: response.value.isArchived,
+      nationalSocietyHasCoordinator: response.value.nationalSocietyHasCoordinator
     }));
 
     yield put(actions.openOverview.success(response.value));

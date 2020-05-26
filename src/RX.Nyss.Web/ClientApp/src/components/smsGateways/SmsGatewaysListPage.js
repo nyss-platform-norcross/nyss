@@ -10,6 +10,8 @@ import SmsGatewaysTable from './SmsGatewaysTable';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { accessMap } from '../../authentication/accessMap';
+import * as roles from '../../authentication/roles';
 
 const SmsGatewaysListPageComponent = (props) => {
   useMount(() => {
@@ -18,12 +20,18 @@ const SmsGatewaysListPageComponent = (props) => {
 
   return (
     <Fragment>
-      {!props.nationalSocietyIsArchived &&
-      <TableActions>
-        <TableActionsButton onClick={() => props.goToCreation(props.nationalSocietyId)} icon={<AddIcon />}>
-          {strings(stringKeys.smsGateway.addNew)}
-        </TableActionsButton>
-      </TableActions>}
+      {!props.nationalSocietyIsArchived && (
+        <TableActions>
+          <TableActionsButton
+            onClick={() => props.goToCreation(props.nationalSocietyId)}
+            icon={<AddIcon />}
+            roles={accessMap.smsGateways.add}
+            condition={!props.nationalSocietyHasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator)}
+          >
+            {strings(stringKeys.smsGateway.addNew)}
+          </TableActionsButton>
+        </TableActions>
+      )}
 
       <SmsGatewaysTable
         list={props.list}
@@ -33,6 +41,8 @@ const SmsGatewaysListPageComponent = (props) => {
         isRemoving={props.isRemoving}
         remove={props.remove}
         nationalSocietyId={props.nationalSocietyId}
+        nationalSocietyHasCoordinator={props.nationalSocietyHasCoordinator}
+        callingUserRoles={props.callingUserRoles}
       />
     </Fragment>
   );
@@ -52,7 +62,9 @@ const mapStateToProps = (state, ownProps) => ({
   list: state.smsGateways.listData,
   isListFetching: state.smsGateways.listFetching,
   isRemoving: state.smsGateways.listRemoving,
-  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
+  callingUserRoles: state.appData.user.roles,
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived,
+  nationalSocietyHasCoordinator: state.appData.siteMap.parameters.nationalSocietyHasCoordinator
 });
 
 const mapDispatchToProps = {

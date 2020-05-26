@@ -6,12 +6,14 @@ import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
 import { Loading } from '../common/loading/Loading';
-import Button from '@material-ui/core/Button';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import { useMount } from '../../utils/lifecycle';
 import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from '../../strings';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { accessMap } from '../../authentication/accessMap';
+import * as roles from '../../authentication/roles';
 
 const NationalSocietiesOverviewPageComponent = (props) => {
   useMount(() => {
@@ -54,12 +56,17 @@ const NationalSocietiesOverviewPageComponent = (props) => {
           </Grid>
         </Grid>
 
-        {!props.nationalSocietyIsArchived && 
-        <FormActions>          
-           <Button variant="outlined" color="primary" onClick={() => props.openEdition(props.data.id)}>
+        <FormActions>
+          <TableActionsButton
+            variant="outlined"
+            color="primary"
+            onClick={() => props.openEdition(props.data.id)}
+            roles={accessMap.nationalSocieties.edit}
+            condition={!props.nationalSocietyIsArchived && (!props.data.hasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator))}
+          >
             {strings(stringKeys.nationalSociety.edit)}
-          </Button>
-        </FormActions>}
+          </TableActionsButton>
+        </FormActions>
       </Form>
 
     </Fragment >
@@ -74,7 +81,9 @@ NationalSocietiesOverviewPageComponent.propTypes = {
 const mapStateToProps = state => ({
   isFetching: state.nationalSocieties.overviewFetching,
   data: state.nationalSocieties.overviewData,
-  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived,
+  nationalSocietyHasCoordinator: state.appData.siteMap.parameters.nationalSocietyHasCoordinator,
+  callingUserRoles: state.appData.user.roles
 });
 
 const mapDispatchToProps = {

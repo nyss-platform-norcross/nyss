@@ -72,9 +72,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> List()
         {
-            var nationalSocietiesQuery = await GetNationalSocietiesQuery();
-
-            var list = await nationalSocietiesQuery
+            var list = await GetNationalSocietiesQuery()
                 .Include(x => x.DefaultOrganization.HeadManager)
                 .Include(x => x.DefaultOrganization.PendingHeadManager)
                 .Select(n => new NationalSocietyListResponseDto
@@ -111,7 +109,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     CountryId = n.Country.Id,
                     CountryName = n.Country.Name,
                     HeadManagerId = n.DefaultOrganization.HeadManager.Id,
-                    IsArchived = n.IsArchived
+                    IsArchived = n.IsArchived,
+                    HasCoordinator = n.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
                 })
                 .FirstOrDefaultAsync(n => n.Id == id);
 
@@ -171,11 +170,32 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
             }
 
-            var nationalSociety = await _nyssContext.NationalSocieties.FindAsync(nationalSocietyId);
+            var currentUser = _authorizationService.GetCurrentUser();
+
+            var nationalSocietyData = await _nyssContext.NationalSocieties
+                .Where(n => n.Id == nationalSocietyId)
+                .Select(ns => new
+                {
+                    NationalSociety = ns,
+                    CurrentUserOrganizationId = ns.NationalSocietyUsers
+                        .Where(uns => uns.User == currentUser)
+                        .Select(uns => uns.OrganizationId)
+                        .SingleOrDefault(),
+                    HasCoordinator = ns.NationalSocietyUsers
+                        .Any(uns => uns.User.Role == Role.Coordinator)
+                })
+                .SingleAsync();
+
+            var nationalSociety = nationalSocietyData.NationalSociety;
 
             if (nationalSociety.IsArchived)
             {
                 return Error(ResultKey.NationalSociety.Edit.CannotEditArchivedNationalSociety);
+            }
+
+            if (nationalSocietyData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
+            {
+                return Error(ResultKey.UnexpectedError);
             }
 
             nationalSociety.Name = dto.Name;
@@ -373,15 +393,17 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         public async Task<Country> GetCountryById(int id) =>
             await _nyssContext.Countries.FindAsync(id);
 
-        private async Task<IQueryable<NationalSociety>> GetNationalSocietiesQuery()
+        private IQueryable<NationalSociety> GetNationalSocietiesQuery()
         {
             if (_nationalSocietyAccessService.HasCurrentUserAccessToAllNationalSocieties())
             {
                 return _nyssContext.NationalSocieties;
             }
 
-            var availableNationalSocieties = await _nationalSocietyAccessService.GetCurrentUserNationalSocietyIds();
-            return _nyssContext.NationalSocieties.Where(ns => availableNationalSocieties.Contains(ns.Id));
+            var userName = _authorizationService.GetCurrentUserName();
+
+            return _nyssContext.NationalSocieties
+                .Where(ns => ns.NationalSocietyUsers.Any(u => u.User.EmailAddress == userName));
         }
 
         private async Task RemoveApiKeys(int nationalSocietyId)
