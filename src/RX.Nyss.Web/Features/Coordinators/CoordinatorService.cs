@@ -225,7 +225,7 @@ namespace RX.Nyss.Web.Features.Coordinators
                 .Where(uns => uns.NationalSocietyId == coordinator.UserNationalSocieties.Single().NationalSocietyId)
                 .CountAsync();
 
-            if (usersInNs > 1 && !_authorizationService.IsCurrentUserInRole(Role.Administrator))
+            if (usersInNs > 1 && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
             {
                 throw new ResultException(ResultKey.User.Deletion.MoreUsersExists);
             }
