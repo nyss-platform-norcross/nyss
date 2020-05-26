@@ -62,7 +62,7 @@ const NationalSocietiesOverviewPageComponent = (props) => {
             color="primary"
             onClick={() => props.openEdition(props.data.id)}
             roles={accessMap.nationalSocieties.edit}
-            condition={!props.nationalSocietyIsArchived && (props.data.hasCoordinator && props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator))}
+            condition={!props.nationalSocietyIsArchived && (!props.data.hasCoordinator || props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.Administrator))}
           >
             {strings(stringKeys.nationalSociety.edit)}
           </TableActionsButton>
