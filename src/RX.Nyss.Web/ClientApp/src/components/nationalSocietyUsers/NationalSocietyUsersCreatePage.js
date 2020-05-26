@@ -78,6 +78,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     const project = props.data.projects.filter(p => p.id === parseInt(projectId))[0];
     const newAlertRecipientsDataSource = [{ label: 'All recipients', value: 0, data: { id: 0 } }, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
     setAlertRecipientsDataSource(newAlertRecipientsDataSource);
+    setSelectedAlertRecipients([]);
   }
 
   const onAlertRecipientsChange = (value, eventData) => {
@@ -305,6 +306,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
               <MultiSelect
                 label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
                 options={alertRecipientsDataSource}
+                value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
                 onChange={onAlertRecipientsChange}
                 onBlur={e => setAlertRecipientsFieldTouched(true)}
                 error={alertRecipientsFieldError}

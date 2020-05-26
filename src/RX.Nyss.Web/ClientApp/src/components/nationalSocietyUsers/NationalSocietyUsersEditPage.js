@@ -84,7 +84,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
   }
 
   const onProjectChange = (projectId) => {
-    const project = props.projects.filter(p => p.id === parseInt(projectId))[0];
+    const project = props.data.editSupervisorFormData.availableProjects.filter(p => p.id === parseInt(projectId))[0];
     const newAlertRecipientsDataSource = [{ label: 'All recipients', value: 0, data: { id: 0 }}, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
     setAlertRecipientsDataSource(newAlertRecipientsDataSource);
     setSelectedAlertRecipients([]);
