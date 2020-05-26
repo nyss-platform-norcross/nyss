@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using MockQueryable.NSubstitute;
 using NetTopologySuite.Geometries;
 using NSubstitute;
@@ -32,6 +33,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const string DataCollectorPhoneNumber3 = "+4712345680";
         private const int ProjectId = 1;
         private const int SupervisorId = 1;
+        private const string SupervisorEmail = "supervisor@example.com";
         private const int NationalSocietyId = 1;
         private const string Village = "Layuna";
         private const int RegionId = 1;
@@ -46,7 +48,9 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var nationalSocietyStructureService = Substitute.For<INationalSocietyStructureService>();
             var geolocationService = Substitute.For<IGeolocationService>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
-            var authorizationService = Substitute.For<IAuthorizationService>();
+            var httpContextAccessorMock = Substitute.For<IHttpContextAccessor>();
+            httpContextAccessorMock.HttpContext.User.Identity.Name.Returns(SupervisorEmail);
+            var authorizationService = new AuthorizationService(httpContextAccessorMock, _nyssContextMock);
 
             dateTimeProvider.UtcNow.Returns(DateTime.UtcNow);
             _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider, authorizationService);
@@ -58,7 +62,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 new SupervisorUser
                 {
                     Id = SupervisorId,
-                    Role = Role.Supervisor
+                    Role = Role.Supervisor,
+                    EmailAddress = SupervisorEmail
                 }
             };
             var usersNationalSocieties = new List<UserNationalSociety>
@@ -67,7 +72,9 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 {
                     NationalSociety = nationalSocieties[0],
                     User = users[0],
-                    NationalSocietyId = NationalSocietyId
+                    UserId = SupervisorId,
+                    NationalSocietyId = NationalSocietyId,
+                    OrganizationId = 1
                 }
             };
 
@@ -78,7 +85,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 new Project
                 {
                     Id = ProjectId,
-                    NationalSociety = nationalSocieties[0]
+                    NationalSociety = nationalSocieties[0],
+                    NationalSocietyId = NationalSocietyId
                 }
             };
             var supervisorUserProjects = new List<SupervisorUserProject>
