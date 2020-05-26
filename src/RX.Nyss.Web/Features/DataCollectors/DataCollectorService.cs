@@ -68,6 +68,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId)
         {
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
                 .ThenInclude(p => p.NationalSociety)
@@ -77,6 +79,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .ThenInclude(v => v.District)
                 .ThenInclude(d => d.Region)
                 .SingleAsync(dc => dc.Id == dataCollectorId);
+
+            var organizationId = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == dataCollector.Project.NationalSocietyId)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
 
             var regions = await _nationalSocietyStructureService.ListRegions(dataCollector.Project.NationalSociety.Id);
             var districts = await _nationalSocietyStructureService.ListDistricts(dataCollector.Village.District.Region.Id);
@@ -108,7 +115,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Districts = districts.Value,
                     Villages = villages.Value,
                     Zones = zones.Value,
-                    Supervisors = await GetSupervisors(dataCollector.Project.Id)
+                    Supervisors = await GetSupervisors(dataCollector.Project.Id, currentUser, organizationId)
                 }
             };
 
@@ -117,13 +124,18 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId)
         {
-            var identityName = _authorizationService.GetCurrentUserName();
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+
             var projectData = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
                 .Select(dc => new
                 {
                     NationalSocietyId = dc.NationalSociety.Id,
-                    CountryName = dc.NationalSociety.Country.Name
+                    CountryName = dc.NationalSociety.Country.Name,
+                    OrganizationId = dc.NationalSociety.NationalSocietyUsers
+                        .Where(nsu => nsu.UserId == currentUser.Id)
+                        .Select(nsu => nsu.OrganizationId)
+                        .FirstOrDefault()
                 })
                 .SingleAsync();
 
@@ -132,7 +144,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var locationFromCountry = await _geolocationService.GetLocationFromCountry(projectData.CountryName);
 
             var defaultSupervisorId = await _nyssContext.Users.FilterAvailable()
-                .Where(u => u.EmailAddress == identityName && u.Role == Role.Supervisor)
+                .Where(u => u.Id == currentUser.Id && u.Role == Role.Supervisor)
                 .Select(u => (int?)u.Id)
                 .FirstOrDefaultAsync();
 
@@ -140,7 +152,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             {
                 NationalSocietyId = projectData.NationalSocietyId,
                 Regions = regions.Value,
-                Supervisors = await GetSupervisors(projectId),
+                Supervisors = await GetSupervisors(projectId, currentUser, projectData.OrganizationId),
                 DefaultSupervisorId = defaultSupervisorId,
                 DefaultLocation = locationFromCountry.IsSuccess
                     ? new LocationDto
@@ -608,10 +620,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .BatchUpdateAsync(x => new Report { PhoneNumber = Anonymization.Text });
         }
 
-        private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId) =>
+        private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId, User currentUser, int? organizationId) =>
             await _nyssContext.SupervisorUserProjects
                 .FilterAvailableUsers()
-                .Where(sup => sup.ProjectId == projectId)
+                .Where(sup => sup.ProjectId == projectId
+                    && (currentUser.Role == Role.Administrator || sup.Project.NationalSociety.NationalSocietyUsers.Single(nsu => nsu.UserId == sup.SupervisorUserId).OrganizationId == organizationId))
                 .Select(sup => new DataCollectorSupervisorResponseDto
                 {
                     Id = sup.SupervisorUserId,
