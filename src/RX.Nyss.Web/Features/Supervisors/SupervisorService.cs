@@ -128,7 +128,8 @@ namespace RX.Nyss.Web.Features.Supervisors
             supervisor.EditSupervisorFormData = new EditSupervisorFormDataDto
             {
                 AvailableProjects = await _nyssContext.Projects
-                    .Where(p => p.NationalSociety.Id == nationalSocietyId)
+                    .Where(p => p.NationalSociety.Id == nationalSocietyId
+                        && (currentUser.Role == Role.Administrator || p.ProjectOrganizations.Any(po => po.OrganizationId == supervisor.OrganizationId)))
                     .Where(p => p.State == ProjectState.Open)
                     .Select(p => new EditSupervisorFormDataDto.ListProjectsResponseDto
                     {

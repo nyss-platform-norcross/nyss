@@ -66,14 +66,14 @@ namespace RX.Nyss.Web.Features.Users
             var organizationId = await _nyssContext.UserNationalSocieties
                 .Where(un => un.UserId == currentUser.Id && un.NationalSocietyId == nationalSocietyId)
                 .Select(un => un.OrganizationId)
-                .FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
 
             var formData = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => new NationalSocietyUsersCreateFormDataResponseDto
                 {
                     Projects = _nyssContext.Projects
-                        .Where(p => p.NationalSociety.Id == ns.Id)
+                        .Where(p => p.NationalSociety.Id == ns.Id && (currentUser.Role == Role.Administrator || p.ProjectOrganizations.Any(po => po.OrganizationId == organizationId)))
                         .Where(p => p.State == ProjectState.Open)
                         .Select(p => new ListOpenProjectsResponseDto
                         {
