@@ -28,7 +28,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
       organization: '',
       email: '',
       phoneNumber: '',
-      projectOrganizationId: ''
+      organizationId: ''
     };
 
     const validation = {
@@ -63,7 +63,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
       organization: values.organization,
       email: values.email,
       phoneNumber: values.phoneNumber,
-      projectOrganizationId: parseInt(values.projectOrganizationId) || null
+      organizationId: parseInt(values.organizationId) || null
     });
   };
 
@@ -116,8 +116,8 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.projectAlertRecipient.form.projectOrganization)}
-                field={form.fields.projectOrganizationId}
-                name="projectOrganizationId"
+                field={form.fields.organizationId}
+                name="organizationId"
               >
                 {props.organizations.map(org => (
                   <MenuItem key={org.id} value={JSON.stringify(org.id)}>

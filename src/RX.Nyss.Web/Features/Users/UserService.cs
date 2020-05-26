@@ -25,12 +25,12 @@ namespace RX.Nyss.Web.Features.Users
 
     public class UserService : IUserService
     {
-        private readonly INyssContext _dataContext;
+        private readonly INyssContext _nyssContext;
         private readonly IAuthorizationService _authorizationService;
 
-        public UserService(INyssContext dataContext, IAuthorizationService authorizationService)
+        public UserService(INyssContext nyssContext, IAuthorizationService authorizationService)
         {
-            _dataContext = dataContext;
+            _nyssContext = nyssContext;
             _authorizationService = authorizationService;
         }
 
@@ -63,19 +63,23 @@ namespace RX.Nyss.Web.Features.Users
         public async Task<Result<NationalSocietyUsersCreateFormDataResponseDto>> GetCreateFormData(int nationalSocietyId)
         {
             var currentUser = _authorizationService.GetCurrentUser();
+            var organizationId = await _nyssContext.UserNationalSocieties
+                .Where(un => un.UserId == currentUser.Id && un.NationalSocietyId == nationalSocietyId)
+                .Select(un => un.OrganizationId)
+                .FirstOrDefaultAsync();
 
-            var formData = await _dataContext.NationalSocieties
+            var formData = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => new NationalSocietyUsersCreateFormDataResponseDto
                 {
-                    Projects = _dataContext.Projects
+                    Projects = _nyssContext.Projects
                         .Where(p => p.NationalSociety.Id == ns.Id)
                         .Where(p => p.State == ProjectState.Open)
                         .Select(p => new ListOpenProjectsResponseDto
                         {
                             Id = p.Id,
                             Name = p.Name,
-                            AlertRecipients = p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
+                            AlertRecipients = currentUser.Role == Role.Administrator ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
                             {
                                 Id = anr.Id,
                                 Role = anr.Role,
@@ -83,6 +87,16 @@ namespace RX.Nyss.Web.Features.Users
                                 Email = anr.Email,
                                 PhoneNumber = anr.PhoneNumber
                             }).ToList()
+                                : p.AlertNotificationRecipients
+                                    .Where(anr => anr.OrganizationId == organizationId)
+                                    .Select(anr => new ProjectAlertRecipientListResponseDto
+                                    {
+                                        Id = anr.Id,
+                                        Role = anr.Role,
+                                        Organization = anr.Organization,
+                                        Email = anr.Email,
+                                        PhoneNumber = anr.PhoneNumber
+                                    }).ToList()
                         }).ToList(),
                     Organizations = ns.Organizations.Select(o => new OrganizationsDto
                     {
@@ -98,32 +112,19 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result<NationalSocietyUsersEditFormDataResponseDto>> GetEditFormData(int nationalSocietyUserId, int nationalSocietyId)
         {
-            var user = await _dataContext.Users
+            var user = await _nyssContext.Users
                 .FilterAvailable()
                 .Where(u => u.Id == nationalSocietyUserId && u.UserNationalSocieties.Any(uns => uns.NationalSocietyId == nationalSocietyId))
+                .Select(u => new
+                {
+                    User = u,
+                    UserNationalSociety = u.UserNationalSocieties.FirstOrDefault(uns => uns.NationalSocietyId == nationalSocietyId)
+                })
                 .Select(u => new NationalSocietyUsersEditFormDataResponseDto
                 {
-                    Email = u.EmailAddress,
-                    Role = u.Role,
-                    Projects = _dataContext.Projects
-                        .Where(p => p.NationalSociety.Id == nationalSocietyId)
-                        .Where(p => p.State == ProjectState.Open)
-                        .Select(p => new ListOpenProjectsResponseDto
-                        {
-                            Id = p.Id,
-                            Name = p.Name,
-                            AlertRecipients = u.Role == Role.Supervisor
-                                ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
-                                {
-                                    Id = anr.Id,
-                                    Role = anr.Role,
-                                    Organization = anr.Organization,
-                                    Email = anr.Email,
-                                    PhoneNumber = anr.PhoneNumber
-                                }).ToList()
-                                : null
-                        }).ToList(),
-                    Organizations = _dataContext.Organizations
+                    Email = u.User.EmailAddress,
+                    Role = u.User.Role,
+                    Organizations = _nyssContext.Organizations
                         .Where(o => o.NationalSociety.Id == nationalSocietyId)
                         .Select(o => new OrganizationsDto
                         {
@@ -137,7 +138,7 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result> AddExisting(int nationalSocietyId, string userEmail)
         {
-            var userData = await _dataContext.Users.FilterAvailable()
+            var userData = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userEmail)
                 .Select(u => new
                 {
@@ -156,7 +157,7 @@ namespace RX.Nyss.Web.Features.Users
                 return Error(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
             }
 
-            var userAlreadyIsInThisNationalSociety = await _dataContext.UserNationalSocieties
+            var userAlreadyIsInThisNationalSociety = await _nyssContext.UserNationalSocieties
                 .FilterAvailableUsers()
                 .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == userData.Id);
 
@@ -165,7 +166,7 @@ namespace RX.Nyss.Web.Features.Users
                 return Error(ResultKey.User.Registration.UserIsAlreadyInThisNationalSociety);
             }
 
-            var nationalSocietyIsArchived = await _dataContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.IsArchived);
+            var nationalSocietyIsArchived = await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.IsArchived);
             if (nationalSocietyIsArchived)
             {
                 return Error(ResultKey.User.Registration.CannotAddExistingUsersToArchivedNationalSociety);
@@ -178,26 +179,26 @@ namespace RX.Nyss.Web.Features.Users
             };
 
             var currentUser = await _authorizationService.GetCurrentUserAsync();
-            userNationalSociety.Organization = await _dataContext.UserNationalSocieties
+            userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                     .Select(uns => uns.Organization)
                     .SingleOrDefaultAsync() ??
-                await _dataContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
+                await _nyssContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
 
-            await _dataContext.UserNationalSocieties.AddAsync(userNationalSociety);
-            await _dataContext.SaveChangesAsync();
+            await _nyssContext.UserNationalSocieties.AddAsync(userNationalSociety);
+            await _nyssContext.SaveChangesAsync();
             return Success();
         }
 
         public async Task<string> GetUserApplicationLanguageCode(string userIdentityName) =>
-            await _dataContext.Users.FilterAvailable()
+            await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == userIdentityName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
 
         private IQueryable<UserNationalSociety> GetFilteredUsersQuery(int nationalSocietyId)
         {
-            var query = _dataContext.UserNationalSocieties
+            var query = _nyssContext.UserNationalSocieties
                 .Where(uns => uns.NationalSocietyId == nationalSocietyId);
 
             if (_authorizationService.IsCurrentUserInRole(Role.Administrator))
