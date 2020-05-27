@@ -31,6 +31,8 @@ namespace RX.Nyss.Web.Features.Users.Dto
         public int Id { get; set; }
 
         public string Name { get; set; }
+
+        public bool IsDefaultOrganization { get; set; }
     }
 
     public class ListOpenProjectsResponseDto
