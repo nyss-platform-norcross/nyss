@@ -112,6 +112,10 @@ const NationalSocietyUsersEditPageComponent = (props) => {
     }
   }
 
+  const canEditOrganization = () => {
+    return props.callingUserRoles.some(r => r === roles.Administrator) && role !== roles.DataConsumer;
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -183,7 +187,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             />
           </Grid>
 
-          {(props.callingUserRoles.some(r => r === roles.Administrator || r === roles.GlobalCoordinator || r === roles.Coordinator) && role !== roles.DataConsumer) && (
+          {canEditOrganization() && (
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.organization)}

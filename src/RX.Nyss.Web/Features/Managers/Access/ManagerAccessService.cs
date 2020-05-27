@@ -33,6 +33,16 @@ namespace RX.Nyss.Web.Features.Managers.Access
                 return false;
             }
 
+            if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
+            {
+                var nationalSocietyHasCoordinator = await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == managerId)
+                    .Where(uns => uns.NationalSociety.NationalSocietyUsers.Any(x => x.User.Role == Role.Coordinator))
+                    .AnyAsync();
+
+                return !nationalSocietyHasCoordinator;
+            }
+
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
                 var isHeadManager = await _nyssContext.Organizations
