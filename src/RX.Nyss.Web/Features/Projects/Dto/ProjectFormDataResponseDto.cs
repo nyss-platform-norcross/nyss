@@ -6,9 +6,9 @@ namespace RX.Nyss.Web.Features.Projects.Dto
     {
         public IEnumerable<TimeZoneResponseDto> TimeZones { get; set; }
         public IEnumerable<ProjectHealthRiskResponseDto> HealthRisks { get; set; }
-        public IEnumerable<Organization> Organizations { get; set; }
+        public IEnumerable<ProjectFormOrganization> Organizations { get; set; }
 
-        public class Organization
+        public class ProjectFormOrganization
         {
             public int Id { get; set; }
 
