@@ -117,6 +117,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             users[1].UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[0] };
 
             _authorizationService.GetCurrentUser().Returns(managerUser);
+            _authorizationService.GetCurrentUserAsync().Returns(managerUser);
 
             var applicationLanguagesDbSet = applicationLanguages.AsQueryable().BuildMockDbSet();
             var usersDbSet = users.AsQueryable().BuildMockDbSet();
