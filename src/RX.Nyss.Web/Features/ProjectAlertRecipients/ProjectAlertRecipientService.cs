@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
             if (!_authorizationService.IsCurrentUserInRole(Role.Administrator))
             {
-                var currentUser = _authorizationService.GetCurrentUser();
+                var currentUser = await _authorizationService.GetCurrentUserAsync();
                 var organizationId = _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                     .Select(uns => uns.OrganizationId)

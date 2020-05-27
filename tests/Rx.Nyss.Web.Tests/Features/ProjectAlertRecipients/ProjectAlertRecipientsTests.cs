@@ -19,18 +19,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
     {
         private const int ProjectId = 1;
         private const int NationalSocietyId = 1;
+        private readonly List<User> _users;
         private readonly ProjectAlertRecipientService _projectAlertRecipientService;
         private readonly IAuthorizationService _authorizationServiceMock;
-        private readonly IHttpContextAccessor _httpContextAccessorMock;
-        private readonly List<AlertNotificationRecipient> _alertNotificationRecipients;
         private readonly INyssContext _nyssContextMock;
 
         public ProjectAlertRecipientsTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
-            _httpContextAccessorMock = Substitute.For<IHttpContextAccessor>();
+            _authorizationServiceMock = Substitute.For<IAuthorizationService>();
 
-            var users = new List<User>
+            _users = new List<User>
             {
                 new ManagerUser
                 {
@@ -59,6 +58,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 }
             };
 
+            var projects = new List<Project> { new Project { Id = 1 } };
+
             var alertRecipients = new List<AlertNotificationRecipient>
             {
                 new AlertNotificationRecipient
@@ -74,16 +75,17 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 }
             };
 
-            var usersDbSet = users.AsQueryable().BuildMockDbSet();
+            var usersDbSet = _users.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             var alertRecipientsDbSet = alertRecipients.AsQueryable().BuildMockDbSet();
+            var projectsDbSet = projects.AsQueryable().BuildMockDbSet();
 
-            _httpContextAccessorMock.HttpContext.User.Identity.Name.Returns("manager@example.com");
+            _authorizationServiceMock.GetCurrentUserAsync().Returns(_users[0]);
             _nyssContextMock.Users.Returns(usersDbSet);
             _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
             _nyssContextMock.AlertNotificationRecipients.Returns(alertRecipientsDbSet);
+            _nyssContextMock.Projects.Returns(projectsDbSet);
 
-            _authorizationServiceMock = new AuthorizationService(_httpContextAccessorMock, _nyssContextMock);
             _projectAlertRecipientService = new ProjectAlertRecipientService(_nyssContextMock, _authorizationServiceMock);
         }
 
@@ -130,7 +132,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
         public async Task Create_WhenUserIsNotTiedToOrganization_ShouldFail()
         {
             // Arrange
-            _httpContextAccessorMock.HttpContext.User.Identity.Name.Returns("manager2@example.com");
+            _authorizationServiceMock.GetCurrentUserAsync().Returns(_users[1]);
             var alertRecipient = new ProjectAlertRecipientRequestDto
             {
                 Role = "Head",
@@ -238,7 +240,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
         public async Task List_ShouldReturnAlertRecipientForTheUsersOrganizationOnly(string userName)
         {
             // Arrange
-            _httpContextAccessorMock.HttpContext.User.Identity.Name.Returns(userName);
+            var user = _users.First(u => u.EmailAddress == userName);
+            _authorizationServiceMock.GetCurrentUserAsync().Returns(user);
             var nationalSocietyId = 1;
             var projectId = 1;
 
