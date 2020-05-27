@@ -705,6 +705,8 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Get_IfSupervisorExists_ReturnSupervisor()
         {
+            _authorizationServiceMock.GetCurrentUserAsync().Returns(new AdministratorUser());
+
             //Act
             var result = await _supervisorService.Get(_supervisorWithDataCollectorsId, _nationalSocietyId1);
 
