@@ -35,9 +35,11 @@ namespace RX.Nyss.Web.Features.Managers.Access
 
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
-                var isHeadManager = await _nyssContext.NationalSocieties.Where(ns => ns.DefaultOrganization.HeadManager.Id == managerId || ns.DefaultOrganization.PendingHeadManager.Id == managerId).AnyAsync();
-                var isHeadManagerForNonDefaultOrganization = await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Organizations.Any(o => o.HeadManagerId == managerId));
-                return isHeadManager || isHeadManagerForNonDefaultOrganization;
+                var isHeadManager = await _nyssContext.Organizations
+                    .Where(o => o.HeadManagerId == managerId || o.PendingHeadManagerId == managerId)
+                    .AnyAsync();
+
+                return isHeadManager;
             }
 
             return true;

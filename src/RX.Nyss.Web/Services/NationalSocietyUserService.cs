@@ -115,7 +115,7 @@ namespace RX.Nyss.Web.Services
         public void DeleteNationalSocietyUser<T>(T nationalSocietyUser) where T : User
         {
             var userNationalSocieties = nationalSocietyUser.UserNationalSocieties;
-
+            
             _dataContext.UserNationalSocieties.RemoveRange(userNationalSocieties);
             _dataContext.Users.Remove(nationalSocietyUser);
         }

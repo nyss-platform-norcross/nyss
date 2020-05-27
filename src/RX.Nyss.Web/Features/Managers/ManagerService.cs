@@ -272,43 +272,42 @@ namespace RX.Nyss.Web.Features.Managers
 
         private async Task HandleHeadManagerStatus(ManagerUser manager, bool allowHeadManagerDeletion)
         {
-            var organizationData = await _nyssContext.Organizations
+            var organization = await _nyssContext.Organizations
                 .Include(o => o.PendingHeadManager)
                 .Include(o => o.HeadManager)
                 .Where(o => o.HeadManager == manager || o.PendingHeadManager == manager)
-                .Select(o => new
-                {
-                    Organization = o,
-                    o.NationalSocietyId
-                })
                 .SingleOrDefaultAsync();
 
-            if (organizationData.Organization == null)
+            if (organization == null)
             {
                 return;
             }
 
-            if (organizationData.Organization.PendingHeadManager == manager)
+            if (organization.PendingHeadManager == manager)
             {
-                organizationData.Organization.PendingHeadManager = null;
+                organization.PendingHeadManager = null;
             }
 
-            if (organizationData.Organization.HeadManager == manager)
+            if (organization.HeadManager == manager)
             {
                 if (!allowHeadManagerDeletion)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
 
-                var organizationHasUsers = _nyssContext.UserNationalSocieties.Any(uns =>
-                    uns.NationalSocietyId == organizationData.NationalSocietyId && uns.OrganizationId == organizationData.Organization.Id && uns.UserId != manager.Id);
+                var currentUser = await _authorizationService.GetCurrentUserAsync();
+                var organizationHasUsers = await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.NationalSocietyId == organization.NationalSocietyId
+                        && uns.OrganizationId == organization.Id
+                        && uns.UserId != manager.Id && uns.UserId != currentUser.Id)
+                    .AnyAsync();
 
                 if (organizationHasUsers)
                 {
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManagerWithUsers);
                 }
 
-                organizationData.Organization.HeadManager = null;
+                organization.HeadManager = null;
             }
         }
     }
