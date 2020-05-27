@@ -211,7 +211,6 @@ namespace RX.Nyss.Web.Features.Users
                 return query.Any(uns => uns.User.Role == Role.Coordinator) ?
                     query.Where(uns => uns.User.Role == Role.Coordinator)
                     : query.Where(uns =>
-                        uns.User.Role == Role.Coordinator ||
                         uns.NationalSociety.DefaultOrganization.HeadManager == uns.User ||
                         uns.NationalSociety.DefaultOrganization.PendingHeadManager == uns.User);
             }

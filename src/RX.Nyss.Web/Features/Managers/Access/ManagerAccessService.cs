@@ -35,13 +35,10 @@ namespace RX.Nyss.Web.Features.Managers.Access
 
             if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
             {
-                var nationalSocietyId = await _nyssContext.UserNationalSocieties
+                var nationalSocietyHasCoordinator = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == managerId)
-                    .Select(uns => uns.NationalSocietyId)
-                    .SingleOrDefaultAsync();
-                var nationalSocietyHasCoordinator = _nyssContext.UserNationalSocieties
-                    .Where(uns => uns.NationalSocietyId == nationalSocietyId)
-                    .Any(uns => uns.User.Role == Role.Coordinator);
+                    .Where(uns => uns.NationalSociety.NationalSocietyUsers.Any(x => x.User.Role == Role.Coordinator))
+                    .AnyAsync();
 
                 return !nationalSocietyHasCoordinator;
             }
