@@ -33,7 +33,7 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={row.id} hover onClick={() => goToEdition(projectId, row.id)} className={tableStyles.clickableRow}>
+            <TableRow key={row.id} onClick={() => !isClosed && goToEdition(projectId, row.id)} hover={!isClosed} className={!isClosed ? tableStyles.clickableRow : null}>
               <TableCell>{row.role}</TableCell>
               <TableCell>{row.organization}</TableCell>
               <TableCell>{row.email}</TableCell>
