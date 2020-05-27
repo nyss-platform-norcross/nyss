@@ -31,11 +31,14 @@ namespace RX.Nyss.Web.Features.Managers.Access
             if (!await _nationalSocietyAccessService.HasCurrentUserAccessToAnyNationalSocietiesOfGivenUser(managerId))
             {
                 return false;
-            } 
+            }
 
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
-                var isHeadManager = await _nyssContext.NationalSocieties.Where(ns => ns.DefaultOrganization.HeadManager.Id == managerId || ns.DefaultOrganization.PendingHeadManager.Id == managerId).AnyAsync();
+                var isHeadManager = await _nyssContext.Organizations
+                    .Where(o => o.HeadManagerId == managerId || o.PendingHeadManagerId == managerId)
+                    .AnyAsync();
+
                 return isHeadManager;
             }
 
