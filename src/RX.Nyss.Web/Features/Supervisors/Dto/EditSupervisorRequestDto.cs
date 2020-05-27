@@ -3,6 +3,7 @@ using FluentValidation;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Organizations;
+using RX.Nyss.Web.Features.Projects.Access;
 using RX.Nyss.Web.Services;
 
 namespace RX.Nyss.Web.Features.Supervisors.Dto
@@ -22,7 +23,7 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
 
         public class EditSupervisorRequestValidator : AbstractValidator<EditSupervisorRequestDto>
         {
-            public EditSupervisorRequestValidator(IOrganizationService organizationService)
+            public EditSupervisorRequestValidator(IOrganizationService organizationService, IProjectAccessService projectAccessService)
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.Sex).IsInEnum();
@@ -30,6 +31,10 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
                 RuleFor(s => s.SupervisorAlertRecipients).NotEmpty();
+                RuleFor(p => p.ProjectId)
+                    .MustAsync((projectId, _) => projectAccessService.HasCurrentUserAccessToProject(projectId.Value))
+                    .When(m => m.ProjectId.HasValue)
+                    .WithMessage(ResultKey.Unauthorized);
             }
         }
     }

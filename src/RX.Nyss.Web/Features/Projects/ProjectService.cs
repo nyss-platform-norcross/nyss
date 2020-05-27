@@ -494,7 +494,7 @@ namespace RX.Nyss.Web.Features.Projects
                         })
                         .OrderBy(hr => hr.HealthRiskCode)
                         .ToList(),
-                    Organizations = ns.Organizations.Select(o => new ProjectFormDataResponseDto.Organization
+                    Organizations = ns.Organizations.Select(o => new ProjectFormDataResponseDto.ProjectFormOrganization
                     {
                         Id = o.Id,
                         Name = o.Name
