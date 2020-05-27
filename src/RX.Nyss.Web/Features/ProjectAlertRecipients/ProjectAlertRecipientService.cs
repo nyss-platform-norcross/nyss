@@ -91,10 +91,19 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
         public async Task<Result<int>> Create(int nationalSocietyId, int projectId, ProjectAlertRecipientRequestDto createDto)
         {
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
 
-            var organizationId = createDto.OrganizationId.HasValue ? createDto.OrganizationId.Value
-                : await _nyssContext.UserNationalSocieties
+            var projectIsClosed = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => p.EndDate.HasValue)
+                .SingleOrDefaultAsync();
+
+            if (projectIsClosed)
+            {
+                return Error<int>(ResultKey.AlertRecipient.ProjectIsClosed);
+            }
+
+            var organizationId = createDto.OrganizationId ?? await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                     .Select(uns => uns.OrganizationId)
                     .SingleOrDefaultAsync();
@@ -138,6 +147,16 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             if (alertRecipient == null)
             {
                 return Error(ResultKey.AlertRecipient.AlertRecipientDoesNotExist);
+            }
+
+            var projectIsClosed = await _nyssContext.Projects
+                .Where(p => p.Id == alertRecipient.ProjectId)
+                .Select(p => p.EndDate.HasValue)
+                .SingleOrDefaultAsync();
+
+            if (projectIsClosed)
+            {
+                return Error(ResultKey.AlertRecipient.ProjectIsClosed);
             }
 
             alertRecipient.Role = editDto.Role;

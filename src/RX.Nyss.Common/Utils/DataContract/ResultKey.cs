@@ -224,6 +224,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string OrganizationAlreadyAdded = "projectOrganization.organizationAlreadyAdded";
             public const string CannotRemoveLastOrganization = "projectOrganization.cannotRemoveLastOrganization";
             public const string CannotRemoveOrganizationThatHasSupervisors = "projectOrganization.cannotRemoveOrganizationThatHasSupervisors";
+            public const string ProjectIsClosed = "projectOrganization.projectIsClosed";
         }
 
         public static class AlertRecipient
@@ -233,6 +234,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string AlertRecipientSuccessfullyEdited = "alertRecipient.alertRecipientSuccessfullyEdited";
             public const string CurrentUserMustBeTiedToAnOrganization = "alertRecipient.currentUserMustBeTiedToAnOrganization";
             public const string CannotDeleteAlertRecipientTiedToSupervisors = "alertRecipient.cannotDeleteAlertRecipientTiedToSupervisors";
+            public const string ProjectIsClosed = "alertRecipient.projectIsClosed";
         }
 
         public class SqlExceptions

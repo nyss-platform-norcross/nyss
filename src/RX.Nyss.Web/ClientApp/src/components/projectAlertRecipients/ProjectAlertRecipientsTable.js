@@ -14,7 +14,7 @@ import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
-export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId }) => {
+export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, projectId, isClosed }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -39,10 +39,11 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
               <TableCell>{row.email}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>
-                <TableRowActions>
-                  <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction onClick={() => remove(projectId, row.id)} confirmationText={strings(stringKeys.projectAlertRecipient.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
-                </TableRowActions>
+                {!isClosed &&
+                  <TableRowActions>
+                    <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                    <TableRowAction onClick={() => remove(projectId, row.id)} confirmationText={strings(stringKeys.projectAlertRecipient.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                  </TableRowActions>}
               </TableCell>
             </TableRow>
           ))}

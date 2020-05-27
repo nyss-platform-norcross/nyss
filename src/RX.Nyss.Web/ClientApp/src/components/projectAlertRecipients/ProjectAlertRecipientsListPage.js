@@ -18,7 +18,7 @@ const ProjectAlertRecipientsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      {!props.nationalSocietyIsArchived &&
+      {!props.nationalSocietyIsArchived && !props.projectIsClosed &&
       <TableActions>
         <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
           {strings(stringKeys.projectAlertRecipient.addNew)}
@@ -32,6 +32,7 @@ const ProjectAlertRecipientsListPageComponent = (props) => {
         goToEdition={props.goToEdition}
         remove={props.remove}
         projectId={props.projectId}
+        isClosed={props.projectIsClosed}
       />
     </Fragment>
   );
@@ -51,7 +52,8 @@ const mapStateToProps = (state, ownProps) => ({
   list: state.projectAlertRecipients.listData,
   isListFetching: state.projectAlertRecipients.listFetching,
   isRemoving: state.projectAlertRecipients.listRemoving,
-  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived,
+  projectIsClosed: state.appData.siteMap.parameters.projectIsClosed
 });
 
 const mapDispatchToProps = {
