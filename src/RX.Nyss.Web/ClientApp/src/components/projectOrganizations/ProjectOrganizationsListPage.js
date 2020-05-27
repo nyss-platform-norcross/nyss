@@ -19,7 +19,7 @@ const ProjectOrganizationsListPageComponent = (props) => {
 
   return (
     <Fragment>
-      {!props.nationalSocietyIsArchived &&
+      {!props.nationalSocietyIsArchived && !props.projectIsClosed &&
       <TableActions>
         <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />} roles={accessMap.projectOrganizations.add}>
           {strings(stringKeys.projectOrganization.addNew)}
@@ -32,6 +32,7 @@ const ProjectOrganizationsListPageComponent = (props) => {
         isRemoving={props.isRemoving}
         remove={props.remove}
         projectId={props.projectId}
+        isClosed={props.projectIsClosed}
       />
     </Fragment>
   );
@@ -50,7 +51,8 @@ const mapStateToProps = (state, ownProps) => ({
   list: state.projectOrganizations.listData,
   isListFetching: state.projectOrganizations.listFetching,
   isRemoving: state.projectOrganizations.listRemoving,
-  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
+  nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived,
+  projectIsClosed: state.appData.siteMap.parameters.projectIsClosed
 });
 
 const mapDispatchToProps = {
