@@ -40,7 +40,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     }
   }
 
-  const defaultOrgId = props.data && props.data.organizations && props.data.organizations[0].id.toString();
+  const defaultOrgId = props.data && props.data.organizations.some(o => o.isDefaultOrganization)
+    && props.data.organizations.filter(o => o.isDefaultOrganization)[0].id.toString()
 
   const form = useMemo(() => {
     const fields = {
