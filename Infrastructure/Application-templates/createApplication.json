@@ -169,7 +169,8 @@
           "cors": {
             "allowedOrigins": [
             ]
-          }
+          },
+          "use32BitWorkerProcess": false
         }
       },
       "resources": [
@@ -222,7 +223,8 @@
           "properties": {
             "siteConfig": {
               "appSettings": [
-              ]
+              ],
+              "use32BitWorkerProcess": false
             }
           },
           "resources": [
@@ -274,7 +276,8 @@
               "value": "[parameters('currentStack')]"
             }
           ],
-          "alwaysOn": "[parameters('alwaysOn')]"
+          "alwaysOn": "[parameters('alwaysOn')]",
+          "use32BitWorkerProcess": false
         },
         "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
         "hostingEnvironment": "[parameters('hostingEnvironment')]",
@@ -356,7 +359,8 @@
                 }
               ],
               "alwaysOn": "[parameters('alwaysOn')]",
-              "httpsOnly": true
+              "httpsOnly": true,
+              "use32BitWorkerProcess": false
             }
           },
           "resources": [
@@ -413,7 +417,8 @@
               "description": "Isolate traffic to only coming from subnet"
             }
           ],
-          "alwaysOn": "[parameters('alwaysOn')]"
+          "alwaysOn": "[parameters('alwaysOn')]",
+          "use32BitWorkerProcess": false
         },
         "httpsOnly": true
       },
@@ -453,7 +458,8 @@
         "httpsOnly": true,
         "redundancyMode": "None",
         "siteConfig": {
-          "alwaysOn": "[parameters('alwaysOn')]"
+          "alwaysOn": "[parameters('alwaysOn')]",
+          "use32BitWorkerProcess": false
         }
       },
       "resources": [
