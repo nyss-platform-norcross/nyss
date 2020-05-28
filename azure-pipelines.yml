@@ -9,10 +9,17 @@ variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk'
+  inputs:
+    packageType: sdk
+    version: 3.1.300
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
 - task: CmdLine@2
   displayName: 'Install gitversion'
   inputs:
-    script: 'brew install gitversion.portable'
+    script: 'brew install gitversion'
 
 - task: PowerShell@2
   displayName: 'GitVersion'
