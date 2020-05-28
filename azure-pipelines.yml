@@ -52,7 +52,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: 'src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" /p:Version=$(GitVersion.MajorMinorPatch)'
+    arguments: 'src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" /p:Version=$(GitVersion.MajorMinorPatch) --runtime win-x64 --self-contained false'
     zipAfterPublish: true
     modifyOutputPath: false
 
