@@ -172,7 +172,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             var acceptedReports = alert.Reports.Count(r => r.Status == ReportStatus.Accepted);
             var pendingReports = alert.Reports.Count(r => r.Status == ReportStatus.Pending);
-            var currentUserCanSeeEveryoneData = _authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator);
+            var currentUserCanSeeEveryoneData = _authorizationService.IsCurrentUserInAnyRole(Role.Administrator);
 
             var dto = new AlertAssessmentResponseDto
             {
