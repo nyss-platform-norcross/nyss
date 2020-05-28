@@ -108,7 +108,8 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
           dismissAlert={props.dismissAlert}
           isDismissing={props.isDismissing}
 
-          notificationRecipients={data.notificationRecipients}
+          notificationEmails={data.notificationEmails}
+          notificationPhoneNumbers={data.notificationPhoneNumbers}
         />
       </div>
     </Fragment>

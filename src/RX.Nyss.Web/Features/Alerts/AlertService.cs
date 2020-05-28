@@ -181,11 +181,8 @@ namespace RX.Nyss.Web.Features.Alerts
                 Comments = alert.Comments,
                 CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(alert.CreatedAt, projectTimeZone),
                 CaseDefinition = alert.CaseDefinition,
-                NotificationRecipients = alert.AlertRecipients.Select(ar => new AlertAssessmentResponseDto.AlertRecipientDto
-                {
-                    Email = ar.Email,
-                    PhoneNumber = ar.PhoneNumber
-                }),
+                NotificationEmails = alert.AlertRecipients.Select(ar => ar.Email).Distinct(),
+                NotificationPhoneNumbers = alert.AlertRecipients.Select(ar => ar.PhoneNumber).Distinct(),
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 CloseOption = alert.CloseOption,
                 Reports = alert.Reports.Select(ar => (currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id))
@@ -231,11 +228,12 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Single(),
                     Project = alert.ProjectHealthRisk.Project.Name,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationRecipients = alert.AlertReports.SelectMany(ar => ar.Report.DataCollector.Supervisor.SupervisorAlertRecipients.Select(sar => new
-                    {
-                        Email = sar.AlertNotificationRecipient.Email,
-                        PhoneNumber = sar.AlertNotificationRecipient.PhoneNumber
-                    })).ToList(),
+                    NotificationRecipients =
+                        alert.AlertReports.SelectMany(ar => ar.Report.DataCollector.Supervisor.SupervisorAlertRecipients.Select(sar => new
+                        {
+                            Email = sar.AlertNotificationRecipient.Email,
+                            PhoneNumber = sar.AlertNotificationRecipient.PhoneNumber
+                        })).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
                     AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted),
                     NationalSocietyId = alert.ProjectHealthRisk.Project.NationalSociety.Id
@@ -489,7 +487,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(a => a.Id == alertId
                     && (currentUser.Role == Role.Administrator
                         || a.AlertReports.Any(ar => currentUserOrgs.Contains(ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value))
-                )).AnyAsync();
+                    )).AnyAsync();
 
             return organizationHasReportsInAlert;
         }
