@@ -40,7 +40,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Updates a region to National Society's structure
         /// </summary>
         [Route("region/{regionId}/edit"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.RegionAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.RegionWriteAccess)]
         public async Task<Result> EditRegion(int regionId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.EditRegion(regionId, dto.Name);
 
@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Deletes a region from the National Society's structure
         /// </summary>
         [Route("region/{regionId}/delete"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.RegionAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.RegionWriteAccess)]
         public async Task<Result> DeleteRegion(int regionId) =>
             await _nationalSocietyStructureService.DeleteRegion(regionId);
 
@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Create a district to National Society's structure
         /// </summary>
         [Route("region/{regionId:int}/district/create"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.RegionAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.RegionWriteAccess)]
         public async Task<Result<StructureResponseDto.StructureDistrictDto>> CreateDistrict(int regionId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.CreateDistrict(regionId, dto.Name);
 
@@ -65,7 +65,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Updates a district to National Society's structure
         /// </summary>
         [Route("district/{districtId}/edit"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.DistrictAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.DistrictWriteAccess)]
         public async Task<Result> EditDistrict(int districtId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.EditDistrict(districtId, dto.Name);
 
@@ -73,7 +73,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Deletes a district from the National Society's structure
         /// </summary>
         [Route("district/{districtId}/delete"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.DistrictAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.DistrictWriteAccess)]
         public async Task<Result> DeleteDistrict(int districtId) =>
             await _nationalSocietyStructureService.DeleteDistrict(districtId);
 
@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Create a village to National Society's structure
         /// </summary>
         [Route("district/{districtId:int}/village/create"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.DistrictAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.DistrictWriteAccess)]
         public async Task<Result<StructureResponseDto.StructureVillageDto>> CreateVillage(int districtId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.CreateVillage(districtId, dto.Name);
 
@@ -90,7 +90,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Updates a village to National Society's structure
         /// </summary>
         [Route("village/{villageId}/edit"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.VillageAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.VillageWriteAccess)]
         public async Task<Result> EditVillage(int villageId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.EditVillage(villageId, dto.Name);
 
@@ -98,7 +98,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Deletes a village from the National Society's structure
         /// </summary>
         [Route("village/{villageId}/delete"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.VillageAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.VillageWriteAccess)]
         public async Task<Result> DeleteVillage(int villageId) =>
             await _nationalSocietyStructureService.DeleteVillage(villageId);
 
@@ -107,7 +107,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Create a zone to National Society's structure
         /// </summary>
         [Route("zone/create"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.VillageAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.VillageWriteAccess)]
         public async Task<Result<StructureResponseDto.StructureZoneDto>> CreateZone(int villageId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.CreateZone(villageId, dto.Name);
 
@@ -116,7 +116,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Updates a zone to National Society's structure
         /// </summary>
         [Route("zone/{zoneId}/edit"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ZoneAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ZoneWriteAccess)]
         public async Task<Result> EditZone(int zoneId, [FromBody] StructureEntryRequestDto dto) =>
             await _nationalSocietyStructureService.EditZone(zoneId, dto.Name);
 
@@ -124,7 +124,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Deletes a zone from the National Society's structure
         /// </summary>
         [Route("zone/{zoneId}/delete"), HttpPost]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ZoneAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.ZoneWriteAccess)]
         public async Task<Result> DeleteZone(int zoneId) =>
             await _nationalSocietyStructureService.DeleteZone(zoneId);
 

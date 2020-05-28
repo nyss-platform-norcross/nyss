@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Features.DataConsumers.Access
             _nationalSocietyAccessService = nationalSocietyAccessService;
         }
 
-        protected override Task<bool> HasAccess(int dataConsumerId) =>
+        protected override Task<bool> HasAccess(int dataConsumerId, bool readOnly) =>
             _nationalSocietyAccessService.HasCurrentUserAccessToAnyNationalSocietiesOfGivenUser(dataConsumerId);
     }
 }

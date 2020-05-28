@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Features.Reports.Access
             _reportAccessService = reportAccessService;
         }
 
-        protected override Task<bool> HasAccess(int reportId) =>
+        protected override Task<bool> HasAccess(int reportId, bool readOnly) =>
             _reportAccessService.HasCurrentUserAccessToReport(reportId);
     }
 }

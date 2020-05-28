@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.Organizations.Access
             _organizationAccessService = organizationAccessService;
         }
 
-        protected override Task<bool> HasAccess(int organizationId) =>
+        protected override Task<bool> HasAccess(int organizationId, bool readOnly) =>
             _organizationAccessService.HasCurrentUserAccessToOrganization(organizationId);
     }
 }

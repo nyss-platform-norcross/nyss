@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.Managers.Access
             _managerAccessService = managerAccessService;
         }
 
-        protected override Task<bool> HasAccess(int managerId) =>
+        protected override Task<bool> HasAccess(int managerId, bool readOnly) =>
             _managerAccessService.HasCurrentUserAccessToManager(managerId);
     }
 }

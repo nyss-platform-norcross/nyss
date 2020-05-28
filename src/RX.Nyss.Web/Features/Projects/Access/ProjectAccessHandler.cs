@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.Projects.Access
             _projectAccessService = projectAccessService;
         }
 
-        protected override Task<bool> HasAccess(int projectId) =>
+        protected override Task<bool> HasAccess(int projectId, bool readOnly) =>
             _projectAccessService.HasCurrentUserAccessToProject(projectId);
     }
 }
