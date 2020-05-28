@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
                 RuleFor(m => m.Email).NotEmpty().MaximumLength(100).EmailAddress();
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
-                RuleFor(s => s.SupervisorAlertRecipients).NotEmpty();
+                RuleFor(s => s.SupervisorAlertRecipients).NotNull();
                 RuleFor(p => p.ProjectId)
                     .MustAsync((projectId, _) => projectAccessService.HasCurrentUserAccessToProject(projectId.Value))
                     .When(m => m.ProjectId.HasValue)

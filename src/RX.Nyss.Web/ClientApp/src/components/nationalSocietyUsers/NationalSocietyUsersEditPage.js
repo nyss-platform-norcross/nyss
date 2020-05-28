@@ -127,7 +127,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       if (alertRecipientsFieldError !== null) {
         return;
       }
-      if (!alertRecipientsFieldTouched) {
+      if (!alertRecipientsFieldTouched && selectedAlertRecipients.length === 0) {
         setAlertRecipientsFieldError("Value is reqired");
         return;
       }
