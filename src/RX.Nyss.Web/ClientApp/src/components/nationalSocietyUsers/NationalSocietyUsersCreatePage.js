@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useMemo, useCallback } from 'react';
+import React, { useState, Fragment, useMemo } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -20,20 +20,28 @@ import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import { MultiSelect } from '../forms/MultiSelect';
+import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 
 const NationalSocietyUsersCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
-  const [role, setRole] = useState(null);
+  const [selectedRole, setRole] = useState(null);
   const [alertRecipientsDataSource, setAlertRecipientsDataSource] = useState([]);
   const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
   const [alertRecipientsFieldTouched, setAlertRecipientsFieldTouched] = useState(false);
   const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
+  const [confirmCoordinatorDialog, setConfirmCoordinatorDialog] = useState({
+    isOpened: false,
+    isConfirmed: false
+  });
 
   const canChangeOrganization = () => {
-    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) && role !== roles.DataConsumer) {
+    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) && selectedRole !== roles.DataConsumer) {
       return true;
     }
   }
+
+  const defaultOrgId = props.data && props.data.organizations.some(o => o.isDefaultOrganization)
+    && props.data.organizations.filter(o => o.isDefaultOrganization)[0].id.toString()
 
   const form = useMemo(() => {
     const fields = {
@@ -47,7 +55,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       decadeOfBirth: "",
       projectId: "",
       sex: "",
-      organizationId: ""
+      organizationId: defaultOrgId
     };
 
     const validation = {
@@ -68,7 +76,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.nationalSocietyId]);
+  }, [props.nationalSocietyId, defaultOrgId]);
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
@@ -118,7 +126,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       return;
     };
 
-    if (role === roles.Supervisor) {
+    if (selectedRole === roles.Supervisor) {
       if (alertRecipientsFieldError !== null) {
         return;
       }
@@ -128,17 +136,25 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       }
     }
 
-    const values = form.getValues();
+    if (selectedRole === roles.Coordinator && !props.data.hasCoordinator && confirmCoordinatorDialog.isConfirmed === false) {
+      setConfirmCoordinatorDialog({ ...confirmCoordinatorDialog, isOpened: true });
+      return;
+    }
 
+    createUser(form, props, canChangeOrganization, setSupervisorAlertRecipients);
+  };
+
+  const createUser = () => {
+    const values = form.getValues();
     props.create(props.nationalSocietyId, {
       ...values,
-      organizationId: values.organizationId ? parseInt(values.organizationId) : null,
+      organizationId: (canChangeOrganization() && values.organizationId) ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
       setAsHeadManager: props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.GlobalCoordinator) ? true : null,
       supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
     });
-  };
+  }
 
   const isCoordinator = () =>
     props.callingUserRoles.some(r => r === roles.Coordinator);
@@ -171,6 +187,11 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   }
 
   const availableUserRoles = getAvailableUserRoles();
+
+  const confirmCoordinatorCreation = () => {
+    setConfirmCoordinatorDialog({ ...confirmCoordinatorDialog, isConfirmed: true, isOpened: false });
+    createUser();
+  }
 
   return (
     <Fragment>
@@ -226,14 +247,15 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
               field={form.fields.additionalPhoneNumber}
             />
           </Grid>
-
-
-          {canChangeOrganization() && (
+          {((canChangeOrganization() || (selectedRole === roles.Coordinator && isGlobalCoordinator())) &&
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.organization)}
                 field={form.fields.organizationId}
                 name="organizationId"
+                customProps={{
+                  disabled: selectedRole === roles.Coordinator && isGlobalCoordinator()
+                }}
               >
                 {props.data.organizations.map(organization => (
                   <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
@@ -243,7 +265,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
               </SelectField>
             </Grid>
           )}
-
           <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.nationalSocietyUser.form.customOrganization)}
@@ -252,66 +273,59 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
             />
           </Grid>
 
-          {role === roles.Supervisor && (
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
-                field={form.fields.decadeOfBirth}
-                name="decadeOfBirth"
-              >
-                {birthDecades.map(decade => (
-                  <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                    {decade}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          )}
-
-          {role === roles.Supervisor && (
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.sex)}
-                field={form.fields.sex}
-                name="sex"
-              >
-                {sexValues.map(type => (
-                  <MenuItem key={`sex${type}`} value={type}>
-                    {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          )}
-
-          {role === roles.Supervisor && (
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.project)}
-                field={form.fields.projectId}
-                name="projectId"
-                onChange={e => onProjectChange(e.target.value)}
-              >
-                {props.data.projects.map(project => (
-                  <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
-                    {project.name}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          )}
-
-          {role === roles.Supervisor && (
-            <Grid item xs={12}>
-              <MultiSelect
-                label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
-                options={alertRecipientsDataSource}
+          {selectedRole === roles.Supervisor && (
+            <Fragment>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
+                  field={form.fields.decadeOfBirth}
+                  name="decadeOfBirth"
+                >
+                  {birthDecades.map(decade => (
+                    <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                      {decade}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.sex)}
+                  field={form.fields.sex}
+                  name="sex"
+                >
+                  {sexValues.map(type => (
+                    <MenuItem key={`sex${type}`} value={type}>
+                      {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.project)}
+                  field={form.fields.projectId}
+                  name="projectId"
+                  onChange={e => onProjectChange(e.target.value)}
+                >
+                  {props.data.projects.map(project => (
+                    <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
+                      {project.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+              <Grid item xs={12}>
+                <MultiSelect
+                  label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
+                  options={alertRecipientsDataSource}
                 value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
-                onChange={onAlertRecipientsChange}
-                onBlur={e => setAlertRecipientsFieldTouched(true)}
-                error={alertRecipientsFieldError}
-              />
-            </Grid>
+                  onChange={onAlertRecipientsChange}
+                  onBlur={e => setAlertRecipientsFieldTouched(true)}
+                  error={alertRecipientsFieldError}
+                />
+              </Grid>
+            </Fragment>
           )}
         </Grid>
 
@@ -320,6 +334,14 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.create)}</SubmitButton>
         </FormActions>
       </Form>
+
+      <ConfirmationDialog
+        isOpened={confirmCoordinatorDialog.isOpened}
+        titleText={strings(stringKeys.nationalSocietyUser.form.confirmCoordinatorCreation)}
+        submit={() => confirmCoordinatorCreation(handleSubmit)}
+        close={() => setConfirmCoordinatorDialog({ ...confirmCoordinatorDialog, isOpened: false })}
+        contentText={strings(stringKeys.nationalSocietyUser.form.confirmCoordinatorCreationText)}
+      />
     </Fragment>
   );
 }

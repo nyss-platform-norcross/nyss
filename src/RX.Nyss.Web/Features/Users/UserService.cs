@@ -101,7 +101,8 @@ namespace RX.Nyss.Web.Features.Users
                     Organizations = ns.Organizations.Select(o => new OrganizationsDto
                     {
                         Id = o.Id,
-                        Name = o.Name
+                        Name = o.Name,
+                        IsDefaultOrganization = o == ns.DefaultOrganization
                     }).ToList(),
                     HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
                     IsHeadManager = ns.DefaultOrganization.HeadManager == currentUser
