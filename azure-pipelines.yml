@@ -19,13 +19,13 @@ steps:
 - task: CmdLine@2
   displayName: 'Install gitversion'
   inputs:
-    script: 'brew install gitversion'
+    script: 'dotnet tool install --global GitVersion.Tool --version 5.3.4'
 
 - task: PowerShell@2
   displayName: 'GitVersion'
   inputs:
     targetType: 'inline'
-    script: 'gitversion /l console /output buildserver /updateAssemblyInfo'
+    script: 'dotnet gitversion /l console /output buildserver /updateAssemblyInfo'
 
 - task: DotNetCoreCLI@2
   displayName: 'Run unit tests'
