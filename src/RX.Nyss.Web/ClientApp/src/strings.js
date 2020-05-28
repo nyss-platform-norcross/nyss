@@ -519,6 +519,8 @@ export const stringKeys = {
       projectIsClosed: "nationalSocietyUser.form.projectIsClosed",
       update: "nationalSocietyUser.form.update",
       alertRecipients: "nationalSocietyUser.form.alertRecipients",
+      alertRecipientsAllNotAllowed: "nationalSocietyUser.form.alertRecipientsAllNotAllowed",
+      alertRecipientsAll: "nationalSocietyUser.form.alertRecipientsAll",
       confirmCoordinatorCreation: "nationalSocietyUser.form.confirmCoordinatorCreation",
       confirmCoordinatorCreationText: "nationalSocietyUser.form.confirmCoordinatorCreationText"
     },

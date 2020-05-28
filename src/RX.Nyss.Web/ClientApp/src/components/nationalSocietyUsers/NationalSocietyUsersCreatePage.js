@@ -27,7 +27,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const [selectedRole, setRole] = useState(null);
   const [alertRecipientsDataSource, setAlertRecipientsDataSource] = useState([]);
   const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
-  const [alertRecipientsFieldTouched, setAlertRecipientsFieldTouched] = useState(false);
   const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
   const [confirmCoordinatorDialog, setConfirmCoordinatorDialog] = useState({
     isOpened: false,
@@ -84,7 +83,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
   const onProjectChange = (projectId) => {
     const project = props.data.projects.filter(p => p.id === parseInt(projectId))[0];
-    const newAlertRecipientsDataSource = [{ label: 'All recipients', value: 0, data: { id: 0 } }, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
+    const newAlertRecipientsDataSource = [{ label: strings(stringKeys.nationalSocietyUser.form.alertRecipientsAll), value: 0, data: { id: 0 }}, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
     setAlertRecipientsDataSource(newAlertRecipientsDataSource);
     setSelectedAlertRecipients([]);
   }
@@ -103,9 +102,9 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
     const allRecipientsChosen = newAlertRecipients.filter(ar => ar.id === 0).length > 0;
     if (newAlertRecipients.length === 0) {
-      setAlertRecipientsFieldError('Field is required');
+      setAlertRecipientsFieldError(strings(stringKeys.validation.fieldRequired));
     } else if (allRecipientsChosen && newAlertRecipients.length > 1) {
-      setAlertRecipientsFieldError('"All recipients" cannot be selected in addition to other recipients');
+      setAlertRecipientsFieldError(strings(stringKeys.nationalSocietyUser.form.alertRecipientsAllNotAllowed));
     } else {
       setAlertRecipientsFieldError(null);
     }
@@ -130,8 +129,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       if (alertRecipientsFieldError !== null) {
         return;
       }
-      if (!alertRecipientsFieldTouched) {
-        setAlertRecipientsFieldError("Value is reqired");
+      if (selectedAlertRecipients.length === 0) {
+        setAlertRecipientsFieldError(strings(stringKeys.validation.fieldRequired));
         return;
       }
     }
@@ -321,7 +320,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                   options={alertRecipientsDataSource}
                 value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
                   onChange={onAlertRecipientsChange}
-                  onBlur={e => setAlertRecipientsFieldTouched(true)}
                   error={alertRecipientsFieldError}
                 />
               </Grid>
