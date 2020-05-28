@@ -118,7 +118,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
   const setSupervisorAlertRecipients = useCallback(role => {
     if (role !== roles.Supervisor) {
       return null;
-    }
+  }
 
     return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
   }, [alertRecipientsDataSource, selectedAlertRecipients]);
@@ -202,13 +202,15 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Grid>
           )}
 
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.nationalSocietyUser.form.customOrganization)}
-              name="organization"
-              field={form.fields.organization}
-            />
-          </Grid>
+          {selectedRole !== roles.Coordinator && (
+            <Grid item xs={12}>
+              <TextInputField
+                label={strings(stringKeys.nationalSocietyUser.form.customOrganization)}
+                name="organization"
+                field={form.fields.organization}
+              />
+            </Grid>
+          )}
 
           {selectedRole === roles.Supervisor && (
             <Grid item xs={12}>

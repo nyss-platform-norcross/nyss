@@ -170,7 +170,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const availableUserRoles = useMemo(() => {
     if (!props.data) {
       return [];
-    }
+  }
 
     if (props.callingUserRoles.some(r => r === roles.Administrator)) {
       return headManagerRoles;
@@ -272,65 +272,67 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
               </SelectField>
             </Grid>
           )}
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.nationalSocietyUser.form.customOrganization)}
-              name="organization"
-              field={form.fields.organization}
-            />
-          </Grid>
+          {selectedRole !== roles.Coordinator && (
+            <Grid item xs={12}>
+              <TextInputField
+                label={strings(stringKeys.nationalSocietyUser.form.customOrganization)}
+                name="organization"
+                field={form.fields.organization}
+              />
+            </Grid>
+          )}
 
           {selectedRole === roles.Supervisor && (
             <Fragment>
-              <Grid item xs={12}>
-                <SelectField
-                  label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
-                  field={form.fields.decadeOfBirth}
-                  name="decadeOfBirth"
-                >
-                  {birthDecades.map(decade => (
-                    <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                      {decade}
-                    </MenuItem>
-                  ))}
-                </SelectField>
-              </Grid>
-              <Grid item xs={12}>
-                <SelectField
-                  label={strings(stringKeys.nationalSocietyUser.form.sex)}
-                  field={form.fields.sex}
-                  name="sex"
-                >
-                  {sexValues.map(type => (
-                    <MenuItem key={`sex${type}`} value={type}>
-                      {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
-                    </MenuItem>
-                  ))}
-                </SelectField>
-              </Grid>
-              <Grid item xs={12}>
-                <SelectField
-                  label={strings(stringKeys.nationalSocietyUser.form.project)}
-                  field={form.fields.projectId}
-                  name="projectId"
-                  onChange={e => onProjectChange(e.target.value)}
-                >
-                  {props.data.projects.map(project => (
-                    <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
-                      {project.name}
-                    </MenuItem>
-                  ))}
-                </SelectField>
-              </Grid>
-              <Grid item xs={12}>
-                <MultiSelect
-                  label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
-                  options={alertRecipientsDataSource}
-                  value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
-                  onChange={onAlertRecipientsChange}
-                  error={alertRecipientsFieldError}
-                />
-              </Grid>
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
+                field={form.fields.decadeOfBirth}
+                name="decadeOfBirth"
+              >
+                {birthDecades.map(decade => (
+                  <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                    {decade}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.sex)}
+                field={form.fields.sex}
+                name="sex"
+              >
+                {sexValues.map(type => (
+                  <MenuItem key={`sex${type}`} value={type}>
+                    {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.project)}
+                field={form.fields.projectId}
+                name="projectId"
+                onChange={e => onProjectChange(e.target.value)}
+              >
+                {props.data.projects.map(project => (
+                  <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
+                    {project.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+            <Grid item xs={12}>
+              <MultiSelect
+                label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
+                options={alertRecipientsDataSource}
+                value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
+                onChange={onAlertRecipientsChange}
+                error={alertRecipientsFieldError}
+              />
+            </Grid>
             </Fragment>
           )}
         </Grid>
