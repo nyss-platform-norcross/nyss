@@ -154,7 +154,8 @@ namespace RX.Nyss.Web.Features.Supervisors
                 {
                     Id = supervisor.CurrentProject.Id,
                     Name = supervisor.CurrentProject.Name,
-                    IsClosed = supervisor.CurrentProject.IsClosed
+                    IsClosed = supervisor.CurrentProject.IsClosed,
+                    AlertRecipients = supervisor.CurrentProject.AlertRecipients
                 });
             }
 
