@@ -203,17 +203,29 @@ namespace RX.Nyss.Web.Configuration
                 options.AddPolicy(Policy.HeadManagerAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<HeadManagerAccessHandler>.Requirement()));
 
-                options.AddPolicy(Policy.RegionAccess.ToString(),
+                options.AddPolicy(Policy.RegionWriteAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<RegionAccessHandler>.Requirement()));
 
-                options.AddPolicy(Policy.DistrictAccess.ToString(),
+                options.AddPolicy(Policy.RegionAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<RegionAccessHandler>.Requirement(readOnly: true)));
+
+                options.AddPolicy(Policy.DistrictWriteAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<DistrictAccessHandler>.Requirement()));
 
-                options.AddPolicy(Policy.VillageAccess.ToString(),
+                options.AddPolicy(Policy.DistrictAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<DistrictAccessHandler>.Requirement(readOnly: true)));
+
+                options.AddPolicy(Policy.VillageWriteAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<VillageAccessHandler>.Requirement()));
 
-                options.AddPolicy(Policy.ZoneAccess.ToString(),
+                options.AddPolicy(Policy.VillageAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<VillageAccessHandler>.Requirement(readOnly: true)));
+
+                options.AddPolicy(Policy.ZoneWriteAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<ZoneAccessHandler>.Requirement()));
+
+                options.AddPolicy(Policy.ZoneAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<ZoneAccessHandler>.Requirement(readOnly: true)));
 
                 options.AddPolicy(Policy.AlertAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<AlertAccessHandler>.Requirement()));

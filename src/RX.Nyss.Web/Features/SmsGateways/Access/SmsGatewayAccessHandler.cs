@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.SmsGateways.Access
             _smsGatewayAccessService = smsGatewayAccessService;
         }
 
-        protected override Task<bool> HasAccess(int smsGatewayId) =>
+        protected override Task<bool> HasAccess(int smsGatewayId, bool readOnly) =>
             _smsGatewayAccessService.HasCurrentUserAccessToSmsGateway(smsGatewayId);
     }
 }

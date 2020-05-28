@@ -1,4 +1,3 @@
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -22,16 +21,22 @@ namespace RX.Nyss.Web.Utils
         {
             var entityId = _httpContextAccessor.GetResourceParameter(_routeParameterName);
 
-            if (entityId.HasValue && await HasAccess(entityId.Value))
+            if (entityId.HasValue && await HasAccess(entityId.Value, requirement.ReadOnly))
             {
                 context.Succeed(requirement);
             }
         }
 
-        protected abstract Task<bool> HasAccess(int entityId);
+        protected abstract Task<bool> HasAccess(int entityId, bool readOnly);
 
         public class Requirement : IAuthorizationRequirement
         {
+            public bool ReadOnly { get; }
+
+            public Requirement(bool readOnly = false)
+            {
+                ReadOnly = readOnly;
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Features.Users.Access
             _nationalSocietyAccessService = nationalSocietyAccessService;
         }
 
-        protected override Task<bool> HasAccess(int organizationId) =>
+        protected override Task<bool> HasAccess(int organizationId, bool readOnly) =>
             _nationalSocietyAccessService.HasCurrentUserAccessAsHeadManager(organizationId);
     }
 }

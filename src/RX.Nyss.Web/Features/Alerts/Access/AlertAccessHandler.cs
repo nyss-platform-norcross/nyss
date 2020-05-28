@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.Alerts.Access
             _alertAccessService = alertAccessService;
         }
 
-        protected override Task<bool> HasAccess(int alertId) =>
+        protected override Task<bool> HasAccess(int alertId, bool readOnly) =>
             _alertAccessService.HasCurrentUserAccessToAlert(alertId);
     }
 }

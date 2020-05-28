@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Features.Supervisors.Access
             _nationalSocietyAccessService = nationalSocietyAccessService;
         }
 
-        protected override Task<bool> HasAccess(int supervisorId) =>
+        protected override Task<bool> HasAccess(int supervisorId, bool readOnly) =>
             _nationalSocietyAccessService.HasCurrentUserAccessToAnyNationalSocietiesOfGivenUser(supervisorId);
     }
 }
