@@ -2,7 +2,7 @@ trigger:
 - master
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'ubuntu-latest'
 
 variables:
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
@@ -12,7 +12,7 @@ steps:
 - task: CmdLine@2
   displayName: 'Install gitversion'
   inputs:
-    script: 'dotnet tool install --global GitVersion.Tool --version 5.1.3-beta1.2'
+    script: 'dotnet tool install --global GitVersion.Tool --version 5.3.4'
 
 - task: PowerShell@2
   displayName: 'GitVersion'
