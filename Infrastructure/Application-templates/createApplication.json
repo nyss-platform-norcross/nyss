@@ -170,7 +170,7 @@
             "allowedOrigins": [
             ]
           },
-          "use32BitWorkerProcess": false
+          "use32BitWorkerProcess": true
         }
       },
       "resources": [
@@ -224,7 +224,7 @@
             "siteConfig": {
               "appSettings": [
               ],
-              "use32BitWorkerProcess": false
+              "use32BitWorkerProcess": true
             }
           },
           "resources": [
@@ -277,7 +277,7 @@
             }
           ],
           "alwaysOn": "[parameters('alwaysOn')]",
-          "use32BitWorkerProcess": false
+          "use32BitWorkerProcess": true
         },
         "serverFarmId": "[concat('/subscriptions/', variables('subscriptionId'),'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', variables('standardPlanName'))]",
         "hostingEnvironment": "[parameters('hostingEnvironment')]",
@@ -360,7 +360,7 @@
               ],
               "alwaysOn": "[parameters('alwaysOn')]",
               "httpsOnly": true,
-              "use32BitWorkerProcess": false
+              "use32BitWorkerProcess": true
             }
           },
           "resources": [
@@ -418,7 +418,7 @@
             }
           ],
           "alwaysOn": "[parameters('alwaysOn')]",
-          "use32BitWorkerProcess": false
+          "use32BitWorkerProcess": true
         },
         "httpsOnly": true
       },
@@ -459,7 +459,7 @@
         "redundancyMode": "None",
         "siteConfig": {
           "alwaysOn": "[parameters('alwaysOn')]",
-          "use32BitWorkerProcess": false
+          "use32BitWorkerProcess": true
         }
       },
       "resources": [
