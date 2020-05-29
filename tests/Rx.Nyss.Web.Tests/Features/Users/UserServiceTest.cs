@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
@@ -30,7 +29,6 @@ namespace RX.Nyss.Web.Tests.Features.Users
             _authorizationService = Substitute.For<IAuthorizationService>();
             _userService = new UserService(_nyssContext, _authorizationService);
             ArrangeNationalSocieties();
-
         }
 
         private void ArrangeNationalSocieties()
@@ -60,6 +58,8 @@ namespace RX.Nyss.Web.Tests.Features.Users
             SetupNationalSocietiesFrom(nationalSocieties);
             SetupOrgsFrom(organizations);
             ArrangeUsers(nationalSocieties, organizations);
+
+            _authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor).Returns(true);
         }
 
         private void SetupNationalSocietiesFrom(List<NationalSociety> nationalSocieties)

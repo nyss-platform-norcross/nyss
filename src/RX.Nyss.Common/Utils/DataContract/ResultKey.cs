@@ -37,6 +37,7 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string CannotCreateUsersInArchivedNationalSociety = "user.registration.cannotCreateUsersInArchivedNationalSociety";
                 public const string CannotAddExistingUsersToArchivedNationalSociety = "user.registration.cannotAddExistingUsersToArchivedNationalSociety";
                 public const string NoAssignableUserWithThisEmailFound = "user.registration.noAssignableUserWithThisEmailFound";
+                public const string TechnicalAdvisorsCanBeAttachedOnlyByManagers = "user.registration.technicalAdvisorsCanBeAttachedOnlyByManagers";
                 public const string UserIsNotAssignedToThisNationalSociety = "user.registration.userIsNotAssignedToThisNationalSociety";
                 public const string UserIsAlreadyInThisNationalSociety = "user.registration.userIsAlreadyInThisNationalSociety";
                 public const string UnknownError = "user.registration.unknownError";
