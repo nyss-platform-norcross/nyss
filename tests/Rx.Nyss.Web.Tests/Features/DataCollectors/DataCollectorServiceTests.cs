@@ -41,6 +41,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const int VillageId = 1;
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
+        private List<NationalSociety> _nationalSocieties;
 
         public DataCollectorServiceTests()
         {
@@ -50,13 +51,20 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
             var httpContextAccessorMock = Substitute.For<IHttpContextAccessor>();
             httpContextAccessorMock.HttpContext.User.Identity.Name.Returns(SupervisorEmail);
-            var authorizationService = new AuthorizationService(httpContextAccessorMock, _nyssContextMock);
+            var authorizationService = Substitute.For<IAuthorizationService>();
 
             dateTimeProvider.UtcNow.Returns(DateTime.UtcNow);
             _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider, authorizationService);
 
             // Arrange
-            var nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = NationalSocietyId } };
+            _nationalSocieties = new List<NationalSociety>
+            {
+                new NationalSociety
+                {
+                    Id = NationalSocietyId
+                }
+            };
+
             var users = new List<User>
             {
                 new SupervisorUser
@@ -70,22 +78,23 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             {
                 new UserNationalSociety
                 {
-                    NationalSociety = nationalSocieties[0],
+                    NationalSociety = _nationalSocieties[0],
                     User = users[0],
                     UserId = SupervisorId,
                     NationalSocietyId = NationalSocietyId,
-                    OrganizationId = 1
+                    OrganizationId = 1,
+                    Organization = new Organization()
                 }
             };
 
-            nationalSocieties[0].NationalSocietyUsers = usersNationalSocieties;
+            _nationalSocieties[0].NationalSocietyUsers = usersNationalSocieties;
 
             var projects = new List<Project>
             {
                 new Project
                 {
                     Id = ProjectId,
-                    NationalSociety = nationalSocieties[0],
+                    NationalSociety = _nationalSocieties[0],
                     NationalSocietyId = NationalSocietyId
                 }
             };
@@ -104,7 +113,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 new Region
                 {
                     Id = RegionId,
-                    NationalSociety = nationalSocieties[0],
+                    NationalSociety = _nationalSocieties[0],
                     Name = "Layuna"
                 }
             };
@@ -183,7 +192,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 rawReports[1]
             };
 
-            var nationalSocietyMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
+            var nationalSocietyMockDbSet = _nationalSocieties.AsQueryable().BuildMockDbSet();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesMockDbSet = usersNationalSocieties.AsQueryable().BuildMockDbSet();
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
@@ -217,6 +226,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             nationalSocietyStructureService.ListDistricts(DistrictId).Returns(Success(new List<DistrictResponseDto>()));
             nationalSocietyStructureService.ListVillages(VillageId).Returns(Success(new List<VillageResponseDto>()));
             nationalSocietyStructureService.ListZones(Arg.Any<int>()).Returns(Success(new List<ZoneResponseDto>()));
+
+            authorizationService.GetCurrentUserAsync().Returns(Task.FromResult((User)new AdministratorUser()));
         }
 
         [Theory]
@@ -462,8 +473,13 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 new DataCollector
                 {
                     PhoneNumber = phoneNumber,
-                    Project = new Project { Id = ProjectId },
-                    RawReports = reports
+                    Project = new Project
+                    {
+                        Id = ProjectId,
+                        NationalSociety = _nationalSocieties[0]
+                    },
+                    RawReports = reports,
+                    Supervisor = new SupervisorUser()
                 }
             };
             var dataCollectorsMockDbSet = dataCollectors.AsQueryable().BuildMockDbSet();

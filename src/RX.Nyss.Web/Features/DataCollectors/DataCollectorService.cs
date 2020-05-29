@@ -508,6 +508,15 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
                 : _nyssContext.DataCollectors;
 
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+
+            var currentOrganizationId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
+                .Where(uns => uns.User == currentUser)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
+
             var result = await dataCollectors
                 .Where(dc => dc.Location.X == lng && dc.Location.Y == lat && dc.Name != Anonymization.Text && dc.DeletedAt == null)
                 .Where(dc => dc.Project.Id == projectId)
@@ -519,6 +528,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .Select(dc => new MapOverviewDataCollectorResponseDto
                 {
+                    IsAnonymized = currentUser.Role != Role.Administrator && !dc.DataCollector.Project.NationalSociety.NationalSocietyUsers.Any(
+                        nsu => nsu.UserId == dc.DataCollector.Supervisor.Id && nsu.OrganizationId == currentOrganizationId),
+                    OrganizationName = dc.DataCollector.Project.NationalSociety.NationalSocietyUsers
+                        .Where(nsu => nsu.UserId == dc.DataCollector.Supervisor.Id)
+                        .Select(nsu => nsu.Organization.Name)
+                        .FirstOrDefault(),
                     Id = dc.DataCollector.Id,
                     DisplayName = dc.DataCollector.DataCollectorType == DataCollectorType.Human
                         ? dc.DataCollector.DisplayName
@@ -529,6 +544,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .ToListAsync();
 
+            result.Where(dc => dc.IsAnonymized).ToList()
+                .ForEach(dc => dc.DisplayName = dc.OrganizationName);
 
             return Success(result);
         }
@@ -549,19 +566,32 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId)
         {
-            var userIdentityName = _authorizationService.GetCurrentUserName();
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
 
             var dataCollectors = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
-                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
+                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor == currentUser)
                 : _nyssContext.DataCollectors;
 
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
 
+            var currentOrganizationId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
+                .Where(uns => uns.User == currentUser)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
+
             var dataCollectorsWithReports = await dataCollectors
                 .Where(dc => dc.Project.Id == projectId && dc.DeletedAt == null)
                 .Select(dc => new
                 {
+                    IsAnonymized = currentUser.Role != Role.Administrator && !dc.Project.NationalSociety.NationalSocietyUsers.Any(
+                        nsu => nsu.UserId == dc.Supervisor.Id && nsu.OrganizationId == currentOrganizationId),
+                    OrganizationName = dc.Project.NationalSociety.NationalSocietyUsers
+                        .Where(nsu => nsu.UserId == dc.Supervisor.Id)
+                        .Select(nsu => nsu.Organization.Name)
+                        .FirstOrDefault(),
                     DataCollectorName = dc.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
                             && r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
@@ -573,9 +603,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .ToListAsync();
 
+
             var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
                 {
-                    r.DataCollectorName,
+                    DataCollectorName = r.IsAnonymized ? r.OrganizationName : r.DataCollectorName,
                     ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(r => (int)(to - r.ReceivedAt).TotalDays / 7)
                 })
                 .Select(dc => new DataCollectorPerformanceResponseDto
