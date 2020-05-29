@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
+using EFCore.BulkExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
@@ -158,6 +160,8 @@ namespace RX.Nyss.Web.Features.Managers
 
                 await DeleteFromDb(managerId, canDeleteHeadManager);
 
+                await AnonymizeManagerWithAlertReferences(managerId);
+
                 await _nyssContext.SaveChangesAsync();
 
                 transactionScope.Complete();
@@ -224,7 +228,7 @@ namespace RX.Nyss.Web.Features.Managers
             }
             else
             {
-                var currentUser = _authorizationService.GetCurrentUser();
+                var currentUser = await _authorizationService.GetCurrentUserAsync();
 
                 userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
@@ -266,7 +270,6 @@ namespace RX.Nyss.Web.Features.Managers
 
             await HandleHeadManagerStatus(manager, allowHeadManagerDeletion);
 
-            _nationalSocietyUserService.DeleteNationalSocietyUser(manager);
             await _identityUserRegistrationService.DeleteIdentityUser(manager.IdentityUserId);
         }
 
@@ -309,6 +312,22 @@ namespace RX.Nyss.Web.Features.Managers
 
                 organization.HeadManager = null;
             }
+        }
+
+        private async Task AnonymizeManagerWithAlertReferences(int managerId)
+        {
+            var managerUser = await _nyssContext.Users
+                .Include(u => u.UserNationalSocieties)
+                .ThenInclude(uns => uns.Organization)
+                .Where(u => u.Id == managerId)
+                .SingleOrDefaultAsync();
+
+            managerUser.IdentityUserId = null;
+            managerUser.EmailAddress = Anonymization.Text;
+            managerUser.PhoneNumber = Anonymization.Text;
+            managerUser.AdditionalPhoneNumber = Anonymization.Text;
+            managerUser.Name = managerUser.UserNationalSocieties.Select(uns => uns.Organization.Name).Single();
+            managerUser.DeletedAt = DateTime.UtcNow;
         }
     }
 }
