@@ -13,7 +13,7 @@ steps:
   displayName: 'Use .NET Core sdk'
   inputs:
     packageType: sdk
-    version: 3.1.201
+    version: 3.1.300
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: CmdLine@2
@@ -70,7 +70,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: 'src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/funcapp" /p:Version=$(GitVersion.MajorMinorPatch) --runtime win-x86 --self-contained false'
+    arguments: 'src/RX.Nyss.FuncApp/RX.Nyss.FuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/funcapp" /p:Version=$(GitVersion.MajorMinorPatch) --self-contained false'
     zipAfterPublish: true
     modifyOutputPath: false
 
@@ -79,7 +79,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: 'src/RX.Nyss.ReportFuncApp/RX.Nyss.ReportFuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/reportfuncapp" /p:Version=$(GitVersion.MajorMinorPatch) --runtime win-x86 --self-contained false'
+    arguments: 'src/RX.Nyss.ReportFuncApp/RX.Nyss.ReportFuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/reportfuncapp" /p:Version=$(GitVersion.MajorMinorPatch) --self-contained false'
     zipAfterPublish: true
     modifyOutputPath: false
 
