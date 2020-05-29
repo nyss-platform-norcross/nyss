@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
 
         public string ContentLanguageName { get; set; }
 
-        public int HeadManagerId { get; set; }
+        public bool IsCurrentUserHeadManager { get; set; }
 
         public bool IsArchived { get; set; }
 

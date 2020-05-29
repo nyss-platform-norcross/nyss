@@ -57,7 +57,7 @@ const mapStateToProps = (state, ownProps) => ({
   isListFetching: state.projects.listFetching,
   isClosing: state.projects.isClosing,
   callingUserRoles: state.appData.user.roles,
-  isHeadManager: state.appData.siteMap.parameters.nationalSocietyHeadManagerId === state.appData.user.id,
+  isHeadManager: state.appData.siteMap.parameters.isCurrentUserHeadManager,
   nationalSocietyIsArchived: state.appData.siteMap.parameters.nationalSocietyIsArchived
 });
 

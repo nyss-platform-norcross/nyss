@@ -99,6 +99,8 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         public async Task<Result<NationalSocietyResponseDto>> Get(int id)
         {
+            var currentUserName = _authorizationService.GetCurrentUserName();
+
             var nationalSociety = await _nyssContext.NationalSocieties
                 .Select(n => new NationalSocietyResponseDto
                 {
@@ -108,18 +110,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     Name = n.Name,
                     CountryId = n.Country.Id,
                     CountryName = n.Country.Name,
-                    HeadManagerId = n.DefaultOrganization.HeadManager.Id,
+                    IsCurrentUserHeadManager = n.Organizations.Any(o => o.HeadManager.EmailAddress == currentUserName),
                     IsArchived = n.IsArchived,
                     HasCoordinator = n.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
                 })
                 .FirstOrDefaultAsync(n => n.Id == id);
 
-            if (nationalSociety == null)
-            {
-                return Error<NationalSocietyResponseDto>(ResultKey.NationalSociety.NotFound);
-            }
-
-            return Success(nationalSociety);
+            return nationalSociety != null
+                ? Success(nationalSociety)
+                : Error<NationalSocietyResponseDto>(ResultKey.NationalSociety.NotFound);
         }
 
         public async Task<Result> Create(CreateNationalSocietyRequestDto dto)

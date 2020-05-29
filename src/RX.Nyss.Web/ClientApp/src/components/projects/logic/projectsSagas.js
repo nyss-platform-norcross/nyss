@@ -122,7 +122,7 @@ function* openProjectsModule(nationalSocietyId) {
     nationalSocietyId: nationalSociety.value.id,
     nationalSocietyName: nationalSociety.value.name,
     nationalSocietyCountry: nationalSociety.value.countryName,
-    nationalSocietyHeadManagerId: nationalSociety.value.headManagerId,
+    isCurrentUserHeadManager: nationalSociety.value.isCurrentUserHeadManager,
     nationalSocietyIsArchived: nationalSociety.value.isArchived
   }));
 }
