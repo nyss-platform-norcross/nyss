@@ -52,7 +52,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: 'src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" /p:Version=$(GitVersion.MajorMinorPatch) --self-contained false'
+    arguments: 'src/RX.Nyss.Web/RX.Nyss.Web.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/webapp" /p:Version=$(GitVersion.MajorMinorPatch) --runtime win-x86 --self-contained false'
     zipAfterPublish: true
     modifyOutputPath: false
 
@@ -61,7 +61,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: 'src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" /p:Version=$(GitVersion.MajorMinorPatch) --self-contained false'
+    arguments: 'src/RX.Nyss.Data.MigrationApp/RX.Nyss.Data.MigrationApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/migrationapp" /p:Version=$(GitVersion.MajorMinorPatch) --runtime win-x86 --self-contained false'
     zipAfterPublish: false
     modifyOutputPath: false
 
@@ -88,7 +88,7 @@ steps:
   inputs:
     command: publish
     publishWebProjects: false
-    arguments: 'src/RX.Nyss.ReportApi/RX.Nyss.ReportApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/reportapi" /p:Version=$(GitVersion.MajorMinorPatch) --self-contained false'
+    arguments: 'src/RX.Nyss.ReportApi/RX.Nyss.ReportApi.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/reportapi" /p:Version=$(GitVersion.MajorMinorPatch) --runtime win-x86 --self-contained false'
     zipAfterPublish: true
     modifyOutputPath: false
 
