@@ -14,7 +14,7 @@ import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 
-export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId }) => {
+export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, remove, list, nationalSocietyId, canModify }) => {
   if (isListFetching) {
     return <Loading />;
   }
@@ -27,21 +27,23 @@ export const OrganizationsTable = ({ isListFetching, isRemoving, goToEdition, re
             <TableCell>{strings(stringKeys.organization.list.name)}</TableCell>
             <TableCell style={{ width: "20%", minWidth: 75 }}>{strings(stringKeys.organization.list.projects)}</TableCell>
             <TableCell style={{ width: "20%", minWidth: 75 }}>{strings(stringKeys.organization.list.headManager)}</TableCell>
-            <TableCell style={{ width: "10%" }} />
+            {canModify && <TableCell style={{ width: "10%" }} />}
           </TableRow>
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={row.id} hover onClick={() => goToEdition(nationalSocietyId, row.id)} className={styles.clickableRow}>
+            <TableRow key={row.id} hover={canModify} onClick={() => canModify && goToEdition(nationalSocietyId, row.id)} className={canModify ? styles.clickableRow : null}>
               <TableCell>{row.name} {row.isDefaultOrganization && strings(stringKeys.organization.list.isDefaultOrganization)}</TableCell>
               <TableCell>{row.projects}</TableCell>
               <TableCell>{row.headManager}</TableCell>
-              <TableCell>
-                <TableRowActions>
-                  <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.organization.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
-                </TableRowActions>
-              </TableCell>
+              {canModify && (
+                <TableCell>
+                  <TableRowActions>
+                    <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                    <TableRowAction onClick={() => remove(nationalSocietyId, row.id)} confirmationText={strings(stringKeys.organization.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                  </TableRowActions>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

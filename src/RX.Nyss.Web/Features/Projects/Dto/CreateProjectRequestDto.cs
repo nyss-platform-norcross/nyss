@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Features.Projects.Dto
                 RuleFor(m => m.OrganizationId)
                     .Must((model, _, t) => projectAccessService.HasCurrentUserAccessToAssignOrganizationToProject())
                     .When(model => model.OrganizationId.HasValue)
-                    .WithMessage(ResultKey.Organization.NotAccessToChangeOrganization);
+                    .WithMessage(ResultKey.Organization.NoAccessToChangeOrganization);
             }
         }
     }

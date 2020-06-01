@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Organizations
         /// </summary>
         /// <returns>An organization</returns>
         [HttpGet("{organizationId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.OrganizationAccess)]
         public Task<Result<OrganizationResponseDto>> Get(int organizationId) =>
             _organizationService.Get(organizationId);
 
@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.Organizations
         /// </summary>
         /// <returns>A list of organizations assigned to the national society</returns>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<OrganizationListResponseDto>>> List(int nationalSocietyId) =>
             _organizationService.List(nationalSocietyId);
 
@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Features.Organizations
         /// <param name="organizationRequestDto">Organization details</param>
         /// <returns>An identifier of the created organization setting</returns>
         [HttpPost("create")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<int>> Create(int nationalSocietyId, [FromBody] OrganizationRequestDto organizationRequestDto) =>
             _organizationService.Create(nationalSocietyId, organizationRequestDto);
 
@@ -56,7 +56,7 @@ namespace RX.Nyss.Web.Features.Organizations
         /// <param name="organizationRequestDto">Organization details</param>
         /// <returns></returns>
         [HttpPost("{organizationId:int}/edit")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.OrganizationAccess)]
         public Task<Result> Edit(int organizationId, [FromBody] OrganizationRequestDto organizationRequestDto) =>
             _organizationService.Edit(organizationId, organizationRequestDto);
 
@@ -66,7 +66,7 @@ namespace RX.Nyss.Web.Features.Organizations
         /// <param name="organizationId">An identifier of organization to be deleted</param>
         /// <returns></returns>
         [HttpPost("{organizationId:int}/delete")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator), NeedsPolicy(Policy.OrganizationAccess)]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Coordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.OrganizationAccess)]
         public Task<Result> Delete(int organizationId) =>
             _organizationService.Delete(organizationId);
 

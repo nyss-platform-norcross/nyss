@@ -27,7 +27,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors.Dto
                 RuleFor(m => m.OrganizationId)
                     .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganizationToUser(model.NationalSocietyId))
                     .When(model => model.OrganizationId.HasValue)
-                    .WithMessage(ResultKey.Organization.NotAccessToChangeOrganization);
+                    .WithMessage(ResultKey.Organization.NoAccessToChangeOrganization);
             }
         }
     }
