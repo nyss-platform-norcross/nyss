@@ -18,7 +18,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
             Supervisor = new SupervisorUser
             {
                 Name = "TestSupervisor",
-                PhoneNumber = "+12345678"
+                PhoneNumber = "+12345678",
+                UserNationalSocieties = new List<UserNationalSociety>()
             }
         };
 
@@ -232,27 +233,104 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
                 var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
                 var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
-                projectHealthRiskWithCountThresholdOf3.Project = new Project
+                var headManager1 = new ManagerUser
                 {
-                    NationalSociety = new NationalSociety
+                    EmailAddress = "test@org1.com",
+                    Name = "HeadManager Organization 1"
+                };
+                var headManager2 = new ManagerUser
+                {
+                    EmailAddress = "test@org2.com",
+                    Name = "HeadManager Organization 2"
+                };
+
+                var organization1 = new Organization
+                {
+                    Name = "Organization 1",
+                    HeadManager = headManager1
+                };
+
+                var organization2 = new Organization
+                {
+                    Name = "Organization 2",
+                    HeadManager = headManager2
+                };
+
+                var nationalSociety = new NationalSociety
+                {
+                    ContentLanguage = contentLanguage,
+                    DefaultOrganization = organization1,
+                    NationalSocietyUsers = new List<UserNationalSociety>
                     {
-                        ContentLanguage = contentLanguage,
-                        DefaultOrganization = new Organization
+                        new UserNationalSociety
                         {
-                            HeadManager = new ManagerUser
-                            {
-                                EmailAddress = "test@example.com",
-                                Name = "HeadManager Name"
-                            }
+                            User = headManager1,
+                            Organization = organization1
+                        },
+                        new UserNationalSociety
+                        {
+                            User = headManager2,
+                            Organization = organization2
                         }
                     }
+                };
+
+                projectHealthRiskWithCountThresholdOf3.Project = new Project
+                {
+                    NationalSociety = nationalSociety
+                };
+
+                var supervisor1 = new SupervisorUser
+                {
+                    Name = "Supervisor Organization 1",
+                    PhoneNumber = "+22345678",
+                    UserNationalSocieties = new List<UserNationalSociety>
+                    {
+                        new UserNationalSociety
+                        {
+                            NationalSociety = nationalSociety,
+                            Organization = organization1
+                        }
+                    }
+                };
+
+                supervisor1.UserNationalSocieties.First().User = supervisor1;
+
+                var supervisor2 = new SupervisorUser
+                {
+                    Name = "Supervisor Organization 2",
+                    PhoneNumber = "+32345678",
+                    UserNationalSocieties = new List<UserNationalSociety>
+                    {
+                        new UserNationalSociety
+                        {
+                            NationalSociety = nationalSociety,
+                            Organization = organization2
+                        }
+                    }
+                };
+
+                supervisor2.UserNationalSocieties.First().User = supervisor2;
+
+                var dataCollector1 = new DataCollector
+                {
+                    DataCollectorType = DataCollectorType.Human,
+                    Supervisor = supervisor1
+                };
+
+                var dataCollector2 = new DataCollector
+                {
+                    DataCollectorType = DataCollectorType.Human,
+                    Supervisor = supervisor2
                 };
 
                 projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent> { new HealthRiskLanguageContent { ContentLanguage = contentLanguage } };
 
                 var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
-                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
-                    .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, dataCollector1, village: new Village { Name = "VillageName" })
+                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, dataCollector2, village: new Village { Name = "VillageName" })
+                    .AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf3, dataCollector1);
+
                 data.Reports = reportGroup.Reports;
 
                 var reportsToCreateAlertFor = data.Reports.Where(r => r.Status == ReportStatus.Pending).ToList();

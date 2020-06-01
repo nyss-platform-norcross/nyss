@@ -638,7 +638,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         }
 
         [Fact]
-        public async Task CheckAlert_WhenAlertIsStillPending_ShouldNotifyHeadManager()
+        public async Task CheckAlert_WhenAlertIsStillPending_ShouldNotifyHeadManagers()
         {
             // arrange
             _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
@@ -656,7 +656,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             await _alertService.CheckIfAlertHasBeenHandled(alert.Id);
 
             // assert
-            await _queuePublisherServiceMock.Received(1).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
+            await _queuePublisherServiceMock.Received(2).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
         }
 
         [Theory]

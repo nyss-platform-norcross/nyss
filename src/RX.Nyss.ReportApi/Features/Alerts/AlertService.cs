@@ -188,8 +188,22 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     {
                         a.Status,
                         a.CreatedAt,
-                        a.ProjectHealthRisk.Project.NationalSociety.DefaultOrganization.HeadManager,
-                        Supervisors = a.AlertReports.Select(x => x.Report.DataCollector.Supervisor.Name),
+                        HeadManagers = a.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers
+                            .Where(nsu => nsu.Organization.HeadManager == nsu.User)
+                            .Where(nshm => a.AlertReports.Any(ar => nshm.Organization == ar.Report.DataCollector.Supervisor.UserNationalSocieties
+                                                                                            .Where(suns => suns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety)
+                                                                                            .Select(suns => suns.Organization)
+                                                                                            .First()))
+                            .Select(nsu => new { nsu.User.Name, nsu.User.EmailAddress, Organization = nsu.Organization.Name }),
+                        Supervisors = a.AlertReports
+                            .Select(ar => new
+                            {
+                                Name = ar.Report.DataCollector.Supervisor.Name,
+                                Organization = ar.Report.DataCollector.Supervisor.UserNationalSocieties
+                                    .Where(suns => suns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety)
+                                    .Select(suns => suns.Organization.Name)
+                                    .First()
+                            }),
                         HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents.First().Name,
                         VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
                             .Select(ar => ar.Report.RawReport.Village.Name)
@@ -212,13 +226,22 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 var emailSubject = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Subject, alert.LanguageCode);
                 var emailBody = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Body, alert.LanguageCode);
 
-                emailBody = emailBody
-                    .Replace("{{healthRiskName}}", alert.HealthRiskName)
-                    .Replace("{{lastReportVillage}}", alert.VillageOfLastReport)
-                    .Replace("{{supervisors}}", string.Join(", ", alert.Supervisors.Distinct()))
-                    .Replace("{{timeSinceAlertWasTriggeredInHours}}", timeSinceTriggered.ToString("0.##"));
+                foreach (var headManager in alert.HeadManagers)
+                {
+                    var supervisors = alert.Supervisors
+                        .Select(supervisor => supervisor.Organization == headManager.Organization
+                            ? supervisor.Name
+                            : supervisor.Organization)
+                        .Distinct();
 
-                await _queuePublisherService.SendEmail((alert.HeadManager.Name, alert.HeadManager.EmailAddress), emailSubject, emailBody);
+                    var headManagerEmailBody = emailBody
+                        .Replace("{{healthRiskName}}", alert.HealthRiskName)
+                        .Replace("{{lastReportVillage}}", alert.VillageOfLastReport)
+                        .Replace("{{supervisors}}", string.Join(", ", supervisors))
+                        .Replace("{{timeSinceAlertWasTriggeredInHours}}", timeSinceTriggered.ToString("0.##"));
+
+                    await _queuePublisherService.SendEmail((headManager.Name, headManager.EmailAddress), emailSubject, headManagerEmailBody);
+                }
             }
         }
 
