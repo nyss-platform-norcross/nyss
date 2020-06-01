@@ -1,4 +1,4 @@
-import React, { useState, Fragment, useMemo } from 'react';
+import React, { useState, Fragment, useMemo, useCallback, useEffect } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -33,16 +33,27 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     isConfirmed: false
   });
 
-  const canChangeOrganization = () => {
-    if (props.data && props.callingUserRoles.some(r => r === roles.Administrator || r === roles.Coordinator) && selectedRole !== roles.DataConsumer) {
-      return true;
-    }
-  }
+  useMount(() => {
+    props.openCreation(props.nationalSocietyId);
+    setRole(roles.Manager);
+  });
 
-  const defaultOrgId = props.data && props.data.organizations.some(o => o.isDefaultOrganization)
-    && props.data.organizations.filter(o => o.isDefaultOrganization)[0].id.toString()
+  const hasAnyRole = useCallback((...roles) =>
+    props.callingUserRoles.some(userRole => roles.some(role => role === userRole)),
+    [props.callingUserRoles]
+  );
+
+  const canChangeOrganization = useMemo(() =>
+    (hasAnyRole(roles.Administrator, roles.Coordinator) && selectedRole !== roles.DataConsumer)
+    || (hasAnyRole(roles.GlobalCoordinator) && selectedRole === roles.Coordinator)
+    || (props.data && props.data.isHeadManager && !props.data.hasCoordinator && selectedRole === roles.Coordinator),
+    [hasAnyRole, selectedRole, props.data]);
 
   const form = useMemo(() => {
+    if (!props.data) {
+      return null;
+    }
+
     const fields = {
       nationalSocietyId: parseInt(props.nationalSocietyId),
       role: roles.Manager,
@@ -54,7 +65,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       decadeOfBirth: "",
       projectId: "",
       sex: "",
-      organizationId: defaultOrgId
+      organizationId: props.data.organizations.some(o => o.isDefaultOrganization)
+        && props.data.organizations.filter(o => o.isDefaultOrganization)[0].id.toString()
     };
 
     const validation = {
@@ -66,29 +78,27 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      organizationId: [validators.requiredWhen(f => canChangeOrganization())]
+      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)]
     };
 
-    setRole(roles.Manager);
     const newForm = createForm(fields, validation);
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.nationalSocietyId, defaultOrgId]);
+  }, [props.data, props.nationalSocietyId]);
 
-  useMount(() => {
-    props.openCreation(props.nationalSocietyId);
-  });
+  useEffect(() => {
+    form && form.fields.organizationId.setValidators([validators.requiredWhen(_ => canChangeOrganization)]);
+  }, [form, canChangeOrganization]);
 
   const onProjectChange = (projectId) => {
     const project = props.data.projects.filter(p => p.id === parseInt(projectId))[0];
-    const newAlertRecipientsDataSource = [{ label: strings(stringKeys.nationalSocietyUser.form.alertRecipientsAll), value: 0, data: { id: 0 }}, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
+    const newAlertRecipientsDataSource = [{ label: strings(stringKeys.nationalSocietyUser.form.alertRecipientsAll), value: 0, data: { id: 0 } }, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
     setAlertRecipientsDataSource(newAlertRecipientsDataSource);
     setSelectedAlertRecipients([]);
   }
 
-  const onAlertRecipientsChange = (value, eventData) => {
+  const onAlertRecipientsChange = useCallback((_, eventData) => {
     let newAlertRecipients = [];
     if (eventData.action === "select-option") {
       newAlertRecipients = [...selectedAlertRecipients, eventData.option.data];
@@ -108,17 +118,31 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     } else {
       setAlertRecipientsFieldError(null);
     }
-  }
+  }, [selectedAlertRecipients]);
 
-  const setSupervisorAlertRecipients = (role) => {
+  const setSupervisorAlertRecipients = useCallback((role) => {
     if (role !== roles.Supervisor) {
       return null;
     }
 
     return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
-  }
+  }, [alertRecipientsDataSource, selectedAlertRecipients]);
 
-  const handleSubmit = (e) => {
+  const { create } = props.create;
+
+  const createUser = useCallback(() => {
+    const values = form.getValues();
+    create(props.nationalSocietyId, {
+      ...values,
+      organizationId: (canChangeOrganization && values.organizationId) ? parseInt(values.organizationId) : null,
+      projectId: values.projectId ? parseInt(values.projectId) : null,
+      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
+      setAsHeadManager: hasAnyRole(roles.Coordinator, roles.GlobalCoordinator) ? true : null,
+      supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
+    });
+  }, [hasAnyRole, canChangeOrganization, form, create, props.nationalSocietyId, setSupervisorAlertRecipients]);
+
+  const handleSubmit = useCallback(e => {
     e.preventDefault();
 
     if (!form.isValid()) {
@@ -140,37 +164,23 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       return;
     }
 
-    createUser(form, props, canChangeOrganization, setSupervisorAlertRecipients);
-  };
+    createUser();
+  }, [createUser, form, selectedRole, props.data, alertRecipientsFieldError, confirmCoordinatorDialog, selectedAlertRecipients]);
 
-  const createUser = () => {
-    const values = form.getValues();
-    props.create(props.nationalSocietyId, {
-      ...values,
-      organizationId: (canChangeOrganization() && values.organizationId) ? parseInt(values.organizationId) : null,
-      projectId: values.projectId ? parseInt(values.projectId) : null,
-      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
-      setAsHeadManager: props.callingUserRoles.some(r => r === roles.Coordinator || r === roles.GlobalCoordinator) ? true : null,
-      supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
-    });
-  }
+  const availableUserRoles = useMemo(() => {
+    if (!props.data) {
+      return [];
+    }
 
-  const isCoordinator = () =>
-    props.callingUserRoles.some(r => r === roles.Coordinator);
-
-  const isGlobalCoordinator = () =>
-    props.callingUserRoles.some(r => r === roles.GlobalCoordinator);
-
-  const getAvailableUserRoles = () => {
     if (props.callingUserRoles.some(r => r === roles.Administrator)) {
       return headManagerRoles;
     }
 
-    if (isGlobalCoordinator()) {
+    if (hasAnyRole(roles.GlobalCoordinator)) {
       return globalCoordinatorUserRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
     }
 
-    if (isCoordinator()) {
+    if (hasAnyRole(roles.Coordinator)) {
       return coordinatorUserRoles;
     }
 
@@ -179,13 +189,11 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     }
 
     return userRoles;
-  }
+  }, [hasAnyRole, props.callingUserRoles, props.data]);
 
   if (!props.data) {
     return null;
   }
-
-  const availableUserRoles = getAvailableUserRoles();
 
   const confirmCoordinatorCreation = () => {
     setConfirmCoordinatorDialog({ ...confirmCoordinatorDialog, isConfirmed: true, isOpened: false });
@@ -217,7 +225,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 <MenuItem
                   key={`role${role}`}
                   value={role}>
-                  {strings(`role.${(((isCoordinator() || isGlobalCoordinator()) && role === roles.Manager) ? "headManager" : role).toLowerCase()}`)}
+                  {strings(`role.${((hasAnyRole(roles.Coordinator, roles.GlobalCoordinator) && role === roles.Manager) ? "headManager" : role).toLowerCase()}`)}
                 </MenuItem>
               ))}
             </SelectInput>
@@ -246,14 +254,14 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
               field={form.fields.additionalPhoneNumber}
             />
           </Grid>
-          {((canChangeOrganization() || (selectedRole === roles.Coordinator && isGlobalCoordinator())) &&
+          {canChangeOrganization && (
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.organization)}
                 field={form.fields.organizationId}
                 name="organizationId"
                 customProps={{
-                  disabled: selectedRole === roles.Coordinator && isGlobalCoordinator()
+                  disabled: selectedRole === roles.Coordinator && hasAnyRole(roles.GlobalCoordinator)
                 }}
               >
                 {props.data.organizations.map(organization => (
@@ -318,7 +326,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 <MultiSelect
                   label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
                   options={alertRecipientsDataSource}
-                value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
+                  value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
                   onChange={onAlertRecipientsChange}
                   error={alertRecipientsFieldError}
                 />

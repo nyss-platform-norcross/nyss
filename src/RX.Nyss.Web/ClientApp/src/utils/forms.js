@@ -1,8 +1,8 @@
 import { strings, stringKeys, stringsFormat } from "../strings";
 
-const validateField = (field, validators, formValues) => {
-  if (validators && validators.length !== 0) {
-    for (let validator of validators) {
+const validateField = (field, formValues) => {
+  if (field._validators && field._validators.length !== 0) {
+    for (let validator of field._validators) {
       if (validator.length !== 2) {
         throw new Error("Wrong validator structure");
       }
@@ -24,12 +24,12 @@ const validateField = (field, validators, formValues) => {
   };
 };
 
-const onChange = (name, newValue, subscribers, form, validatorDefinition, suspendValidation, formSubscribers) => {
+const onChange = (name, newValue, subscribers, form, suspendValidation, formSubscribers) => {
   const field = form[name];
   field.value = newValue;
 
-  if (validatorDefinition && !suspendValidation) {
-    field.error = validateField(field, validatorDefinition, getFormValues(form)).errorMessage;
+  if (field._validators && !suspendValidation) {
+    field.error = validateField(field, getFormValues(form)).errorMessage;
   }
 
   for (let subscriber of subscribers) {
@@ -41,19 +41,22 @@ const onChange = (name, newValue, subscribers, form, validatorDefinition, suspen
   }
 };
 
-const validateFields = (form, validators) => {
+const validateFields = (fields) => {
   let isValid = true;
-  const formValues = getFormValues(form);
+  const formValues = getFormValues(fields);
 
-  for (let name in validators) {
-    if (!validators.hasOwnProperty(name)) {
+  for (let name in fields) {
+    if (!fields.hasOwnProperty(name)) {
       continue;
     }
 
-    const validationResult = validateField(form[name], validators[name], formValues);
+    const field = fields[name];
 
-    form[name].error = validationResult.errorMessage;
-    form[name].update(form[name].value);
+    const validationResult = validateField(field, formValues);
+
+
+    field.error = validationResult.errorMessage;
+    field.update(field.value);
 
     if (!validationResult.isValid) {
       isValid = false;
@@ -78,7 +81,7 @@ const getFormValues = (form) => {
 const createFormField = (name, value, validatorDefinition, form, formSubscribers) => {
   const subscribers = [];
 
-  return {
+  const field = {
     name: name,
     value: value,
     error: null,
@@ -90,8 +93,13 @@ const createFormField = (name, value, validatorDefinition, form, formSubscribers
       };
     },
     _subscribers: subscribers,
-    update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, validatorDefinition, suspendValidation, formSubscribers)
-  }
+    _validators: validatorDefinition,
+    update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, suspendValidation, formSubscribers)
+  };
+
+  field.setValidators = newValidators => field._validators = newValidators;
+
+  return field;
 }
 
 export const createForm = (fields, validators) => {
@@ -120,11 +128,13 @@ export const createForm = (fields, validators) => {
 
   return {
     fields: form,
-    isValid: () => validateFields(form, validators, getFormValues(form)),
+    isValid: () => validateFields(form, getFormValues(form)),
     getValues: () => getFormValues(form),
     subscribe: subscribeToForm,
-    addField: (name, value, validators) => { form[name] = createFormField(name, value, validators, form, formSubscribers) },
-    removeField: (name, value, validators) => removeField(name),
+    addField: (name, value, fieldValidators) => {
+      form[name] = createFormField(name, value, fieldValidators, form, formSubscribers)
+    },
+    removeField: (name, _, __) => removeField(name),
     subscribeOnce: callback => {
       const { unsubscribe } = subscribeToForm(() => {
         callback();
