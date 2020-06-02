@@ -128,7 +128,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
   }, [alertRecipientsDataSource, selectedAlertRecipients]);
 
-  const { create } = props.create;
+  const { create } = props;
 
   const createUser = useCallback(() => {
     const values = form.getValues();
