@@ -27,6 +27,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         {
             _nyssContext = Substitute.For<INyssContext>();
             _authorizationService = Substitute.For<IAuthorizationService>();
+            _authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor).Returns(true);
             _userService = new UserService(_nyssContext, _authorizationService);
             ArrangeNationalSocieties();
         }
@@ -58,8 +59,6 @@ namespace RX.Nyss.Web.Tests.Features.Users
             SetupNationalSocietiesFrom(nationalSocieties);
             SetupOrgsFrom(organizations);
             ArrangeUsers(nationalSocieties, organizations);
-
-            _authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor).Returns(true);
         }
 
         private void SetupNationalSocietiesFrom(List<NationalSociety> nationalSocieties)
