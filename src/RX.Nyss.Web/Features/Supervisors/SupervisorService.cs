@@ -469,7 +469,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         }
         private void AnonymizeSupervisor(SupervisorUser supervisorUser)
         {
-            supervisorUser.Name = Anonymization.Text;
+            supervisorUser.Name = supervisorUser.UserNationalSocieties.Single().Organization.Name;
             supervisorUser.EmailAddress = Anonymization.Text;
             supervisorUser.PhoneNumber = Anonymization.Text;
             supervisorUser.AdditionalPhoneNumber = Anonymization.Text;
@@ -480,6 +480,7 @@ namespace RX.Nyss.Web.Features.Supervisors
             var supervisorUserData = await _nyssContext.Users.FilterAvailable()
                 .OfType<SupervisorUser>()
                 .Include(u => u.UserNationalSocieties)
+                .ThenInclude(uns => uns.Organization)
                 .Include(u => u.SupervisorAlertRecipients)
                 .Where(u => u.Id == supervisorUserId)
                 .Select(u => new SupervisorUserData
