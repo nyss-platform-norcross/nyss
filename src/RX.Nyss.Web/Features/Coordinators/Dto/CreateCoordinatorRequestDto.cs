@@ -26,9 +26,9 @@ namespace RX.Nyss.Web.Features.Coordinators.Dto
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
                 RuleFor(m => m.Organization).MaximumLength(100);
                 RuleFor(m => m.OrganizationId)
-                    .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganization(model.NationalSocietyId))
+                    .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganizationToUser(model.NationalSocietyId))
                     .When(model => model.OrganizationId.HasValue)
-                    .WithMessage(ResultKey.Organization.NotAccessToChangeOrganization);
+                    .WithMessage(ResultKey.Organization.NoAccessToChangeOrganization);
             }
         }
     }

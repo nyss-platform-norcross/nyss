@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useState, Fragment, useMemo, useCallback } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
@@ -23,8 +23,7 @@ import { MultiSelect } from '../forms/MultiSelect';
 
 const NationalSocietyUsersEditPageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
-  const [form, setForm] = useState(null);
-  const [role, setRole] = useState(null);
+  const [selectedRole, setRole] = useState(null);
   const [alertRecipientsDataSource, setAlertRecipientsDataSource] = useState([]);
   const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
   const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
@@ -33,9 +32,14 @@ const NationalSocietyUsersEditPageComponent = (props) => {
     props.openEdition(props.nationalSocietyUserId);
   });
 
-  useEffect(() => {
+  const hasAnyRole = useCallback((...roles) =>
+    props.callingUserRoles.some(userRole => roles.some(role => role === userRole)),
+    [props.callingUserRoles]
+  );
+
+  const form = useMemo(() => {
     if (!props.data) {
-      return;
+      return null;
     }
 
     const fields = {
@@ -75,21 +79,17 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       setSelectedAlertRecipients(currentAlertRecipients.length === allAlertRecipientsForProject.length ? [allRecipients.data] : currentAlertRecipients);
     }
 
-    setForm(createForm(fields, validation));
-  }, [props.data, props.match, props.nationalSocietyId]);
+    return createForm(fields, validation);
+  }, [props.data, props.nationalSocietyId]);
 
-  if (!props.data) {
-    return null;
-  }
-
-  const onProjectChange = (projectId) => {
+  const onProjectChange = useCallback(projectId => {
     const project = props.data.editSupervisorFormData.availableProjects.filter(p => p.id === parseInt(projectId))[0];
-    const newAlertRecipientsDataSource = [{ label: strings(stringKeys.nationalSocietyUser.form.alertRecipientsAll), value: 0, data: { id: 0 }}, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
+    const newAlertRecipientsDataSource = [{ label: strings(stringKeys.nationalSocietyUser.form.alertRecipientsAll), value: 0, data: { id: 0 } }, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
     setAlertRecipientsDataSource(newAlertRecipientsDataSource);
     setSelectedAlertRecipients([]);
-  }
+  }, [props.data]);
 
-  const onAlertRecipientsChange = (value, eventData) => {
+  const onAlertRecipientsChange = useCallback((_, eventData) => {
     let newAlertRecipients = [];
     if (eventData.action === "select-option") {
       newAlertRecipients = [...selectedAlertRecipients, eventData.option.data];
@@ -109,20 +109,28 @@ const NationalSocietyUsersEditPageComponent = (props) => {
     } else {
       setAlertRecipientsFieldError(null);
     }
-  }
+  }, [selectedAlertRecipients]);
 
-  const canEditOrganization = () => {
-    return props.callingUserRoles.some(r => r === roles.Administrator) && role !== roles.DataConsumer;
-  }
+  const canChangeOrganization = useMemo(() =>
+    hasAnyRole(roles.Administrator) && selectedRole !== roles.DataConsumer,
+    [hasAnyRole, selectedRole]);
 
-  const handleSubmit = (e) => {
+  const setSupervisorAlertRecipients = useCallback(role => {
+    if (role !== roles.Supervisor) {
+      return null;
+    }
+
+    return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
+  }, [alertRecipientsDataSource, selectedAlertRecipients]);
+
+  const handleSubmit = useCallback(e => {
     e.preventDefault();
 
     if (!form.isValid()) {
       return;
     };
 
-    if (role === roles.Supervisor) {
+    if (selectedRole === roles.Supervisor) {
       if (alertRecipientsFieldError !== null) {
         return;
       }
@@ -141,17 +149,9 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
       supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
     });
-  };
+  }, [form, props, selectedRole, selectedAlertRecipients, setSupervisorAlertRecipients, alertRecipientsFieldError]);
 
-  const setSupervisorAlertRecipients = (role) => {
-    if (role !== roles.Supervisor) {
-      return null;
-    }
-
-    return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
-  }
-
-  if (props.isFetching || !form) {
+  if (!props.data || !form || props.isFetching ) {
     return <Loading />;
   }
 
@@ -186,7 +186,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             />
           </Grid>
 
-          {canEditOrganization() && (
+          {canChangeOrganization && (
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.organization)}
@@ -210,7 +210,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             />
           </Grid>
 
-          {role === roles.Supervisor && (
+          {selectedRole === roles.Supervisor && (
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
@@ -226,7 +226,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Grid>
           )}
 
-          {role === roles.Supervisor && (
+          {selectedRole === roles.Supervisor && (
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.sex)}
@@ -242,7 +242,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Grid>
           )}
 
-          {role === roles.Supervisor && (
+          {selectedRole === roles.Supervisor && (
             <Grid item xs={12}>
               <SelectField
                 label={strings(stringKeys.nationalSocietyUser.form.project)}
@@ -261,7 +261,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Grid>
           )}
 
-          {role === roles.Supervisor && (
+          {selectedRole === roles.Supervisor && (
             <Grid item xs={12}>
               <MultiSelect
                 label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}

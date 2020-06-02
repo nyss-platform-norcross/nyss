@@ -76,7 +76,7 @@ namespace RX.Nyss.Common.Utils.DataContract
 
         public static class Organization
         {
-            public const string NotAccessToChangeOrganization = "organization.notAccessToChangeOrganization";
+            public const string NoAccessToChangeOrganization = "organization.notAccessToChangeOrganization";
         }
 
         public static class Login
