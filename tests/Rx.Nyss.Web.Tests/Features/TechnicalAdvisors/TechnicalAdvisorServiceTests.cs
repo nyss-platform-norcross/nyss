@@ -56,8 +56,8 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             });
 
             var organizations = new List<Organization>{
-                new Organization{Id = 1, Name = "org 1"},
-                new Organization{Id = 2, Name = "org 2"}
+                new Organization{Id = 1, Name = "org 1", NationalSocietyId = 1},
+                new Organization{Id = 2, Name = "org 2", NationalSocietyId = 2}
             };
 
             SetupTestNationalSocieties(organizations);
@@ -96,7 +96,8 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
                     {
                         Id = 1,
                         Name = "Org 1"
-                    }
+                    },
+                    OrganizationId = 1
                 }
             };
 
@@ -141,14 +142,18 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
                     User = technicalAdvisor,
                     UserId = technicalAdvisor.Id,
                     NationalSocietyId = 1,
-                    NationalSociety = _nyssContext.NationalSocieties.Find(1)
+                    NationalSociety = _nyssContext.NationalSocieties.Find(1),
+                    OrganizationId = 1,
+                    Organization = _nyssContext.Organizations.Find(1)
                 },
                 new UserNationalSociety
                 {
                     User = technicalAdvisor,
                     UserId = technicalAdvisor.Id,
                     NationalSocietyId = 2,
-                    NationalSociety = _nyssContext.NationalSocieties.Find(2)
+                    NationalSociety = _nyssContext.NationalSocieties.Find(2),
+                    OrganizationId = 2,
+                    Organization = _nyssContext.Organizations.Find(2)
                 }
             };
 
@@ -197,6 +202,9 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
 
         private void SetupTestNationalSocieties(List<Organization> organizations)
         {
+            var organizationsDbSet = organizations.AsQueryable().BuildMockDbSet();
+            _nyssContext.Organizations.Returns(organizationsDbSet);
+
             var nationalSociety1 = new NationalSociety
             {
                 Id = 1,
@@ -455,7 +463,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
 
 
         [Fact]
-        public async Task DeleteTechnicalAdvisor_WhenDeletingFromLastNationalSociety_RemoveOnNyssUserIsCalledOnce()
+        public async Task DeleteTechnicalAdvisor_WhenDeletingFromLastNationalSociety_UserIsAnonymized()
         {
             //arrange
             var user = ArrangeUsersDbSetWithOneTechnicalAdvisorInOneNationalSociety();
@@ -464,7 +472,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             await _technicalAdvisorService.Delete(1, 123);
 
             //assert
-            _nationalSocietyUserService.Received(1).DeleteNationalSocietyUser(user);
+            user.Name.ShouldBe("Org 1");
         }
 
         [Fact]
