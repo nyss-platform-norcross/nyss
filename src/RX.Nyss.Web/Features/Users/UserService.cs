@@ -158,6 +158,11 @@ namespace RX.Nyss.Web.Features.Users
                 return Error(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
             }
 
+            if (userData.Role == Role.TechnicalAdvisor && !_authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor))
+            {
+                return Error(ResultKey.User.Registration.TechnicalAdvisorsCanBeAttachedOnlyByManagers);
+            }
+
             var userAlreadyIsInThisNationalSociety = await _nyssContext.UserNationalSocieties
                 .FilterAvailableUsers()
                 .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == userData.Id);
@@ -183,8 +188,7 @@ namespace RX.Nyss.Web.Features.Users
             userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                     .Select(uns => uns.Organization)
-                    .SingleOrDefaultAsync() ??
-                await _nyssContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
+                    .SingleOrDefaultAsync();
 
             await _nyssContext.UserNationalSocieties.AddAsync(userNationalSociety);
             await _nyssContext.SaveChangesAsync();
