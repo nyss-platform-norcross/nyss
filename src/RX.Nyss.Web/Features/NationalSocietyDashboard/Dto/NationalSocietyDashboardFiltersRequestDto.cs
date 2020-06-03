@@ -21,6 +21,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 
         public AreaDto Area { get; set; }
 
+        public int? OrganizationId { get; set; }
+
         public DatesGroupingType GroupingType { get; set; }
 
         public NationalSocietyReportsTypeDto ReportsType { get; set; }

@@ -18,6 +18,14 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<Alert> FilterByNationalSociety(this IQueryable<Alert> alerts, int? nationalSocietyId) =>
             alerts.Where(alert => !nationalSocietyId.HasValue || alert.ProjectHealthRisk.Project.NationalSocietyId == nationalSocietyId.Value);
 
+        public static IQueryable<Alert> FilterByOrganization(this IQueryable<Alert> alerts, int? organizationId) =>
+            organizationId.HasValue
+                ? alerts.Where(alert => alert.AlertReports.Any(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties
+                    .Any(uns =>
+                        uns.NationalSociety == ar.Alert.ProjectHealthRisk.Project.NationalSociety
+                        && uns.OrganizationId == organizationId.Value)))
+                : alerts;
+
         public static IQueryable<Alert> FilterByHealthRisk(this IQueryable<Alert> alerts, int? healthRiskId) =>
             alerts.Where(a => !healthRiskId.HasValue || a.ProjectHealthRisk.HealthRiskId == healthRiskId.Value);
 

@@ -6,5 +6,14 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
     public class ProjectDashboardFiltersResponseDto
     {
         public IEnumerable<HealthRiskDto> HealthRisks { get; set; }
+
+        public IEnumerable<OrganizationDto> Organizations { get; set; }
+
+        public class OrganizationDto
+        {
+            public int Id { get; set; }
+
+            public string Name { get; set; }
+        }
     }
 }

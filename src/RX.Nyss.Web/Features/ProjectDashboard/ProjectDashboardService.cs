@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Services.ReportsDashboard;
 using RX.Nyss.Web.Services.ReportsDashboard.Dto;
@@ -33,6 +36,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
         private readonly IReportsDashboardByDataCollectionPointService _reportsDashboardByDataCollectionPointService;
         private readonly IProjectDashboardSummaryService _projectDashboardSummaryService;
+        private readonly INyssContext _nyssContext;
+        private readonly IAuthorizationService _authorizationService;
 
         public ProjectDashboardService(
             IProjectService projectService,
@@ -42,7 +47,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             IReportsDashboardByHealthRiskService reportsDashboardByHealthRiskService,
             IReportsDashboardByVillageService reportsDashboardByVillageService,
             IReportsDashboardByDataCollectionPointService reportsDashboardByDataCollectionPointService,
-            IProjectDashboardSummaryService projectDashboardSummaryService)
+            IProjectDashboardSummaryService projectDashboardSummaryService,
+            INyssContext nyssContext,
+            IAuthorizationService authorizationService)
         {
             _projectService = projectService;
             _reportService = reportService;
@@ -52,6 +59,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
             _reportsDashboardByDataCollectionPointService = reportsDashboardByDataCollectionPointService;
             _projectDashboardSummaryService = projectDashboardSummaryService;
+            _nyssContext = nyssContext;
+            _authorizationService = authorizationService;
         }
 
         public async Task<Result<ProjectDashboardFiltersResponseDto>> GetFiltersData(int projectId)
@@ -62,11 +71,44 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 HealthRiskType.NonHuman,
                 HealthRiskType.UnusualEvent
             };
+
+            var organizations = await GetOrganizations(projectId);
             var projectHealthRisks = await _projectService.GetHealthRiskNames(projectId, healthRiskTypesWithoutActivity);
 
-            var dto = new ProjectDashboardFiltersResponseDto { HealthRisks = projectHealthRisks };
+            var dto = new ProjectDashboardFiltersResponseDto
+            {
+                HealthRisks = projectHealthRisks,
+                Organizations = organizations
+            };
 
             return Success(dto);
+        }
+
+        private async Task<List<ProjectDashboardFiltersResponseDto.OrganizationDto>> GetOrganizations(int projectId)
+        {
+            if (_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.DataConsumer))
+            {
+                return await _nyssContext.Projects
+                    .Where(p => p.Id == projectId)
+                    .SelectMany(p => p.ProjectOrganizations)
+                    .Select(o => new ProjectDashboardFiltersResponseDto.OrganizationDto
+                    {
+                        Id = o.Organization.Id,
+                        Name = o.Organization.Name
+                    }).ToListAsync();
+            }
+
+            var currentUserName = _authorizationService.GetCurrentUserName();
+
+            return await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
+                .Where(uns => uns.User.EmailAddress == currentUserName)
+                .Select(o => new ProjectDashboardFiltersResponseDto.OrganizationDto
+                {
+                    Id = o.Organization.Id,
+                    Name = o.Organization.Name
+                }).ToListAsync();
         }
 
         public async Task<Result<ProjectDashboardResponseDto>> GetData(int projectId, FiltersRequestDto filtersDto)
@@ -118,6 +160,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 StartDate = filtersDto.StartDate,
                 EndDate = filtersDto.EndDate.AddDays(1),
                 HealthRiskId = filtersDto.HealthRiskId,
+                OrganizationId = filtersDto.OrganizationId,
                 Area = filtersDto.Area == null
                     ? null
                     : new Area

@@ -13,7 +13,7 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 
-export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, onChange }) => {
+export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange }) => {
   const [value, setValue] = useState(filters);
 
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
@@ -35,6 +35,9 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
 
   const handleHealthRiskChange = event =>
     onChange(updateValue({ healthRiskId: event.target.value === 0 ? null : event.target.value }))
+
+  const handleOrganizationChange = event =>
+    onChange(updateValue({ organizationId: event.target.value === 0 ? null : event.target.value }))
 
   const handleDateFromChange = date =>
     onChange(updateValue({ startDate: date.format('YYYY-MM-DD') }))
@@ -141,6 +144,25 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
           </Grid>
 
           <Grid item>
+            <TextField
+              select
+              label={strings(stringKeys.project.dashboard.filters.organization)}
+              onChange={handleOrganizationChange}
+              value={value.organizationId || 0}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+              <MenuItem value={0}>{strings(stringKeys.project.dashboard.filters.organizationsAll)}</MenuItem>
+
+              {organizations.map(organization => (
+                <MenuItem key={`filter_organization_${organization.id}`} value={organization.id}>
+                  {organization.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item>
             <InputLabel className={styles.trainingStateLabel}>{strings(stringKeys.project.dashboard.filters.trainingReportsListType)}</InputLabel>
             <RadioGroup
               value={value.isTraining}
@@ -151,8 +173,8 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
               <FormControlLabel control={<Radio />} label={strings(stringKeys.project.dashboard.filters.inTraining)} value={true} />
             </RadioGroup >
           </Grid>
-
         </Grid>
+
       </CardContent>
     </Card>
   );

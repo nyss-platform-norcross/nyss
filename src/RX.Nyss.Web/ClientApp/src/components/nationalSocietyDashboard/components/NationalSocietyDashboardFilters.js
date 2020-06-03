@@ -9,7 +9,7 @@ import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 
-export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, healthRisks, onChange }) => {
+export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange }) => {
   const [value, setValue] = useState(filters);
 
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
@@ -28,9 +28,11 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
     setSelectedArea(item);
     onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }))
   }
-
   const handleHealthRiskChange = event =>
     onChange(updateValue({ healthRiskId: event.target.value === 0 ? null : event.target.value }))
+
+  const handleOrganizationChange = event =>
+    onChange(updateValue({ organizationId: event.target.value === 0 ? null : event.target.value }))
 
   const handleDateFromChange = date =>
     onChange(updateValue({ startDate: date.format('YYYY-MM-DD') }))
@@ -129,6 +131,25 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
               <MenuItem value="dataCollectionPoint">
                 {strings(stringKeys.nationalSociety.dashboard.filters.dataCollectionPointReportsType)}
               </MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid item>
+            <TextField
+              select
+              label={strings(stringKeys.nationalSociety.dashboard.filters.organization)}
+              onChange={handleOrganizationChange}
+              value={value.organizationId || 0}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+              <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.organizationsAll)}</MenuItem>
+
+              {organizations.map(organization => (
+                <MenuItem key={`filter_organization_${organization.id}`} value={organization.id}>
+                  {organization.name}
+                </MenuItem>
+              ))}
             </TextField>
           </Grid>
         </Grid>

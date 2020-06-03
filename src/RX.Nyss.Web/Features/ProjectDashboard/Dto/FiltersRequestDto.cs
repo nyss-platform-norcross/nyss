@@ -26,5 +26,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
         public ReportsTypeDto ReportsType { get; set; }
 
         public bool IsTraining { get; set; }
+
+        public int? OrganizationId { get; set; }
     }
 }

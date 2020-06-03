@@ -42,6 +42,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
       <Grid item xs={12} className={styles.filtersGrid}>
         <ProjectsDashboardFilters
           healthRisks={props.healthRisks}
+          organizations={props.organizations}
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
@@ -105,6 +106,7 @@ const mapStateToProps = state => ({
   projectId: state.appData.route.params.projectId,
   nationalSocietyId: state.appData.route.params.nationalSocietyId,
   healthRisks: state.projectDashboard.filtersData.healthRisks,
+  organizations: state.projectDashboard.filtersData.organizations,
   projectSummary: state.projectDashboard.projectSummary,
   filters: state.projectDashboard.filters,
   reportsGroupedByHealthRiskAndDate: state.projectDashboard.reportsGroupedByHealthRiskAndDate,
