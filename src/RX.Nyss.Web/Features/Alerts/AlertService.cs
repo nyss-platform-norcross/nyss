@@ -133,6 +133,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .ToListAsync();
 
             var alert = await _nyssContext.Alerts
+                .IgnoreQueryFilters()
                 .Where(a => a.Id == alertId)
                 .Select(a => new
                 {
