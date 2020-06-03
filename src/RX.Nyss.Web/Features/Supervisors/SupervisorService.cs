@@ -469,7 +469,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         }
         private void AnonymizeSupervisor(SupervisorUser supervisorUser)
         {
-            supervisorUser.Name = supervisorUser.UserNationalSocieties.Single().Organization.Name;
+            supervisorUser.Name = Anonymization.Text;
             supervisorUser.EmailAddress = Anonymization.Text;
             supervisorUser.PhoneNumber = Anonymization.Text;
             supervisorUser.AdditionalPhoneNumber = Anonymization.Text;

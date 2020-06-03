@@ -317,16 +317,19 @@ namespace RX.Nyss.Web.Features.Managers
         private async Task AnonymizeManagerWithAlertReferences(int managerId)
         {
             var managerUser = await _nyssContext.Users
-                .Include(u => u.UserNationalSocieties)
-                .ThenInclude(uns => uns.Organization)
                 .Where(u => u.Id == managerId)
                 .SingleOrDefaultAsync();
+
+            if (managerUser == null)
+            {
+                throw new ResultException(ResultKey.User.Deletion.UserNotFound);
+            }
 
             managerUser.IdentityUserId = null;
             managerUser.EmailAddress = Anonymization.Text;
             managerUser.PhoneNumber = Anonymization.Text;
             managerUser.AdditionalPhoneNumber = Anonymization.Text;
-            managerUser.Name = managerUser.UserNationalSocieties.Select(uns => uns.Organization.Name).Single();
+            managerUser.Name = Anonymization.Text;
             managerUser.DeletedAt = DateTime.UtcNow;
         }
     }

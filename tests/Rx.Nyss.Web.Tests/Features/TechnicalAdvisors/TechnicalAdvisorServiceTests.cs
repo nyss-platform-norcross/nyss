@@ -472,7 +472,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             await _technicalAdvisorService.Delete(1, 123);
 
             //assert
-            user.Name.ShouldBe("Org 1");
+            user.Name.ShouldBe(Anonymization.Text);
         }
 
         [Fact]

@@ -161,6 +161,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .ToListAsync();
 
             var canAssess = await _nyssContext.AlertReports
+                .IgnoreQueryFilters()
                 .Where(ar =>
                     ar.ReportId == reportId
                     && (currentUser.Role == Role.Administrator

@@ -248,7 +248,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             if (isUsersLastNationalSociety)
             {
                 await _identityUserRegistrationService.DeleteIdentityUser(technicalAdvisor.IdentityUserId);
-                await AnonymizeTechnicalAdvisorWithAlertReferences(technicalAdvisorId, nationalSocietyId);
+                await AnonymizeTechnicalAdvisorWithAlertReferences(technicalAdvisorId);
             }
         }
 
@@ -281,19 +281,22 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             }
         }
 
-        private async Task AnonymizeTechnicalAdvisorWithAlertReferences(int technicalAdvisorId, int nationalSocietyId)
+        private async Task AnonymizeTechnicalAdvisorWithAlertReferences(int technicalAdvisorId)
         {
             var technicalAdvisorUser = await _dataContext.Users
-                .Include(u => u.UserNationalSocieties)
-                .ThenInclude(uns => uns.Organization)
                 .Where(u => u.Id == technicalAdvisorId)
                 .SingleOrDefaultAsync();
+
+            if (technicalAdvisorUser == null)
+            {
+                throw new ResultException(ResultKey.User.Deletion.UserNotFound);
+            }
 
             technicalAdvisorUser.IdentityUserId = null;
             technicalAdvisorUser.EmailAddress = Anonymization.Text;
             technicalAdvisorUser.PhoneNumber = Anonymization.Text;
             technicalAdvisorUser.AdditionalPhoneNumber = Anonymization.Text;
-            technicalAdvisorUser.Name = technicalAdvisorUser.UserNationalSocieties.Single(uns => uns.NationalSocietyId == nationalSocietyId).Organization.Name;
+            technicalAdvisorUser.Name = Anonymization.Text;
             technicalAdvisorUser.DeletedAt = DateTime.UtcNow;
         }
     }
