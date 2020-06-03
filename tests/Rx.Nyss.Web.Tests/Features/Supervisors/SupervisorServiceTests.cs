@@ -244,14 +244,18 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                     NationalSociety = nationalSocieties[0],
                     NationalSocietyId = _nationalSocietyId1,
                     User = supervisorWithoutDataCollectors,
-                    UserId = _supervisorWithoutDataCollectorsId
+                    UserId = _supervisorWithoutDataCollectorsId,
+                    Organization = organizations[0],
+                    OrganizationId = organizations[0].Id
                 },
                 new UserNationalSociety
                 {
                     NationalSociety = nationalSocieties[0],
                     NationalSocietyId = _nationalSocietyId1,
                     User = supervisorWithDeletedDataCollectors,
-                    UserId = _supervisorWithDeletedDataCollectorsId
+                    UserId = _supervisorWithDeletedDataCollectorsId,
+                    Organization = organizations[0],
+                    OrganizationId = organizations[0].Id
                 }
             };
             supervisorWithDataCollectors.SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>();

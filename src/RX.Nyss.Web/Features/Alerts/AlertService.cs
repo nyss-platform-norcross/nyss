@@ -133,6 +133,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .ToListAsync();
 
             var alert = await _nyssContext.Alerts
+                .IgnoreQueryFilters()
                 .Where(a => a.Id == alertId)
                 .Select(a => new
                 {
@@ -379,6 +380,7 @@ namespace RX.Nyss.Web.Features.Alerts
         public async Task<Result<AlertLogResponseDto>> GetLogs(int alertId)
         {
             var alert = await _nyssContext.Alerts
+                .IgnoreQueryFilters()
                 .Where(a => a.Id == alertId)
                 .Select(a => new
                 {
@@ -388,9 +390,15 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.ClosedAt,
                     a.CloseOption,
                     a.Comments,
-                    EscalatedBy = a.EscalatedBy.Name,
-                    DismissedBy = a.DismissedBy.Name,
-                    ClosedBy = a.ClosedBy.Name,
+                    EscalatedBy = a.EscalatedBy.DeletedAt.HasValue ?
+                        a.EscalatedBy.UserNationalSocieties.Single(eduns => eduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
+                        : a.EscalatedBy.Name,
+                    DismissedBy = a.DismissedBy.DeletedAt.HasValue ?
+                        a.DismissedBy.UserNationalSocieties.Single(dbuns => dbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
+                        : a.DismissedBy.Name,
+                    ClosedBy = a.ClosedBy.DeletedAt.HasValue ?
+                        a.ClosedBy.UserNationalSocieties.Single(cbuns => cbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
+                        : a.ClosedBy.Name,
                     ProjectTimeZone = a.ProjectHealthRisk.Project.TimeZone,
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
@@ -404,9 +412,15 @@ namespace RX.Nyss.Web.Features.Alerts
                             ar.Report.AcceptedAt,
                             ar.Report.RejectedAt,
                             ar.Report.ResetAt,
-                            AcceptedBy = ar.Report.AcceptedBy.Name,
-                            RejectedBy = ar.Report.RejectedBy.Name,
-                            ResetBy = ar.Report.ResetBy.Name
+                            AcceptedBy = ar.Report.AcceptedBy.DeletedAt.HasValue ?
+                                ar.Report.AcceptedBy.UserNationalSocieties.Single(abuns => abuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
+                                : ar.Report.AcceptedBy.Name,
+                            RejectedBy = ar.Report.RejectedBy.DeletedAt.HasValue ?
+                                ar.Report.RejectedBy.UserNationalSocieties.Single(rejecteduns => rejecteduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
+                                : ar.Report.RejectedBy.Name,
+                            ResetBy = ar.Report.ResetBy.DeletedAt.HasValue ?
+                                ar.Report.ResetBy.UserNationalSocieties.Single(resetuns => resetuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
+                                : ar.Report.ResetBy.Name,
                         })
                         .ToList()
                 })
@@ -471,6 +485,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .ToListAsync();
 
             var organizationHasReportsInAlert = await _nyssContext.Alerts
+                .IgnoreQueryFilters()
                 .Where(a => a.Id == alertId
                     && (currentUser.Role == Role.Administrator
                         || a.AlertReports.Any(ar => currentUserOrgs.Contains(ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId.Value))
