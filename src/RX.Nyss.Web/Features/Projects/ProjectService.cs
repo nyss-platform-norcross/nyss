@@ -343,7 +343,7 @@ namespace RX.Nyss.Web.Features.Projects
 
             if (projectToClose.Project.AllowMultipleOrganizations && !await ValidateCoordinatorAccess(projectToClose.Project.NationalSocietyId))
             {
-                return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
+                return Error<int>(ResultKey.Project.OnlyCoordinatorCanCloseThisProjects);
             }
 
             if (!projectToClose.Project.AllowMultipleOrganizations && !projectToClose.HasAccessAsHeadManager && !_authorizationService.IsCurrentUserInAnyRole(Role.Coordinator, Role.Administrator))
