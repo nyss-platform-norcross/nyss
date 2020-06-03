@@ -79,14 +79,15 @@ namespace RX.Nyss.Web.Features.Users
                         {
                             Id = p.Id,
                             Name = p.Name,
-                            AlertRecipients = currentUser.Role == Role.Administrator ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
-                            {
-                                Id = anr.Id,
-                                Role = anr.Role,
-                                Organization = anr.Organization,
-                                Email = anr.Email,
-                                PhoneNumber = anr.PhoneNumber
-                            }).ToList()
+                            AlertRecipients = currentUser.Role == Role.Administrator
+                                ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
+                                {
+                                    Id = anr.Id,
+                                    Role = anr.Role,
+                                    Organization = anr.Organization,
+                                    Email = anr.Email,
+                                    PhoneNumber = anr.PhoneNumber
+                                }).ToList()
                                 : p.AlertNotificationRecipients
                                     .Where(anr => anr.OrganizationId == organizationId)
                                     .Select(anr => new ProjectAlertRecipientListResponseDto
@@ -98,12 +99,14 @@ namespace RX.Nyss.Web.Features.Users
                                         PhoneNumber = anr.PhoneNumber
                                     }).ToList()
                         }).ToList(),
-                    Organizations = ns.Organizations.Select(o => new OrganizationsDto
-                    {
-                        Id = o.Id,
-                        Name = o.Name,
-                        IsDefaultOrganization = o == ns.DefaultOrganization
-                    }).ToList(),
+                    Organizations = ns.Organizations
+                        .Select(o => new OrganizationsDto
+                        {
+                            Id = o.Id,
+                            Name = o.Name,
+                            IsDefaultOrganization = o == ns.DefaultOrganization,
+                            HasHeadManager = o.HeadManagerId.HasValue || o.PendingHeadManagerId.HasValue
+                        }).ToList(),
                     HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
                     IsHeadManager = ns.DefaultOrganization.HeadManager == currentUser
                 }).SingleAsync();
@@ -186,9 +189,9 @@ namespace RX.Nyss.Web.Features.Users
 
             var currentUser = await _authorizationService.GetCurrentUserAsync();
             userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
-                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
-                    .Select(uns => uns.Organization)
-                    .SingleOrDefaultAsync();
+                .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                .Select(uns => uns.Organization)
+                .SingleOrDefaultAsync();
 
             await _nyssContext.UserNationalSocieties.AddAsync(userNationalSociety);
             await _nyssContext.SaveChangesAsync();
@@ -213,8 +216,8 @@ namespace RX.Nyss.Web.Features.Users
 
             if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
             {
-                return query.Any(uns => uns.User.Role == Role.Coordinator) ?
-                    query.Where(uns => uns.User.Role == Role.Coordinator)
+                return query.Any(uns => uns.User.Role == Role.Coordinator)
+                    ? query.Where(uns => uns.User.Role == Role.Coordinator)
                     : query.Where(uns =>
                         uns.NationalSociety.DefaultOrganization.HeadManager == uns.User ||
                         uns.NationalSociety.DefaultOrganization.PendingHeadManager == uns.User);

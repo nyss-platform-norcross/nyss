@@ -170,7 +170,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const availableUserRoles = useMemo(() => {
     if (!props.data) {
       return [];
-  }
+    }
 
     if (props.callingUserRoles.some(r => r === roles.Administrator)) {
       return headManagerRoles;
@@ -181,6 +181,10 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     }
 
     if (hasAnyRole(roles.Coordinator)) {
+      if (props.data.organizations.every((o) => o.hasHeadManager)) {
+        return [roles.Coordinator];
+      }
+
       return coordinatorUserRoles;
     }
 
@@ -190,6 +194,18 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
     return userRoles;
   }, [hasAnyRole, props.callingUserRoles, props.data]);
+
+  const avaiableOrganizations = useMemo(() => {
+    if (!props.data) {
+      return [];
+    }
+
+    if (hasAnyRole(roles.Coordinator) && selectedRole === roles.Manager) {
+      return props.data.organizations.filter((o) => !o.hasHeadManager);
+    }
+
+    return props.data.organizations;
+  }, [hasAnyRole, props.callingUserRoles, props.data, selectedRole])
 
   if (!props.data) {
     return null;
@@ -264,7 +280,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                   disabled: selectedRole === roles.Coordinator && hasAnyRole(roles.GlobalCoordinator)
                 }}
               >
-                {props.data.organizations.map(organization => (
+                {avaiableOrganizations.map(organization => (
                   <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
                     {organization.name}
                   </MenuItem>
@@ -284,55 +300,55 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
           {selectedRole === roles.Supervisor && (
             <Fragment>
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
-                field={form.fields.decadeOfBirth}
-                name="decadeOfBirth"
-              >
-                {birthDecades.map(decade => (
-                  <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                    {decade}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.sex)}
-                field={form.fields.sex}
-                name="sex"
-              >
-                {sexValues.map(type => (
-                  <MenuItem key={`sex${type}`} value={type}>
-                    {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.project)}
-                field={form.fields.projectId}
-                name="projectId"
-                onChange={e => onProjectChange(e.target.value)}
-              >
-                {props.data.projects.map(project => (
-                  <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
-                    {project.name}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-            <Grid item xs={12}>
-              <MultiSelect
-                label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
-                options={alertRecipientsDataSource}
-                value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
-                onChange={onAlertRecipientsChange}
-                error={alertRecipientsFieldError}
-              />
-            </Grid>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
+                  field={form.fields.decadeOfBirth}
+                  name="decadeOfBirth"
+                >
+                  {birthDecades.map(decade => (
+                    <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                      {decade}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.sex)}
+                  field={form.fields.sex}
+                  name="sex"
+                >
+                  {sexValues.map(type => (
+                    <MenuItem key={`sex${type}`} value={type}>
+                      {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.project)}
+                  field={form.fields.projectId}
+                  name="projectId"
+                  onChange={e => onProjectChange(e.target.value)}
+                >
+                  {props.data.projects.map(project => (
+                    <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
+                      {project.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+              <Grid item xs={12}>
+                <MultiSelect
+                  label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
+                  options={alertRecipientsDataSource}
+                  value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
+                  onChange={onAlertRecipientsChange}
+                  error={alertRecipientsFieldError}
+                />
+              </Grid>
             </Fragment>
           )}
         </Grid>

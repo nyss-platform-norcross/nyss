@@ -33,6 +33,8 @@ namespace RX.Nyss.Web.Features.Users.Dto
         public string Name { get; set; }
 
         public bool IsDefaultOrganization { get; set; }
+
+        public bool HasHeadManager { get; set; }
     }
 
     public class ListOpenProjectsResponseDto
