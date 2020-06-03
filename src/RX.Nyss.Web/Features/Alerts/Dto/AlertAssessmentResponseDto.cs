@@ -12,8 +12,9 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
 
         public IEnumerable<ReportDto> Reports { get; set; }
 
-        public IEnumerable<AlertRecipientDto> NotificationRecipients { get; set; }
+        public IEnumerable<string> NotificationEmails { get; set; }
 
+        public IEnumerable<string> NotificationPhoneNumbers { get; set; }
         public DateTime CreatedAt { get; set; }
 
         public AlertAssessmentStatus AssessmentStatus { get; set; }
@@ -21,12 +22,6 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public CloseAlertOptions? CloseOption { get; set; }
 
         public string Comments { get; set; }
-
-        public class AlertRecipientDto
-        {
-            public string Email { get; set; }
-            public string PhoneNumber { get; set; }
-        }
 
         public class ReportDto
         {

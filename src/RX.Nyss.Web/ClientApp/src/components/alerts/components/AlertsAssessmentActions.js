@@ -45,8 +45,8 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
               alertId={alertId}
               escalateAlert={props.escalateAlert}
               isEscalating={props.isEscalating}
-              notificationEmails={props.notificationRecipients.map(ar => ar.email)}
-              notificationPhoneNumbers={props.notificationRecipients.map(ar => ar.phoneNumber)}
+              notificationEmails={props.notificationEmails}
+              notificationPhoneNumbers={props.notificationPhoneNumbers}
               isOpened={escalationDialogOpened}
               close={() => setEscalationDialogOpened(false)}
             />
