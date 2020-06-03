@@ -351,6 +351,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FromKnownDataCollector()
                 .FilterByArea(filters.Area)
                 .FilterByDataCollectorType(filters.DataCollectorType)
+                .FilterByOrganization(filters.OrganizationId)
                 .FilterByProject(filters.ProjectId)
                 .FilterReportsByNationalSociety(filters.NationalSocietyId)
                 .FilterByDate(filters.StartDate.Date, filters.EndDate.Date)

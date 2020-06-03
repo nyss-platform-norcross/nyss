@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.NationalSocieties;
@@ -28,24 +31,39 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly INationalSocietyDashboardSummaryService _nationalSocietyDashboardSummaryService;
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
+        private readonly INyssContext _nyssContext;
 
         public NationalSocietyDashboardService(
             INationalSocietyService nationalSocietyService,
             INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
             IReportsDashboardMapService reportsDashboardMapService,
-            IReportsDashboardByVillageService reportsDashboardByVillageService)
+            IReportsDashboardByVillageService reportsDashboardByVillageService,
+            INyssContext nyssContext)
         {
             _nationalSocietyService = nationalSocietyService;
             _nationalSocietyDashboardSummaryService = nationalSocietyDashboardSummaryService;
             _reportsDashboardMapService = reportsDashboardMapService;
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
+            _nyssContext = nyssContext;
         }
 
         public async Task<Result<NationalSocietyDashboardFiltersResponseDto>> GetFiltersData(int nationalSocietyId)
         {
             var healthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId, true);
 
-            var dto = new NationalSocietyDashboardFiltersResponseDto { HealthRisks = healthRiskNames };
+            var organizations = await _nyssContext.Organizations
+                .Where(o => o.NationalSocietyId == nationalSocietyId)
+                .Select(o => new NationalSocietyDashboardFiltersResponseDto.OrganizationDto
+                {
+                    Id = o.Id,
+                    Name = o.Name
+                }).ToListAsync();
+
+            var dto = new NationalSocietyDashboardFiltersResponseDto
+            {
+                HealthRisks = healthRiskNames,
+                Organizations = organizations
+            };
 
             return Success(dto);
         }
@@ -85,6 +103,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 EndDate = filtersDto.EndDate.AddDays(1),
                 HealthRiskId = filtersDto.HealthRiskId,
                 NationalSocietyId = nationalSocietyId,
+                OrganizationId = filtersDto.OrganizationId,
                 Area = filtersDto.Area == null
                     ? null
                     : new Area

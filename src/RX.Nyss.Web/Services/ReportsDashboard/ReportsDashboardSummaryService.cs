@@ -53,6 +53,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             _nyssContext.Alerts
                 .FilterByProject(filters.ProjectId)
                 .FilterByNationalSociety(filters.NationalSocietyId)
+                .FilterByOrganization(filters.OrganizationId)
                 .FilterByHealthRisk(filters.HealthRiskId)
                 .FilterByArea(filters.Area);
     }

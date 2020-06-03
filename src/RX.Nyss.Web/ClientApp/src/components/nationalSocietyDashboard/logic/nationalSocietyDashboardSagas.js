@@ -21,6 +21,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
     const filters = (yield select(state => state.nationalSocietyDashboard.filters)) ||
     {
       healthRiskId: null,
+      organizationId: null,
       area: null,
       startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
       endDate: endDate.format('YYYY-MM-DD'),

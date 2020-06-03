@@ -18,6 +18,8 @@ namespace RX.Nyss.Web.Features.Reports
 
         public Area Area { get; set; }
 
+        public int? OrganizationId { get; set; }
+
         public DataCollectorType? DataCollectorType { get; set; }
 
         public bool IsTraining { get; set; }

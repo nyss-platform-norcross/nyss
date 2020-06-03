@@ -52,7 +52,8 @@ export const initialState = {
     isFetching: true,
     isGeneratingPdf: false,
     filtersData: {
-      healthRisks: []
+      healthRisks: [],
+      organizations: []
     },
     filters: null,
     reportsGroupedByLocationDetails: null,
@@ -132,6 +133,7 @@ export const initialState = {
     isFetching: true,
     isGeneratingPdf: false,
     filtersData: {
+      organizations: [],
       healthRisks: []
     },
     filters: null,

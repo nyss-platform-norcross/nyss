@@ -23,6 +23,14 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<RawReport> FilterReportsByNationalSociety(this IQueryable<RawReport> reports, int? nationalSocietyId) =>
             reports.Where(r => !nationalSocietyId.HasValue || r.DataCollector.Project.NationalSocietyId == nationalSocietyId.Value);
 
+        public static IQueryable<RawReport> FilterByOrganization(this IQueryable<RawReport> reports, int? organizationId) =>
+            organizationId.HasValue
+                ? reports.Where(r => r.DataCollector.Supervisor.UserNationalSocieties
+                    .Any(uns =>
+                        uns.NationalSociety == r.DataCollector.Project.NationalSociety
+                        && uns.OrganizationId == organizationId.Value))
+                : reports;
+
         public static IQueryable<RawReport> AllSuccessfulReports(this IQueryable<RawReport> reports) =>
             reports.Where(r => r.Report != null);
 
