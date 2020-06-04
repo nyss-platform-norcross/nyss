@@ -35,7 +35,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
-    setRole(roles.Manager);
   });
 
   const hasAnyRole = useCallback((...roles) =>
@@ -49,6 +48,46 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     || (props.data && props.data.isHeadManager && !props.data.hasCoordinator && selectedRole === roles.Coordinator),
     [hasAnyRole, selectedRole, props.data]);
 
+  const availableUserRoles = useMemo(() => {
+    if (!props.data) {
+      return [];
+    }
+
+    if (props.callingUserRoles.some(r => r === roles.Administrator)) {
+      return headManagerRoles;
+    }
+
+    if (hasAnyRole(roles.GlobalCoordinator)) {
+      return globalCoordinatorUserRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
+    }
+
+    if (hasAnyRole(roles.Coordinator)) {
+      if (props.data.organizations.every((o) => o.hasHeadManager)) {
+        return [roles.Coordinator];
+      }
+
+      return coordinatorUserRoles;
+    }
+
+    if (props.data.isHeadManager) {
+      return headManagerRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
+    }
+
+    return userRoles;
+  }, [hasAnyRole, props.callingUserRoles, props.data]);
+
+  const availableOrganizations = useMemo(() => {
+    if (!props.data) {
+      return [];
+    }
+
+    if (hasAnyRole(roles.Coordinator) && selectedRole === roles.Manager) {
+      return props.data.organizations.filter((o) => !o.hasHeadManager);
+    }
+
+    return props.data.organizations;
+  }, [hasAnyRole, props.data, selectedRole]);
+
   const form = useMemo(() => {
     if (!props.data) {
       return null;
@@ -56,17 +95,16 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
     const fields = {
       nationalSocietyId: parseInt(props.nationalSocietyId),
-      role: roles.Manager,
-      name: "",
-      email: "",
-      phoneNumber: "",
-      additionalPhoneNumber: "",
-      organization: "",
-      decadeOfBirth: "",
-      projectId: "",
-      sex: "",
-      organizationId: props.data.organizations.some(o => o.isDefaultOrganization)
-        && props.data.organizations.filter(o => o.isDefaultOrganization)[0].id.toString()
+      role: '',
+      name: '',
+      email: '',
+      phoneNumber: '',
+      additionalPhoneNumber: '',
+      organization: '',
+      decadeOfBirth: '',
+      projectId: '',
+      sex: '',
+      organizationId: ''
     };
 
     const validation = {
@@ -86,6 +124,28 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
     return newForm;
   }, [props.data, props.nationalSocietyId]);
+
+  useEffect(() => {
+    if (!form || selectedRole) {
+      return;
+    }
+
+    const newRole = availableUserRoles.some(r => r === roles.Manager) ? roles.Manager : availableUserRoles[0];
+    setRole(newRole);
+    form.fields.role.update(newRole);
+  }, [availableUserRoles, selectedRole, form]);
+
+  useEffect(() => {
+    if (!form) {
+      return;
+    }
+
+    const organizationId = availableOrganizations.some(o => o.isDefaultOrganization) ?
+      availableOrganizations.filter(o => o.isDefaultOrganization)[0].id.toString()
+      : (availableOrganizations.length > 0 && availableOrganizations[0].id.toString()) || '';
+
+    form.fields.organizationId.update(organizationId);
+  }, [availableOrganizations, availableUserRoles, form]);
 
   useEffect(() => {
     form && form.fields.organizationId.setValidators([validators.requiredWhen(_ => canChangeOrganization)]);
@@ -167,46 +227,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     createUser();
   }, [createUser, form, selectedRole, props.data, alertRecipientsFieldError, confirmCoordinatorDialog, selectedAlertRecipients]);
 
-  const availableUserRoles = useMemo(() => {
-    if (!props.data) {
-      return [];
-    }
-
-    if (props.callingUserRoles.some(r => r === roles.Administrator)) {
-      return headManagerRoles;
-    }
-
-    if (hasAnyRole(roles.GlobalCoordinator)) {
-      return globalCoordinatorUserRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
-    }
-
-    if (hasAnyRole(roles.Coordinator)) {
-      if (props.data.organizations.every((o) => o.hasHeadManager)) {
-        return [roles.Coordinator];
-      }
-
-      return coordinatorUserRoles;
-    }
-
-    if (props.data.isHeadManager) {
-      return headManagerRoles.filter(r => !props.data.hasCoordinator || r !== roles.Coordinator);
-    }
-
-    return userRoles;
-  }, [hasAnyRole, props.callingUserRoles, props.data]);
-
-  const avaiableOrganizations = useMemo(() => {
-    if (!props.data) {
-      return [];
-    }
-
-    if (hasAnyRole(roles.Coordinator) && selectedRole === roles.Manager) {
-      return props.data.organizations.filter((o) => !o.hasHeadManager);
-    }
-
-    return props.data.organizations;
-  }, [hasAnyRole, props.callingUserRoles, props.data, selectedRole])
-
   if (!props.data) {
     return null;
   }
@@ -280,7 +300,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                   disabled: selectedRole === roles.Coordinator && hasAnyRole(roles.GlobalCoordinator)
                 }}
               >
-                {avaiableOrganizations.map(organization => (
+                {availableOrganizations.map(organization => (
                   <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
                     {organization.name}
                   </MenuItem>
