@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as organizationsActions from './logic/organizationsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -39,6 +39,8 @@ const OrganizationsEditPageComponent = (props) => {
     setForm(createForm(fields, validation));
   }, [props.data, props.match]);
 
+  useCustomErrors(form, props.error);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -59,7 +61,7 @@ const OrganizationsEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
@@ -80,9 +82,6 @@ const OrganizationsEditPageComponent = (props) => {
     </Fragment>
   );
 }
-
-OrganizationsEditPageComponent.propTypes = {
-};
 
 const mapStateToProps = (state, ownProps) => ({
   organizationId: ownProps.match.params.organizationId,

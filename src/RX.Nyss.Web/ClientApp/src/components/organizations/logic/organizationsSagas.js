@@ -59,7 +59,7 @@ function* createOrganization({ nationalSocietyId, data }) {
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.organization.create.success));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 
@@ -71,7 +71,7 @@ function* editOrganization({ nationalSocietyId, data }) {
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.organization.edit.success));
   } catch (error) {
-    yield put(actions.edit.failure(error.message));
+    yield put(actions.edit.failure(error));
   }
 };
 
@@ -83,7 +83,7 @@ function* removeOrganization({ nationalSocietyId, organizationId }) {
     yield call(getOrganizations, nationalSocietyId);
     yield put(appActions.showMessage(stringKeys.organization.delete.success));
   } catch (error) {
-    yield put(actions.remove.failure(organizationId, error.message));
+    yield put(actions.remove.failure(organizationId, error));
   }
 };
 
@@ -93,7 +93,7 @@ function* getOrganizations(nationalSocietyId) {
     const response = yield call(http.get, `/api/organization/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
-    yield put(actions.getList.failure(error.message));
+    yield put(actions.getList.failure(error));
   }
 };
 

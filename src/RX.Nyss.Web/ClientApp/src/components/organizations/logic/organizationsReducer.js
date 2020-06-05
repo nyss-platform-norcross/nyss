@@ -43,7 +43,7 @@ export function organizationsReducer(state = initialState.organizations, action)
       return { ...state, formSaving: false, listStale: true };
 
     case actions.CREATE_ORGANIZATION.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.EDIT_ORGANIZATION.REQUEST:
       return { ...state, formSaving: true };
@@ -52,7 +52,7 @@ export function organizationsReducer(state = initialState.organizations, action)
       return { ...state, formSaving: false, listStale: true };
 
     case actions.EDIT_ORGANIZATION.FAILURE:
-      return { ...state, formSaving: false };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.REMOVE_ORGANIZATION.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };

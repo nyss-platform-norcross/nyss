@@ -1,12 +1,14 @@
 import { stringKeys, stringKey } from "../strings";
 import * as cache from "./cache";
 import { reloadPage } from "./page";
+import { RequestError } from "./RequestError";
 
 export const post = (path, data, anonymous) => {
   const headers = {
     "Accept": "application/json",
     "Content-Type": "application/json"
   };
+
   return callApi(path, "POST", data || {}, headers, !anonymous)
     .then(response => {
       ensureResponseIsSuccess(response);
@@ -31,7 +33,10 @@ export const getCached = ({ path, dependencies }) =>
 
 export const ensureResponseIsSuccess = (response) => {
   if (!response.isSuccess) {
-    throw new Error(stringKey((response.message && response.message.key) || stringKeys.error.responseNotSuccessful));
+    const message = stringKey((response.message && response.message.key) || stringKeys.error.responseNotSuccessful);
+    const data = response.message && response.message.data;
+
+    throw new RequestError(message, data);
   }
 };
 
@@ -44,7 +49,11 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
         ...headers,
         "Pragma": "no-cache",
         "Cache-Control": "no-cache",
-        "Expires": "0"
+        "Expires": "0",
+        ...(window.userLanguage
+          ? { "Accept-Language": `${window.userLanguage}, en;q=0.5` }
+          : {}
+        )
       })
     };
     if (data) {

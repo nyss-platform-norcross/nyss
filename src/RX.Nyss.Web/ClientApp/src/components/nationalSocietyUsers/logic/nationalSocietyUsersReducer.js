@@ -43,16 +43,16 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formSaving: false, listStale: true };
 
     case actions.CREATE_NATIONAL_SOCIETY_USER.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.REQUEST:
       return { ...state, formSaving: true };
 
     case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.SUCCESS:
-        return { ...state, formSaving: false, listStale: true };
+      return { ...state, formSaving: false, listStale: true };
 
     case actions.ADD_EXISTING_NATIONAL_SOCIETY_USER.FAILURE:
-        return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.EDIT_NATIONAL_SOCIETY_USER.REQUEST:
       return { ...state, formSaving: true };
@@ -61,7 +61,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formSaving: false, listStale: true };
 
     case actions.EDIT_NATIONAL_SOCIETY_USER.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.REMOVE_NATIONAL_SOCIETY_USER.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };
@@ -79,7 +79,7 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, listStale: true, settingAsHead: setProperty(state.settingAsHead, action.id, undefined) };
 
     case actions.SET_AS_HEAD_MANAGER.FAILURE:
-      return { ...state, settingAsHead: setProperty(state.settingAsHead, action.id, undefined), message: action.message };
+      return { ...state, settingAsHead: setProperty(state.settingAsHead, action.id, undefined), message: action.error && action.error.message };
 
     case nationalSocietyActions.ARCHIVE_NATIONAL_SOCIETY.SUCCESS:
       return { ...state, listStale: true };

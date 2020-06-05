@@ -31,6 +31,7 @@ class FieldBase extends PureComponent {
         : this.setAutoCompleteValue(val) || e.target.value);
 
     this.setState({ value: value });
+    this.props.field._customError = null;
     this.props.field.update(value, !this.props.field.touched && (type === "textbox" || type === "password"));
   }
 

@@ -33,7 +33,7 @@ function* openNationalSocietyUsersList({ nationalSocietyId }) {
 
     yield put(actions.openList.success());
   } catch (error) {
-    yield put(actions.openList.failure(error.message));
+    yield put(actions.openList.failure(error));
   }
 };
 
@@ -44,7 +44,7 @@ function* openNationalSocietyUserCreation({ nationalSocietyId }) {
     const formData = yield call(http.get, `/api/user/createFormData?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.openCreation.success(formData.value));
   } catch (error) {
-    yield put(actions.openCreation.failure(error.message));
+    yield put(actions.openCreation.failure(error));
   }
 };
 
@@ -54,7 +54,7 @@ function* openNationalSocietyAddExistingUser({ nationalSocietyId }) {
     yield openNationalSocietyUsersModule(nationalSocietyId);
     yield put(actions.openAddExisting.success());
   } catch (error) {
-    yield put(actions.openAddExisting.failure(error.message));
+    yield put(actions.openAddExisting.failure(error));
   }
 };
 
@@ -67,7 +67,7 @@ function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
     yield openNationalSocietyUsersModule(nationalSocietyId);
     yield put(actions.openEdition.success(response.value, formData.value.organizations));
   } catch (error) {
-    yield put(actions.openEdition.failure(error.message));
+    yield put(actions.openEdition.failure(error));
   }
 };
 
@@ -79,7 +79,7 @@ function* createNationalSocietyUser({ nationalSocietyId, data }) {
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.nationalSocietyUser.messages.creationSuccessful));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 
@@ -91,7 +91,7 @@ function* addExistingNationalSocietyUser({ nationalSocietyId, data }) {
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.nationalSocietyUser.create.success));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 
@@ -103,7 +103,7 @@ function* editNationalSocietyUser({ nationalSocietyId, data }) {
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.nationalSocietyUser.edit.success));
   } catch (error) {
-    yield put(actions.edit.failure(error.message));
+    yield put(actions.edit.failure(error));
   }
 };
 
@@ -114,7 +114,7 @@ function* removeNationalSocietyUser({ nationalSocietyUserId, role, nationalSocie
     yield put(actions.remove.success(nationalSocietyUserId));
     yield put(appActions.showMessage(stringKeys.nationalSocietyUser.remove.success));
   } catch (error) {
-    yield put(actions.remove.failure(nationalSocietyUserId, error.message));
+    yield put(actions.remove.failure(nationalSocietyUserId, error));
   }
 };
 
@@ -124,7 +124,7 @@ function* getNationalSocietyUsers(nationalSocietyId) {
     const response = yield call(http.get, `/api/user/list?nationalSocietyId=${nationalSocietyId}`);
     yield put(actions.getList.success(nationalSocietyId, response.value));
   } catch (error) {
-    yield put(actions.getList.failure(error.message));
+    yield put(actions.getList.failure(error));
   }
 };
 
@@ -137,7 +137,7 @@ function* setAsHeadManagerInOrganization({ organizationId, nationalSocietyUserId
     const nationalSocietyId = yield select(state => state.appData.route.params.nationalSocietyId);
     yield call(getNationalSocietyUsers, nationalSocietyId);
   } catch (error) {
-    yield put(actions.setAsHeadManager.failure(nationalSocietyUserId, error.message));
+    yield put(actions.setAsHeadManager.failure(nationalSocietyUserId, error));
   }
 };
 

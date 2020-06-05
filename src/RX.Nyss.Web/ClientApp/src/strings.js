@@ -939,6 +939,9 @@ export const stringKeys = {
   }
 };
 
+export const isStringKey = (key) =>
+  (key && key.substr(0, stringPrefix.length) === stringPrefix);
+
 export const extractString = (keyValue, noEditor) =>
   strings(extractKey(keyValue), noEditor);
 
@@ -976,7 +979,7 @@ export const stringKey = (key) =>
   `${stringPrefix}${key}`;
 
 export const extractKey = (key) =>
-  (key && key.substr(0, stringPrefix.length) === stringPrefix)
+  isStringKey(key)
     ? key.substring(stringPrefix.length)
     : key
 

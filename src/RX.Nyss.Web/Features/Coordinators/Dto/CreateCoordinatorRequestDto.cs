@@ -3,6 +3,7 @@ using FluentValidation.Validators;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Coordinators.Dto
 {
@@ -28,7 +29,7 @@ namespace RX.Nyss.Web.Features.Coordinators.Dto
                 RuleFor(m => m.OrganizationId)
                     .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganizationToUser(model.NationalSocietyId))
                     .When(model => model.OrganizationId.HasValue)
-                    .WithMessage(ResultKey.Organization.NoAccessToChangeOrganization);
+                    .WithMessageKey(ResultKey.Organization.NoAccessToChangeOrganization);
             }
         }
     }
