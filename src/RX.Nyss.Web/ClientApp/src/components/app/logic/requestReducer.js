@@ -56,7 +56,7 @@ export function requestReducer(state = initialState.requests, action) {
       return {
         ...state,
         isFetching: false,
-        errorMessage: action.suppressPopup ? null : action.message,
+        errorMessage: action.suppressPopup ? null : (action.message || (action.error && action.error.message)),
         pending: {
           ...state.pending,
           ...(action.id ? ({ [actionName + "_" + action.id]: false }) : {}),

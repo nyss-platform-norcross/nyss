@@ -30,6 +30,8 @@ function* initApplication() {
       yield put(actions.goToNationalSocietyConsents())
     }
 
+    window.userLanguage = user && user.languageCode;
+
     storeUser(user);
   } catch (error) {
     yield put(actions.initApplication.failure(error.message));

@@ -3,6 +3,7 @@ using FluentValidation;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Projects.Access;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Projects.Dto
 {
@@ -30,7 +31,7 @@ namespace RX.Nyss.Web.Features.Projects.Dto
                 RuleFor(m => m.OrganizationId)
                     .Must((model, _, t) => projectAccessService.HasCurrentUserAccessToAssignOrganizationToProject())
                     .When(model => model.OrganizationId.HasValue)
-                    .WithMessage(ResultKey.Organization.NoAccessToChangeOrganization);
+                    .WithMessageKey(ResultKey.Organization.NoAccessToChangeOrganization);
             }
         }
     }

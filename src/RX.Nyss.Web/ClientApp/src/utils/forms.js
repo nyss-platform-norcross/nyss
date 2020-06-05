@@ -1,4 +1,5 @@
-import { strings, stringKeys, stringsFormat } from "../strings";
+import { strings, stringKeys, stringsFormat, extractString, isStringKey } from "../strings";
+import { useEffect } from "react";
 
 const validateField = (field, formValues) => {
   if (field._validators && field._validators.length !== 0) {
@@ -16,6 +17,13 @@ const validateField = (field, formValues) => {
         };
       }
     }
+  }
+
+  if (field._customError) {
+    return {
+      isValid: false,
+      errorMessage: field._customError
+    };
   }
 
   return {
@@ -43,22 +51,15 @@ const onChange = (name, newValue, subscribers, form, suspendValidation, formSubs
 
 const validateFields = (fields) => {
   let isValid = true;
-  const formValues = getFormValues(fields);
-
   for (let name in fields) {
     if (!fields.hasOwnProperty(name)) {
       continue;
     }
 
     const field = fields[name];
-
-    const validationResult = validateField(field, formValues);
-
-
-    field.error = validationResult.errorMessage;
     field.update(field.value);
 
-    if (!validationResult.isValid) {
+    if (field.error) {
       isValid = false;
     }
   }
@@ -66,14 +67,14 @@ const validateFields = (fields) => {
   return isValid;
 };
 
-const getFormValues = (form) => {
+const getFormValues = (fields) => {
   let result = {};
-  for (let name in form) {
-    if (!form.hasOwnProperty(name)) {
+  for (let name in fields) {
+    if (!fields.hasOwnProperty(name)) {
       continue;
     }
 
-    result[name] = form[name].value;
+    result[name] = fields[name].value;
   }
   return result;
 };
@@ -94,6 +95,7 @@ const createFormField = (name, value, validatorDefinition, form, formSubscribers
     },
     _subscribers: subscribers,
     _validators: validatorDefinition,
+    _customError: null,
     update: (newValue, suspendValidation) => onChange(name, newValue, subscribers, form, suspendValidation, formSubscribers)
   };
 
@@ -101,6 +103,11 @@ const createFormField = (name, value, validatorDefinition, form, formSubscribers
 
   return field;
 }
+
+export const useCustomErrors = (form, error) =>
+  useEffect(() => {
+    form && form.setCustomErrors(error && error.data)
+  }, [form, error]);
 
 export const createForm = (fields, validators) => {
   const form = {};
@@ -126,14 +133,50 @@ export const createForm = (fields, validators) => {
     delete form[name];
   };
 
+  const setCustomErrors = (errors) => {
+    const customErrorsKeys = errors ? Object.keys(errors) : [];
+    let hasNewState = false;
+
+    for (let name in form) {
+      if (!form.hasOwnProperty(name)) {
+        continue;
+      }
+
+      const field = form[name];
+      const customErrorKey = customErrorsKeys.find(e => e.toLowerCase() === name.toLowerCase());
+
+      if (customErrorKey) {
+        const errorMessages = errors[customErrorKey];
+
+        if (errorMessages && errorMessages.length) {
+          if (!field._customError) {
+            hasNewState = true;
+          }
+
+          field._customError = isStringKey(errorMessages[0]) ? extractString(errorMessages[0]) : errorMessages[0];
+        }
+      } else if (field._customError) {
+        field._customError = null;
+        hasNewState = true;
+      }
+    }
+
+    hasNewState && validateFields(form);
+  };
+
   return {
     fields: form,
-    isValid: () => validateFields(form, getFormValues(form)),
+    isValid: () => {
+      setCustomErrors([]);
+      return validateFields(form);
+    },
     getValues: () => getFormValues(form),
     subscribe: subscribeToForm,
     addField: (name, value, fieldValidators) => {
       form[name] = createFormField(name, value, fieldValidators, form, formSubscribers)
     },
+    setCustomErrors: setCustomErrors,
+    clearCustomErrors: () => setCustomErrors([]),
     removeField: (name, _, __) => removeField(name),
     subscribeOnce: callback => {
       const { unsubscribe } = subscribeToForm(() => {

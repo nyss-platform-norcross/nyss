@@ -22,6 +22,8 @@ namespace RX.Nyss.Web.Configuration
 
         public string FuncAppBaseUrl { get; set; }
 
+        public string Languages { get; set; }
+
         public string Environment { get; set; }
 
         public bool IsProduction => Environment == NyssEnvironments.Prod || Environment == NyssEnvironments.Demo;

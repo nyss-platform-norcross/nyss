@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as organizationsActions from './logic/organizationsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -27,6 +27,8 @@ const OrganizationsCreatePageComponent = (props) => {
     return createForm(fields, validation)
   });
 
+  useCustomErrors(form, props.error);
+
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
   })
@@ -46,7 +48,7 @@ const OrganizationsCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FluentValidation;
-using RX.Nyss.Web.Features.Alerts.Dto;
 
 namespace RX.Nyss.Web.Features.Projects.Dto
 {

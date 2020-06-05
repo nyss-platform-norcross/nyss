@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useMemo, useCallback } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -82,6 +82,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
     return createForm(fields, validation);
   }, [props.data, props.nationalSocietyId]);
 
+  useCustomErrors(form, props.error);
+
   const onProjectChange = useCallback(projectId => {
     const project = props.data.editSupervisorFormData.availableProjects.filter(p => p.id === parseInt(projectId))[0];
     const newAlertRecipientsDataSource = [{ label: strings(stringKeys.nationalSocietyUser.form.alertRecipientsAll), value: 0, data: { id: 0 } }, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
@@ -157,7 +159,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

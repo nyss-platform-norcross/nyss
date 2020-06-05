@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -31,6 +31,8 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
     return createForm(fields, validation);
   });
 
+  useCustomErrors(form, props.error);
+
   useMount(() => {
     props.openAddExisting(props.nationalSocietyId);
   })
@@ -47,14 +49,14 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && <ValidationMessage message={props.error.message} />}
 
-       <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit}>
         <Box mb={3}>
           <Typography variant="body1">{strings(stringKeys.nationalSocietyUser.form.addExistingDescription)}</Typography>
         </Box>
 
-         <Grid container spacing={3}>
+        <Grid container spacing={3}>
 
           <Grid item xs={12}>
             <TextInputField

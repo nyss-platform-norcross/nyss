@@ -1,5 +1,9 @@
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +28,8 @@ namespace RX.Nyss.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            var config = Configuration.Get<ConfigSingleton>();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -37,6 +43,18 @@ namespace RX.Nyss.Web
             }
 
             app.UseCustomExceptionHandler();
+
+            var supportedCultures = config.Languages.Split(",").Select(lang => new CultureInfo(lang)).ToList();
+
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures,
+                RequestCultureProviders = new List<IRequestCultureProvider>
+                {
+                    new AcceptLanguageHeaderRequestCultureProvider()
+                }
+            });
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
