@@ -294,7 +294,7 @@ namespace RX.Nyss.Data.MigrationApp
 
                 context.SaveChanges();
 
-                context.SupervisorUserProjects.AddRange(context.Users.Where(u => u.Role == Role.Supervisor)
+                context.SupervisorUserProjects.AddRange(context.Users.Where(u => u.Role == Role.Supervisor && !context.SupervisorUserProjects.Any(sup => sup.SupervisorUserId == u.Id))
                     .Select(sup => new SupervisorUserProject
                     {
                         Project = context.Projects.First(p => p.NationalSocietyId == 2),
