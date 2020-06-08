@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useEffect, useMemo, useCallback } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as projectsActions from './logic/projectsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -45,13 +45,15 @@ const ProjectsCreatePageComponent = (props) => {
     };
 
     const validation = {
-      name: [validators.required, validators.minLength(1), validators.maxLength(100)],
+      name: [validators.required, validators.minLength(1), validators.maxLength(110)],
       timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)],
       organizationId: [validators.requiredWhen(f => canChangeOrganization())]
     };
 
     return createForm(fields, validation);
   }, [canChangeOrganization]);
+
+  useCustomErrors(form, props.error);
 
   useMount(() => {
     props.openCreation(props.nationalSocietyId);
@@ -87,7 +89,7 @@ const ProjectsCreatePageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={3}>
@@ -114,28 +116,30 @@ const ProjectsCreatePageComponent = (props) => {
             </SelectField>
           </Grid>
 
-          <Grid item xs={12} sm={9}>
-            <CheckboxField
-              label={strings(stringKeys.project.form.allowMultipleOrganizations)}
-              name="allowMultipleOrganizations"
-              field={form.fields.allowMultipleOrganizations}
-            />
-          </Grid>
-
           {canChangeOrganization() && (
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.project.form.organization)}
-                field={form.fields.organizationId}
-                name="organizationId"
-              >
-                {props.data.organizations.map(organization => (
-                  <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
-                    {organization.name}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
+            <Fragment>
+              <Grid item xs={12} sm={9}>
+                <CheckboxField
+                  label={strings(stringKeys.project.form.allowMultipleOrganizations)}
+                  name="allowMultipleOrganizations"
+                  field={form.fields.allowMultipleOrganizations}
+                />
+              </Grid>
+
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.project.form.organization)}
+                  field={form.fields.organizationId}
+                  name="organizationId"
+                >
+                  {props.data.organizations.map(organization => (
+                    <MenuItem key={`organization_${organization.id}`} value={organization.id.toString()}>
+                      {organization.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+            </Fragment>
           )}
 
           <Grid item xs={12}>

@@ -7,9 +7,9 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
     {
         public IEnumerable<HealthRiskDto> HealthRisks { get; set; }
 
-        public IEnumerable<OrganizationDto> Organizations { get; set; }
+        public IEnumerable<ProjectOrganizationDto> Organizations { get; set; }
 
-        public class OrganizationDto
+        public class ProjectOrganizationDto
         {
             public int Id { get; set; }
 

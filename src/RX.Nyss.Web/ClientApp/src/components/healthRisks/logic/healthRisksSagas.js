@@ -49,7 +49,6 @@ function* createHealthRisk({ data }) {
   yield put(actions.create.request());
   try {
     const response = yield call(http.post, "/api/healthrisk/create", data);
-    http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.healthRisk.create.success));
@@ -62,7 +61,6 @@ function* editHealthRisk({ id, data }) {
   yield put(actions.edit.request());
   try {
     const response = yield call(http.post, `/api/healthrisk/${id}/edit`, data);
-    http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.healthRisk.edit.success));

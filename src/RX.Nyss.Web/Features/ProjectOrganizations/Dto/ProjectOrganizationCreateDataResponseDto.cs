@@ -4,9 +4,9 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations.Dto
 {
     public class ProjectOrganizationCreateDataResponseDto
     {
-        public IEnumerable<OrganizationDto> Organizations { get; set; }
+        public IEnumerable<CreateProjectOrganizationDto> Organizations { get; set; }
 
-        public class OrganizationDto
+        public class CreateProjectOrganizationDto
         {
             public int Id { get; set; }
 

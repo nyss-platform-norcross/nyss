@@ -57,7 +57,7 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations
                 {
                     Organizations = p.NationalSociety.Organizations
                         .Where(o => !p.ProjectOrganizations.Any(po => po.OrganizationId == o.Id))
-                        .Select(o => new ProjectOrganizationCreateDataResponseDto.OrganizationDto
+                        .Select(o => new ProjectOrganizationCreateDataResponseDto.CreateProjectOrganizationDto
                         {
                             Id = o.Id,
                             Name = o.Name

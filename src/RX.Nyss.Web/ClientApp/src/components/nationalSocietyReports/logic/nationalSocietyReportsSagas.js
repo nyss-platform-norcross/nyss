@@ -47,7 +47,6 @@ function* getNationalSocietyReports({ nationalSocietyId, pageNumber, filters, so
   yield put(actions.getList.request());
   try {
     const response = yield call(http.post, `/api/nationalSocietyReport/list?nationalSocietyId=${nationalSocietyId}&pageNumber=${pageNumber || 1}`, { ...filters, ...sorting });
-    http.ensureResponseIsSuccess(response);
     yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters, sorting));
   } catch (error) {
     yield put(actions.getList.failure(error.message));

@@ -27,7 +27,7 @@ export function projectsReducer(state = initialState.projects, action) {
       return { ...state, formFetching: false, formData: action.data};
 
     case actions.OPEN_PROJECT_CREATION.FAILURE:
-      return { ...state, formFetching: false };
+      return { ...state, formFetching: false, formError: action.error };
 
     case actions.OPEN_PROJECT_EDITION.INVOKE:
       return { ...state, formFetching: true, formData: null, formHealthRisks: [], formTimeZones: [] };
@@ -60,7 +60,7 @@ export function projectsReducer(state = initialState.projects, action) {
       return { ...state, formSaving: false, listStale: true };
 
     case actions.CREATE_PROJECT.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.EDIT_PROJECT.REQUEST:
       return { ...state, formSaving: true };

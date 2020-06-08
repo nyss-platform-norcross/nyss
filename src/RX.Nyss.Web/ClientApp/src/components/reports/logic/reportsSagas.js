@@ -60,7 +60,6 @@ function* getReports({ projectId, pageNumber, filters, sorting }) {
   yield put(actions.getList.request());
   try {
     const response = yield call(http.post, `/api/report/list?projectId=${projectId}&pageNumber=${page}`, { ...requestFilters, ...requestSorting });
-    http.ensureResponseIsSuccess(response);
     yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, requestFilters, requestSorting));
   } catch (error) {
     yield put(actions.getList.failure(error.message));

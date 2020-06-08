@@ -50,7 +50,6 @@ function* createGlobalCoordinator({ data }) {
   yield put(actions.create.request());
   try {
     const response = yield call(http.post, "/api/globalcoordinator/create", data);
-    http.ensureResponseIsSuccess(response);
     yield put(actions.create.success(response.value));
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.globalCoordinator.create.success));
@@ -63,7 +62,6 @@ function* editGlobalCoordinator({ data }) {
   yield put(actions.edit.request());
   try {
     const response = yield call(http.post, `/api/globalcoordinator/${data.id}/edit`, data);
-    http.ensureResponseIsSuccess(response);
     yield put(actions.edit.success(response.value));
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.globalCoordinator.edit.success));
