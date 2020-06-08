@@ -237,7 +237,7 @@ namespace RX.Nyss.Data.MigrationApp
 
                 context.Projects.Add(new Project
                 {
-                    Name = "Projet d'essai de Mandawi",
+                    Name = "Mandawi - Projet test",
                     NationalSociety = context.NationalSocieties.First(ns => ns.Id == 2),
                     StartDate = DateTime.UtcNow,
                     TimeZone = "UTC",
