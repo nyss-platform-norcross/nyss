@@ -377,6 +377,13 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<AlertLogResponseDto>> GetLogs(int alertId)
         {
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+
+            var userOrganizations = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.UserId == currentUser.Id)
+                .Select(uns => uns.Organization)
+                .ToListAsync();
+
             var alert = await _nyssContext.Alerts
                 .IgnoreQueryFilters()
                 .Where(a => a.Id == alertId)
@@ -388,13 +395,13 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.ClosedAt,
                     a.CloseOption,
                     a.Comments,
-                    EscalatedBy = a.EscalatedBy.DeletedAt.HasValue ?
+                    EscalatedBy = a.EscalatedBy.DeletedAt.HasValue || !userOrganizations.Contains(_nyssContext.UserNationalSocieties.First(uns => uns.UserId == a.EscalatedBy.Id).Organization) ?
                         a.EscalatedBy.UserNationalSocieties.Single(eduns => eduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                         : a.EscalatedBy.Name,
-                    DismissedBy = a.DismissedBy.DeletedAt.HasValue ?
+                    DismissedBy = a.DismissedBy.DeletedAt.HasValue || !userOrganizations.Contains(_nyssContext.UserNationalSocieties.First(uns => uns.UserId == a.DismissedBy.Id).Organization) ?
                         a.DismissedBy.UserNationalSocieties.Single(dbuns => dbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                         : a.DismissedBy.Name,
-                    ClosedBy = a.ClosedBy.DeletedAt.HasValue ?
+                    ClosedBy = a.ClosedBy.DeletedAt.HasValue || !userOrganizations.Contains(_nyssContext.UserNationalSocieties.First(uns => uns.UserId == a.ClosedBy.Id).Organization) ?
                         a.ClosedBy.UserNationalSocieties.Single(cbuns => cbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                         : a.ClosedBy.Name,
                     ProjectTimeZone = a.ProjectHealthRisk.Project.TimeZone,
@@ -410,13 +417,13 @@ namespace RX.Nyss.Web.Features.Alerts
                             ar.Report.AcceptedAt,
                             ar.Report.RejectedAt,
                             ar.Report.ResetAt,
-                            AcceptedBy = ar.Report.AcceptedBy.DeletedAt.HasValue ?
+                            AcceptedBy = ar.Report.AcceptedBy.DeletedAt.HasValue || !userOrganizations.Contains(_nyssContext.UserNationalSocieties.First(uns => uns.UserId == ar.Report.AcceptedBy.Id).Organization) ?
                                 ar.Report.AcceptedBy.UserNationalSocieties.Single(abuns => abuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                                 : ar.Report.AcceptedBy.Name,
-                            RejectedBy = ar.Report.RejectedBy.DeletedAt.HasValue ?
+                            RejectedBy = ar.Report.RejectedBy.DeletedAt.HasValue || !userOrganizations.Contains(_nyssContext.UserNationalSocieties.First(uns => uns.UserId == ar.Report.RejectedBy.Id).Organization) ?
                                 ar.Report.RejectedBy.UserNationalSocieties.Single(rejecteduns => rejecteduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                                 : ar.Report.RejectedBy.Name,
-                            ResetBy = ar.Report.ResetBy.DeletedAt.HasValue ?
+                            ResetBy = ar.Report.ResetBy.DeletedAt.HasValue || !userOrganizations.Contains(_nyssContext.UserNationalSocieties.First(uns => uns.UserId == ar.Report.ResetBy.Id).Organization) ?
                                 ar.Report.ResetBy.UserNationalSocieties.Single(resetuns => resetuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                                 : ar.Report.ResetBy.Name,
                         })
