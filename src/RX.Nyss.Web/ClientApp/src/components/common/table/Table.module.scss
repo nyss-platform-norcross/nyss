@@ -6,7 +6,8 @@
   position: relative;
 
   @media screen and (max-width: 1919px) {
-      overflow-x: scroll;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 }
 
@@ -17,7 +18,7 @@
 
 .inactiveRow {
   @extend .clickableRow;
-  >td{
+  > td {
     color: #a2a2a2;
   }
 }
@@ -31,9 +32,9 @@
     z-index: 1;
 
     @media screen and (min-width: 1280px) {
-        top: 0px !important;
-        position: sticky;
-        background: white;
+      top: 0px !important;
+      position: sticky;
+      background: white;
     }
   }
 }
