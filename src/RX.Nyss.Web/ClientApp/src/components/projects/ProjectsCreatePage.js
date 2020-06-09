@@ -45,7 +45,7 @@ const ProjectsCreatePageComponent = (props) => {
     };
 
     const validation = {
-      name: [validators.required, validators.minLength(1), validators.maxLength(110)],
+      name: [validators.required, validators.minLength(1), validators.maxLength(100)],
       timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)],
       organizationId: [validators.requiredWhen(f => canChangeOrganization())]
     };

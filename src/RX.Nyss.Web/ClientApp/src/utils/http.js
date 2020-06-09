@@ -9,17 +9,11 @@ export const post = (path, data, anonymous) => {
     "Content-Type": "application/json"
   };
 
-  return callApi(path, "POST", data || {}, headers, !anonymous)
-    .then(response => {
-      return response;
-    });
+  return callApi(path, "POST", data || {}, headers, !anonymous);
 }
 
 export const get = (path, anonymous) => {
-  return callApi(path, "GET", undefined, {}, !anonymous)
-    .then(response => {
-      return response;
-    });
+  return callApi(path, "GET", undefined, {}, !anonymous);
 }
 
 export const getCached = ({ path, dependencies }) =>

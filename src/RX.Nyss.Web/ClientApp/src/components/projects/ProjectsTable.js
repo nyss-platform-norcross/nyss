@@ -47,13 +47,13 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
           <TableHead>
             <TableRow>
               <TableCell style={{ minWidth: 160 }}>{strings(stringKeys.project.list.name)}</TableCell>
-              <TableCell style={{ width: "10%", minWidth: 80 }}>{strings(stringKeys.project.list.startDate)}</TableCell>
-              <TableCell style={{ width: "10%", minWidth: 80 }}>{strings(stringKeys.project.list.endDate)}</TableCell>
-              <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.supervisorCount)}</TableCell>
-              <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.totalDataCollectorCount)}</TableCell>
-              <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.totalReportCount)}</TableCell>
-              <TableCell style={{ width: "13%" }}>{strings(stringKeys.project.list.escalatedAlertCount)}</TableCell>
-              <TableCell style={{ width: "16%" }} />
+              <TableCell style={{ width: "20%", minWidth: 80 }}>{strings(stringKeys.project.list.startDate)}</TableCell>
+              <TableCell style={{ width: "20%", minWidth: 80 }}>{strings(stringKeys.project.list.endDate)}</TableCell>
+              <TableCell style={{ width: "10%" }}>{strings(stringKeys.project.list.supervisorCount)}</TableCell>
+              <TableCell style={{ width: "10%" }}>{strings(stringKeys.project.list.totalDataCollectorCount)}</TableCell>
+              <TableCell style={{ width: "10%" }}>{strings(stringKeys.project.list.totalReportCount)}</TableCell>
+              <TableCell style={{ width: "10%" }}>{strings(stringKeys.project.list.escalatedAlertCount)}</TableCell>
+              <TableCell style={{ width: "10%" }} />
             </TableRow>
           </TableHead>
           <TableBody>
