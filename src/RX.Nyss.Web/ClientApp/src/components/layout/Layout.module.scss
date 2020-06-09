@@ -18,14 +18,18 @@
         flex: 1;
         overflow-y: auto;
 
-          @media screen and (max-width: 1280px) {
-            width: calc(100vw);
-          }
+        @media screen and (max-width: 1919px) {
+          max-width: calc(100vw - 260px);
+        }
+
+        @media screen and (max-width: 1279px) {
+          max-width: calc(100vw);
+        }
 
         .pageContent {
           padding: 20px 35px;
 
-          @media screen and (max-width: 1280px) {
+          @media screen and (max-width: 1279px) {
               padding: 20px 20px;
           }
         }

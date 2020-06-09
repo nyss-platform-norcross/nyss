@@ -5,7 +5,7 @@
   display: flex;
   padding-top: 30px;
 
-  @media screen and (max-width: 1280px) {
+  @media screen and (max-width: 1279px) {
     padding-top: 0;
   }
 }
@@ -13,7 +13,7 @@
 .paperHeader {
   margin: 30px 0 !important;
 
-  @media screen and (max-width: 1280px) {
+  @media screen and (max-width: 1279px) {
     font-size: 22px !important;
     margin: 30px 0 !important;
     text-align: center;
@@ -21,7 +21,7 @@
 }
 
 .loginHeader {
-  @media screen and (max-width: 1280px) {
+  @media screen and (max-width: 1279px) {
     text-align: center;
     font-size: 16px !important;
   }
@@ -30,7 +30,7 @@
 .loginPaper {
   width: 500px;
 
-  @media screen and (max-width: 1280px) {
+  @media screen and (max-width: 1279px) {
     background: none !important;
     width: unset;
   }
@@ -65,7 +65,7 @@
     opacity: 1;
     animation: initlogo 1s ease-in-out;
 
-    @media screen and (max-width: 1280px) {
+    @media screen and (max-width: 1279px) {
       margin: 20px;
       margin-top: 50px;
     }
@@ -104,7 +104,7 @@
   margin: 15px 30px;
   width: 160px;
 
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 599px) {
     height: unset;
     width: 140px;
   }

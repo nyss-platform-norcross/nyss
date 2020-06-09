@@ -61,7 +61,7 @@ export const theme = createMuiTheme({
         textDecoration: "underline"
       },
       startIcon: {
-        "@media (max-width: 1280px)": {
+        "@media (max-width: 1279px)": {
           display: "none"
         }
       }
