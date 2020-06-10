@@ -234,6 +234,12 @@ namespace RX.Nyss.Web.Features.Users
 
             var currentUser = _authorizationService.GetCurrentUser();
 
+            if (currentUser.Role == Role.Manager)
+            {
+                return query.Where(uns => uns.User.Role == Role.Coordinator || uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId)
+                    .FirstOrDefault());
+            }
+
             return query.Where(uns => uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId)
                 .FirstOrDefault());
         }
