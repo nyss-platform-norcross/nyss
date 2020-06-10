@@ -36,15 +36,21 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result<List<GetNationalSocietyUsersResponseDto>>> List(int nationalSocietyId)
         {
-            var usersQuery = GetFilteredUsersQuery(nationalSocietyId);
+            var usersQuery = await GetFilteredUsersQuery(nationalSocietyId);
 
             var users = await usersQuery
                 .Select(uns => new GetNationalSocietyUsersResponseDto
                 {
                     Id = uns.User.Id,
-                    Name = uns.User is DataConsumerUser && uns.User.IsFirstLogin ? "***" : uns.User.Name,
-                    Email = uns.User is DataConsumerUser && uns.User.IsFirstLogin ? "***" : uns.User.EmailAddress,
-                    PhoneNumber = uns.User is DataConsumerUser && uns.User.IsFirstLogin ? "***" : uns.User.PhoneNumber,
+                    Name = uns.User is DataConsumerUser && uns.User.IsFirstLogin
+                        ? "***"
+                        : uns.User.Name,
+                    Email = uns.User is DataConsumerUser && uns.User.IsFirstLogin
+                        ? "***"
+                        : uns.User.EmailAddress,
+                    PhoneNumber = uns.User is DataConsumerUser && uns.User.IsFirstLogin
+                        ? "***"
+                        : uns.User.PhoneNumber,
                     Role = uns.User.Role.ToString(),
                     Project = uns.User is SupervisorUser
                         ? ((SupervisorUser)uns.User).CurrentProject != null ? ((SupervisorUser)uns.User).CurrentProject.Name : null
@@ -52,7 +58,8 @@ namespace RX.Nyss.Web.Features.Users
                     OrganizationName = uns.Organization.Name,
                     OrganizationId = uns.Organization.Id,
                     IsHeadManager = uns.Organization.HeadManagerId.HasValue && uns.Organization.HeadManagerId == uns.User.Id,
-                    IsPendingHeadManager = uns.Organization.PendingHeadManagerId.HasValue && uns.Organization.PendingHeadManagerId == uns.User.Id
+                    IsPendingHeadManager = uns.Organization.PendingHeadManagerId.HasValue && uns.Organization.PendingHeadManagerId == uns.User.Id,
+                    IsVerified = !uns.User.IsFirstLogin
                 })
                 .OrderByDescending(u => u.IsHeadManager).ThenBy(u => u.Name)
                 .ToListAsync();
@@ -204,44 +211,26 @@ namespace RX.Nyss.Web.Features.Users
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
 
-        private IQueryable<UserNationalSociety> GetFilteredUsersQuery(int nationalSocietyId)
+        private async Task<IQueryable<UserNationalSociety>> GetFilteredUsersQuery(int nationalSocietyId)
         {
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
             var query = _nyssContext.UserNationalSocieties
                 .Where(uns => uns.NationalSocietyId == nationalSocietyId);
 
-            if (_authorizationService.IsCurrentUserInRole(Role.Administrator))
+            return currentUser switch
             {
-                return query;
-            }
-
-            if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator))
-            {
-                return query.Any(uns => uns.User.Role == Role.Coordinator)
-                    ? query.Where(uns => uns.User.Role == Role.Coordinator)
-                    : query.Where(uns =>
-                        uns.NationalSociety.DefaultOrganization.HeadManager == uns.User ||
-                        uns.NationalSociety.DefaultOrganization.PendingHeadManager == uns.User);
-            }
-
-            if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
-            {
-                return query
-                    .Where(u =>
-                        u.User.Role == Role.Coordinator ||
-                        u.Organization.HeadManager == u.User ||
-                        u.Organization.PendingHeadManager == u.User);
-            }
-
-            var currentUser = _authorizationService.GetCurrentUser();
-
-            if (currentUser.Role == Role.Manager)
-            {
-                return query.Where(uns => uns.User.Role == Role.Coordinator || uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId)
-                    .FirstOrDefault());
-            }
-
-            return query.Where(uns => uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId)
-                .FirstOrDefault());
+                AdministratorUser _ => query,
+                GlobalCoordinatorUser _ => (query.Any(uns => uns.User is CoordinatorUser)
+                    ? query.Where(uns => uns.User is CoordinatorUser)
+                    : query.Where(uns => uns.NationalSociety.DefaultOrganization.HeadManager == uns.User
+                        || uns.NationalSociety.DefaultOrganization.PendingHeadManager == uns.User)),
+                CoordinatorUser _ => query.Where(u => u.User is CoordinatorUser || u.User is DataConsumerUser
+                    || u.Organization.HeadManager == u.User || u.Organization.PendingHeadManager == u.User),
+                ManagerUser _ => query.Where(uns =>
+                    uns.User is CoordinatorUser || uns.User is DataConsumerUser
+                    || uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId).FirstOrDefault()),
+                _ => query.Where(uns => uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId).FirstOrDefault())
+            };
         }
     }
 }

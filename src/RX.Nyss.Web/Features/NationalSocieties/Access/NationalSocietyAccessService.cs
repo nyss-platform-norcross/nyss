@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Services.Authorization;
 
 namespace RX.Nyss.Web.Features.NationalSocieties.Access
@@ -43,8 +44,9 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Access
             var currentUserName = _authorizationService.GetCurrentUserName();
 
             return await _nyssContext.UserNationalSocieties
-                .AnyAsync(uns1 => uns1.UserId == userId && uns1.NationalSociety.NationalSocietyUsers
-                                                            .Any(uns2 => uns2.User.EmailAddress == currentUserName));
+                .AnyAsync(uns1 => uns1.UserId == userId
+                    && !(uns1.User is DataConsumerUser && uns1.User.IsFirstLogin)
+                    && uns1.NationalSociety.NationalSocietyUsers.Any(uns2 => uns2.User.EmailAddress == currentUserName));
         }
 
         public async Task<bool> HasCurrentUserAccessToNationalSociety(int nationalSocietyId)

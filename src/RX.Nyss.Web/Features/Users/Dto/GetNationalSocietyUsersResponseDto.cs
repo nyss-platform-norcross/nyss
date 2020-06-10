@@ -12,5 +12,6 @@
         public bool IsPendingHeadManager { get; set; }
         public string OrganizationName { get; set; }
         public int OrganizationId { get; set; }
+        public bool IsVerified { get; set; }
     }
 }

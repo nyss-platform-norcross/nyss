@@ -28,6 +28,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             _nyssContext = Substitute.For<INyssContext>();
             _authorizationService = Substitute.For<IAuthorizationService>();
             _authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor).Returns(true);
+            _authorizationService.GetCurrentUserAsync().Returns(new AdministratorUser());
             _userService = new UserService(_nyssContext, _authorizationService);
             ArrangeNationalSocieties();
         }
@@ -120,7 +121,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsGlobalCoordinator_ShouldNotReturnSupervisors()
         {
             //arrange
-            _authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator).Returns(true);
+            _authorizationService.GetCurrentUserAsync().Returns(new GlobalCoordinatorUser());
 
             //act
             var users = await _userService.List(1);
@@ -158,7 +159,8 @@ namespace RX.Nyss.Web.Tests.Features.Users
                     Id = 4,
                     Role = Role.DataConsumer,
                     Name = NationalSociety1Tag,
-                    EmailAddress = "dataConsumer4@domain.com"
+                    EmailAddress = "dataConsumer4@domain.com",
+                    IsFirstLogin = false
                 },
                 new TechnicalAdvisorUser
                 {
@@ -186,7 +188,8 @@ namespace RX.Nyss.Web.Tests.Features.Users
                     Id = 8,
                     Role = Role.DataConsumer,
                     Name = NationalSociety2Tag,
-                    EmailAddress = "dataConsumer8@domain.com"
+                    EmailAddress = "dataConsumer8@domain.com",
+                    IsFirstLogin = false
                 },
                 new TechnicalAdvisorUser
                 {

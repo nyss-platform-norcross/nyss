@@ -1,5 +1,5 @@
 import styles from '../common/table/Table.module.scss';
-import React from 'react';
+import React, { Fragment } from 'react';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
@@ -43,6 +43,8 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
     }
   ];
 
+  const canBeEdited = (row) => row.role !== Roles.DataConsumer || row.isVerified || user.roles.some(r => r === Roles.Administrator);
+
   return (
     <TableContainer sticky>
       <Table>
@@ -60,8 +62,8 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={row.id} onClick={() => goToEdition(nationalSocietyId, row.id)} hover className={styles.clickableRow}>
-              <TableCell>{row.name}</TableCell>
+            <TableRow key={row.id} onClick={() => canBeEdited(row) && goToEdition(nationalSocietyId, row.id)} hover className={canBeEdited(row) && styles.clickableRow}>
+              <TableCell>{(row.role !== Roles.DataConsumer || row.isVerified) ? row.name : strings(stringKeys.nationalSocietyUser.list.notVerified)}</TableCell>
               <TableCell>{row.email}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{strings(`role.${row.role.toLowerCase()}`)}</TableCell>
@@ -75,11 +77,14 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
               <TableCell>
                 <TableRowActions>
                   <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingAsHead[row.id]} />
-                  <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
-                  <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                  {canBeEdited(row) && (
+                    <Fragment>
+                      <TableRowAction onClick={() => goToEdition(nationalSocietyId, row.id)} icon={<EditIcon />} title={"Edit"} />
+                      <TableRowAction onClick={() => remove(row.id, row.role, nationalSocietyId)} confirmationText={strings(stringKeys.nationalSocietyUser.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
+                    </Fragment>
+                  )}
                 </TableRowActions>
               </TableCell>
-
             </TableRow>
           ))}
         </TableBody>
