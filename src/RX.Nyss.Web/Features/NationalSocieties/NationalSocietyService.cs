@@ -82,12 +82,19 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     Name = n.Name,
                     Country = n.Country.Name,
                     StartDate = n.StartDate,
-                    HeadManagerName = n.DefaultOrganization.HeadManager.Name,
-                    PendingHeadManagerName = n.DefaultOrganization.PendingHeadManager.Name,
+                    HeadManagers = string.Join(", ", n.Organizations.AsQueryable()
+                        .Where(o => o.HeadManager != null)
+                        .Select(o => o.HeadManager.Name)
+                        .ToList()),
                     TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.AsQueryable()
                         .Where(UserNationalSocietyQueries.IsNotDeletedUser)
                         .Where(u => u.User.Role == Role.TechnicalAdvisor)
                         .Select(u => u.User.Name)
+                        .ToList()),
+                    Coordinators = string.Join(", ", n.NationalSocietyUsers.AsQueryable()
+                        .Where(UserNationalSocietyQueries.IsNotDeletedUser)
+                        .Where(nsu => nsu.User.Role == Role.Coordinator)
+                        .Select(nsu => nsu.User.Name)
                         .ToList()),
                     IsArchived = n.IsArchived
                 })
@@ -136,7 +143,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 IsArchived = false,
                 StartDate = DateTime.UtcNow
             };
-            
+
             if (nationalSociety.ContentLanguage == null)
             {
                 return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotFound);

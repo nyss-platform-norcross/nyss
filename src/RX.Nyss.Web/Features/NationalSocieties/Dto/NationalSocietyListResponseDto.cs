@@ -18,9 +18,9 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
 
         public string TechnicalAdvisor { get; set; }
 
-        public string HeadManagerName { get; set; }
+        public string HeadManagers { get; set; }
 
-        public string PendingHeadManagerName { get; set; }
+        public string Coordinators { get; set; }
         public bool IsArchived { get; set; }
     }
 }

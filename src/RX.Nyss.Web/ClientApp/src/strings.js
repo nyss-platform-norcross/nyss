@@ -78,6 +78,7 @@ export const stringKeys = {
       name: "nationalSociety.list.name",
       country: "nationalSociety.list.country",
       startDate: "nationalSociety.list.startDate",
+      coordinator: "nationalSociety.list.coordinator",
       headManager: "nationalSociety.list.headManager",
       technicalAdvisor: "nationalSociety.list.technicalAdvisor",
       removalConfirmation: "nationalSociety.list.removalConfirmation",
