@@ -118,16 +118,14 @@ namespace RX.Nyss.Web.Features.Projects
 
         public async Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId)
         {
-            var userIdentityName = _authorizationService.GetCurrentUserName();
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
 
-            var projectsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
+            var projectsQuery = currentUser.Role == Role.Supervisor
                 ? _nyssContext.SupervisorUserProjects
-                    .Where(x => x.SupervisorUser.EmailAddress == userIdentityName)
+                    .Where(x => x.SupervisorUser == currentUser)
                     .Select(x => x.Project)
                 : _nyssContext.Projects;
-
-            var currentUser = _authorizationService.GetCurrentUser();
-
+            
             var nationalSocietyData = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => new
@@ -144,7 +142,7 @@ namespace RX.Nyss.Web.Features.Projects
             var query = projectsQuery
                 .Where(p => p.NationalSocietyId == nationalSocietyId);
 
-            if (nationalSocietyData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
+            if (nationalSocietyData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator, Role.DataConsumer))
             {
                 query = query
                     .Where(p => p.ProjectOrganizations.Any(po => po.OrganizationId == nationalSocietyData.CurrentUserOrganizationId));
