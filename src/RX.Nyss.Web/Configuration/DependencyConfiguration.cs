@@ -282,7 +282,7 @@ namespace RX.Nyss.Web.Configuration
                             .ToDictionary(stateEntry => stateEntry.Key,
                                 stateEntry => stateEntry.Value.Errors.Select(x => x.ErrorMessage));
 
-                        return new OkObjectResult(Result.Error(ResultKey.Validation.ValidationError, validationErrors));
+                        return new BadRequestObjectResult(Result.Error(ResultKey.Validation.ValidationError, validationErrors));
                     };
                 });
 

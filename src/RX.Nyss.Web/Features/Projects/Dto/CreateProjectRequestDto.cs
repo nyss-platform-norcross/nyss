@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using FluentValidation;
 using RX.Nyss.Common.Utils.DataContract;
-using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Projects.Access;
 using RX.Nyss.Web.Utils.Extensions;
 
@@ -27,6 +26,11 @@ namespace RX.Nyss.Web.Features.Projects.Dto
                 RuleFor(p => p.Name).MaximumLength(50);
                 RuleFor(p => p.HealthRisks).NotNull();
                 RuleForEach(p => p.HealthRisks).SetValidator(new ProjectHealthRiskRequestDto.Validator());
+
+                RuleFor(m => m.AllowMultipleOrganizations)
+                    .Must((model, _, t) => projectAccessService.HasCurrentUserAccessToAssignOrganizationToProject())
+                    .When(model => model.AllowMultipleOrganizations)
+                    .WithMessageKey(ResultKey.Project.NoAccessToSetOrgBasedAccessControl);
 
                 RuleFor(m => m.OrganizationId)
                     .Must((model, _, t) => projectAccessService.HasCurrentUserAccessToAssignOrganizationToProject())

@@ -38,7 +38,7 @@ function* openProjectCreation({ nationalSocietyId }) {
     yield openProjectsModule(nationalSocietyId);
     yield put(actions.openCreation.success(formData.value));
   } catch (error) {
-    yield put(actions.openCreation.failure(error.message));
+    yield put(actions.openCreation.failure(error));
   }
 };
 
@@ -72,7 +72,7 @@ function* createProject({ nationalSocietyId, data }) {
     yield put(actions.goToList(nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.project.messages.create.success));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 

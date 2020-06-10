@@ -290,6 +290,11 @@ namespace RX.Nyss.Web.Features.Projects
                     return Error<int>(ResultKey.Project.OnlyCoordinatorCanAdministrateProjects);
                 }
 
+                if (dto.AllowMultipleOrganizations != projectToUpdate.AllowMultipleOrganizations && !_authorizationService.IsCurrentUserInAnyRole(Role.Coordinator, Role.Administrator))
+                {
+                    return Error<int>(ResultKey.Project.OnlyCoordinatorCanChangeMultipleOrgAccess);
+                }
+
                 if (projectToUpdate.AllowMultipleOrganizations && !dto.AllowMultipleOrganizations
                     && projectToUpdate.ProjectOrganizations.Count > 1)
                 {

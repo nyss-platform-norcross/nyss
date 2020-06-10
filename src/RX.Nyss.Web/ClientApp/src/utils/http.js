@@ -9,19 +9,11 @@ export const post = (path, data, anonymous) => {
     "Content-Type": "application/json"
   };
 
-  return callApi(path, "POST", data || {}, headers, !anonymous)
-    .then(response => {
-      ensureResponseIsSuccess(response);
-      return response;
-    });
+  return callApi(path, "POST", data || {}, headers, !anonymous);
 }
 
 export const get = (path, anonymous) => {
-  return callApi(path, "GET", undefined, {}, !anonymous)
-    .then(response => {
-      ensureResponseIsSuccess(response);
-      return response;
-    });
+  return callApi(path, "GET", undefined, {}, !anonymous);
 }
 
 export const getCached = ({ path, dependencies }) =>
@@ -31,13 +23,11 @@ export const getCached = ({ path, dependencies }) =>
     dependencies: dependencies
   });
 
-export const ensureResponseIsSuccess = (response) => {
-  if (!response.isSuccess) {
-    const message = stringKey((response.message && response.message.key) || stringKeys.error.responseNotSuccessful);
-    const data = response.message && response.message.data;
+export const handleValidationError = (response) => {
+  const message = stringKey((response.message && response.message.key) || stringKeys.error.responseNotSuccessful);
+  const data = response.message && response.message.data;
 
-    throw new RequestError(message, data);
-  }
+  throw new RequestError(message, data);
 };
 
 const callApi = (path, method, data, headers = {}, authenticate = false) => {
@@ -74,6 +64,10 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
           reject(new Error(stringKey(stringKeys.error.notAuthenticated)));
         } else if (response.status === 403) {
           reject(new Error(stringKey(stringKeys.error.unauthorized)));
+        } else if (response.status === 400) {
+          return response.json()
+            .then(data => handleValidationError(data))
+            .catch(e => reject(e));
         } else {
           return response.json()
             .then(data => reject(new Error(stringKey(data.message.key))))

@@ -980,8 +980,8 @@ export const stringKey = (key) =>
 
 export const extractKey = (key) =>
   isStringKey(key)
-    ? key.substring(stringPrefix.length)
-    : key
+  ? key.substring(stringPrefix.length)
+  : key
 
 export function updateStrings(strings) {
   Object.assign(stringList, strings);

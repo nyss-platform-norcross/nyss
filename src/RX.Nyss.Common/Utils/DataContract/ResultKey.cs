@@ -219,6 +219,8 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string OnlyCoordinatorCanAdministrateProjects = "project.onlyCoordinatorCanAdministrateProjects";
             public const string OnlyCoordinatorCanCloseThisProjects = "project.onlyCoordinatorCanCloseThisProjects";
             public const string AllowMultipleOrganizationsFlagCannotBeRemoved = "project.allowMultipleOrganizationsFlagCannotBeRemoved";
+            public const string OnlyCoordinatorCanChangeMultipleOrgAccess = "project.onlyCoordinatorCanChangeMultipleOrgAccess";
+            public const string NoAccessToSetOrgBasedAccessControl = "project.noAccessToSetOrgBasedAccessControl";
         }
 
         public class ProjectOrganization

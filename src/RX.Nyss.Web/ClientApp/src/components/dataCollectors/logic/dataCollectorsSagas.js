@@ -182,7 +182,6 @@ function* setTrainingState({ dataCollectorIds, inTraining }) {
   yield put(actions.setTrainingState.request(dataCollectorIds));
   try {
     const response = yield call(http.post, "/api/dataCollector/setTrainingState", { dataCollectorIds, inTraining });
-    http.ensureResponseIsSuccess(response);
     yield put(actions.setTrainingState.success(dataCollectorIds, inTraining));
     yield put(appActions.showMessage(response.message.key));
     const projectId = yield select(state => state.dataCollectors.projectId);

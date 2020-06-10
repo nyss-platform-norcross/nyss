@@ -38,7 +38,7 @@ export const create = {
   invoke: (nationalSocietyId, data) => ({ type: CREATE_PROJECT.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: CREATE_PROJECT.REQUEST }),
   success: () => ({ type: CREATE_PROJECT.SUCCESS }),
-  failure: (message) => ({ type: CREATE_PROJECT.FAILURE, message, suppressPopup: true })
+  failure: (error) => ({ type: CREATE_PROJECT.FAILURE, error, suppressPopup: true  })
 };
 
 export const openEdition = {
