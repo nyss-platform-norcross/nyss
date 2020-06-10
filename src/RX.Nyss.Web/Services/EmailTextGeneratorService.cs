@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Services
@@ -11,6 +13,7 @@ namespace RX.Nyss.Web.Services
         Task<(string subject, string body)> GenerateResetPasswordEmail(string resetUrl, string name, string languageCode);
         Task<(string subject, string body)> GenerateEmailVerificationEmail(Role role, string callbackUrl, string name, string languageCode);
         Task<(string subject, string body)> GenerateEscalatedAlertEmail(string languageCode);
+        Task<(string subject, string body)> GenerateEmailVerificationForDataConsumersEmail(Role role, string callbackUrl, string organizations, string name, string languageCode);
     }
 
     public class EmailTextGeneratorService : IEmailTextGeneratorService
@@ -25,8 +28,8 @@ namespace RX.Nyss.Web.Services
         public async Task<(string subject, string body)> GenerateEscalatedAlertEmail(string languageCode)
         {
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
-            var subject = GetTranslation("email.alertEscalated.subject", languageCode, emailContents.Value);
-            var body = GetTranslation("email.alertEscalated.body", languageCode, emailContents.Value);
+            var subject = GetTranslation("email.alertEscalated.subject", emailContents.Value);
+            var body = GetTranslation("email.alertEscalated.body", emailContents.Value);
 
             return (subject, body);
         }
@@ -53,17 +56,12 @@ namespace RX.Nyss.Web.Services
 
         public async Task<(string subject, string body)> GenerateEmailVerificationEmail(Role role, string callbackUrl, string name, string languageCode)
         {
-            var roleName = GetRoleName(role);
-            var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
-            if (!emailContents.Value.TryGetValue("email.verification.subject", out var subject))
-            {
-                throw new Exception($"Could not find translations for email.verification.subject with language: {languageCode}");
-            }
+            var stringTranslations = await _stringsResourcesService.GetStringsResources(languageCode);
+            var roleName = GetTranslation($"roles.{role.ToString().ToCamelCase()}", stringTranslations.Value);
 
-            if (!emailContents.Value.TryGetValue("email.verification.body", out var body))
-            {
-                throw new Exception($"Could not find translations for email.verification.body with language: {languageCode}");
-            }
+            var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
+            var subject = GetTranslation("email.verification.subject", emailContents.Value);
+            var body = GetTranslation("email.verification.body", emailContents.Value);
 
             body = body
                 .Replace("{{username}}", name)
@@ -73,23 +71,32 @@ namespace RX.Nyss.Web.Services
             return (subject, body);
         }
 
-        private static string GetTranslation(string key, string languageCode, IDictionary<string, string> translations)
+        public async Task<(string subject, string body)> GenerateEmailVerificationForDataConsumersEmail(Role role, string callbackUrl, string organizations, string name, string languageCode)
+        {
+            var stringTranslations = await _stringsResourcesService.GetStringsResources(languageCode);
+            var roleName = GetTranslation($"roles.{role.ToString().ToCamelCase()}", stringTranslations.Value);
+
+            var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
+            var subject = GetTranslation("email.verification.subject", emailContents.Value);
+            var body = GetTranslation("email.dataConsumerVerification.body", emailContents.Value);
+
+            body = body
+                .Replace("{{username}}", name)
+                .Replace("{{roleName}}", roleName)
+                .Replace("{{organizations}}", organizations)
+                .Replace("{{link}}", callbackUrl);
+
+            return (subject, body);
+        }
+        
+        private static string GetTranslation(string key, IDictionary<string, string> translations)
         {
             if (!translations.TryGetValue(key, out var value))
             {
-                throw new Exception($"Could not find translations for {key} with language: {languageCode}");
+                throw new Exception($"Could not find translations for {key}");
             }
 
             return value;
         }
-
-        private static string GetRoleName(Role userRole) =>
-            userRole switch
-            {
-                Role.DataConsumer => "Data consumer",
-                Role.GlobalCoordinator => "Global coordinator",
-                Role.TechnicalAdvisor => "Technical advisor",
-                _ => userRole.ToString()
-            };
     }
 }

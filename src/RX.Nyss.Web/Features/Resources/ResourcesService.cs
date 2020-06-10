@@ -129,7 +129,7 @@ namespace RX.Nyss.Web.Features.Resources
 
             return Success(dto);
         }
-
+        
         private static StringsBlob.Entry CreateEntry(ICollection<StringsBlob.Entry> strings, string key)
         {
             var entry = new StringsBlob.Entry

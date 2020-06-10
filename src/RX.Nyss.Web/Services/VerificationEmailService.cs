@@ -9,6 +9,7 @@ namespace RX.Nyss.Web.Services
     public interface IVerificationEmailService
     {
         Task SendVerificationEmail(User user, string securityStamp);
+        Task SendVerificationForDataConsumersEmail(User user, string organizations, string securityStamp);
     }
 
     public class VerificationEmailService : IVerificationEmailService
@@ -30,9 +31,24 @@ namespace RX.Nyss.Web.Services
             var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(user.EmailAddress)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
 
             var (emailSubject, emailBody) = await _emailTextGeneratorService.GenerateEmailVerificationEmail(
-                role: user.Role,
-                callbackUrl: verificationUrl,
-                name: user.Name,
+                user.Role,
+                verificationUrl,
+                user.Name,
+                user.ApplicationLanguage.LanguageCode);
+
+            await _emailPublisherService.SendEmail((user.EmailAddress, user.Name), emailSubject, emailBody);
+        }
+
+        public async Task SendVerificationForDataConsumersEmail(User user, string organizations, string securityStamp)
+        {
+            var baseUrl = new Uri(_config.BaseUrl);
+            var verificationUrl = new Uri(baseUrl, $"verifyEmail?email={WebUtility.UrlEncode(user.EmailAddress)}&token={WebUtility.UrlEncode(securityStamp)}").ToString();
+
+            var (emailSubject, emailBody) = await _emailTextGeneratorService.GenerateEmailVerificationForDataConsumersEmail(
+                user.Role,
+                verificationUrl,
+                organizations,
+                user.Name,
                 user.ApplicationLanguage.LanguageCode);
 
             await _emailPublisherService.SendEmail((user.EmailAddress, user.Name), emailSubject, emailBody);

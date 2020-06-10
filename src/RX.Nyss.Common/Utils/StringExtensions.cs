@@ -13,5 +13,14 @@ namespace RX.Nyss.Common.Utils
             var maxNumberOfChars = Math.Min(s.Length, numberOfCharacters);
             return s.Substring(s.Length - maxNumberOfChars, maxNumberOfChars);
         }
+
+        public static string ToCamelCase(this string str)
+        {
+            if (!string.IsNullOrEmpty(str) && str.Length > 1)
+            {
+                return char.ToLowerInvariant(str[0]) + str.Substring(1);
+            }
+            return str;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.AspNetCore.Identity;
@@ -50,17 +51,19 @@ namespace RX.Nyss.Web.Features.DataConsumers
             {
                 string securityStamp;
                 DataConsumerUser user;
+                ICollection<Organization> organizations;
+
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
                     var identityUser = await _identityUserRegistrationService.CreateIdentityUser(createDataConsumerRequestDto.Email, Role.DataConsumer);
                     securityStamp = await _identityUserRegistrationService.GenerateEmailVerification(identityUser.Email);
 
-                    user = await CreateDataConsumerUser(identityUser, nationalSocietyId, createDataConsumerRequestDto);
+                    (user, organizations) = await CreateDataConsumerUser(identityUser, nationalSocietyId, createDataConsumerRequestDto);
 
                     transactionScope.Complete();
                 }
 
-                await _verificationEmailService.SendVerificationEmail(user, securityStamp);
+                await _verificationEmailService.SendVerificationForDataConsumersEmail(user, string.Join(", ", organizations.Select(o => o.Name)), securityStamp);
                 return Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
@@ -155,9 +158,11 @@ namespace RX.Nyss.Web.Features.DataConsumers
             }
         }
 
-        private async Task<DataConsumerUser> CreateDataConsumerUser(IdentityUser identityUser, int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto)
+        private async Task<(DataConsumerUser user, ICollection<Organization> Organizations)> CreateDataConsumerUser(IdentityUser identityUser, int nationalSocietyId, CreateDataConsumerRequestDto createDataConsumerRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+            var nationalSociety = await _dataContext.NationalSocieties
+                .Include(ns => ns.ContentLanguage)
+                .Include(ns => ns.Organizations)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -189,7 +194,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
             await _dataContext.AddAsync(userNationalSociety);
             await _dataContext.SaveChangesAsync();
 
-            return user;
+            return (user, nationalSociety.Organizations);
         }
 
         private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
