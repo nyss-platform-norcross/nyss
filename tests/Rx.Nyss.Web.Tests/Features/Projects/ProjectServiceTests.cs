@@ -49,6 +49,9 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectsMockDbSet = project.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
 
+            var currentUser = new AdministratorUser();
+            _authorizationService.GetCurrentUserAsync().Returns(currentUser);
+
             var nationalSocieties = new[]
             {
                 new NationalSociety
@@ -58,7 +61,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                     {
                         new UserNationalSociety
                         {
-                            User = new AdministratorUser()
+                            User = currentUser
                         }
                     }
                 }

@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Features.Projects.Access
                 })
                 .SingleAsync();
 
-            if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator) && data.HasCoordinator && !data.HasSameOrganization)
+            if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator, Role.DataConsumer) && data.HasCoordinator && !data.HasSameOrganization)
             {
                 return false;
             }
