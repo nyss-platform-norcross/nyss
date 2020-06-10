@@ -86,7 +86,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         private async Task<List<ProjectDashboardFiltersResponseDto.ProjectOrganizationDto>> GetOrganizations(int projectId)
         {
-            if (_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.DataConsumer))
+            if (_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
             {
                 return await _nyssContext.Projects
                     .Where(p => p.Id == projectId)
@@ -103,7 +103,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             return await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
                 .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
-                .Where(uns => uns.User.EmailAddress == currentUserName)
+                .Where(uns => uns.User.Role != Role.DataConsumer && uns.User.EmailAddress == currentUserName)
                 .Select(o => new ProjectDashboardFiltersResponseDto.ProjectOrganizationDto
                 {
                     Id = o.Organization.Id,
