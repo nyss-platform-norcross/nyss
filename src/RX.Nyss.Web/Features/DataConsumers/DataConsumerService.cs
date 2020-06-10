@@ -64,6 +64,7 @@ namespace RX.Nyss.Web.Features.DataConsumers
                 }
 
                 await _verificationEmailService.SendVerificationForDataConsumersEmail(user, string.Join(", ", organizations.Select(o => o.Name)), securityStamp);
+
                 return Success(ResultKey.User.Registration.Success);
             }
             catch (ResultException e)
