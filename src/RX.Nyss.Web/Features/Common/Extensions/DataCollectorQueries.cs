@@ -90,5 +90,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 SexDto.Other => dataCollectors.Where(dc => dc.Sex == Sex.Other),
                 _ => dataCollectors
             };
+
+        public static IQueryable<DataCollector> FilterByOrganization(this IQueryable<DataCollector> dataCollectors, Organization organization) =>
+            organization == null ? dataCollectors : dataCollectors.Where(dc => dc.Supervisor.UserNationalSocieties.Any(uns => uns.Organization == organization));
     }
 }
