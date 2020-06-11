@@ -41,7 +41,8 @@ const DataCollectorsListPageComponent = (props) => {
         nationalSocietyId={props.nationalSocietyId}
         supervisors={props.supervisors}
         filters={props.filters}
-        onChange={handleFilterChange} />
+        onChange={handleFilterChange}
+        callingUserRoles={props.callingUserRoles} />
 
       <DataCollectorsTable
         list={props.list}
@@ -81,7 +82,8 @@ const mapStateToProps = (state, ownProps) => ({
   listSelectedAll: state.dataCollectors.listSelectedAll,
   supervisors: state.dataCollectors.filtersData.supervisors,
   nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
-  filters: state.dataCollectors.filters
+  filters: state.dataCollectors.filters,
+  callingUserRoles: state.appData.user.roles
 });
 
 const mapDispatchToProps = {

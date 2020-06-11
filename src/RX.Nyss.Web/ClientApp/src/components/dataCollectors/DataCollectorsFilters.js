@@ -9,8 +9,9 @@ import { AreaFilter } from "../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../strings";
 import { sexValues, trainingStatus } from './logic/dataCollectorsConstants';
 import { InputLabel, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
+import * as roles from '../../authentication/roles';
 
-export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors, onChange }) => {
+export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors, onChange, callingUserRoles }) => {
   const [value, setValue] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
 
@@ -59,24 +60,26 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
             />
           </Grid>
 
-          <Grid item>
-            <TextField
-              select
-              label={strings(stringKeys.dataCollector.filters.supervisors)}
-              onChange={handleSupervisorChange}
-              value={value.supervisorId || 0}
-              className={styles.filterItem}
-              InputLabelProps={{ shrink: true }}
-            >
-              <MenuItem value={0}>{strings(stringKeys.dataCollector.filters.supervisorsAll)}</MenuItem>
+          {(!callingUserRoles.some(r => r === roles.Supervisor) &&
+            <Grid item>
+              <TextField
+                select
+                label={strings(stringKeys.dataCollector.filters.supervisors)}
+                onChange={handleSupervisorChange}
+                value={value.supervisorId || 0}
+                className={styles.filterItem}
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value={0}>{strings(stringKeys.dataCollector.filters.supervisorsAll)}</MenuItem>
 
-              {supervisors.map(supervisor => (
-                <MenuItem key={`filter_supervisor_${supervisor.id}`} value={supervisor.id}>
-                  {supervisor.name}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
+                {supervisors.map(supervisor => (
+                  <MenuItem key={`filter_supervisor_${supervisor.id}`} value={supervisor.id}>
+                    {supervisor.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          )}
 
           <Grid item>
             <TextField
@@ -93,7 +96,7 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
 
               {sexValues.map(sex => (
                 <MenuItem key={`datacollector_filter_${sex}`} value={sex}>
-                {strings(stringKeys.dataCollector.constants.sex[sex.toLowerCase()])}
+                  {strings(stringKeys.dataCollector.constants.sex[sex.toLowerCase()])}
                 </MenuItem>
               ))}
             </TextField>

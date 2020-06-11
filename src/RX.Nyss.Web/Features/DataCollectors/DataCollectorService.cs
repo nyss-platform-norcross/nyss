@@ -169,20 +169,24 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId)
         {
-            var filtersData = await _nyssContext.Projects
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var projectData = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
-                .Select(p => new DataCollectorFiltersReponseDto
+                .Select(dc => new
                 {
-                    NationalSocietyId = p.NationalSocietyId,
-                    Supervisors = p.SupervisorUserProjects
-                        .Where(sup => sup.ProjectId == projectId && !sup.SupervisorUser.DeletedAt.HasValue)
-                        .Select(sup => new DataCollectorSupervisorResponseDto
-                        {
-                            Id = sup.SupervisorUserId,
-                            Name = sup.SupervisorUser.Name
-                        })
+                    NationalSocietyId = dc.NationalSociety.Id,
+                    OrganizationId = dc.NationalSociety.NationalSocietyUsers
+                        .Where(nsu => nsu.User == currentUser)
+                        .Select(nsu => nsu.OrganizationId)
+                        .FirstOrDefault()
                 })
-                .FirstOrDefaultAsync();
+                .SingleAsync();
+
+            var filtersData = new DataCollectorFiltersReponseDto
+            {
+                NationalSocietyId = projectData.NationalSocietyId,
+                Supervisors = await GetSupervisors(projectId, currentUser, projectData.OrganizationId),
+            };
 
             return Success(filtersData);
         }
@@ -621,7 +625,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Name = sup.SupervisorUser.Name
                 })
                 .ToListAsync();
-
+        
         private static Point CreatePoint(double latitude, double longitude)
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
