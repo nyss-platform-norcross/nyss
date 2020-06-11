@@ -546,6 +546,7 @@ export const stringKeys = {
       removalConfirmation: "nationalSocietyUser.list.removalConfirmation",
       headManager: "nationalSocietyUser.list.headManager",
       organization: "nationalSocietyUser.list.organization",
+      notVerified: "nationalSocietyUser.list.notVerified"
     },
     messages: {
       creationSuccessful: "nationalSocietyUser.messages.creationSuccessful",

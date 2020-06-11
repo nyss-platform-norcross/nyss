@@ -62,7 +62,9 @@ namespace RX.Nyss.Web.Services
         public async Task<Result> VerifyEmail(string email, string verificationToken)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            var nyssUser = await _nyssContext.Users.Where(u => u.IdentityUserId == user.Id).FirstOrDefaultAsync();
+
+            if (user == null || nyssUser == null)
             {
                 return Error(ResultKey.User.VerifyEmail.NotFound);
             }
@@ -73,6 +75,9 @@ namespace RX.Nyss.Web.Services
             {
                 return Error(ResultKey.User.VerifyEmail.Failed, string.Join(", ", confirmationResult.Errors.Select(x => x.Description)));
             }
+
+            nyssUser.IsFirstLogin = false;
+            await _nyssContext.SaveChangesAsync();
 
             return Success(true, ResultKey.User.VerifyEmail.Success, confirmationResult);
         }

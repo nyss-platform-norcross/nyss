@@ -157,12 +157,22 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var nationalSociety1 = new NationalSociety
             {
                 Id = 1,
-                Name = "Test national society 1"
+                Name = "Test national society 1",
+                Organizations = new List<Organization>
+                {
+                    new Organization{ Name = "Org 1 in NS 1"},
+                    new Organization{ Name = "Org 2 in NS 1"},
+                }
             };
             var nationalSociety2 = new NationalSociety
             {
                 Id = 2,
-                Name = "Test national society 2"
+                Name = "Test national society 2",
+                Organizations = new List<Organization>
+                {
+                    new Organization{ Name = "Org 1 in NS 2"},
+                    new Organization{ Name = "Org 2 in NS 2"},
+                }
             };
             var nationalSocieties = new List<NationalSociety>
             {
@@ -195,7 +205,7 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
             var result = await _dataConsumerService.Create(nationalSocietyId, registerDataConsumerRequestDto);
 
             await _identityUserRegistrationServiceMock.Received(1).GenerateEmailVerification(userEmail);
-            await _verificationEmailServiceMock.Received(1).SendVerificationEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), Arg.Any<string>());
+            await _verificationEmailServiceMock.Received(1).SendVerificationForDataConsumersEmail(Arg.Is<User>(u => u.EmailAddress == userEmail), "Org 1 in NS 1, Org 2 in NS 1", Arg.Any<string>());
             result.IsSuccess.ShouldBeTrue();
         }
 
