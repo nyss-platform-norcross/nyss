@@ -9,6 +9,7 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyDashboard.Dto;
 using RX.Nyss.Web.Features.Reports;
+using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.ReportsDashboard;
 using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -32,18 +33,21 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByVillageService _reportsDashboardByVillageService;
         private readonly INyssContext _nyssContext;
+        private readonly IAuthorizationService _authorizationService;
 
         public NationalSocietyDashboardService(
             INationalSocietyService nationalSocietyService,
             INationalSocietyDashboardSummaryService nationalSocietyDashboardSummaryService,
             IReportsDashboardMapService reportsDashboardMapService,
             IReportsDashboardByVillageService reportsDashboardByVillageService,
+            IAuthorizationService authorizationService,
             INyssContext nyssContext)
         {
             _nationalSocietyService = nationalSocietyService;
             _nationalSocietyDashboardSummaryService = nationalSocietyDashboardSummaryService;
             _reportsDashboardMapService = reportsDashboardMapService;
             _reportsDashboardByVillageService = reportsDashboardByVillageService;
+            _authorizationService = authorizationService;
             _nyssContext = nyssContext;
         }
 
@@ -51,13 +55,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
         {
             var healthRiskNames = await _nationalSocietyService.GetHealthRiskNames(nationalSocietyId, true);
 
-            var organizations = await _nyssContext.Organizations
-                .Where(o => o.NationalSocietyId == nationalSocietyId)
-                .Select(o => new NationalSocietyDashboardFiltersResponseDto.OrganizationDto
-                {
-                    Id = o.Id,
-                    Name = o.Name
-                }).ToListAsync();
+            var organizations = await GetOrganizations(nationalSocietyId);
 
             var dto = new NationalSocietyDashboardFiltersResponseDto
             {
@@ -66,6 +64,33 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
             };
 
             return Success(dto);
+        }
+
+        private async Task<List<NationalSocietyDashboardFiltersResponseDto.OrganizationDto>> GetOrganizations(int nationalSocietyId)
+        {
+            if (_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
+            {
+                return await _nyssContext.NationalSocieties
+                    .Where(ns => ns.Id == nationalSocietyId)
+                    .SelectMany(p => p.Organizations)
+                    .Select(o => new NationalSocietyDashboardFiltersResponseDto.OrganizationDto
+                    {
+                        Id = o.Id,
+                        Name = o.Name
+                    }).ToListAsync();
+            }
+
+            var currentUserName = _authorizationService.GetCurrentUserName();
+
+            return await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == nationalSocietyId)
+                .SelectMany(ns => ns.NationalSocietyUsers)
+                .Where(nsu => nsu.User.Role != Role.DataConsumer &&  nsu.User.EmailAddress == currentUserName)
+                .Select(nsu => new NationalSocietyDashboardFiltersResponseDto.OrganizationDto
+                {
+                    Id = nsu.Organization.Id,
+                    Name = nsu.Organization.Name
+                }).ToListAsync();
         }
 
         public async Task<Result<NationalSocietyDashboardResponseDto>> GetData(int nationalSocietyId, NationalSocietyDashboardFiltersRequestDto filtersDto)
