@@ -10,6 +10,7 @@ export const toggleSideMenu = (value) => ({ type: actions.TOGGLE_SIDE_MENU, valu
 export const goToNationalSocietyConsents = () => push(`/nationalSocietyConsents`);
 export const goToTranslations = () => push(`/translations`);
 export const pageFocused = () => ({ type: actions.PAGE_FOCUSED });
+export const stringsUpdated = (key, translations) => ({ type: actions.STRINGS_UPDATED, key, translations });
 
 export const initApplication = {
   invoke: () =>

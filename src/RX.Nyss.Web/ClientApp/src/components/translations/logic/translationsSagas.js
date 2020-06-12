@@ -6,10 +6,10 @@ import * as appActions from "../../app/logic/appActions";
 import { strings, stringKeys } from "../../../strings";
 
 export const translationsSagas = () => [
-  takeEvery(consts.OPEN_TRANSLATIONS_LIST.INVOKE, openTranslationsList)
+  takeEvery(consts.OPEN_TRANSLATIONS_LIST.INVOKE, openTranslationsList),
 ];
 
-function* openTranslationsList({ path, params }) {
+function* openTranslationsList({ path }) {
   yield put(actions.openList.request());
   try {
     yield call(getTranslations);
