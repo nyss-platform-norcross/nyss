@@ -42,6 +42,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private const string OutgoingMessageIdParameterName = "oid";
         private const string ModemNumberParameterName = "modemno";
         private const string ApiKeyParameterName = "apikey";
+        private const string SourceParameterName = "source";
 
         private readonly IReportMessageService _reportMessageService;
         private readonly INyssContext _nyssContext;
@@ -79,6 +80,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var outgoingMessageId = parsedQueryString[OutgoingMessageIdParameterName].ParseToNullableInt();
             var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
             var apiKey = parsedQueryString[ApiKeyParameterName];
+            var source = parsedQueryString[SourceParameterName];
 
             ErrorReportData reportErrorData = null;
 
@@ -87,6 +89,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 Alert triggeredAlert = null;
                 ProjectHealthRisk projectHealthRisk = null;
                 GatewaySetting gatewaySetting = null;
+                ReportData reportData = null;
 
                 using (var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
@@ -108,6 +111,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     {
                         gatewaySetting = reportValidationResult.GatewaySetting;
                         projectHealthRisk = reportValidationResult.ReportData.ProjectHealthRisk;
+                        reportData = reportValidationResult.ReportData;
 
                         var epiDate = _dateTimeProvider.GetEpiDate(reportValidationResult.ReportData.ReceivedAt);
 
@@ -160,7 +164,11 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     if (projectHealthRisk != null)
                     {
                         var recipients = new List<string> { sender };
-                        await _queuePublisherService.SendSms(recipients, gatewaySetting, projectHealthRisk.FeedbackMessage);
+                        var feedbackMessage = !string.IsNullOrEmpty(source) && source == "Nyss"
+                            ? $"{GetFeedbackMessageForReportSentThroughNyss(reportData, gatewaySetting).Result} {projectHealthRisk.FeedbackMessage}"
+                            : projectHealthRisk.FeedbackMessage;
+
+                        await _queuePublisherService.SendSms(recipients, gatewaySetting, feedbackMessage);
                     }
 
                     if (triggeredAlert != null)
@@ -418,6 +426,26 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 _loggerAdapter.Warn(e.Message);
                 return new ReportValidationResult { IsSuccess = false };
             }
+        }
+
+        private async Task<string> GetFeedbackMessageForReportSentThroughNyss(ReportData reportData, GatewaySetting gatewaySetting)
+        {
+            var languageCode = await _nyssContext.NationalSocieties
+                .Where(ns => ns.Id == gatewaySetting.NationalSocietyId)
+                .Select(ns => ns.ContentLanguage.LanguageCode)
+                .FirstOrDefaultAsync();
+
+            var feedbackMessage = await GetFeedbackMessageContent(SmsContentKey.Reports.ReportSentFromNyss, languageCode);
+            var supervisor = reportData.DataCollector.Supervisor;
+
+            var languageContents = await _nyssContext.HealthRiskLanguageContents
+                .SingleAsync(hlc => hlc.HealthRisk == reportData.ProjectHealthRisk.HealthRisk && hlc.ContentLanguage.LanguageCode == languageCode);
+
+            feedbackMessage = feedbackMessage.Replace("{{supervisor}}", supervisor.Name);
+            feedbackMessage = feedbackMessage.Replace("{{timestamp}}", reportData.ReceivedAt.ToString(CultureInfo.InvariantCulture));
+            feedbackMessage = feedbackMessage.Replace("{{healthRisk/event}}", languageContents.Name);
+
+            return feedbackMessage;
         }
 
         private async Task SendFeedbackOnError(ErrorReportData errorReport, GatewaySetting gatewaySetting)

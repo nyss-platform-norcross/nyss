@@ -56,6 +56,15 @@ export function reportsReducer(state = initialState.reports, action) {
     case actions.MARK_AS_ERROR.FAILURE:
       return { ...state, markingAsError: false, message: action.message };
 
+    case actions.OPEN_SEND_REPORT.REQUEST:
+      return { ...state, formFetching: true };
+
+    case actions.OPEN_SEND_REPORT.SUCCESS:
+      return { ...state, formFetcing: false, sendReport: { dataCollectors: action.dataCollectors, smsGateway: action.smsGateway } };
+
+    case actions.OPEN_SEND_REPORT.FAILURE:
+      return { ...state, formFetching: false, message: action.message };
+
     case actions.SEND_REPORT.REQUEST:
       return { ...state, formSaving: true };
 

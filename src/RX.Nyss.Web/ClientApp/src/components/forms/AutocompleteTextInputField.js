@@ -4,11 +4,11 @@ import { createFieldComponent } from "./FieldBase";
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
-const filter = (options, params) => {
+const filter = (options, params, allowAddingValue) => {
   if (params.inputValue !== '') {
     const filtered = options.filter(o => o.title.toLowerCase().indexOf(params.inputValue.toLowerCase()) > -1);
 
-    filtered.push({
+    allowAddingValue && filtered.push({
       inputValue: params.inputValue,
       title: `Add "${params.inputValue}"`,
     });
@@ -19,7 +19,7 @@ const filter = (options, params) => {
   return options;
 }
 
-const AutocompleteTextInput = ({ error, name, label, value, options, freeSolo, autoSelect, controlProps, autoWidth, disabled, type }) => {
+const AutocompleteTextInput = ({ error, name, label, value, options, freeSolo, autoSelect, controlProps, autoWidth, disabled, type, allowAddingValue }) => {
   return (
     <Autocomplete
       name={name}
@@ -28,7 +28,7 @@ const AutocompleteTextInput = ({ error, name, label, value, options, freeSolo, a
       autoSelect={autoSelect}
       disabled={disabled}
       options={options}
-      filterOptions={(options, params) => filter(options, params)}
+      filterOptions={(options, params) => filter(options, params, allowAddingValue)}
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
         if (typeof option === 'string') {

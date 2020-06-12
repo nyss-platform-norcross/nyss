@@ -14,8 +14,16 @@ import { strings, stringKeys } from "../../strings";
 import Icon from "@material-ui/core/Icon";
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import Hidden from "@material-ui/core/Hidden";
+import * as roles from '../../authentication/roles';
+import { SendReportDialog } from "./SendReportDialog";
+import { useState } from "react";
 
 const ReportsListPageComponent = (props) => {
+  const [open, setOpen] = useState(false);
+
+  const canSendReport = props.user && [roles.Administrator, roles.Manager, roles.TechnicalAdvisor, roles.Supervisor]
+    .some(neededRole => props.user.roles.some(userRole => userRole === neededRole));
+
   useMount(() => {
     props.openReportsList(props.projectId);
   });
@@ -40,6 +48,12 @@ const ReportsListPageComponent = (props) => {
     props.markAsError(reportId);
   }
 
+  const handleSendReport = (e) => {
+    e.stopPropagation();
+    props.openSendReport(props.projectId);
+    setOpen(true);
+  }
+
   return (
     <Fragment>
       <TableActions>
@@ -56,7 +70,20 @@ const ReportsListPageComponent = (props) => {
         <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters, props.sorting)}>
           {strings(stringKeys.reports.list.exportToExcel)}
         </TableActionsButton>
+
+        {canSendReport &&
+          <TableActionsButton onClick={handleSendReport}>
+            {strings(stringKeys.reports.list.sendReport)}
+          </TableActionsButton>
+        }
       </TableActions>
+
+      {open && (
+        <SendReportDialog close={() => setOpen(false)}
+          projectId={props.projectId}
+          openSendReport={props.openSendReport}
+          sendReport={props.sendReport} />
+      )}
 
       <div className={styles.filtersGrid}>
         <ReportFilters
@@ -117,7 +144,9 @@ const mapDispatchToProps = {
   exportToExcel: reportsActions.exportToExcel.invoke,
   exportToCsv: reportsActions.exportToCsv.invoke,
   markAsError: reportsActions.markAsError.invoke,
-  goToEdition: reportsActions.goToEdition
+  goToEdition: reportsActions.goToEdition,
+  openSendReport: reportsActions.openSendReport.invoke,
+  sendReport: reportsActions.sendReport.invoke
 };
 
 export const ReportsListPage = useLayout(

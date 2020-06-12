@@ -8,36 +8,53 @@ import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
-import { useTheme, Grid, Button } from "@material-ui/core"
+import { useTheme, Grid, Button, MenuItem, Typography, FormControlLabel } from "@material-ui/core"
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { Dialog } from "@material-ui/core";
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { useSelector } from "react-redux";
+import SelectField from "../forms/SelectField";
+import { DatePicker } from "../forms/DatePicker";
+import { TimePicker } from "../forms/TimePicker";
+import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
 
 
-export const SendReportDialog = ({ close, props }) => {
+export const SendReportDialog = ({ close, props, sendReport }) => {
   const [form, setForm] = useState(null);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   dayjs.extend(utc);
 
+  const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}` })));
+  const smsGateway = useSelector(state => state.reports.sendReport.smsGateway);
+  const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [time, setTime] = useState(dayjs());
+  const isSending = useSelector(state => state.reports.formSaving);
+
   useEffect(() => {
     const fields = {
-      phoneNumber: "",
-      message: "",
-      apiKey: ""
+      dataCollector: '',
+      message: ''
     };
 
     const validation = {
-      phoneNumber: [validators.required, validators.phoneNumber],
-      message: [validators.required],
-      apiKey: [validators.required]
+      dataCollector: [validators.required],
+      message: [validators.required]
     };
 
     setForm(createForm(fields, validation));
-  }, [props.data, props.match]);
+  }, []);
+
+  const handleDateChange = date => {
+    setDate(date.format('YYYY-MM-DD'));
+  }
+
+  const handleTimeChange = time => {
+    setTime(time);
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -47,12 +64,14 @@ export const SendReportDialog = ({ close, props }) => {
     };
 
     const values = form.getValues();
-    props.sendReport({
-      sender: values.phoneNumber,
+    sendReport({
+      sender: values.dataCollector.split('/')[1].trim(),
       text: values.message,
-      timestamp: dayjs.utc().format("YYYYMMDDHHmmss"),
-      apiKey: values.apiKey
+      timestamp: dayjs(`${date} ${time.format('hh:mm')}`).utc().format('YYYYMMDDHHmmss'),
+      apiKey: smsGateway.apiKey
     });
+
+    close();
   };
 
   if (!form) {
@@ -67,14 +86,36 @@ export const SendReportDialog = ({ close, props }) => {
           <Form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <TextInputField
-                  className={styles.fullWidth}
-                  label={strings(stringKeys.reports.sendReport.phoneNumber)}
-                  name="phoneNumber"
-                  field={form.fields.phoneNumber}
+                <AutocompleteTextInputField
+                  label={strings(stringKeys.reports.sendReport.dataCollector)}
+                  field={form.fields.dataCollector}
+                  options={dataCollectors}
+                  allowAddingValue={false}
+                  autoSelect
+                  name="dataCollectors"
                 />
               </Grid>
             </Grid>
+
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
+                <DatePicker
+                  label={strings(stringKeys.reports.sendReport.dateOfReport)}
+                  fullWidth
+                  onChange={handleDateChange}
+                  value={date}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TimePicker
+                  label={strings(stringKeys.reports.sendReport.timeOfReport)}
+                  fullWidth
+                  onChange={handleTimeChange}
+                  value={time}
+                />
+              </Grid>
+            </Grid>
+
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <TextInputField
@@ -85,22 +126,12 @@ export const SendReportDialog = ({ close, props }) => {
                 />
               </Grid>
             </Grid>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <TextInputField
-                  className={styles.fullWidth}
-                  label={strings(stringKeys.reports.sendReport.apiKey)}
-                  name="apiKey"
-                  field={form.fields.apiKey}
-                />
-              </Grid>
-            </Grid>
 
             <FormActions>
               <Button onClick={close}>
                 {strings(stringKeys.form.cancel)}
               </Button>
-              <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.reports.sendReport.sendReport)}</SubmitButton>
+              <SubmitButton isFetching={isSending}>{strings(stringKeys.reports.sendReport.sendReport)}</SubmitButton>
             </FormActions>
           </Form>
         </DialogContent>

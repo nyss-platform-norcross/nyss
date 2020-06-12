@@ -212,7 +212,11 @@ export const initialState = {
     },
     filters: null,
     sorting: null,
-    formHealthRisks: []
+    formHealthRisks: [],
+    sendReport: {
+      dataCollectors: [],
+      smsGateway: null
+    }
   },
   nationalSocietyReports: {
     listFetching: false,

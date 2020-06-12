@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.Reports
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssWebConfig _config;
-        
+
         public ReportSenderService(IHttpClientFactory httpClientFactory, ILoggerAdapter loggerAdapter, INyssWebConfig config)
         {
             _httpClientFactory = httpClientFactory;
@@ -32,21 +32,17 @@ namespace RX.Nyss.Web.Features.Reports
 
         public async Task<Result> SendReport(SendReportRequestDto report)
         {
-            if (!_config.IsDemo)
-            {
-                return Error("Sending reports for testing purposes is only allowed in demo environment");
-            }
-            
             using var httpClient = _httpClientFactory.CreateClient();
 
             var baseUri = new Uri(_config.FuncAppBaseUrl);
-            var requestUri = new Uri(baseUri, new Uri($"/api/enqueueSmsEagleReport", UriKind.Relative));
+            var requestUri = new Uri(baseUri, new Uri("/api/enqueueSmsEagleReport", UriKind.Relative));
             var reportProps = new Dictionary<string, string>
             {
                 { "Sender", report.Sender },
                 { "Timestamp", report.Timestamp },
                 { "ApiKey", report.ApiKey },
-                { "Text", report.Text }
+                { "Text", report.Text },
+                { "Source", "Nyss" }
             };
             var content = new FormUrlEncodedContent(reportProps);
 

@@ -62,6 +62,7 @@ export const ProjectsAlertRecipientItem = ({ form, alertRecipient, onAddOrganiza
             name="organization"
             freeSolo
             autoSelect
+            allowAddingValue
             options={organizations}
             defaultValue={alertRecipient.organization}
             field={form.fields[`alertRecipientOrganization${alertRecipientNumber}`]}
