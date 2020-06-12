@@ -42,21 +42,18 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
     list.filter(i => i.isSelected).map(i => i.id), [list]);
 
   const multipleSelectionMenu = useMemo(() =>
-    isSelected
-      ? [
-        {
-          title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
-          action: () => setTrainingState(getSelectedIds(), false),
-          roles: accessMap.dataCollectors.list
-        },
-        {
-          title: strings(stringKeys.dataCollector.list.setToInTraining),
-          action: () => setTrainingState(getSelectedIds(), true),
-          roles: accessMap.dataCollectors.list
-        }
-      ]
-      : []
-    , [getSelectedIds, setTrainingState, isSelected]);
+    [
+      {
+        title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
+        action: () => setTrainingState(getSelectedIds(), false),
+        roles: accessMap.dataCollectors.list
+      },
+      {
+        title: strings(stringKeys.dataCollector.list.setToInTraining),
+        action: () => setTrainingState(getSelectedIds(), true),
+        roles: accessMap.dataCollectors.list
+      }
+    ], [getSelectedIds, setTrainingState]);
 
   const handleSelect = (e, id, value) => {
     e.stopPropagation();
@@ -85,9 +82,11 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
             <TableCell>{strings(stringKeys.dataCollector.list.trainingStatus)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollector.list.supervisor)}</TableCell>
             <TableCell>
-              <TableRowActions style={{ textAlign: "left" }}>
-                <TableRowMenu icon={<MoreVertIcon />} items={multipleSelectionMenu} alwaysShow />
-              </TableRowActions>
+              {isSelected && (
+                <TableRowActions style={{ textAlign: "left" }}>
+                  <TableRowMenu icon={<MoreVertIcon />} items={multipleSelectionMenu} alwaysHighlighted />
+                </TableRowActions>
+              )}
             </TableCell>
           </TableRow>
         </TableHead>
