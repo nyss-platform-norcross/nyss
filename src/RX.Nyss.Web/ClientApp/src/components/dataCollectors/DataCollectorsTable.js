@@ -83,7 +83,7 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
             <TableCell>{strings(stringKeys.dataCollector.list.supervisor)}</TableCell>
             <TableCell>
               {isSelected && (
-                <TableRowActions style={{ textAlign: "left" }}>
+                <TableRowActions style={{ marginRight: 70 }}>
                   <TableRowMenu icon={<MoreVertIcon />} items={multipleSelectionMenu} alwaysHighlighted />
                 </TableRowActions>
               )}
