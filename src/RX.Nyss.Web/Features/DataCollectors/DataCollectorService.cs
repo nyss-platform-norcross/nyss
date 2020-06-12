@@ -478,10 +478,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .Select(dc => new MapOverviewDataCollectorResponseDto
                 {
-                    OrganizationName = dc.DataCollector.Project.NationalSociety.NationalSocietyUsers
-                        .Where(nsu => nsu.UserId == dc.DataCollector.Supervisor.Id)
-                        .Select(nsu => nsu.Organization.Name)
-                        .FirstOrDefault(),
                     Id = dc.DataCollector.Id,
                     DisplayName = dc.DataCollector.DataCollectorType == DataCollectorType.Human
                         ? dc.DataCollector.DisplayName
@@ -520,10 +516,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new
                 {
-                    OrganizationName = dc.Project.NationalSociety.NationalSocietyUsers
-                        .Where(nsu => nsu.UserId == dc.Supervisor.Id)
-                        .Select(nsu => nsu.Organization.Name)
-                        .FirstOrDefault(),
                     DataCollectorName = dc.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
                             && r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
@@ -625,7 +617,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Name = sup.SupervisorUser.Name
                 })
                 .ToListAsync();
-        
+
         private static Point CreatePoint(double latitude, double longitude)
         {
             var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(SpatialReferenceSystemIdentifier.Wgs84);
