@@ -15,7 +15,6 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
-using RX.Nyss.Web.Features.DataCollectors.Access;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Services.Authorization;
@@ -170,54 +169,33 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId)
         {
-            var filtersData = await _nyssContext.Projects
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var projectData = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
-                .Select(p => new DataCollectorFiltersReponseDto
+                .Select(dc => new
                 {
-                    NationalSocietyId = p.NationalSocietyId,
-                    Supervisors = p.SupervisorUserProjects
-                        .Where(sup => sup.ProjectId == projectId && !sup.SupervisorUser.DeletedAt.HasValue)
-                        .Select(sup => new DataCollectorSupervisorResponseDto
-                        {
-                            Id = sup.SupervisorUserId,
-                            Name = sup.SupervisorUser.Name
-                        })
+                    NationalSocietyId = dc.NationalSociety.Id,
+                    OrganizationId = dc.NationalSociety.NationalSocietyUsers
+                        .Where(nsu => nsu.User == currentUser)
+                        .Select(nsu => nsu.OrganizationId)
+                        .FirstOrDefault()
                 })
-                .FirstOrDefaultAsync();
+                .SingleAsync();
+
+            var filtersData = new DataCollectorFiltersReponseDto
+            {
+                NationalSocietyId = projectData.NationalSocietyId,
+                Supervisors = await GetSupervisors(projectId, currentUser, projectData.OrganizationId),
+            };
 
             return Success(filtersData);
         }
 
         public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters)
         {
-            var currentUser = _authorizationService.GetCurrentUser();
-
-            var projectData = await _nyssContext.Projects
-                .Where(p => p.Id == projectId)
-                .Select(p => new
-                {
-                    CurrentUserOrganizationId = p.NationalSociety.NationalSocietyUsers
-                        .Where(uns => uns.User == currentUser)
-                        .Select(uns => uns.OrganizationId)
-                        .SingleOrDefault(),
-                    HasCoordinator = p.NationalSociety.NationalSocietyUsers
-                        .Any(uns => uns.User.Role == Role.Coordinator)
-                })
-                .SingleAsync();
-
-            var dataCollectorsQuery = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
-                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == currentUser.EmailAddress)
-                : _nyssContext.DataCollectors;
-
-            if (projectData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator))
-            {
-                dataCollectorsQuery = dataCollectorsQuery
-                    .Where(p => p.Supervisor.UserNationalSocieties.Any(uns => uns.OrganizationId == projectData.CurrentUserOrganizationId));
-            }
+            var dataCollectorsQuery = await GetDataCollectorsForCurrentUserInProject(projectId);
 
             var dataCollectors = await dataCollectorsQuery
-                .Where(dc => dc.DeletedAt == null)
-                .FilterByProject(projectId)
                 .FilterByArea(dataCollectorsFilters.Area)
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
                 .FilterBySex(dataCollectorsFilters.Sex)
@@ -420,18 +398,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to)
         {
-            var userIdentityName = _authorizationService.GetCurrentUserName();
+            var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
             var endDate = to.Date.AddDays(1);
 
-            var dataCollectors = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
-                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
-                : _nyssContext.DataCollectors;
-
             var dataCollectorsWithNoReports = dataCollectors
-                .Where(dc => dc.CreatedAt < endDate && dc.Name != Anonymization.Text && dc.DeletedAt == null)
+                .Where(dc => dc.CreatedAt < endDate && dc.DeletedAt == null)
                 .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value
                     && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
-                .Where(dc => dc.Project.Id == projectId)
                 .Select(dc => new
                 {
                     dc.Location.X,
@@ -441,26 +414,17 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     NoReport = 1
                 });
 
-
-            var rawReports = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
-                ? _nyssContext.RawReports.Where(dc => dc.DataCollector.Supervisor.EmailAddress == userIdentityName)
-                : _nyssContext.RawReports;
-
-            var dataCollectorsWithReports = rawReports
-                .Where(r => r.IsTraining.HasValue && !r.IsTraining.Value)
-                .Where(r => r.ReceivedAt >= from.Date && r.ReceivedAt < endDate)
-                .Where(r => r.DataCollector.CreatedAt < endDate && r.DataCollector.Name != Anonymization.Text && r.DataCollector.DeletedAt == null)
-                .Where(dc => dc.DataCollector.Project.Id == projectId)
+            var dataCollectorsWithReports = dataCollectors
+                .Where(dc => dc.CreatedAt < endDate && dc.Name != Anonymization.Text && dc.DeletedAt == null)
+                .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value
+                    && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
+                .Where(dc => dc.Project.Id == projectId)
                 .Select(r => new
                 {
-                    r.DataCollector.Location.X,
-                    r.DataCollector.Location.Y,
-                    InvalidReport = r.Report == null
-                        ? 1
-                        : 0,
-                    ValidReport = r.Report != null
-                        ? 1
-                        : 0,
+                    r.Location.X,
+                    r.Location.Y,
+                    InvalidReport = r.RawReports.Count(rr => !rr.ReportId.HasValue),
+                    ValidReport = r.RawReports.Count(rr => rr.ReportId.HasValue),
                     NoReport = 0
                 });
 
@@ -502,24 +466,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng)
         {
-            var userIdentityName = _authorizationService.GetCurrentUserName();
-
-            var dataCollectors = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
-                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor.EmailAddress == userIdentityName)
-                : _nyssContext.DataCollectors;
-
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
-
-            var currentOrganizationId = await _nyssContext.Projects
-                .Where(p => p.Id == projectId)
-                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
-                .Where(uns => uns.User == currentUser)
-                .Select(uns => uns.OrganizationId)
-                .SingleOrDefaultAsync();
+            var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
 
             var result = await dataCollectors
-                .Where(dc => dc.Location.X == lng && dc.Location.Y == lat && dc.Name != Anonymization.Text && dc.DeletedAt == null)
-                .Where(dc => dc.Project.Id == projectId)
+                .Where(dc => dc.Location.X == lng && dc.Location.Y == lat && dc.DeletedAt == null)
                 .Select(dc => new
                 {
                     DataCollector = dc,
@@ -528,12 +478,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .Select(dc => new MapOverviewDataCollectorResponseDto
                 {
-                    IsAnonymized = currentUser.Role != Role.Administrator && !dc.DataCollector.Project.NationalSociety.NationalSocietyUsers.Any(
-                        nsu => nsu.UserId == dc.DataCollector.Supervisor.Id && nsu.OrganizationId == currentOrganizationId),
-                    OrganizationName = dc.DataCollector.Project.NationalSociety.NationalSocietyUsers
-                        .Where(nsu => nsu.UserId == dc.DataCollector.Supervisor.Id)
-                        .Select(nsu => nsu.Organization.Name)
-                        .FirstOrDefault(),
                     Id = dc.DataCollector.Id,
                     DisplayName = dc.DataCollector.DataCollectorType == DataCollectorType.Human
                         ? dc.DataCollector.DisplayName
@@ -543,9 +487,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         : DataCollectorStatus.NotReporting
                 })
                 .ToListAsync();
-
-            result.Where(dc => dc.IsAnonymized).ToList()
-                .ForEach(dc => dc.DisplayName = dc.OrganizationName);
 
             return Success(result);
         }
@@ -566,32 +507,15 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
-
-            var dataCollectors = _authorizationService.IsCurrentUserInRole(Role.Supervisor)
-                ? _nyssContext.DataCollectors.Where(dc => dc.Supervisor == currentUser)
-                : _nyssContext.DataCollectors;
+            var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
 
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
 
-            var currentOrganizationId = await _nyssContext.Projects
-                .Where(p => p.Id == projectId)
-                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
-                .Where(uns => uns.User == currentUser)
-                .Select(uns => uns.OrganizationId)
-                .SingleOrDefaultAsync();
-
             var dataCollectorsWithReports = await dataCollectors
-                .Where(dc => dc.Project.Id == projectId && dc.DeletedAt == null)
+                .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new
                 {
-                    IsAnonymized = currentUser.Role != Role.Administrator && !dc.Project.NationalSociety.NationalSocietyUsers.Any(
-                        nsu => nsu.UserId == dc.Supervisor.Id && nsu.OrganizationId == currentOrganizationId),
-                    OrganizationName = dc.Project.NationalSociety.NationalSocietyUsers
-                        .Where(nsu => nsu.UserId == dc.Supervisor.Id)
-                        .Select(nsu => nsu.Organization.Name)
-                        .FirstOrDefault(),
                     DataCollectorName = dc.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
                             && r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
@@ -606,7 +530,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
                 {
-                    DataCollectorName = r.IsAnonymized ? r.OrganizationName : r.DataCollectorName,
+                    r.DataCollectorName,
                     ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(r => (int)(to - r.ReceivedAt).TotalDays / 7)
                 })
                 .Select(dc => new DataCollectorPerformanceResponseDto
@@ -627,6 +551,37 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .ToList();
 
             return Success(dataCollectorPerformances);
+        }
+
+        private async Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId)
+        {
+            var currentUserEmail = _authorizationService.GetCurrentUserName();
+            var projectData = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => new
+                {
+                    CurrentUserOrganization = p.NationalSociety.NationalSocietyUsers
+                        .Where(uns => uns.User.EmailAddress == currentUserEmail)
+                        .Select(uns => uns.Organization)
+                        .SingleOrDefault(),
+                    HasCoordinator = p.NationalSociety.NationalSocietyUsers
+                        .Any(uns => uns.User.Role == Role.Coordinator)
+                })
+                .SingleAsync();
+
+            var dataCollectorsQuery = _nyssContext.DataCollectors.FilterByProject(projectId);
+
+            if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
+            {
+                dataCollectorsQuery = dataCollectorsQuery.Where(dc => dc.Supervisor.EmailAddress == currentUserEmail);
+            }
+
+            if (projectData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator))
+            {
+                dataCollectorsQuery = dataCollectorsQuery.FilterByOrganization(projectData.CurrentUserOrganization);
+            }
+
+            return dataCollectorsQuery;
         }
 
         private async Task Anonymize(int dataCollectorId)

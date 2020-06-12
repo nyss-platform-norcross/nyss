@@ -174,13 +174,26 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return package;
         }
 
-        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, string> stringResources, DataCollectorsFiltersRequestDto dataCollectorsFilter) => 
-            await _nyssContext.DataCollectors
+        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, string> stringResources, DataCollectorsFiltersRequestDto dataCollectorsFilter)
+        {
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var nationalSocietyId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .Select(p => p.NationalSocietyId)
+                .SingleOrDefaultAsync();
+
+            var currentUserOrganization = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.User == currentUser && uns.NationalSocietyId == nationalSocietyId)
+                .Select(uns => uns.Organization)
+                .SingleOrDefaultAsync();
+
+            return await _nyssContext.DataCollectors
                 .FilterByProject(projectId)
                 .FilterByArea(dataCollectorsFilter.Area)
                 .FilterBySupervisor(dataCollectorsFilter.SupervisorId)
                 .FilterBySex(dataCollectorsFilter.Sex)
                 .FilterByTrainingMode(dataCollectorsFilter.TrainingStatus)
+                .FilterByOrganization(currentUserOrganization)
                 .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new ExportDataCollectorsResponseDto
                 {
@@ -206,6 +219,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
                 .ToListAsync();
+        }
 
         private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
             stringResources.Keys.Contains(key)
