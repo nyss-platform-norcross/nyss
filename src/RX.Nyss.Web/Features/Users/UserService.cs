@@ -42,9 +42,7 @@ namespace RX.Nyss.Web.Features.Users
                 .Select(uns => new GetNationalSocietyUsersResponseDto
                 {
                     Id = uns.User.Id,
-                    Name = uns.User is DataConsumerUser && uns.User.IsFirstLogin
-                        ? "***"
-                        : uns.User.Name,
+                    Name = uns.User.Name,
                     Email = uns.User is DataConsumerUser && uns.User.IsFirstLogin
                         ? "***"
                         : uns.User.EmailAddress,
