@@ -26,14 +26,23 @@ export function translationsReducer(state = initialState.translations, action) {
 
     case appActions.STRINGS_UPDATED:
       return {
-        ...state, listTranslations: assignInArray(
-          state.listTranslations,
-          item => item.key === action.key,
-          item => ({
-            ...item,
-            translations: action.translations
-          })
-        )
+        ...state, listTranslations:
+          state.listTranslations.some(t => t.key === action.key)
+            ? assignInArray(
+              state.listTranslations,
+              item => item.key === action.key,
+              item => ({
+                ...item,
+                translations: action.translations
+              })
+            )
+            : [
+              ...state.listTranslations,
+              {
+                key: action.key,
+                translations: action.translations
+              }
+            ]
       };
 
     default:
