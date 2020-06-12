@@ -82,17 +82,15 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                     Name = n.Name,
                     Country = n.Country.Name,
                     StartDate = n.StartDate,
-                    HeadManagers = string.Join(", ", n.Organizations.AsQueryable()
+                    HeadManagers = string.Join(", ", n.Organizations
                         .Where(o => o.HeadManager != null)
                         .Select(o => o.HeadManager.Name)
                         .ToList()),
-                    TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers.AsQueryable()
-                        .Where(UserNationalSocietyQueries.IsNotDeletedUser)
+                    TechnicalAdvisor = string.Join(", ", n.NationalSocietyUsers
                         .Where(u => u.User.Role == Role.TechnicalAdvisor)
                         .Select(u => u.User.Name)
                         .ToList()),
-                    Coordinators = string.Join(", ", n.NationalSocietyUsers.AsQueryable()
-                        .Where(UserNationalSocietyQueries.IsNotDeletedUser)
+                    Coordinators = string.Join(", ", n.NationalSocietyUsers
                         .Where(nsu => nsu.User.Role == Role.Coordinator)
                         .Select(nsu => nsu.User.Name)
                         .ToList()),
@@ -290,8 +288,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 .Select(ns => new
                 {
                     NationalSociety = ns,
-                    HasRegisteredUsers = ns.NationalSocietyUsers.AsQueryable()
-                        .Where(UserNationalSocietyQueries.IsNotDeletedUser)
+                    HasRegisteredUsers = ns.NationalSocietyUsers
                         .Any(uns => uns.UserId != ns.DefaultOrganization.HeadManager.Id),
                     HasOpenedProjects = openedProjectsQuery.Any(p => p.NationalSocietyId == ns.Id),
                     HeadManagerId = ns.DefaultOrganization.HeadManager != null
