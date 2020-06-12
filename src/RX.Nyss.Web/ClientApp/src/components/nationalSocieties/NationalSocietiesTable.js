@@ -62,6 +62,7 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
               <TableCell>{strings(stringKeys.nationalSociety.list.name)}</TableCell>
               <TableCell style={{ width: "16%", minWidth: 100 }}>{strings(stringKeys.nationalSociety.list.country)}</TableCell>
               <TableCell style={{ width: "8%", minWidth: 75 }}>{strings(stringKeys.nationalSociety.list.startDate)}</TableCell>
+              <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.coordinator)}</TableCell>
               <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.headManager)}</TableCell>
               <TableCell style={{ width: "16%" }}>{strings(stringKeys.nationalSociety.list.technicalAdvisor)}</TableCell>
               <TableCell style={{ width: "16%", minWidth: 75 }} />
@@ -73,7 +74,8 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.country}</TableCell>
                 <TableCell>{dayjs(row.startDate).format("YYYY-MM-DD")}</TableCell>
-                <TableCell>{row.headManagerName}</TableCell>
+                <TableCell>{row.coordinators}</TableCell>
+                <TableCell>{row.headManagers}</TableCell>
                 <TableCell>{row.technicalAdvisor}</TableCell>
                 <TableCell>
                   <TableRowActions>

@@ -200,7 +200,8 @@ namespace RX.Nyss.Data.MigrationApp
                     Organization = user.roleName == "DataConsumer" ? null : context.Organizations.First(o => o.Id == user.organizationId)
                 }));
 
-                context.NationalSocieties.First().DefaultOrganization.HeadManager = context.Users.First(u => u.Role == Role.Manager && u.EmailAddress.Contains("mary"));
+                context.NationalSocieties.First().Organizations.First(o => o.Id == 1).HeadManager = context.Users.First(u => u.EmailAddress.Contains("mary"));
+                context.NationalSocieties.First().Organizations.First(o => o.Id == 2).HeadManager = context.Users.First(u => u.EmailAddress.Contains("martin"));
 
                 context.SaveChanges();
             }
@@ -309,7 +310,8 @@ namespace RX.Nyss.Data.MigrationApp
                     Organization = user.roleName == "DataConsumer" ? null : context.Organizations.First(o => o.Id == user.organizationId)
                 }));
 
-                context.NationalSocieties.First(ns => ns.Id == 2).DefaultOrganization.HeadManager = context.Users.First(u => u.Role == Role.Manager && u.EmailAddress.Contains("marcelle"));
+                context.NationalSocieties.First(ns => ns.Id == 2).Organizations.First(o => o.Id == 3).HeadManager = context.Users.First(u => u.EmailAddress.Contains("marcelle"));
+                context.NationalSocieties.First(ns => ns.Id == 2).Organizations.First(o => o.Id == 4).HeadManager = context.Users.First(u => u.EmailAddress.Contains("marc"));
 
                 context.SaveChanges();
             }
