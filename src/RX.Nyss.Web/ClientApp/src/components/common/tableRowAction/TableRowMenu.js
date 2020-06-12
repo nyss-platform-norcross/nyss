@@ -5,7 +5,7 @@ import Menu from "@material-ui/core/Menu";
 import { useUser } from "../hasAccess/HasUser";
 import MenuItem from "@material-ui/core/MenuItem";
 
-const TableRowMenuComponent = ({ id, icon, items, isFetching, user, alwaysShow }) => {
+const TableRowMenuComponent = ({ id, icon, items, isFetching, user, alwaysShow, alwaysHighlighted }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleDropdownClick = (e) => {
@@ -35,7 +35,7 @@ const TableRowMenuComponent = ({ id, icon, items, isFetching, user, alwaysShow }
 
   return (
     <Fragment>
-      <div className={`${styles.tableRowAction} ${(isFetching ? styles.fetching : "")}`} title={`more...`} onClick={handleDropdownClick}>
+      <div className={`${styles.tableRowAction} ${(alwaysHighlighted ? styles.alwaysHighlighted : "")} ${(isFetching ? styles.fetching : "")}`} title={`more...`} onClick={handleDropdownClick}>
         {isFetching && <CircularProgress size={20} className={styles.loader} />}
         <div className={styles.icon}>
           {icon}
