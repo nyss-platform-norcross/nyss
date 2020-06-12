@@ -11,10 +11,13 @@ import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
 import { updateStrings } from '../../../strings';
 import Grid from '@material-ui/core/Grid';
+import { useDispatch } from 'react-redux';
+import { stringsUpdated } from '../../app/logic/appActions';
 
 export const StringsEditorDialog = ({ stringKey, close }) => {
   const [form, setForm] = useState(null);
   const [languageCodes, setLanguageCodes] = useState([]);
+  const dispatch = useDispatch();
 
   const currentLanguageCode = "en";
 
@@ -60,6 +63,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
           [values.key]: values[`value_${currentLanguageCode}`]
         });
 
+        dispatch(stringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
         close();
       });
   }

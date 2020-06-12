@@ -1,6 +1,8 @@
 import * as actions from "./translationsConstants";
 import { initialState } from "../../../initialState";
 import { LOCATION_CHANGE } from "connected-react-router";
+import * as appActions from "../../app/logic/appConstans";
+import { assignInArray } from "../../../utils/immutable";
 
 export function translationsReducer(state = initialState.translations, action) {
   switch (action.type) {
@@ -21,6 +23,27 @@ export function translationsReducer(state = initialState.translations, action) {
 
     case actions.GET_TRANSLATIONS.FAILURE:
       return { ...state, listFetching: false, listData: [] };
+
+    case appActions.STRINGS_UPDATED:
+      return {
+        ...state, listTranslations:
+          state.listTranslations.some(t => t.key === action.key)
+            ? assignInArray(
+              state.listTranslations,
+              item => item.key === action.key,
+              item => ({
+                ...item,
+                translations: action.translations
+              })
+            )
+            : [
+              ...state.listTranslations,
+              {
+                key: action.key,
+                translations: action.translations
+              }
+            ]
+      };
 
     default:
       return state;

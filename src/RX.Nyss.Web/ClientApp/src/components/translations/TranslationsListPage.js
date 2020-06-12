@@ -27,7 +27,7 @@ TranslationsListPageComponent.propTypes = {
   translations: PropTypes.array
 };
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   isListFetching: state.translations.listFetching,
   translations: state.translations.listTranslations,
   languages: state.translations.listLanguages
