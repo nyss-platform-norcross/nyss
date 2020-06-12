@@ -541,7 +541,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
                 {
                     r.DataCollectorName,
-                    ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(r => (int)(to - r.ReceivedAt).TotalDays / 7)
+                    ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(ritr => (int)(to - ritr.ReceivedAt).TotalDays / 7)
                 })
                 .Select(dc => new DataCollectorPerformanceResponseDto
                 {
