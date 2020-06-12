@@ -64,6 +64,8 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
           reject(new Error(stringKey(stringKeys.error.notAuthenticated)));
         } else if (response.status === 403) {
           reject(new Error(stringKey(stringKeys.error.unauthorized)));
+        }else if (response.status === 429) {
+          reject(new Error(stringKey(stringKeys.error.tooManyRequests)));
         } else if (response.status === 400) {
           return response.json()
             .then(data => handleValidationError(data))

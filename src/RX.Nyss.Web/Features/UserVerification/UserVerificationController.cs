@@ -31,6 +31,7 @@ namespace RX.Nyss.Web.Features.UserVerification
         }
 
         [HttpPost("resetPassword"), AllowAnonymous]
+        [RequestRateLimit(Name = "Limit Request Number", Seconds = 10)]
         public async Task<Result> ResetPassword([FromBody] ResetPasswordRequestDto request) => await _identityUserRegistrationService.TriggerPasswordReset(request.Email);
 
         [HttpPost("resetPasswordCallback"), AllowAnonymous]

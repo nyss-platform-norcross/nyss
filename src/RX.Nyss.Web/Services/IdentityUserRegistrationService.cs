@@ -85,22 +85,23 @@ namespace RX.Nyss.Web.Services
         public async Task<Result> TriggerPasswordReset(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
+
             if (user == null)
             {
-                return Error(ResultKey.User.ResetPassword.UserNotFound);
+                _loggerAdapter.WarnFormat("Trigger password reset failed, user with email {0} not found", email);
+                return Success(ResultKey.User.ResetPassword.Success);
             }
 
-            var nyssUser = await _nyssContext.Users.FilterAvailable().Include(u => u.ApplicationLanguage).SingleAsync(x => x.IdentityUserId == user.Id);
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             var baseUrl = new Uri(_config.BaseUrl);
             var resetUrl = new Uri(baseUrl, $"resetPasswordCallback?email={WebUtility.UrlEncode(email)}&token={WebUtility.UrlEncode(token)}").ToString();
 
+            var nyssUser = await _nyssContext.Users.FilterAvailable().Include(u => u.ApplicationLanguage).SingleAsync(x => x.IdentityUserId == user.Id);
             var (emailSubject, emailBody) = await _emailTextGeneratorService.GenerateResetPasswordEmail(resetUrl, nyssUser.Name, nyssUser.ApplicationLanguage.LanguageCode);
 
             await _emailPublisherService.SendEmail((email, nyssUser.Name), emailSubject, emailBody);
-
-
+            
             return Success(ResultKey.User.ResetPassword.Success);
         }
 
@@ -137,7 +138,7 @@ namespace RX.Nyss.Web.Services
             }
 
             var passwordChangeResult = await _userManager.ResetPasswordAsync(user, verificationToken, newPassword);
-
+            
             var isPasswordTooWeak = passwordChangeResult.Errors.Any(x => x.IsPasswordTooWeak());
             if (isPasswordTooWeak)
             {
@@ -147,6 +148,14 @@ namespace RX.Nyss.Web.Services
             if (!passwordChangeResult.Succeeded)
             {
                 return Error(ResultKey.User.ResetPassword.Failed, passwordChangeResult);
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                user.EmailConfirmed = true;
+                await _userManager.UpdateAsync(user);
+                var nyssUser = await _nyssContext.Users.FilterAvailable().Include(u => u.ApplicationLanguage).SingleAsync(x => x.IdentityUserId == user.Id);
+                nyssUser.IsFirstLogin = false;
             }
 
             return Success(true, ResultKey.User.ResetPassword.Success, passwordChangeResult);
