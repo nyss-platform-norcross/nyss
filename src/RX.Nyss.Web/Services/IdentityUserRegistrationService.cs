@@ -152,10 +152,12 @@ namespace RX.Nyss.Web.Services
 
             if (!user.EmailConfirmed)
             {
-                user.EmailConfirmed = true;
-                await _userManager.UpdateAsync(user);
-                var nyssUser = await _nyssContext.Users.FilterAvailable().Include(u => u.ApplicationLanguage).SingleAsync(x => x.IdentityUserId == user.Id);
+                var nyssUser = await _nyssContext.Users.FilterAvailable().SingleAsync(x => x.IdentityUserId == user.Id);
                 nyssUser.IsFirstLogin = false;
+                user.EmailConfirmed = true;
+
+                await _userManager.UpdateAsync(user);
+                await _nyssContext.SaveChangesAsync();
             }
 
             return Success(true, ResultKey.User.ResetPassword.Success, passwordChangeResult);
