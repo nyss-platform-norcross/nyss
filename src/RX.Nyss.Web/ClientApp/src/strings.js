@@ -12,7 +12,8 @@ export const stringKeys = {
     responseNotSuccessful: "error.responseNotSuccessful",
     notAuthenticated: "error.notAuthenticated",
     unauthorized: "error.unauthorized",
-    redirected: "error.redirected"
+    redirected: "error.redirected",
+    tooManyRequests: "error.tooManyRequests"
   },
   roles: {
     "TechnicalAdvisor": "roles.technicalAdvisor",
@@ -898,7 +899,8 @@ export const stringKeys = {
       submit: "user.resetPassword.submit",
       enterNewPassword: "user.resetPassword.enterNewPassword",
       notFound: "user.resetPassword.notFound",
-      emailSent: "user.resetPassword.emailSent"
+      emailSent: "user.resetPassword.emailSent",
+      goToLoginPage: "user.resetPassword.goToLoginPage"
     }
   },
   validation: {

@@ -52,8 +52,7 @@ export const resetPassword = {
   success: () =>
     ({ type: RESET_PASSWORD.SUCCESS }),
 
-  failure: (message) =>
-    ({ type: RESET_PASSWORD.FAILURE, message })
+  failure: (message) => ({ type: RESET_PASSWORD.FAILURE, message, suppressPopup: true })
 };
 
 export const resetPasswordCallback = {

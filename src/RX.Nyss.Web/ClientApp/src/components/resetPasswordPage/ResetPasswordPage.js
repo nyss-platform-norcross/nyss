@@ -4,7 +4,6 @@ import { useLayout } from '../../utils/layout';
 import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import TextInputField from '../forms/TextInputField';
 import Typography from '@material-ui/core/Typography';
 import styles from './ResetPasswordPage.module.scss';
@@ -13,6 +12,9 @@ import { createForm, validators } from '../../utils/forms';
 import * as authActions from '../../authentication/authActions';
 import Grid from '@material-ui/core/Grid';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import SubmitButton from '../forms/submitButton/SubmitButton';
+import FormActions from '../forms/formActions/FormActions';
+import { Link } from '@material-ui/core';
 
 class ResetPasswordPageComponent extends PureComponent {
   constructor(props) {
@@ -62,11 +64,12 @@ class ResetPasswordPageComponent extends PureComponent {
                 </Grid>
               </Grid>
 
-              <div className={styles.actions}>
-                <Button type="submit" variant="outlined" color="primary">
+              <FormActions>
+                <Link href="/">{strings(stringKeys.user.resetPassword.goToLoginPage)}</Link>
+                <SubmitButton isFetching={this.props.isFetching}>
                   {strings(stringKeys.user.resetPassword.submit)}
-                </Button>
-              </div>
+                </SubmitButton>
+              </FormActions>
             </form>
           </div>
         </Paper>
@@ -81,7 +84,8 @@ ResetPasswordPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  resetPasswordErrorMessage: state.auth.resetPasswordErrorMessage
+  resetPasswordErrorMessage: state.auth.resetPasswordErrorMessage,
+  isFetching: state.requests.isFetching
 });
 
 const mapDispatchToProps = {

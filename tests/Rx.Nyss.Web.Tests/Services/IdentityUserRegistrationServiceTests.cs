@@ -111,15 +111,5 @@ namespace RX.Nyss.Web.Tests.Services
 
             result.Message.Key.ShouldBe(ResultKey.User.ResetPassword.UserNotFound);
         }
-
-        [Fact]
-        public async Task TriggerPasswordReset_WhenUserNotFound_ShouldReturnNotFound()
-        {
-            var identityUserRegistrationService = GetIdentityUserServiceWithMockedDependencies(new List<IdentityUser>());
-
-            var result = await identityUserRegistrationService.TriggerPasswordReset("missingUser");
-
-            result.Message.Key.ShouldBe(ResultKey.User.ResetPassword.UserNotFound);
-        }
     }
 }

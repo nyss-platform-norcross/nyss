@@ -12,6 +12,9 @@ export function authReducer(state = initialState.auth, action) {
     case actions.VERIFY_EMAIL.FAILURE:
       return { ...state, verifyEmailErrorMessage: action.message };
 
+    case actions.RESET_PASSWORD.REQUEST:
+      return { ...state, resetPasswordErrorMessage: null }
+
     case actions.RESET_PASSWORD.FAILURE:
       return { ...state, resetPasswordErrorMessage: action.message };
 
