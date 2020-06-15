@@ -7,7 +7,9 @@ import { getRootSaga } from "./sagas";
 import { routerMiddleware } from 'connected-react-router'
 
 export const configureStore = (history, initialState) => {
-  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+  const composeEnhancers = process.env.NODE_ENV === 'production'
+    ? compose
+    : (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose);
 
   const sagaMiddleware = createSagaMiddleware();
   const store = createStore(
