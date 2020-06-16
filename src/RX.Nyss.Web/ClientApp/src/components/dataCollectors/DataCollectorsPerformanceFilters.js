@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from "../../strings";
 import { AreaFilter } from "../common/filters/AreaFilter";
 import { performanceStatus } from "./logic/dataCollectorsConstants";
-import { FormGroup, Card, CardContent } from "@material-ui/core";
+import { FormGroup, Card, CardContent, InputLabel } from "@material-ui/core";
 import { getIconFromStatus } from "./logic/dataCollectorsService";
 import CheckboxWithIcon from "../common/filters/CheckboxWithIcon";
 import { useSelector } from "react-redux";
@@ -37,7 +37,15 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
       <CardContent>
         <Grid container spacing={3}>
           <Grid item>
-            <FormGroup>
+            <AreaFilter
+              nationalSocietyId={nationalSocietyId}
+              selectedItem={filtersValue.area}
+              onChange={handleAreaChange}
+            />
+          </Grid>
+          <Grid item>
+            <InputLabel style={{marginTop: "6px"}}>Status</InputLabel>
+            <FormGroup style={{ flexDirection: "row", marginTop: "10px" }}>
               <CheckboxWithIcon
                 label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.reportingCorrectly])}
                 name={performanceStatus.reportingCorrectly}
@@ -68,14 +76,6 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
                 }
               />
             </FormGroup>
-          </Grid>
-
-          <Grid item>
-            <AreaFilter
-              nationalSocietyId={nationalSocietyId}
-              selectedItem={filtersValue.area}
-              onChange={handleAreaChange}
-            />
           </Grid>
         </Grid>
       </CardContent>

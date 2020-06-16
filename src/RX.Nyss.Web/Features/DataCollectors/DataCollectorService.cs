@@ -512,11 +512,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
             var reportingStatusFilter = MapToReportingStatusFilterType(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting);
-
             var dataCollectorsWithReports = await dataCollectors
                 .FilterOnlyNotDeletedBefore(from)
                 .FilterByArea(dataCollectorsFilters.Area)
-                .FilterByReportsWithinTimeRange(from, to)
                 .FilterByReportingStatus(reportingStatusFilter)
                 .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new
@@ -532,6 +530,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .ToListAsync();
 
+            if (reportingStatusFilter == ReportingStatusFilterType.NotReporting)
+            {
+                dataCollectorsWithReports = dataCollectorsWithReports.Where(x => !x.ReportsInTimeRange.Any()).ToList();
+            }
 
             var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
                 {

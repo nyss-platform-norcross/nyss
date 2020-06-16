@@ -99,19 +99,18 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             {
                 ReportingStatusFilterType.All => dataCollectors,
                 ReportingStatusFilterType.Correct => dataCollectors
-                    .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && r.ReportId.HasValue)),
+                        .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
+                            && dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && r.ReportId.HasValue)),
                 ReportingStatusFilterType.CorrectAndError => dataCollectors
-                    .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
+                        .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
                 ReportingStatusFilterType.CorrectAndNotReporting => dataCollectors
-                    .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
-                        || !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
+                        .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
+                            || !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
                 ReportingStatusFilterType.Error => dataCollectors
-                    .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)),
-                ReportingStatusFilterType.ErrorAndNotReporting => dataCollectors
-                    .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
+                        .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)),
+                ReportingStatusFilterType.ErrorAndNotReporting => dataCollectors.Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
                         || !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
-                ReportingStatusFilterType.NotReporting => dataCollectors
-                    .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
+                ReportingStatusFilterType.NotReporting => dataCollectors.Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
                 ReportingStatusFilterType.None => dataCollectors.Take(0),
                 _ => dataCollectors
             };
