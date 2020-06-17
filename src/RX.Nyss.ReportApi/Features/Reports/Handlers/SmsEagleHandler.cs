@@ -214,6 +214,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
 
             var dataCollector = await _nyssContext.DataCollectors
+                .Include(dc => dc.Supervisor)
                 .Include(dc => dc.Project)
                 .Include(dc => dc.Village)
                 .Include(dc => dc.Zone)
@@ -442,8 +443,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 .SingleAsync(hlc => hlc.HealthRisk == reportData.ProjectHealthRisk.HealthRisk && hlc.ContentLanguage.LanguageCode == languageCode);
 
             feedbackMessage = feedbackMessage.Replace("{{supervisor}}", supervisor.Name);
-            feedbackMessage = feedbackMessage.Replace("{{timestamp}}", reportData.ReceivedAt.ToString(CultureInfo.InvariantCulture));
-            feedbackMessage = feedbackMessage.Replace("{{healthRisk/event}}", languageContents.Name);
+            feedbackMessage = feedbackMessage.Replace("{{date/time}}", reportData.ReceivedAt.ToString("yyyy-MM-dd HH:mm"));
+            feedbackMessage = feedbackMessage.Replace("{{health risk/event}}", languageContents.Name);
 
             return feedbackMessage;
         }
