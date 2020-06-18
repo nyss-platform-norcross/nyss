@@ -137,13 +137,15 @@ const ProjectsEditPageComponent = (props) => {
             </Grid>
           }
 
-          {selectedHealthRisks.map(selectedHealthRisk => (
-            <ProjectsHealthRiskItem
-              key={`projectsHealthRiskItem_${selectedHealthRisk.healthRiskId}`}
-              form={form}
-              projectHealthRisk={{ id: selectedHealthRisk.id }}
-              healthRisk={selectedHealthRisk}
-            />
+          {selectedHealthRisks.sort((a, b) => a.healthRiskCode - b.healthRiskCode).map(selectedHealthRisk => (
+            <Grid item xs={12}>
+              <ProjectsHealthRiskItem
+                key={`projectsHealthRiskItem_${selectedHealthRisk.healthRiskId}`}
+                form={form}
+                projectHealthRisk={{ id: selectedHealthRisk.id }}
+                healthRisk={selectedHealthRisk}
+              />
+            </Grid>
           ))}
         </Grid>
 
