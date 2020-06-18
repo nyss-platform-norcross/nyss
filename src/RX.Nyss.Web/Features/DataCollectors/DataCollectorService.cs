@@ -512,17 +512,14 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
             var reportingStatusFilter = MapToReportingStatusFilterType(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting);
-            
-            var dataCollectorsWithReports = await dataCollectors
+
+            var dataCollectorsWithReportsData = await dataCollectors
                 .FilterOnlyNotDeletedBefore(from)
                 .FilterByArea(dataCollectorsFilters.Area)
-                .FilterByReportingStatus(reportingStatusFilter)
                 .Where(dc => dc.DeletedAt == null)
-                .FilterByReportsWithinTimeRange(from, to)
-                .FilterByReportingStatus(reportingStatusFilter)
-                .Select(dc => new
+                .Select(dc => new DataCollectorWithRawReportData
                 {
-                    DataCollectorName = dc.Name,
+                    Name = dc.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
                             && r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
                         .Select(r => new RawReportData
@@ -530,22 +527,18 @@ namespace RX.Nyss.Web.Features.DataCollectors
                             IsValid = r.ReportId.HasValue,
                             ReceivedAt = r.ReceivedAt.Date
                         })
-                })
-                .ToListAsync();
+                }).ToListAsync();
 
-            if (reportingStatusFilter == ReportingStatusFilterType.NotReporting)
-            {
-                dataCollectorsWithReports = dataCollectorsWithReports.Where(x => !x.ReportsInTimeRange.Any()).ToList();
-            }
+            dataCollectorsWithReportsData = FilterByReportingStatus(dataCollectorsWithReportsData, reportingStatusFilter);
 
-            var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
+            var dataCollectorPerformances = dataCollectorsWithReportsData.Select(r => new
                 {
-                    r.DataCollectorName,
+                    r.Name,
                     ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(ritr => (int)(to - ritr.ReceivedAt).TotalDays / 7)
                 })
                 .Select(dc => new DataCollectorPerformanceResponseDto
                 {
-                    Name = dc.DataCollectorName,
+                    Name = dc.Name,
                     DaysSinceLastReport = dc.ReportsGroupedByWeek.Any()
                         ? (int)(to - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).FirstOrDefault().ReceivedAt).TotalDays
                         : -1,
@@ -562,6 +555,20 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             return Success(dataCollectorPerformances);
         }
+
+        private List<DataCollectorWithRawReportData> FilterByReportingStatus(List<DataCollectorWithRawReportData> dataCollectors, ReportingStatusFilterType filter) =>
+            filter switch
+            {
+                ReportingStatusFilterType.All => dataCollectors,
+                ReportingStatusFilterType.Correct => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => rrd.IsValid)).ToList(),
+                ReportingStatusFilterType.Error => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => !rrd.IsValid)).ToList(),
+                ReportingStatusFilterType.CorrectAndError => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any()).ToList(),
+                ReportingStatusFilterType.CorrectAndNotReporting => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => rrd.IsValid) || !dc.ReportsInTimeRange.Any()).ToList(),
+                ReportingStatusFilterType.ErrorAndNotReporting => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => !rrd.IsValid) || !dc.ReportsInTimeRange.Any()).ToList(),
+                ReportingStatusFilterType.NotReporting => dataCollectors.Where(dc => !dc.ReportsInTimeRange.Any()).ToList(),
+                ReportingStatusFilterType.None => dataCollectors.Take(0).ToList(),
+                _ => dataCollectors
+            };
 
         private async Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId)
         {
@@ -691,6 +698,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
         {
             public bool IsValid { get; set; }
             public DateTime ReceivedAt { get; set; }
+        }
+
+        private class DataCollectorWithRawReportData
+        {
+            public string Name { get; set; }
+            public IEnumerable<RawReportData> ReportsInTimeRange { get; set; }
         }
     }
 }

@@ -93,29 +93,5 @@ namespace RX.Nyss.Web.Features.Common.Extensions
 
         public static IQueryable<DataCollector> FilterByOrganization(this IQueryable<DataCollector> dataCollectors, Organization organization) =>
             organization == null ? dataCollectors : dataCollectors.Where(dc => dc.Supervisor.UserNationalSocieties.Any(uns => uns.Organization == organization));
-
-        public static IQueryable<DataCollector> FilterByReportingStatus(this IQueryable<DataCollector> dataCollectors, ReportingStatusFilterType reportingStatusFilter) =>
-            reportingStatusFilter switch
-            {
-                ReportingStatusFilterType.All => dataCollectors,
-                ReportingStatusFilterType.Correct => dataCollectors
-                        .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
-                            && dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && r.ReportId.HasValue)),
-                ReportingStatusFilterType.CorrectAndError => dataCollectors
-                        .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
-                ReportingStatusFilterType.CorrectAndNotReporting => dataCollectors
-                        .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
-                            || !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
-                ReportingStatusFilterType.Error => dataCollectors
-                        .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)),
-                ReportingStatusFilterType.ErrorAndNotReporting => dataCollectors.Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value && !r.ReportId.HasValue)
-                        || !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
-                ReportingStatusFilterType.NotReporting => dataCollectors.Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value)),
-                ReportingStatusFilterType.None => dataCollectors.Take(0),
-                _ => dataCollectors
-            };
-
-        public static IQueryable<DataCollector> FilterByReportsWithinTimeRange(this IQueryable<DataCollector> dataCollectors, DateTime from, DateTime to) =>
-            dataCollectors.Where(dc => dc.RawReports.Where(r => r.ReceivedAt >= from && r.ReceivedAt < to).Any());
     }
 }
