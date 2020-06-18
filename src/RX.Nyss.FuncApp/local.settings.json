@@ -13,6 +13,7 @@
     "WhitelistedPhoneNumbersBlobPath": "sms-gateway/whitelisted-phone-numbers.txt"
   },
   "ReleaseName": "1.0.0.1",
+  "MaxContentLength": 500, 
   "MailConfig": {
     "FromAddress": "",
     "FromName": "Nyss Platform",
