@@ -332,7 +332,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         private async Task RecalculateAlert(Report report, AlertRule alertRule)
         {
-            var pointsWithLabels = await _reportLabelingService.CalculateNewLabelsInLabelGroup(report.ReportGroupLabel, alertRule.KilometersThreshold.Value * 1000 * 2, report.Id);
+            var pointsWithLabels = await _reportLabelingService.CalculateNewLabelsInLabelGroup(report.ReportGroupLabel, (alertRule.KilometersThreshold ?? 0) * 1000 * 2, report.Id);
             await _reportLabelingService.UpdateLabelsInDatabaseDirect(pointsWithLabels);
         }
 
