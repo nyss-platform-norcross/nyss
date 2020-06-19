@@ -53,7 +53,7 @@ function* createHealthRisk({ data }) {
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.healthRisk.create.success));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 
@@ -65,7 +65,7 @@ function* editHealthRisk({ id, data }) {
     yield put(actions.goToList());
     yield put(appActions.showMessage(stringKeys.healthRisk.edit.success));
   } catch (error) {
-    yield put(actions.edit.failure(error.message));
+    yield put(actions.edit.failure(error));
   }
 };
 

@@ -19,12 +19,12 @@ const formatString = (row) => {
 
 export const AlertsLogsTable = ({ list }) => {
   return (
-    <TableContainer sticky={true}>
+    <TableContainer sticky="true">
       <Table>
         <TableHead>
           <TableRow>
             <TableCell style={{ width: "12%", minWidth: 150 }}>{strings(stringKeys.alerts.logs.list.date)}</TableCell>
-            <TableCell style={{ minWidth: 200 }}>{strings(stringKeys.alerts.logs.list.logType)}</TableCell>
+            <TableCell style={{ width: "30%", minWidth: 200 }}>{strings(stringKeys.alerts.logs.list.logType)}</TableCell>
             <TableCell>{strings(stringKeys.alerts.logs.list.userName)}</TableCell>
           </TableRow>
         </TableHead>
