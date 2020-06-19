@@ -66,10 +66,12 @@ const ProjectsOverviewPageComponent = (props) => {
           <Typography variant="h3">{strings(stringKeys.project.form.overviewHealthRisksSection)}</Typography>
           <Grid container spacing={3}>
             {props.data.projectHealthRisks.map(hr =>
-              <ProjectsOverviewHealthRiskItem
-                key={`projectsHealthRiskItem_${hr.healthRiskId}`}
-                projectHealthRisk={hr}
-              />
+              <Grid item xs={12}>
+                <ProjectsOverviewHealthRiskItem
+                  key={`projectsHealthRiskItem_${hr.healthRiskId}`}
+                  projectHealthRisk={hr}
+                />
+              </Grid>
             )}
           </Grid>
         </Grid>

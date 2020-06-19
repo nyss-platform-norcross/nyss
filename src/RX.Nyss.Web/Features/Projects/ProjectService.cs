@@ -11,7 +11,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
-using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors;
 using RX.Nyss.Web.Features.Projects.Dto;
@@ -65,22 +64,23 @@ namespace RX.Nyss.Web.Features.Projects
                     TimeZoneId = p.TimeZone,
                     AllowMultipleOrganizations = p.AllowMultipleOrganizations,
                     State = p.State,
-                    ProjectHealthRisks = p.ProjectHealthRisks.Select(phr => new ProjectHealthRiskResponseDto
-                    {
-                        Id = phr.Id,
-                        HealthRiskId = phr.HealthRiskId,
-                        HealthRiskCode = phr.HealthRisk.HealthRiskCode,
-                        HealthRiskName = phr.HealthRisk.LanguageContents
-                            .Where(lc => lc.ContentLanguage.Id == p.NationalSociety.ContentLanguage.Id)
-                            .Select(lc => lc.Name)
-                            .FirstOrDefault(),
-                        AlertRuleCountThreshold = phr.AlertRule.CountThreshold,
-                        AlertRuleDaysThreshold = phr.AlertRule.DaysThreshold,
-                        AlertRuleKilometersThreshold = phr.AlertRule.KilometersThreshold,
-                        FeedbackMessage = phr.FeedbackMessage,
-                        CaseDefinition = phr.CaseDefinition,
-                        ContainsReports = phr.Reports.Any()
-                    }),
+                    ProjectHealthRisks = p.ProjectHealthRisks.OrderBy(phr => phr.HealthRisk.HealthRiskCode)
+                        .Select(phr => new ProjectHealthRiskResponseDto
+                        {
+                            Id = phr.Id,
+                            HealthRiskId = phr.HealthRiskId,
+                            HealthRiskCode = phr.HealthRisk.HealthRiskCode,
+                            HealthRiskName = phr.HealthRisk.LanguageContents
+                                .Where(lc => lc.ContentLanguage.Id == p.NationalSociety.ContentLanguage.Id)
+                                .Select(lc => lc.Name)
+                                .FirstOrDefault(),
+                            AlertRuleCountThreshold = phr.AlertRule.CountThreshold,
+                            AlertRuleDaysThreshold = phr.AlertRule.DaysThreshold,
+                            AlertRuleKilometersThreshold = phr.AlertRule.KilometersThreshold,
+                            FeedbackMessage = phr.FeedbackMessage,
+                            CaseDefinition = phr.CaseDefinition,
+                            ContainsReports = phr.Reports.Any()
+                        }),
                     ContentLanguageId = p.NationalSociety.ContentLanguage.Id,
                     HasCoordinator = p.NationalSociety.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator)
                 })
@@ -97,10 +97,6 @@ namespace RX.Nyss.Web.Features.Projects
 
             return result;
         }
-
-        private async Task<bool> ValidateCoordinatorAccess(int nationalSocietyId) =>
-            _authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator) 
-            || !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator));
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int projectId, IEnumerable<HealthRiskType> healthRiskTypes) =>
             await _nyssContext.ProjectHealthRisks
@@ -125,7 +121,7 @@ namespace RX.Nyss.Web.Features.Projects
                     .Where(x => x.SupervisorUser == currentUser)
                     .Select(x => x.Project)
                 : _nyssContext.Projects;
-            
+
             var nationalSocietyData = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => new
@@ -212,7 +208,9 @@ namespace RX.Nyss.Web.Features.Projects
                 }
 
                 var organizationId = dto.OrganizationId
-                    ?? (data.OrganizationsCount == 1 ? data.FirstOrganizationId : data.UserOrganizationId);
+                    ?? (data.OrganizationsCount == 1
+                        ? data.FirstOrganizationId
+                        : data.UserOrganizationId);
 
                 var projectToAdd = new Project
                 {
@@ -237,13 +235,7 @@ namespace RX.Nyss.Web.Features.Projects
                         }
                     }).ToList(),
                     ProjectOrganizations = organizationId.HasValue
-                        ? new List<ProjectOrganization>
-                        {
-                            new ProjectOrganization
-                            {
-                                OrganizationId = organizationId.Value
-                            }
-                        }
+                        ? new List<ProjectOrganization> { new ProjectOrganization { OrganizationId = organizationId.Value } }
                         : new List<ProjectOrganization>()
                 };
 
@@ -389,7 +381,7 @@ namespace RX.Nyss.Web.Features.Projects
 
             return Success(project);
         }
-        
+
         public async Task<Result<ProjectFormDataResponseDto>> GetFormData(int nationalSocietyId)
         {
             var contentLanguageId = await _nyssContext.NationalSocieties
@@ -407,6 +399,10 @@ namespace RX.Nyss.Web.Features.Projects
                 .Where(u => u.EmailAddress == supervisorIdentityName)
                 .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
                 .ToListAsync();
+
+        private async Task<bool> ValidateCoordinatorAccess(int nationalSocietyId) =>
+            _authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator)
+            || !await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Id == nationalSocietyId && ns.NationalSocietyUsers.Any(nsu => nsu.User.Role == Role.Coordinator));
 
         private async Task UpdateHealthRisks(Project projectToUpdate, ICollection<ProjectHealthRiskRequestDto> healthRisks)
         {
@@ -469,7 +465,7 @@ namespace RX.Nyss.Web.Features.Projects
         {
             var data = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
-                .Select(ns => new 
+                .Select(ns => new
                 {
                     HealthRisks = _nyssContext.HealthRisks
                         .Include(hr => hr.LanguageContents)
