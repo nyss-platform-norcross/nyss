@@ -35,6 +35,7 @@ const callApi = (path, method, data, headers = {}, authenticate = false) => {
     let init = {
       method,
       redirect: "manual",
+      credentials: "include",
       headers: new Headers({
         ...headers,
         "Pragma": "no-cache",
