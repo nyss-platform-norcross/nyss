@@ -12,40 +12,40 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
   const [reportCountThreshold, setReportCountThreshold] = useState(healthRisk.alertRuleCountThreshold || 0);
 
   useMount(() => {
-    form.addField(`healthRisk_${healthRisk.healthRiskId}_projectHealthRiskId`, projectHealthRisk.id);
-    form.addField(`healthRisk_${healthRisk.healthRiskId}_caseDefinition`, healthRisk.caseDefinition, [validators.required, validators.maxLength(500)]);
-    form.addField(`healthRisk_${healthRisk.healthRiskId}_feedbackMessage`, healthRisk.feedbackMessage, [validators.required, validators.maxLength(160)]);
-    form.addField(`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`, healthRisk.alertRuleCountThreshold, [validators.nonNegativeNumber]);
-    form.addField(`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`,
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.projectHealthRiskId`, projectHealthRisk.id);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.caseDefinition`, healthRisk.caseDefinition, [validators.required, validators.maxLength(500)]);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`, healthRisk.feedbackMessage, [validators.required, validators.maxLength(160)]);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`, healthRisk.alertRuleCountThreshold, [validators.nonNegativeNumber]);
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`,
       healthRisk.alertRuleDaysThreshold,
       [
-        validators.requiredWhen(f => f[`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`] > 1),
+        validators.requiredWhen(f => f[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`] > 1),
         validators.inRange(1, 365)
       ]);
-    form.addField(`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`,
+    form.addField(`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`,
       healthRisk.alertRuleKilometersThreshold,
       [
-        validators.requiredWhen(f => f[`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`] > 1),
+        validators.requiredWhen(f => f[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`] > 1),
         validators.inRange(1, 9999)
       ]);
 
-    form.fields[`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`].subscribe(({ newValue }) => setReportCountThreshold(newValue));
+    form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`].subscribe(({ newValue }) => setReportCountThreshold(newValue));
     setReady(true);
 
     return () => {
-      form.removeField(`healthRisk_${healthRisk.healthRiskId}_projectHealthRiskId`);
-      form.removeField(`healthRisk_${healthRisk.healthRiskId}_caseDefinition`);
-      form.removeField(`healthRisk_${healthRisk.healthRiskId}_feedbackMessage`);
-      form.removeField(`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`);
-      form.removeField(`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`);
-      form.removeField(`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`);
+      form.removeField(`healthRisk.${healthRisk.healthRiskId}.projectHealthRiskId`);
+      form.removeField(`healthRisk.${healthRisk.healthRiskId}.caseDefinition`);
+      form.removeField(`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`);
+      form.removeField(`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`);
+      form.removeField(`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`);
+      form.removeField(`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`);
     };
   })
 
   useEffect(() => {
-    if (reportCountThreshold <= 1){
-      form.fields[`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`].update("");
-      form.fields[`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`].update("");
+    if (reportCountThreshold <= 1) {
+      form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`].update("");
+      form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`].update("");
     }
     return;
   }, [form, reportCountThreshold, healthRisk])
@@ -55,25 +55,24 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
   }
 
   return (
-    <Card key={`healthRisk_${healthRisk.healthRiskId}`}>
+    <Card key={`healthRisk.${healthRisk.healthRiskId}`}>
       <CardContent>
-        <Typography variant="h3">
-          <Typography variant="h2" display="inline" style={{ marginRight: "10px" }}>{healthRisk.healthRiskCode}</Typography> {healthRisk.healthRiskName}
-        </Typography>
+        <Typography variant="h2" display="inline">{healthRisk.healthRiskCode}</Typography>
+        <Typography variant="h3" style={{ marginLeft: "10px" }} display="inline"> {healthRisk.healthRiskName}</Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6}>
             <TextInputField
               label={strings(stringKeys.project.form.caseDefinition)}
-              name={`healthRisk_${healthRisk.healthRiskId}_caseDefinition`}
-              field={form.fields[`healthRisk_${healthRisk.healthRiskId}_caseDefinition`]}
+              name={`healthRisk.${healthRisk.healthRiskId}.caseDefinition`}
+              field={form.fields[`healthRisk.${healthRisk.healthRiskId}.caseDefinition`]}
               multiline
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextInputField
               label={strings(stringKeys.project.form.feedbackMessage)}
-              name={`healthRisk_${healthRisk.healthRiskId}_feedbackMessage`}
-              field={form.fields[`healthRisk_${healthRisk.healthRiskId}_feedbackMessage`]}
+              name={`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`}
+              field={form.fields[`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`]}
               multiline
             />
           </Grid>
@@ -84,26 +83,26 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
           <Grid item xs={12} sm={4}>
             <TextInputField
               label={strings(stringKeys.project.form.alertRuleCountThreshold)}
-              name={`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`}
-              field={form.fields[`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`]}
+              name={`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`}
+              field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`]}
             />
           </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextInputField
-                  label={strings(stringKeys.project.form.alertRuleDaysThreshold)}
-                  name={`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`}
-                  field={form.fields[`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`]}
-                  disabled={!reportCountThreshold || reportCountThreshold <= 1}
-                />
-              </Grid>
-              <Grid item xs={12} sm={4}>
-                <TextInputField
-                  label={strings(stringKeys.project.form.alertRuleKilometersThreshold)}
-                  name={`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`}
-                  field={form.fields[`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`]}
-                  disabled={!reportCountThreshold || reportCountThreshold <= 1}
-                />
-              </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextInputField
+              label={strings(stringKeys.project.form.alertRuleDaysThreshold)}
+              name={`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`}
+              field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`]}
+              disabled={!reportCountThreshold || reportCountThreshold <= 1}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextInputField
+              label={strings(stringKeys.project.form.alertRuleKilometersThreshold)}
+              name={`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`}
+              field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`]}
+              disabled={!reportCountThreshold || reportCountThreshold <= 1}
+            />
+          </Grid>
         </Grid>
       </CardContent>
     </Card>

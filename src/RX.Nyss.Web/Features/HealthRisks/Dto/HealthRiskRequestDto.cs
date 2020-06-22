@@ -25,8 +25,12 @@ namespace RX.Nyss.Web.Features.HealthRisks.Dto
                 RuleFor(hr => hr.HealthRiskCode).GreaterThan(0);
                 RuleFor(hr => hr.HealthRiskType).IsInEnum();
                 RuleFor(hr => hr.AlertRuleCountThreshold).GreaterThanOrEqualTo(0).When(hr => hr.AlertRuleCountThreshold.HasValue);
-                RuleFor(hr => hr.AlertRuleDaysThreshold).GreaterThanOrEqualTo(0).When(hr => hr.AlertRuleDaysThreshold.HasValue);
-                RuleFor(hr => hr.AlertRuleKilometersThreshold).GreaterThanOrEqualTo(0).When(hr => hr.AlertRuleKilometersThreshold.HasValue);
+                RuleFor(hr => hr.AlertRuleDaysThreshold)
+                    .NotEmpty().When(hr => hr.AlertRuleCountThreshold > 1)
+                    .InclusiveBetween(1, 365).When(hr => hr.AlertRuleDaysThreshold.HasValue);
+                RuleFor(hr => hr.AlertRuleKilometersThreshold)
+                    .NotEmpty().When(hr => hr.AlertRuleCountThreshold > 1)
+                    .InclusiveBetween(1, 9999).When(hr => hr.AlertRuleKilometersThreshold.HasValue);
                 RuleFor(hr => hr.LanguageContent).NotEmpty();
             }
         }

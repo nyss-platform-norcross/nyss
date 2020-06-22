@@ -85,7 +85,7 @@ function* editProject({ nationalSocietyId, projectId, data }) {
     yield put(actions.goToOverview(nationalSocietyId, projectId));
     yield put(appActions.showMessage(stringKeys.project.messages.edit.success));
   } catch (error) {
-    yield put(actions.edit.failure(error.message));
+    yield put(actions.edit.failure(error));
   }
 };
 

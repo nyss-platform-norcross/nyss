@@ -54,12 +54,12 @@ const HealthRisksEditPageComponent = (props) => {
       healthRiskType: [validators.required],
       alertRuleCountThreshold: [validators.integer],
       alertRuleDaysThreshold: [
-        validators.integer,
-        validators.requiredWhen(f => f.alertRuleCountThreshold > 1)
+        validators.requiredWhen(f => f.alertRuleCountThreshold > 1),
+        validators.inRange(1, 365)
       ],
       alertRuleKilometersThreshold: [
-        validators.integer,
-        validators.requiredWhen(f => f.alertRuleCountThreshold > 1)
+        validators.requiredWhen(f => f.alertRuleCountThreshold > 1),
+        validators.inRange(1, 9999)
       ]
     };
 

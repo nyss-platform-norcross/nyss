@@ -10,9 +10,8 @@ export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
   return (
     <Card>
       <CardContent className={styles.healthRisk}>
-        <Typography variant="h3">
-          <Typography variant="h2" display="inline" style={{ marginRight: "10px" }}>{projectHealthRisk.healthRiskCode}</Typography> {projectHealthRisk.healthRiskName}
-        </Typography>
+        <Typography variant="h2" display="inline">{projectHealthRisk.healthRiskCode}</Typography>
+        <Typography variant="h3" style={{ marginLeft: "10px" }} display="inline"> {projectHealthRisk.healthRiskName}</Typography>
         <Grid container spacing={1} className={styles.healthRiskTextArea}>
           <Grid item xs={4}>
             <Typography variant="h6" >

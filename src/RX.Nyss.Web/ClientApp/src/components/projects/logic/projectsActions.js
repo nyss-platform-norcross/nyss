@@ -59,7 +59,7 @@ export const edit = {
   invoke: (nationalSocietyId, projectId, data) => ({ type: EDIT_PROJECT.INVOKE, nationalSocietyId, projectId, data }),
   request: () => ({ type: EDIT_PROJECT.REQUEST }),
   success: () => ({ type: EDIT_PROJECT.SUCCESS }),
-  failure: (message) => ({ type: EDIT_PROJECT.FAILURE, message, suppressPopup: true })
+  failure: (error) => ({ type: EDIT_PROJECT.FAILURE, error, suppressPopup: true })
 };
 
 export const close = {

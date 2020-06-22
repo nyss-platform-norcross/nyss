@@ -4,13 +4,13 @@ export const getSaveFormModel = (values, healthRisks) =>
     allowMultipleOrganizations: values.allowMultipleOrganizations,
     timeZoneId: values.timeZoneId,
     healthRisks: healthRisks.map(healthRisk => ({
-      id: values[`healthRisk_${healthRisk.healthRiskId}_projectHealthRiskId`],
+      id: values[`healthRisk.${healthRisk.healthRiskId}.projectHealthRiskId`],
       healthRiskId: healthRisk.healthRiskId,
-      feedbackMessage: values[`healthRisk_${healthRisk.healthRiskId}_feedbackMessage`],
-      caseDefinition: values[`healthRisk_${healthRisk.healthRiskId}_caseDefinition`],
-      alertRuleCountThreshold: parseInt(values[`healthRisk_${healthRisk.healthRiskId}_alertRuleCountThreshold`]),
-      alertRuleDaysThreshold: parseInt(values[`healthRisk_${healthRisk.healthRiskId}_alertRuleDaysThreshold`]),
-      alertRuleKilometersThreshold: parseInt(values[`healthRisk_${healthRisk.healthRiskId}_alertRuleKilometersThreshold`])
+      feedbackMessage: values[`healthRisk.${healthRisk.healthRiskId}.feedbackMessage`],
+      caseDefinition: values[`healthRisk.${healthRisk.healthRiskId}.caseDefinition`],
+      alertRuleCountThreshold: parseInt(values[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`]),
+      alertRuleDaysThreshold: parseInt(values[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`]),
+      alertRuleKilometersThreshold: parseInt(values[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`])
     })),
     organizationId: values.organizationId ? parseInt(values.organizationId) : null
   });

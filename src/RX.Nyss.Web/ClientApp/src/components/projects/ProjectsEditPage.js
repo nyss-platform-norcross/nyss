@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as projectsActions from './logic/projectsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -81,13 +81,15 @@ const ProjectsEditPageComponent = (props) => {
     }
   }
 
+  useCustomErrors(form, props.error);
+
   if (props.isFetching || !form) {
     return <Loading />;
   }
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={3}>
@@ -138,9 +140,8 @@ const ProjectsEditPageComponent = (props) => {
           }
 
           {selectedHealthRisks.sort((a, b) => a.healthRiskCode - b.healthRiskCode).map(selectedHealthRisk => (
-            <Grid item xs={12}>
+            <Grid item xs={12} key={`projectsHealthRiskItem_${selectedHealthRisk.healthRiskId}`}>
               <ProjectsHealthRiskItem
-                key={`projectsHealthRiskItem_${selectedHealthRisk.healthRiskId}`}
                 form={form}
                 projectHealthRisk={{ id: selectedHealthRisk.id }}
                 healthRisk={selectedHealthRisk}
