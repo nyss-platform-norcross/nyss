@@ -833,7 +833,7 @@ export const stringKeys = {
       },
       sex: {
         "Female": "alerts.sex.female",
-        "Male": "alerts.sex.female",
+        "Male": "alerts.sex.male",
       },
       age: {
         "BelowFive": "alerts.age.belowFive",
