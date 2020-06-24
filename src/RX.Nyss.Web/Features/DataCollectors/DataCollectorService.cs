@@ -516,7 +516,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorsWithReportsData = await dataCollectors
                 .FilterOnlyNotDeletedBefore(from)
                 .FilterByArea(dataCollectorsFilters.Area)
-                .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new DataCollectorWithRawReportData
                 {
                     Name = dc.Name,

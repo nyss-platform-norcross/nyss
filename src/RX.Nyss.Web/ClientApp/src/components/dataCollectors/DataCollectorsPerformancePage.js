@@ -6,7 +6,6 @@ import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
 import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
-import { Loading } from '../common/loading/Loading';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 
 const DataCollectorsPerformancePageComponent = (props) => {
@@ -16,10 +15,6 @@ const DataCollectorsPerformancePageComponent = (props) => {
 
   const onFilterChange = (filters) => {
     props.getDataCollectorPerformanceList(props.projectId, filters);
-  }
-
-  if (props.isListFetching) {
-    return <Loading />;
   }
 
   return (
