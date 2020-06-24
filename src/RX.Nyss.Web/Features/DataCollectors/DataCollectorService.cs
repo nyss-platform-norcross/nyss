@@ -13,6 +13,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -35,7 +36,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
-        Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId);
+        Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters);
         Task AnonymizeDataCollectorsWithReports(int projectId);
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
     }
@@ -179,7 +180,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         .Where(nsu => nsu.User == currentUser)
                         .Select(nsu => nsu.OrganizationId)
                         .FirstOrDefault()
-                })
+                        })
                 .SingleAsync();
 
             var filtersData = new DataCollectorFiltersReponseDto
@@ -483,8 +484,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         ? dc.DataCollector.DisplayName
                         : dc.DataCollector.Name,
                     Status = dc.ReportsInTimeRange.Any()
-                        ? dc.ReportsInTimeRange.All(r => r.Report != null) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
-                        : DataCollectorStatus.NotReporting
+                        ? dc.ReportsInTimeRange.All(r => r.Report != null) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
+                        : ReportingStatus.NotReporting
                 })
                 .ToListAsync();
 
@@ -505,18 +506,19 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 : ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
-        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId)
+        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters)
         {
             var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
-
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
+            var reportingStatusFilter = MapToReportingStatusFilterType(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting);
 
-            var dataCollectorsWithReports = await dataCollectors
-                .Where(dc => dc.DeletedAt == null)
-                .Select(dc => new
+            var dataCollectorsWithReportsData = await dataCollectors
+                .FilterOnlyNotDeletedBefore(from)
+                .FilterByArea(dataCollectorsFilters.Area)
+                .Select(dc => new DataCollectorWithRawReportData
                 {
-                    DataCollectorName = dc.Name,
+                    Name = dc.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
                             && r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
                         .Select(r => new RawReportData
@@ -524,18 +526,18 @@ namespace RX.Nyss.Web.Features.DataCollectors
                             IsValid = r.ReportId.HasValue,
                             ReceivedAt = r.ReceivedAt.Date
                         })
-                })
-                .ToListAsync();
+                }).ToListAsync();
 
+            dataCollectorsWithReportsData = FilterByReportingStatus(dataCollectorsWithReportsData, reportingStatusFilter);
 
-            var dataCollectorPerformances = dataCollectorsWithReports.Select(r => new
+            var dataCollectorPerformances = dataCollectorsWithReportsData.Select(r => new
                 {
-                    r.DataCollectorName,
-                    ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(r => (int)(to - r.ReceivedAt).TotalDays / 7)
+                    r.Name,
+                    ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(ritr => (int)(to - ritr.ReceivedAt).TotalDays / 7)
                 })
                 .Select(dc => new DataCollectorPerformanceResponseDto
                 {
-                    Name = dc.DataCollectorName,
+                    Name = dc.Name,
                     DaysSinceLastReport = dc.ReportsGroupedByWeek.Any()
                         ? (int)(to - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).FirstOrDefault().ReceivedAt).TotalDays
                         : -1,
@@ -552,6 +554,20 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             return Success(dataCollectorPerformances);
         }
+
+        private List<DataCollectorWithRawReportData> FilterByReportingStatus(List<DataCollectorWithRawReportData> dataCollectors, ReportingStatusFilterType filter) =>
+            filter switch
+            {
+                ReportingStatusFilterType.All => dataCollectors,
+                ReportingStatusFilterType.Correct => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => rrd.IsValid)).ToList(),
+                ReportingStatusFilterType.Error => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => !rrd.IsValid)).ToList(),
+                ReportingStatusFilterType.CorrectAndError => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any()).ToList(),
+                ReportingStatusFilterType.CorrectAndNotReporting => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => rrd.IsValid) || !dc.ReportsInTimeRange.Any()).ToList(),
+                ReportingStatusFilterType.ErrorAndNotReporting => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => !rrd.IsValid) || !dc.ReportsInTimeRange.Any()).ToList(),
+                ReportingStatusFilterType.NotReporting => dataCollectors.Where(dc => !dc.ReportsInTimeRange.Any()).ToList(),
+                ReportingStatusFilterType.None => dataCollectors.Take(0).ToList(),
+                _ => dataCollectors
+            };
 
         private async Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId)
         {
@@ -624,12 +640,45 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return geometryFactory.CreatePoint(new Coordinate(longitude, latitude));
         }
 
-        private DataCollectorStatus GetDataCollectorStatus(int week, IEnumerable<IGrouping<int, RawReportData>> grouping)
+        private ReportingStatus GetDataCollectorStatus(int week, IEnumerable<IGrouping<int, RawReportData>> grouping)
         {
             var reports = grouping.Where(g => g.Key == week).SelectMany(g => g);
             return reports.Any()
-                ? reports.All(x => x.IsValid) ? DataCollectorStatus.ReportingCorrectly : DataCollectorStatus.ReportingWithErrors
-                : DataCollectorStatus.NotReporting;
+                ? reports.All(x => x.IsValid) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
+                : ReportingStatus.NotReporting;
+        }
+
+        private ReportingStatusFilterType MapToReportingStatusFilterType(bool reportingCorrectly, bool reportingWithErrors, bool notReporting)
+        {
+            if (reportingCorrectly && reportingWithErrors && notReporting)
+            {
+                return ReportingStatusFilterType.All;
+            }
+            if (reportingCorrectly && !reportingWithErrors && !notReporting)
+            {
+                return ReportingStatusFilterType.Correct;
+            }
+            if (reportingCorrectly && reportingWithErrors && !notReporting)
+            {
+                return ReportingStatusFilterType.CorrectAndError;
+            }
+            if (reportingCorrectly && !reportingWithErrors && notReporting)
+            {
+                return ReportingStatusFilterType.CorrectAndNotReporting;
+            }
+            if (!reportingCorrectly && reportingWithErrors && notReporting)
+            {
+                return ReportingStatusFilterType.ErrorAndNotReporting;
+            }
+            if (!reportingCorrectly && reportingWithErrors && !notReporting)
+            {
+                return ReportingStatusFilterType.Error;
+            }
+            if (!reportingCorrectly && !reportingWithErrors && notReporting)
+            {
+                return ReportingStatusFilterType.NotReporting;
+            }
+            return ReportingStatusFilterType.None;
         }
 
         private async Task<LocationDto> GetCountryLocationFromProject(int projectId)
@@ -648,6 +697,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
         {
             public bool IsValid { get; set; }
             public DateTime ReceivedAt { get; set; }
+        }
+
+        private class DataCollectorWithRawReportData
+        {
+            public string Name { get; set; }
+            public IEnumerable<RawReportData> ReportsInTimeRange { get; set; }
         }
     }
 }

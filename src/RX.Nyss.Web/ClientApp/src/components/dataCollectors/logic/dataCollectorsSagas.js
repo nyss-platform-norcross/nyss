@@ -20,6 +20,7 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.GET_DATA_COLLECTORS_MAP_DETAILS.INVOKE, getMapDetails),
   takeEvery(consts.SET_DATA_COLLECTORS_TRAINING_STATE.INVOKE, setTrainingState),
   takeEvery(consts.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, openDataCollectorsPerformanceList),
+  takeEvery(consts.GET_DATA_COLLECTORS_PERFORMANCE.INVOKE, getDataCollectorsPerformance),
   takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_EXCEL.INVOKE, getExcelExportData),
   takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, getCsvExportData),
   takeEvery(consts.GET_DATA_COLLECTORS.INVOKE, getDataCollectors)
@@ -197,18 +198,34 @@ function* openDataCollectorsPerformanceList({ projectId }) {
   yield put(actions.openDataCollectorsPerformanceList.request());
   try {
     yield openDataCollectorsModule(projectId);
-    yield call(getDataCollectorsPerformance, projectId);
-    yield put(actions.openDataCollectorsPerformanceList.success(projectId));
+
+    const filters = (yield select(state => state.dataCollectors.dataCollectorPerformanceFilters)) ||
+      {
+        area: null,
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      };
+
+    let filtersData = yield select(state => state.dataCollectors.filtersData);
+
+    if (filtersData.nationalSocietyId == null) {
+      const fetchedFiltersData = yield call(http.get, `/api/dataCollector/filters?projectId=${projectId}`);
+      filtersData = fetchedFiltersData.value;
+    }
+
+    yield call(getDataCollectorsPerformance, { projectId, filters });
+    yield put(actions.openDataCollectorsPerformanceList.success(filtersData));
   } catch (error) {
     yield put(actions.openDataCollectorsPerformanceList.failure(error.message));
   }
 };
 
-function* getDataCollectorsPerformance(projectId) {
+function* getDataCollectorsPerformance({ projectId, filters }) {
   yield put(actions.getDataCollectorsPerformanceList.request());
   try {
-    const response = yield call(http.get, `/api/dataCollector/performance?projectId=${projectId}`);
-    yield put(actions.getDataCollectorsPerformanceList.success(response.value));
+    const response = yield call(http.post, `/api/dataCollector/performance?projectId=${projectId}`, filters);
+    yield put(actions.getDataCollectorsPerformanceList.success(response.value, filters));
   } catch (error) {
     yield put(actions.getDataCollectorsPerformanceList.failure(error.message));
   }

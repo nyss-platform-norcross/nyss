@@ -9,8 +9,9 @@ import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { getIconFromStatus } from './logic/dataCollectorsService';
 import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
+import { Loading } from '../common/loading/Loading';
 
-export const DataCollectorsPerformanceTable = ({ list }) => {
+export const DataCollectorsPerformanceTable = ({ list, isListFetching }) => {
   return (
     <TableContainer sticky>
       <Table>
@@ -30,36 +31,40 @@ export const DataCollectorsPerformanceTable = ({ list }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {list.map((row, index) => (
-            <TableRow key={index} hover>
-              <TableCell>{row.name}</TableCell>
-              <TableCell style={{textAlign: "center"}}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
-              <TableCell style={{textAlign: "center"}}>
-                <DataCollectorStatusIcon status={row.statusLastWeek} icon={getIconFromStatus(row.statusLastWeek)} />
-              </TableCell>
-              <TableCell style={{textAlign: "center"}}>
-                <DataCollectorStatusIcon status={row.statusTwoWeeksAgo} icon={getIconFromStatus(row.statusTwoWeeksAgo)} />
-              </TableCell>
-              <TableCell style={{textAlign: "center"}}>
-                <DataCollectorStatusIcon status={row.statusThreeWeeksAgo} icon={getIconFromStatus(row.statusThreeWeeksAgo)} />
-              </TableCell>
-              <TableCell style={{textAlign: "center"}}>
-                <DataCollectorStatusIcon status={row.statusFourWeeksAgo} icon={getIconFromStatus(row.statusFourWeeksAgo)} />
-              </TableCell>
-              <TableCell style={{textAlign: "center"}}>
-                <DataCollectorStatusIcon status={row.statusFiveWeeksAgo} icon={getIconFromStatus(row.statusFiveWeeksAgo)} />
-              </TableCell>
-              <TableCell style={{textAlign: "center"}}>
-                <DataCollectorStatusIcon status={row.statusSixWeeksAgo} icon={getIconFromStatus(row.statusSixWeeksAgo)} />
-              </TableCell>
-              <TableCell style={{textAlign: "center"}}>
-                <DataCollectorStatusIcon status={row.statusSevenWeeksAgo} icon={getIconFromStatus(row.statusSevenWeeksAgo)} />
-              </TableCell>
-              <TableCell style={{textAlign: "center"}}>
-                <DataCollectorStatusIcon status={row.statusEightWeeksAgo} icon={getIconFromStatus(row.statusEightWeeksAgo)} />
-              </TableCell>
-            </TableRow>
-          ))}
+          {isListFetching && <Loading />}
+
+          {!isListFetching && (
+            list.map((row, index) => (
+              <TableRow key={index} hover>
+                <TableCell>{row.name}</TableCell>
+                <TableCell style={{ textAlign: "center" }}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <DataCollectorStatusIcon status={row.statusLastWeek} icon={getIconFromStatus(row.statusLastWeek)} />
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <DataCollectorStatusIcon status={row.statusTwoWeeksAgo} icon={getIconFromStatus(row.statusTwoWeeksAgo)} />
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <DataCollectorStatusIcon status={row.statusThreeWeeksAgo} icon={getIconFromStatus(row.statusThreeWeeksAgo)} />
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <DataCollectorStatusIcon status={row.statusFourWeeksAgo} icon={getIconFromStatus(row.statusFourWeeksAgo)} />
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <DataCollectorStatusIcon status={row.statusFiveWeeksAgo} icon={getIconFromStatus(row.statusFiveWeeksAgo)} />
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <DataCollectorStatusIcon status={row.statusSixWeeksAgo} icon={getIconFromStatus(row.statusSixWeeksAgo)} />
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <DataCollectorStatusIcon status={row.statusSevenWeeksAgo} icon={getIconFromStatus(row.statusSevenWeeksAgo)} />
+                </TableCell>
+                <TableCell style={{ textAlign: "center" }}>
+                  <DataCollectorStatusIcon status={row.statusEightWeeksAgo} icon={getIconFromStatus(row.statusEightWeeksAgo)} />
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </TableContainer>
@@ -67,7 +72,7 @@ export const DataCollectorsPerformanceTable = ({ list }) => {
 }
 
 DataCollectorsPerformanceTable.propTypes = {
-  isFetching: PropTypes.bool,
+  isListFetching: PropTypes.bool,
   list: PropTypes.array
 };
 

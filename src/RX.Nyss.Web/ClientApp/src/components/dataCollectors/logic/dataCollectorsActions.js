@@ -102,14 +102,14 @@ export const setTrainingState = {
 export const openDataCollectorsPerformanceList = {
   invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE, projectId }),
   request: () => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.REQUEST }),
-  success: (projectId) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS, projectId }),
+  success: (filtersData) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS, filtersData }),
   failure: (message) => ({ type: OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.FAILURE, message })
 }
 
 export const getDataCollectorsPerformanceList = {
-  invoke: (projectId) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.INVOKE, projectId }),
+  invoke: (projectId, filters) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.INVOKE, projectId, filters }),
   request: () => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.REQUEST }),
-  success: (list) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS, list }),
+  success: (list, filters) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS, list, filters }),
   failure: (message) => ({ type: GET_DATA_COLLECTORS_PERFORMANCE.FAILURE, message })
 }
 

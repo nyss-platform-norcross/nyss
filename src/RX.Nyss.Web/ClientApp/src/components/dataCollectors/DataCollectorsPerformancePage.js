@@ -6,28 +6,28 @@ import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
 import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
-import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
-import { Loading } from '../common/loading/Loading';
+import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 
 const DataCollectorsPerformancePageComponent = (props) => {
   useMount(() => {
-    props.openDataCollectorsPerformanceList(props.projectId);
+    props.openDataCollectorsPerformanceList(props.projectId, props.filters);
   });
 
-  if (props.isListFetching) {
-    return <Loading />;
+  const onFilterChange = (filters) => {
+    props.getDataCollectorPerformanceList(props.projectId, filters);
   }
 
   return (
     <Fragment>
+      <DataCollectorsPerformanceFilters
+        onChange={onFilterChange}
+      />
       <DataCollectorsPerformanceTable
         list={props.list}
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
         projectId={props.projectId}
       />
-
-      <DataCollectorsPerformanceTableLegend />
     </Fragment>
   );
 }
@@ -40,12 +40,15 @@ DataCollectorsPerformancePageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
+  nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
+  filters: state.dataCollectors.performanceListFilters,
   list: state.dataCollectors.performanceListData,
   isListFetching: state.dataCollectors.performanceListFetching,
 });
 
 const mapDispatchToProps = {
-  openDataCollectorsPerformanceList: dataCollectorActions.openDataCollectorsPerformanceList.invoke
+  openDataCollectorsPerformanceList: dataCollectorActions.openDataCollectorsPerformanceList.invoke,
+  getDataCollectorPerformanceList: dataCollectorActions.getDataCollectorsPerformanceList.invoke
 };
 
 export const DataCollectorsPerformancePage = useLayout(
