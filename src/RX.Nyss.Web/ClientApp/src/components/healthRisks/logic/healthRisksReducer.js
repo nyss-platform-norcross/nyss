@@ -36,7 +36,7 @@ export function healthRisksReducer(state = initialState.healthRisks, action) {
       return { ...state, formSaving: false, listData: [] };
 
     case actions.CREATE_HEALTH_RISK.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.EDIT_HEALTH_RISK.REQUEST:
       return { ...state, formSaving: true, formError: null };
@@ -45,7 +45,7 @@ export function healthRisksReducer(state = initialState.healthRisks, action) {
       return { ...state, formSaving: false, listData: [] };
 
     case actions.EDIT_HEALTH_RISK.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.REMOVE_HEALTH_RISK.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };

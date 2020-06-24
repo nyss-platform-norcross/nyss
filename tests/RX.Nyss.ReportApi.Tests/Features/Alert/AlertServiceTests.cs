@@ -590,7 +590,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             await _alertService.ReportReset(reportBeingReset.Id);
 
             //assert
-            await _reportLabelingServiceMock.Received(1).CalculateNewLabelsInLabelGroup(reportBeingReset.ReportGroupLabel, alertRule.KilometersThreshold.Value * 1000 * 2, reportBeingReset.Id);
+            await _reportLabelingServiceMock.Received(1).CalculateNewLabelsInLabelGroup(reportBeingReset.ReportGroupLabel, (alertRule.KilometersThreshold ?? 0) * 1000 * 2, reportBeingReset.Id);
         }
 
         [Fact]

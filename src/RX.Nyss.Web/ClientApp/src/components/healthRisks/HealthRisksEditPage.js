@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as healthRisksActions from './logic/healthRisksActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -22,16 +22,25 @@ import { ValidationMessage } from '../forms/ValidationMessage';
 
 const HealthRisksEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
+  const [reportCountThreshold, setReportCountThreshold] = useState(null);
 
   useMount(() => {
     props.openEdition(props.match);
   });
 
   useEffect(() => {
+    if (form && reportCountThreshold <= 1){
+      form.fields.alertRuleDaysThreshold.update("");
+      form.fields.alertRuleKilometersThreshold.update("");
+    }
+    return;
+  }, [form, reportCountThreshold])
+
+  useEffect(() => {
     if (!props.data) {
       return;
     }
-
+    setReportCountThreshold(props.data.alertRuleCountThreshold);
     let fields = {
       healthRiskCode: props.data.healthRiskCode.toString(),
       healthRiskType: props.data.healthRiskType,
@@ -44,8 +53,14 @@ const HealthRisksEditPageComponent = (props) => {
       healthRiskCode: [validators.required, validators.integer],
       healthRiskType: [validators.required],
       alertRuleCountThreshold: [validators.integer],
-      alertRuleDaysThreshold: [validators.integer],
-      alertRuleKilometersThreshold: [validators.integer]
+      alertRuleDaysThreshold: [
+        validators.requiredWhen(f => f.alertRuleCountThreshold > 1),
+        validators.inRange(1, 365)
+      ],
+      alertRuleKilometersThreshold: [
+        validators.requiredWhen(f => f.alertRuleCountThreshold > 1),
+        validators.inRange(1, 9999)
+      ]
     };
 
     const finalFormData = props.contentLanguages
@@ -58,16 +73,18 @@ const HealthRisksEditPageComponent = (props) => {
           [`contentLanguage_${lang.id}_feedbackMessage`]: content && content.feedbackMessage
         },
         validation: lang.name.toLowerCase() === "english"
-        ? {
-          ...result.validation,
-          [`contentLanguage_${lang.id}_name`]: [validators.required, validators.maxLength(100)],
-          [`contentLanguage_${lang.id}_caseDefinition`]: [validators.required, validators.maxLength(500)],
-          [`contentLanguage_${lang.id}_feedbackMessage`]: [validators.required, validators.maxLength(160)]
-        }
-        : result.validation
+          ? {
+            ...result.validation,
+            [`contentLanguage_${lang.id}_name`]: [validators.required, validators.maxLength(100)],
+            [`contentLanguage_${lang.id}_caseDefinition`]: [validators.required, validators.maxLength(500)],
+            [`contentLanguage_${lang.id}_feedbackMessage`]: [validators.required, validators.maxLength(160)]
+          }
+          : result.validation
       }), { fields, validation });
 
-    setForm(createForm(finalFormData.fields, finalFormData.validation));
+    const newForm = createForm(finalFormData.fields, finalFormData.validation);
+    setForm(newForm);
+    newForm.fields.alertRuleCountThreshold.subscribe(({ newValue }) => setReportCountThreshold(newValue));
   }, [props.data, props.contentLanguages]);
 
   const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
@@ -85,20 +102,18 @@ const HealthRisksEditPageComponent = (props) => {
     props.edit(props.data.id, getSaveFormModel(form.getValues(), props.contentLanguages));
   };
 
+  useCustomErrors(form, props.formError);
+
   if (props.isFetching || !form) {
     return <Loading />;
   }
 
   return (
     <Fragment>
+      {props.formError && <ValidationMessage message={props.formError.message} />}
+
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
         <Grid container spacing={3}>
-          {props.formError && (
-            <Grid item xs={12}>
-              <ValidationMessage message={props.formError} />
-            </Grid>
-          )}
-
           <Grid item xs={3}>
             <TextInputField
               label={strings(stringKeys.healthRisk.form.healthRiskCode)}
@@ -170,6 +185,7 @@ const HealthRisksEditPageComponent = (props) => {
               label={strings(stringKeys.healthRisk.form.alertRuleDaysThreshold)}
               name="alertRuleDaysThreshold"
               field={form.fields.alertRuleDaysThreshold}
+              disabled={!reportCountThreshold || reportCountThreshold <= 1}
             />
           </Grid>
 
@@ -178,6 +194,7 @@ const HealthRisksEditPageComponent = (props) => {
               label={strings(stringKeys.healthRisk.form.alertRuleKilometersThreshold)}
               name="alertRuleKilometersThreshold"
               field={form.fields.alertRuleKilometersThreshold}
+              disabled={!reportCountThreshold || reportCountThreshold <= 1}
             />
           </Grid>
         </Grid>

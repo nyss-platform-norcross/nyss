@@ -101,6 +101,9 @@ export const theme = createMuiTheme({
         '&:-webkit-autofill': {
           transitionDelay: '9999s'
         },
+        "&$disabled": {
+          backgroundColor: "#FAFAFA"
+        },
       },
       formControl: {
         marginTop: "30px !important"

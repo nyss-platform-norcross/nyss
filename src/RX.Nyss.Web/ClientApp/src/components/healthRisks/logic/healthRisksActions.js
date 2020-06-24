@@ -17,14 +17,14 @@ export const create = {
   invoke: (data) => ({ type: CREATE_HEALTH_RISK.INVOKE, data }),
   request: () => ({ type: CREATE_HEALTH_RISK.REQUEST }),
   success: () => ({ type: CREATE_HEALTH_RISK.SUCCESS }),
-  failure: (message) => ({ type: CREATE_HEALTH_RISK.FAILURE, message, suppressPopup: true })
+  failure: (error) => ({ type: CREATE_HEALTH_RISK.FAILURE, error, suppressPopup: true })
 };
 
 export const edit = {
   invoke: (id, data) => ({ type: EDIT_HEALTH_RISK.INVOKE, id, data }),
   request: () => ({ type: EDIT_HEALTH_RISK.REQUEST }),
   success: () => ({ type: EDIT_HEALTH_RISK.SUCCESS }),
-  failure: (message) => ({ type: EDIT_HEALTH_RISK.FAILURE, message, suppressPopup: true })
+  failure: (error) => ({ type: EDIT_HEALTH_RISK.FAILURE, error, suppressPopup: true })
 };
 
 export const openEdition = {

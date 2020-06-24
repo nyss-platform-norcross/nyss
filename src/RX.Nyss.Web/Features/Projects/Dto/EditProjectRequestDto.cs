@@ -20,7 +20,10 @@ namespace RX.Nyss.Web.Features.Projects.Dto
                 RuleFor(p => p.Name).NotEmpty().MaximumLength(200);
                 RuleFor(p => p.Name).MaximumLength(50);
                 RuleFor(p => p.HealthRisks).NotNull();
-                RuleForEach(p => p.HealthRisks).SetValidator(new ProjectHealthRiskRequestDto.Validator());
+                RuleForEach(p => p.HealthRisks)
+                    .OverrideIndexer((x, collection, element, index) => $".{element.HealthRiskId}")
+                    .SetValidator(new ProjectHealthRiskRequestDto.Validator())
+                    .OverridePropertyName("HealthRisk");
             }
         }
     }
