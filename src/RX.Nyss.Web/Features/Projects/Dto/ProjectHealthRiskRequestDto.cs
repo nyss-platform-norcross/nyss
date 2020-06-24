@@ -26,11 +26,15 @@ namespace RX.Nyss.Web.Features.Projects.Dto
                 RuleFor(phr => phr.HealthRiskId).GreaterThan(0);
                 RuleFor(phr => phr.AlertRuleCountThreshold).GreaterThanOrEqualTo(0).When(phr => phr.AlertRuleCountThreshold.HasValue);
                 RuleFor(phr => phr.AlertRuleDaysThreshold)
-                    .NotEmpty().When(hr => hr.AlertRuleCountThreshold > 1)
-                    .InclusiveBetween(1, 365).When(hr => hr.AlertRuleDaysThreshold.HasValue);
+                    .Empty().When(hr => hr.AlertRuleCountThreshold == null || hr.AlertRuleCountThreshold <= 1);
+                RuleFor(phr => phr.AlertRuleDaysThreshold)
+                    .NotEmpty()
+                    .InclusiveBetween(1, 365).When(hr => hr.AlertRuleCountThreshold > 1);
                 RuleFor(phr => phr.AlertRuleKilometersThreshold)
-                    .NotEmpty().When(hr => hr.AlertRuleCountThreshold > 1)
-                    .InclusiveBetween(1, 9999).When(hr => hr.AlertRuleDaysThreshold.HasValue);
+                    .Empty().When(hr => hr.AlertRuleCountThreshold == null || hr.AlertRuleCountThreshold <= 1);
+                RuleFor(phr => phr.AlertRuleKilometersThreshold)
+                    .NotEmpty()
+                    .InclusiveBetween(1, 9999).When(hr => hr.AlertRuleCountThreshold > 1);
                 RuleFor(phr => phr.FeedbackMessage).MaximumLength(160);
                 RuleFor(phr => phr.CaseDefinition).MaximumLength(500);
             }
