@@ -164,8 +164,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     if (projectHealthRisk != null)
                     {
                         var recipients = new List<string> { sender };
-                        var feedbackMessage = !string.IsNullOrEmpty(source) && source == "Nyss"
-                            ? $"{GetFeedbackMessageForReportSentThroughNyss(reportData, gatewaySetting).Result} {projectHealthRisk.FeedbackMessage}"
+                        var feedbackForReportSentThroughNyss = !string.IsNullOrEmpty(source) && source == "Nyss" ? await GetFeedbackMessageForReportSentThroughNyss(reportData, gatewaySetting) : null;
+                        var feedbackMessage = !string.IsNullOrEmpty(feedbackForReportSentThroughNyss)
+                            ? $"{feedbackForReportSentThroughNyss} {projectHealthRisk.FeedbackMessage}"
                             : projectHealthRisk.FeedbackMessage;
 
                         await _queuePublisherService.SendSms(recipients, gatewaySetting, feedbackMessage);
