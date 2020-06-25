@@ -17,6 +17,7 @@ export const reportsSagas = () => [
   takeEvery(consts.EXPORT_TO_EXCEL.INVOKE, getExcelExportData),
   takeEvery(consts.EXPORT_TO_CSV.INVOKE, getCsvExportData),
   takeEvery(consts.MARK_AS_ERROR.INVOKE, markAsError),
+  takeEvery(consts.OPEN_SEND_REPORT.INVOKE, openSendReport),
   takeEvery(consts.SEND_REPORT.INVOKE, sendReport)
 ];
 
@@ -149,6 +150,22 @@ function* markAsError({ reportId }) {
     yield put(actions.markAsError.failure());
   }
 };
+
+function* openSendReport({ projectId }) {
+  yield put(actions.openSendReport.request());
+  try {
+    const filters = {
+      area: null,
+      sex: null,
+      supervisorId: null,
+      trainingStatus: null
+    };
+    const dataCollectors = yield call(http.post, `/api/dataCollector/list?projectId=${projectId}`, filters);
+    yield put(actions.openSendReport.success(dataCollectors.value));
+  } catch (error) {
+    yield put(actions.openSendReport.failure(error.message));
+  }
+}
 
 function* sendReport({ report }) {
   yield put(actions.sendReport.request());

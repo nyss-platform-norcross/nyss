@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.FuncApp.Contracts
+﻿using RX.Nyss.Common.Utils.DataContract;
+
+namespace RX.Nyss.FuncApp.Contracts
 {
     public class Report
     {
@@ -7,10 +9,5 @@
         public ReportSource ReportSource { get; set; }
 
         public override string ToString() => $"{nameof(Content)}: {Content}, {nameof(ReportSource)}: {ReportSource}";
-    }
-
-    public enum ReportSource
-    {
-        SmsEagle
     }
 }

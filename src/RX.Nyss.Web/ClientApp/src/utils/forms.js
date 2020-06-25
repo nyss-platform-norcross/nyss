@@ -189,6 +189,7 @@ export const createForm = (fields, validators) => {
 
 const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const phoneNumberRegex = /^\+[0-9]{6}[0-9]*$/;
+const timeRegex = /^[0-9]{2}:[0-9]{2}/;
 
 export const validators = {
   phoneNumber: [() => strings(stringKeys.validation.invalidPhoneNumber), (value) => !value || phoneNumberRegex.test(value)],
@@ -201,5 +202,6 @@ export const validators = {
   emailWhen: (fieldGetter) => [() => strings(stringKeys.validation.invalidEmail), (value, fields) => !fieldGetter(fields) || emailRegex.test(value)],
   moduloTen: [() => strings(stringKeys.validation.invalidModuloTen), (value) => (Number(value) % 10 === 0)],
   nonNegativeNumber: [() => strings(stringKeys.validation.valueCannotBeNegative), (value) => !value || (!isNaN(Number(value)) && Number(value) >= 0)],
-  inRange: (min, max) => [() => stringsFormat(stringKeys.validation.inRange, { min, max }), (value) => !value || (!isNaN(Number(value)) && value >= min && value <= max)]
+  inRange: (min, max) => [() => stringsFormat(stringKeys.validation.inRange, { min, max }), (value) => !value || (!isNaN(Number(value)) && value >= min && value <= max)],
+  time: [() => strings(stringKeys.validation.invalidTimeFormat), (value) => !value || timeRegex.test(value)]
 };

@@ -688,7 +688,8 @@ export const stringKeys = {
       markAsErrorConfirmationText: "reports.list.markAsErrorConfirmationText",
       markedAsError: "reports.list.markedAsError",
       editReport: "reports.list.editReport",
-      editedSuccesfully: "reports.list.editedSuccessfully"
+      editedSuccesfully: "reports.list.editedSuccessfully",
+      sendReport: "reports.list.sendReport"
     },
     form: {
       title: "reports.form.editionTitle",
@@ -705,9 +706,10 @@ export const stringKeys = {
     },
     title: "reports.title",
     sendReport: {
-      phoneNumber: "reports.sendReport.phoneNumber",
+      dataCollector: "reports.sendReport.dataCollector",
       message: "reports.sendReport.message",
-      apiKey: "reports.sendReport.apiKey",
+      dateOfReport: "reports.sendReport.dateOfReport",
+      timeOfReport: "reports.sendReport.timeOfReport",
       sendReport: "reports.sendReport.sendReport",
       goToReportList: "reports.sendReport.goToReportList",
       success: "reports.sendReport.success"
@@ -913,7 +915,8 @@ export const stringKeys = {
     phoneNumberInvalid: "validation.phoneNumberInvalid",
     invalidModuloTen: "validation.invalidModuloTen",
     valueCannotBeNegative: "validation.valueCannotBeNegative",
-    inRange: "validation.valueMustBeInRange"
+    inRange: "validation.valueMustBeInRange",
+    invalidTimeFormat: "validation.invalidTimeFormat"
   },
   nationalSocietyConsents: {
     title: "headManagerConsents.title",

@@ -212,7 +212,10 @@ export const initialState = {
     },
     filters: null,
     sorting: null,
-    formHealthRisks: []
+    formHealthRisks: [],
+    sendReport: {
+      dataCollectors: []
+    }
   },
   nationalSocietyReports: {
     listFetching: false,
