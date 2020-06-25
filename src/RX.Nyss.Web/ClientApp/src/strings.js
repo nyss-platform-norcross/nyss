@@ -802,6 +802,8 @@ export const stringKeys = {
         sender: "alerts.assess.report.sender",
         phoneNumber: "alerts.assess.report.phoneNumber",
         village: "alerts.assess.report.village",
+        district: "alerts.assess.report.district",
+        region: "alerts.assess.report.region",
         sex: "alerts.assess.report.sex",
         age: "alerts.assess.report.age",
         id: "alerts.assess.report.id",

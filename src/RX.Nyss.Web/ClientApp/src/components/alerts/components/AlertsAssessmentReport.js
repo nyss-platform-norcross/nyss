@@ -12,7 +12,7 @@ import dayjs from "dayjs";
 import Icon from "@material-ui/core/Icon";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import { assessmentStatus } from "../logic/alertsConstants";
-import { Button, CircularProgress } from "@material-ui/core";
+import { Button, CircularProgress, Grid } from "@material-ui/core";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>
@@ -49,30 +49,44 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
         </div>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={styles.form}>
-        <ReportFormLabel
-          label={strings(stringKeys.alerts.assess.report.phoneNumber)}
-          value={report.phoneNumber}
-        />
-        <ReportFormLabel
-          label={strings(stringKeys.alerts.assess.report.village)}
-          value={report.village}
-        />
-        {report.sex && (
-          <ReportFormLabel
-            label={strings(stringKeys.alerts.assess.report.sex)}
-            value={strings(stringKeys.alerts.constants.sex[report.sex])}
-          />
-        )}
-        {report.age && (
-          <ReportFormLabel
-            label={strings(stringKeys.alerts.assess.report.age)}
-            value={strings(stringKeys.alerts.constants.age[report.age])}
-          />
-        )}
-        <ReportFormLabel
-          label={strings(stringKeys.alerts.assess.report.id)}
-          value={report.id}
-        />
+        <Grid container spacing={3}>
+          <Grid item xs={6} xl={3}>
+            <ReportFormLabel
+              label={strings(stringKeys.alerts.assess.report.phoneNumber)}
+              value={report.phoneNumber}
+            />
+            <ReportFormLabel
+              label={strings(stringKeys.alerts.assess.report.village)}
+              value={report.village}
+            />
+            <ReportFormLabel
+              label={strings(stringKeys.alerts.assess.report.district)}
+              value={report.district}
+            />
+            <ReportFormLabel
+              label={strings(stringKeys.alerts.assess.report.region)}
+              value={report.region}
+            />
+          </Grid>
+          <Grid item xs={6} xl={3}>
+            {report.sex && (
+              <ReportFormLabel
+                label={strings(stringKeys.alerts.assess.report.sex)}
+                value={strings(stringKeys.alerts.constants.sex[report.sex])}
+              />
+            )}
+            {report.age && (
+              <ReportFormLabel
+                label={strings(stringKeys.alerts.assess.report.age)}
+                value={strings(stringKeys.alerts.constants.age[report.age])}
+              />
+            )}
+            <ReportFormLabel
+              label={strings(stringKeys.alerts.assess.report.id)}
+              value={report.id}
+            />
+          </Grid>
+        </Grid>
       </ExpansionPanelDetails>
       {!projectIsClosed && (
         <Fragment>
