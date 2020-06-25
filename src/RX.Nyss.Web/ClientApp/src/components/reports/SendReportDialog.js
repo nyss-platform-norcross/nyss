@@ -8,7 +8,7 @@ import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
-import { useTheme, Grid, Button, MenuItem, Typography, FormControlLabel } from "@material-ui/core"
+import { useTheme, Grid, Button } from "@material-ui/core"
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { Dialog } from "@material-ui/core";
@@ -16,9 +16,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { useSelector } from "react-redux";
-import SelectField from "../forms/SelectField";
 import { DatePicker } from "../forms/DatePicker";
-import { TimePicker } from "../forms/TimePicker";
 import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
 
 
@@ -29,20 +27,20 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
   dayjs.extend(utc);
 
   const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}` })));
-  const smsGateway = useSelector(state => state.reports.sendReport.smsGateway);
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
-  const [time, setTime] = useState(dayjs());
   const isSending = useSelector(state => state.reports.formSaving);
 
   useEffect(() => {
     const fields = {
       dataCollector: '',
-      message: ''
+      message: '',
+      time: dayjs().format('HH:mm')
     };
 
     const validation = {
       dataCollector: [validators.required],
-      message: [validators.required]
+      message: [validators.required],
+      time: [validators.required, validators.time]
     };
 
     setForm(createForm(fields, validation));
@@ -50,10 +48,6 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
 
   const handleDateChange = date => {
     setDate(date.format('YYYY-MM-DD'));
-  }
-
-  const handleTimeChange = time => {
-    setTime(time);
   }
 
   const handleSubmit = (e) => {
@@ -67,8 +61,7 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
     sendReport({
       sender: values.dataCollector.split('/')[1].trim(),
       text: values.message,
-      timestamp: dayjs(`${date} ${time.format('hh:mm')}`).utc().format('YYYYMMDDHHmmss'),
-      apiKey: smsGateway.apiKey
+      timestamp: dayjs(`${date} ${values.time}`).utc().format('YYYYMMDDHHmmss')
     });
 
     close();
@@ -82,7 +75,7 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
     <Fragment>
       <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
         <DialogTitle id="form-dialog-title">{strings(stringKeys.reports.sendReport.sendReport)}</DialogTitle>
-        <DialogContent style={{ width: 400 }}>
+        <DialogContent>
           <Form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -95,9 +88,7 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
                   name="dataCollectors"
                 />
               </Grid>
-            </Grid>
-
-            <Grid container spacing={3}>
+              
               <Grid item xs={6}>
                 <DatePicker
                   label={strings(stringKeys.reports.sendReport.dateOfReport)}
@@ -106,17 +97,17 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
                   value={date}
                 />
               </Grid>
+              
               <Grid item xs={6}>
-                <TimePicker
+                <TextInputField
                   label={strings(stringKeys.reports.sendReport.timeOfReport)}
-                  fullWidth
-                  onChange={handleTimeChange}
-                  value={time}
+                  type="time"
+                  name="time"
+                  field={form.fields.time}
+                  pattern="[0-9]{2}:[0-9]{2}"
                 />
               </Grid>
-            </Grid>
 
-            <Grid container spacing={3}>
               <Grid item xs={12}>
                 <TextInputField
                   className={styles.fullWidth}

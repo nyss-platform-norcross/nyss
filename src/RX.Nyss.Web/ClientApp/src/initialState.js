@@ -214,8 +214,7 @@ export const initialState = {
     sorting: null,
     formHealthRisks: [],
     sendReport: {
-      dataCollectors: [],
-      smsGateway: null
+      dataCollectors: []
     }
   },
   nationalSocietyReports: {

@@ -154,7 +154,6 @@ function* markAsError({ reportId }) {
 function* openSendReport({ projectId }) {
   yield put(actions.openSendReport.request());
   try {
-    const nationalSocietyId = yield select(state => state.appData.siteMap.parameters.nationalSocietyId);
     const filters = {
       area: null,
       sex: null,
@@ -162,8 +161,7 @@ function* openSendReport({ projectId }) {
       trainingStatus: null
     };
     const dataCollectors = yield call(http.post, `/api/dataCollector/list?projectId=${projectId}`, filters);
-    const smsGateways = yield call(http.get, `/api/smsGateway/list?nationalSocietyId=${nationalSocietyId}`);
-    yield put(actions.openSendReport.success(dataCollectors.value, smsGateways.value[0]));
+    yield put(actions.openSendReport.success(dataCollectors.value));
   } catch (error) {
     yield put(actions.openSendReport.failure(error.message));
   }

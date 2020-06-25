@@ -915,7 +915,8 @@ export const stringKeys = {
     phoneNumberInvalid: "validation.phoneNumberInvalid",
     invalidModuloTen: "validation.invalidModuloTen",
     valueCannotBeNegative: "validation.valueCannotBeNegative",
-    inRange: "validation.valueMustBeInRange"
+    inRange: "validation.valueMustBeInRange",
+    invalidTimeFormat: "validation.invalidTimeFormat"
   },
   nationalSocietyConsents: {
     title: "headManagerConsents.title",

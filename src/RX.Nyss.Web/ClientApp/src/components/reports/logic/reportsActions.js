@@ -60,7 +60,7 @@ export const markAsError = {
 export const openSendReport = {
   invoke: (projectId) => ({ type: OPEN_SEND_REPORT.INVOKE, projectId }),
   request: () => ({ type: OPEN_SEND_REPORT.REQUEST }),
-  success: (dataCollectors, smsGateway) => ({ type: OPEN_SEND_REPORT.SUCCESS, dataCollectors, smsGateway }),
+  success: (dataCollectors) => ({ type: OPEN_SEND_REPORT.SUCCESS, dataCollectors }),
   failure: (message) => ({ type: OPEN_SEND_REPORT.FAILURE, message })
 }
 
