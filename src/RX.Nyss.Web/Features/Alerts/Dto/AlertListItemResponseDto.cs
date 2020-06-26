@@ -20,5 +20,9 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public CloseAlertOptions? CloseOption { get; set; }
 
         public string Comments { get; set; }
+
+        public string LastReportDistrict { get; set; }
+
+        public string LastReportRegion { get; set; }
     }
 }

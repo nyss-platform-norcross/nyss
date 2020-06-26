@@ -42,6 +42,10 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
             public string Age { get; set; }
 
             public string Organization { get; set; }
+
+            public string District { get; set; }
+
+            public string Region { get; set; }
         }
     }
 }

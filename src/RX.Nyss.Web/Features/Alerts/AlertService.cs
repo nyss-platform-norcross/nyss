@@ -91,7 +91,13 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.CloseOption,
                     a.Comments,
                     ReportCount = a.AlertReports.Count,
-                    LastReportVillage = a.AlertReports.OrderByDescending(ar => ar.Report.Id).First().Report.RawReport.Village.Name,
+                    LastReportVillage = a.AlertReports.OrderByDescending(ar => ar.Report.Id)
+                        .Select(ar => new
+                        {
+                            VillageName = ar.Report.RawReport.Village.Name,
+                            DistrictName = ar.Report.RawReport.Village.District.Name,
+                            RegionName = ar.Report.RawReport.Village.District.Region.Name
+                        }).First(),
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
@@ -115,7 +121,9 @@ namespace RX.Nyss.Web.Features.Alerts
                     CloseOption = a.CloseOption,
                     Comments = a.Comments,
                     ReportCount = a.ReportCount,
-                    LastReportVillage = a.LastReportVillage,
+                    LastReportVillage = a.LastReportVillage.VillageName,
+                    LastReportDistrict = a.LastReportVillage.DistrictName,
+                    LastReportRegion = a.LastReportVillage.RegionName,
                     HealthRisk = a.HealthRisk
                 })
                 .AsPaginatedList(pageNumber, totalCount, rowsPerPage);
@@ -157,6 +165,8 @@ namespace RX.Nyss.Web.Features.Alerts
                         ReceivedAt = ar.Report.ReceivedAt,
                         PhoneNumber = ar.Report.PhoneNumber,
                         Village = ar.Report.RawReport.Village.Name,
+                        District = ar.Report.RawReport.Village.District.Name,
+                        Region = ar.Report.RawReport.Village.District.Region.Name,
                         ReportedCase = ar.Report.ReportedCase,
                         Status = ar.Report.Status
                     }),
@@ -185,7 +195,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 NotificationPhoneNumbers = alert.AlertRecipients.Select(ar => ar.PhoneNumber).Distinct(),
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 CloseOption = alert.CloseOption,
-                Reports = alert.Reports.Select(ar => (currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id))
+                Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
                     ? new AlertAssessmentResponseDto.ReportDto
                     {
                         Id = ar.Id,
@@ -194,6 +204,8 @@ namespace RX.Nyss.Web.Features.Alerts
                         PhoneNumber = ar.PhoneNumber,
                         Status = ar.Status.ToString(),
                         Village = ar.Village,
+                        District = ar.District,
+                        Region = ar.Region,
                         Sex = GetSex(ar.ReportedCase),
                         Age = GetAge(ar.ReportedCase)
                     }
@@ -221,7 +233,9 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(alert => new
                 {
                     Alert = alert,
-                    LastReportVillage = alert.AlertReports.OrderByDescending(r => r.Report.Id).First().Report.RawReport.Village.Name,
+                    LastReportVillage = alert.AlertReports.OrderByDescending(r => r.Report.Id)
+                        .Select(ar => $"{ar.Report.RawReport.Village.Name}, {ar.Report.RawReport.Village.District.Name}, {ar.Report.RawReport.Village.District.Region.Name}")
+                        .First(),
                     HealthRisk = alert.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
@@ -398,18 +412,18 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.CloseOption,
                     a.Comments,
                     EscalatedBy = a.EscalatedBy.DeletedAt.HasValue ||
-                        (currentUser.Role != Role.Administrator &&
-                            currentUserOrganization != a.EscalatedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
+                        currentUser.Role != Role.Administrator &&
+                        currentUserOrganization != a.EscalatedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
                             ? a.EscalatedBy.UserNationalSocieties.Single(eduns => eduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                             : a.EscalatedBy.Name,
                     DismissedBy = a.DismissedBy.DeletedAt.HasValue ||
-                        (currentUser.Role != Role.Administrator &&
-                            currentUserOrganization != a.DismissedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
+                        currentUser.Role != Role.Administrator &&
+                        currentUserOrganization != a.DismissedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
                             ? a.DismissedBy.UserNationalSocieties.Single(dbuns => dbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                             : a.DismissedBy.Name,
                     ClosedBy = a.ClosedBy.DeletedAt.HasValue ||
-                        (currentUser.Role != Role.Administrator &&
-                            currentUserOrganization != a.ClosedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
+                        currentUser.Role != Role.Administrator &&
+                        currentUserOrganization != a.ClosedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
                             ? a.ClosedBy.UserNationalSocieties.Single(cbuns => cbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                             : a.ClosedBy.Name,
                     ProjectTimeZone = a.ProjectHealthRisk.Project.TimeZone,
@@ -426,20 +440,20 @@ namespace RX.Nyss.Web.Features.Alerts
                             ar.Report.RejectedAt,
                             ar.Report.ResetAt,
                             AcceptedBy = ar.Report.AcceptedBy.DeletedAt.HasValue ||
-                                (currentUser.Role != Role.Administrator &&
-                                    currentUserOrganization != ar.Report.AcceptedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
+                                currentUser.Role != Role.Administrator &&
+                                currentUserOrganization != ar.Report.AcceptedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
                                     ? ar.Report.AcceptedBy.UserNationalSocieties.Single(abuns => abuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                                     : ar.Report.AcceptedBy.Name,
                             RejectedBy = ar.Report.RejectedBy.DeletedAt.HasValue ||
-                                (currentUser.Role != Role.Administrator &&
-                                    currentUserOrganization != ar.Report.RejectedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
+                                currentUser.Role != Role.Administrator &&
+                                currentUserOrganization != ar.Report.RejectedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
                                     ? ar.Report.RejectedBy.UserNationalSocieties.Single(rejecteduns => rejecteduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                                     : ar.Report.RejectedBy.Name,
                             ResetBy = ar.Report.ResetBy.DeletedAt.HasValue ||
-                                (currentUser.Role != Role.Administrator &&
-                                    currentUserOrganization != ar.Report.ResetBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
+                                currentUser.Role != Role.Administrator &&
+                                currentUserOrganization != ar.Report.ResetBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
                                     ? ar.Report.ResetBy.UserNationalSocieties.Single(resetuns => resetuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
-                                    : ar.Report.ResetBy.Name,
+                                    : ar.Report.ResetBy.Name
                         })
                         .ToList()
                 })
