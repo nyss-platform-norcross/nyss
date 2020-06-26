@@ -108,7 +108,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             ApiKey = TestData.ApiKey,
-                            Village = new Village()
+                            Village = new Village
+                            {
+                                Name = "Village 1",
+                                District = new District
+                                {
+                                    Name = "District 9",
+                                    Region = new Region
+                                    {
+                                        Name = "Region 1"
+                                    }
+                                }
+                            }
                         },
                         DataCollector = new DataCollector
                         {
@@ -127,7 +138,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             ApiKey = TestData.ApiKey,
-                            Village = new Village()
+                            Village = new Village
+                            {
+                                Name = "Village 1",
+                                District = new District
+                                {
+                                    Name = "District 9",
+                                    Region = new Region
+                                    {
+                                        Name = "Region 1"
+                                    }
+                                }
+                            }
                         },
                         DataCollector = new DataCollector
                         {
@@ -146,7 +168,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             ApiKey = TestData.ApiKey,
-                            Village = new Village()
+                            Village = new Village
+                            {
+                                Name = "Village 1",
+                                District = new District
+                                {
+                                    Name = "District 9",
+                                    Region = new Region
+                                    {
+                                        Name = "Region 1"
+                                    }
+                                }
+                            }
                         },
                         DataCollector = new DataCollector
                         {
@@ -188,7 +221,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             ApiKey = TestData.ApiKey,
-                            Village = new Village()
+                            Village = new Village
+                            {
+                                Name = "Village 1",
+                                District = new District
+                                {
+                                    Name = "District 9",
+                                    Region = new Region
+                                    {
+                                        Name = "Region 1"
+                                    }
+                                }
+                            }
                         },
                         DataCollector = new DataCollector
                         {
@@ -254,7 +298,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             ApiKey = TestData.ApiKey,
-                            Village = new Village()
+                            Village = new Village
+                            {
+                                Name = "Village 1",
+                                District = new District
+                                {
+                                    Name = "District 9",
+                                    Region = new Region
+                                    {
+                                        Name = "Region 1"
+                                    }
+                                }
+                            }
                         },
                         DataCollector = new DataCollector
                         {
@@ -317,7 +372,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             ApiKey = "Some_missing_key",
-                            Village = new Village()
+                            Village = new Village
+                            {
+                                Name = "Village 1",
+                                District = new District
+                                {
+                                    Name = "District 9",
+                                    Region = new Region
+                                    {
+                                        Name = "Region 1"
+                                    }
+                                }
+                            }
                         },
                         DataCollector = new DataCollector
                         {
@@ -370,7 +436,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             ApiKey = TestData.ApiKey,
-                            Village = new Village()
+                            Village = new Village
+                            {
+                                Name = "Village 1",
+                                District = new District
+                                {
+                                    Name = "District 9",
+                                    Region = new Region
+                                    {
+                                        Name = "Region 1"
+                                    }
+                                }
+                            }
                         },
                         DataCollector = new DataCollector
                         {
@@ -409,7 +486,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         RawReport = new RawReport
                         {
                             ApiKey = TestData.ApiKey,
-                            Village = new Village()
+                            Village = new Village
+                            {
+                                Name = "Village 1",
+                                District = new District
+                                {
+                                    Name = "District 9",
+                                    Region = new Region
+                                    {
+                                        Name = "Region 1"
+                                    }
+                                }
+                            }
                         },
                         DataCollector = new DataCollector
                         {
@@ -749,7 +837,18 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                     RawReport = new RawReport
                                     {
                                         ApiKey = ApiKey,
-                                        Village = new Village()
+                                        Village = new Village
+                                        {
+                                            Name = "Village 1",
+                                            District = new District
+                                            {
+                                                Name = "District 9",
+                                                Region = new Region
+                                                {
+                                                    Name = "Region 1"
+                                                }
+                                            }
+                                        }
                                     },
                                     DataCollector = new DataCollector
                                     {
