@@ -1,13 +1,8 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { strings, stringKeys } from "../../strings";
 import { AreaFilter } from "../common/filters/AreaFilter";
-import { performanceStatus } from "./logic/dataCollectorsConstants";
-import { FormGroup, Card, CardContent, InputLabel } from "@material-ui/core";
-import { getIconFromStatus } from "./logic/dataCollectorsService";
-import CheckboxWithIcon from "../common/filters/CheckboxWithIcon";
+import { Card, CardContent, InputLabel } from "@material-ui/core";
 import { useSelector } from "react-redux";
-import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
 
 export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   const filtersValue = useSelector(state => state.dataCollectors.performanceListFilters);
@@ -15,17 +10,6 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
 
   const handleAreaChange = (item) => {
     onChange({ ...filtersValue, area: item ? { type: item.type, id: item.id, name: item.name } : null });
-  }
-  const handleReportingCorrectlyChange = (change) => {
-    onChange({ ...filtersValue, reportingCorrectly: change.target.checked });
-  }
-
-  const handleReportingWithErrorsChange = (change) => {
-    onChange({ ...filtersValue, reportingWithErrors: change.target.checked });
-  }
-
-  const handleNotReportingChange = (change) => {
-    onChange({ ...filtersValue, notReporting: change.target.checked });
   }
 
   if (filtersValue == null || nationalSocietyId == null) {
@@ -42,40 +26,6 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
               selectedItem={filtersValue.area}
               onChange={handleAreaChange}
             />
-          </Grid>
-          <Grid item>
-            <InputLabel style={{marginTop: "6px"}}>Status</InputLabel>
-            <FormGroup style={{ flexDirection: "row", marginTop: "10px" }}>
-              <CheckboxWithIcon
-                label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.reportingCorrectly])}
-                name={performanceStatus.reportingCorrectly}
-                value={filtersValue.reportingCorrectly}
-                onChange={handleReportingCorrectlyChange}
-                icon={
-                  <DataCollectorStatusIcon icon={getIconFromStatus(performanceStatus.reportingCorrectly)} status={performanceStatus.reportingCorrectly} />
-                }
-              />
-
-              <CheckboxWithIcon
-                label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.reportingWithErrors])}
-                name={performanceStatus.reportingWithErrors}
-                value={filtersValue.reportingWithErrors}
-                onChange={handleReportingWithErrorsChange}
-                icon={
-                  <DataCollectorStatusIcon icon={getIconFromStatus(performanceStatus.reportingWithErrors)} status={performanceStatus.reportingWithErrors} />
-                }
-              />
-
-              <CheckboxWithIcon
-                label={strings(stringKeys.dataCollector.performanceList.legend[performanceStatus.notReporting])}
-                name={performanceStatus.notReporting}
-                value={filtersValue.notReporting}
-                onChange={handleNotReportingChange}
-                icon={
-                  <DataCollectorStatusIcon icon={getIconFromStatus(performanceStatus.notReporting)} status={performanceStatus.notReporting} />
-                }
-              />
-            </FormGroup>
           </Grid>
         </Grid>
       </CardContent>
