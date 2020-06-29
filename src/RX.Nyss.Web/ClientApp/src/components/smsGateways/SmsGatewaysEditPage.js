@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -83,8 +83,9 @@ const SmsGatewaysEditPageComponent = (props) => {
     }
 
     const values = form.getValues();
-    props.edit(props.nationalSocietyId, {
+    props.edit({
       id: values.id,
+      nationalSocietyId: parseInt(props.nationalSocietyId),
       name: values.name,
       apiKey: values.apiKey,
       gatewayType: values.gatewayType,
@@ -92,6 +93,8 @@ const SmsGatewaysEditPageComponent = (props) => {
       iotHubDeviceName: values.useIotHub ? values.iotHubDeviceName : null
     });
   };
+
+  useCustomErrors(form, props.error);
 
   if (props.isFetching || !form) {
     return <Loading />;
@@ -107,7 +110,7 @@ const SmsGatewaysEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

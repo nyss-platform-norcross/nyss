@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -74,7 +74,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
     }
 
     const values = form.getValues();
-    props.create(props.nationalSocietyId, {
+    props.create({
+      nationalSocietyId: parseInt(props.nationalSocietyId),
       name: values.name,
       apiKey: values.apiKey,
       gatewayType: values.gatewayType,
@@ -91,9 +92,11 @@ const SmsGatewaysCreatePageComponent = (props) => {
     props.pingIotDevice(form.fields.iotHubDeviceName.value);
   }
 
+  useCustomErrors(form, props.error);
+
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

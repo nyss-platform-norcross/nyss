@@ -53,27 +53,27 @@ function* openSmsGatewayEdition({ nationalSocietyId, smsGatewayId }) {
   }
 };
 
-function* createSmsGateway({ nationalSocietyId, data }) {
+function* createSmsGateway({ data }) {
   yield put(actions.create.request());
   try {
-    const response = yield call(http.post, `/api/smsGateway/create?nationalSocietyId=${nationalSocietyId}`, data);
+    const response = yield call(http.post, `/api/smsGateway/create?nationalSocietyId=${data.nationalSocietyId}`, data);
     yield put(actions.create.success(response.value));
-    yield put(actions.goToList(nationalSocietyId));
+    yield put(actions.goToList(data.nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.smsGateway.create.success));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 
-function* editSmsGateway({ nationalSocietyId, data }) {
+function* editSmsGateway({ data }) {
   yield put(actions.edit.request());
   try {
     const response = yield call(http.post, `/api/smsGateway/${data.id}/edit`, data);
     yield put(actions.edit.success(response.value));
-    yield put(actions.goToList(nationalSocietyId));
+    yield put(actions.goToList(data.nationalSocietyId));
     yield put(appActions.showMessage(stringKeys.smsGateway.edit.success));
   } catch (error) {
-    yield put(actions.edit.failure(error.message));
+    yield put(actions.edit.failure(error));
   }
 };
 

@@ -43,7 +43,7 @@ export function smsGatewaysReducer(state = initialState.smsGateways, action) {
       return { ...state, formSaving: false, listStale: true };
 
     case actions.CREATE_SMS_GATEWAY.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.EDIT_SMS_GATEWAY.REQUEST:
       return { ...state, formSaving: true };
@@ -52,7 +52,7 @@ export function smsGatewaysReducer(state = initialState.smsGateways, action) {
       return { ...state, formSaving: false, listStale: true };
 
     case actions.EDIT_SMS_GATEWAY.FAILURE:
-      return { ...state, formSaving: false };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.REMOVE_SMS_GATEWAY.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };

@@ -19,8 +19,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
     {
         Task<Result<GatewaySettingResponseDto>> Get(int smsGatewayId);
         Task<Result<List<GatewaySettingResponseDto>>> List(int nationalSocietyId);
-        Task<Result<int>> Create(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto);
-        Task<Result> Edit(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto);
+        Task<Result<int>> Create(GatewaySettingCreateRequestDto gatewaySettingRequestDto);
+        Task<Result> Edit(int smsGatewayId, GatewaySettingEditRequestDto gatewaySettingRequestDto);
         Task<Result> Delete(int smsGatewayId);
         Task UpdateAuthorizedApiKeys();
         Task<Result> GetIotHubConnectionString(int smsGatewayId);
@@ -89,33 +89,17 @@ namespace RX.Nyss.Web.Features.SmsGateways
             return result;
         }
 
-        public async Task<Result<int>> Create(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto)
+        public async Task<Result<int>> Create(GatewaySettingCreateRequestDto gatewaySettingRequestDto)
         {
             try
             {
-                var nationalSociety = await _nyssContext.NationalSocieties
-                    .Include(x => x.Country)
-                    .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
-
-                if (nationalSociety == null)
-                {
-                    return Error<int>(ResultKey.NationalSociety.SmsGateway.NationalSocietyDoesNotExist);
-                }
-
-                var apiKeyExists = await _nyssContext.GatewaySettings.AnyAsync(gs => gs.ApiKey == gatewaySettingRequestDto.ApiKey);
-
-                if (apiKeyExists)
-                {
-                    return Error<int>(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
-                }
-
                 var gatewaySettingToAdd = new GatewaySetting
                 {
                     Name = gatewaySettingRequestDto.Name,
                     ApiKey = gatewaySettingRequestDto.ApiKey,
                     GatewayType = gatewaySettingRequestDto.GatewayType,
                     EmailAddress = gatewaySettingRequestDto.EmailAddress,
-                    NationalSocietyId = nationalSocietyId,
+                    NationalSocietyId = gatewaySettingRequestDto.NationalSocietyId,
                     IotHubDeviceName = gatewaySettingRequestDto.IotHubDeviceName
                 };
 
@@ -133,25 +117,13 @@ namespace RX.Nyss.Web.Features.SmsGateways
             }
         }
 
-        public async Task<Result> Edit(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto)
+        public async Task<Result> Edit(int smsGatewayId, GatewaySettingEditRequestDto gatewaySettingRequestDto)
         {
             try
             {
                 var gatewaySettingToUpdate = await _nyssContext.GatewaySettings
                     .Include(x => x.NationalSociety.Country)
                     .SingleOrDefaultAsync(x => x.Id == smsGatewayId);
-
-                if (gatewaySettingToUpdate == null)
-                {
-                    return Error(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
-                }
-
-                var apiKeyExists = await _nyssContext.GatewaySettings.AnyAsync(gs => gs.ApiKey == gatewaySettingRequestDto.ApiKey && gs.Id != smsGatewayId);
-
-                if (apiKeyExists)
-                {
-                    return Error<int>(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
-                }
 
                 gatewaySettingToUpdate.Name = gatewaySettingRequestDto.Name;
                 gatewaySettingToUpdate.ApiKey = gatewaySettingRequestDto.ApiKey;
