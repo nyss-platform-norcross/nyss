@@ -179,7 +179,10 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 }
                 else
                 {
-                    await SendFeedbackOnError(reportErrorData, gatewaySetting);
+                    if (string.IsNullOrEmpty(source))
+                    {
+                        await SendFeedbackOnError(reportErrorData, gatewaySetting);
+                    }
                 }
             }
             catch (ReportValidationException e)
