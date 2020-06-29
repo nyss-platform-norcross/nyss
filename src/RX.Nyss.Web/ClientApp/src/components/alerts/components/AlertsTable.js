@@ -15,7 +15,7 @@ import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import { assessmentStatus, closeOptions } from '../logic/alertsConstants';
-import { Tooltip, Box } from '@material-ui/core';
+import { Tooltip } from '@material-ui/core';
 
 export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, getList, page, rowsPerPage, totalRows }) => {
   const onChangePage = (event, page) => {
@@ -65,7 +65,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
               <TableCell>{dayjs(row.createdAt).format('YYYY-MM-DD HH:mm')}</TableCell>
               <TableCell>{row.healthRisk}</TableCell>
               <TableCell>{row.reportCount}</TableCell>
-              <TableCell>{row.lastReportVillage}, <Box display="inline" color="text.secondary">{row.lastReportDistrict}, {row.lastReportRegion}</Box></TableCell>
+              <TableCell>{[row.lastReportRegion, row.lastReportDistrict, row.lastReportVillage].filter(l => l).join(", ")}</TableCell>
               <TableCell>{renderStatus(row)}</TableCell>
             </TableRow>
           ))}

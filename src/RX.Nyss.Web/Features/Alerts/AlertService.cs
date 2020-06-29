@@ -11,6 +11,7 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Services;
@@ -81,6 +82,19 @@ namespace RX.Nyss.Web.Features.Alerts
 
             var rowsPerPage = _config.PaginationRowsPerPage;
             var totalCount = await alertsQuery.CountAsync();
+            var currentRole = _authorizationService.GetCurrentUser().Role;
+            var currentUserName = _authorizationService.GetCurrentUserName();
+            var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
+            var currentUserId = await _nyssContext.Users.FilterAvailable()
+                .Where(u => u.EmailAddress == currentUserName)
+                .Select(u => u.Id)
+                .SingleAsync();
+            var currentUserOrganizationId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
+                .Where(uns => uns.User.Id == currentUserId)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
 
             var alerts = await alertsQuery
                 .Select(a => new
@@ -91,12 +105,14 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.CloseOption,
                     a.Comments,
                     ReportCount = a.AlertReports.Count,
-                    LastReportVillage = a.AlertReports.OrderByDescending(ar => ar.Report.Id)
+                    LastReport = a.AlertReports.OrderByDescending(ar => ar.Report.Id)
                         .Select(ar => new
                         {
                             VillageName = ar.Report.RawReport.Village.Name,
                             DistrictName = ar.Report.RawReport.Village.District.Name,
-                            RegionName = ar.Report.RawReport.Village.District.Region.Name
+                            RegionName = ar.Report.RawReport.Village.District.Region.Name,
+                            IsAnonymized = currentRole != Role.Administrator && !ar.Report.RawReport.NationalSociety.NationalSocietyUsers.Any(
+                                nsu => nsu.UserId == ar.Report.RawReport.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
                         }).First(),
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
@@ -121,9 +137,9 @@ namespace RX.Nyss.Web.Features.Alerts
                     CloseOption = a.CloseOption,
                     Comments = a.Comments,
                     ReportCount = a.ReportCount,
-                    LastReportVillage = a.LastReportVillage.VillageName,
-                    LastReportDistrict = a.LastReportVillage.DistrictName,
-                    LastReportRegion = a.LastReportVillage.RegionName,
+                    LastReportVillage = a.LastReport.IsAnonymized ? "" : a.LastReport.VillageName,
+                    LastReportDistrict = a.LastReport.DistrictName,
+                    LastReportRegion = a.LastReport.RegionName,
                     HealthRisk = a.HealthRisk
                 })
                 .AsPaginatedList(pageNumber, totalCount, rowsPerPage);
