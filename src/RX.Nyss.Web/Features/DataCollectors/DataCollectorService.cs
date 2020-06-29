@@ -514,7 +514,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var reportingStatusFilter = MapToReportingStatusFilterType(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting);
 
             var dataCollectorsWithReportsData = await dataCollectors
-                .FilterOnlyNotDeletedBefore(from)
+                .FilterOnlyNotDeleted()
                 .FilterByArea(dataCollectorsFilters.Area)
                 .Select(dc => new DataCollectorWithRawReportData
                 {
