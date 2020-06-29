@@ -12,8 +12,8 @@ export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
       <CardContent className={styles.healthRisk}>
         <Typography variant="h2" display="inline">{projectHealthRisk.healthRiskCode}</Typography>
         <Typography variant="h3" style={{ marginLeft: "10px" }} display="inline"> {projectHealthRisk.healthRiskName}</Typography>
-        <Grid container spacing={1} className={styles.healthRiskTextArea}>
-          <Grid item xs={4}>
+        <Grid container spacing={3} className={styles.healthRiskTextArea}>
+          <Grid item xs={12} sm={6}>
             <Typography variant="h6" >
               {strings(stringKeys.project.form.caseDefinition)}
             </Typography>
@@ -22,7 +22,7 @@ export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
             </Typography>
           </Grid>
 
-          <Grid item xs={8}>
+          <Grid item xs={12} sm={6}>
             <Typography variant="h6" >
               {strings(stringKeys.project.form.feedbackMessage)}
             </Typography>
@@ -34,7 +34,7 @@ export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
         <Typography variant="h3">{strings(stringKeys.project.form.alertsSetion)}</Typography>
 
         {projectHealthRisk.alertRuleCountThreshold === 0 && (
-          <Typography variant="body1" style={{color: "#a0a0a0"}}>{strings(stringKeys.common.boolean.false)}</Typography>
+          <Typography variant="body1" style={{ color: "#a0a0a0" }}>{strings(stringKeys.common.boolean.false)}</Typography>
         )}
 
         {projectHealthRisk.alertRuleCountThreshold > 0 && (

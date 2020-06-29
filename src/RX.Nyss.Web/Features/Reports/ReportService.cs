@@ -518,9 +518,7 @@ namespace RX.Nyss.Web.Features.Reports
                 {
                     x.DataCollectorDisplayName = x.OrganizationName;
                     x.PhoneNumber = x.PhoneNumber.Length > 4 ? "***" + x.PhoneNumber.SubstringFromEnd(4) : "***";
-                    x.Region = "";
                     x.Zone = "";
-                    x.District = "";
                     x.Village = "";
                 });
 
