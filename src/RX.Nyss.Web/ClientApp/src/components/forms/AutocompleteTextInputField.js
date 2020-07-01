@@ -60,7 +60,8 @@ const AutocompleteTextInput = ({ error, name, label, value, options, freeSolo, a
 
 AutocompleteTextInput.propTypes = {
   controlProps: PropTypes.object,
-  name: PropTypes.string
+  name: PropTypes.string,
+  allowAddingValue: PropTypes.bool
 };
 
 export const AutocompleteTextInputField = createFieldComponent(AutocompleteTextInput);

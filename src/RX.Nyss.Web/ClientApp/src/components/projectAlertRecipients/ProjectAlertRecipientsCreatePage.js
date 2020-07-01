@@ -92,6 +92,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
               options={organizations}
               freeSolo
               autoSelect
+              allowAddingValue
               name="organization"
             />
           </Grid>
