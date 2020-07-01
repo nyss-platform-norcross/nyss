@@ -74,8 +74,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
     }
 
     const values = form.getValues();
-    props.create({
-      nationalSocietyId: parseInt(props.nationalSocietyId),
+    props.create(props.nationalSocietyId, {
       name: values.name,
       apiKey: values.apiKey,
       gatewayType: values.gatewayType,

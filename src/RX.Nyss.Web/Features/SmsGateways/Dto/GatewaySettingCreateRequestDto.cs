@@ -6,18 +6,17 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.SmsGateways.Dto
 {
-    public class GatewaySettingCreateRequestDto
+    public class GatewaySettingRequestDto
     {
-        public int NationalSocietyId { get; set; }
         public string Name { get; set; }
         public string ApiKey { get; set; }
         public string EmailAddress { get; set; }
         public GatewayType GatewayType { get; set; }
         public string IotHubDeviceName { get; set; }
 
-        public class GatewaySettingCreateValidator : AbstractValidator<GatewaySettingCreateRequestDto>
+        public class GatewaySettingRequestValidator : AbstractValidator<GatewaySettingRequestDto>
         {
-            public GatewaySettingCreateValidator(ISmsGatewayValidationService smsGatewayValidationService)
+            public GatewaySettingRequestValidator(ISmsGatewayValidationService smsGatewayValidationService)
             {
                 RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
                 RuleFor(x => x.ApiKey).NotEmpty().MaximumLength(100);
@@ -28,10 +27,6 @@ namespace RX.Nyss.Web.Features.SmsGateways.Dto
                 RuleFor(gs => gs.ApiKey)
                     .MustAsync(async (model, apiKey, t) => !await smsGatewayValidationService.ApiKeyExists(apiKey))
                     .WithMessageKey(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
-
-                RuleFor(gs => gs.NationalSocietyId)
-                    .MustAsync(async (model, nationalSocietyId, t) => await smsGatewayValidationService.NationalSocietyExists(nationalSocietyId))
-                    .WithMessageKey(ResultKey.NationalSociety.SmsGateway.NationalSocietyDoesNotExist);
             }
         }
     }

@@ -32,7 +32,7 @@ export const openCreation = {
 };
 
 export const create = {
-  invoke: (data) => ({ type: CREATE_SMS_GATEWAY.INVOKE, data }),
+  invoke: (nationalSocietyId, data) => ({ type: CREATE_SMS_GATEWAY.INVOKE, nationalSocietyId, data }),
   request: () => ({ type: CREATE_SMS_GATEWAY.REQUEST }),
   success: () => ({ type: CREATE_SMS_GATEWAY.SUCCESS }),
   failure: (error) => ({ type: CREATE_SMS_GATEWAY.FAILURE, error, suppressPopup: true })
