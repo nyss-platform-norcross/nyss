@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -63,13 +63,15 @@ const NationalSocietiesEditPageComponent = (props) => {
     });
   };
 
+  useCustomErrors(form, props.error);
+
   if (props.isFetching || !form) {
     return <Loading />;
   }
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

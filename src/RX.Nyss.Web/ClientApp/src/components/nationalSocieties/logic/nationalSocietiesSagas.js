@@ -78,7 +78,7 @@ function* createNationalSociety({ data }) {
     yield put(push(`/nationalsocieties/${response.value}`));
     yield put(appActions.showMessage(stringKeys.nationalSociety.messages.create.success));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 
@@ -91,7 +91,7 @@ function* editNationalSociety({ data }) {
     yield put(push(`/nationalsocieties/${data.id}/overview`));
     yield put(appActions.showMessage(stringKeys.nationalSociety.messages.edit.success));
   } catch (error) {
-    yield put(actions.edit.failure(error.message));
+    yield put(actions.edit.failure(error));
   }
 };
 
