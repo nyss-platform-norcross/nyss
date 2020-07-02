@@ -76,20 +76,13 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations
                 {
                     p.AllowMultipleOrganizations,
                     IsClosed = p.EndDate.HasValue,
-                    OrganiationsCount = p.ProjectOrganizations.Count,
-                    HasSameOrganization = p.ProjectOrganizations
-                        .Any(po => po.ProjectId == projectId && po.OrganizationId == createDto.OrganizationId)
+                    OrganiationsCount = p.ProjectOrganizations.Count
                 })
                 .SingleAsync();
 
             if (projectData.IsClosed)
             {
                 return Error<int>(ResultKey.ProjectOrganization.ProjectIsClosed);
-            }
-
-            if (projectData.HasSameOrganization)
-            {
-                return Error<int>(ResultKey.ProjectOrganization.OrganizationAlreadyAdded);
             }
 
             if (projectData.OrganiationsCount > 0 && !projectData.AllowMultipleOrganizations)

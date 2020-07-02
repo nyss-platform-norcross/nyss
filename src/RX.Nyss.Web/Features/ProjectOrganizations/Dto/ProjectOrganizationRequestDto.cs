@@ -1,4 +1,7 @@
 ﻿using FluentValidation;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Web.Features.ProjectOrganizations.Validation;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.ProjectOrganizations.Dto
 {
@@ -8,9 +11,12 @@ namespace RX.Nyss.Web.Features.ProjectOrganizations.Dto
 
         public class ProjectOrganizationValidator : AbstractValidator<ProjectOrganizationRequestDto>
         {
-            public ProjectOrganizationValidator()
+            public ProjectOrganizationValidator(IProjectOrganizationValidationService projectOrganizationValidationService)
             {
                 RuleFor(x => x.OrganizationId).NotEmpty();
+                RuleFor(po => po.OrganizationId)
+                    .MustAsync(async (model, _, t) => await projectOrganizationValidationService.HasSameOrganization(model.OrganizationId))
+                    .WithMessageKey(ResultKey.ProjectOrganization.OrganizationAlreadyAdded);
             }
         }
     }

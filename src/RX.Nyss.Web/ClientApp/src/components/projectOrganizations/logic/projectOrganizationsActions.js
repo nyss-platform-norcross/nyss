@@ -33,7 +33,7 @@ export const create = {
   invoke: (projectId, data) => ({ type: CREATE_PROJECT_ORGANIZATION.INVOKE, projectId, data }),
   request: () => ({ type: CREATE_PROJECT_ORGANIZATION.REQUEST }),
   success: () => ({ type: CREATE_PROJECT_ORGANIZATION.SUCCESS }),
-  failure: (message) => ({ type: CREATE_PROJECT_ORGANIZATION.FAILURE, message, suppressPopup: true })
+  failure: (error) => ({ type: CREATE_PROJECT_ORGANIZATION.FAILURE, error, suppressPopup: true })
 };
 
 export const remove = {

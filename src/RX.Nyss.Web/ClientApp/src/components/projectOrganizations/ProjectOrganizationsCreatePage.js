@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as projectOrganizationsActions from './logic/projectOrganizationsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -45,13 +45,15 @@ const ProjectOrganizationsCreatePageComponent = (props) => {
     });
   };
 
+  useCustomErrors(form, props.error);
+
   if (!props.data) {
     return null;
   }
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
