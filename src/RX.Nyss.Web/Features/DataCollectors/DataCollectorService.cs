@@ -225,15 +225,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result> Create(int projectId, CreateDataCollectorRequestDto createDto)
         {
-            var phoneNumberExists = await _nyssContext.DataCollectors
-                .Where(dc => dc.Project.State == ProjectState.Open)
-                .AnyAsync(dc => dc.PhoneNumber == createDto.PhoneNumber);
-
-            if (phoneNumberExists)
-            {
-                return Error(ResultKey.DataCollector.PhoneNumberAlreadyExists).Cast<int>();
-            }
-
             var project = await _nyssContext.Projects
                 .Include(p => p.NationalSociety)
                 .SingleAsync(p => p.Id == projectId);
@@ -283,14 +274,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result> Edit(EditDataCollectorRequestDto editDto)
         {
-            var phoneNumberExists = await _nyssContext.DataCollectors
-                .AnyAsync(dc => dc.PhoneNumber == editDto.PhoneNumber && dc.Id != editDto.Id);
-
-            if (phoneNumberExists)
-            {
-                return Error(ResultKey.DataCollector.PhoneNumberAlreadyExists).Cast<int>();
-            }
-
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
                 .ThenInclude(x => x.NationalSociety)

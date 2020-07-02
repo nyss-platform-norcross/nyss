@@ -4,7 +4,7 @@ import styles from './DataCollectorsEditPage.module.scss';
 import React, { useEffect, useState, useReducer, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
@@ -139,6 +139,8 @@ const DataCollectorsEditPageComponent = (props) => {
     });
   };
 
+  useCustomErrors(form, props.error);
+
   if (props.isFetching) {
     return <Loading />;
   }
@@ -149,11 +151,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error &&
-        <ValidationMessage
-          message={props.error}
-        />
-      }
+      {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit} fullWidth>
         <Grid container spacing={3} className={formStyles.shrinked}>

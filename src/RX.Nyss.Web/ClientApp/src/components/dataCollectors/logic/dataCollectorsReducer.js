@@ -80,7 +80,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formSaving: false, listStale: true };
 
     case actions.CREATE_DATA_COLLECTOR.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.EDIT_DATA_COLLECTOR.REQUEST:
       return { ...state, formSaving: true, formError: null };
@@ -89,7 +89,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formSaving: false, listStale: true };
 
     case actions.EDIT_DATA_COLLECTOR.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.REMOVE_DATA_COLLECTOR.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };
