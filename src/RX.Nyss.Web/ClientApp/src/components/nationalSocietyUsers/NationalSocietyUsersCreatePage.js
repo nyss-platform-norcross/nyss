@@ -155,8 +155,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
   const onProjectChange = (projectId) => {
     const project = props.data.projects.filter(p => p.id === parseInt(projectId))[0];
-    const newAlertRecipientsDataSource = [{ label: strings(stringKeys.nationalSocietyUser.form.alertRecipientsAll), value: 0, data: { id: 0 } }, ...project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar }))];
-    setAlertRecipientsDataSource(newAlertRecipientsDataSource);
+    setAlertRecipientsDataSource(project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar })));
     setSelectedAlertRecipients([]);
   }
 
@@ -164,22 +163,12 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     let newAlertRecipients = [];
     if (eventData.action === "select-option") {
       newAlertRecipients = [...selectedAlertRecipients, eventData.option.data];
-      setSelectedAlertRecipients([...selectedAlertRecipients, eventData.option.data]);
     } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
       newAlertRecipients = selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value);
-      setSelectedAlertRecipients(selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value));
-    } else if (eventData.action === "clear") {
-      setSelectedAlertRecipients([]);
     }
 
-    const allRecipientsChosen = newAlertRecipients.filter(ar => ar.id === 0).length > 0;
-    if (newAlertRecipients.length === 0) {
-      setAlertRecipientsFieldError(strings(stringKeys.validation.fieldRequired));
-    } else if (allRecipientsChosen && newAlertRecipients.length > 1) {
-      setAlertRecipientsFieldError(strings(stringKeys.nationalSocietyUser.form.alertRecipientsAllNotAllowed));
-    } else {
-      setAlertRecipientsFieldError(null);
-    }
+    setAlertRecipientsFieldError(newAlertRecipients.length === 0 ? strings(stringKeys.validation.fieldRequired) : null);
+    setSelectedAlertRecipients(newAlertRecipients);
   }, [selectedAlertRecipients]);
 
   const setSupervisorAlertRecipients = useCallback((role) => {
