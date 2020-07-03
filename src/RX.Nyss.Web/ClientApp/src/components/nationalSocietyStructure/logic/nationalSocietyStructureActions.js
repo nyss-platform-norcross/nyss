@@ -12,7 +12,8 @@ import {
   CREATE_ZONE,
   EDIT_ZONE,
   REMOVE_ZONE,
-  UPDATE_NATIONAL_SOCIETY_STRUCTURE_EXPANDED_ITEMS
+  UPDATE_NATIONAL_SOCIETY_STRUCTURE_EXPANDED_ITEMS,
+  REVERSE_LOOKUP
 } from "./nationalSocietyStructureConstants";
 
 export const updateExpandedItems = (items) => ({ type: UPDATE_NATIONAL_SOCIETY_STRUCTURE_EXPANDED_ITEMS, items });
@@ -108,3 +109,9 @@ export const removeZone = {
   failure: (id, message) => ({ type: REMOVE_ZONE.FAILURE, id, message })
 };
 
+export const reverseLookup = {
+  invoke: (nationalSocietyId, lat, lng) => ({ type: REVERSE_LOOKUP.INVOKE, nationalSocietyId, lat, lng }),
+  request: () => ({ type: REVERSE_LOOKUP.REQUEST }),
+  success: (data) => ({ type: REVERSE_LOOKUP.SUCCESS, data }),
+  failure: (message) => ({ type: REVERSE_LOOKUP.FAILURE, message })
+};

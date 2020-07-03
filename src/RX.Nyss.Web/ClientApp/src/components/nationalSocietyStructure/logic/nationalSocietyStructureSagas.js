@@ -22,7 +22,9 @@ export const nationalSocietyStructureSagas = () => [
 
   takeEvery(consts.CREATE_ZONE.INVOKE, createZone),
   takeEvery(consts.EDIT_ZONE.INVOKE, editZone),
-  takeEvery(consts.REMOVE_ZONE.INVOKE, removeZone)
+  takeEvery(consts.REMOVE_ZONE.INVOKE, removeZone),
+
+  takeEvery(consts.REVERSE_LOOKUP.INVOKE, reverseLookup)
 ];
 
 function* openNationalSocietyStructure({ nationalSocietyId }) {
@@ -189,3 +191,13 @@ function* openNationalSocietyModule(nationalSocietyId) {
     nationalSocietyHasCoordinator: nationalSociety.value.hasCoordinator
   }));
 }
+
+function* reverseLookup({ nationalSocietyId, lat, lng }) {
+  yield put(actions.reverseLookup.request());
+  try {
+    const response = yield call(http.get, `/api/nationalSocietyStructure/reverseLookup?nationalSocietyId=${nationalSocietyId}&latitude=${lat}&longitude=${lng}`);
+    yield put(actions.reverseLookup.success(response.value));
+  } catch (error) {
+    yield put(actions.reverseLookup.failure(error.message));
+  }
+};

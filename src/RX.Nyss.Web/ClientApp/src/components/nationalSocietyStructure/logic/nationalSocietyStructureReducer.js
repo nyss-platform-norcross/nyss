@@ -56,6 +56,12 @@ export function nationalSocietyStructureReducer(state = initialState.nationalSoc
     case actions.EDIT_ZONE.SUCCESS:
       return { ...state, zones: assignInArray(state.zones, item => item.id === action.id, item => ({ ...item, name: action.name })) };
 
+    case actions.REVERSE_LOOKUP.REQUEST:
+      return { ...state, reverseLookup: { isFetching: true, result: null } };
+
+    case actions.REVERSE_LOOKUP.SUCCESS:
+      return { ...state, reverseLookup: { isFetching: false, result: action.data } };
+
     default:
       return state;
   }

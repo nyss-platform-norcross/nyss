@@ -18,3 +18,5 @@ export const REMOVE_VILLAGE = action("REMOVE_VILLAGE");
 export const CREATE_ZONE = action("CREATE_ZONE");
 export const EDIT_ZONE = action("EDIT_ZONE");
 export const REMOVE_ZONE = action("REMOVE_ZONE");
+
+export const REVERSE_LOOKUP = action("REVERSE_LOOKUP");

@@ -11,6 +11,7 @@ namespace RX.Nyss.Web.Configuration
         bool IsDemo { get; }
         string AuthorizedApiKeysBlobObjectName { get; set; }
         int PaginationRowsPerPage { get; set; }
+        string GisApiKey { get; set; }
         ConfigSingleton.AuthenticationOptions Authentication { get; set; }
         ConfigSingleton.ExportOptions Export { get; set; }
         ConfigSingleton.ViewOptions View { get; set; }
@@ -45,6 +46,8 @@ namespace RX.Nyss.Web.Configuration
         public string PlatformAgreementBlobObjectName { get; set; }
 
         public int PaginationRowsPerPage { get; set; }
+
+        public string GisApiKey { get; set; }
 
         public string SmsContentResourcesBlobObjectName { get; set; }
 

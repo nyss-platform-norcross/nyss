@@ -65,7 +65,11 @@ export const initialState = {
     districts: [],
     villages: [],
     zones: [],
-    expandedItems: []
+    expandedItems: [],
+    reverseLookup: {
+      isFetching: false,
+      result: null
+    }
   },
   smsGateways: {
     listNationalSocietyId: null,

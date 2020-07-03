@@ -13,10 +13,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
     public class NationalSocietyStructureController : BaseController
     {
         private readonly INationalSocietyStructureService _nationalSocietyStructureService;
+        private readonly IGisApiService _gisApiService;
 
-        public NationalSocietyStructureController(INationalSocietyStructureService nationalSocietyStructureService)
+        public NationalSocietyStructureController(INationalSocietyStructureService nationalSocietyStructureService, IGisApiService gisApiService)
         {
             _nationalSocietyStructureService = nationalSocietyStructureService;
+            _gisApiService = gisApiService;
         }
 
         /// <summary>
@@ -160,5 +162,10 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.VillageAccess)]
         public async Task<Result<List<ZoneResponseDto>>> ListZones(int villageId) =>
             await _nationalSocietyStructureService.ListZones(villageId);
+
+        [Route("reverseLookup"), HttpGet]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        public async Task<Result<ReverseLookupResultDto>> ReverseGeoCodeLookup(int nationalSocietyId, double latitude, double longitude) =>
+            await _gisApiService.ReverseLookup(nationalSocietyId, latitude: latitude, longitude: longitude);
     }
 }

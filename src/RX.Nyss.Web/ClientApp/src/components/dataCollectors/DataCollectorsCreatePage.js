@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
+import { reverseLookup } from '../nationalSocietyStructure/logic/nationalSocietyStructureActions';
 import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
@@ -90,12 +91,14 @@ const DataCollectorsCreatePageComponent = (props) => {
 
     const newForm = createForm(fields, validation);
     setForm(newForm);
-    newForm.fields.dataCollectorType.subscribe(({newValue}) => setType(newValue));
-    newForm.fields.latitude.subscribe(({newValue}) => dispatch({ type: "latitude", value: newValue}));
-    newForm.fields.longitude.subscribe(({newValue}) => dispatch({ type: "longitude", value: newValue}));
+    newForm.fields.dataCollectorType.subscribe(({ newValue }) => setType(newValue));
+    newForm.fields.latitude.subscribe(({ newValue }) => dispatch({ type: "latitude", value: newValue }));
+    newForm.fields.longitude.subscribe(({ newValue }) => dispatch({ type: "longitude", value: newValue }));
   }, [props.regions, props.defaultSupervisorId, props.defaultLocation]);
 
   const onLocationChange = (e) => {
+    console.log(e.lat, e.lng);
+    props.reverseLookup(props.nationalSocietyId, e.lat, e.lng);
     form.fields.latitude.update(e.lat);
     form.fields.longitude.update(e.lng);
   }
@@ -103,7 +106,7 @@ const DataCollectorsCreatePageComponent = (props) => {
   const onRetrieveLocation = () => {
     setIsFetchingLocation(true);
     retrieveGpsLocation(location => {
-      if (location === null){
+      if (location === null) {
         setIsFetchingLocation(false);
         return;
       }
@@ -188,18 +191,18 @@ const DataCollectorsCreatePageComponent = (props) => {
 
           {type === dataCollectorType.human && (
             <Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.dataCollector.form.sex)}
-              field={form.fields.sex}
-              name="sex"
-            >
-              {sexValues.map(type => (
-                <MenuItem key={`sex${type}`} value={type}>
-                  {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
-                </MenuItem>
-              ))}
-            </SelectField>
-          </Grid>
+              <SelectField
+                label={strings(stringKeys.dataCollector.form.sex)}
+                field={form.fields.sex}
+                name="sex"
+              >
+                {sexValues.map(type => (
+                  <MenuItem key={`sex${type}`} value={type}>
+                    {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
           )}
 
           {type === dataCollectorType.human && (<Grid item xs={12}>
@@ -232,6 +235,8 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>)}
         </Grid>
+
+
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <div>Location</div>
@@ -243,40 +248,57 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>
 
         </Grid>
+        <Grid container>
+          <Grid item xs={6}>
+            <Grid container>
+
+              <Grid item className={styles.locationButton}>
+                <TableActionsButton
+                  onClick={onRetrieveLocation}
+                  isFetching={isFetchingLocation}
+                >
+                  {strings(stringKeys.dataCollector.form.retrieveLocation)}
+                </TableActionsButton>
+              </Grid>
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.dataCollector.form.latitude)}
+                  name="latitude"
+                  field={form.fields.latitude}
+                  type="number"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.dataCollector.form.longitude)}
+                  name="longitude"
+                  field={form.fields.longitude}
+                  type="number"
+                />
+              </Grid>
+
+              <GeoStructureSelect
+                regions={props.regions}
+                regionIdField={form.fields.regionId}
+                districtIdField={form.fields.districtId}
+                villageIdField={form.fields.villageId}
+                zoneIdField={form.fields.zoneId}
+              />
+
+            </Grid>
+          </Grid>
+          <Grid item xs={6}>
+            {(props.isLookingUp &&
+              <span>Is reverse looking up location....</span>
+            )}
+            {(props.reverseLookupResult && props.reverseLookupResult.matches.length > 0 &&
+              <ul>
+                {props.reverseLookupResult.matches.map(m => <li><span role="img" aria-label="house">🏠</span> {m.name} (dist: {m.distance})</li>)}
+              </ul>
+            )}
+          </Grid>
+        </Grid>
         <Grid container spacing={3} className={formStyles.shrinked}>
-
-          <Grid item className={styles.locationButton}>
-            <TableActionsButton
-              onClick={onRetrieveLocation}
-              isFetching={isFetchingLocation}
-            >
-              {strings(stringKeys.dataCollector.form.retrieveLocation)}
-            </TableActionsButton>
-          </Grid>
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.dataCollector.form.latitude)}
-              name="latitude"
-              field={form.fields.latitude}
-              type="number"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.dataCollector.form.longitude)}
-              name="longitude"
-              field={form.fields.longitude}
-              type="number"
-            />
-          </Grid>
-
-          <GeoStructureSelect
-            regions={props.regions}
-            regionIdField={form.fields.regionId}
-            districtIdField={form.fields.districtId}
-            villageIdField={form.fields.villageId}
-            zoneIdField={form.fields.zoneId}
-          />
 
           <Grid item xs={12}>
             <SelectField
@@ -308,6 +330,7 @@ DataCollectorsCreatePageComponent.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   countryName: state.appData.siteMap.parameters.nationalSocietyCountry,
+  nationalSocietyId: state.appData.siteMap.parameters.nationalSocietyId,
   isFetching: state.dataCollectors.formFetching,
   isSaving: state.dataCollectors.formSaving,
   regions: state.dataCollectors.formRegions,
@@ -316,13 +339,16 @@ const mapStateToProps = (state, ownProps) => ({
   defaultSupervisorId: state.dataCollectors.formDefaultSupervisorId,
   isGettingCountryLocation: state.dataCollectors.gettingLocation,
   country: state.dataCollectors.countryData,
-  error: state.dataCollectors.formError
+  error: state.dataCollectors.formError,
+  reverseLookupResult: state.nationalSocietyStructure.reverseLookup.result,
+  isLookingUp: state.nationalSocietyStructure.reverseLookup.isFetching
 });
 
 const mapDispatchToProps = {
   openCreation: dataCollectorsActions.openCreation.invoke,
   create: dataCollectorsActions.create.invoke,
-  goToList: dataCollectorsActions.goToList
+  goToList: dataCollectorsActions.goToList,
+  reverseLookup: reverseLookup.invoke
 };
 
 export const DataCollectorsCreatePage = useLayout(

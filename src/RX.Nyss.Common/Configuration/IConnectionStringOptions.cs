@@ -38,5 +38,6 @@ namespace RX.Nyss.Common.Configuration
         public string Nominatim { get; set; }
         public string IotHubManagement { get; set; }
         public string IotHubService { get; set; }
+        public string GisApi { get; set; }
     }
 }
