@@ -103,48 +103,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<NationalSociety>());
         }
 
-        [Theory]
-        [InlineData(BasicNationalSocietyServiceTestData.CountryId, 2)]
-        [InlineData(2, BasicNationalSocietyServiceTestData.ContentLanguageId)]
-        public async Task CreateNationalSociety_WhenLanguageOrCountryNotFound_ShouldReturnError(int countryId, int contentLanguageId)
-        {
-            // Arrange
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var nationalSocietyReq = new CreateNationalSocietyRequestDto
-            {
-                Name = BasicNationalSocietyServiceTestData.NationalSocietyName,
-                CountryId = countryId,
-                ContentLanguageId = contentLanguageId
-            };
-
-            // Act
-            var result = await _nationalSocietyService.Create(nationalSocietyReq);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBeOneOf(ResultKey.NationalSociety.Creation.CountryNotFound, ResultKey.NationalSociety.Creation.LanguageNotFound);
-        }
-
-        [Fact]
-        public async Task CreateNationalSociety_WhenNameAlreadyExists_ShouldReturnError()
-        {
-            // Arrange
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var nationalSocietyReq = new CreateNationalSocietyRequestDto
-            {
-                Name = BasicNationalSocietyServiceTestData.ExistingNationalSocietyName,
-                CountryId = BasicNationalSocietyServiceTestData.CountryId,
-                ContentLanguageId = BasicNationalSocietyServiceTestData.ContentLanguageId
-            };
-
-            // Act
-            var result = await _nationalSocietyService.Create(nationalSocietyReq);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.NationalSociety.Creation.NameAlreadyExists);
-        }
-
         [Fact]
         public async Task EditNationalSociety_WhenSuccessful_ShouldReturnSuccess()
         {

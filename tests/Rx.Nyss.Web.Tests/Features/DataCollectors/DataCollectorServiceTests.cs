@@ -255,27 +255,6 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         }
 
         [Fact]
-        public async Task CreateDataCollector_WhenPhoneNumberAlreadyExists_ShouldReturnError()
-        {
-            // Arrange
-            var dataCollector = new CreateDataCollectorRequestDto
-            {
-                PhoneNumber = DataCollectorPhoneNumber1,
-                SupervisorId = SupervisorId,
-                VillageId = _nyssContextMock.Villages.ToList()[0].Id,
-                Latitude = 15,
-                Longitude = 45
-            };
-
-            // Act
-            var result = await _dataCollectorService.Create(ProjectId, dataCollector);
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.DataCollector.PhoneNumberAlreadyExists);
-        }
-
-        [Fact]
         public void EditDataCollector_WhenDataCollectorDoesNotExist_ShouldThrowException()
         {
             // Arrange

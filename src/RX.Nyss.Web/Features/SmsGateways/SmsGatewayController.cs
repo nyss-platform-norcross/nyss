@@ -47,8 +47,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <returns>An identifier of the created SMS Gateway setting</returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<int>> Create(int nationalSocietyId, [FromBody] GatewaySettingRequestDto requestDto) =>
-            _smsGatewayService.Create(nationalSocietyId, requestDto);
+        public Task<Result<int>> Create(int nationalSocietyId, [FromBody] GatewaySettingRequestDto createRequestDto) =>
+            _smsGatewayService.Create(nationalSocietyId, createRequestDto);
 
         /// <summary>
         /// Edits a specified SMS Gateway.
@@ -58,8 +58,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <returns></returns>
         [HttpPost("{smsGatewayId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.SmsGatewayAccess)]
-        public Task<Result> Edit(int smsGatewayId, [FromBody] GatewaySettingRequestDto requestDto) =>
-            _smsGatewayService.Edit(smsGatewayId, requestDto);
+        public Task<Result> Edit(int smsGatewayId, [FromBody] GatewaySettingRequestDto editRequestDto) =>
+            _smsGatewayService.Edit(smsGatewayId, editRequestDto);
 
         /// <summary>
         /// Deletes a specified SMS Gateway.

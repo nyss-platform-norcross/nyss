@@ -227,58 +227,6 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
         }
 
         [Fact]
-        public async Task AddSmsGateway_WhenApiKeyAlreadyExists_ShouldReturnError()
-        {
-            // Arrange
-            const int nationalSocietyId = 1;
-
-            var nationalSocieties = new[]
-            {
-                new NationalSociety
-                {
-                    Id = nationalSocietyId,
-                    Name = "National Society"
-                }
-            };
-
-            var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
-
-            var gatewaySettings = new[]
-            {
-                new GatewaySetting
-                {
-                    Id = 1,
-                    Name = "Name",
-                    ApiKey = "existing-api-key",
-                    NationalSocietyId = nationalSocietyId,
-                    GatewayType = GatewayType.SmsEagle
-                }
-            };
-
-            var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
-
-            var gatewaySettingRequestDto = new GatewaySettingRequestDto
-            {
-                Name = "New SMS Gateway",
-                ApiKey = "existing-api-key",
-                GatewayType = GatewayType.SmsEagle
-            };
-
-            // Act
-            var result = await _smsGatewayService.Create(nationalSocietyId, gatewaySettingRequestDto);
-
-            // Assert
-            await _nyssContextMock.GatewaySettings.DidNotReceive().AddAsync(Arg.Any<GatewaySetting>());
-            await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            var content = Arg.Any<string>();
-            await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
-        }
-
-        [Fact]
         public async Task AddSmsGateway_WhenExceptionIsThrown_ShouldReturnError()
         {
             // Arrange
@@ -439,66 +387,6 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
-        }
-
-        [Fact]
-        public async Task UpdateSmsGateway_WhenApiKeyAlreadyExists_ShouldReturnError()
-        {
-            // Arrange
-            const int smsGatewayId = 1;
-
-            var nationalSocieties = new[]
-            {
-                new NationalSociety
-                {
-                    Id = 1,
-                    Name = "National Society"
-                }
-            };
-
-            var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
-
-            var gatewaySettings = new[]
-            {
-                new GatewaySetting
-                {
-                    Id = smsGatewayId,
-                    Name = "Name",
-                    ApiKey = "api-key",
-                    NationalSocietyId = 1,
-                    GatewayType = GatewayType.SmsEagle
-                },
-                new GatewaySetting
-                {
-                    Id = 2,
-                    Name = "Name",
-                    ApiKey = "existing-api-key",
-                    NationalSocietyId = 1,
-                    GatewayType = GatewayType.SmsEagle
-                }
-            };
-
-            var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
-            _nyssContextMock.GatewaySettings.FindAsync(smsGatewayId).Returns(gatewaySettings[0]);
-
-            var gatewaySettingRequestDto = new GatewaySettingRequestDto
-            {
-                Name = "Updated SMS Gateway",
-                ApiKey = "existing-api-key",
-                GatewayType = GatewayType.SmsEagle
-            };
-
-            // Act
-            var result = await _smsGatewayService.Edit(smsGatewayId, gatewaySettingRequestDto);
-
-            // Assert
-            await _nyssContextMock.DidNotReceive().SaveChangesAsync();
-            var content = Arg.Any<string>();
-            await _smsGatewayBlobProviderMock.DidNotReceive().UpdateApiKeys(content);
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
         }
 
         [Fact]
