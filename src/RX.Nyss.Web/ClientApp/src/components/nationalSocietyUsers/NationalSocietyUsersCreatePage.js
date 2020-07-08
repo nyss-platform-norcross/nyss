@@ -27,7 +27,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   const [selectedRole, setRole] = useState(null);
   const [alertRecipientsDataSource, setAlertRecipientsDataSource] = useState([]);
   const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
-  const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
   const [confirmCoordinatorDialog, setConfirmCoordinatorDialog] = useState({
     isOpened: false,
     isConfirmed: false
@@ -167,7 +166,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       newAlertRecipients = selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value);
     }
 
-    setAlertRecipientsFieldError(newAlertRecipients.length === 0 ? strings(stringKeys.validation.fieldRequired) : null);
     setSelectedAlertRecipients(newAlertRecipients);
   }, [selectedAlertRecipients]);
 
@@ -176,8 +174,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       return null;
     }
 
-    return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
-  }, [alertRecipientsDataSource, selectedAlertRecipients]);
+    return selectedAlertRecipients.map(sar => sar.id);
+  }, [selectedAlertRecipients]);
 
   const { create } = props;
 
@@ -200,23 +198,13 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       return;
     };
 
-    if (selectedRole === roles.Supervisor) {
-      if (alertRecipientsFieldError !== null) {
-        return;
-      }
-      if (selectedAlertRecipients.length === 0) {
-        setAlertRecipientsFieldError(strings(stringKeys.validation.fieldRequired));
-        return;
-      }
-    }
-
     if (selectedRole === roles.Coordinator && !props.data.hasCoordinator && confirmCoordinatorDialog.isConfirmed === false) {
       setConfirmCoordinatorDialog({ ...confirmCoordinatorDialog, isOpened: true });
       return;
     }
 
     createUser();
-  }, [createUser, form, selectedRole, props.data, alertRecipientsFieldError, confirmCoordinatorDialog, selectedAlertRecipients]);
+  }, [createUser, form, selectedRole, props.data, confirmCoordinatorDialog]);
 
   if (!props.data) {
     return null;
@@ -357,7 +345,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                   options={alertRecipientsDataSource}
                   value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
                   onChange={onAlertRecipientsChange}
-                  error={alertRecipientsFieldError}
                 />
               </Grid>
             </Fragment>

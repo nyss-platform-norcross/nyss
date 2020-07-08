@@ -26,7 +26,6 @@ const NationalSocietyUsersEditPageComponent = (props) => {
   const [selectedRole, setRole] = useState(null);
   const [alertRecipientsDataSource, setAlertRecipientsDataSource] = useState([]);
   const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
-  const [alertRecipientsFieldError, setAlertRecipientsFieldError] = useState(null);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyUserId);
@@ -97,7 +96,6 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       newAlertRecipients = selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value);
     }
 
-    setAlertRecipientsFieldError(newAlertRecipients.length === 0 ? strings(stringKeys.validation.fieldRequired) : null);
     setSelectedAlertRecipients(newAlertRecipients);
   }, [selectedAlertRecipients]);
 
@@ -110,8 +108,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       return null;
     }
 
-    return selectedAlertRecipients[0].id === 0 ? alertRecipientsDataSource.map(ards => ards.data.id).filter(id => id !== 0) : selectedAlertRecipients.map(sar => sar.id);
-  }, [alertRecipientsDataSource, selectedAlertRecipients]);
+    return selectedAlertRecipients.map(sar => sar.id);
+  }, [selectedAlertRecipients]);
 
   const handleSubmit = useCallback(e => {
     e.preventDefault();
@@ -119,11 +117,6 @@ const NationalSocietyUsersEditPageComponent = (props) => {
     if (!form.isValid()) {
       return;
     };
-
-    if (selectedRole === roles.Supervisor && selectedAlertRecipients.length === 0) {
-      setAlertRecipientsFieldError(strings(stringKeys.validation.fieldRequired));
-      return;
-    }
 
     const values = form.getValues();
 
@@ -134,7 +127,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
       supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
     });
-  }, [form, props, selectedRole, selectedAlertRecipients, setSupervisorAlertRecipients]);
+  }, [form, props, setSupervisorAlertRecipients]);
 
   if (!props.data || !form || props.isFetching) {
     return <Loading />;
@@ -255,7 +248,6 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                 options={alertRecipientsDataSource}
                 value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
                 onChange={onAlertRecipientsChange}
-                error={alertRecipientsFieldError}
               />
             </Grid>
           )}
