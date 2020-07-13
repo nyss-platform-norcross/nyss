@@ -9,6 +9,8 @@ namespace RX.Nyss.Common.Services
     {
         Task<string> GetStringsResources();
         Task SaveStringsResources(string value);
+        Task SaveEmailContentResources(string value);
+        Task SaveSmsContentResources(string value);
         Task<string> GetEmailContentResources();
         Task<string> GetSmsContentResources();
         string GetPlatformAgreementUrl(string languageCode);
@@ -30,6 +32,12 @@ namespace RX.Nyss.Common.Services
 
         public async Task SaveStringsResources(string value) =>
             await _blobProvider.SetBlobValue(_config.StringsResourcesBlobObjectName, value);
+
+        public async Task SaveEmailContentResources(string value) =>
+            await _blobProvider.SetBlobValue(_config.EmailContentResourcesBlobObjectName, value);
+
+        public async Task SaveSmsContentResources(string value) =>
+            await _blobProvider.SetBlobValue(_config.SmsContentResourcesBlobObjectName, value);
 
         public async Task<string> GetEmailContentResources() =>
             await _blobProvider.GetBlobValue(_config.EmailContentResourcesBlobObjectName);

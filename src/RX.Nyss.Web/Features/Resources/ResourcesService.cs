@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.Resources
                 return Error<GetStringResponseDto>(ResultKey.UnexpectedError);
             }
 
-            var stringsBlob = await _stringsResourcesService.GetStringsBlob();
+            var stringsBlob = await GetStringsBlob(key);
             var entry = stringsBlob.Strings.FirstOrDefault(x => x.Key == key);
 
             var contentLanguages = await _nyssContext.ContentLanguages.ToListAsync();
@@ -74,7 +74,7 @@ namespace RX.Nyss.Web.Features.Resources
                 return Error<string>(ResultKey.UnexpectedError);
             }
 
-            var stringsBlob = await _stringsResourcesService.GetStringsBlob();
+            var stringsBlob = await GetStringsBlob(dto.Key);
             var strings = stringsBlob.Strings.ToList();
             var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
 
@@ -92,7 +92,7 @@ namespace RX.Nyss.Web.Features.Resources
                 }
             }
 
-            await _stringsResourcesService.SaveStringsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
+            await SaveStringsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) }, dto.Key);
 
             return Success("Success");
         }
@@ -105,7 +105,12 @@ namespace RX.Nyss.Web.Features.Resources
             }
 
             var stringsBlob = await _stringsResourcesService.GetStringsBlob();
-            var translations = stringsBlob.Strings.ToList();
+            var emailContentBlob = await _stringsResourcesService.GetEmailContentBlob();
+            var smsContentBlob = await _stringsResourcesService.GetSmsContentBlob();
+            var translations = stringsBlob.Strings
+                .Union(emailContentBlob.Strings)
+                .Union(smsContentBlob.Strings)
+                .ToList();
 
             var languages = await _nyssContext.ContentLanguages
                 .Select(cl => new ListTranslationsResponseDto.LanguageResponseDto
@@ -129,7 +134,43 @@ namespace RX.Nyss.Web.Features.Resources
 
             return Success(dto);
         }
-        
+
+        private async Task<StringsBlob> GetStringsBlob(string key)
+        {
+            var blobIdentifier = key.Split(".")[0];
+
+            if (blobIdentifier == "email")
+            {
+                return await _stringsResourcesService.GetEmailContentBlob();
+            }
+            else if (blobIdentifier == "sms")
+            {
+                return await _stringsResourcesService.GetSmsContentBlob();
+            }
+            else
+            {
+                return await _stringsResourcesService.GetStringsBlob();
+            }
+        }
+
+        private async Task SaveStringsBlob(StringsBlob stringsBlob, string key)
+        {
+            var blobIdentifier = key.Split(".")[0];
+
+            if (blobIdentifier == "email")
+            {
+                await _stringsResourcesService.SaveEmailContentsBlob(stringsBlob);
+            }
+            else if (blobIdentifier == "sms")
+            {
+                await _stringsResourcesService.SaveSmsContentsBlob(stringsBlob);
+            }
+            else
+            {
+                await _stringsResourcesService.SaveStringsBlob(stringsBlob);
+            }
+        }
+
         private static StringsBlob.Entry CreateEntry(ICollection<StringsBlob.Entry> strings, string key)
         {
             var entry = new StringsBlob.Entry
