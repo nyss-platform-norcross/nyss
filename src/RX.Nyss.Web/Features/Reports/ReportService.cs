@@ -167,7 +167,7 @@ namespace RX.Nyss.Web.Features.Reports
             var reports = await result
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync<IReportListResponseDto>();
-            
+
             await UpdateTimeZoneInReports(projectId, reports);
             AnonymizeCrossOrganizationReports(reports);
 
@@ -274,10 +274,10 @@ namespace RX.Nyss.Web.Features.Reports
 
             if (useExcelFormat)
             {
-                return GetExcelData(reports, stringResources);
+                return GetExcelData(reports, stringResources, filter.ReportsType);
             }
 
-            return await GetCsvData(reports);
+            return await GetCsvData(reports, filter.ReportsType);
         }
 
         public async Task<Result> Edit(int reportId, ReportRequestDto reportRequestDto)
@@ -405,15 +405,15 @@ namespace RX.Nyss.Web.Features.Reports
                 nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId));
         }
 
-        private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, string> stringResources)
+        private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, string> stringResources, ReportListType reportListType)
         {
             var documentTitle = GetStringResource(stringResources, "reports.export.title");
-            var columnLabels = GetColumnLabels(stringResources);
-            var excelDoc = _excelExportService.ToExcel(reports, columnLabels, documentTitle);
+            var columnLabels = GetColumnLabels(stringResources, reportListType);
+            var excelDoc = _excelExportService.ToExcel(reports, columnLabels, documentTitle, reportListType);
             return excelDoc.GetAsByteArray();
         }
 
-        private async Task<byte[]> GetCsvData(List<IReportListResponseDto> reports)
+        private async Task<byte[]> GetCsvData(List<IReportListResponseDto> reports, ReportListType reportListType)
         {
             var userName = _authorizationService.GetCurrentUserName();
             var userApplicationLanguage = _nyssContext.Users.FilterAvailable()
@@ -423,40 +423,75 @@ namespace RX.Nyss.Web.Features.Reports
 
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguage)).Value;
 
-            var columnLabels = GetColumnLabels(stringResources);
+            var columnLabels = GetColumnLabels(stringResources, reportListType);
 
-            var reportData = reports.Select(r =>
-            {
-                var report = (ExportReportListResponseDto)r;
-                return new
+                var reportData = reportListType == ReportListType.FromDcp ? reports.Select(r =>
                 {
-                    Date = report.DateTime.ToString("yyyy-MM-dd"),
-                    Time = report.DateTime.ToString("HH:mm"),
-                    Status = report.Status,
-                    report.DataCollectorDisplayName,
-                    report.PhoneNumber,
-                    report.Region,
-                    report.District,
-                    report.Village,
-                    report.Zone,
-                    report.HealthRiskName,
-                    report.CountMalesBelowFive,
-                    report.CountMalesAtLeastFive,
-                    report.CountFemalesBelowFive,
-                    report.CountFemalesAtLeastFive,
-                    TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
-                    TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
-                    TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
-                    TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
-                    Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
-                    Location = report.Location != null
-                        ? $"{report.Location.Y}/{report.Location.X}"
-                        : "",
-                    report.Message,
-                    EpiYear = report.EpiWeek,
-                    EpiWeek = report.EpiYear
-                };
-            });
+                    var report = (ExportReportListResponseDto)r;
+                    return new ExportReportListCsvContentDto
+                    {
+                        Date = r.DateTime.ToString("yyyy-MM-dd"),
+                        Time = report.DateTime.ToString("HH:mm"),
+                        Status = report.Status,
+                        DataCollectorDisplayName = report.DataCollectorDisplayName,
+                        PhoneNumber = report.PhoneNumber,
+                        Region = report.Region,
+                        District = report.District,
+                        Village = report.Village,
+                        Zone = report.Zone,
+                        HealthRiskName = report.HealthRiskName,
+                        CountMalesBelowFive = report.CountMalesBelowFive,
+                        CountMalesAtLeastFive = report.CountMalesAtLeastFive,
+                        CountFemalesBelowFive = report.CountFemalesBelowFive,
+                        CountFemalesAtLeastFive = report.CountFemalesAtLeastFive,
+                        TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
+                        TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
+                        TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
+                        TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
+                        Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
+                        ReferredCount = report.ReferredCount,
+                        DeathCount = report.DeathCount,
+                        FromOtherVillagesCount = report.FromOtherVillagesCount,
+                        Location = report.Location != null
+                            ? $"{report.Location.Y}/{report.Location.X}"
+                            : "",
+                        Message = report.Message,
+                        EpiWeek = report.EpiYear,
+                        EpiYear = report.EpiWeek
+                    };
+                })
+                    : reports.Select(r =>
+                {
+                    var report = (ExportReportListResponseDto)r;
+                    return new ExportReportListCsvContentDto
+                    {
+                        Date = r.DateTime.ToString("yyyy-MM-dd"),
+                        Time = report.DateTime.ToString("HH:mm"),
+                        Status = report.Status,
+                        DataCollectorDisplayName = report.DataCollectorDisplayName,
+                        PhoneNumber = report.PhoneNumber,
+                        Region = report.Region,
+                        District = report.District,
+                        Village = report.Village,
+                        Zone = report.Zone,
+                        HealthRiskName = report.HealthRiskName,
+                        CountMalesBelowFive = report.CountMalesBelowFive,
+                        CountMalesAtLeastFive = report.CountMalesAtLeastFive,
+                        CountFemalesBelowFive = report.CountFemalesBelowFive,
+                        CountFemalesAtLeastFive = report.CountFemalesAtLeastFive,
+                        TotalBelowFive = report.CountFemalesBelowFive + report.CountMalesBelowFive,
+                        TotalAtLeastFive = report.CountMalesAtLeastFive + report.CountFemalesAtLeastFive,
+                        TotalMale = report.CountMalesAtLeastFive + report.CountMalesBelowFive,
+                        TotalFemale = report.CountFemalesAtLeastFive + report.CountFemalesBelowFive,
+                        Total = report.CountMalesBelowFive + report.CountMalesAtLeastFive + report.CountFemalesBelowFive + report.CountFemalesAtLeastFive,
+                        Location = report.Location != null
+                            ? $"{report.Location.Y}/{report.Location.X}"
+                            : "",
+                        Message = report.Message,
+                        EpiWeek = report.EpiYear,
+                        EpiYear = report.EpiWeek
+                    };
+                });
 
             return _excelExportService.ToCsv(reportData, columnLabels);
         }
@@ -470,8 +505,37 @@ namespace RX.Nyss.Web.Features.Reports
                     : GetStringResource(stringResources, "reports.list.error")
             };
 
-        private List<string> GetColumnLabels(IDictionary<string, string> stringResources) =>
-            new List<string>
+        private List<string> GetColumnLabels(IDictionary<string, string> stringResources, ReportListType reportListType) =>
+            reportListType == ReportListType.FromDcp ? new List<string>
+            {
+                GetStringResource(stringResources, "reports.export.date"),
+                GetStringResource(stringResources, "reports.export.time"),
+                GetStringResource(stringResources, "reports.list.status"),
+                GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
+                GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
+                GetStringResource(stringResources, "reports.list.region"),
+                GetStringResource(stringResources, "reports.list.district"),
+                GetStringResource(stringResources, "reports.list.village"),
+                GetStringResource(stringResources, "reports.list.zone"),
+                GetStringResource(stringResources, "reports.list.healthRisk"),
+                GetStringResource(stringResources, "reports.list.malesBelowFive"),
+                GetStringResource(stringResources, "reports.list.malesAtLeastFive"),
+                GetStringResource(stringResources, "reports.list.femalesBelowFive"),
+                GetStringResource(stringResources, "reports.list.femalesAtLeastFive"),
+                GetStringResource(stringResources, "reports.export.totalBelowFive"),
+                GetStringResource(stringResources, "reports.export.totalAtLeastFive"),
+                GetStringResource(stringResources, "reports.export.totalMale"),
+                GetStringResource(stringResources, "reports.export.totalFemale"),
+                GetStringResource(stringResources, "reports.export.total"),
+                GetStringResource(stringResources, "reports.export.referredCount"),
+                GetStringResource(stringResources, "reports.export.deathCount"),
+                GetStringResource(stringResources, "reports.export.fromOtherVillagesCount"),
+                GetStringResource(stringResources, "reports.export.location"),
+                GetStringResource(stringResources, "reports.export.message"),
+                GetStringResource(stringResources, "reports.export.epiYear"),
+                GetStringResource(stringResources, "reports.export.epiWeek")
+            }
+            : new List<string>
             {
                 GetStringResource(stringResources, "reports.export.date"),
                 GetStringResource(stringResources, "reports.export.time"),
