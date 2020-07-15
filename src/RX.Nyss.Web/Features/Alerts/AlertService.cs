@@ -184,13 +184,13 @@ namespace RX.Nyss.Web.Features.Alerts
                         District = ar.Report.RawReport.Village.District.Name,
                         Region = ar.Report.RawReport.Village.District.Region.Name,
                         ReportedCase = ar.Report.ReportedCase,
-                        Status = ar.Report.Status
-                    }),
-                    AlertRecipients = a.AlertReports.SelectMany(ar => ar.Report.DataCollector.Supervisor.SupervisorAlertRecipients.Select(sar => new
-                    {
-                        Email = sar.AlertNotificationRecipient.Email,
-                        PhoneNumber = sar.AlertNotificationRecipient.PhoneNumber
-                    })).ToList()
+                        Status = ar.Report.Status,
+                        AlertRecipients = ar.Report.DataCollector.Supervisor.SupervisorAlertRecipients.Select(sar => new
+                        {
+                            Email = sar.AlertNotificationRecipient.Email,
+                            PhoneNumber = sar.AlertNotificationRecipient.PhoneNumber
+                        })
+                    })
                 })
                 .AsNoTracking()
                 .SingleAsync();
@@ -207,8 +207,8 @@ namespace RX.Nyss.Web.Features.Alerts
                 Comments = alert.Comments,
                 CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(alert.CreatedAt, projectTimeZone),
                 CaseDefinition = alert.CaseDefinition,
-                NotificationEmails = alert.AlertRecipients.Select(ar => ar.Email).Distinct(),
-                NotificationPhoneNumbers = alert.AlertRecipients.Select(ar => ar.PhoneNumber).Distinct(),
+                NotificationEmails = alert.Reports.SelectMany(r => r.AlertRecipients.Select(ar => ar.Email)).Distinct(),
+                NotificationPhoneNumbers = alert.Reports.SelectMany(r => r.AlertRecipients.Select(ar => ar.PhoneNumber)).Distinct(),
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 CloseOption = alert.CloseOption,
                 Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
