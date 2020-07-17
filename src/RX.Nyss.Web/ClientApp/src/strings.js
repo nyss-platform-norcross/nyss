@@ -594,7 +594,8 @@ export const stringKeys = {
       trainingStatus: "dataCollectors.list.trainingStatus",
       setToInTraining: "dataCollectors.list.setToInTraining",
       takeOutOfTraining: "dataCollectors.list.takeOutOfTraining",
-      supervisor: "dataCollectors.list.supervisor"
+      supervisor: "dataCollectors.list.supervisor",
+      replaceSupervisor: "dataCollectors.list.replaceSupervisor"
     },
     performanceList: {
       title: "dataCollectors.performanceList.title",

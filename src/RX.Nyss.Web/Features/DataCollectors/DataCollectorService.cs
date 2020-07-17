@@ -39,6 +39,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters);
         Task AnonymizeDataCollectorsWithReports(int projectId);
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
+        Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -674,6 +675,30 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return result.IsSuccess
                 ? result.Value
                 : null;
+        }
+
+        public async Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto)
+        {
+            try
+            {
+                var dataCollectors = await _nyssContext.DataCollectors
+                    .Where(dc => replaceSupervisorRequestDto.DataCollectorIds.Contains(dc.Id))
+                    .ToListAsync();
+                var supervisor = await _nyssContext.Users.FirstOrDefaultAsync(u => u.Id == replaceSupervisorRequestDto.SupervisorId);
+
+                foreach (var dc in dataCollectors)
+                {
+                    dc.Supervisor = (SupervisorUser)supervisor;
+                }
+
+                await _nyssContext.SaveChangesAsync();
+
+                return Success();
+            }
+            catch (Exception e)
+            {
+                return Error(e.Message);
+            }
         }
 
         private class RawReportData

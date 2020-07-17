@@ -19,7 +19,7 @@ import { accessMap } from '../../authentication/accessMap';
 import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';
 import { Checkbox } from '@material-ui/core';
 
-export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isSettingTrainingState, selectDataCollector, selectAllDataCollectors }) => {
+export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isSettingTrainingState, selectDataCollector, selectAllDataCollectors, replaceSupervisor }) => {
   const [isSelected, setIsSelected] = useState(false);
   useEffect(() => setIsSelected(list.some(i => i.isSelected)), [list]);
 
@@ -52,8 +52,13 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
         title: strings(stringKeys.dataCollector.list.setToInTraining),
         action: () => setTrainingState(getSelectedIds(), true),
         roles: accessMap.dataCollectors.list
+      },
+      {
+        title: strings(stringKeys.dataCollector.list.replaceSupervisor),
+        action: () => replaceSupervisor(getSelectedIds(), ),
+        roles: accessMap.dataCollectors.replaceSupervisor
       }
-    ], [getSelectedIds, setTrainingState]);
+    ], [getSelectedIds, setTrainingState, replaceSupervisor]);
 
   const handleSelect = (e, id, value) => {
     e.stopPropagation();

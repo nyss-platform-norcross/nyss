@@ -121,6 +121,15 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.FAILURE:
       return { ...state, performanceListFetching: false, performanceListData: [] };
 
+    case actions.REPLACE_SUPERVISOR.REQUEST:
+      return { ...state, replacingSupervisor: true };
+
+    case actions.REPLACE_SUPERVISOR.SUCCESS:
+      return { ...state, replacingSupervisor: false, listStale: true };
+
+    case actions.REPLACE_SUPERVISOR.FAILURE:
+      return { ...state, replacingSupervisor: false, formError: action.error };
+
     default:
       return state;
   }

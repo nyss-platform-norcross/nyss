@@ -57,6 +57,7 @@ const DataCollectorsListPageComponent = (props) => {
         selectDataCollector={props.selectDataCollector}
         selectAllDataCollectors={props.selectAllDataCollectors}
         listSelectedAll={props.listSelectedAll}
+        replaceSupervisor={props.replaceSupervisor}
       />
     </Fragment>
   );
@@ -96,7 +97,8 @@ const mapDispatchToProps = {
   remove: dataCollectorsActions.remove.invoke,
   setTrainingState: dataCollectorsActions.setTrainingState.invoke,
   exportToExcel: dataCollectorsActions.exportToExcel.invoke,
-  exportToCsv: dataCollectorsActions.exportToCsv.invoke
+  exportToCsv: dataCollectorsActions.exportToCsv.invoke,
+  replaceSupervisor: dataCollectorsActions.replaceSupervisor.invoke
 };
 
 export const DataCollectorsListPage = useLayout(

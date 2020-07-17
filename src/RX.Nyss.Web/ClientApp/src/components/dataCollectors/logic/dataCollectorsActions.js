@@ -12,7 +12,8 @@ import {
   EXPORT_DATA_COLLECTORS_TO_CSV,
   EXPORT_DATA_COLLECTORS_TO_EXCEL,
   SELECT_DATA_COLLECTOR,
-  SELECT_ALL_DATA_COLLECTOR
+  SELECT_ALL_DATA_COLLECTOR,
+  REPLACE_SUPERVISOR
 } from "./dataCollectorsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/datacollectors/list`);
@@ -126,3 +127,10 @@ export const exportToCsv = {
   success: () => ({ type: EXPORT_DATA_COLLECTORS_TO_CSV.SUCCESS }),
   failure: (message) => ({ type: EXPORT_DATA_COLLECTORS_TO_CSV.FAILURE, message })
 };
+
+export const replaceSupervisor = {
+  invoke: (dataCollectorIds, supervisorId) => ({ type: REPLACE_SUPERVISOR.INVOKE, dataCollectorIds, supervisorId }),
+  request: () => ({ type: REPLACE_SUPERVISOR.REQUEST }),
+  success: () => ({ type: REPLACE_SUPERVISOR.SUCCESS }),
+  failure: (error) => ({ type: REPLACE_SUPERVISOR.FAILURE, error })
+}
