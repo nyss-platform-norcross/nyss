@@ -56,7 +56,7 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
       bounds={bounds}
       center={center}
       scrollWheelZoom={false}
-      maxZoom={25}
+      maxZoom={19}
     >
       <TileLayer
         attribution=''
