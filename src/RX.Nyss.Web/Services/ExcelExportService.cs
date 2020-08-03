@@ -10,7 +10,7 @@ namespace RX.Nyss.Web.Services
     public interface IExcelExportService
     {
         byte[] ToCsv<T>(IEnumerable<T> data, IEnumerable<string> columnLabels) where T : class;
-        ExcelPackage ToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title);
+        ExcelPackage ToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title, ReportListType reportListType);
     }
 
     public class ExcelExportService : IExcelExportService
@@ -45,7 +45,7 @@ namespace RX.Nyss.Web.Services
             return Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(builder.ToString())).ToArray();
         }
 
-        public ExcelPackage ToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title)
+        public ExcelPackage ToExcel(List<IReportListResponseDto> columnData, List<string> columnLabels, string title, ReportListType reportListType)
         {
             var package = new ExcelPackage();
             package.Workbook.Properties.Title = title;
@@ -82,15 +82,36 @@ namespace RX.Nyss.Web.Services
                 worksheet.Cells[columnIndex, 17].Value = data.CountMalesBelowFive + data.CountMalesAtLeastFive;
                 worksheet.Cells[columnIndex, 18].Value = data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
                 worksheet.Cells[columnIndex, 19].Value = data.CountMalesBelowFive + data.CountMalesAtLeastFive + data.CountFemalesBelowFive + data.CountFemalesAtLeastFive;
-                worksheet.Cells[columnIndex, 20].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
-                worksheet.Cells[columnIndex, 21].Value = data.Message;
-                worksheet.Cells[columnIndex, 22].Value = data.EpiYear;
-                worksheet.Cells[columnIndex, 23].Value = data.EpiWeek;
+
+                if (reportListType == ReportListType.FromDcp)
+                {
+                    worksheet.Cells[columnIndex, 20].Value = data.ReferredCount;
+                    worksheet.Cells[columnIndex, 21].Value = data.DeathCount;
+                    worksheet.Cells[columnIndex, 22].Value = data.FromOtherVillagesCount;
+                    worksheet.Cells[columnIndex, 23].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
+                    worksheet.Cells[columnIndex, 24].Value = data.Message;
+                    worksheet.Cells[columnIndex, 25].Value = data.EpiYear;
+                    worksheet.Cells[columnIndex, 26].Value = data.EpiWeek;
+                }
+                else
+                {
+                    worksheet.Cells[columnIndex, 20].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
+                    worksheet.Cells[columnIndex, 21].Value = data.Message;
+                    worksheet.Cells[columnIndex, 22].Value = data.EpiYear;
+                    worksheet.Cells[columnIndex, 23].Value = data.EpiWeek;
+                }
             }
 
             worksheet.Column(1).Width = 20;
             worksheet.Column(5).Width = 20;
-            worksheet.Column(20).Width = 30;
+            if (reportListType == ReportListType.FromDcp)
+            {
+                worksheet.Column(23).Width = 30;
+            }
+            else
+            {
+                worksheet.Column(20).Width = 30;
+            }
 
             return package;
         }
