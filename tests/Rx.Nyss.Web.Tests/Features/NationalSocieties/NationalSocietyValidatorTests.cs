@@ -4,12 +4,12 @@ using RX.Nyss.Web.Features.NationalSocieties.Dto;
 using RX.Nyss.Web.Features.NationalSocieties.Validation;
 using Xunit;
 
-namespace RX.Nyss.Web.Tests.Validators
+namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 {
     public class CreateNationalSocietyValidatorTester
     {
-        private CreateNationalSocietyRequestDto.Validator CreateValidator { get; set; }
-        private EditNationalSocietyRequestDto.Validator EditValidator { get; set; }
+        private CreateNationalSocietyRequestDto.Validator CreateValidator { get; }
+        private EditNationalSocietyRequestDto.Validator EditValidator { get; }
 
         public CreateNationalSocietyValidatorTester()
         {

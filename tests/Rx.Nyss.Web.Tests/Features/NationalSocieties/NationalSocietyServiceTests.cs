@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties;
@@ -34,9 +32,9 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 
         private readonly IManagerService _managerServiceMock;
         private readonly ITechnicalAdvisorService _technicalAdvisorServiceMock;
-        private IGeneralBlobProvider _generalBlobProviderMock;
-        private IDataBlobService _dataBlobServiceMock;
         private readonly IOrganizationService _organizationServiceMock;
+        private readonly IGeneralBlobProvider _generalBlobProviderMock;
+        private readonly IDataBlobService _dataBlobServiceMock;
 
 
         public NationalSocietyServiceTests()
@@ -66,7 +64,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 
             _testData = new NationalSocietyServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
         }
-        
+
         [Fact]
         public async Task ConsentToNationalSocietyAgreement_WhenUserNotFound_ShouldReturnNotFound()
         {

@@ -37,8 +37,16 @@ namespace RX.Nyss.Web.Tests.Features.Users
         {
             var organizations = new List<Organization>
             {
-                new Organization { Id = 1, Name = "first org"},
-                new Organization { Id = 2, Name = "another org" }
+                new Organization
+                {
+                    Id = 1,
+                    Name = "first org"
+                },
+                new Organization
+                {
+                    Id = 2,
+                    Name = "another org"
+                }
             };
 
             var nationalSocieties = new List<NationalSociety>
@@ -68,7 +76,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
         }
 
-        
+
         private void SetupOrgsFrom(List<Organization> orgs)
         {
             var orgsDbSet = orgs.AsQueryable().BuildMockDbSet();
@@ -242,7 +250,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
                     NationalSociety = nationalSocieties[0],
                     OrganizationId = 1,
                     Organization = organizations[0]
-            })
+                })
                 .Concat(users.Where(u => u.Name == NationalSociety1And2Tag).Select(u => new UserNationalSociety
                 {
                     User = u,

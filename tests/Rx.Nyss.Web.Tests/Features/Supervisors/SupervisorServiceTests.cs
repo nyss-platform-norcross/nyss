@@ -518,10 +518,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            var result = await _supervisorService.Edit(999, new EditSupervisorRequestDto
-            {
-                SupervisorAlertRecipients = new List<int>()
-            });
+            var result = await _supervisorService.Edit(999, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -529,10 +526,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingUserThatIsNotSupervisor_ReturnsErrorResult()
         {
-            var result = await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto
-            {
-                SupervisorAlertRecipients = new List<int>()
-            });
+            var result = await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -540,10 +534,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingUserThatIsNotSupervisor_SaveChangesShouldNotBeCalled()
         {
-            await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto
-            {
-                SupervisorAlertRecipients = new List<int>()
-            });
+            await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -552,10 +543,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingExistingSupervisor_ReturnsSuccess()
         {
-            var result = await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto
-            {
-                SupervisorAlertRecipients = new List<int>()
-            });
+            var result = await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
 
             result.IsSuccess.ShouldBeTrue();
         }
@@ -563,10 +551,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingExistingSupervisor_SaveChangesAsyncIsCalled()
         {
-            await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto
-            {
-                SupervisorAlertRecipients = new List<int>()
-            });
+            await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
 
             await _nyssContext.Received().SaveChangesAsync();
         }

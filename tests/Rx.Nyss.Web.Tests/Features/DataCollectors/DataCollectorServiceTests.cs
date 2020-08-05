@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const int VillageId = 1;
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
-        private List<NationalSociety> _nationalSocieties;
+        private readonly List<NationalSociety> _nationalSocieties;
 
         public DataCollectorServiceTests()
         {
@@ -57,13 +57,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider, authorizationService);
 
             // Arrange
-            _nationalSocieties = new List<NationalSociety>
-            {
-                new NationalSociety
-                {
-                    Id = NationalSocietyId
-                }
-            };
+            _nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = NationalSocietyId } };
 
             var users = new List<User>
             {
@@ -342,7 +336,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             // Act
             var result = await _dataCollectorService.SetTrainingState(new SetDataCollectorsTrainingStateRequestDto
             {
-                DataCollectorIds = new [] { DataCollectorWithoutReportsId },
+                DataCollectorIds = new[] { DataCollectorWithoutReportsId },
                 InTraining = true
             });
 

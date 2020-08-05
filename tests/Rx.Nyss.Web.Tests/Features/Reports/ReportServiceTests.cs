@@ -66,7 +66,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
 
             _authorizationService.IsCurrentUserInRole(Role.Supervisor).Returns(false);
             _authorizationService.GetCurrentUserName().Returns("admin@domain.com");
-            _authorizationService.GetCurrentUser().Returns(new AdministratorUser { Role = Role.Administrator});
+            _authorizationService.GetCurrentUser().Returns(new AdministratorUser { Role = Role.Administrator });
             ArrangeData();
         }
 
@@ -196,7 +196,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
                     ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 1).ToList(),
-                    TimeZone = "UTC",
+                    TimeZone = "UTC"
                 },
                 new Project
                 {

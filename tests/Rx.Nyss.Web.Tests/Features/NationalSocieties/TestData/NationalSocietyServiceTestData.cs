@@ -25,8 +25,16 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
             {
                 var organizations = new List<Organization>
                 {
-                    new Organization{ Id = 1, Name = "Org 1"},
-                    new Organization{ Id = 2, Name = "Org 2"}
+                    new Organization
+                    {
+                        Id = 1,
+                        Name = "Org 1"
+                    },
+                    new Organization
+                    {
+                        Id = 2,
+                        Name = "Org 2"
+                    }
                 };
                 var nationalSocietyWithProjects = new NationalSociety
                 {

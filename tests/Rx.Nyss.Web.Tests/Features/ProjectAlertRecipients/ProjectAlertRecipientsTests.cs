@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Utils.DataContract;
@@ -250,7 +249,9 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
 
             // Assert
             res.IsSuccess.ShouldBe(true);
-            res.Value.Count.ShouldBe(userName == "manager@example.com" ? 1 : 0);
+            res.Value.Count.ShouldBe(userName == "manager@example.com"
+                ? 1
+                : 0);
         }
     }
 }

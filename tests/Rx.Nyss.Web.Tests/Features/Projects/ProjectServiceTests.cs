@@ -57,13 +57,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 new NationalSociety
                 {
                     Id = nationalSocietyId,
-                    NationalSocietyUsers = new List<UserNationalSociety>
-                    {
-                        new UserNationalSociety
-                        {
-                            User = currentUser
-                        }
-                    }
+                    NationalSocietyUsers = new List<UserNationalSociety> { new UserNationalSociety { User = currentUser } }
                 }
             };
 
@@ -111,7 +105,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 Id = 1,
                 ContentLanguage = new ContentLanguage { Id = 2 },
                 Organizations = new List<Organization>(),
-                NationalSocietyUsers = new List<UserNationalSociety>( )
+                NationalSocietyUsers = new List<UserNationalSociety>()
             };
 
             var nationalSociety2 = new NationalSociety
@@ -122,10 +116,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 NationalSocietyUsers = new List<UserNationalSociety>()
             };
 
-            var nationalSocieties = new[]
-            {
-                nationalSociety1, nationalSociety2
-            };
+            var nationalSocieties = new[] { nationalSociety1, nationalSociety2 };
 
             var project = new[]
             {
@@ -896,7 +887,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
             var dcMockDbSet = dataCollectorsToAnonymize.Union(dataCollectorsToDelete).AsQueryable().BuildMockDbSet();
             _nyssContextMock.DataCollectors.Returns(dcMockDbSet);
-            var nationalSocietiesMockDbSet = new [] { new NationalSociety() }.AsQueryable().BuildMockDbSet();
+            var nationalSocietiesMockDbSet = new[] { new NationalSociety() }.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
             // Act

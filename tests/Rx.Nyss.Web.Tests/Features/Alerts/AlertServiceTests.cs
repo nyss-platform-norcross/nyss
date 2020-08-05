@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Extensions;
@@ -34,7 +33,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly DateTime _now = DateTime.UtcNow;
         private readonly User _currentUser = new GlobalCoordinatorUser();
         private readonly ISmsPublisherService _smsPublisherService;
-        private List<GatewaySetting> _gatewaySettings;
+        private readonly List<GatewaySetting> _gatewaySettings;
 
         public AlertServiceTests()
         {
@@ -114,20 +113,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 District = new District
                                 {
                                     Name = "District 9",
-                                    Region = new Region
-                                    {
-                                        Name = "Region 1"
-                                    }
+                                    Region = new Region { Name = "Region 1" }
                                 }
                             }
                         },
-                        DataCollector = new DataCollector
-                        {
-                            Supervisor = new SupervisorUser
-                            {
-                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
-                            }
-                        }
+                        DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
                     }
                 },
                 new AlertReport
@@ -144,20 +134,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 District = new District
                                 {
                                     Name = "District 9",
-                                    Region = new Region
-                                    {
-                                        Name = "Region 1"
-                                    }
+                                    Region = new Region { Name = "Region 1" }
                                 }
                             }
                         },
-                        DataCollector = new DataCollector
-                        {
-                            Supervisor = new SupervisorUser
-                            {
-                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
-                            }
-                        }
+                        DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
                     }
                 },
                 new AlertReport
@@ -174,20 +155,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 District = new District
                                 {
                                     Name = "District 9",
-                                    Region = new Region
-                                    {
-                                        Name = "Region 1"
-                                    }
+                                    Region = new Region { Name = "Region 1" }
                                 }
                             }
                         },
-                        DataCollector = new DataCollector
-                        {
-                            Supervisor = new SupervisorUser
-                            {
-                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
-                            }
-                        }
+                        DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
                     }
                 }
             };
@@ -227,10 +199,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 District = new District
                                 {
                                     Name = "District 9",
-                                    Region = new Region
-                                    {
-                                        Name = "Region 1"
-                                    }
+                                    Region = new Region { Name = "Region 1" }
                                 }
                             }
                         },
@@ -256,7 +225,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> {
+            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient>
+            {
                 new AlertNotificationRecipient
                 {
                     Email = emailAddress,
@@ -304,10 +274,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 District = new District
                                 {
                                     Name = "District 9",
-                                    Region = new Region
-                                    {
-                                        Name = "Region 1"
-                                    }
+                                    Region = new Region { Name = "Region 1" }
                                 }
                             }
                         },
@@ -333,7 +300,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> {
+            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient>
+            {
                 new AlertNotificationRecipient
                 {
                     Email = emailAddress,
@@ -378,10 +346,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 District = new District
                                 {
                                     Name = "District 9",
-                                    Region = new Region
-                                    {
-                                        Name = "Region 1"
-                                    }
+                                    Region = new Region { Name = "Region 1" }
                                 }
                             }
                         },
@@ -391,13 +356,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             {
                                 SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>
                                 {
-                                    new SupervisorUserAlertRecipient
-                                    {
-                                        AlertNotificationRecipient = new AlertNotificationRecipient
-                                        {
-                                            PhoneNumber = phonenumber
-                                        }
-                                    }
+                                    new SupervisorUserAlertRecipient { AlertNotificationRecipient = new AlertNotificationRecipient { PhoneNumber = phonenumber } }
                                 }
                             }
                         }
@@ -406,12 +365,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             };
 
             _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> {
-                new AlertNotificationRecipient
-                {
-                    PhoneNumber = phonenumber
-                }
-            };
+            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> { new AlertNotificationRecipient { PhoneNumber = phonenumber } };
 
             // Act
             await _alertService.Escalate(TestData.AlertId, true);
@@ -442,20 +396,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 District = new District
                                 {
                                     Name = "District 9",
-                                    Region = new Region
-                                    {
-                                        Name = "Region 1"
-                                    }
+                                    Region = new Region { Name = "Region 1" }
                                 }
                             }
                         },
-                        DataCollector = new DataCollector
-                        {
-                            Supervisor = new SupervisorUser
-                            {
-                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
-                            }
-                        }
+                        DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
                     }
                 }
             };
@@ -492,20 +437,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                 District = new District
                                 {
                                     Name = "District 9",
-                                    Region = new Region
-                                    {
-                                        Name = "Region 1"
-                                    }
+                                    Region = new Region { Name = "Region 1" }
                                 }
                             }
                         },
-                        DataCollector = new DataCollector
-                        {
-                            Supervisor = new SupervisorUser
-                            {
-                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
-                            }
-                        }
+                        DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
                     }
                 }
             };
@@ -843,20 +779,11 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                                             District = new District
                                             {
                                                 Name = "District 9",
-                                                Region = new Region
-                                                {
-                                                    Name = "Region 1"
-                                                }
+                                                Region = new Region { Name = "Region 1" }
                                             }
                                         }
                                     },
-                                    DataCollector = new DataCollector
-                                    {
-                                        Supervisor = new SupervisorUser
-                                        {
-                                            SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
-                                        }
-                                    }
+                                    DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
                                 }
                             }
                         },
@@ -880,7 +807,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Project = new Project
                             {
                                 TimeZone = TimeZoneName,
-                                AlertNotificationRecipients = new List<AlertNotificationRecipient> {
+                                AlertNotificationRecipients = new List<AlertNotificationRecipient>
+                                {
                                     new AlertNotificationRecipient
                                     {
                                         Email = "aaaa@example.com",

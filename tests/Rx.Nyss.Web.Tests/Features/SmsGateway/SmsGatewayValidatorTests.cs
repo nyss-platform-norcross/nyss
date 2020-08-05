@@ -4,7 +4,7 @@ using RX.Nyss.Web.Features.SmsGateways.Dto;
 using RX.Nyss.Web.Features.SmsGateways.Validation;
 using Xunit;
 
-namespace RX.Nyss.Web.Tests.Validators
+namespace RX.Nyss.Web.Tests.Features.SmsGateway
 {
     public class SmsGatewayValidatorTests
     {

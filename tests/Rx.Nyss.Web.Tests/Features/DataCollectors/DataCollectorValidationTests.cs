@@ -1,17 +1,15 @@
 using FluentValidation.TestHelper;
 using NSubstitute;
-
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Validation;
 using Xunit;
 
-namespace RX.Nyss.Web.Tests.Validators
+namespace RX.Nyss.Web.Tests.Features.DataCollectors
 {
-    
     public class DataCollectorValidationTests
     {
-        private CreateDataCollectorRequestDto.Validator CreateValidator { get; set; }
-        private EditDataCollectorRequestDto.Validator EditValidator { get; set; }
+        private CreateDataCollectorRequestDto.Validator CreateValidator { get; }
+        private EditDataCollectorRequestDto.Validator EditValidator { get; }
 
         public DataCollectorValidationTests()
         {
