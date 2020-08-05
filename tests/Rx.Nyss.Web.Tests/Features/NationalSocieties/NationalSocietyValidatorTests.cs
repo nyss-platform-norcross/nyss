@@ -1,12 +1,11 @@
 using FluentValidation.TestHelper;
 using NSubstitute;
-using NUnit.Framework;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
 using RX.Nyss.Web.Features.NationalSocieties.Validation;
+using Xunit;
 
 namespace RX.Nyss.Web.Tests.Validators
 {
-    [TestFixture]
     public class CreateNationalSocietyValidatorTester
     {
         private CreateNationalSocietyRequestDto.Validator CreateValidator { get; set; }
@@ -22,37 +21,37 @@ namespace RX.Nyss.Web.Tests.Validators
             EditValidator = new EditNationalSocietyRequestDto.Validator(validationService);
         }
 
-        [Test]
+        [Fact]
         public void Create_WhenCountryDoesntExists_ShouldHaveError()
         {
             CreateValidator.ShouldHaveValidationErrorFor(ns => ns.CountryId, 1);
         }
 
-        [Test]
+        [Fact]
         public void Create_WhenContentLanguageDoesntExists_ShouldHaveError()
         {
             CreateValidator.ShouldHaveValidationErrorFor(ns => ns.ContentLanguageId, 1);
         }
 
-        [Test]
+        [Fact]
         public void Create_WhenNameExists_ShouldHaveError()
         {
             CreateValidator.ShouldHaveValidationErrorFor(ns => ns.Name, "Test");
         }
 
-        [Test]
+        [Fact]
         public void Edit_WhenCountryDoesntExist_ShouldHaveError()
         {
             EditValidator.ShouldHaveValidationErrorFor(ns => ns.CountryId, 1);
         }
 
-        [Test]
+        [Fact]
         public void Edit_WhenContentLanguageDoesntExist_ShouldHaveError()
         {
             EditValidator.ShouldHaveValidationErrorFor(ns => ns.ContentLanguageId, 1);
         }
 
-        [Test]
+        [Fact]
         public void Edit_WhenNameExist_ShouldHaveError()
         {
             EditValidator.ShouldHaveValidationErrorFor(ns => ns.Name, "Test");

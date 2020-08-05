@@ -1,12 +1,13 @@
 using FluentValidation.TestHelper;
 using NSubstitute;
-using NUnit.Framework;
+
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.DataCollectors.Validation;
+using Xunit;
 
 namespace RX.Nyss.Web.Tests.Validators
 {
-    [TestFixture]
+    
     public class DataCollectorValidationTests
     {
         private CreateDataCollectorRequestDto.Validator CreateValidator { get; set; }
@@ -20,13 +21,13 @@ namespace RX.Nyss.Web.Tests.Validators
             EditValidator = new EditDataCollectorRequestDto.Validator(validationService);
         }
 
-        [Test]
+        [Fact]
         public void Create_WhenNameExists_ShouldHaveError()
         {
             CreateValidator.ShouldHaveValidationErrorFor(dc => dc.PhoneNumber, "+4712345678");
         }
 
-        [Test]
+        [Fact]
         public void Create_WhenNameDoesntExists_ShouldNotHaveError()
         {
             CreateValidator.ShouldNotHaveValidationErrorFor(dc => dc.PhoneNumber, "+4712345679");
