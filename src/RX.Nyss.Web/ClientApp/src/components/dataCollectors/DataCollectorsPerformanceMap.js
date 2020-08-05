@@ -80,7 +80,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
       length={4}
       bounds={bounds}
       zoom={5}
-      maxZoom={25}
+      maxZoom={19}
       className={styles.map}
     >
       <TileLayer attribution='' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
