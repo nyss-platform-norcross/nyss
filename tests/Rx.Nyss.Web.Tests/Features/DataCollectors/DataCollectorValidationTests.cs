@@ -6,10 +6,11 @@ using Xunit;
 
 namespace RX.Nyss.Web.Tests.Features.DataCollectors
 {
+    
     public class DataCollectorValidationTests
     {
-        private CreateDataCollectorRequestDto.Validator CreateValidator { get; }
-        private EditDataCollectorRequestDto.Validator EditValidator { get; }
+        private CreateDataCollectorRequestDto.Validator CreateValidator { get; set; }
+        private EditDataCollectorRequestDto.Validator EditValidator { get; set; }
 
         public DataCollectorValidationTests()
         {

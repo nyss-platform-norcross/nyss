@@ -8,37 +8,40 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
 {
     public class SmsGatewayValidatorTests
     {
-        private GatewaySettingRequestDto.GatewaySettingRequestValidator Validator { get; }
+        private readonly CreateGatewaySettingRequestDto.CreateGatewaySettingRequestValidator _createValidator;
+
+        private readonly GatewaySettingRequestDto.GatewaySettingRequestValidator _editValidator;
 
         public SmsGatewayValidatorTests()
         {
             var validationService = Substitute.For<ISmsGatewayValidationService>();
             validationService.ApiKeyExists("1234").Returns(true);
-            Validator = new GatewaySettingRequestDto.GatewaySettingRequestValidator(validationService);
+            _createValidator = new CreateGatewaySettingRequestDto.CreateGatewaySettingRequestValidator(validationService);
+            _editValidator = new GatewaySettingRequestDto.GatewaySettingRequestValidator();
         }
 
         [Fact]
-        public void Create_WhenApiExists_ShouldHaveError()
-        {
-            Validator.ShouldHaveValidationErrorFor(gs => gs.ApiKey, "1234");
-        }
+        public void Create_WhenApiExists_ShouldHaveError() => _createValidator.ShouldHaveValidationErrorFor(gs => gs.ApiKey, "1234");
 
         [Fact]
-        public void Create_WhenEmailIsNullAndIotHubDeviceNameIsNull_ShouldHaveError()
-        {
-            Validator.ShouldHaveValidationErrorFor(gs => gs.IotHubDeviceName, null as string);
-        }
+        public void Create_WhenEmailIsNullAndIotHubDeviceNameIsNull_ShouldHaveError() => _createValidator.ShouldHaveValidationErrorFor(gs => gs.IotHubDeviceName, null as string);
 
         [Fact]
-        public void Create_WhenIotHubDeviceNameIsSetAndEmailIsNull_ShouldNotHaveError()
-        {
-            Validator.ShouldNotHaveValidationErrorFor(gs => gs.IotHubDeviceName, "iothub");
-        }
+        public void Create_WhenIotHubDeviceNameIsSetAndEmailIsNull_ShouldNotHaveError() => _createValidator.ShouldNotHaveValidationErrorFor(gs => gs.IotHubDeviceName, "iothub");
 
         [Fact]
-        public void Create_WhenIotHubDeviceNameIsNullAndEmailIsSet_ShouldNotHaveError()
-        {
-            Validator.ShouldNotHaveValidationErrorFor(gs => gs.EmailAddress, "test@example.com");
-        }
+        public void Create_WhenIotHubDeviceNameIsNullAndEmailIsSet_ShouldNotHaveError() => _createValidator.ShouldNotHaveValidationErrorFor(gs => gs.EmailAddress, "test@example.com");
+
+        [Fact]
+        public void Edit_WhenApiExists_ShouldNotHaveError() => _editValidator.ShouldNotHaveValidationErrorFor(gs => gs.ApiKey, "1234");
+
+        [Fact]
+        public void Edit_WhenEmailIsNullAndIotHubDeviceNameIsNull_ShouldHaveError() => _editValidator.ShouldHaveValidationErrorFor(gs => gs.IotHubDeviceName, null as string);
+
+        [Fact]
+        public void Edit_WhenIotHubDeviceNameIsSetAndEmailIsNull_ShouldNotHaveError() => _editValidator.ShouldNotHaveValidationErrorFor(gs => gs.IotHubDeviceName, "iothub");
+
+        [Fact]
+        public void Edit_WhenIotHubDeviceNameIsNullAndEmailIsSet_ShouldNotHaveError() => _editValidator.ShouldNotHaveValidationErrorFor(gs => gs.EmailAddress, "test@example.com");
     }
 }

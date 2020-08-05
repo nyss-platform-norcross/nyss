@@ -8,8 +8,8 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 {
     public class CreateNationalSocietyValidatorTester
     {
-        private CreateNationalSocietyRequestDto.Validator CreateValidator { get; }
-        private EditNationalSocietyRequestDto.Validator EditValidator { get; }
+        private CreateNationalSocietyRequestDto.Validator CreateValidator { get; set; }
+        private EditNationalSocietyRequestDto.Validator EditValidator { get; set; }
 
         public CreateNationalSocietyValidatorTester()
         {
