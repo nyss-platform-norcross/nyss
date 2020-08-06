@@ -5,7 +5,7 @@ using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.SmsGateways.Dto
 {
-    public class CreateGatewaySettingRequestDto : GatewaySettingRequestDto
+    public class CreateGatewaySettingRequestDto : EditGatewaySettingRequestDto
     {
         public class CreateGatewaySettingRequestValidator : AbstractValidator<CreateGatewaySettingRequestDto>
         {

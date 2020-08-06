@@ -58,7 +58,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// <returns></returns>
         [HttpPost("{smsGatewayId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.SmsGatewayAccess)]
-        public Task<Result> Edit(int smsGatewayId, [FromBody] GatewaySettingRequestDto editRequestDto) =>
+        public Task<Result> Edit(int smsGatewayId, [FromBody] EditGatewaySettingRequestDto editRequestDto) =>
             _smsGatewayService.Edit(smsGatewayId, editRequestDto);
 
         /// <summary>

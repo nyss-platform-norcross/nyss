@@ -10,6 +10,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
         public string Name { get; set; }
         public int CountryId { get; set; }
         public int ContentLanguageId { get; set; }
+        public int Id { get; set; }
 
         public class Validator : AbstractValidator<EditNationalSocietyRequestDto>
         {
@@ -17,7 +18,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
             {
                 RuleFor(r => r.Name).NotEmpty().MinimumLength(3);
                 RuleFor(r => r.Name)
-                    .MustAsync(async (model, name, t) => !await nationalSocietyValidationService.NameExists(name))
+                    .MustAsync(async (model, name, t) => !await nationalSocietyValidationService.NameExistsToOther(name, model.Id))
                     .WithMessageKey(ResultKey.NationalSociety.Creation.NameAlreadyExists);
                 RuleFor(r => r.ContentLanguageId).GreaterThan(0);
                 RuleFor(r => r.ContentLanguageId)
@@ -29,5 +30,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
                     .WithMessageKey(ResultKey.NationalSociety.Creation.CountryNotFound);
             }
         }
+
     }
 }

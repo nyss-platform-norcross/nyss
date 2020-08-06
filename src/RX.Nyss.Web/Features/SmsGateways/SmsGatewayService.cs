@@ -19,8 +19,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
     {
         Task<Result<GatewaySettingResponseDto>> Get(int smsGatewayId);
         Task<Result<List<GatewaySettingResponseDto>>> List(int nationalSocietyId);
-        Task<Result<int>> Create(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto);
-        Task<Result> Edit(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto);
+        Task<Result<int>> Create(int nationalSocietyId, EditGatewaySettingRequestDto editGatewaySettingRequestDto);
+        Task<Result> Edit(int smsGatewayId, EditGatewaySettingRequestDto editGatewaySettingRequestDto);
         Task<Result> Delete(int smsGatewayId);
         Task UpdateAuthorizedApiKeys();
         Task<Result> GetIotHubConnectionString(int smsGatewayId);
@@ -89,7 +89,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
             return result;
         }
 
-        public async Task<Result<int>> Create(int nationalSocietyId, GatewaySettingRequestDto gatewaySettingRequestDto)
+        public async Task<Result<int>> Create(int nationalSocietyId, EditGatewaySettingRequestDto editGatewaySettingRequestDto)
         {
             try
             {
@@ -100,12 +100,12 @@ namespace RX.Nyss.Web.Features.SmsGateways
 
                 var gatewaySettingToAdd = new GatewaySetting
                 {
-                    Name = gatewaySettingRequestDto.Name,
-                    ApiKey = gatewaySettingRequestDto.ApiKey,
-                    GatewayType = gatewaySettingRequestDto.GatewayType,
-                    EmailAddress = gatewaySettingRequestDto.EmailAddress,
+                    Name = editGatewaySettingRequestDto.Name,
+                    ApiKey = editGatewaySettingRequestDto.ApiKey,
+                    GatewayType = editGatewaySettingRequestDto.GatewayType,
+                    EmailAddress = editGatewaySettingRequestDto.EmailAddress,
                     NationalSocietyId = nationalSocietyId,
-                    IotHubDeviceName = gatewaySettingRequestDto.IotHubDeviceName
+                    IotHubDeviceName = editGatewaySettingRequestDto.IotHubDeviceName
                 };
 
                 await _nyssContext.GatewaySettings.AddAsync(gatewaySettingToAdd);
@@ -122,7 +122,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
             }
         }
 
-        public async Task<Result> Edit(int smsGatewayId, GatewaySettingRequestDto gatewaySettingRequestDto)
+        public async Task<Result> Edit(int smsGatewayId, EditGatewaySettingRequestDto editGatewaySettingRequestDto)
         {
             try
             {
@@ -135,11 +135,11 @@ namespace RX.Nyss.Web.Features.SmsGateways
                     return Error(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
                 }
 
-                gatewaySettingToUpdate.Name = gatewaySettingRequestDto.Name;
-                gatewaySettingToUpdate.ApiKey = gatewaySettingRequestDto.ApiKey;
-                gatewaySettingToUpdate.GatewayType = gatewaySettingRequestDto.GatewayType;
-                gatewaySettingToUpdate.EmailAddress = gatewaySettingRequestDto.EmailAddress;
-                gatewaySettingToUpdate.IotHubDeviceName = gatewaySettingRequestDto.IotHubDeviceName;
+                gatewaySettingToUpdate.Name = editGatewaySettingRequestDto.Name;
+                gatewaySettingToUpdate.ApiKey = editGatewaySettingRequestDto.ApiKey;
+                gatewaySettingToUpdate.GatewayType = editGatewaySettingRequestDto.GatewayType;
+                gatewaySettingToUpdate.EmailAddress = editGatewaySettingRequestDto.EmailAddress;
+                gatewaySettingToUpdate.IotHubDeviceName = editGatewaySettingRequestDto.IotHubDeviceName;
 
                 await _nyssContext.SaveChangesAsync();
                 await UpdateAuthorizedApiKeys();

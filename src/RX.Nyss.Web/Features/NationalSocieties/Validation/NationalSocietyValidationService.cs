@@ -1,9 +1,6 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Concepts;
-using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Services.Authorization;
 
 namespace RX.Nyss.Web.Features.NationalSocieties.Validation
@@ -13,6 +10,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Validation
         Task<bool> NameExists(string name);
         Task<bool> LanguageExists(int languageId);
         Task<bool> CountryExists(int countryId);
+        Task<bool> NameExistsToOther(string name, int currentNationalSocietyId);
     }
 
     public class NationalSocietyValidationService : INationalSocietyValidationService
@@ -28,8 +26,11 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Validation
             _authorizationService = authorizationService;
         }
 
-        public async Task<bool> NameExists(string name) => 
+        public async Task<bool> NameExists(string name) =>
             await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Name.ToLower() == name.ToLower());
+
+        public async Task<bool> NameExistsToOther(string name, int currentNationalSocietyId) =>
+            await _nyssContext.NationalSocieties.AnyAsync(ns => ns.Name.ToLower() == name.ToLower() && ns.Id != currentNationalSocietyId);
 
         public async Task<bool> LanguageExists(int languageId) =>
             await _nyssContext.ContentLanguages.AnyAsync(cl => cl.Id == languageId);

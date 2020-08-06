@@ -10,14 +10,15 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
     {
         private readonly CreateGatewaySettingRequestDto.CreateGatewaySettingRequestValidator _createValidator;
 
-        private readonly GatewaySettingRequestDto.GatewaySettingRequestValidator _editValidator;
+        private readonly EditGatewaySettingRequestDto.GatewaySettingRequestValidator _editValidator;
 
         public SmsGatewayValidatorTests()
         {
             var validationService = Substitute.For<ISmsGatewayValidationService>();
             validationService.ApiKeyExists("1234").Returns(true);
+            validationService.ApiKeyExistsToOther(1, "1234").Returns(true);
             _createValidator = new CreateGatewaySettingRequestDto.CreateGatewaySettingRequestValidator(validationService);
-            _editValidator = new GatewaySettingRequestDto.GatewaySettingRequestValidator();
+            _editValidator = new EditGatewaySettingRequestDto.GatewaySettingRequestValidator(validationService);
         }
 
         [Fact]
@@ -33,7 +34,16 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
         public void Create_WhenIotHubDeviceNameIsNullAndEmailIsSet_ShouldNotHaveError() => _createValidator.ShouldNotHaveValidationErrorFor(gs => gs.EmailAddress, "test@example.com");
 
         [Fact]
-        public void Edit_WhenApiExists_ShouldNotHaveError() => _editValidator.ShouldNotHaveValidationErrorFor(gs => gs.ApiKey, "1234");
+        public void Edit_WhenApiExistsToOther_ShouldHaveError()
+        {
+            var result = _editValidator.TestValidate(new EditGatewaySettingRequestDto
+            {
+                Id = 1,
+                ApiKey = "1234"
+            });
+
+            result.ShouldHaveValidationErrorFor(gs => gs.ApiKey);
+        }
 
         [Fact]
         public void Edit_WhenEmailIsNullAndIotHubDeviceNameIsNull_ShouldHaveError() => _editValidator.ShouldHaveValidationErrorFor(gs => gs.IotHubDeviceName, null as string);

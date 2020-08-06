@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                 RuleFor(dc => dc.Name).NotEmpty().MaximumLength(100);
                 RuleFor(dc => dc.PhoneNumber).NotEmpty().MaximumLength(20);
                 RuleFor(dc => dc.PhoneNumber)
-                    .MustAsync(async (model, phoneNumber, t) => !await dataCollectorValidationService.PhoneNumberExists(phoneNumber))
+                    .MustAsync(async (model, phoneNumber, t) => !await dataCollectorValidationService.PhoneNumberExistsToOther(model.Id, phoneNumber))
                     .WithMessageKey(ResultKey.DataCollector.PhoneNumberAlreadyExists);
                 RuleFor(dc => dc.AdditionalPhoneNumber).MaximumLength(20);
                 RuleFor(dc => dc.Latitude).InclusiveBetween(-90, 90);

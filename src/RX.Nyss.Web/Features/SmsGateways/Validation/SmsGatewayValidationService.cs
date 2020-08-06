@@ -2,15 +2,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
-using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.SmsGateways.Validation
 {
     public interface ISmsGatewayValidationService
     {
-        Task<bool> NationalSocietyExists(int nationalSocietyId);
-        Task<bool> GatewayExists(int smsGatewayId);
         Task<bool> ApiKeyExists(string apiKey);
+        Task<bool> ApiKeyExistsToOther(int currentGatewayId, string apiKey);
     }
 
     public class SmsGatewayValidationService : ISmsGatewayValidationService
@@ -32,5 +30,8 @@ namespace RX.Nyss.Web.Features.SmsGateways.Validation
 
         public async Task<bool> ApiKeyExists(string apiKey) =>
             await _nyssContext.GatewaySettings.AnyAsync(gs => gs.ApiKey == apiKey);
+
+        public async Task<bool> ApiKeyExistsToOther(int currentGatewayId, string apiKey) =>
+            await _nyssContext.GatewaySettings.AnyAsync(gs => gs.ApiKey == apiKey && gs.Id != currentGatewayId);
     }
 }

@@ -166,7 +166,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
 
-            var gatewaySettingRequestDto = new GatewaySettingRequestDto
+            var gatewaySettingRequestDto = new EditGatewaySettingRequestDto
             {
                 Name = "New SMS Gateway",
                 ApiKey = "new-api-key",
@@ -207,7 +207,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
-            var gatewaySettingRequestDto = new GatewaySettingRequestDto
+            var gatewaySettingRequestDto = new EditGatewaySettingRequestDto
             {
                 Name = "New SMS Gateway",
                 ApiKey = "new-api-key",
@@ -259,7 +259,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
 
-            var gatewaySettingRequestDto = new GatewaySettingRequestDto
+            var gatewaySettingRequestDto = new EditGatewaySettingRequestDto
             {
                 Name = "New SMS Gateway",
                 ApiKey = "new-api-key",
@@ -319,7 +319,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
             _nyssContextMock.GatewaySettings.FindAsync(smsGatewayId).Returns(gatewaySettings[0]);
 
-            var gatewaySettingRequestDto = new GatewaySettingRequestDto
+            var gatewaySettingRequestDto = new EditGatewaySettingRequestDto
             {
                 Name = "Updated SMS Gateway",
                 ApiKey = "updated-api-key",
@@ -371,7 +371,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
             _nyssContextMock.GatewaySettings.FindAsync(nonExistentSmsGatewayId).ReturnsNull();
 
-            var gatewaySettingRequestDto = new GatewaySettingRequestDto
+            var gatewaySettingRequestDto = new EditGatewaySettingRequestDto
             {
                 Name = "Updated SMS Gateway",
                 ApiKey = "updated-api-key",
@@ -423,7 +423,7 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
             _nyssContextMock.GatewaySettings.FindAsync(smsGatewayId).Returns(gatewaySettings[0]);
 
-            var gatewaySettingRequestDto = new GatewaySettingRequestDto
+            var gatewaySettingRequestDto = new EditGatewaySettingRequestDto
             {
                 Name = "Updated SMS Gateway",
                 ApiKey = "updated-api-key",

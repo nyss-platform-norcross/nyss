@@ -7,6 +7,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
     public interface IDataCollectorValidationService
     {
         Task<bool> PhoneNumberExists(string phoneNumber);
+        Task<bool> PhoneNumberExistsToOther(int currentDataCollectorId, string phoneNumber);
     }
 
     public class DataCollectorValidationService : IDataCollectorValidationService
@@ -20,5 +21,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
 
         public async Task<bool> PhoneNumberExists(string phoneNumber) => 
             await _nyssContext.DataCollectors.AnyAsync(dc => dc.PhoneNumber == phoneNumber);
+
+        public async Task<bool> PhoneNumberExistsToOther(int currentDataCollectorId, string phoneNumber) =>
+            await _nyssContext.DataCollectors.AnyAsync(dc => dc.PhoneNumber == phoneNumber && dc.Id != currentDataCollectorId);
     }
 }
