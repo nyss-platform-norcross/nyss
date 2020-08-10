@@ -27,16 +27,16 @@ namespace RX.Nyss.Web.Features.Authentication
     {
         private readonly INyssContext _nyssContext;
         private readonly IUserIdentityService _userIdentityService;
-        private readonly IOrganizationService _organizationService;
+        private readonly INationalSocietyService _nationalSocietyService;
 
         public AuthenticationService(
             IUserIdentityService userIdentityService,
             INyssContext nyssContext,
-            IOrganizationService organizationService)
+            INationalSocietyService organizationService)
         {
             _userIdentityService = userIdentityService;
             _nyssContext = nyssContext;
-            _organizationService = organizationService;
+            _nationalSocietyService = organizationService;
         }
 
         public async Task<Result> Login(LoginRequestDto dto)
@@ -78,10 +78,10 @@ namespace RX.Nyss.Web.Features.Authentication
             {
                 return Error<StatusResponseDto>(ResultKey.User.Common.UserNotFound);
             }
-            
-            var hasPendingNationalSocietyConsents = await GetHasPendingNationalSocietyConsents(userEntity);
 
+            var (pendingAgreements, staleAgreements) = await _nationalSocietyService.GetNationalSocietiesByAgreementsStatus(userEntity);
             var homePageData = await GetHomePageData(userEntity);
+
             return Success(new StatusResponseDto
             {
                 IsAuthenticated = user.Identity.IsAuthenticated,
@@ -93,21 +93,14 @@ namespace RX.Nyss.Web.Features.Authentication
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),
-                        HasPendingNationalSocietyConsents = hasPendingNationalSocietyConsents,
+                        HasPendingAgreements = pendingAgreements.Any(),
+                        HasUpdatedAgreements = staleAgreements.Any(),
                         HomePage = user.Identity.IsAuthenticated
                             ? homePageData
                             : null
                     }
                     : null
             });
-        }
-
-        private async Task<bool> GetHasPendingNationalSocietyConsents(User userEntity)
-        {
-            var pendingOnes = await _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(userEntity)
-                .ToListAsync();
-
-            return pendingOnes.Any();
         }
 
         private async Task<StatusResponseDto.HomePageDto> GetHomePageData(User userEntity) =>

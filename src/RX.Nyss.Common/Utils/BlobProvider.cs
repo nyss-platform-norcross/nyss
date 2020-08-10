@@ -35,7 +35,7 @@ namespace RX.Nyss.Common.Utils
             {
                 return null;
             }
-
+            
             var sasToken = blob.GetSharedAccessSignature(new SharedAccessBlobPolicy
             {
                 Permissions = SharedAccessBlobPermissions.Read,
@@ -44,6 +44,19 @@ namespace RX.Nyss.Common.Utils
 
             var blobUrl = $"{blob.Uri}{sasToken}";
             return blobUrl;
+        }
+
+        public async Task<BlobProperties> GetBlobProperties(string blobName)
+        {
+            var blob = GetBlobReference(blobName);
+            if (!blob.Exists())
+            {
+                return null;
+            }
+
+            await blob.FetchAttributesAsync();
+
+            return blob.Properties;
         }
 
         public async Task CopyBlob(string sourceUri, string to)

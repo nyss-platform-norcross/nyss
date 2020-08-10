@@ -35,6 +35,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity);
         Task<Result> Reopen(int nationalSocietyId);
         Task<Result> ConsentToNationalSocietyAgreement(string languageCode);
+        Task<(List<NationalSociety> pendingSocieties, List<NationalSociety> staleSocieties)> GetNationalSocietiesByAgreementsStatus(User userEntity);
     }
 
     public class NationalSocietyService : INationalSocietyService
@@ -212,14 +213,14 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 return Error<PendingConsentDto>(ResultKey.User.Common.UserNotFound);
             }
 
-            var pendingSocieties = await _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(userEntity)
+            var (pending, stale) = await GetNationalSocietiesByAgreementsStatus(userEntity);
+
+            var pendingSocieties = pending.Union(stale)
                 .Select(ns => new PendingNationalSocietyConsentDto
                 {
                     NationalSocietyName = ns.Name,
-                    NationalSocietyCountryName = ns.Country.Name,
                     NationalSocietyId = ns.Id
-                })
-                .ToListAsync();
+                }).ToList();
 
             if (!pendingSocieties.Any())
             {
@@ -241,6 +242,22 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             };
 
             return Success(pendingSociety);
+        }
+        
+        public async Task<(List<NationalSociety> pendingSocieties, List<NationalSociety> staleSocieties)> GetNationalSocietiesByAgreementsStatus(User userEntity)
+        {
+            var agreementLastUpdatedTimeStamp = await _generalBlobProvider.GetPlatformAgreementLastModifiedDate();
+            var applicableNationalSocieties = _nyssContext.NationalSocieties.Where(x =>
+                (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id)) ||
+                (_authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor) && x.DefaultOrganization.HeadManager == userEntity) || x.DefaultOrganization.PendingHeadManager == userEntity);
+
+            var activeAgreements = _nyssContext.NationalSocietyConsents.Where(nsc => !nsc.ConsentedUntil.HasValue && nsc.UserEmailAddress == userEntity.EmailAddress);
+            var staleAgreements = activeAgreements.Where(nsc => nsc.ConsentedFrom < agreementLastUpdatedTimeStamp);
+
+            var pendingNationalSocieties = await applicableNationalSocieties.Where(ns => activeAgreements.All(aa => aa.NationalSocietyId != ns.Id)).ToListAsync();
+            var staleNationalSocieties = await applicableNationalSocieties.Where(ns => staleAgreements.Any(sa => sa.NationalSocietyId == ns.Id)).ToListAsync();
+
+            return (pendingNationalSocieties, staleNationalSocieties);
         }
 
         public async Task<IEnumerable<HealthRiskDto>> GetHealthRiskNames(int nationalSocietyId, bool excludeActivity) =>
@@ -339,8 +356,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 return Error(ResultKey.User.Common.UserNotFound);
             }
 
-            var pendingSocieties = await _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(user)
-                .Include(x => x.DefaultOrganization).ToListAsync();
+            var (pendingSocieties, _) = await GetNationalSocietiesByAgreementsStatus(user);
             var utcNow = DateTime.UtcNow;
 
             var consentDocumentFileName = Guid.NewGuid() + ".pdf";
@@ -351,8 +367,12 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             {
                 if (user.Role == Role.Manager || user.Role == Role.TechnicalAdvisor)
                 {
-                    nationalSociety.DefaultOrganization.PendingHeadManager = null;
-                    nationalSociety.DefaultOrganization.HeadManager = user;
+                    var ns = await _nyssContext.NationalSocieties
+                        .Include(society => society.DefaultOrganization)
+                        .Where(society => society.Id == nationalSociety.Id).FirstOrDefaultAsync();
+
+                    ns.DefaultOrganization.PendingHeadManager = null;
+                    ns.DefaultOrganization.HeadManager = user;
                 }
 
                 await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent

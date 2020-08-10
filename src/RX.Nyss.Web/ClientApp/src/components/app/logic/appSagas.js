@@ -26,7 +26,7 @@ function* initApplication() {
     yield call(getStrings, user ? user.languageCode : "en");
     yield put(actions.initApplication.success());
 
-    if (user && user.hasPendingNationalSocietyConsents){
+    if (user && (user.hasPendingAgreements || user.hasUpdatedAgreements)){
       yield put(actions.goToNationalSocietyConsents())
     }
 

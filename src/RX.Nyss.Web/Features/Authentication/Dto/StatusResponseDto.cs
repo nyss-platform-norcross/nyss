@@ -21,6 +21,8 @@
             public bool HasPendingNationalSocietyConsents { get; set; }
 
             public HomePageDto HomePage { get; set; }
+
+            public bool HasUpdatedAgreements { get; set; }
         }
 
         public class HomePageDto
