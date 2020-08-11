@@ -41,6 +41,9 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
   const getSelectedIds = useCallback(() =>
     list.filter(i => i.isSelected).map(i => i.id), [list]);
 
+  const getSelectedDataCollectors = useCallback(() =>
+    list.filter(i => i.isSelected).map(i => ({ name: i.name, id: i.id })), [list]);
+
   const multipleSelectionMenu = useMemo(() =>
     [
       {
@@ -55,10 +58,10 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
       },
       {
         title: strings(stringKeys.dataCollector.list.replaceSupervisor),
-        action: () => replaceSupervisor(getSelectedIds(), ),
+        action: () => replaceSupervisor(getSelectedDataCollectors()),
         roles: accessMap.dataCollectors.replaceSupervisor
       }
-    ], [getSelectedIds, setTrainingState, replaceSupervisor]);
+    ], [getSelectedIds, getSelectedDataCollectors, setTrainingState, replaceSupervisor]);
 
   const handleSelect = (e, id, value) => {
     e.stopPropagation();

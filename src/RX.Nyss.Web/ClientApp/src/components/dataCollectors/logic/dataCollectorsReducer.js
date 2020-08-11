@@ -125,7 +125,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, replacingSupervisor: true };
 
     case actions.REPLACE_SUPERVISOR.SUCCESS:
-      return { ...state, replacingSupervisor: false, listStale: true };
+      return { ...state, replacingSupervisor: false };
 
     case actions.REPLACE_SUPERVISOR.FAILURE:
       return { ...state, replacingSupervisor: false, formError: action.error };

@@ -188,6 +188,7 @@ export const initialState = {
     mapOverviewDetailsFetching: false,
     settingTrainingState: {},
     replacingSupervisor: false,
+    isReplacingSupervisor: false,
     performanceListData: [],
     performanceListFetching: false,
     performanceListFilters: null,

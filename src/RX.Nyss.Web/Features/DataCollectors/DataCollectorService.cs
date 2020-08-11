@@ -18,6 +18,7 @@ using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
@@ -52,19 +53,28 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private readonly IGeolocationService _geolocationService;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IEmailToSMSService _emailToSMSService;
+        private readonly ISmsPublisherService _smsPublisherService;
+        private readonly ISmsTextGeneratorService _smsTextGeneratorService;
 
         public DataCollectorService(
             INyssContext nyssContext,
             INationalSocietyStructureService nationalSocietyStructureService,
             IGeolocationService geolocationService,
             IDateTimeProvider dateTimeProvider,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IEmailToSMSService emailToSMSService,
+            ISmsPublisherService smsPublisherService,
+            ISmsTextGeneratorService smsTextGeneratorService)
         {
             _nyssContext = nyssContext;
             _nationalSocietyStructureService = nationalSocietyStructureService;
             _geolocationService = geolocationService;
             _dateTimeProvider = dateTimeProvider;
             _authorizationService = authorizationService;
+            _emailToSMSService = emailToSMSService;
+            _smsPublisherService = smsPublisherService;
+            _smsTextGeneratorService = smsTextGeneratorService;
         }
 
         public async Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId)
@@ -679,25 +689,48 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto)
         {
-            try
-            {
-                var dataCollectors = await _nyssContext.DataCollectors
-                    .Where(dc => replaceSupervisorRequestDto.DataCollectorIds.Contains(dc.Id))
-                    .ToListAsync();
-                var supervisor = await _nyssContext.Users.FirstOrDefaultAsync(u => u.Id == replaceSupervisorRequestDto.SupervisorId);
-
-                foreach (var dc in dataCollectors)
+            var dataCollectors = await _nyssContext.DataCollectors
+                .Where(dc => replaceSupervisorRequestDto.DataCollectorIds.Contains(dc.Id))
+                .ToListAsync();
+            var supervisorData = await _nyssContext.Users
+                .Select(u => new
                 {
-                    dc.Supervisor = (SupervisorUser)supervisor;
-                }
+                    Supervisor = (SupervisorUser)u,
+                    NationalSociety = u.UserNationalSocieties.Select(uns => uns.NationalSociety).Single()
+                })
+                .FirstOrDefaultAsync(u => u.Supervisor.Id == replaceSupervisorRequestDto.SupervisorId);
+            var gatewaySetting = await _nyssContext.GatewaySettings
+                .Include(gs => gs.NationalSociety)
+                .ThenInclude(ns => ns.ContentLanguage)
+                .FirstOrDefaultAsync(gs => gs.NationalSociety == supervisorData.NationalSociety);
 
-                await _nyssContext.SaveChangesAsync();
-
-                return Success();
-            }
-            catch (Exception e)
+            foreach (var dc in dataCollectors)
             {
-                return Error(e.Message);
+                dc.Supervisor = supervisorData.Supervisor;
+            }
+
+            await _nyssContext.SaveChangesAsync();
+
+            await SendReplaceSupervisorSms(gatewaySetting, dataCollectors, supervisorData.Supervisor);
+
+            return Success();
+        }
+
+        private async Task SendReplaceSupervisorSms(GatewaySetting gatewaySetting, List<DataCollector> dataCollectors, SupervisorUser newSupervisor)
+        {
+            var phoneNumbers = dataCollectors.Select(dc => dc.PhoneNumber).ToList();
+            var message = await _smsTextGeneratorService.GenerateReplaceSupervisorSms(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode);
+
+            message = message.Replace("{{supervisorName}}", newSupervisor.Name);
+            message = message.Replace("{{phoneNumber}}", newSupervisor.PhoneNumber);
+
+            if (string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
+            {
+                await _emailToSMSService.SendMessage(gatewaySetting, phoneNumbers, message);
+            }
+            else
+            {
+                await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, phoneNumbers, message);
             }
         }
 
