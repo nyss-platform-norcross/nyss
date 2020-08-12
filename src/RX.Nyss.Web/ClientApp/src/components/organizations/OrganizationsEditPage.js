@@ -51,7 +51,8 @@ const OrganizationsEditPageComponent = (props) => {
     const values = form.getValues();
     props.edit(props.nationalSocietyId, {
       id: values.id,
-      name: values.name
+      name: values.name,
+      nationalSocietyId: parseInt(props.nationalSocietyId)
     });
   };
 

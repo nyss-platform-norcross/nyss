@@ -8,6 +8,8 @@ namespace RX.Nyss.Web.Features.Organizations.Dto
     public class OrganizationRequestDto
     {
         public string Name { get; set; }
+        public int NationalSocietyId { get; set; }
+        public int? Id { get; set; }
 
         public class OrganizationValidator : AbstractValidator<OrganizationRequestDto>
         {
@@ -15,7 +17,7 @@ namespace RX.Nyss.Web.Features.Organizations.Dto
             {
                 RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
                 RuleFor(x => x.Name)
-                    .MustAsync(async (model, name, t) => !await organizationValidationService.NameExists(name))
+                    .MustAsync(async (model, name, t) => !await organizationValidationService.NameExists(model.NationalSocietyId, model.Id, name))
                     .WithMessageKey(ResultKey.Organization.NameAlreadyExists);
             }
         }

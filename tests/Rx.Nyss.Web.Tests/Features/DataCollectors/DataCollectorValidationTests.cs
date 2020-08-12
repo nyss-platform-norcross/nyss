@@ -16,6 +16,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         {
             var validationService = Substitute.For<IDataCollectorValidationService>();
             validationService.PhoneNumberExists("+4712345678").Returns(true);
+            validationService.PhoneNumberExistsToOther(1, "+4712345678").Returns(true);
+            validationService.PhoneNumberExistsToOther(2, "+4712345678").Returns(false);
             CreateValidator = new CreateDataCollectorRequestDto.Validator(validationService);
             EditValidator = new EditDataCollectorRequestDto.Validator(validationService);
         }
@@ -30,6 +32,30 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public void Create_WhenNameDoesntExists_ShouldNotHaveError()
         {
             CreateValidator.ShouldNotHaveValidationErrorFor(dc => dc.PhoneNumber, "+4712345679");
+        }
+
+        [Fact]
+        public void Edit_WhenNameExistsForOtherDataCollector_ShouldHaveError()
+        {
+            var result = EditValidator.TestValidate(new EditDataCollectorRequestDto
+            {
+                Id = 1,
+                PhoneNumber = "+4712345678"
+            });
+
+            result.ShouldHaveValidationErrorFor(x => x.PhoneNumber);
+        }
+
+        [Fact]
+        public void Edit_WhenNameDoesntExists_ShouldNotHaveError()
+        {
+            var result = EditValidator.TestValidate(new EditDataCollectorRequestDto
+            {
+                Id = 2,
+                PhoneNumber = "+4712345678"
+            });
+
+            result.ShouldNotHaveValidationErrorFor(x => x.PhoneNumber);
         }
     }
 }

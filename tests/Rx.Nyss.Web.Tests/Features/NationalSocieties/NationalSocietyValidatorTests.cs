@@ -17,6 +17,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             validationService.CountryExists(1).Returns(false);
             validationService.LanguageExists(1).Returns(false);
             validationService.NameExists("Test").Returns(true);
+            validationService.NameExistsToOther("Test", 1).Returns(true);
             CreateValidator = new CreateNationalSocietyRequestDto.Validator(validationService);
             EditValidator = new EditNationalSocietyRequestDto.Validator(validationService);
         }
@@ -54,7 +55,13 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
         [Fact]
         public void Edit_WhenNameExist_ShouldHaveError()
         {
-            EditValidator.ShouldHaveValidationErrorFor(ns => ns.Name, "Test");
+            var result = EditValidator.TestValidate(new EditNationalSocietyRequestDto
+            {
+                Name = "Test",
+                Id = 1
+            });
+
+            result.ShouldHaveValidationErrorFor(x => x.Name);
         }
     }
 }

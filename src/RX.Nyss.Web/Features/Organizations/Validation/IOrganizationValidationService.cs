@@ -10,28 +10,21 @@ namespace RX.Nyss.Web.Features.Organizations.Validation
 {
     public interface IOrganizationValidationService
     {
-        Task<bool> NameExists(string name);
+        Task<bool> NameExists(int nationalSocietyId, int? organizationId, string name);
     }
 
     public class OrganizationValidationService : IOrganizationValidationService
     {
         private readonly INyssContext _nyssContext;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OrganizationValidationService(INyssContext nyssContext, IHttpContextAccessor httpContextAccessor)
+        public OrganizationValidationService(INyssContext nyssContext)
         {
             _nyssContext = nyssContext;
-            _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<bool> NameExists(string name)
-        {
-            var nationalSocietyId = _httpContextAccessor.GetResourceParameter("nationalSocietyId") ?? await _nyssContext.Organizations
-                .Where(o => o.Id == _httpContextAccessor.GetResourceParameter("organizationId"))
-                .Select(o => o.NationalSocietyId)
-                .FirstOrDefaultAsync();
-
-            return await _nyssContext.Organizations.AnyAsync(o => o.NationalSocietyId == nationalSocietyId && o.Name == name);
-        }
+        public async Task<bool> NameExists(int nationalSocietyId, int? organizationId, string name) =>
+            await _nyssContext.Organizations.AnyAsync(o => o.NationalSocietyId == nationalSocietyId && (organizationId.HasValue
+                ? o.Id != organizationId && o.Name == name
+                : o.Name == name));
     }
 }

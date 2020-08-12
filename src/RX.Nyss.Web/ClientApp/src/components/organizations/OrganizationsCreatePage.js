@@ -42,7 +42,8 @@ const OrganizationsCreatePageComponent = (props) => {
 
     const values = form.getValues();
     props.create(props.nationalSocietyId, {
-      name: values.name
+      name: values.name,
+      nationalSocietyId: parseInt(props.nationalSocietyId)
     });
   };
 
