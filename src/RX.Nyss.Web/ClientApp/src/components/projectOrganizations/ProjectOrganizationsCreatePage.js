@@ -41,7 +41,8 @@ const ProjectOrganizationsCreatePageComponent = (props) => {
 
     const values = form.getValues();
     props.create(props.projectId, {
-      organizationId: parseInt(values.organizationId)
+      organizationId: parseInt(values.organizationId),
+      projectId: parseInt(props.projectId)
     });
   };
 

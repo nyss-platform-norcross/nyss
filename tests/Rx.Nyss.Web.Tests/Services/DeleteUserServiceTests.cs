@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using NSubstitute;
+﻿using NSubstitute;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Services;
+using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
 
@@ -11,14 +11,14 @@ namespace RX.Nyss.Web.Tests.Services
     public class DeleteUserServiceTests
     {
         private readonly IDeleteUserService _deleteUserService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INyssContext _nyssContext;
+        private readonly IAuthorizationService _authorizationService;
 
         public DeleteUserServiceTests()
         {
-            _httpContextAccessor = Substitute.For<IHttpContextAccessor>();
+            _authorizationService = Substitute.For<IAuthorizationService>();
             _nyssContext = Substitute.For<INyssContext>();
-            _deleteUserService = new DeleteUserService(_httpContextAccessor, _nyssContext);
+            _deleteUserService = new DeleteUserService(_nyssContext, _authorizationService);
         }
 
         [Theory]
