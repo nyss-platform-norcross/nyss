@@ -160,8 +160,8 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
                 Name = "Test national society 1",
                 Organizations = new List<Organization>
                 {
-                    new Organization{ Name = "Org 1 in NS 1"},
-                    new Organization{ Name = "Org 2 in NS 1"},
+                    new Organization { Name = "Org 1 in NS 1" },
+                    new Organization { Name = "Org 2 in NS 1" }
                 }
             };
             var nationalSociety2 = new NationalSociety
@@ -170,8 +170,8 @@ namespace RX.Nyss.Web.Tests.Features.DataConsumers
                 Name = "Test national society 2",
                 Organizations = new List<Organization>
                 {
-                    new Organization{ Name = "Org 1 in NS 2"},
-                    new Organization{ Name = "Org 2 in NS 2"},
+                    new Organization { Name = "Org 1 in NS 2" },
+                    new Organization { Name = "Org 2 in NS 2" }
                 }
             };
             var nationalSocieties = new List<NationalSociety>

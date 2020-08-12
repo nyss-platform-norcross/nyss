@@ -11,7 +11,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication;
 using RX.Nyss.Web.Features.Authentication.Dto;
-using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
 using Shouldly;

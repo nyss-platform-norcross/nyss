@@ -33,7 +33,7 @@ export function projectOrganizationsReducer(state = initialState.projectOrganiza
       return { ...state, formSaving: false, listStale: true };
 
     case actions.CREATE_PROJECT_ORGANIZATION.FAILURE:
-      return { ...state, formSaving: false, formError: action.message };
+      return { ...state, formSaving: false, formError: action.error };
 
     case actions.REMOVE_PROJECT_ORGANIZATION.REQUEST:
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, true) };

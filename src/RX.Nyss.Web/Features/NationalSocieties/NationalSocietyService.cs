@@ -128,11 +128,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         public async Task<Result> Create(CreateNationalSocietyRequestDto dto)
         {
-            if (_nyssContext.NationalSocieties.Any(ns => ns.Name.ToLower() == dto.Name.ToLower()))
-            {
-                return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
-            }
-
             var nationalSociety = new NationalSociety
             {
                 Name = dto.Name,
@@ -141,16 +136,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 IsArchived = false,
                 StartDate = DateTime.UtcNow
             };
-
-            if (nationalSociety.ContentLanguage == null)
-            {
-                return Error<int>(ResultKey.NationalSociety.Creation.LanguageNotFound);
-            }
-
-            if (nationalSociety.Country == null)
-            {
-                return Error<int>(ResultKey.NationalSociety.Creation.CountryNotFound);
-            }
 
             await _nyssContext.AddAsync(nationalSociety);
             await _nyssContext.SaveChangesAsync();
@@ -169,11 +154,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         public async Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto dto)
         {
-            if (_nyssContext.NationalSocieties.Any(ns => ns.Id != nationalSocietyId && ns.Name.ToLower() == dto.Name.ToLower()))
-            {
-                return Error<int>(ResultKey.NationalSociety.Creation.NameAlreadyExists);
-            }
-
             var currentUser = _authorizationService.GetCurrentUser();
 
             var nationalSocietyData = await _nyssContext.NationalSocieties

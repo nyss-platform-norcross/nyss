@@ -47,7 +47,7 @@ function* createProjectOrganization({ projectId, data }) {
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage(stringKeys.projectOrganization.create.success));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 

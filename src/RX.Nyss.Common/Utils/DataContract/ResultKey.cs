@@ -78,6 +78,7 @@ namespace RX.Nyss.Common.Utils.DataContract
         public static class Organization
         {
             public const string NoAccessToChangeOrganization = "organization.notAccessToChangeOrganization";
+            public const string NameAlreadyExists = "organization.nameAlreadyExists";
         }
 
         public static class Login

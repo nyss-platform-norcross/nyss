@@ -43,23 +43,23 @@ namespace RX.Nyss.Web.Features.SmsGateways
         /// Creates a new SMS Gateway for a specified national society.
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
-        /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
+        /// <param name="createRequestDto">A SMS Gateway settings</param>
         /// <returns>An identifier of the created SMS Gateway setting</returns>
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<int>> Create(int nationalSocietyId, [FromBody] GatewaySettingRequestDto gatewaySettingRequestDto) =>
-            _smsGatewayService.Create(nationalSocietyId, gatewaySettingRequestDto);
+        public Task<Result<int>> Create(int nationalSocietyId, [FromBody] CreateGatewaySettingRequestDto createRequestDto) =>
+            _smsGatewayService.Create(nationalSocietyId, createRequestDto);
 
         /// <summary>
         /// Edits a specified SMS Gateway.
         /// </summary>
         /// <param name="smsGatewayId">An identifier of SMS Gateway to be updated</param>
-        /// <param name="gatewaySettingRequestDto">A SMS Gateway settings</param>
+        /// <param name="editRequestDto">A SMS Gateway settings</param>
         /// <returns></returns>
         [HttpPost("{smsGatewayId:int}/edit")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.SmsGatewayAccess)]
-        public Task<Result> Edit(int smsGatewayId, [FromBody] GatewaySettingRequestDto gatewaySettingRequestDto) =>
-            _smsGatewayService.Edit(smsGatewayId, gatewaySettingRequestDto);
+        public Task<Result> Edit(int smsGatewayId, [FromBody] EditGatewaySettingRequestDto editRequestDto) =>
+            _smsGatewayService.Edit(smsGatewayId, editRequestDto);
 
         /// <summary>
         /// Deletes a specified SMS Gateway.

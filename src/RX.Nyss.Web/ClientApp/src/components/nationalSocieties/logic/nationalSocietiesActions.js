@@ -18,14 +18,14 @@ export const create = {
   invoke: (data) => ({ type: CREATE_NATIONAL_SOCIETY.INVOKE, data }),
   request: () => ({ type: CREATE_NATIONAL_SOCIETY.REQUEST }),
   success: () => ({ type: CREATE_NATIONAL_SOCIETY.SUCCESS }),
-  failure: (message) => ({ type: CREATE_NATIONAL_SOCIETY.FAILURE, message, suppressPopup: true })
+  failure: (error) => ({ type: CREATE_NATIONAL_SOCIETY.FAILURE, error, suppressPopup: true })
 };
 
 export const edit = {
   invoke: (data) => ({ type: EDIT_NATIONAL_SOCIETY.INVOKE, data }),
   request: () => ({ type: EDIT_NATIONAL_SOCIETY.REQUEST }),
   success: () => ({ type: EDIT_NATIONAL_SOCIETY.SUCCESS }),
-  failure: (message) => ({ type: EDIT_NATIONAL_SOCIETY.FAILURE, message, suppressPopup: true })
+  failure: (error) => ({ type: EDIT_NATIONAL_SOCIETY.FAILURE, error, suppressPopup: true })
 };
 
 export const openEdition = {

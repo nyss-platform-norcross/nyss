@@ -49,7 +49,8 @@ namespace RX.Nyss.Web.Tests.Features.Managers
 
             _authorizationService = Substitute.For<IAuthorizationService>();
             _organizationService = Substitute.For<IOrganizationService>();
-            _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService, _authorizationService, _organizationService);
+            _managerService = new ManagerService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService,
+                _authorizationService, _organizationService);
 
             var nationalSocieties = new List<NationalSociety>
             {
@@ -89,7 +90,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                 new Organization
                 {
                     Id = _organizationId,
-                    Name = "test org 1",
+                    Name = "test org 1"
                 }
             };
 
@@ -112,7 +113,7 @@ namespace RX.Nyss.Web.Tests.Features.Managers
                     NationalSociety = nationalSocieties[0],
                     OrganizationId = _organizationId,
                     Organization = organizations[0]
-                },
+                }
             };
             users[1].UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[0] };
 

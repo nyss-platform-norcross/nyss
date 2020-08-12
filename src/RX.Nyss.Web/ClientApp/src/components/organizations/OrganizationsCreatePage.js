@@ -42,13 +42,14 @@ const OrganizationsCreatePageComponent = (props) => {
 
     const values = form.getValues();
     props.create(props.nationalSocietyId, {
-      name: values.name
+      name: values.name,
+      nationalSocietyId: parseInt(props.nationalSocietyId)
     });
   };
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error.message} />}
+      {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

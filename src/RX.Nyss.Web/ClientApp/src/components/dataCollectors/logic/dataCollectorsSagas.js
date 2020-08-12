@@ -112,7 +112,7 @@ function* createDataCollector({ projectId, data }) {
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage(stringKeys.dataCollector.messages.creationSuccessful));
   } catch (error) {
-    yield put(actions.create.failure(error.message));
+    yield put(actions.create.failure(error));
   }
 };
 
@@ -124,7 +124,7 @@ function* editDataCollector({ projectId, data }) {
     yield put(actions.goToList(projectId));
     yield put(appActions.showMessage(stringKeys.dataCollector.messages.editionSuccessful));
   } catch (error) {
-    yield put(actions.edit.failure(error.message));
+    yield put(actions.edit.failure(error));
   }
 };
 

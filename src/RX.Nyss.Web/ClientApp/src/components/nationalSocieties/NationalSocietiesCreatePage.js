@@ -2,7 +2,7 @@ import React, { useState, Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
-import { validators, createForm } from '../../utils/forms';
+import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import * as appActions from '../app/logic/appActions';
 import Layout from '../layout/Layout';
@@ -57,9 +57,11 @@ const NationalSocietiesCreatePageComponent = (props) => {
     });
   };
 
+  useCustomErrors(form, props.error);
+
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error} />}
+      {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

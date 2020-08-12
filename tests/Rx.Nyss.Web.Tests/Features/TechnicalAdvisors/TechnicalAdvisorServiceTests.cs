@@ -29,8 +29,8 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailServiceMock;
         private readonly IDeleteUserService _deleteUserService;
-        private IAuthorizationService _authorizationService;
-        private IOrganizationService _organizationService;
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IOrganizationService _organizationService;
 
         public TechnicalAdvisorServiceTests()
         {
@@ -47,7 +47,8 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
 
             _authorizationService = Substitute.For<IAuthorizationService>();
             _organizationService = Substitute.For<IOrganizationService>();
-            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock, _deleteUserService, _authorizationService, _organizationService);
+            _technicalAdvisorService = new TechnicalAdvisorService(_identityUserRegistrationServiceMock, _nationalSocietyUserService, _nyssContext, _loggerAdapter, _verificationEmailServiceMock,
+                _deleteUserService, _authorizationService, _organizationService);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
             {
@@ -55,9 +56,20 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
                 Email = (string)ci[0]
             });
 
-            var organizations = new List<Organization>{
-                new Organization{Id = 1, Name = "org 1", NationalSocietyId = 1},
-                new Organization{Id = 2, Name = "org 2", NationalSocietyId = 2}
+            var organizations = new List<Organization>
+            {
+                new Organization
+                {
+                    Id = 1,
+                    Name = "org 1",
+                    NationalSocietyId = 1
+                },
+                new Organization
+                {
+                    Id = 2,
+                    Name = "org 2",
+                    NationalSocietyId = 2
+                }
             };
 
             SetupTestNationalSocieties(organizations);
@@ -109,10 +121,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
 
         private void ArrangeManagerAsCurrentUser()
         {
-            var managerUser = new ManagerUser
-            {
-                Id = 5
-            };
+            var managerUser = new ManagerUser { Id = 5 };
 
             _authorizationService.GetCurrentUser().Returns(managerUser);
 
@@ -209,7 +218,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             {
                 Id = 1,
                 Name = "Test national society 1",
-                Organizations = new List<Organization>{ organizations[0]},
+                Organizations = new List<Organization> { organizations[0] },
                 DefaultOrganizationId = 1,
                 DefaultOrganization = organizations[0]
             };

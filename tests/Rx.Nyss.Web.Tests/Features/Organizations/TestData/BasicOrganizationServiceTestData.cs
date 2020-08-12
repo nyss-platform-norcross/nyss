@@ -48,10 +48,24 @@ namespace RX.Nyss.Web.Tests.Features.Organizations.TestData
                     nyssContext.Countries.FindAsync(CountryId).Returns(data.Countries[0]);
                 };
             });
+
+        public BasicOrganizationServiceTestData(INyssContext nyssContext, EntityNumerator nationalSocietyNumerator)
+        {
+            _nationalSocietyNumerator = nationalSocietyNumerator;
+            _testCaseDataProvider = new TestCaseDataProvider(nyssContext);
+        }
+
         public TestCaseData WhenNoConsentsAndRole(Role role) =>
             _testCaseDataProvider.GetOrCreate(nameof(WhenNoConsentsAndRole), data =>
             {
-                data.Users = new List<User> { new ManagerUser { EmailAddress = "yo", Role = role } };
+                data.Users = new List<User>
+                {
+                    new ManagerUser
+                    {
+                        EmailAddress = "yo",
+                        Role = role
+                    }
+                };
 
                 data.NationalSocieties = new List<NationalSociety>
                 {
@@ -60,15 +74,12 @@ namespace RX.Nyss.Web.Tests.Features.Organizations.TestData
                         Id = _nationalSocietyNumerator.Next,
                         Name = ExistingNationalSocietyName,
                         DefaultOrganization = data.Organizations[0],
-                        NationalSocietyUsers = new List<UserNationalSociety>
-                        {
-                            new UserNationalSociety{ User = data.Users[0] }
-                        }
+                        NationalSocietyUsers = new List<UserNationalSociety> { new UserNationalSociety { User = data.Users[0] } }
                     }
                 };
                 data.ContentLanguages = new List<ContentLanguage> { new ContentLanguage { Id = ContentLanguageId } };
                 data.Countries = new List<Country> { new Country { Id = CountryId } };
-                
+
                 data.NyssContextMockedMethods = nyssContext =>
                 {
                     nyssContext.NationalSocieties.FindAsync(NationalSocietyId).Returns(data.NationalSocieties[0]);
@@ -76,11 +87,5 @@ namespace RX.Nyss.Web.Tests.Features.Organizations.TestData
                     nyssContext.Countries.FindAsync(CountryId).Returns(data.Countries[0]);
                 };
             });
-
-        public BasicOrganizationServiceTestData(INyssContext nyssContext, EntityNumerator nationalSocietyNumerator)
-        {
-            _nationalSocietyNumerator = nationalSocietyNumerator;
-            _testCaseDataProvider = new TestCaseDataProvider(nyssContext);
-        }
     }
 }
