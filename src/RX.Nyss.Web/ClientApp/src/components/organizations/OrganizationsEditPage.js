@@ -61,7 +61,7 @@ const OrganizationsEditPageComponent = (props) => {
 
   return (
     <Fragment>
-      {props.error && <ValidationMessage message={props.error.message} />}
+      {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
         <Grid container spacing={3}>

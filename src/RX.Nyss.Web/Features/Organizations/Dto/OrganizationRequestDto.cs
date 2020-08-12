@@ -1,4 +1,7 @@
 ﻿using FluentValidation;
+using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.Web.Features.Organizations.Validation;
+using RX.Nyss.Web.Utils.Extensions;
 
 namespace RX.Nyss.Web.Features.Organizations.Dto
 {
@@ -8,9 +11,12 @@ namespace RX.Nyss.Web.Features.Organizations.Dto
 
         public class OrganizationValidator : AbstractValidator<OrganizationRequestDto>
         {
-            public OrganizationValidator()
+            public OrganizationValidator(IOrganizationValidationService organizationValidationService)
             {
                 RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
+                RuleFor(x => x.Name)
+                    .MustAsync(async (model, name, t) => !await organizationValidationService.NameExists(name))
+                    .WithMessageKey(ResultKey.Organization.NameAlreadyExists);
             }
         }
     }
