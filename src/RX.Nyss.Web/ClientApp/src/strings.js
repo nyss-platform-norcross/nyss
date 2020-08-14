@@ -932,6 +932,7 @@ export const stringKeys = {
     nationalSocieties: "headManagerConsents.nationalSocieties",
     agreeToContinue: "headManagerConsents.agreeToContinue",
     submit: "headManagerConsents.submit",
+    postpone: "headManagerConsents.postpone",
     iConsent: "headManagerConsents.iConsent",
     setAsHeadManager: "headManagerConsents.setAsHeadManager",
     pendingHeadManager: "headManagerConsents.pendingHeadManager",

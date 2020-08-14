@@ -14,7 +14,7 @@ import { useMount } from '../../utils/lifecycle';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardMedia from '@material-ui/core/CardMedia';
-import { MenuItem, Grid, FormControl, InputLabel, Select, Snackbar } from '@material-ui/core';
+import { MenuItem, Grid, FormControl, InputLabel, Select, Snackbar, Button } from '@material-ui/core';
 
 const NationalSocietyConsentsPageComponent = (props) => {
   const [hasConsented, setHasConsented] = useState(false);
@@ -49,12 +49,23 @@ const NationalSocietyConsentsPageComponent = (props) => {
             <Grid item xs={12}>
               <Typography variant="h2">{strings(stringKeys.nationalSocietyConsents.title)}</Typography>
 
-              <Typography variant="h6" gutterBottom>
-                {props.nationalSocieties.length > 1 ?
-                  strings(stringKeys.nationalSocietyConsents.nationalSocieties) :
-                  strings(stringKeys.nationalSocietyConsents.nationalSociety)
-                }: {props.nationalSocieties.map(ns => ns.nationalSocietyName).join(", ")}
-              </Typography>
+              {(props.pendingSocieties.length > 0 &&
+                <Typography variant="h6" gutterBottom>
+                  {props.pendingSocieties.length > 1 ?
+                    strings(stringKeys.nationalSocietyConsents.nationalSocieties) :
+                    strings(stringKeys.nationalSocietyConsents.nationalSociety)
+                  }: {props.pendingSocieties.map(ns => ns.nationalSocietyName).join(", ")}
+                </Typography>
+              )}
+
+              {(props.staleSocieties.length > 0 &&
+                <Typography variant="h6" gutterBottom>
+                  {props.staleSocieties.length > 1 ?
+                    strings(stringKeys.nationalSocietyConsents.nationalSocieties) :
+                    strings(stringKeys.nationalSocietyConsents.nationalSociety)
+                  }: {props.staleSocieties.map(ns => ns.nationalSocietyName).join(", ")}
+                </Typography>
+              )}
 
               <Typography variant="body1" >
                 {strings(stringKeys.nationalSocietyConsents.consentText)}
@@ -87,7 +98,7 @@ const NationalSocietyConsentsPageComponent = (props) => {
               (<Grid item xs>
                 <a target="_blank" rel="noopener noreferrer" href={selectedDocumentUrl}>{strings(stringKeys.nationalSocietyConsents.downloadDirectly)}</a>
               </Grid>
-            )}
+              )}
             <Grid item>
               <FormControlLabel
                 control={
@@ -103,6 +114,10 @@ const NationalSocietyConsentsPageComponent = (props) => {
                 label={strings(stringKeys.nationalSocietyConsents.iConsent)}
               />
               <SubmitButton onClick={handleSubmit} isFetching={props.submitting}>{strings(stringKeys.nationalSocietyConsents.submit)}</SubmitButton>
+
+              {(props.staleSocieties.length > 0 && props.pendingSocieties.length === 0 &&
+                <Button style={{marginLeft: "15px"}} href="/">{strings(stringKeys.nationalSocietyConsents.postpone)}</Button>
+              )}
             </Grid>
           </Grid>
         </div>
@@ -124,7 +139,8 @@ NationalSocietyConsentsPageComponent.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  nationalSocieties: state.nationalSocietyConsents.nationalSocieties,
+  pendingSocieties: state.nationalSocietyConsents.pendingSocieties,
+  staleSocieties: state.nationalSocietyConsents.staleSocieties,
   agreementDocuments: state.nationalSocietyConsents.agreementDocuments,
   submitting: state.nationalSocietyConsents.submitting
 });

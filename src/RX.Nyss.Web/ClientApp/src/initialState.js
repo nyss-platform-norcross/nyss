@@ -198,7 +198,8 @@ export const initialState = {
     filters: null
   },
   nationalSocietyConsents: {
-    nationalSocieties: [],
+    pendingSocieties: [],
+    staleSocieties: [],
     agreementDocuments: []
   },
   reports: {

@@ -24,9 +24,14 @@ function* initApplication() {
     const user = yield select(state => state.appData.user);
     yield call(getAppData);
     yield call(getStrings, user ? user.languageCode : "en");
+
+    if (user && user.hasPendingAgreements){
+      yield put(actions.goToNationalSocietyConsents())
+    }
+
     yield put(actions.initApplication.success());
 
-    if (user && (user.hasPendingAgreements || user.hasUpdatedAgreements)){
+    if (user && user.hasUpdatedAgreements){
       yield put(actions.goToNationalSocietyConsents())
     }
 
@@ -99,7 +104,6 @@ function* getAppData() {
   try {
     const appData = yield call(http.get, "/api/appData/getAppData", true);
     yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries, appData.value.isDevelopment, appData.value.isDemo, appData.value.authCookieExpiration));
-    return appData.value;
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }

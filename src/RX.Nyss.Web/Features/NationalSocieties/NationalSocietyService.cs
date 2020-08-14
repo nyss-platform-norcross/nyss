@@ -215,14 +215,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
             var (pending, stale) = await GetNationalSocietiesByAgreementsStatus(userEntity);
 
-            var pendingSocieties = pending.Union(stale)
-                .Select(ns => new PendingNationalSocietyConsentDto
-                {
-                    NationalSocietyName = ns.Name,
-                    NationalSocietyId = ns.Id
-                }).ToList();
-
-            if (!pendingSocieties.Any())
+            if (!pending.Union(stale).Any())
             {
                 return Error<PendingConsentDto>(ResultKey.Consent.NoPendingConsent);
             }
@@ -238,18 +231,28 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             var pendingSociety = new PendingConsentDto
             {
                 AgreementDocuments = docs,
-                NationalSocieties = pendingSocieties
+                PendingSocieties = pending.Select(ns => new PendingNationalSocietyConsentDto
+                {
+                    NationalSocietyName = ns.Name,
+                    NationalSocietyId = ns.Id
+                }).ToList(),
+                StaleSocieties = stale.Select(ns => new PendingNationalSocietyConsentDto
+                {
+                    NationalSocietyName = ns.Name,
+                    NationalSocietyId = ns.Id
+                }).ToList()
             };
 
             return Success(pendingSociety);
         }
-        
+
         public async Task<(List<NationalSociety> pendingSocieties, List<NationalSociety> staleSocieties)> GetNationalSocietiesByAgreementsStatus(User userEntity)
         {
             var agreementLastUpdatedTimeStamp = await _generalBlobProvider.GetPlatformAgreementLastModifiedDate();
             var applicableNationalSocieties = _nyssContext.NationalSocieties.Where(x =>
-                (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id)) ||
-                (_authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor) && x.DefaultOrganization.HeadManager == userEntity) || x.DefaultOrganization.PendingHeadManager == userEntity);
+                _authorizationService.IsCurrentUserInRole(Role.Coordinator) && x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id) ||
+                _authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor) && x.DefaultOrganization.HeadManager == userEntity ||
+                x.DefaultOrganization.PendingHeadManager == userEntity);
 
             var activeAgreements = _nyssContext.NationalSocietyConsents.Where(nsc => !nsc.ConsentedUntil.HasValue && nsc.UserEmailAddress == userEntity.EmailAddress);
             var staleAgreements = activeAgreements.Where(nsc => nsc.ConsentedFrom < agreementLastUpdatedTimeStamp);
@@ -356,12 +359,28 @@ namespace RX.Nyss.Web.Features.NationalSocieties
                 return Error(ResultKey.User.Common.UserNotFound);
             }
 
-            var (pendingSocieties, _) = await GetNationalSocietiesByAgreementsStatus(user);
+            var (pendingSocieties, staleSocieties) = await GetNationalSocietiesByAgreementsStatus(user);
             var utcNow = DateTime.UtcNow;
 
             var consentDocumentFileName = Guid.NewGuid() + ".pdf";
             var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
             await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
+
+            foreach (var staleSociety in staleSocieties)
+            {
+                var existingConsent = await _nyssContext.NationalSocietyConsents
+                    .Where(consent => consent.NationalSocietyId == staleSociety.Id && consent.UserEmailAddress == user.EmailAddress && !consent.ConsentedUntil.HasValue).SingleAsync();
+                existingConsent.ConsentedUntil = utcNow;
+
+                await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent
+                {
+                    ConsentedFrom = utcNow,
+                    NationalSocietyId = staleSociety.Id,
+                    UserEmailAddress = user.EmailAddress,
+                    UserPhoneNumber = user.PhoneNumber,
+                    ConsentDocument = consentDocumentFileName
+                });
+            }
 
             foreach (var nationalSociety in pendingSocieties)
             {

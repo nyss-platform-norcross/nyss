@@ -8,7 +8,7 @@ export function nationalSocietyConsentsReducer(state = initialState.nationalSoci
       return { ...state, fetching: true, nationalSocieties: [], agreementDocuments: [] };
 
     case actions.OPEN_HEAD_MANAGER_CONSENTS_PAGE.SUCCESS:
-      return { ...state, fetching: false, nationalSocieties: action.pendingHeadManagerConsent.nationalSocieties, agreementDocuments: action.pendingHeadManagerConsent.agreementDocuments };
+      return { ...state, fetching: false, pendingSocieties: action.pendingHeadManagerConsent.pendingSocieties, staleSocieties: action.pendingHeadManagerConsent.staleSocieties,agreementDocuments: action.pendingHeadManagerConsent.agreementDocuments };
 
     case actions.OPEN_HEAD_MANAGER_CONSENTS_PAGE.FAILURE:
       return { ...state, fetching: false };

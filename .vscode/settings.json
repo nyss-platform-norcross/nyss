@@ -19,5 +19,8 @@
     "**/dist": true,
     "**/node_modules": true
   },
-  "eslint.workingDirectories": ["./src/RX.Nyss.Web/ClientApp/src"]
+  "eslint.workingDirectories": [
+    "./src/RX.Nyss.Web/ClientApp/src"
+  ],
+  "eslint.enable": true
 }
