@@ -14,8 +14,14 @@ namespace RX.Nyss.Web.Features.Resources
     public interface IResourcesService
     {
         Task<Result<string>> SaveString(SaveStringRequestDto dto);
+        Task<Result<string>> SaveEmailString(SaveStringRequestDto dto);
+        Task<Result<string>> SaveSmsString(SaveStringRequestDto dto);
         Task<Result<GetStringResponseDto>> GetString(string key);
-        Task<Result<ListTranslationsResponseDto>> ListTranslations();
+        Task<Result<GetStringResponseDto>> GetEmailString(string key);
+        Task<Result<GetStringResponseDto>> GetSmsString(string key);
+        Task<Result<ListTranslationsResponseDto>> ListStringsTranslations();
+        Task<Result<ListTranslationsResponseDto>> ListEmailTranslations();
+        Task<Result<ListTranslationsResponseDto>> ListSmsTranslations();
     }
 
     public class ResourcesService : IResourcesService
@@ -41,7 +47,73 @@ namespace RX.Nyss.Web.Features.Resources
                 return Error<GetStringResponseDto>(ResultKey.UnexpectedError);
             }
 
-            var stringsBlob = await GetStringsBlob(key);
+            var stringsBlob = await _stringsResourcesService.GetStringsBlob();
+            var entry = stringsBlob.Strings.FirstOrDefault(x => x.Key == key);
+
+            var contentLanguages = await _nyssContext.ContentLanguages.ToListAsync();
+
+            var dto = new GetStringResponseDto
+            {
+                Key = key,
+                Translations = contentLanguages.Select(cl =>
+                {
+                    var languageCode = cl.LanguageCode.ToLower();
+
+                    return new GetStringResponseDto.GetEntryDto
+                    {
+                        LanguageCode = languageCode,
+                        Name = cl.DisplayName,
+                        Value = entry?.Translations?.ContainsKey(languageCode) == true
+                            ? entry.Translations[languageCode]
+                            : ""
+                    };
+                }).ToList()
+            };
+
+            return Success(dto);
+        }
+
+        public async Task<Result<GetStringResponseDto>> GetEmailString(string key)
+        {
+            if (_config.IsProduction)
+            {
+                return Error<GetStringResponseDto>(ResultKey.UnexpectedError);
+            }
+
+            var stringsBlob = await _stringsResourcesService.GetEmailContentBlob();
+            var entry = stringsBlob.Strings.FirstOrDefault(x => x.Key == key);
+
+            var contentLanguages = await _nyssContext.ContentLanguages.ToListAsync();
+
+            var dto = new GetStringResponseDto
+            {
+                Key = key,
+                Translations = contentLanguages.Select(cl =>
+                {
+                    var languageCode = cl.LanguageCode.ToLower();
+
+                    return new GetStringResponseDto.GetEntryDto
+                    {
+                        LanguageCode = languageCode,
+                        Name = cl.DisplayName,
+                        Value = entry?.Translations?.ContainsKey(languageCode) == true
+                            ? entry.Translations[languageCode]
+                            : ""
+                    };
+                }).ToList()
+            };
+
+            return Success(dto);
+        }
+
+        public async Task<Result<GetStringResponseDto>> GetSmsString(string key)
+        {
+            if (_config.IsProduction)
+            {
+                return Error<GetStringResponseDto>(ResultKey.UnexpectedError);
+            }
+
+            var stringsBlob = await _stringsResourcesService.GetSmsContentBlob();
             var entry = stringsBlob.Strings.FirstOrDefault(x => x.Key == key);
 
             var contentLanguages = await _nyssContext.ContentLanguages.ToListAsync();
@@ -74,7 +146,7 @@ namespace RX.Nyss.Web.Features.Resources
                 return Error<string>(ResultKey.UnexpectedError);
             }
 
-            var stringsBlob = await GetStringsBlob(dto.Key);
+            var stringsBlob = await _stringsResourcesService.GetStringsBlob();
             var strings = stringsBlob.Strings.ToList();
             var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
 
@@ -92,12 +164,72 @@ namespace RX.Nyss.Web.Features.Resources
                 }
             }
 
-            await SaveStringsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) }, dto.Key);
+            await _stringsResourcesService.SaveStringsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
 
             return Success("Success");
         }
 
-        public async Task<Result<ListTranslationsResponseDto>> ListTranslations()
+        public async Task<Result<string>> SaveEmailString(SaveStringRequestDto dto)
+        {
+            if (_config.IsProduction)
+            {
+                return Error<string>(ResultKey.UnexpectedError);
+            }
+
+            var stringsBlob = await _stringsResourcesService.GetEmailContentBlob();
+            var strings = stringsBlob.Strings.ToList();
+            var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
+
+            foreach (var dtoTranslation in dto.Translations)
+            {
+                var languageCode = dtoTranslation.LanguageCode.ToLower();
+
+                if (entry.Translations.ContainsKey(languageCode))
+                {
+                    entry.Translations[languageCode] = dtoTranslation.Value;
+                }
+                else
+                {
+                    entry.Translations.Add(languageCode, dtoTranslation.Value);
+                }
+            }
+
+            await _stringsResourcesService.SaveEmailContentsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
+
+            return Success("Success");
+        }
+
+        public async Task<Result<string>> SaveSmsString(SaveStringRequestDto dto)
+        {
+            if (_config.IsProduction)
+            {
+                return Error<string>(ResultKey.UnexpectedError);
+            }
+
+            var stringsBlob = await _stringsResourcesService.GetSmsContentBlob();
+            var strings = stringsBlob.Strings.ToList();
+            var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
+
+            foreach (var dtoTranslation in dto.Translations)
+            {
+                var languageCode = dtoTranslation.LanguageCode.ToLower();
+
+                if (entry.Translations.ContainsKey(languageCode))
+                {
+                    entry.Translations[languageCode] = dtoTranslation.Value;
+                }
+                else
+                {
+                    entry.Translations.Add(languageCode, dtoTranslation.Value);
+                }
+            }
+
+            await _stringsResourcesService.SaveSmsContentsBlob(new StringsBlob { Strings = strings.OrderBy(x => x.Key) });
+
+            return Success("Success");
+        }
+
+        public async Task<Result<ListTranslationsResponseDto>> ListStringsTranslations()
         {
             if (_config.IsProduction)
             {
@@ -105,12 +237,7 @@ namespace RX.Nyss.Web.Features.Resources
             }
 
             var stringsBlob = await _stringsResourcesService.GetStringsBlob();
-            var emailContentBlob = await _stringsResourcesService.GetEmailContentBlob();
-            var smsContentBlob = await _stringsResourcesService.GetSmsContentBlob();
-            var translations = stringsBlob.Strings
-                .Union(emailContentBlob.Strings)
-                .Union(smsContentBlob.Strings)
-                .ToList();
+            var translations = stringsBlob.Strings.ToList();
 
             var languages = await _nyssContext.ContentLanguages
                 .Select(cl => new ListTranslationsResponseDto.LanguageResponseDto
@@ -135,40 +262,70 @@ namespace RX.Nyss.Web.Features.Resources
             return Success(dto);
         }
 
-        private async Task<StringsBlob> GetStringsBlob(string key)
+        public async Task<Result<ListTranslationsResponseDto>> ListEmailTranslations()
         {
-            var blobIdentifier = key.Split(".")[0];
+            if (_config.IsProduction)
+            {
+                return Error<ListTranslationsResponseDto>(ResultKey.UnexpectedError);
+            }
 
-            if (blobIdentifier == "email")
+            var stringsBlob = await _stringsResourcesService.GetEmailContentBlob();
+            var translations = stringsBlob.Strings.ToList();
+
+            var languages = await _nyssContext.ContentLanguages
+                .Select(cl => new ListTranslationsResponseDto.LanguageResponseDto
+                {
+                    DisplayName = cl.DisplayName,
+                    LanguageCode = cl.LanguageCode
+                })
+                .ToListAsync();
+
+            var dto = new ListTranslationsResponseDto
             {
-                return await _stringsResourcesService.GetEmailContentBlob();
-            }
-            else if (blobIdentifier == "sms")
-            {
-                return await _stringsResourcesService.GetSmsContentBlob();
-            }
-            else
-            {
-                return await _stringsResourcesService.GetStringsBlob();
-            }
+                Languages = languages,
+                Translations = translations
+                    .Select(t => new ListTranslationsResponseDto.TranslationsResponseDto
+                    {
+                        Key = t.Key,
+                        Translations = t.Translations
+                    })
+                    .ToList()
+            };
+
+            return Success(dto);
         }
 
-        private async Task SaveStringsBlob(StringsBlob stringsBlob, string key)
+        public async Task<Result<ListTranslationsResponseDto>> ListSmsTranslations()
         {
-            var blobIdentifier = key.Split(".")[0];
+            if (_config.IsProduction)
+            {
+                return Error<ListTranslationsResponseDto>(ResultKey.UnexpectedError);
+            }
 
-            if (blobIdentifier == "email")
+            var stringsBlob = await _stringsResourcesService.GetSmsContentBlob();
+            var translations = stringsBlob.Strings.ToList();
+
+            var languages = await _nyssContext.ContentLanguages
+                .Select(cl => new ListTranslationsResponseDto.LanguageResponseDto
+                {
+                    DisplayName = cl.DisplayName,
+                    LanguageCode = cl.LanguageCode
+                })
+                .ToListAsync();
+
+            var dto = new ListTranslationsResponseDto
             {
-                await _stringsResourcesService.SaveEmailContentsBlob(stringsBlob);
-            }
-            else if (blobIdentifier == "sms")
-            {
-                await _stringsResourcesService.SaveSmsContentsBlob(stringsBlob);
-            }
-            else
-            {
-                await _stringsResourcesService.SaveStringsBlob(stringsBlob);
-            }
+                Languages = languages,
+                Translations = translations
+                    .Select(t => new ListTranslationsResponseDto.TranslationsResponseDto
+                    {
+                        Key = t.Key,
+                        Translations = t.Translations
+                    })
+                    .ToList()
+            };
+
+            return Success(dto);
         }
 
         private static StringsBlob.Entry CreateEntry(ICollection<StringsBlob.Entry> strings, string key)

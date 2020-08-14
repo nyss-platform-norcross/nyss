@@ -39,13 +39,63 @@ namespace RX.Nyss.Web.Features.Resources
             return result;
         }
 
+        [HttpPost("saveEmailString"), AllowAnonymous]
+        public async Task<Result> SaveEmailString([FromBody] SaveStringRequestDto dto)
+        {
+            var result = await _resourcesService.SaveEmailString(dto);
+
+            if (result.IsSuccess)
+            {
+                foreach (var translation in dto.Translations)
+                {
+                    _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
+                }
+            }
+
+            return result;
+        }
+
+        [HttpPost("saveSmsString"), AllowAnonymous]
+        public async Task<Result> SaveSmsString([FromBody] SaveStringRequestDto dto)
+        {
+            var result = await _resourcesService.SaveSmsString(dto);
+
+            if (result.IsSuccess)
+            {
+                foreach (var translation in dto.Translations)
+                {
+                    _inMemoryCache.Remove($"GetStrings.{translation.LanguageCode.ToLower()}");
+                }
+            }
+
+            return result;
+        }
+
         [HttpGet("getString/{key}"), AllowAnonymous]
         public async Task<Result<GetStringResponseDto>> GetString(string key) =>
             await _resourcesService.GetString(key);
 
-        [HttpGet("listTranslations")]
+        [HttpGet("getEmailString/{key}"), AllowAnonymous]
+        public async Task<Result<GetStringResponseDto>> GetEmailString(string key) =>
+            await _resourcesService.GetEmailString(key);
+
+        [HttpGet("getSmsString/{key}"), AllowAnonymous]
+        public async Task<Result<GetStringResponseDto>> GetSmsString(string key) =>
+            await _resourcesService.GetSmsString(key);
+
+        [HttpGet("listStringsTranslations")]
         [NeedsRole(Role.Administrator)]
-        public async Task<Result<ListTranslationsResponseDto>> ListTranslations() =>
-            await _resourcesService.ListTranslations();
+        public async Task<Result<ListTranslationsResponseDto>> ListStringsTranslations() =>
+            await _resourcesService.ListStringsTranslations();
+
+        [HttpGet("listEmailTranslations")]
+        [NeedsRole(Role.Administrator)]
+        public async Task<Result<ListTranslationsResponseDto>> ListEmailTranslations() =>
+            await _resourcesService.ListEmailTranslations();
+
+        [HttpGet("listSmsTranslations")]
+        [NeedsRole(Role.Administrator)]
+        public async Task<Result<ListTranslationsResponseDto>> ListSmsTranslations() =>
+            await _resourcesService.ListSmsTranslations();
     }
 }
