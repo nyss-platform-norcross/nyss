@@ -13,8 +13,9 @@ import { updateStrings } from '../../../strings';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
+import TextInputWithCharacterCountField from '../../forms/TextInputWithCharacterCountField';
 
-export const StringsEditorDialog = ({ stringKey, close }) => {
+export const SmsStringsEditorDialog = ({ stringKey, close }) => {
   const [form, setForm] = useState(null);
   const [languageCodes, setLanguageCodes] = useState([]);
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
   const currentLanguageCode = "en";
 
   useMount(() => {
-    get(`/api/resources/getString/${encodeURI(stringKey)}`)
+    get(`/api/resources/getSmsString/${encodeURI(stringKey)}`)
       .then(response => {
         const translations = response.value.translations;
 
@@ -57,7 +58,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
       }))
     };
 
-    post('/api/resources/saveString', dto)
+    post('/api/resources/saveSmsString', dto)
       .then(() => {
         updateStrings({
           [values.key]: values[`value_${currentLanguageCode}`]
@@ -98,7 +99,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
 
               {languageCodes.map((lang, index) => (
                 <Grid item xs={12} key={`lang_${lang.languageCode}`}>
-                  <TextInputField
+                  <TextInputWithCharacterCountField
                     autoFocus={index === 0}
                     label={lang.name}
                     name={`value_${lang.languageCode}`}

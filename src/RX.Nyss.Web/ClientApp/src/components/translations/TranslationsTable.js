@@ -11,7 +11,7 @@ import { TableContainer } from '../common/table/TableContainer';
 import { StringsEditor } from '../common/stringsEditor/StringsEditor';
 import { TableSortLabel } from '@material-ui/core';
 
-export const TranslationsTable = ({ isListFetching, languages, translations }) => {
+export const TranslationsTable = ({ isListFetching, languages, translations, type }) => {
   const [sorting, setSorting] = useState({ orderBy: "key" });
 
   if (isListFetching) {
@@ -67,7 +67,7 @@ export const TranslationsTable = ({ isListFetching, languages, translations }) =
           {sortedTranslations().map(translation => (
             <TableRow key={translation.key}>
               <TableCell>
-                <StringsEditor stringKey={translation.key} />
+                <StringsEditor stringKey={translation.key} type={type} />
               </TableCell>
               {languages.map(language => (
                 <TableCell key={`translation_${translation.key}_${language.languageCode}`}>
@@ -85,7 +85,8 @@ export const TranslationsTable = ({ isListFetching, languages, translations }) =
 TranslationsTable.propTypes = {
   isFetching: PropTypes.bool,
   languages: PropTypes.array,
-  translation: PropTypes.array
+  translation: PropTypes.array,
+  type: PropTypes.string
 };
 
 export default TranslationsTable;

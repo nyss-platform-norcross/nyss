@@ -60,6 +60,8 @@ import { ProjectOrganizationsCreatePage } from '../projectOrganizations/ProjectO
 import { ProjectAlertRecipientsListPage } from '../projectAlertRecipients/ProjectAlertRecipientsListPage';
 import { ProjectAlertRecipientsCreatePage } from '../projectAlertRecipients/ProjectAlertRecipientsCreatePage';
 import { ProjectAlertRecipientsEditPage } from '../projectAlertRecipients/ProjectAlertRecipientsEditPage';
+import { EmailTranslationsListPage } from '../translations/EmailTranslationsListPage';
+import { SmsTranslationsListPage } from '../translations/SmsTranslationsListPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -137,6 +139,8 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/alerts/:alertId/logs' component={AlertsLogsPage} roles={accessMap.alerts.assess} />
 
           <AuthRoute exact path='/translations' component={TranslationsListPage} roles={accessMap.translations.list} />
+          <AuthRoute exact path='/emailTranslations' component={EmailTranslationsListPage} roles={accessMap.translations.list} />
+          <AuthRoute exact path='/smsTranslations' component={SmsTranslationsListPage} roles={accessMap.translations.list} />
 
           <Route component={NotFoundPage} />
         </Switch>

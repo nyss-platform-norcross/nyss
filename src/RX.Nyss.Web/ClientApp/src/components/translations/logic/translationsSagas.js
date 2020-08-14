@@ -7,25 +7,69 @@ import { strings, stringKeys } from "../../../strings";
 
 export const translationsSagas = () => [
   takeEvery(consts.OPEN_TRANSLATIONS_LIST.INVOKE, openTranslationsList),
+  takeEvery(consts.OPEN_EMAIL_TRANSLATIONS_LIST.INVOKE, openEmailTranslationsList),
+  takeEvery(consts.OPEN_SMS_TRANSLATIONS_LIST.INVOKE, openSmsTranslationsList)
 ];
 
 function* openTranslationsList({ path }) {
-  yield put(actions.openList.request());
+  yield put(actions.openTranslationsList.request());
   try {
     yield call(getTranslations);
     yield put(appActions.openModule.invoke(path, {title: strings(stringKeys.translations.title)}));
-    yield put(actions.openList.success());
+    yield put(actions.openTranslationsList.success());
   } catch (error) {
-    yield put(actions.openList.failure(error.message));
+    yield put(actions.openTranslationsList.failure(error.message));
   }
 };
 
 function* getTranslations() {
-  yield put(actions.getList.request());
+  yield put(actions.getTranslationsList.request());
   try {
-    const response = yield call(http.get, `/api/resources/listTranslations`);
-    yield put(actions.getList.success(response.value));
+    const response = yield call(http.get, `/api/resources/listStringsTranslations`);
+    yield put(actions.getTranslationsList.success(response.value));
   } catch (error) {
-    yield put(actions.getList.failure(error.message));
+    yield put(actions.getTranslationsList.failure(error.message));
+  }
+};
+
+function* openEmailTranslationsList({ path }) {
+  yield put(actions.openEmailTranslationsList.request());
+  try {
+    yield call(getEmailTranslations);
+    yield put(appActions.openModule.invoke(path, {title: strings(stringKeys.translations.title)}));
+    yield put(actions.openEmailTranslationsList.success());
+  } catch (error) {
+    yield put(actions.openEmailTranslationsList.failure(error.message));
+  }
+};
+
+function* getEmailTranslations() {
+  yield put(actions.getEmailTranslationsList.request());
+  try {
+    const response = yield call(http.get, `/api/resources/listEmailTranslations`);
+    yield put(actions.getEmailTranslationsList.success(response.value));
+  } catch (error) {
+    yield put(actions.getEmailTranslationsList.failure(error.message));
+  }
+};
+
+function* openSmsTranslationsList({ path }) {
+  yield put(actions.openSmsTranslationsList.request());
+  try {
+    yield call(getSmsTranslations);
+    yield put(appActions.openModule.invoke(path, {title: strings(stringKeys.translations.title)}));
+    yield put(actions.openSmsTranslationsList.success());
+  } catch (error) {
+    yield put(actions.openSmsTranslationsList.failure(error.message));
+  }
+};
+
+function* getSmsTranslations() {
+  yield put(actions.getSmsTranslationsList.request());
+  try {
+    const response = yield call(http.get, `/api/resources/listSmsTranslations`);
+    yield put(actions.getSmsTranslationsList.success(response.value));
+  } catch (error) {
+    yield put(actions.getSmsTranslationsList.failure(error.message));
   }
 };

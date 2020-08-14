@@ -7,7 +7,7 @@ import Layout from '../layout/Layout';
 import TranslationsTable from './TranslationsTable';
 import { useMount } from '../../utils/lifecycle';
 
-const TranslationsListPageComponent = (props) => {
+const SmsTranslationsListPageComponent = (props) => {
   useMount(() => {
     props.openTranslationsList(props.match.path, props.match.params);
   });
@@ -17,12 +17,12 @@ const TranslationsListPageComponent = (props) => {
       isListFetching={props.isListFetching}
       languages={props.languages}
       translations={props.translations}
-      type="strings"
+      type="sms"
     />
   );
 }
 
-TranslationsListPageComponent.propTypes = {
+SmsTranslationsListPageComponent.propTypes = {
   isFetching: PropTypes.bool,
   languages: PropTypes.array,
   translations: PropTypes.array
@@ -30,15 +30,15 @@ TranslationsListPageComponent.propTypes = {
 
 const mapStateToProps = (state) => ({
   isListFetching: state.translations.listFetching,
-  translations: state.translations.listTranslations,
-  languages: state.translations.listLanguages
+  translations: state.translations.smsTranslations,
+  languages: state.translations.smsLanguages
 });
 
 const mapDispatchToProps = {
-  openTranslationsList: translationsActions.openTranslationsList.invoke
+  openTranslationsList: translationsActions.openSmsTranslationsList.invoke
 };
 
-export const TranslationsListPage = useLayout(
+export const SmsTranslationsListPage = useLayout(
   Layout,
-  connect(mapStateToProps, mapDispatchToProps)(TranslationsListPageComponent)
+  connect(mapStateToProps, mapDispatchToProps)(SmsTranslationsListPageComponent)
 );

@@ -238,6 +238,10 @@ export const initialState = {
   translations: {
     listFetching: false,
     listLanguages: [],
-    listTranslations: []
+    listTranslations: [],
+    emailLanguages: [],
+    emailTranslations: [],
+    smsLanguages: [],
+    smsTranslations: []
   }
 };
