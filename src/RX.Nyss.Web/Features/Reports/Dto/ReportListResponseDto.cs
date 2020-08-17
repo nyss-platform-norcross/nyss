@@ -14,6 +14,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         string PhoneNumber { get; set; }
         bool IsAnonymized { get; set; }
         string OrganizationName { get; set; }
+        string SupervisorName { get; set; }
     }
 
     public class ReportListResponseDto : IReportListResponseDto
@@ -43,5 +44,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public DateTime DateTime { get; set; }
         public bool IsAnonymized { get; set; }
         public string OrganizationName { get; set; }
+        public string SupervisorName { get; set; }
     }
 }

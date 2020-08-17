@@ -118,8 +118,8 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
                 </TableCell>
                 <TableCell>
                   {row.dataCollectorDisplayName}
-                  {row.dataCollectorDisplayName ? <br /> : ""}
-                  {row.phoneNumber}
+                  {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ""}
+                  {!row.isAnonymized && row.phoneNumber}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>

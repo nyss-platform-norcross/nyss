@@ -102,6 +102,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .SingleAsync();
 
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
+            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
 
             var baseQuery = _nyssContext.RawReports
                 .FilterByProject(projectId)
@@ -116,52 +117,55 @@ namespace RX.Nyss.Web.Features.Reports
                     : r.Report == null || r.Report.MarkedAsError);
 
 
-            var currentUserOrganizationId = await _nyssContext.Projects
+            var currentUserOrganization = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
                 .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
                 .Where(uns => uns.User.Id == currentUserId)
-                .Select(uns => uns.OrganizationId)
+                .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
             var currentRole = _authorizationService.GetCurrentUser().Role;
 
             var result = baseQuery.Select(r => new ReportListResponseDto
-                {
-                    Id = r.Id,
-                    IsAnonymized = currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
-                        nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
-                    OrganizationName = r.NationalSociety.NationalSocietyUsers
+            {
+                Id = r.Id,
+                IsAnonymized = isSupervisor
+                        ? r.DataCollector.Supervisor.Id != currentUserId
+                        : currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
+                            nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id),
+                OrganizationName = r.NationalSociety.NationalSocietyUsers
                         .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
                         .Select(nsu => nsu.Organization.Name)
                         .FirstOrDefault(),
-                    DateTime = r.ReceivedAt,
-                    HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
+                DateTime = r.ReceivedAt,
+                HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
                         .Single(),
-                    IsValid = r.Report != null,
-                    Region = r.Village.District.Region.Name,
-                    District = r.Village.District.Name,
-                    Village = r.Village.Name,
-                    Zone = r.Zone.Name,
-                    DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
+                IsValid = r.Report != null,
+                Region = r.Village.District.Region.Name,
+                District = r.Village.District.Name,
+                Village = r.Village.Name,
+                Zone = r.Zone.Name,
+                DataCollectorDisplayName = r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
                         ? r.DataCollector.Name
                         : r.DataCollector.DisplayName,
-                    PhoneNumber = r.Sender,
-                    IsMarkedAsError = r.Report.MarkedAsError,
-                    UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
-                    IsInAlert = r.Report.ReportAlerts.Any(),
-                    ReportId = r.ReportId,
-                    ReportType = r.Report.ReportType,
-                    Message = r.Text,
-                    CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
-                    CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
-                    CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
-                    CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
-                    ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
-                    DeathCount = r.Report.DataCollectionPointCase.DeathCount,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
-                })
+                SupervisorName = r.DataCollector.Supervisor.Name,
+                PhoneNumber = r.Sender,
+                IsMarkedAsError = r.Report.MarkedAsError,
+                UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
+                IsInAlert = r.Report.ReportAlerts.Any(),
+                ReportId = r.ReportId,
+                ReportType = r.Report.ReportType,
+                Message = r.Text,
+                CountMalesBelowFive = r.Report.ReportedCase.CountMalesBelowFive,
+                CountMalesAtLeastFive = r.Report.ReportedCase.CountMalesAtLeastFive,
+                CountFemalesBelowFive = r.Report.ReportedCase.CountFemalesBelowFive,
+                CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
+                ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
+                DeathCount = r.Report.DataCollectionPointCase.DeathCount,
+                FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
+            })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
 
@@ -171,7 +175,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .ToListAsync<IReportListResponseDto>();
 
             await UpdateTimeZoneInReports(projectId, reports);
-            AnonymizeCrossOrganizationReports(reports);
+            AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
 
             return Success(reports.Cast<ReportListResponseDto>().AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
         }
@@ -210,12 +214,12 @@ namespace RX.Nyss.Web.Features.Reports
 
             var currentUser = _authorizationService.GetCurrentUser();
 
-            var currentUserOrganizationId = await _nyssContext
+            var currentUserOrganization = await _nyssContext
                 .Projects
                 .Where(p => p.Id == projectId)
                 .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
                 .Where(uns => uns.User.Id == currentUser.Id)
-                .Select(uns => uns.OrganizationId)
+                .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
             var reportsQuery = _nyssContext.RawReports
@@ -238,12 +242,15 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(lc => lc.Name)
                         .Single(),
                     IsValid = r.Report != null,
-                    IsAnonymized = currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
-                        nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
+                    IsAnonymized = currentRole == Role.Supervisor
+                        ? r.DataCollector.Supervisor.Id != currentUser.Id
+                        : currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
+                            nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id),
                     OrganizationName = r.NationalSociety.NationalSocietyUsers
                         .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
                         .Select(nsu => nsu.Organization.Name)
                         .FirstOrDefault(),
+                    SupervisorName = r.DataCollector.Supervisor.Name,
                     Status = GetReportStatus(r.Report != null, r.Report.MarkedAsError, stringResources),
                     MarkedAsError = r.Report.MarkedAsError,
                     Region = r.Village.District.Region.Name,
@@ -274,7 +281,7 @@ namespace RX.Nyss.Web.Features.Reports
             var reports = await reportsQuery.ToListAsync<IReportListResponseDto>();
 
             await UpdateTimeZoneInReports(projectId, reports);
-            AnonymizeCrossOrganizationReports(reports);
+            AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
 
             if (useExcelFormat)
             {
@@ -572,19 +579,21 @@ namespace RX.Nyss.Web.Features.Reports
             reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
         }
 
-        private void AnonymizeCrossOrganizationReports(IEnumerable<IReportListResponseDto> reports) =>
+        private void AnonymizeCrossOrganizationReports(IEnumerable<IReportListResponseDto> reports, string currentUserOrganizationName, IDictionary<string, string> stringsResources)
+        {
             reports
                 .Where(r => r.IsAnonymized)
                 .ToList()
                 .ForEach(x =>
                 {
-                    x.DataCollectorDisplayName = x.OrganizationName;
-                    x.PhoneNumber = x.PhoneNumber.Length > 4
-                        ? "***" + x.PhoneNumber.SubstringFromEnd(4)
-                        : "***";
+                    x.DataCollectorDisplayName = x.OrganizationName == currentUserOrganizationName
+                        ? $"{GetStringResource(stringsResources, ResultKey.Report.LinkedToSupervisor)} {x.SupervisorName}"
+                        : $"{GetStringResource(stringsResources, ResultKey.Report.LinkedToOrganization)} {x.OrganizationName}";
+                    x.PhoneNumber = "***";
                     x.Zone = "";
                     x.Village = "";
                 });
+        }
 
         private static Area MapToArea(AreaDto area) =>
             area == null

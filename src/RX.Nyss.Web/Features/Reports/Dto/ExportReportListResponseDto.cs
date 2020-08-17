@@ -18,6 +18,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public string PhoneNumber { get; set; }
         public bool IsAnonymized { get; set; }
         public string OrganizationName { get; set; }
+        public string SupervisorName { get; set; }
         public string Message { get; set; }
         public int? CountMalesBelowFive { get; set; }
         public int? CountFemalesBelowFive { get; set; }
