@@ -1,29 +1,34 @@
 import styles from './TextInputWithHTMLPreviewField.module.scss';
-import React, { Fragment } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import { createFieldComponent } from "./FieldBase";
 import TextField from '@material-ui/core/TextField';
+import { Grid } from '@material-ui/core';
 
 const TextInputWithHTMLPreview = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type }) => {
   return (
-    <Fragment>
-      <TextField
-        name={name}
-        error={!!error}
-        helperText={error}
-        label={label}
-        value={value}
-        multiline={multiline}
-        rows={rows}
-        disabled={disabled}
-        fullWidth={autoWidth ? false : true}
-        InputLabelProps={{ shrink: true }}
-        InputProps={{ ...controlProps }}
-        inputProps={{ autoFocus: autoFocus }}
-        type={type}
-      />
-      <div dangerouslySetInnerHTML={{ __html: value }} className={styles.htmlPreview} />
-    </Fragment>
+    <Grid container spacing={3}>
+      <Grid item xs={6}>
+        <TextField
+          name={name}
+          error={!!error}
+          helperText={error}
+          label={label}
+          value={value}
+          multiline={multiline}
+          rows={rows}
+          disabled={disabled}
+          fullWidth={autoWidth ? false : true}
+          InputLabelProps={{ shrink: true }}
+          InputProps={{ ...controlProps }}
+          inputProps={{ autoFocus: autoFocus }}
+          type={type}
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <div dangerouslySetInnerHTML={{ __html: value }} className={styles.htmlPreview} />
+      </Grid>
+    </Grid>
   );
 };
 
