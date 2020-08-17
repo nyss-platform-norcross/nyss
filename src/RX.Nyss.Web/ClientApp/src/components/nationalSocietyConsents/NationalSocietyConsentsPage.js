@@ -61,8 +61,8 @@ const NationalSocietyConsentsPageComponent = (props) => {
               {(props.staleSocieties.length > 0 &&
                 <Typography variant="h6" gutterBottom>
                   {props.staleSocieties.length > 1 ?
-                    strings(stringKeys.nationalSocietyConsents.nationalSocieties) :
-                    strings(stringKeys.nationalSocietyConsents.nationalSociety)
+                    strings(stringKeys.nationalSocietyConsents.nationalSocietiesWithUpdatedAgreement) :
+                    strings(stringKeys.nationalSocietyConsents.nationalSocietyWithUpdatedAgreement)
                   }: {props.staleSocieties.map(ns => ns.nationalSocietyName).join(", ")}
                 </Typography>
               )}

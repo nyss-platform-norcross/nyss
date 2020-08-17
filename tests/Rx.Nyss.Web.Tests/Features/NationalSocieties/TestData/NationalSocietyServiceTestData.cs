@@ -66,7 +66,9 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties.TestData
                 var headManagerUser = new ManagerUser
                 {
                     Id = _userNumerator.Next,
-                    Role = Role.Manager
+                    Role = Role.Manager,
+                    EmailAddress = "yo",
+                    ApplicationLanguage = new ApplicationLanguage { LanguageCode = "klingon" }
                 };
                 var userNationalSociety = new UserNationalSociety
                 {

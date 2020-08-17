@@ -11,6 +11,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Authentication;
 using RX.Nyss.Web.Features.Authentication.Dto;
+using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
 using Shouldly;
@@ -27,13 +28,13 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
         private readonly INyssContext _nyssContext;
         private readonly AuthenticationService _authenticationService;
         private readonly AdministratorUser _user;
-        private readonly IOrganizationService _organizationService;
+        private readonly INationalSocietyService _nationalSocietyService;
 
         public AuthenticationServiceTests()
         {
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
-            _organizationService = Substitute.For<IOrganizationService>();
+            _nationalSocietyService = Substitute.For<INationalSocietyService>();
 
             _user = new AdministratorUser
             {
@@ -41,7 +42,7 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
                 Name = UserName
             };
             _nyssContext.Users = new List<User> { _user }.AsQueryable().BuildMockDbSet();
-            _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext, _organizationService);
+            _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext, _nationalSocietyService);
         }
 
         [Fact]
@@ -99,9 +100,9 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
         {
             const string languageCode = "en";
             const string role = "Administrator";
-            var nationalSocietiesDbSet = new List<NationalSociety>().AsQueryable().BuildMockDbSet();
+            var nationalSocietiesDbSet = new List<NationalSociety>();
             _user.ApplicationLanguage = new ApplicationLanguage { LanguageCode = languageCode };
-            _organizationService.GetNationalSocietiesWithPendingAgreementsForUserQuery(Arg.Any<User>()).Returns(nationalSocietiesDbSet);
+            _nationalSocietyService.GetNationalSocietiesByAgreementsStatus(Arg.Any<User>()).Returns((nationalSocietiesDbSet, nationalSocietiesDbSet));
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {

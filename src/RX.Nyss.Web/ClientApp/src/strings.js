@@ -929,6 +929,8 @@ export const stringKeys = {
     title: "headManagerConsents.title",
     consentText: "headManagerConsents.consentText",
     nationalSociety: "headManagerConsents.nationalSociety",
+    nationalSocietyWithUpdatedAgreement: "headManagerConsents.nationalSocietyWithUpdatedAgreement",
+    nationalSocietiesWithUpdatedAgreement: "headManagerConsents.nationalSocietiesWithUpdatedAgreement",
     nationalSocieties: "headManagerConsents.nationalSocieties",
     agreeToContinue: "headManagerConsents.agreeToContinue",
     submit: "headManagerConsents.submit",
