@@ -32,11 +32,11 @@ namespace RX.Nyss.Web.Features.Authentication
         public AuthenticationService(
             IUserIdentityService userIdentityService,
             INyssContext nyssContext,
-            INationalSocietyService organizationService)
+            INationalSocietyService nationalSocietyService)
         {
             _userIdentityService = userIdentityService;
             _nyssContext = nyssContext;
-            _nationalSocietyService = organizationService;
+            _nationalSocietyService = nationalSocietyService;
         }
 
         public async Task<Result> Login(LoginRequestDto dto)
