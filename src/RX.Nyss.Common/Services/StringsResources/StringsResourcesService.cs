@@ -14,7 +14,11 @@ namespace RX.Nyss.Common.Services.StringsResources
         Task<Result<IDictionary<string, string>>> GetStringsResources(string languageCode);
         Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode);
         Task<StringsBlob> GetStringsBlob();
+        Task<StringsBlob> GetEmailContentBlob();
+        Task<StringsBlob> GetSmsContentBlob();
         Task SaveStringsBlob(StringsBlob blob);
+        Task SaveEmailContentsBlob(StringsBlob blob);
+        Task SaveSmsContentsBlob(StringsBlob blob);
         Task<Result<IDictionary<string, string>>> GetSmsContentResources(string languageCode);
     }
 
@@ -115,14 +119,28 @@ namespace RX.Nyss.Common.Services.StringsResources
             await _generalBlobProvider.SaveStringsResources(blobValue);
         }
 
-        private async Task<StringsBlob> GetEmailContentBlob()
+        public async Task SaveEmailContentsBlob(StringsBlob blob)
+        {
+            var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            await _generalBlobProvider.SaveEmailContentResources(blobValue);
+        }
+
+        public async Task SaveSmsContentsBlob(StringsBlob blob)
+        {
+            var blobValue = JsonSerializer.Serialize(blob, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            await _generalBlobProvider.SaveSmsContentResources(blobValue);
+        }
+
+        public async Task<StringsBlob> GetEmailContentBlob()
         {
             var blobValue = await _generalBlobProvider.GetEmailContentResources();
 
             return JsonSerializer.Deserialize<StringsBlob>(blobValue, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         }
 
-        private async Task<StringsBlob> GetSmsContentBlob()
+        public async Task<StringsBlob> GetSmsContentBlob()
         {
             var blobValue = await _generalBlobProvider.GetSmsContentResources();
 

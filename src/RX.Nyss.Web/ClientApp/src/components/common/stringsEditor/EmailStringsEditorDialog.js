@@ -6,6 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { createForm } from '../../../utils/forms';
 import TextInputField from '../../forms/TextInputField';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { post, get } from '../../../utils/http';
 import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
@@ -13,20 +14,24 @@ import { updateStrings } from '../../../strings';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
+import TextWithHTMLPreviewInputField from '../../forms/TextInputWithHTMLPreviewField';
+import { useTheme } from '@material-ui/core';
 
-export const StringsEditorDialog = ({ stringKey, close }) => {
+export const EmailStringsEditorDialog = ({ stringKey, close }) => {
   const [form, setForm] = useState(null);
   const [languageCodes, setLanguageCodes] = useState([]);
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const currentLanguageCode = "en";
 
   useMount(() => {
-    get(`/api/resources/getString/${encodeURI(stringKey)}`)
+    get(`/api/resources/getEmailString/${encodeURI(stringKey)}`)
       .then(response => {
         const translations = response.value.translations;
 
-        setLanguageCodes(translations.map(t => ({ languageCode: t.languageCode, name: t.name })));
+        setLanguageCodes(translations.map(t => ({ languageCode: t.languageCode, name: t.name, value: t.value })));
 
         const translationFields = translations.reduce((prev, current) => ({
           ...prev,
@@ -57,7 +62,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
       }))
     };
 
-    post('/api/resources/saveString', dto)
+    post('/api/resources/saveEmailString', dto)
       .then(() => {
         updateStrings({
           [values.key]: values[`value_${currentLanguageCode}`]
@@ -78,16 +83,12 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
     if (e.key === "Escape") {
       close();
     }
-
-    if (e.key === "Enter") {
-      handleSave();
-    }
   }
 
   return (
-    <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} onKeyDown={handleKeyDown}>
+    <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} onKeyDown={handleKeyDown} fullScreen={fullScreen} maxWidth="md">
       <DialogTitle id="form-dialog-title">Edit string resource</DialogTitle>
-      <DialogContent style={{ width: 500 }}>
+      <DialogContent>
         <Grid container spacing={3}>
           {!form && <Loading />}
           {form && (
@@ -98,8 +99,9 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
 
               {languageCodes.map((lang, index) => (
                 <Grid item xs={12} key={`lang_${lang.languageCode}`}>
-                  <TextInputField
+                  <TextWithHTMLPreviewInputField
                     autoFocus={index === 0}
+                    multiline
                     label={lang.name}
                     name={`value_${lang.languageCode}`}
                     field={form.fields[`value_${lang.languageCode}`]}
@@ -112,12 +114,8 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
         <br />
       </DialogContent>
       {form && <DialogActions>
-        <Button onClick={close} color="primary" variant="outlined">
-          Cancel
-      </Button>
-        <Button onClick={handleSave} color="primary" variant="outlined">
-          Save
-      </Button>
+        <Button onClick={close} color="primary" variant="outlined">Cancel</Button>
+        <Button onClick={handleSave} color="primary" variant="outlined">Save</Button>
       </DialogActions>}
     </Dialog>
   );

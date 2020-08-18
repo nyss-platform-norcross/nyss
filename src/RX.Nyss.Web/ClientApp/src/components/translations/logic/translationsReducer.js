@@ -22,7 +22,25 @@ export function translationsReducer(state = initialState.translations, action) {
       return { ...state, listFetching: false, listLanguages: action.data.languages, listTranslations: action.data.translations };
 
     case actions.GET_TRANSLATIONS.FAILURE:
-      return { ...state, listFetching: false, listData: [] };
+      return { ...state, listFetching: false };
+
+      case actions.GET_EMAIL_TRANSLATIONS.REQUEST:
+        return { ...state, listFetching: true, emailLanguages: [], emailTranslations: [] };
+  
+      case actions.GET_EMAIL_TRANSLATIONS.SUCCESS:
+        return { ...state, listFetching: false, emailLanguages: action.data.languages, emailTranslations: action.data.translations };
+  
+      case actions.GET_EMAIL_TRANSLATIONS.FAILURE:
+        return { ...state, listFetching: false };
+
+        case actions.GET_SMS_TRANSLATIONS.REQUEST:
+          return { ...state, listFetching: true, smsLanguages: [], smsTranslations: [] };
+    
+        case actions.GET_SMS_TRANSLATIONS.SUCCESS:
+          return { ...state, listFetching: false, smsLanguages: action.data.languages, smsTranslations: action.data.translations };
+    
+        case actions.GET_SMS_TRANSLATIONS.FAILURE:
+          return { ...state, listFetching: false };
 
     case appActions.STRINGS_UPDATED:
       return {

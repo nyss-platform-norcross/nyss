@@ -942,6 +942,10 @@ export const stringKeys = {
   },
   translations: {
     title: "translations.title",
+    emailTitle: "translations.emailTitle",
+    smsTitle: "translations.smsTitle",
+    smsCharacters: "translations.smsCharacters",
+    smsParts: "translations.smsParts",
     list: {
       key: "translations.list.key"
     }
@@ -960,7 +964,7 @@ export const strings = (key, noEditor) => {
   if (showKeys) {
     return noEditor
       ? key
-      : <StringsEditor stringKey={key} />;
+      : <StringsEditor stringKey={key} type="strings" />;
   }
 
   return value === undefined ? key : value;
@@ -972,7 +976,7 @@ export const stringsFormat = (key, data, noEditor) => {
   if (showKeys) {
     return noEditor
       ? key
-      : <StringsEditor stringKey={key} />;
+      : <StringsEditor stringKey={key} type="strings" />;
   }
 
   if (value === undefined) {
