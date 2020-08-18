@@ -92,5 +92,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
             File(await _dataCollectorExportService.ExportAsCsv(projectId, dataCollectorsFiltersDto), "text/csv");
+
+        [HttpPost, Route("replaceSupervisor")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]
+        public async Task<Result> ReplaceSupervisor([FromBody] ReplaceSupervisorRequestDto replaceSupervisorRequestDto) =>
+            await _dataCollectorService.ReplaceSupervisor(replaceSupervisorRequestDto);
     }
 }

@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
@@ -12,14 +12,23 @@ import { strings, stringKeys } from '../../strings';
 import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 import { accessMap } from '../../authentication/accessMap';
 import { DataCollectorsFilters } from './DataCollectorsFilters';
+import { ReplaceSupervisorDialog } from './ReplaceSupervisorDialog';
 
 const DataCollectorsListPageComponent = (props) => {
   useMount(() => {
     props.openDataCollectorsList(props.projectId, props.filters);
   });
 
+  const [replaceSupervisorDialogOpened, setReplaceSupervisorDialogOpened] = useState(false);
+  const [selectedDataCollectors, setSelectedDataCollectors] = useState([]);
+
   const handleFilterChange = (filters) =>
     props.getDataCollectorList(props.projectId, filters);
+
+  const handleReplaceSupervisor = (dataCollectors) => {
+    setSelectedDataCollectors(dataCollectors);
+    setReplaceSupervisorDialogOpened(true);
+  }
 
   return (
     <Fragment>
@@ -53,10 +62,19 @@ const DataCollectorsListPageComponent = (props) => {
         remove={props.remove}
         projectId={props.projectId}
         setTrainingState={props.setTrainingState}
-        isSettingTrainingState={props.isSettingTrainingState}
+        isUpdatingDataCollector={props.isUpdatingDataCollector}
         selectDataCollector={props.selectDataCollector}
         selectAllDataCollectors={props.selectAllDataCollectors}
         listSelectedAll={props.listSelectedAll}
+        replaceSupervisor={handleReplaceSupervisor}
+      />
+
+      <ReplaceSupervisorDialog
+        isOpened={replaceSupervisorDialogOpened}
+        replaceSupervisor={props.replaceSupervisor}
+        supervisors={props.supervisors}
+        dataCollectors={selectedDataCollectors}
+        close={() => setReplaceSupervisorDialogOpened(false)}
       />
     </Fragment>
   );
@@ -78,7 +96,7 @@ const mapStateToProps = (state, ownProps) => ({
   list: state.dataCollectors.listData,
   isListFetching: state.dataCollectors.listFetching,
   isRemoving: state.dataCollectors.listRemoving,
-  isSettingTrainingState: state.dataCollectors.settingTrainingState,
+  isUpdatingDataCollector: state.dataCollectors.updatingDataCollector,
   listSelectedAll: state.dataCollectors.listSelectedAll,
   supervisors: state.dataCollectors.filtersData.supervisors,
   nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
@@ -96,7 +114,8 @@ const mapDispatchToProps = {
   remove: dataCollectorsActions.remove.invoke,
   setTrainingState: dataCollectorsActions.setTrainingState.invoke,
   exportToExcel: dataCollectorsActions.exportToExcel.invoke,
-  exportToCsv: dataCollectorsActions.exportToCsv.invoke
+  exportToCsv: dataCollectorsActions.exportToCsv.invoke,
+  replaceSupervisor: dataCollectorsActions.replaceSupervisor.invoke
 };
 
 export const DataCollectorsListPage = useLayout(

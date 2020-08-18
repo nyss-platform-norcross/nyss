@@ -23,7 +23,8 @@ export const dataCollectorsSagas = () => [
   takeEvery(consts.GET_DATA_COLLECTORS_PERFORMANCE.INVOKE, getDataCollectorsPerformance),
   takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_EXCEL.INVOKE, getExcelExportData),
   takeEvery(consts.EXPORT_DATA_COLLECTORS_TO_CSV.INVOKE, getCsvExportData),
-  takeEvery(consts.GET_DATA_COLLECTORS.INVOKE, getDataCollectors)
+  takeEvery(consts.GET_DATA_COLLECTORS.INVOKE, getDataCollectors),
+  takeEvery(consts.REPLACE_SUPERVISOR.INVOKE, replaceSupervisor)
 ];
 
 function* openDataCollectorsList({ projectId }) {
@@ -189,7 +190,6 @@ function* setTrainingState({ dataCollectorIds, inTraining }) {
     const filters = yield select(state => state.dataCollectors.filters);
     yield call(getDataCollectors, { projectId, filters });
   } catch (error) {
-    console.log(error);
     yield put(actions.setTrainingState.failure(dataCollectorIds, error.message));
   }
 };
@@ -258,6 +258,20 @@ function* getCsvExportData({ projectId, filters }) {
     yield put(actions.exportToCsv.success());
   } catch (error) {
     yield put(actions.exportToCsv.failure(error.message));
+  }
+};
+
+function* replaceSupervisor({ dataCollectorIds, supervisorId }) {
+  yield put(actions.replaceSupervisor.request(dataCollectorIds));
+  try {
+    const projectId = yield select(state => state.dataCollectors.projectId);
+    const filters = yield select(state => state.dataCollectors.filters);
+    yield call(http.post, '/api/dataCollector/replaceSupervisor', { dataCollectorIds, supervisorId });
+    yield call(getDataCollectors, { projectId, filters });
+    yield put(actions.replaceSupervisor.success(dataCollectorIds));
+    yield put(appActions.showMessage(stringKeys.dataCollector.list.supervisorReplacedSuccessfully));
+  } catch (error) {
+    yield put(actions.replaceSupervisor.failure(dataCollectorIds, error));
   }
 };
 

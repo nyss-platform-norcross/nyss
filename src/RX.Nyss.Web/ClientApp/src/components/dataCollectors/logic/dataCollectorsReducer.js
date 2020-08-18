@@ -101,13 +101,13 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, listRemoving: setProperty(state.listRemoving, action.id, undefined) };
 
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.REQUEST:
-      return { ...state, settingTrainingState: action.dataCollectorIds.reduce((trainingState, id) => setProperty(trainingState, id, true), state.settingTrainingState) };
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((trainingState, id) => setProperty(trainingState, id, true), state.updatingDataCollector) };
 
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.SUCCESS:
-      return { ...state, settingTrainingState: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.settingTrainingState), listStale: true };
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.updatingDataCollector), listStale: true };
 
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE:
-      return { ...state, settingTrainingState: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.settingTrainingState) };
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.updatingDataCollector) };
 
     case actions.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS:
       return { ...state, filtersData: action.filtersData };
@@ -120,6 +120,15 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.FAILURE:
       return { ...state, performanceListFetching: false, performanceListData: [] };
+
+    case actions.REPLACE_SUPERVISOR.REQUEST:
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => setProperty(replacingState, id, true), state.updatingDataCollector) };
+
+    case actions.REPLACE_SUPERVISOR.SUCCESS:
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => removeProperty(replacingState, id), state.updatingDataCollector), listStale: true };
+
+    case actions.REPLACE_SUPERVISOR.FAILURE:
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => removeProperty(replacingState, id), state.updatingDataCollector) };
 
     default:
       return state;

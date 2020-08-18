@@ -19,7 +19,7 @@ import { accessMap } from '../../authentication/accessMap';
 import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';
 import { Checkbox } from '@material-ui/core';
 
-export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isSettingTrainingState, selectDataCollector, selectAllDataCollectors }) => {
+export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isUpdatingDataCollector, selectDataCollector, selectAllDataCollectors, replaceSupervisor }) => {
   const [isSelected, setIsSelected] = useState(false);
   useEffect(() => setIsSelected(list.some(i => i.isSelected)), [list]);
 
@@ -41,6 +41,9 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
   const getSelectedIds = useCallback(() =>
     list.filter(i => i.isSelected).map(i => i.id), [list]);
 
+  const getSelectedDataCollectors = useCallback(() =>
+    list.filter(i => i.isSelected).map(i => ({ name: i.name, id: i.id })), [list]);
+
   const multipleSelectionMenu = useMemo(() =>
     [
       {
@@ -52,8 +55,13 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
         title: strings(stringKeys.dataCollector.list.setToInTraining),
         action: () => setTrainingState(getSelectedIds(), true),
         roles: accessMap.dataCollectors.list
+      },
+      {
+        title: strings(stringKeys.dataCollector.list.replaceSupervisor),
+        action: () => replaceSupervisor(getSelectedDataCollectors()),
+        roles: accessMap.dataCollectors.replaceSupervisor
       }
-    ], [getSelectedIds, setTrainingState]);
+    ], [getSelectedIds, getSelectedDataCollectors, setTrainingState, replaceSupervisor]);
 
   const handleSelect = (e, id, value) => {
     e.stopPropagation();
@@ -104,7 +112,7 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
               <TableCell>{row.supervisor.name}</TableCell>
               <TableCell>
                 <TableRowActions>
-                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />
+                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isUpdatingDataCollector[row.id]} />
                   <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
                   <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>

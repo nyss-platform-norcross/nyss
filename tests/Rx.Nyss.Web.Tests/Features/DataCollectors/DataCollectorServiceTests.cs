@@ -16,6 +16,7 @@ using RX.Nyss.Web.Features.DataCollectors;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using Shouldly;
@@ -35,13 +36,16 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const int SupervisorId = 1;
         private const string SupervisorEmail = "supervisor@example.com";
         private const int NationalSocietyId = 1;
+        private const int NationalSocietyWithoutIotDeviceId = 2;
         private const string Village = "Layuna";
         private const int RegionId = 1;
         private const int DistrictId = 1;
         private const int VillageId = 1;
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
-        private readonly List<NationalSociety> _nationalSocieties;
+        private readonly IEmailToSMSService _emailToSMSService;
+        private readonly ISmsPublisherService _smsPublisherService;
+        private List<NationalSociety> _nationalSocieties;
 
         public DataCollectorServiceTests()
         {
@@ -52,18 +56,70 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var httpContextAccessorMock = Substitute.For<IHttpContextAccessor>();
             httpContextAccessorMock.HttpContext.User.Identity.Name.Returns(SupervisorEmail);
             var authorizationService = Substitute.For<IAuthorizationService>();
+            _emailToSMSService = Substitute.For<IEmailToSMSService>();
+            _smsPublisherService = Substitute.For<ISmsPublisherService>();
+            var smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
+            smsTextGeneratorService.GenerateReplaceSupervisorSms("en").Returns("Test");
 
             dateTimeProvider.UtcNow.Returns(DateTime.UtcNow);
-            _dataCollectorService = new DataCollectorService(_nyssContextMock, nationalSocietyStructureService, geolocationService, dateTimeProvider, authorizationService);
+            _dataCollectorService = new DataCollectorService(
+                _nyssContextMock,
+                nationalSocietyStructureService,
+                geolocationService,
+                dateTimeProvider,
+                authorizationService,
+                _emailToSMSService,
+                _smsPublisherService,
+                smsTextGeneratorService);
 
             // Arrange
-            _nationalSocieties = new List<NationalSociety> { new NationalSociety { Id = NationalSocietyId } };
+            _nationalSocieties = new List<NationalSociety>
+            {
+                new NationalSociety
+                {
+                    Id = NationalSocietyId,
+                    ContentLanguage = new ContentLanguage
+                    {
+                        Id = 1,
+                        LanguageCode = "en"
+                    }
+                },
+                new NationalSociety
+                {
+                    Id = NationalSocietyWithoutIotDeviceId,
+                    ContentLanguage = new ContentLanguage
+                    {
+                        Id = 1,
+                        LanguageCode = "en"
+                    }
+                }
+            };
+
+            var gatewaySettings = new List<GatewaySetting>
+            {
+                new GatewaySetting
+                {
+                    NationalSociety = _nationalSocieties[0],
+                    IotHubDeviceName = "iot"
+                },
+                new GatewaySetting
+                {
+                    NationalSociety = _nationalSocieties[1],
+                    EmailAddress = "test@example.com"
+                }
+            };
 
             var users = new List<User>
             {
                 new SupervisorUser
                 {
                     Id = SupervisorId,
+                    Role = Role.Supervisor,
+                    EmailAddress = SupervisorEmail
+                },
+                new SupervisorUser
+                {
+                    Id = 2,
                     Role = Role.Supervisor,
                     EmailAddress = SupervisorEmail
                 }
@@ -78,10 +134,21 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                     NationalSocietyId = NationalSocietyId,
                     OrganizationId = 1,
                     Organization = new Organization()
+                },
+                new UserNationalSociety
+                {
+                    NationalSociety = _nationalSocieties[1],
+                    User = users[1],
+                    UserId = 2,
+                    NationalSocietyId = NationalSocietyWithoutIotDeviceId,
+                    OrganizationId = 1,
+                    Organization = new Organization()
                 }
             };
 
             _nationalSocieties[0].NationalSocietyUsers = usersNationalSocieties;
+            users[0].UserNationalSocieties = new List<UserNationalSociety> { usersNationalSocieties[0] };
+            users[1].UserNationalSocieties = new List<UserNationalSociety> { usersNationalSocieties[1] };
 
             var projects = new List<Project>
             {
@@ -187,6 +254,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             };
 
             var nationalSocietyMockDbSet = _nationalSocieties.AsQueryable().BuildMockDbSet();
+            var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesMockDbSet = usersNationalSocieties.AsQueryable().BuildMockDbSet();
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
@@ -201,6 +269,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var rawReportsDbSet = rawReports.AsQueryable().BuildMockDbSet();
 
             _nyssContextMock.NationalSocieties.Returns(nationalSocietyMockDbSet);
+            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
             _nyssContextMock.Users.Returns(usersMockDbSet);
             _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesMockDbSet);
             _nyssContextMock.Projects.Returns(projectsMockDbSet);
@@ -336,7 +405,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             // Act
             var result = await _dataCollectorService.SetTrainingState(new SetDataCollectorsTrainingStateRequestDto
             {
-                DataCollectorIds = new[] { DataCollectorWithoutReportsId },
+                DataCollectorIds = new [] { DataCollectorWithoutReportsId },
                 InTraining = true
             });
 
@@ -479,6 +548,42 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             result.Value[0].StatusSixWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 5)));
             result.Value[0].StatusSevenWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 6)));
             result.Value[0].StatusEightWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 7)));
+        }
+        
+        [Fact]
+        public async Task ReplaceSupervisor_WhenUsingIotHub_ShouldSendSmsToDataCollectorsThroughIotHub()
+        {
+            // Arrange
+            var replaceSupervisorDto = new ReplaceSupervisorRequestDto
+            {
+                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
+                SupervisorId = SupervisorId
+            };
+
+            // Act
+            var res = await _dataCollectorService.ReplaceSupervisor(replaceSupervisorDto);
+
+            // Assert
+            res.IsSuccess.ShouldBe(true);
+            await _smsPublisherService.Received().SendSms("iot", Arg.Any<List<string>>(), "Test");
+        }
+
+        [Fact]
+        public async Task ReplaceSupervisor_WhenUsingEmailToSms_ShouldSendSmsToDataCollectorsThroughEmail()
+        {
+            // Arrange
+            var replaceSupervisorDto = new ReplaceSupervisorRequestDto
+            {
+                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
+                SupervisorId = 2
+            };
+
+            // Act
+            var res = await _dataCollectorService.ReplaceSupervisor(replaceSupervisorDto);
+
+            // Assert
+            res.IsSuccess.ShouldBe(true);
+            await _emailToSMSService.Received().SendMessage(Arg.Any<GatewaySetting>(), Arg.Any<List<string>>(), "Test");
         }
 
         public ReportingStatus DataCollectorStatusFromReports(IEnumerable<RawReport> reports)

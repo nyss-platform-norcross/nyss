@@ -579,7 +579,10 @@ export const stringKeys = {
       district: "dataCollectors.form.district",
       region: "dataCollectors.form.region",
       zone: "dataCollectors.form.zone",
-      retrieveLocation: "dataCollectors.form.retrieveLocation"
+      retrieveLocation: "dataCollectors.form.retrieveLocation",
+      replaceSupervisor: "dataCollectors.form.replaceSupervisor",
+      newSupervisor: "dataCollectors.form.newSupervisor",
+      replaceSupervisorWarning: "dataCollectors.form.replaceSupervisorWarning"
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",
@@ -594,7 +597,9 @@ export const stringKeys = {
       trainingStatus: "dataCollectors.list.trainingStatus",
       setToInTraining: "dataCollectors.list.setToInTraining",
       takeOutOfTraining: "dataCollectors.list.takeOutOfTraining",
-      supervisor: "dataCollectors.list.supervisor"
+      supervisor: "dataCollectors.list.supervisor",
+      replaceSupervisor: "dataCollectors.list.replaceSupervisor",
+      supervisorReplacedSuccessfully: "dataCollectors.list.supervisorReplacedSuccessfully"
     },
     performanceList: {
       title: "dataCollectors.performanceList.title",
