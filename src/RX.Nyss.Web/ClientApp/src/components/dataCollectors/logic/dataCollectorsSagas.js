@@ -190,7 +190,6 @@ function* setTrainingState({ dataCollectorIds, inTraining }) {
     const filters = yield select(state => state.dataCollectors.filters);
     yield call(getDataCollectors, { projectId, filters });
   } catch (error) {
-    console.log(error);
     yield put(actions.setTrainingState.failure(dataCollectorIds, error.message));
   }
 };
@@ -263,17 +262,16 @@ function* getCsvExportData({ projectId, filters }) {
 };
 
 function* replaceSupervisor({ dataCollectorIds, supervisorId }) {
-  yield put(actions.replaceSupervisor.request());
+  yield put(actions.replaceSupervisor.request(dataCollectorIds));
   try {
     const projectId = yield select(state => state.dataCollectors.projectId);
     const filters = yield select(state => state.dataCollectors.filters);
     yield call(http.post, '/api/dataCollector/replaceSupervisor', { dataCollectorIds, supervisorId });
     yield call(getDataCollectors, { projectId, filters });
-    yield put(actions.replaceSupervisor.success());
+    yield put(actions.replaceSupervisor.success(dataCollectorIds));
     yield put(appActions.showMessage(stringKeys.dataCollector.list.supervisorReplacedSuccessfully));
   } catch (error) {
-    yield put(actions.replaceSupervisor.failure(error));
-    yield put(appActions.showMessage(error.message));
+    yield put(actions.replaceSupervisor.failure(dataCollectorIds, error));
   }
 };
 

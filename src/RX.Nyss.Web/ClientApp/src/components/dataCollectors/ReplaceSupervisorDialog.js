@@ -14,7 +14,7 @@ import Form from '../forms/form/Form';
 import SelectField from '../forms/SelectField';
 import WarningIcon from '@material-ui/icons/Warning';
 
-export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, supervisors, isReplacing, replaceSupervisor }) => {
+export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, supervisors, replaceSupervisor }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
@@ -61,7 +61,7 @@ export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, super
             <Grid item xs={10} style={{ alignSelf: 'center'}}>
               <Typography variant="body1">
                 {strings(stringKeys.dataCollector.form.replaceSupervisorWarning)}
-              </Typography>      
+              </Typography>
             </Grid>
             <Grid item xs={2}>
               <WarningIcon color="primary" style={{ fontSize: 40 }} />
@@ -80,7 +80,7 @@ export const ReplaceSupervisorDialog = ({ isOpened, close, dataCollectors, super
             <Button onClick={close}>
               {strings(stringKeys.form.cancel)}
             </Button>
-            <SubmitButton isFetching={isReplacing}>
+            <SubmitButton>
               {strings(stringKeys.dataCollector.form.replaceSupervisor)}
             </SubmitButton>
           </FormActions>

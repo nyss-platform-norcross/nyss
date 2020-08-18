@@ -19,7 +19,7 @@ import { accessMap } from '../../authentication/accessMap';
 import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';
 import { Checkbox } from '@material-ui/core';
 
-export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isSettingTrainingState, selectDataCollector, selectAllDataCollectors, replaceSupervisor }) => {
+export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isUpdatingDataCollector, selectDataCollector, selectAllDataCollectors, replaceSupervisor }) => {
   const [isSelected, setIsSelected] = useState(false);
   useEffect(() => setIsSelected(list.some(i => i.isSelected)), [list]);
 
@@ -112,7 +112,7 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
               <TableCell>{row.supervisor.name}</TableCell>
               <TableCell>
                 <TableRowActions>
-                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isSettingTrainingState[row.id]} />
+                  <TableRowMenu id={row.id} items={getRowMenu(row)} icon={<MoreVertIcon />} isFetching={isUpdatingDataCollector[row.id]} />
                   <TableRowAction onClick={() => goToEdition(projectId, row.id)} icon={<EditIcon />} title={"Edit"} />
                   <TableRowAction onClick={() => remove(row.id)} confirmationText={strings(stringKeys.dataCollector.list.removalConfirmation)} icon={<ClearIcon />} title={"Delete"} isFetching={isRemoving[row.id]} />
                 </TableRowActions>

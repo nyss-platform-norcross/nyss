@@ -62,7 +62,7 @@ const DataCollectorsListPageComponent = (props) => {
         remove={props.remove}
         projectId={props.projectId}
         setTrainingState={props.setTrainingState}
-        isSettingTrainingState={props.isSettingTrainingState}
+        isUpdatingDataCollector={props.isUpdatingDataCollector}
         selectDataCollector={props.selectDataCollector}
         selectAllDataCollectors={props.selectAllDataCollectors}
         listSelectedAll={props.listSelectedAll}
@@ -74,7 +74,6 @@ const DataCollectorsListPageComponent = (props) => {
         replaceSupervisor={props.replaceSupervisor}
         supervisors={props.supervisors}
         dataCollectors={selectedDataCollectors}
-        isReplacing={props.isReplacingSupervisor}
         close={() => setReplaceSupervisorDialogOpened(false)}
       />
     </Fragment>
@@ -97,13 +96,12 @@ const mapStateToProps = (state, ownProps) => ({
   list: state.dataCollectors.listData,
   isListFetching: state.dataCollectors.listFetching,
   isRemoving: state.dataCollectors.listRemoving,
-  isSettingTrainingState: state.dataCollectors.settingTrainingState,
+  isUpdatingDataCollector: state.dataCollectors.updatingDataCollector,
   listSelectedAll: state.dataCollectors.listSelectedAll,
   supervisors: state.dataCollectors.filtersData.supervisors,
   nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
   filters: state.dataCollectors.filters,
-  callingUserRoles: state.appData.user.roles,
-  isReplacingSupervisor: state.dataCollectors.isReplacingSupervisor
+  callingUserRoles: state.appData.user.roles
 });
 
 const mapDispatchToProps = {
