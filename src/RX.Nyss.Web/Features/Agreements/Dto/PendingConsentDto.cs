@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace RX.Nyss.Web.Features.NationalSocieties.Dto
+namespace RX.Nyss.Web.Features.Agreements.Dto
 {
     public class PendingConsentDto
     {

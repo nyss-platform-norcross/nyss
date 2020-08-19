@@ -79,7 +79,6 @@ namespace RX.Nyss.Web.Features.Authentication
                 return Error<StatusResponseDto>(ResultKey.User.Common.UserNotFound);
             }
 
-            var (pendingAgreements, staleAgreements) = await _nationalSocietyService.GetNationalSocietiesByAgreementsStatus(userEntity);
             var homePageData = await GetHomePageData(userEntity);
 
             return Success(new StatusResponseDto
@@ -93,8 +92,6 @@ namespace RX.Nyss.Web.Features.Authentication
                         Email = email,
                         LanguageCode = userEntity.ApplicationLanguage?.LanguageCode ?? "en",
                         Roles = user.FindAll(m => m.Type == ClaimTypes.Role).Select(x => x.Value).ToArray(),
-                        HasPendingAgreements = pendingAgreements.Any(),
-                        HasUpdatedAgreements = staleAgreements.Any(),
                         HomePage = user.Identity.IsAuthenticated
                             ? homePageData
                             : null

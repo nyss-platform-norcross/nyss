@@ -6,23 +6,24 @@ import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import styles from './NationalSocietyConsentsPage.module.scss';
+import styles from './AgreementsPage.module.scss';
 import Icon from "@material-ui/core/Icon";
 import { strings, stringKeys } from '../../strings';
-import * as nationalSocietyConsentsActions from './logic/nationalSocietyConsentsActions';
+import * as agreementsActions from './logic/agreementsActions';
 import { useMount } from '../../utils/lifecycle';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import CardMedia from '@material-ui/core/CardMedia';
 import { MenuItem, Grid, FormControl, InputLabel, Select, Snackbar, Button } from '@material-ui/core';
+import { Loading } from '../common/loading/Loading';
 
-const NationalSocietyConsentsPageComponent = (props) => {
+const AgreementsPageComponent = (props) => {
   const [hasConsented, setHasConsented] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [validationMessage, setValidationMessage] = useState(null);
 
   useMount(() => {
-    props.openNationalSocietyConsentsPage();
+    props.openAgreementPage();
   });
 
   const handleSubmit = (e) => {
@@ -32,7 +33,7 @@ const NationalSocietyConsentsPageComponent = (props) => {
       return;
     };
 
-    props.consentAsHeadManager(selectedLanguage);
+    props.acceptAgreement(selectedLanguage);
   }
 
   const handleDocChange = (event) => {
@@ -40,6 +41,10 @@ const NationalSocietyConsentsPageComponent = (props) => {
   }
 
   const selectedDocumentUrl = props.agreementDocuments.length > 0 && props.agreementDocuments.find(ad => ad.languageCode === selectedLanguage).agreementDocumentUrl;
+
+  if (!props.pendingSocieties || !props.staleSocieties) {
+    return <Loading />;
+  }
 
   return (
     <div className={styles.consentWrapper}>
@@ -134,23 +139,23 @@ const NationalSocietyConsentsPageComponent = (props) => {
   );
 }
 
-NationalSocietyConsentsPageComponent.propTypes = {
-  consentAsHeadManager: PropTypes.func,
+AgreementsPageComponent.propTypes = {
+  acceptAgreement: PropTypes.func,
 };
 
 const mapStateToProps = state => ({
-  pendingSocieties: state.nationalSocietyConsents.pendingSocieties,
-  staleSocieties: state.nationalSocietyConsents.staleSocieties,
-  agreementDocuments: state.nationalSocietyConsents.agreementDocuments,
-  submitting: state.nationalSocietyConsents.submitting
+  pendingSocieties: state.agreements.pendingSocieties,
+  staleSocieties: state.agreements.staleSocieties,
+  agreementDocuments: state.agreements.agreementDocuments,
+  submitting: state.agreements.submitting
 });
 
 const mapDispatchToProps = {
-  openNationalSocietyConsentsPage: nationalSocietyConsentsActions.openNationalSocietyConsentsPage.invoke,
-  consentAsHeadManager: nationalSocietyConsentsActions.consentAsHeadManager.invoke
+  openAgreementPage: agreementsActions.openAgreementPage.invoke,
+  acceptAgreement: agreementsActions.acceptAgreement.invoke
 };
 
-export const NationalSocietyConsentsPage = useLayout(
+export const AgreementsPage = useLayout(
   AnonymousLayout,
-  connect(mapStateToProps, mapDispatchToProps)(NationalSocietyConsentsPageComponent)
+  connect(mapStateToProps, mapDispatchToProps)(AgreementsPageComponent)
 );

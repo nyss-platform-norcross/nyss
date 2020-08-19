@@ -17,12 +17,8 @@
             public string[] Roles { get; set; }
 
             public string LanguageCode { get; set; }
-
-            public bool HasPendingAgreements { get; set; }
-
+            
             public HomePageDto HomePage { get; set; }
-
-            public bool HasUpdatedAgreements { get; set; }
         }
 
         public class HomePageDto

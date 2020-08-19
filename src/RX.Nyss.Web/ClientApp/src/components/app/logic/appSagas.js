@@ -24,16 +24,7 @@ function* initApplication() {
     const user = yield select(state => state.appData.user);
     yield call(getAppData);
     yield call(getStrings, user ? user.languageCode : "en");
-
-    if (user && user.hasPendingAgreements){
-      yield put(actions.goToNationalSocietyConsents())
-    }
-
     yield put(actions.initApplication.success());
-
-    if (user && user.hasUpdatedAgreements){
-      yield put(actions.goToNationalSocietyConsents())
-    }
 
     window.userLanguage = user && user.languageCode;
 

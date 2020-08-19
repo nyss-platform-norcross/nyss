@@ -7,7 +7,6 @@ export const entityUpdated = (entity) => ({ type: actions.ENTITY_UPDATED, entiti
 export const switchStrings = (status) => ({ type: actions.SWITCH_STRINGS, status });
 export const setAppReady = (status) => ({ type: actions.SET_APP_READY, status });
 export const toggleSideMenu = (value) => ({ type: actions.TOGGLE_SIDE_MENU, value });
-export const goToNationalSocietyConsents = () => push(`/nationalSocietyConsents`);
 export const goToTranslations = () => push(`/translations`);
 export const pageFocused = () => ({ type: actions.PAGE_FOCUSED });
 export const stringsUpdated = (key, translations) => ({ type: actions.STRINGS_UPDATED, key, translations });
