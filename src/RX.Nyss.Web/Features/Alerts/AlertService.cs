@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Extensions;
+using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
@@ -14,6 +15,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -49,6 +51,8 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IStringsResourcesService _stringsResourcesService;
+        private readonly IUserService _userService;
 
         public AlertService(
             INyssContext nyssContext,
@@ -59,7 +63,9 @@ namespace RX.Nyss.Web.Features.Alerts
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,
             IAuthorizationService authorizationService,
-            ISmsPublisherService smsPublisherService)
+            ISmsPublisherService smsPublisherService,
+            IStringsResourcesService stringsResourcesService,
+            IUserService userService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
@@ -70,6 +76,8 @@ namespace RX.Nyss.Web.Features.Alerts
             _authorizationService = authorizationService;
             _smsPublisherService = smsPublisherService;
             _config = config;
+            _stringsResourcesService = stringsResourcesService;
+            _userService = userService;
         }
 
         public async Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber)
@@ -151,6 +159,9 @@ namespace RX.Nyss.Web.Features.Alerts
         {
             var currentUser = await _authorizationService.GetCurrentUserAsync();
 
+            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUser.EmailAddress);
+            var stringsResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
+
             var userOrganizations = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == currentUser.Id)
                 .Select(uns => uns.Organization)
@@ -178,6 +189,8 @@ namespace RX.Nyss.Web.Features.Alerts
                         DataCollector = ar.Report.DataCollector.DisplayName,
                         OrganizationId = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId,
                         OrganizationName = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().Organization.Name,
+                        IsAnonymized = ar.Report.DataCollector.Supervisor.Id != currentUser.Id,
+                        SupervisorName = ar.Report.DataCollector.Supervisor.Name,
                         ReceivedAt = ar.Report.ReceivedAt,
                         PhoneNumber = ar.Report.PhoneNumber,
                         Village = ar.Report.RawReport.Village.Name,
@@ -215,15 +228,16 @@ namespace RX.Nyss.Web.Features.Alerts
                     ? new AlertAssessmentResponseDto.ReportDto
                     {
                         Id = ar.Id,
-                        DataCollector = ar.DataCollector,
+                        DataCollector = ar.IsAnonymized ? $"{GetStringResource(stringsResources, ResultKey.Alert.Report.LinkedToSupervisor)} {ar.SupervisorName}" : ar.DataCollector,
                         ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
-                        PhoneNumber = ar.PhoneNumber,
+                        PhoneNumber = ar.IsAnonymized ? "***" : ar.PhoneNumber,
                         Status = ar.Status.ToString(),
                         Village = ar.Village,
                         District = ar.District,
                         Region = ar.Region,
                         Sex = GetSex(ar.ReportedCase),
-                        Age = GetAge(ar.ReportedCase)
+                        Age = GetAge(ar.ReportedCase),
+                        IsAnonymized = ar.IsAnonymized
                     }
                     : new AlertAssessmentResponseDto.ReportDto
                     {
@@ -666,5 +680,10 @@ namespace RX.Nyss.Web.Features.Alerts
                 throw new ResultException(ResultKey.Alert.EscalateAlert.SmsNotificationFailed);
             }
         }
+
+        private static string GetStringResource(IDictionary<string, string> stringResources, string key) =>
+            stringResources.Keys.Contains(key)
+                ? stringResources[key]
+                : key;
     }
 }

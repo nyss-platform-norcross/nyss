@@ -46,6 +46,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
             public string District { get; set; }
 
             public string Region { get; set; }
+
+            public bool IsAnonymized { get; set; }
         }
     }
 }
