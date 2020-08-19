@@ -100,9 +100,7 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
         {
             const string languageCode = "en";
             const string role = "Administrator";
-            var nationalSocietiesDbSet = new List<NationalSociety>();
             _user.ApplicationLanguage = new ApplicationLanguage { LanguageCode = languageCode };
-            _nationalSocietyService.GetNationalSocietiesByAgreementsStatus(Arg.Any<User>()).Returns((nationalSocietiesDbSet, nationalSocietiesDbSet));
 
             var user = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
             {

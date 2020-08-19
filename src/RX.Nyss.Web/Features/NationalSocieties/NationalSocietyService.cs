@@ -4,18 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
-using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
-using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.SmsGateways;
 using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Services.Authorization;
@@ -44,16 +41,13 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         private readonly IManagerService _managerService;
         private readonly ITechnicalAdvisorService _technicalAdvisorService;
         private readonly ISmsGatewayService _smsGatewayService;
-        private readonly IGeneralBlobProvider _generalBlobProvider;
-        private readonly IDataBlobService _dataBlobService;
 
         public NationalSocietyService(
             INyssContext context,
             INationalSocietyAccessService nationalSocietyAccessService,
             ILoggerAdapter loggerAdapter, IAuthorizationService authorizationService,
             IManagerService managerService, ITechnicalAdvisorService technicalAdvisorService,
-            ISmsGatewayService smsGatewayService, IGeneralBlobProvider generalBlobProvider,
-            IOrganizationService organizationService, IDataBlobService dataBlobService)
+            ISmsGatewayService smsGatewayService)
         {
             _nyssContext = context;
             _nationalSocietyAccessService = nationalSocietyAccessService;
@@ -62,8 +56,6 @@ namespace RX.Nyss.Web.Features.NationalSocieties
             _managerService = managerService;
             _technicalAdvisorService = technicalAdvisorService;
             _smsGatewayService = smsGatewayService;
-            _generalBlobProvider = generalBlobProvider;
-            _dataBlobService = dataBlobService;
         }
 
         public async Task<Result<List<NationalSocietyListResponseDto>>> List()

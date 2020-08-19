@@ -1,21 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MockQueryable.NSubstitute;
 using NSubstitute;
-using NSubstitute.Core;
-using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
-using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
-using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.SmsGateways;
 using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Services.Authorization;
@@ -35,11 +27,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 
         private readonly IManagerService _managerServiceMock;
         private readonly ITechnicalAdvisorService _technicalAdvisorServiceMock;
-        private readonly IOrganizationService _organizationServiceMock;
-        private readonly IGeneralBlobProvider _generalBlobProviderMock;
-        private readonly IDataBlobService _dataBlobServiceMock;
         private readonly IAuthorizationService _authorizationServiceMock;
-
 
         public NationalSocietyServiceTests()
         {
@@ -50,9 +38,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
             _managerServiceMock = Substitute.For<IManagerService>();
             _technicalAdvisorServiceMock = Substitute.For<ITechnicalAdvisorService>();
             _smsGatewayServiceMock = Substitute.For<ISmsGatewayService>();
-            _generalBlobProviderMock = Substitute.For<IGeneralBlobProvider>();
-            _organizationServiceMock = Substitute.For<IOrganizationService>();
-            _dataBlobServiceMock = Substitute.For<IDataBlobService>();
 
             _nationalSocietyService = new NationalSocietyService(
                 _nyssContextMock,
@@ -61,69 +46,9 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
                 _authorizationServiceMock,
                 _managerServiceMock,
                 _technicalAdvisorServiceMock,
-                _smsGatewayServiceMock,
-                _generalBlobProviderMock,
-                _organizationServiceMock,
-                _dataBlobServiceMock);
+                _smsGatewayServiceMock);
 
             _testData = new NationalSocietyServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
-        }
-
-        [Fact]
-        public async Task ConsentToNationalSocietyAgreement_WhenUserNotFound_ShouldReturnNotFound()
-        {
-            // Arrange
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var users = new List<User> { new ManagerUser { EmailAddress = "no-yo" } };
-            var mockDbSet = users.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Users.Returns(mockDbSet);
-
-            // Act
-            var result = await _nationalSocietyService.ConsentToNationalSocietyAgreement("fr");
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
-        }
-        
-        [Fact]
-        public async Task GetNationalSocietiesByAgreementsStatus_WhenNoAgreements_ShouldIncludePending()
-        {
-            // Arrange
-            _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().AddToDbContext();
-            _authorizationServiceMock.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor).Returns(true);
-
-            // Act
-            var (pending, _) = await _nationalSocietyService.GetNationalSocietiesByAgreementsStatus(_testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.EntityData.Users[0]);
-
-            // Assert
-            pending.Count.ShouldBe(1);
-        }
-
-        [Fact]
-        public async Task GetNationalSocietiesByAgreementsStatus_WhenUpdated_ShouldIncludeStale()
-        {
-            // Arrange
-            var consentedDate = new DateTime(2020, 10, 10, 13, 37, 00);
-            _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.GenerateData().AddToDbContext();
-            _authorizationServiceMock.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor).Returns(true);
-            _generalBlobProviderMock.GetPlatformAgreementLastModifiedDate("klingon").Returns(consentedDate.AddDays(1)); // one day newer
-
-            var consents = new List<NationalSocietyConsent> { new NationalSocietyConsent()
-            {
-                UserEmailAddress = "yo",
-                ConsentedFrom = consentedDate,
-                NationalSocietyId = _testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.EntityData.NationalSocieties[0].Id
-            } };
-            var mockDbSet = consents.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.NationalSocietyConsents.Returns(mockDbSet);
-
-            // Act
-            var (_, stale) = await _nationalSocietyService.GetNationalSocietiesByAgreementsStatus(_testData.WhenHasNoProjectsAndNoUsersExceptHeadManagerWithRoleManager.EntityData.Users[0]);
-
-            // Assert
-            await _generalBlobProviderMock.Received(1).GetPlatformAgreementLastModifiedDate("klingon");
-            stale.Count.ShouldBe(1);
         }
 
         [Fact]

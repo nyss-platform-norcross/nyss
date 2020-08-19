@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.Agreements
         /// <returns></returns>
         [HttpGet("listPending")]
         public async Task<Result> Status() =>
-            await _agreementService.GetNationalSocietiesByAgreementsStatus();
+            await _agreementService.GetPendingAgreements();
 
         /// <summary>
         /// Get agreement documents in all languages for the pending national societies for the current user
@@ -41,6 +41,6 @@ namespace RX.Nyss.Web.Features.Agreements
         [HttpPost("accept")]
         [NeedsRole(Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
         public async Task<Result> AcceptAgreement(string languageCode) =>
-            await _agreementService.AcceptAgreementToNationalSociety(languageCode);
+            await _agreementService.AcceptAgreement(languageCode);
     }
 }

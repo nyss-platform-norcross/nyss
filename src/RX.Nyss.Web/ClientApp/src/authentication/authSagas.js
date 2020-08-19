@@ -27,13 +27,13 @@ function* login({ userName, password, redirectUrl }) {
       throw new Error(stringKey(data.message.key));
     }
 
+    yield put(authActions.login.success());
+
     const agreementStatusResponse = yield call(http.get, "/api/agreement/listPending");
 
     if (agreementStatusResponse.value.pendingSocieties.length > 0 || agreementStatusResponse.value.staleSocieties.length > 0){
       yield put(authActions.goToAgreements());
     }
-
-    yield put(authActions.login.success());
 
     if (redirectUrl) {
       auth.redirectTo(redirectUrl);

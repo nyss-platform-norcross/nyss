@@ -19,8 +19,8 @@ namespace RX.Nyss.Web.Features.Agreements
     public interface IAgreementService
     {
         Task<Result<PendingConsentDto>> GetPendingAgreementDocuments();
-        Task<Result> AcceptAgreementToNationalSociety(string languageCode);
-        Task<Result<AgreementsStatusesDto>> GetNationalSocietiesByAgreementsStatus();
+        Task<Result> AcceptAgreement(string languageCode);
+        Task<Result<AgreementsStatusesDto>> GetPendingAgreements();
     }
 
     public class AgreementService : IAgreementService
@@ -38,53 +38,7 @@ namespace RX.Nyss.Web.Features.Agreements
             _dataBlobService = dataBlobService;
         }
 
-        public async Task<Result<PendingConsentDto>> GetPendingAgreementDocuments()
-        {
-            var identityUserName = _authorizationService.GetCurrentUserName();
-
-            var userEntity = await _nyssContext.Users.FilterAvailable()
-                .Include(x => x.ApplicationLanguage)
-                .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
-
-            if (userEntity == null)
-            {
-                return Error<PendingConsentDto>(ResultKey.User.Common.UserNotFound);
-            }
-
-            var (pending, stale) = await GetNationalSocietiesByAgreementsStatus(userEntity);
-
-            if (!pending.Union(stale).Any())
-            {
-                return Error<PendingConsentDto>(ResultKey.Consent.NoPendingConsent);
-            }
-
-            var applicationLanguages = await _nyssContext.ApplicationLanguages.ToListAsync();
-            var docs = applicationLanguages.Select(apl => new AgreementDocument
-            {
-                Language = apl.DisplayName,
-                LanguageCode = apl.LanguageCode,
-                AgreementDocumentUrl = _generalBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower())
-            }).Where(d => d.AgreementDocumentUrl != null);
-
-            var pendingSociety = new PendingConsentDto
-            {
-                AgreementDocuments = docs,
-                PendingSocieties = pending.Select(ns => new PendingNationalSocietyConsentDto
-                {
-                    NationalSocietyName = ns.Name,
-                    NationalSocietyId = ns.Id
-                }).ToList(),
-                StaleSocieties = stale.Select(ns => new PendingNationalSocietyConsentDto
-                {
-                    NationalSocietyName = ns.Name,
-                    NationalSocietyId = ns.Id
-                }).ToList()
-            };
-
-            return Success(pendingSociety);
-        }
-
-        public async Task<Result> AcceptAgreementToNationalSociety(string languageCode)
+        public async Task<Result> AcceptAgreement(string languageCode)
         {
             var identityUserName = _authorizationService.GetCurrentUserName();
 
@@ -97,7 +51,7 @@ namespace RX.Nyss.Web.Features.Agreements
                 return Error(ResultKey.User.Common.UserNotFound);
             }
 
-            var (pendingSocieties, staleSocieties) = await GetNationalSocietiesByAgreementsStatus(user);
+            var (pendingSocieties, staleSocieties) = await GetPendingAndStaleNationalSocieties(user);
             var utcNow = DateTime.UtcNow;
 
             var consentDocumentFileName = Guid.NewGuid() + ".pdf";
@@ -147,7 +101,7 @@ namespace RX.Nyss.Web.Features.Agreements
             return Success();
         }
 
-        public async Task<Result<AgreementsStatusesDto>> GetNationalSocietiesByAgreementsStatus()
+        public async Task<Result<AgreementsStatusesDto>> GetPendingAgreements()
         {
             if (!_authorizationService.IsCurrentUserInAnyRole(Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator))
             {
@@ -160,7 +114,7 @@ namespace RX.Nyss.Web.Features.Agreements
                 .Include(x => x.ApplicationLanguage)
                 .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
             
-            var (pending, stale) = await GetNationalSocietiesByAgreementsStatus(userEntity);
+            var (pending, stale) = await GetPendingAndStaleNationalSocieties(userEntity);
             return Success(new AgreementsStatusesDto
             {
                 PendingSocieties = pending.Select(p => p.Name),
@@ -168,7 +122,53 @@ namespace RX.Nyss.Web.Features.Agreements
             });
         }
 
-        private async Task<(List<NationalSociety> pendingSocieties, List<NationalSociety> staleSocieties)> GetNationalSocietiesByAgreementsStatus(User userEntity)
+        public async Task<Result<PendingConsentDto>> GetPendingAgreementDocuments()
+        {
+            var identityUserName = _authorizationService.GetCurrentUserName();
+
+            var userEntity = await _nyssContext.Users.FilterAvailable()
+                .Include(x => x.ApplicationLanguage)
+                .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
+
+            if (userEntity == null)
+            {
+                return Error<PendingConsentDto>(ResultKey.User.Common.UserNotFound);
+            }
+
+            var (pending, stale) = await GetPendingAndStaleNationalSocieties(userEntity);
+
+            if (!pending.Union(stale).Any())
+            {
+                return Error<PendingConsentDto>(ResultKey.Consent.NoPendingConsent);
+            }
+
+            var applicationLanguages = await _nyssContext.ApplicationLanguages.ToListAsync();
+            var docs = applicationLanguages.Select(apl => new AgreementDocument
+            {
+                Language = apl.DisplayName,
+                LanguageCode = apl.LanguageCode,
+                AgreementDocumentUrl = _generalBlobProvider.GetPlatformAgreementUrl(apl.LanguageCode.ToLower())
+            }).Where(d => d.AgreementDocumentUrl != null);
+
+            var pendingSociety = new PendingConsentDto
+            {
+                AgreementDocuments = docs,
+                PendingSocieties = pending.Select(ns => new PendingNationalSocietyConsentDto
+                {
+                    NationalSocietyName = ns.Name,
+                    NationalSocietyId = ns.Id
+                }).ToList(),
+                StaleSocieties = stale.Select(ns => new PendingNationalSocietyConsentDto
+                {
+                    NationalSocietyName = ns.Name,
+                    NationalSocietyId = ns.Id
+                }).ToList()
+            };
+
+            return Success(pendingSociety);
+        }
+
+        private async Task<(List<NationalSociety> pendingSocieties, List<NationalSociety> staleSocieties)> GetPendingAndStaleNationalSocieties(User userEntity)
         {
             var applicableNationalSocieties = _nyssContext.NationalSocieties.Where(x =>
                 (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id)) ||
