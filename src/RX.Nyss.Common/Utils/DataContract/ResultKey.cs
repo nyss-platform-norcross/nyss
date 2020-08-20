@@ -194,6 +194,8 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string NoAccess = "report.noAccess";
             public const string ReportSentSuccessfully = "report.sentSuccessfully";
             public const string NoGatewaySettingFoundForNationalSociety = "report.noGatewaySettingFoundForNationalSociety";
+            public const string LinkedToSupervisor = "report.linkedToSupervisor";
+            public const string LinkedToOrganization = "report.linkedToOrganization";
 
             public static class Edit
             {

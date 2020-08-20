@@ -6,6 +6,7 @@ using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -55,10 +56,10 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _projectService.GetHealthRiskNames(Arg.Any<int>(), Arg.Any<List<HealthRiskType>>()).Returns(Task.FromResult(Enumerable.Empty<HealthRiskDto>()));
 
             _authorizationService = Substitute.For<IAuthorizationService>();
-            _authorizationService.GetCurrentUserName().Returns((string)null);
-
+            
             _excelExportService = Substitute.For<IExcelExportService>();
             _stringsResourcesService = Substitute.For<IStringsResourcesService>();
+            _stringsResourcesService.GetStringsResources("en").Returns(Task.FromResult(new Result<IDictionary<string, string>>(new Dictionary<string, string>(), true)));
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
 
@@ -215,21 +216,33 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Id = 1,
                     Project = projects[0],
                     Village = villages[0],
-                    DataCollectorType = DataCollectorType.Human
+                    DataCollectorType = DataCollectorType.Human,
+                    Supervisor = new SupervisorUser
+                    {
+                        Name = "Super"
+                    }
                 },
                 new DataCollector
                 {
                     Id = 2,
                     Project = projects[1],
                     Village = villages[0],
-                    DataCollectorType = DataCollectorType.Human
+                    DataCollectorType = DataCollectorType.Human,
+                    Supervisor = new SupervisorUser
+                    {
+                        Name = "Super"
+                    }
                 },
                 new DataCollector
                 {
                     Id = 3,
                     Project = projects[1],
                     Village = villages[0],
-                    DataCollectorType = DataCollectorType.CollectionPoint
+                    DataCollectorType = DataCollectorType.CollectionPoint,
+                    Supervisor = new SupervisorUser
+                    {
+                        Name = "Super"
+                    }
                 }
             };
 
