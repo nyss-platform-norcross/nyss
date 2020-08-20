@@ -3,6 +3,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as consts from "./agreementsConstants";
 import * as actions from "./agreementsActions";
 import * as http from "../../../utils/http";
+import * as auth from "../../../authentication/auth";
 
 export const agreementsSagas = () => [
   takeEvery(consts.OPEN_AGREEMENT_PAGE.INVOKE, getPendingAgreementDocuments),
@@ -25,7 +26,7 @@ function* acceptAgreement({ selectedLanguage }) {
   try {
     yield call(http.post, `/api/agreement/accept?languageCode=${selectedLanguage}`);
     yield put(actions.acceptAgreement.success());
-    window.location.href = "/";
+    auth.redirectToRoot();
   } catch (error) {
     yield put(appActions.showMessage(error.message));
     yield put(actions.acceptAgreement.failure(error.message));

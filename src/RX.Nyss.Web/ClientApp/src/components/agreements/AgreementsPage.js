@@ -121,7 +121,7 @@ const AgreementsPageComponent = (props) => {
               <SubmitButton onClick={handleSubmit} isFetching={props.submitting}>{strings(stringKeys.nationalSocietyConsents.submit)}</SubmitButton>
 
               {(props.staleSocieties.length > 0 && props.pendingSocieties.length === 0 &&
-                <Button style={{marginLeft: "15px"}} href="/">{strings(stringKeys.nationalSocietyConsents.postpone)}</Button>
+                <Button style={{ marginLeft: "15px" }} href="/">{strings(stringKeys.nationalSocietyConsents.postpone)}</Button>
               )}
             </Grid>
           </Grid>

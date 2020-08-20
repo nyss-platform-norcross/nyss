@@ -74,7 +74,7 @@ export const App = ({ history }) => (
           <Route path='/resetPasswordCallback' component={ResetPasswordCallbackPage} />
 
           <AuthRoute exact path='/' component={Home} />
-          <AuthRoute exact path='/agreements' component={AgreementsPage} />
+          <AuthRoute exact path='/agreements' component={AgreementsPage} ignoreRedirection />
 
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/dashboard' component={NationalSocietyDashboardPage} roles={accessMap.nationalSocieties.showDashboard} />
           <AuthRoute exact path='/nationalsocieties/:nationalSocietyId/overview' component={NationalSocietiesOverviewPage} roles={accessMap.nationalSocieties.edit} />

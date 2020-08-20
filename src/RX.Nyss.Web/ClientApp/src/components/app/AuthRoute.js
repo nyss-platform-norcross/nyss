@@ -4,7 +4,7 @@ import { Route, Redirect } from "react-router";
 import { BaseLayout } from "../layout/BaseLayout";
 import { ReactReduxContext } from 'react-redux'
 
-export const AuthRoute = ({ component: Component, roles, computedMatch, ...rest }) => (
+export const AuthRoute = ({ component: Component, roles, computedMatch, ignoreRedirection, ...rest }) => (
   <Route exact {...rest} render={props => {
     return <ReactReduxContext.Consumer>
       {({ store }) => {
@@ -17,7 +17,7 @@ export const AuthRoute = ({ component: Component, roles, computedMatch, ...rest 
 
         const redirectUrl = auth.getRedirectUrl();
 
-        if (redirectUrl) {
+        if (redirectUrl && !ignoreRedirection) {
           auth.removeRedirectUrl();
           return <Redirect to={redirectUrl} />;
         }

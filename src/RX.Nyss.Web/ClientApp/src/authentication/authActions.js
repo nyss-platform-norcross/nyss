@@ -1,7 +1,4 @@
 import { LOGIN, LOGOUT, VERIFY_EMAIL, RESET_PASSWORD, RESET_PASSWORD_CALLBACK } from "./authConstants";
-import { push } from "connected-react-router";
-
-export const goToAgreements = () => push(`/agreements`);
 
 export const login = {
   invoke: (userName, password, redirectUrl) =>
