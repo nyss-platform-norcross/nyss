@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Services;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -23,6 +24,7 @@ namespace RX.Nyss.Web.Tests.Features.Agreements
         private readonly IGeneralBlobProvider _generalBlobProviderMock;
         private readonly IDataBlobService _dataBlobServiceMock;
         private readonly IAuthorizationService _authorizationServiceMock;
+        private readonly IDateTimeProvider _dateTimeProviderMock;
 
 
         public AgreementServiceTests()
@@ -31,12 +33,13 @@ namespace RX.Nyss.Web.Tests.Features.Agreements
             _authorizationServiceMock = Substitute.For<IAuthorizationService>();
             _generalBlobProviderMock = Substitute.For<IGeneralBlobProvider>();
             _dataBlobServiceMock = Substitute.For<IDataBlobService>();
+            _dateTimeProviderMock = Substitute.For<IDateTimeProvider>();
 
             // Current user stuff
             _authorizationServiceMock.GetCurrentUserName().Returns("yo");
             _authorizationServiceMock.IsCurrentUserInAnyRole(Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator).Returns(true);
 
-            _agreementService = new AgreementService(_authorizationServiceMock, _nyssContextMock, _generalBlobProviderMock, _dataBlobServiceMock);
+            _agreementService = new AgreementService(_authorizationServiceMock, _nyssContextMock, _generalBlobProviderMock, _dataBlobServiceMock, _dateTimeProviderMock);
         }
 
         [Fact]

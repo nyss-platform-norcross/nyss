@@ -34,7 +34,8 @@ namespace RX.Nyss.Web.Features.Agreements
             await _agreementService.GetPendingAgreementDocuments();
 
         /// <summary>
-        /// Will set the current user as the head manager for the organization he or she is pending as.
+        /// Will make the current user accept any pending agreements and storing it with the timestamp and a reference to a copied
+        /// version of the agreement document in the selected language. It will also set the current user as the head manager for the default organization if he or she is pending as that.
         /// </summary>
         /// <param name="languageCode">The selected language the user has chosen to see the agreement in</param>
         /// <returns></returns>

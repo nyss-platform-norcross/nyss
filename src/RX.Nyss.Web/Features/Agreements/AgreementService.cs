@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Services;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
@@ -29,13 +30,15 @@ namespace RX.Nyss.Web.Features.Agreements
         private readonly INyssContext _nyssContext;
         private readonly IGeneralBlobProvider _generalBlobProvider;
         private readonly IDataBlobService _dataBlobService;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
-        public AgreementService(IAuthorizationService authorizationService, INyssContext nyssContext, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService)
+        public AgreementService(IAuthorizationService authorizationService, INyssContext nyssContext, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService, IDateTimeProvider dateTimeProvider)
         {
             _authorizationService = authorizationService;
             _nyssContext = nyssContext;
             _generalBlobProvider = generalBlobProvider;
             _dataBlobService = dataBlobService;
+            _dateTimeProvider = dateTimeProvider;
         }
 
         public async Task<Result> AcceptAgreement(string languageCode)
@@ -52,7 +55,7 @@ namespace RX.Nyss.Web.Features.Agreements
             }
 
             var (pendingSocieties, staleSocieties) = await GetPendingAndStaleNationalSocieties(user);
-            var utcNow = DateTime.UtcNow;
+            var utcNow = _dateTimeProvider.UtcNow;
 
             var consentDocumentFileName = Guid.NewGuid() + ".pdf";
             var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
