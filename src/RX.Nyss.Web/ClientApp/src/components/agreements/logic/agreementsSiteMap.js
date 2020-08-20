@@ -1,8 +1,8 @@
 import { strings, stringKeys } from "../../../strings";
 
-export const nationalSocietyConsentsSiteMap = [
+export const agreementsSiteMap = [
   {
-    path: "/nationalSocietyConsents",
+    path: "/agreements",
     title: () => strings(stringKeys.nationalSocietyConsents.title)
   }
 ];

@@ -29,8 +29,10 @@ function* login({ userName, password, redirectUrl }) {
 
     yield put(authActions.login.success());
 
-    if (redirectUrl) {
-      auth.redirectTo(redirectUrl);
+    const agreementStatusResponse = yield call(http.get, "/api/agreement/listPending");
+
+    if (agreementStatusResponse.value.pendingSocieties.length > 0 || agreementStatusResponse.value.staleSocieties.length > 0) {
+      auth.redirectTo("/agreements");
     } else {
       auth.redirectToRoot();
     }

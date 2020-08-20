@@ -197,8 +197,9 @@ export const initialState = {
     },
     filters: null
   },
-  nationalSocietyConsents: {
-    nationalSocieties: [],
+  agreements: {
+    pendingSocieties: [],
+    staleSocieties: [],
     agreementDocuments: []
   },
   reports: {

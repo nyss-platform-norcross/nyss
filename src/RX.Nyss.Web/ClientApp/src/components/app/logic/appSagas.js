@@ -26,10 +26,6 @@ function* initApplication() {
     yield call(getStrings, user ? user.languageCode : "en");
     yield put(actions.initApplication.success());
 
-    if (user && user.hasPendingNationalSocietyConsents){
-      yield put(actions.goToNationalSocietyConsents())
-    }
-
     window.userLanguage = user && user.languageCode;
 
     storeUser(user);
@@ -99,7 +95,6 @@ function* getAppData() {
   try {
     const appData = yield call(http.get, "/api/appData/getAppData", true);
     yield put(actions.getAppData.success(appData.value.contentLanguages, appData.value.countries, appData.value.isDevelopment, appData.value.isDemo, appData.value.authCookieExpiration));
-    return appData.value;
   } catch (error) {
     yield put(actions.getAppData.failure(error.message));
   }

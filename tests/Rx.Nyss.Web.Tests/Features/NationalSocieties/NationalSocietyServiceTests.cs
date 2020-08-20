@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MockQueryable.NSubstitute;
 using NSubstitute;
-using RX.Nyss.Common.Services;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
@@ -12,7 +8,6 @@ using RX.Nyss.Web.Features.Managers;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Dto;
-using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.SmsGateways;
 using RX.Nyss.Web.Features.TechnicalAdvisors;
 using RX.Nyss.Web.Services.Authorization;
@@ -32,54 +27,28 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocieties
 
         private readonly IManagerService _managerServiceMock;
         private readonly ITechnicalAdvisorService _technicalAdvisorServiceMock;
-        private readonly IOrganizationService _organizationServiceMock;
-        private readonly IGeneralBlobProvider _generalBlobProviderMock;
-        private readonly IDataBlobService _dataBlobServiceMock;
-
+        private readonly IAuthorizationService _authorizationServiceMock;
 
         public NationalSocietyServiceTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
             var loggerAdapterMock = Substitute.For<ILoggerAdapter>();
-            var authorizationService = Substitute.For<IAuthorizationService>();
-            authorizationService.GetCurrentUserName().Returns("yo");
+            _authorizationServiceMock = Substitute.For<IAuthorizationService>();
+            _authorizationServiceMock.GetCurrentUserName().Returns("yo");
             _managerServiceMock = Substitute.For<IManagerService>();
             _technicalAdvisorServiceMock = Substitute.For<ITechnicalAdvisorService>();
             _smsGatewayServiceMock = Substitute.For<ISmsGatewayService>();
-            _generalBlobProviderMock = Substitute.For<IGeneralBlobProvider>();
-            _organizationServiceMock = Substitute.For<IOrganizationService>();
-            _dataBlobServiceMock = Substitute.For<IDataBlobService>();
 
             _nationalSocietyService = new NationalSocietyService(
                 _nyssContextMock,
                 Substitute.For<INationalSocietyAccessService>(),
                 loggerAdapterMock,
-                authorizationService,
+                _authorizationServiceMock,
                 _managerServiceMock,
                 _technicalAdvisorServiceMock,
-                _smsGatewayServiceMock,
-                _generalBlobProviderMock,
-                _organizationServiceMock,
-                _dataBlobServiceMock);
+                _smsGatewayServiceMock);
 
             _testData = new NationalSocietyServiceTestData(_nyssContextMock, _smsGatewayServiceMock);
-        }
-
-        [Fact]
-        public async Task ConsentToNationalSocietyAgreement_WhenUserNotFound_ShouldReturnNotFound()
-        {
-            // Arrange
-            _testData.BasicData.Data.GenerateData().AddToDbContext();
-            var users = new List<User> { new ManagerUser { EmailAddress = "no-yo" } };
-            var mockDbSet = users.AsQueryable().BuildMockDbSet();
-            _nyssContextMock.Users.Returns(mockDbSet);
-
-            // Act
-            var result = await _nationalSocietyService.ConsentToNationalSocietyAgreement("fr");
-
-            // Assert
-            result.IsSuccess.ShouldBeFalse();
-            result.Message.Key.ShouldBe(ResultKey.User.Common.UserNotFound);
         }
 
         [Fact]

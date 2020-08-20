@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 
-namespace RX.Nyss.Web.Features.NationalSocieties.Dto
+namespace RX.Nyss.Web.Features.Agreements.Dto
 {
     public class PendingConsentDto
     {
-        public List<PendingNationalSocietyConsentDto> NationalSocieties { get; set; }
+        public List<PendingNationalSocietyConsentDto> PendingSocieties { get; set; }
+        public List<PendingNationalSocietyConsentDto> StaleSocieties { get; set; }
         public IEnumerable<AgreementDocument> AgreementDocuments { get; set; }
     }
 
@@ -20,7 +21,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties.Dto
     public class PendingNationalSocietyConsentDto
     {
         public string NationalSocietyName { get; set; }
+
         public int NationalSocietyId { get; set; }
-        public string NationalSocietyCountryName { get; set; }
     }
 }
