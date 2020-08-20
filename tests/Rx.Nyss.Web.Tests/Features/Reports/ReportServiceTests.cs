@@ -56,8 +56,7 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             _projectService.GetHealthRiskNames(Arg.Any<int>(), Arg.Any<List<HealthRiskType>>()).Returns(Task.FromResult(Enumerable.Empty<HealthRiskDto>()));
 
             _authorizationService = Substitute.For<IAuthorizationService>();
-            //_authorizationService.GetCurrentUserName().Returns((string)null);
-
+            
             _excelExportService = Substitute.For<IExcelExportService>();
             _stringsResourcesService = Substitute.For<IStringsResourcesService>();
             _stringsResourcesService.GetStringsResources("en").Returns(Task.FromResult(new Result<IDictionary<string, string>>(new Dictionary<string, string>(), true)));
