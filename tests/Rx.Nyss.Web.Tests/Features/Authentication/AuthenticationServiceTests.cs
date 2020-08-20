@@ -28,13 +28,11 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
         private readonly INyssContext _nyssContext;
         private readonly AuthenticationService _authenticationService;
         private readonly AdministratorUser _user;
-        private readonly INationalSocietyService _nationalSocietyService;
 
         public AuthenticationServiceTests()
         {
             _userIdentityService = Substitute.For<IUserIdentityService>();
             _nyssContext = Substitute.For<INyssContext>();
-            _nationalSocietyService = Substitute.For<INationalSocietyService>();
 
             _user = new AdministratorUser
             {
@@ -42,7 +40,7 @@ namespace RX.Nyss.Web.Tests.Features.Authentication
                 Name = UserName
             };
             _nyssContext.Users = new List<User> { _user }.AsQueryable().BuildMockDbSet();
-            _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext, _nationalSocietyService);
+            _authenticationService = new AuthenticationService(_userIdentityService, _nyssContext);
         }
 
         [Fact]

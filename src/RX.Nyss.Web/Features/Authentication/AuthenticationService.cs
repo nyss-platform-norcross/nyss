@@ -8,8 +8,6 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Authentication.Dto;
-using RX.Nyss.Web.Features.NationalSocieties;
-using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Services;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
@@ -27,16 +25,13 @@ namespace RX.Nyss.Web.Features.Authentication
     {
         private readonly INyssContext _nyssContext;
         private readonly IUserIdentityService _userIdentityService;
-        private readonly INationalSocietyService _nationalSocietyService;
 
         public AuthenticationService(
             IUserIdentityService userIdentityService,
-            INyssContext nyssContext,
-            INationalSocietyService nationalSocietyService)
+            INyssContext nyssContext)
         {
             _userIdentityService = userIdentityService;
             _nyssContext = nyssContext;
-            _nationalSocietyService = nationalSocietyService;
         }
 
         public async Task<Result> Login(LoginRequestDto dto)

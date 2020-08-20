@@ -108,7 +108,11 @@ namespace RX.Nyss.Web.Features.Agreements
         {
             if (!_authorizationService.IsCurrentUserInAnyRole(Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator))
             {
-                return Success(new AgreementsStatusesDto());
+                return Success(new AgreementsStatusesDto
+                {
+                    PendingSocieties = new List<string>(),
+                    StaleSocieties = new List<string>()
+                });
             }
 
             var identityUserName = _authorizationService.GetCurrentUserName();
