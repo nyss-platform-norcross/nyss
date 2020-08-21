@@ -45,10 +45,9 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
         {getReportIcon(report.status)}
         <span className={styles.time}>{dayjs(report.receivedAt).format('YYYY-MM-DD HH:mm')}</span>
         <div className={styles.senderContainer}>
-          <span className={styles.senderLabel}>{strings(stringKeys.alerts.assess.report.sender)}</span>
-          {report.isAnonymized && 
-            <span className={styles.linkedToSupervisor}>{strings(stringKeys.alerts.assess.report.linkedToSupervisor)}</span>
-          }
+          <span className={styles.senderLabel}>
+            {strings(stringKeys.alerts.assess.report.sender)} {report.isAnonymized && strings(stringKeys.alerts.assess.report.linkedToSupervisor)}
+          </span>
           <span className={styles.sender}>{report.dataCollector || report.organization}</span>
         </div>
       </ExpansionPanelSummary>
