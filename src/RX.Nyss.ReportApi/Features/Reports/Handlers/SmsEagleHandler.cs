@@ -98,7 +98,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         Sender = sender,
                         Timestamp = timestamp,
                         ReceivedAt = _dateTimeProvider.UtcNow,
-                        Text = text,
+                        Text = text.Truncate(160),
                         IncomingMessageId = incomingMessageId,
                         OutgoingMessageId = outgoingMessageId,
                         ModemNumber = modemNumber,

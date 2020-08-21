@@ -48,6 +48,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 throw new ReportValidationException("A report cannot be empty.");
             }
 
+            if (reportMessage.Length > 160)
+            {
+                throw new ReportValidationException("A report cannot be longer than 160 characters.");
+            }
+
             if (SingleReportRegex.IsMatch(reportMessage))
             {
                 return ParseSingleReport(reportMessage);
