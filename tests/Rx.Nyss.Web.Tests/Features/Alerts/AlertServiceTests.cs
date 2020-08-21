@@ -36,8 +36,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly User _currentUser = new GlobalCoordinatorUser();
         private readonly ISmsPublisherService _smsPublisherService;
         private readonly List<GatewaySetting> _gatewaySettings;
-        private readonly IStringsResourcesService _stringsResourcesService;
-        private readonly IUserService _userService;
 
         public AlertServiceTests()
         {
@@ -50,8 +48,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _authorizationService = Substitute.For<IAuthorizationService>();
-            _stringsResourcesService = Substitute.For<IStringsResourcesService>();
-            _userService = Substitute.For<IUserService>();
 
             _smsPublisherService = Substitute.For<ISmsPublisherService>();
             _alertService = new AlertService(_nyssContext,
@@ -62,9 +58,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 loggerAdapter,
                 _dateTimeProvider,
                 _authorizationService,
-                _smsPublisherService,
-                _stringsResourcesService,
-                _userService);
+                _smsPublisherService);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();

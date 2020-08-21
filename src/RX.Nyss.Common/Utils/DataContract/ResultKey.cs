@@ -321,11 +321,6 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string WrongStatus = "alert.closeAlert.wrongStatus";
                 public const string NoPermission = "alert.closeAlert.noPermission";
             }
-
-            public static class Report
-            {
-                public const string LinkedToSupervisor = "alert.report.linkedToSupervisor";
-            }
         }
         public static class Consent
         {
