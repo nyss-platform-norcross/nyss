@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Extensions;
+using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
@@ -14,6 +15,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -178,6 +180,8 @@ namespace RX.Nyss.Web.Features.Alerts
                         DataCollector = ar.Report.DataCollector.DisplayName,
                         OrganizationId = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId,
                         OrganizationName = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().Organization.Name,
+                        IsAnonymized = currentUser.Role == Role.Supervisor && ar.Report.DataCollector.Supervisor.Id != currentUser.Id,
+                        SupervisorName = ar.Report.DataCollector.Supervisor.Name,
                         ReceivedAt = ar.Report.ReceivedAt,
                         PhoneNumber = ar.Report.PhoneNumber,
                         Village = ar.Report.RawReport.Village.Name,
@@ -215,15 +219,16 @@ namespace RX.Nyss.Web.Features.Alerts
                     ? new AlertAssessmentResponseDto.ReportDto
                     {
                         Id = ar.Id,
-                        DataCollector = ar.DataCollector,
+                        DataCollector = ar.IsAnonymized ? ar.SupervisorName : ar.DataCollector,
                         ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
-                        PhoneNumber = ar.PhoneNumber,
+                        PhoneNumber = ar.IsAnonymized ? "***" : ar.PhoneNumber,
                         Status = ar.Status.ToString(),
                         Village = ar.Village,
                         District = ar.District,
                         Region = ar.Region,
                         Sex = GetSex(ar.ReportedCase),
-                        Age = GetAge(ar.ReportedCase)
+                        Age = GetAge(ar.ReportedCase),
+                        IsAnonymized = ar.IsAnonymized
                     }
                     : new AlertAssessmentResponseDto.ReportDto
                     {

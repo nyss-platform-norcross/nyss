@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Extensions;
+using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
@@ -14,6 +15,7 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
@@ -46,6 +48,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _authorizationService = Substitute.For<IAuthorizationService>();
+
             _smsPublisherService = Substitute.For<ISmsPublisherService>();
             _alertService = new AlertService(_nyssContext,
                 _emailPublisherService,

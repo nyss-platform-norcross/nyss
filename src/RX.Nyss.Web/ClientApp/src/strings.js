@@ -812,6 +812,7 @@ export const stringKeys = {
         sex: "alerts.assess.report.sex",
         age: "alerts.assess.report.age",
         id: "alerts.assess.report.id",
+        linkedToSupervisor: "alerts.assess.report.linkedToSupervisor"
       }
     },
     logs: {
