@@ -19,14 +19,11 @@ import * as roles from '../../authentication/roles';
 import { getBirthDecades } from '../dataCollectors/logic/dataCollectorsService';
 import SelectField from '../forms/SelectField';
 import { ValidationMessage } from '../forms/ValidationMessage';
-import { MultiSelect } from '../forms/MultiSelect';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 
 const NationalSocietyUsersCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [selectedRole, setRole] = useState(null);
-  const [alertRecipientsDataSource, setAlertRecipientsDataSource] = useState([]);
-  const [selectedAlertRecipients, setSelectedAlertRecipients] = useState([]);
   const [confirmCoordinatorDialog, setConfirmCoordinatorDialog] = useState({
     isOpened: false,
     isConfirmed: false
@@ -152,31 +149,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
   useCustomErrors(form, props.error);
 
-  const onProjectChange = (projectId) => {
-    const project = props.data.projects.filter(p => p.id === parseInt(projectId))[0];
-    setAlertRecipientsDataSource(project.alertRecipients.map(ar => ({ label: `${ar.organization} - ${ar.role}`, value: ar.id, data: ar })));
-    setSelectedAlertRecipients([]);
-  }
-
-  const onAlertRecipientsChange = useCallback((_, eventData) => {
-    let newAlertRecipients = [];
-    if (eventData.action === "select-option") {
-      newAlertRecipients = [...selectedAlertRecipients, eventData.option.data];
-    } else if (eventData.action === "remove-value" || eventData.action === "pop-value") {
-      newAlertRecipients = selectedAlertRecipients.filter(sar => sar.id !== eventData.removedValue.value);
-    }
-
-    setSelectedAlertRecipients(newAlertRecipients);
-  }, [selectedAlertRecipients]);
-
-  const setSupervisorAlertRecipients = useCallback((role) => {
-    if (role !== roles.Supervisor) {
-      return null;
-    }
-
-    return selectedAlertRecipients.map(sar => sar.id);
-  }, [selectedAlertRecipients]);
-
   const { create } = props;
 
   const createUser = useCallback(() => {
@@ -186,10 +158,9 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organizationId: (canChangeOrganization && values.organizationId) ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
-      setAsHeadManager: hasAnyRole(roles.Coordinator, roles.GlobalCoordinator) ? true : null,
-      supervisorAlertRecipients: setSupervisorAlertRecipients(values.role)
+      setAsHeadManager: hasAnyRole(roles.Coordinator, roles.GlobalCoordinator) ? true : null
     });
-  }, [hasAnyRole, canChangeOrganization, form, create, props.nationalSocietyId, setSupervisorAlertRecipients]);
+  }, [hasAnyRole, canChangeOrganization, form, create, props.nationalSocietyId]);
 
   const handleSubmit = useCallback(e => {
     e.preventDefault();
@@ -330,7 +301,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                   label={strings(stringKeys.nationalSocietyUser.form.project)}
                   field={form.fields.projectId}
                   name="projectId"
-                  onChange={e => onProjectChange(e.target.value)}
                 >
                   {props.data.projects.map(project => (
                     <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
@@ -338,14 +308,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                     </MenuItem>
                   ))}
                 </SelectField>
-              </Grid>
-              <Grid item xs={12}>
-                <MultiSelect
-                  label={strings(stringKeys.nationalSocietyUser.form.alertRecipients)}
-                  options={alertRecipientsDataSource}
-                  value={alertRecipientsDataSource.filter(ar => (selectedAlertRecipients.some(sar => sar.id === ar.value)))}
-                  onChange={onAlertRecipientsChange}
-                />
               </Grid>
             </Fragment>
           )}

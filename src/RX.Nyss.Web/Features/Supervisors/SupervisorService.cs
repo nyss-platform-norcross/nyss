@@ -178,9 +178,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                 supervisorUser.Organization = editSupervisorRequestDto.Organization;
 
                 await UpdateSupervisorProjectReferences(supervisorUser, supervisorUserData.CurrentProjectReference, editSupervisorRequestDto.ProjectId);
-
-                await UpdateAlertRecipientsReferences(supervisorUser, editSupervisorRequestDto.SupervisorAlertRecipients);
-
+                
                 if (editSupervisorRequestDto.OrganizationId.HasValue)
                 {
                     var userLink = await _nyssContext.UserNationalSocieties
@@ -299,10 +297,7 @@ namespace RX.Nyss.Web.Features.Supervisors
             };
 
             await AddNewSupervisorToProject(user, createSupervisorRequestDto.ProjectId, nationalSocietyId);
-
-            var alertNotificationRecipients = await GetAlertNotificationRecipients(createSupervisorRequestDto.SupervisorAlertRecipients);
-            await AttachAlertRecipientsToSupervisor(user, alertNotificationRecipients);
-
+            
             var userNationalSociety = new UserNationalSociety
             {
                 NationalSociety = nationalSociety,
@@ -360,6 +355,8 @@ namespace RX.Nyss.Web.Features.Supervisors
             await _nyssContext.AddAsync(newSupervisorUserProject);
         }
 
+
+        // ToDo: Reuse this in ProjectAlertRecipient service
         private async Task AttachAlertRecipientsToSupervisor(SupervisorUser user, IEnumerable<AlertNotificationRecipient> alertNotificationRecipients)
         {
             foreach (var sar in alertNotificationRecipients)

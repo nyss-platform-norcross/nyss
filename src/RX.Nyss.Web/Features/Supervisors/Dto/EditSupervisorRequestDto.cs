@@ -19,19 +19,17 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
         public int? ProjectId { get; set; }
         public int? OrganizationId { get; set; }
         public string Organization { get; set; }
-        public IEnumerable<int> SupervisorAlertRecipients { get; set; }
         public int NationalSocietyId { get; set; }
 
         public class EditSupervisorRequestValidator : AbstractValidator<EditSupervisorRequestDto>
         {
-            public EditSupervisorRequestValidator(IOrganizationService organizationService, IProjectAccessService projectAccessService)
+            public EditSupervisorRequestValidator(IProjectAccessService projectAccessService)
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.Sex).IsInEnum();
                 RuleFor(m => m.DecadeOfBirth).NotEmpty().Must(y => y % 10 == 0).WithMessageKey(ResultKey.Validation.BirthGroupStartYearMustBeMulipleOf10);
                 RuleFor(m => m.PhoneNumber).NotEmpty().MaximumLength(20).PhoneNumber();
                 RuleFor(m => m.AdditionalPhoneNumber).MaximumLength(20).PhoneNumber().Unless(r => string.IsNullOrEmpty(r.AdditionalPhoneNumber));
-                RuleFor(s => s.SupervisorAlertRecipients).NotNull();
                 RuleFor(p => p.ProjectId)
                     .MustAsync((projectId, _) => projectAccessService.HasCurrentUserAccessToProject(projectId.Value))
                     .When(m => m.ProjectId.HasValue)
