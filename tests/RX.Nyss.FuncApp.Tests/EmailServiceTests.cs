@@ -32,7 +32,7 @@ namespace RX.Nyss.FuncApp.Tests
 
         [Theory]
         [InlineData("user@example.com")]
-        public async Task SendEmailWithMailjet_WhenSendToAllFlagIsMissing_ShouldUseSandboxModeAndLogWarning(string email)
+        public async Task SendEmail_WhenSendToAllFlagIsMissing_ShouldUseSandboxModeAndLogWarning(string email)
         {
             // Act
             await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "hey@example.com", "");
@@ -43,7 +43,7 @@ namespace RX.Nyss.FuncApp.Tests
 
         [Theory]
         [InlineData("user@example.com")]
-        public async Task SendEmailWithMailjet_WhenSendToAllIsFalse_ShouldUseSandboxMode(string email)
+        public async Task SendEmail_WhenSendToAllIsFalse_ShouldUseSandboxMode(string email)
         {
             // Act
             await _emailService.SendEmail(new SendEmailMessage { To = new Contact { Email = email } }, "", "");
@@ -53,7 +53,7 @@ namespace RX.Nyss.FuncApp.Tests
         }
 
         [Fact]
-        public async Task SendEmailWithMailjet_WhenSendToAllIsFalse_ShouldUseSandboxModeUnlessWhiteListed()
+        public async Task SendEmail_WhenSendToAllIsFalse_ShouldUseSandboxModeUnlessWhiteListed()
         {
             // Arrange
             var whitelistedEmail = "whitelisted@email.com";
@@ -74,7 +74,7 @@ namespace RX.Nyss.FuncApp.Tests
         [InlineData("user@example.com")]
         [InlineData("donald.duck@example.com")]
         [InlineData("scrooge.mc.duck@example.com")]
-        public async Task SendEmailWithMailjet_WhenSendToAllIsTrue_ShouldSendToAll(string email)
+        public async Task SendEmail_WhenSendToAllIsTrue_ShouldSendToAll(string email)
         {
             // Arrange
             _configurationMock.MailConfig.SendToAll = true;
@@ -92,7 +92,7 @@ namespace RX.Nyss.FuncApp.Tests
 
         [Theory]
         [InlineData("user@example.com", "+4712345678")]
-        public async Task SendEmailWithMailjet_WhenMessageSendAsTextOnlyIsTrue_ShouldSendAsTextOnly(string email, string phoneNumber)
+        public async Task SendEmail_WhenMessageSendAsTextOnlyIsTrue_ShouldSendAsTextOnly(string email, string phoneNumber)
         {
             // Arrange
             var whitelist = "user@example.com";
@@ -115,7 +115,7 @@ namespace RX.Nyss.FuncApp.Tests
 
         [Theory]
         [InlineData("user@example.com", "+4712345679")]
-        public async Task SendEmailWithMailjet_WhenPhoneNumberIsNotWhitelisted_ShouldNotSendEmail(string email, string phoneNumber)
+        public async Task SendEmail_WhenPhoneNumberIsNotWhitelisted_ShouldNotSendEmail(string email, string phoneNumber)
         {
             // Arrange
             _configurationMock.MailConfig.SendFeedbackSmsToAll = false;
@@ -139,7 +139,7 @@ namespace RX.Nyss.FuncApp.Tests
 
         [Theory]
         [InlineData("user@example.com", "+4712345678")]
-        public async Task SendEmailWithMailjet_WhenSendFeedbackSmsToAllIsTrue_ShouldSendToAll(string email, string phoneNumber)
+        public async Task SendEmail_WhenSendFeedbackSmsToAllIsTrue_ShouldSendToAll(string email, string phoneNumber)
         {
             // Arrange
             _configurationMock.MailConfig.SendFeedbackSmsToAll = true;

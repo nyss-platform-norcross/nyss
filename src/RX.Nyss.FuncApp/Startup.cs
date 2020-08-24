@@ -13,10 +13,7 @@ namespace RX.Nyss.FuncApp
 {
     public class Startup : FunctionsStartup
     {
-        public override void Configure(IFunctionsHostBuilder builder)
-        {
-            builder.AddConfiguration();
-        }
+        public override void Configure(IFunctionsHostBuilder builder) => builder.AddConfiguration();
     }
 
     public static class FunctionHostBuilderExtensions
@@ -47,15 +44,11 @@ namespace RX.Nyss.FuncApp
             builder.Services.AddScoped<IWhitelistValidator, WhitelistValidator>();
             builder.Services.AddScoped<ISmsService, SmsService>();
             builder.Services.AddSingleton<IHttpPostClient, HttpPostClient>();
-            
-            if (nyssFuncAppConfig.MailConfig.UseSendGrid)
-            {
-                builder.Services.AddSingleton<IEmailClient, SendGridEmailClient>();
-            }
-            else
-            {
-                builder.Services.AddSingleton<IEmailClient, MailjetEmailClient>();
-            }
+
+            //https://docs.microsoft.com/en-us/azure/azure-functions/functions-app-settings#azure_functions_environment
+            builder.Services.AddScoped(typeof(IEmailClient), newConfiguration["AZURE_FUNCTIONS_ENVIRONMENT"] == "Development"
+                ? typeof(DummyConsoleEmailClient)
+                : typeof(SendGridEmailClient));
         }
     }
 }

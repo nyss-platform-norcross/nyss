@@ -17,21 +17,13 @@
 
         public class MailConfigOptions
         {
-            public bool UseSendGrid { get; set; }
             public bool EnableFeedbackSms { get; set; }
             public string FromAddress { get; set; }
             public string FromName { get; set; }
             public bool SendToAll { get; set; }
             public bool SendFeedbackSmsToAll { get; set; }
-            public MailjetConfigOptions Mailjet { get; set; }
             public SendGridConfigOptions SendGrid { get; set; }
 
-            public class MailjetConfigOptions
-            {
-                public string ApiKey { get; set; }
-                public string ApiSecret { get; set; }
-                public string SendMailUrl { get; set; }
-            }
             public class SendGridConfigOptions
             {
                 public string SendMailUrl { get; set; }
