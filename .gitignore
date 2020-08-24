@@ -284,3 +284,4 @@ src/RX.Nyss.Web/RX.Nyss.Web.xml
 **/appsettings.Development.json
 **/local.settings.json
 /scripts/tmp*
+serviceDependencies.local.json
