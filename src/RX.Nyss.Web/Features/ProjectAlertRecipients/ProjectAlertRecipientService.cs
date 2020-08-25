@@ -58,7 +58,9 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                     Role = anr.Role,
                     Organization = anr.Organization,
                     Email = anr.Email,
-                    PhoneNumber = anr.PhoneNumber
+                    PhoneNumber = anr.PhoneNumber,
+                    HealthRisks = anr.ProjectHealthRiskAlertRecipients.Select(phr => phr.ProjectHealthRisk.HealthRisk.HealthRiskCode),
+                    Supervisors = anr.SupervisorAlertRecipients.Select(sr => sr.Supervisor.Name)
                 })
                 .ToListAsync();
 

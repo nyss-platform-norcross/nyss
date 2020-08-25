@@ -314,7 +314,9 @@ export const stringKeys = {
       organization: "projectAlertRecipient.list.organization",
       email: "projectAlertRecipient.list.email",
       phoneNumber: "projectAlertRecipient.list.phoneNumber",
-      removalConfirmation: "projectAlertRecipient.list.removalConfirmation"
+      removalConfirmation: "projectAlertRecipient.list.removalConfirmation",
+      supervisors: "projectAlertRecipient.list.supervisors",
+      healthRisks: "projectAlertRecipient.list.healthRisks"
     },
   },
   project: {

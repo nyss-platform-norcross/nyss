@@ -1,4 +1,6 @@
-﻿namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
+﻿using System.Collections.Generic;
+
+namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
 {
     public class ProjectAlertRecipientListResponseDto
     {
@@ -10,5 +12,9 @@
         public string Role { get; set; }
 
         public string Organization { get; set; }
+
+        public IEnumerable<int> HealthRisks { get; set; }
+
+        public IEnumerable<string> Supervisors { get; set; }
     }
 }
