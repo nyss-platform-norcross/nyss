@@ -58,6 +58,8 @@ namespace RX.Nyss.Data
 
         public DbSet<ProjectHealthRisk> ProjectHealthRisks { get; set; }
 
+        public DbSet<ProjectHealthRiskAlertRecipient> ProjectHealthRiskAlertRecipients { get; set; }
+
         public DbSet<RawReport> RawReports { get; set; }
 
         public DbSet<Region> Regions { get; set; }

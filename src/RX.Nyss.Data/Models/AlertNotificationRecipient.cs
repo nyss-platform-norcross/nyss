@@ -12,5 +12,6 @@ namespace RX.Nyss.Data.Models
         public int ProjectId { get; set; }
         public int OrganizationId { get; set; }
         public virtual ICollection<SupervisorUserAlertRecipient> SupervisorAlertRecipients { get; set; }
+        public virtual ICollection<ProjectHealthRiskAlertRecipient> ProjectHealthRiskAlertRecipients { get; set; }
     }
 }
