@@ -204,15 +204,25 @@ export const theme = createMuiTheme({
       }
     },
     MuiTreeItem: {
-      root: {
-        "&:focus": {
-          backgroundColor: "inherit"
-        }
-      },
+      root: {},
       content: {
         padding: "8px",
-        background: "inherit !important"
-      }
+        cursor: "default !important",
+        "&:hover": {
+          backgroundColor: "rgba(0, 0, 0, 0.04)"
+        }
+      },
+      selected: {},
+      label: {
+        backgroundColor: "transparent !important",
+        cursor: "pointer"
+      },
+      iconContainer: {
+        cursor: "pointer",
+        "&:empty": {
+          cursor: "default"
+        }
+      },
     },
     MuiExpansionPanel: {
       root: {
