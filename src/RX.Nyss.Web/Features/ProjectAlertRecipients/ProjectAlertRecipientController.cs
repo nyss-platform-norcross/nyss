@@ -49,6 +49,16 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
         public Task<Result<int>> Create(int nationalSocietyId, int projectId, [FromBody] ProjectAlertRecipientRequestDto createDto) =>
             _alertRecipientService.Create(nationalSocietyId, projectId, createDto);
 
+
+        /// <summary>
+        /// Gets form data needed for creating a new alert recipient for a specified project.
+        /// </summary>
+        /// <param name="projectId">An identifier of a project</param>
+        [HttpGet("formData")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
+        public Task<Result<ProjectAlertRecipientFormDataDto>> FormData(int projectId) =>
+            _alertRecipientService.GetFormData(projectId);
+
         /// <summary>
         /// Edits an alert recipient.
         /// </summary>

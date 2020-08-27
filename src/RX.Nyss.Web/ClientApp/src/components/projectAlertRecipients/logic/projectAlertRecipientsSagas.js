@@ -5,7 +5,6 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { stringKeys } from "../../../strings";
-import { Administrator } from "../../../authentication/roles";
 
 export const projectAlertRecipientsSagas = () => [
   takeEvery(consts.OPEN_ALERT_RECIPIENTS_LIST.INVOKE, openProjectAlertRecipientsList),
@@ -34,11 +33,9 @@ function* openProjectAlertRecipientsList({ projectId }) {
 function* openAlertRecipientCreation({ projectId }) {
   yield put(actions.openCreation.request());
   try {
-    const userRoles = yield select(state => state.appData.user.roles);
-    const response = userRoles.some(r => r === Administrator) ? yield call(http.get, `/api/projectOrganization/list?projectId=${projectId}`) : null;
-    const organizations = response ? response.value : [];
+    const response = yield call(http.get, `/api/projectAlertRecipient/formData?projectId=${projectId}`);
     yield openProjectAlertRecipientsModule(projectId);
-    yield put(actions.openCreation.success(organizations));
+    yield put(actions.openCreation.success(response.value));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }

@@ -298,7 +298,9 @@ export const stringKeys = {
       email: "projectAlertRecipient.form.email",
       phoneNumber: "projectAlertRecipient.form.phoneNumber",
       create: "projectAlertRecipient.form.create",
-      update: "projectAlertRecipient.form.update"
+      update: "projectAlertRecipient.form.update",
+      supervisors: "projectAlertRecipient.form.supervisors",
+      healthRisks: "projectAlertRecipient.form.healthRisks"
     },
     create: {
       success: "projectAlertRecipient.create.success"

@@ -6,6 +6,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -19,6 +20,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
         Task<Result<int>> Create(int nationalSocietyId, int projectId, ProjectAlertRecipientRequestDto createDto);
         Task<Result> Edit(int alertRecipientId, ProjectAlertRecipientRequestDto editDto);
         Task<Result> Delete(int alertRecipientId);
+        Task<Result<ProjectAlertRecipientFormDataDto>> GetFormData(int projectId);
     }
 
     public class ProjectAlertRecipientService : IProjectAlertRecipientService
@@ -106,9 +108,9 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             }
 
             var organizationId = createDto.OrganizationId ?? await _nyssContext.UserNationalSocieties
-                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
-                    .Select(uns => uns.OrganizationId)
-                    .SingleOrDefaultAsync();
+                .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
 
             if (!organizationId.HasValue)
             {
@@ -192,6 +194,49 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
             await _nyssContext.SaveChangesAsync();
             return Success();
+        }
+
+        public async Task<Result<ProjectAlertRecipientFormDataDto>> GetFormData(int projectId)
+        {
+            var isAdmin = _authorizationService.IsCurrentUserInRole(Role.Administrator);
+            var nationalSocietyId = await _nyssContext.Projects.Where(p => p.Id == projectId).Select(p => p.NationalSocietyId).SingleOrDefaultAsync();
+
+            var currentUserOrganizationId = isAdmin
+                ? 0
+                : await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.NationalSocietyId == nationalSocietyId && uns.User.EmailAddress == _authorizationService.GetCurrentUserName())
+                    .Select(uns => uns.Organization.Id)
+                    .SingleOrDefaultAsync();
+
+            var organizations = await _nyssContext.Organizations.Where(o => isAdmin
+                    ? o.NationalSocietyId == nationalSocietyId
+                    : o.NationalSocietyId == nationalSocietyId && o.Id == currentUserOrganizationId)
+                .Select(o => new ProjectAlertOrganization
+                {
+                    Id = o.Id,
+                    Name = o.Name
+                }).ToListAsync();
+
+            var supervisors = await _nyssContext.SupervisorUserProjects.FilterAvailableUsers().Where(sup => isAdmin
+                    ? sup.SupervisorUser.CurrentProject.Id == projectId
+                    : sup.SupervisorUser.CurrentProject.Id == projectId && sup.SupervisorUser.UserNationalSocieties.Any(uns => uns.OrganizationId == currentUserOrganizationId))
+                .Select(s => new ProjectAlertSupervisors
+                {
+                    Id = s.SupervisorUser.Id,
+                    Name = s.SupervisorUser.Name,
+                    OrganizationId = s.SupervisorUser.UserNationalSocieties.Single(uns => uns.NationalSocietyId == nationalSocietyId).OrganizationId.Value
+                }).ToListAsync();
+
+            return Success(new ProjectAlertRecipientFormDataDto
+            {
+                Supervisors = supervisors,
+                ProjectOrganizations = organizations,
+                HealthRisks = await _nyssContext.ProjectHealthRisks.Where(phr => phr.Project.Id == projectId).Select(phr => new ProjectAlertHealthRisk
+                {
+                    Id = phr.HealthRiskId,
+                    HealthRiskName = phr.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguageId == phr.Project.NationalSociety.ContentLanguage.Id).Single().Name
+                }).ToListAsync()
+            });
         }
     }
 }

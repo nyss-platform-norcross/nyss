@@ -17,9 +17,12 @@ import TextInputField from '../forms/TextInputField';
 import { Administrator } from '../../authentication/roles';
 import SelectField from '../forms/SelectField';
 import { MenuItem } from '@material-ui/core';
+import { MultiSelect } from '../forms/MultiSelect';
 
 const ProjectAlertRecipientsCreatePageComponent = (props) => {
   const [organizations, setOrganizations] = useState([]);
+  const [supervisorsDataSource, setSupervisorsDataSource] = useState([]);
+  const [healtHRiskDataSource, setHealtHRiskDataSource] = useState([]);
   const userRoles = useSelector(state => state.appData.user.roles);
 
   const [form] = useState(() => {
@@ -67,7 +70,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
     });
   };
 
-  if (!props.organizations) {
+  if (!props.formData) {
     return null;
   }
 
@@ -120,7 +123,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                 field={form.fields.organizationId}
                 name="organizationId"
               >
-                {props.organizations.map(org => (
+                {props.formData.projectOrganizations.map(org => (
                   <MenuItem key={org.id} value={JSON.stringify(org.id)}>
                     {org.name}
                   </MenuItem>
@@ -128,13 +131,20 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
               </SelectField>
             </Grid>
           )}
+
+          <Grid item xs={12}>
+            <MultiSelect
+              label={strings(stringKeys.projectAlertRecipient.form.supervisors)}
+              options={supervisorsDataSource}
+            />
+          </Grid>
         </Grid>
         <FormActions>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.projectAlertRecipient.form.create)}</SubmitButton>
         </FormActions>
       </Form>
-    </Fragment>
+    </Fragment >
   );
 }
 
@@ -144,7 +154,7 @@ ProjectAlertRecipientsCreatePageComponent.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   listData: state.projectAlertRecipients.listData,
-  organizations: state.projectAlertRecipients.formData,
+  formData: state.projectAlertRecipients.formData,
   isSaving: state.projectAlertRecipients.formSaving,
   error: state.projectAlertRecipients.formError
 });
