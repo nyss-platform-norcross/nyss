@@ -300,7 +300,11 @@ export const stringKeys = {
       create: "projectAlertRecipient.form.create",
       update: "projectAlertRecipient.form.update",
       supervisors: "projectAlertRecipient.form.supervisors",
-      healthRisks: "projectAlertRecipient.form.healthRisks"
+      healthRisks: "projectAlertRecipient.form.healthRisks",
+      anyHealthRisk: "projectAlertRecipient.form.anyHealthRisk",
+      triggerDetails: "projectAlertRecipient.form.triggerDetails",
+      receiverDetails: "projectAlertRecipient.form.receiverDetails",
+      anySupervisor: "projectAlertRecipient.form.anySupervisor"
     },
     create: {
       success: "projectAlertRecipient.create.success"

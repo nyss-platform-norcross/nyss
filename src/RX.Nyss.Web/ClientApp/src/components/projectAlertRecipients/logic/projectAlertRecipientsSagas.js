@@ -33,9 +33,12 @@ function* openProjectAlertRecipientsList({ projectId }) {
 function* openAlertRecipientCreation({ projectId }) {
   yield put(actions.openCreation.request());
   try {
-    const response = yield call(http.get, `/api/projectAlertRecipient/formData?projectId=${projectId}`);
     yield openProjectAlertRecipientsModule(projectId);
-    yield put(actions.openCreation.success(response.value));
+    if (yield select(state => state.projectAlertRecipients.listStale)) {
+      yield call(getProjectAlertRecipients, projectId);
+    }
+    const formData = yield call(http.get, `/api/projectAlertRecipient/formData?projectId=${projectId}`);
+    yield put(actions.openCreation.success(formData.value));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }
