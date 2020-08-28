@@ -22,7 +22,7 @@ namespace RX.Nyss.Data.Models.Maps
                 .WithMany(x => x.ProjectHealthRiskAlertRecipients)
                 .HasForeignKey(sar => sar.AlertNotificationRecipientId)
                 .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

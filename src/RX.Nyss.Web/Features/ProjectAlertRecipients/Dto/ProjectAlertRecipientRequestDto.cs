@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.Collections.Generic;
+using FluentValidation;
 
 namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
 {
@@ -13,7 +14,12 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
         public string Role { get; set; }
 
         public string Organization { get; set; }
+
         public int? OrganizationId { get; set; }
+
+        public List<int> Supervisors { get; set; }
+
+        public List<int> HealthRisks { get; set; }
 
         public class Validator : AbstractValidator<ProjectAlertRecipientRequestDto>
         {

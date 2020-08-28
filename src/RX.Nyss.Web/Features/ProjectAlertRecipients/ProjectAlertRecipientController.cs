@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
         /// <returns>A list of alert recipients assigned to the project</returns>
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<List<ProjectAlertRecipientListResponseDto>>> List(int nationalSocietyId, int projectId) =>
+        public Task<Result<List<ProjectAlertRecipientResponseDto>>> List(int nationalSocietyId, int projectId) =>
             _alertRecipientService.List(nationalSocietyId, projectId);
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
         /// <returns>An alert recipient</returns>
         [HttpGet("{alertRecipientId:int}/get")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.AlertRecipientAccess)]
-        public Task<Result<ProjectAlertRecipientListResponseDto>> Get(int alertRecipientId) =>
+        public Task<Result<ProjectAlertRecipientResponseDto>> Get(int alertRecipientId) =>
             _alertRecipientService.Get(alertRecipientId);
 
         /// <summary>

@@ -85,7 +85,7 @@ namespace RX.Nyss.Web.Features.Users
                             Id = p.Id,
                             Name = p.Name,
                             AlertRecipients = currentUser.Role == Role.Administrator
-                                ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
+                                ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientResponseDto
                                 {
                                     Id = anr.Id,
                                     Role = anr.Role,
@@ -95,7 +95,7 @@ namespace RX.Nyss.Web.Features.Users
                                 }).ToList()
                                 : p.AlertNotificationRecipients
                                     .Where(anr => anr.OrganizationId == organizationId)
-                                    .Select(anr => new ProjectAlertRecipientListResponseDto
+                                    .Select(anr => new ProjectAlertRecipientResponseDto
                                     {
                                         Id = anr.Id,
                                         Role = anr.Role,

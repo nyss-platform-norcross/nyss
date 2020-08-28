@@ -107,7 +107,8 @@ export const initialState = {
     listData: [],
     formFetching: false,
     formSaving: false,
-    formData: null
+    formData: null,
+    recipient: null
   },
   projects: {
     listFetching: false,

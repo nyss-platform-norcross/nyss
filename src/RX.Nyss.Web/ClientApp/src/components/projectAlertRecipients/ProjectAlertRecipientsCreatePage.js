@@ -41,7 +41,6 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
     const validation = {
       role: [validators.required],
       organization: [validators.required],
-      organizationId: [validators.required],
       email: [validators.emailWhen(x => x.phoneNumber === '')],
       phoneNumber: [validators.phoneNumber, validators.requiredWhen(x => x.email === '')]
     };

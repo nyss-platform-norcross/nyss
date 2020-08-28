@@ -33,7 +33,7 @@ export const openCreation = {
 export const openEdition = {
   invoke: (projectId, alertRecipientId) => ({ type: OPEN_ALERT_RECIPIENT_EDITION.INVOKE, projectId, alertRecipientId }),
   request: () => ({ type: OPEN_ALERT_RECIPIENT_EDITION.REQUEST }),
-  success: (formData) => ({ type: OPEN_ALERT_RECIPIENT_EDITION.SUCCESS, formData }),
+  success: (recipient, formData) => ({ type: OPEN_ALERT_RECIPIENT_EDITION.SUCCESS, recipient, formData }),
   failure: (message) => ({ type: OPEN_ALERT_RECIPIENT_EDITION.FAILURE, message })
 };
 

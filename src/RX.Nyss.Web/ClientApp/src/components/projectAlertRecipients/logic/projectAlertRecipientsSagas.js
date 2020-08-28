@@ -61,9 +61,10 @@ function* openAlertRecipientEdition({ alertRecipientId }) {
   yield put(actions.openEdition.request());
   try {
     const projectId = yield select(state => state.appData.route.params.projectId);
-    const response = yield call(http.get, `/api/projectAlertRecipient/${alertRecipientId}/get`);
+    const recipient = yield call(http.get, `/api/projectAlertRecipient/${alertRecipientId}/get`);
     yield openProjectAlertRecipientsModule(projectId);
-    yield put(actions.openEdition.success(response.value));
+    const formData = yield call(http.get, `/api/projectAlertRecipient/formData?projectId=${projectId}`);
+    yield put(actions.openEdition.success(recipient.value, formData.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }

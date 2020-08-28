@@ -109,7 +109,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Id = u.User.CurrentProject.Id,
                         Name = u.User.CurrentProject.Name,
                         IsClosed = u.User.CurrentProject.State == ProjectState.Closed,
-                        AlertRecipients = u.User.SupervisorAlertRecipients.Select(anr => new ProjectAlertRecipientListResponseDto
+                        AlertRecipients = u.User.SupervisorAlertRecipients.Select(anr => new ProjectAlertRecipientResponseDto
                         {
                             Id = anr.AlertNotificationRecipientId,
                             Role = anr.AlertNotificationRecipient.Role,
@@ -138,7 +138,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                         IsClosed = p.State == ProjectState.Closed,
                         AlertRecipients = p.AlertNotificationRecipients
                             .Where(anr => currentUser.Role == Role.Administrator || anr.OrganizationId == supervisor.OrganizationId)
-                            .Select(anr => new ProjectAlertRecipientListResponseDto
+                            .Select(anr => new ProjectAlertRecipientResponseDto
                             {
                                 Id = anr.Id,
                                 Role = anr.Role,
@@ -355,72 +355,10 @@ namespace RX.Nyss.Web.Features.Supervisors
             await _nyssContext.AddAsync(newSupervisorUserProject);
         }
 
-
-        // ToDo: Reuse this in ProjectAlertRecipient service
-        private async Task AttachAlertRecipientsToSupervisor(SupervisorUser user, IEnumerable<AlertNotificationRecipient> alertNotificationRecipients)
-        {
-            foreach (var sar in alertNotificationRecipients)
-            {
-                var supervisorAlertRecipient = CreateSupervisorAlertRecipientReference(user, sar);
-                await _nyssContext.AddAsync(supervisorAlertRecipient);
-            }
-        }
-
-        private async Task UpdateAlertRecipientsReferences(SupervisorUser user, IEnumerable<int> alertNotificationRecipientIds)
-        {
-            var alertNotificationRecipients = await GetAlertNotificationRecipients(alertNotificationRecipientIds);
-            var alertRecipientsToRemove = user.SupervisorAlertRecipients.Where(sar => !alertNotificationRecipients.Any(anr => anr.Id == sar.AlertNotificationRecipientId));
-
-            _nyssContext.SupervisorUserAlertRecipients.RemoveRange(alertRecipientsToRemove);
-
-            foreach (var alertRecipient in alertNotificationRecipients)
-            {
-                if (!user.SupervisorAlertRecipients.Any(sar => sar.AlertNotificationRecipientId == alertRecipient.Id))
-                {
-                    user.SupervisorAlertRecipients.Add(new SupervisorUserAlertRecipient
-                    {
-                        AlertNotificationRecipient = alertRecipient,
-                        AlertNotificationRecipientId = alertRecipient.Id,
-                        Supervisor = user,
-                        SupervisorId = user.Id
-                    });
-                }
-            }
-        }
-
         private void RemoveAlertRecipientsReferences(SupervisorUser user)
         {
             var alertRecipients = user.SupervisorAlertRecipients.ToList();
             _nyssContext.SupervisorUserAlertRecipients.RemoveRange(alertRecipients);
-        }
-
-        private SupervisorUserAlertRecipient CreateSupervisorAlertRecipientReference(SupervisorUser user, AlertNotificationRecipient alertNotificationRecipient) =>
-            new SupervisorUserAlertRecipient
-            {
-                Supervisor = user,
-                SupervisorId = user.Id,
-                AlertNotificationRecipient = alertNotificationRecipient,
-                AlertNotificationRecipientId = alertNotificationRecipient.Id
-            };
-
-        private async Task<IEnumerable<AlertNotificationRecipient>> GetAlertNotificationRecipients(IEnumerable<int> alertNotificationRecipientIds)
-        {
-            var alertNotificationRecipients = new List<AlertNotificationRecipient>();
-
-            foreach (var id in alertNotificationRecipientIds)
-            {
-                var alertNotificationRecipient = await _nyssContext.AlertNotificationRecipients.FirstOrDefaultAsync(anr => anr.Id == id);
-                if (alertNotificationRecipient == null)
-                {
-                    _loggerAdapter.Warn($"AlertNotificationRecipient with id: {id} not found");
-                }
-                else
-                {
-                    alertNotificationRecipients.Add(alertNotificationRecipient);
-                }
-            }
-
-            return alertNotificationRecipients;
         }
 
         private async Task UpdateSupervisorProjectReferences(SupervisorUser user, SupervisorUserProject currentProjectReference, int? selectedProjectId)

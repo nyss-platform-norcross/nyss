@@ -2,9 +2,12 @@
 
 namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
 {
-    public class ProjectAlertRecipientListResponseDto
+    public class ProjectAlertRecipientResponseDto
     {
         public int Id { get; set; }
+
+        public int OrganizationId { get; set; }
+
         public string PhoneNumber { get; set; }
 
         public string Email { get; set; }
@@ -13,8 +16,8 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
 
         public string Organization { get; set; }
 
-        public IEnumerable<int> HealthRisks { get; set; }
+        public IEnumerable<ProjectAlertHealthRiskDto> HealthRisks { get; set; }
 
-        public IEnumerable<string> Supervisors { get; set; }
+        public IEnumerable<ProjectAlertSupervisorsDto> Supervisors { get; set; }
     }
 }
