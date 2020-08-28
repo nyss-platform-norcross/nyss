@@ -37,11 +37,11 @@ const DataCollectorsListPageComponent = (props) => {
           <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
-            {strings(stringKeys.dataCollector.exportExcel)}
-          </TableActionsButton>
           <TableActionsButton onClick={() => props.exportToCsv(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.exportCsv)}
+          </TableActionsButton>
+          <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+            {strings(stringKeys.dataCollector.exportExcel)}
           </TableActionsButton>
         </TableActions>
       }
