@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.FuncApp.Contracts;
 
@@ -16,12 +17,13 @@ namespace RX.Nyss.FuncApp
     public class ReportReceiver
     {
         private const string ApiKeyQueryParameterName = "apikey";
-        private const int MaxContentLength = 500;
         private readonly ILogger<ReportReceiver> _logger;
+        private readonly IConfig _config;
 
-        public ReportReceiver(ILogger<ReportReceiver> logger)
+        public ReportReceiver(ILogger<ReportReceiver> logger, IConfig config)
         {
             _logger = logger;
+            _config = config;
         }
 
         [FunctionName("EnqueueSmsEagleReport")]
@@ -30,9 +32,11 @@ namespace RX.Nyss.FuncApp
             [ServiceBus("%SERVICEBUS_REPORTQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] IAsyncCollector<Report> reportQueue,
             [Blob("%AuthorizedApiKeysBlobPath%", FileAccess.Read)] string authorizedApiKeys)
         {
-            if ((httpRequest.Content.Headers.ContentLength ?? int.MaxValue) > MaxContentLength)
+            var maxContentLength = _config.MaxContentLength;
+            var contentLength = httpRequest.Content.Headers.ContentLength;
+            if (contentLength == null || contentLength > maxContentLength)
             {
-                _logger.Log(LogLevel.Warning, $"Received a SMS Eagle request with length more than {MaxContentLength} bytes.");
+                _logger.Log(LogLevel.Warning, $"Received an SMS Eagle request with length more than {maxContentLength} bytes. (length: {contentLength.ToString() ?? "N/A"})");   
                 return new BadRequestResult();
             }
 

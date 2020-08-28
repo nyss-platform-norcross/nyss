@@ -14,6 +14,21 @@ namespace RX.Nyss.Common.Utils
             return s.Substring(s.Length - maxNumberOfChars, maxNumberOfChars);
         }
 
+        public static string Truncate(this string s, int maxLength)
+        {
+            if (maxLength <= 0)
+            {
+                return string.Empty;
+            }
+
+            if (string.IsNullOrEmpty(s) || s.Length <= maxLength)
+            {
+                return s;
+            }
+
+            return s.Substring(0, maxLength);
+        }
+
         public static string ToCamelCase(this string str)
         {
             if (!string.IsNullOrEmpty(str) && str.Length > 1)

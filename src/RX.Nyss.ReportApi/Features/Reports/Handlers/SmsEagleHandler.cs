@@ -98,7 +98,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         Sender = sender,
                         Timestamp = timestamp,
                         ReceivedAt = _dateTimeProvider.UtcNow,
-                        Text = text,
+                        Text = text.Truncate(160),
                         IncomingMessageId = incomingMessageId,
                         OutgoingMessageId = outgoingMessageId,
                         ModemNumber = modemNumber,
@@ -462,6 +462,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     ReportErrorType.FormatError => await GetFeedbackMessageContent(SmsContentKey.ReportError.FormatError, errorReport.LanguageCode),
                     ReportErrorType.HealthRiskNotFound => await GetFeedbackMessageContent(SmsContentKey.ReportError.HealthRiskNotFound, errorReport.LanguageCode),
                     ReportErrorType.DataCollectorNotFound => null,
+                    ReportErrorType.TooLong => null,
                     _ => await GetFeedbackMessageContent(SmsContentKey.ReportError.Other, errorReport.LanguageCode)
                 };
 
