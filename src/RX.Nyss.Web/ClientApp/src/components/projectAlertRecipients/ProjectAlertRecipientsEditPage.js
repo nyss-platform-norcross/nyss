@@ -19,7 +19,6 @@ import { MultiSelect } from '../forms/MultiSelect';
 
 const ProjectAlertRecipientsEditPageComponent = (props) => {
   const [freeTextOrganizations, setFreeTextOrganizations] = useState([]);
-  const [supervisorsDataSource] = useState([]);
   const [selectedSupervisors, setSelectedSupervisors] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
   const [acceptAnySupervisor, setAcceptAnySupervisor] = useState(false);
@@ -40,6 +39,8 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
     setFreeTextOrganizations(uniqueOrganizations.map(o => ({ title: o })));
     setSelectedSupervisors(props.alertRecipient.supervisors.map((s) => { return { label: s.name, value: s.id } }));
     setSelectedHealthRisks(props.alertRecipient.healthRisks.map((s) => { return { label: s.healthRiskName, value: s.id } }));
+    setAcceptAnySupervisor(props.alertRecipient.supervisors.length === 0);
+    setAcceptAnyHealthRisk(props.alertRecipient.healthRisks.length === 0);
 
     const fields = {
       role: props.alertRecipient.role,
@@ -177,7 +178,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
                         label={strings(stringKeys.projectAlertRecipient.form.supervisors)}
                         options={
                           props.formData.supervisors
-                            .filter(s => !selectedSupervisors.some(ss => ss.id === s.id))
+                            .filter(s => !selectedSupervisors.some(ss => ss.id === s.id) && s.organizationId === props.alertRecipient.organizationId)
                             .map((s) => { return { label: s.name, value: s.id } })}
                         value={selectedSupervisors}
                         onChange={onSupervisorChange}

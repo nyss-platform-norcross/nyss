@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
@@ -43,6 +44,17 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertAssessmentResponseDto>> Get(int alertId) =>
             _alertService.Get(alertId);
+
+
+        /// <summary>
+        /// Gets information about the alert's notification recipients
+        /// </summary>
+        /// <param name="alertId">An identifier of the alert</param>
+        [HttpGet("{alertId:int}/alertRecipients")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsPolicy(Policy.AlertAccess)]
+        public Task<Result<AlertRecipientsResponseDto>> GetAlertRecipients(int alertId) =>
+            _alertService.GetAlertRecipientsByAlertId(alertId);
 
         /// <summary>
         /// Accepts the report

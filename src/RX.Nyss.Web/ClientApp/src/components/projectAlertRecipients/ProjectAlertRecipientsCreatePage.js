@@ -25,8 +25,8 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
   const [selectedSupervisors, setSelectedSupervisors] = useState([]);
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
   const [selectedOrganizationId, setSelectedOrganizationId] = useState(null);
-  const [acceptAnySupervisor, setAcceptAnySupervisor] = useState(false);
-  const [acceptAnyHealthRisk, setAcceptAnyHealthRisk] = useState(false);
+  const [acceptAnySupervisor, setAcceptAnySupervisor] = useState(true);
+  const [acceptAnyHealthRisk, setAcceptAnyHealthRisk] = useState(true);
   const userRoles = useSelector(state => state.appData.user.roles);
 
   const [form] = useState(() => {

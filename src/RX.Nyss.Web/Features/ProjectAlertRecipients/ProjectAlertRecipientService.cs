@@ -135,16 +135,16 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 .Select(org => new
                 {
                     Id = org.Id,
-                    SupervisorsIsPartOfOrganization = createDto.Supervisors.All(s => org.NationalSocietyUsers.Any(ns => ns.UserId == s))
+                    OrganizationUsers = org.NationalSocietyUsers.Where(ns => ns.User.Role == Role.Supervisor).Select(u => u.UserId)
                 })
                 .SingleOrDefaultAsync();
 
-            if (organization != null)
+            if (organization == null)
             {
                 return Error<int>(ResultKey.AlertRecipient.CurrentUserMustBeTiedToAnOrganization);
             }
 
-            if (!organization.SupervisorsIsPartOfOrganization)
+            if (!createDto.Supervisors.All(s => organization.OrganizationUsers.Contains(s)))
             {
                 return Error<int>(ResultKey.AlertRecipient.AllSupervisorsMustBeTiedToSameOrganization);
             }
@@ -206,6 +206,15 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             if (projectIsClosed)
             {
                 return Error(ResultKey.AlertRecipient.ProjectIsClosed);
+            }
+
+            var applicableSupervisors = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.OrganizationId == alertRecipient.OrganizationId && uns.User.Role == Role.Supervisor)
+                .Select(u => u.UserId).ToListAsync();
+
+            if (!editDto.Supervisors.All(s => applicableSupervisors.Contains(s)))
+            {
+                return Error<int>(ResultKey.AlertRecipient.AllSupervisorsMustBeTiedToSameOrganization);
             }
 
             alertRecipient.Role = editDto.Role;
@@ -287,15 +296,19 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                     OrganizationId = s.SupervisorUser.UserNationalSocieties.Single(uns => uns.NationalSocietyId == nationalSocietyId).OrganizationId.Value
                 }).ToListAsync();
 
+            var healthRisks = await _nyssContext.ProjectHealthRisks
+                .Where(phr => phr.Project.Id == projectId && phr.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                .Select(phr => new ProjectAlertHealthRiskDto
+                {
+                    Id = phr.Id,
+                    HealthRiskName = phr.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguageId == phr.Project.NationalSociety.ContentLanguage.Id).Name
+                }).ToListAsync();
+
             return Success(new ProjectAlertRecipientFormDataDto
             {
                 Supervisors = supervisors,
                 ProjectOrganizations = organizations,
-                HealthRisks = await _nyssContext.ProjectHealthRisks.Where(phr => phr.Project.Id == projectId).Select(phr => new ProjectAlertHealthRiskDto
-                {
-                    Id = phr.Id,
-                    HealthRiskName = phr.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguageId == phr.Project.NationalSociety.ContentLanguage.Id).Name
-                }).ToListAsync()
+                HealthRisks = healthRisks
             });
         }
     }

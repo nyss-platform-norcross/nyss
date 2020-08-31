@@ -108,8 +108,11 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
           dismissAlert={props.dismissAlert}
           isDismissing={props.isDismissing}
 
-          notificationEmails={data.notificationEmails}
-          notificationPhoneNumbers={data.notificationPhoneNumbers}
+          fetchRecipients={props.fetchRecipients}
+          isFetchingRecipients={props.isFetchingRecipients}
+
+          notificationEmails={props.notificationEmails}
+          notificationPhoneNumbers={props.notificationPhoneNumbers}
         />
       </div>
     </Fragment>
@@ -127,7 +130,10 @@ const mapStateToProps = (state, ownProps) => ({
   isEscalating: state.alerts.formEscalating,
   isClosing: state.alerts.formClosing,
   isDismissing: state.alerts.formDismissing,
+  isFetchingRecipients: state.alerts.isFetchingRecipients,
   data: state.alerts.formData,
+  notificationEmails: state.alerts.notificationEmails,
+  notificationPhoneNumbers: state.alerts.notificationPhoneNumbers,
   projectIsClosed: state.appData.siteMap.parameters.projectIsClosed,
 });
 
@@ -140,6 +146,7 @@ const mapDispatchToProps = {
   escalateAlert: alertsActions.escalateAlert.invoke,
   closeAlert: alertsActions.closeAlert.invoke,
   dismissAlert: alertsActions.dismissAlert.invoke,
+  fetchRecipients: alertsActions.fetchRecipients.invoke
 };
 
 export const AlertsAssessmentPage = useLayout(

@@ -30,6 +30,7 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
     if (form.fields.escalateWithoutNotification.value) {
       setEscalationWithoutNotificationDialogOpened(true);
     } else {
+      props.fetchRecipients(alertId);
       setEscalationDialogOpened(true);
     }
   }
@@ -45,6 +46,7 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
               alertId={alertId}
               escalateAlert={props.escalateAlert}
               isEscalating={props.isEscalating}
+              isFetchingRecipients={props.isFetchingRecipients}
               notificationEmails={props.notificationEmails}
               notificationPhoneNumbers={props.notificationPhoneNumbers}
               isOpened={escalationDialogOpened}

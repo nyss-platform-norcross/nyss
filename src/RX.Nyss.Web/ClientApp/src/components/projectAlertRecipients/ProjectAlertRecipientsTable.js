@@ -40,8 +40,8 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
               <TableCell>{row.organization}</TableCell>
               <TableCell>{row.email}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
-              <TableCell>{row.healthRisks.length > 0 ? row.healthRisks.join(", ") : "Any"}</TableCell>
-              <TableCell>{row.supervisors.length > 0 ? row.supervisors.join(", ") : "Any"}</TableCell>
+              <TableCell>{row.healthRisks.length > 0 ? row.healthRisks.map(hr => hr.healthRiskName).join(", ") : "Any"}</TableCell>
+              <TableCell>{row.supervisors.length > 0 ? row.supervisors.map(s => s.name).join(", ") : "Any"}</TableCell>
               <TableCell>
                 {!isClosed &&
                   <TableRowActions>

@@ -12,7 +12,7 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state, formData: null }
 
     case actions.OPEN_ALERTS_LIST.INVOKE:
-      return { ...state  };
+      return { ...state };
 
     case actions.OPEN_ALERTS_LIST.SUCCESS:
       return { ...state, listProjectId: action.projectId };
@@ -100,33 +100,33 @@ export function alertsReducer(state = initialState.alerts, action) {
         }
       };
 
-      case actions.RESET_REPORT.REQUEST:
-        return {
-          ...state,
-          formData: {
-            ...state.formData,
-            reports: updateReport(state.formData.reports, action.reportId, { isResetting: true })
-          }
-        };
-  
-      case actions.RESET_REPORT.SUCCESS:
-        return {
-          ...state,
-          formData: {
-            ...state.formData,
-            assessmentStatus: action.assessmentStatus,
-            reports: updateReport(state.formData.reports, action.reportId, { isResetting: false, status: "Pending" })
-          }
-        };
-  
-      case actions.RESET_REPORT.FAILURE:
-        return {
-          ...state,
-          formData: {
-            ...state.formData,
-            reports: updateReport(state.formData.reports, action.reportId, { isResetting: false })
-          }
-        };
+    case actions.RESET_REPORT.REQUEST:
+      return {
+        ...state,
+        formData: {
+          ...state.formData,
+          reports: updateReport(state.formData.reports, action.reportId, { isResetting: true })
+        }
+      };
+
+    case actions.RESET_REPORT.SUCCESS:
+      return {
+        ...state,
+        formData: {
+          ...state.formData,
+          assessmentStatus: action.assessmentStatus,
+          reports: updateReport(state.formData.reports, action.reportId, { isResetting: false, status: "Pending" })
+        }
+      };
+
+    case actions.RESET_REPORT.FAILURE:
+      return {
+        ...state,
+        formData: {
+          ...state.formData,
+          reports: updateReport(state.formData.reports, action.reportId, { isResetting: false })
+        }
+      };
 
     case actions.ESCALATE_ALERT.REQUEST:
       return { ...state, formEscalating: true };
@@ -141,7 +141,7 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state, formDismissing: true };
 
     case actions.DISMISS_ALERT.SUCCESS:
-      return { ...state, formDismissing: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.dismissed }};
+      return { ...state, formDismissing: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.dismissed } };
 
     case actions.DISMISS_ALERT.FAILURE:
       return { ...state, formDismissing: false };
@@ -150,10 +150,19 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state, formClosing: true };
 
     case actions.CLOSE_ALERT.SUCCESS:
-      return { ...state, formClosing: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.closed }};
+      return { ...state, formClosing: false, formData: { ...state.formData, assessmentStatus: actions.assessmentStatus.closed } };
 
     case actions.CLOSE_ALERT.FAILURE:
       return { ...state, formClosing: false };
+
+    case actions.FETCH_RECIPIENTS.REQUEST:
+      return { ...state, isFetchingRecipients: true, notificationEmails: [], notificationPhoneNumbers: [] };
+
+    case actions.FETCH_RECIPIENTS.SUCCESS:
+      return { ...state, isFetchingRecipients: false, notificationEmails: action.data.emails, notificationPhoneNumbers: action.data.phoneNumbers };
+
+    case actions.FETCH_RECIPIENTS.FAILURE:
+      return { ...state, isFetchingRecipients: false, notificationEmails: [], notificationPhoneNumbers: [] };
 
     default:
       return state;

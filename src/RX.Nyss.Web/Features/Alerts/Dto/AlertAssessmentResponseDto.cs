@@ -15,6 +15,7 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public IEnumerable<string> NotificationEmails { get; set; }
 
         public IEnumerable<string> NotificationPhoneNumbers { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public AlertAssessmentStatus AssessmentStatus { get; set; }
