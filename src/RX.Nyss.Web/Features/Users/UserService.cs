@@ -208,6 +208,8 @@ namespace RX.Nyss.Web.Features.Users
                 ManagerUser _ => query.Where(uns =>
                     uns.User is CoordinatorUser || uns.User is DataConsumerUser
                     || uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId).FirstOrDefault()),
+                TechnicalAdvisorUser _ => query.Where(uns => uns.User is DataConsumerUser
+                    || uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId).FirstOrDefault()),
                 _ => query.Where(uns => uns.OrganizationId == query.Where(x => x.User == currentUser).Select(x => x.OrganizationId).FirstOrDefault())
             };
         }
