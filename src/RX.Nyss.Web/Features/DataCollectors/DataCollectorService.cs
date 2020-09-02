@@ -475,8 +475,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 {
                     Id = dc.DataCollector.Id,
                     DisplayName = dc.DataCollector.DataCollectorType == DataCollectorType.Human
-                        ? dc.DataCollector.DisplayName
-                        : dc.DataCollector.Name,
+                        ? $"{dc.DataCollector.DisplayName}: {dc.DataCollector.PhoneNumber}"
+                        : $"{dc.DataCollector.Name}: {dc.DataCollector.PhoneNumber}",
                     Status = dc.ReportsInTimeRange.Any()
                         ? dc.ReportsInTimeRange.All(r => r.Report != null) ? ReportingStatus.ReportingCorrectly : ReportingStatus.ReportingWithErrors
                         : ReportingStatus.NotReporting

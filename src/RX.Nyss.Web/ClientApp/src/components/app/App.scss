@@ -31,6 +31,10 @@ html {
   display: none;
 }
 
+.leaflet-fade-anim .leaflet-popup {
+  transition: none;
+}
+
 .highcharts-container {
   width: 100% !important;
 
