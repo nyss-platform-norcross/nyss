@@ -44,7 +44,7 @@ export const MultiSelect = ({ name, error, label, value, defaultValue, options, 
       onChange={onChange}
       placeholder={""}
       components={components}
-      styles={customMultiselectStyle}
+      style={customMultiselectStyle}
       TextFieldProps={{
         label: label,
         error: !!error,

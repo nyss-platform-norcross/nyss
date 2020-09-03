@@ -46,6 +46,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
+          isFetching={isFetching}
         />
       </Grid>
 
