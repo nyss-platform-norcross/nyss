@@ -1,8 +1,11 @@
+import styles from './DataCollectorsPerformanceFilters.module.scss';
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { AreaFilter } from "../common/filters/AreaFilter";
-import { Card, CardContent, InputLabel } from "@material-ui/core";
+import { Card, CardContent } from "@material-ui/core";
 import { useSelector } from "react-redux";
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { strings, stringKeys } from '../../strings';
 
 export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   const filtersValue = useSelector(state => state.dataCollectors.performanceListFilters);
@@ -12,6 +15,52 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
     onChange({ ...filtersValue, area: item ? { type: item.type, id: item.id, name: item.name } : null });
   }
 
+  const resetFilters = () => {
+    onChange({
+      area: null,
+      lastWeek: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      twoWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      threeWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      fourWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      fiveWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      sixWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      sevenWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      eightWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      }
+    });
+  }
+
   if (filtersValue == null || nationalSocietyId == null) {
     return null;
   }
@@ -19,13 +68,18 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   return (
     <Card>
       <CardContent>
-        <Grid container spacing={3}>
+        <Grid container spacing={3} className={styles.filterContainer}>
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}
               selectedItem={filtersValue.area}
               onChange={handleAreaChange}
             />
+          </Grid>
+          <Grid item className={styles.resetButton}>
+            <TableActionsButton onClick={resetFilters}>
+              {strings(stringKeys.dataCollector.filters.resetAll)}
+            </TableActionsButton>
           </Grid>
         </Grid>
       </CardContent>

@@ -202,9 +202,46 @@ function* openDataCollectorsPerformanceList({ projectId }) {
     const filters = (yield select(state => state.dataCollectors.dataCollectorPerformanceFilters)) ||
       {
         area: null,
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
+        lastWeek: {
+          reportingCorrectly: true,
+          reportingWithErrors: true,
+          notReporting: true
+        },
+        twoWeeksAgo: {
+          reportingCorrectly: true,
+          reportingWithErrors: true,
+          notReporting: true
+        },
+        threeWeeksAgo: {
+          reportingCorrectly: true,
+          reportingWithErrors: true,
+          notReporting: true
+        },
+        fourWeeksAgo: {
+          reportingCorrectly: true,
+          reportingWithErrors: true,
+          notReporting: true
+        },
+        fiveWeeksAgo: {
+          reportingCorrectly: true,
+          reportingWithErrors: true,
+          notReporting: true
+        },
+        sixWeeksAgo: {
+          reportingCorrectly: true,
+          reportingWithErrors: true,
+          notReporting: true
+        },
+        sevenWeeksAgo: {
+          reportingCorrectly: true,
+          reportingWithErrors: true,
+          notReporting: true
+        },
+        eightWeeksAgo: {
+          reportingCorrectly: true,
+          reportingWithErrors: true,
+          notReporting: true
+        }
       };
 
     let filtersData = yield select(state => state.dataCollectors.filtersData);
