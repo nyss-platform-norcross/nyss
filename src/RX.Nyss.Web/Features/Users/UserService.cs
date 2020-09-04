@@ -83,26 +83,7 @@ namespace RX.Nyss.Web.Features.Users
                         .Select(p => new ListOpenProjectsResponseDto
                         {
                             Id = p.Id,
-                            Name = p.Name,
-                            AlertRecipients = currentUser.Role == Role.Administrator
-                                ? p.AlertNotificationRecipients.Select(anr => new ProjectAlertRecipientResponseDto
-                                {
-                                    Id = anr.Id,
-                                    Role = anr.Role,
-                                    Organization = anr.Organization,
-                                    Email = anr.Email,
-                                    PhoneNumber = anr.PhoneNumber
-                                }).ToList()
-                                : p.AlertNotificationRecipients
-                                    .Where(anr => anr.OrganizationId == organizationId)
-                                    .Select(anr => new ProjectAlertRecipientResponseDto
-                                    {
-                                        Id = anr.Id,
-                                        Role = anr.Role,
-                                        Organization = anr.Organization,
-                                        Email = anr.Email,
-                                        PhoneNumber = anr.PhoneNumber
-                                    }).ToList()
+                            Name = p.Name
                         }).ToList(),
                     Organizations = ns.Organizations
                         .Select(o => new OrganizationsDto

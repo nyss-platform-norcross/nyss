@@ -108,13 +108,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                     {
                         Id = u.User.CurrentProject.Id,
                         Name = u.User.CurrentProject.Name,
-                        IsClosed = u.User.CurrentProject.State == ProjectState.Closed,
-                        AlertRecipients = u.User.SupervisorAlertRecipients.Select(anr => new ProjectAlertRecipientResponseDto
-                        {
-                            Id = anr.AlertNotificationRecipientId,
-                            Role = anr.AlertNotificationRecipient.Role,
-                            Organization = anr.AlertNotificationRecipient.Organization
-                        }).ToList()
+                        IsClosed = u.User.CurrentProject.State == ProjectState.Closed
                     }
                 })
                 .SingleOrDefaultAsync();
@@ -135,15 +129,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                     {
                         Id = p.Id,
                         Name = p.Name,
-                        IsClosed = p.State == ProjectState.Closed,
-                        AlertRecipients = p.AlertNotificationRecipients
-                            .Where(anr => currentUser.Role == Role.Administrator || anr.OrganizationId == supervisor.OrganizationId)
-                            .Select(anr => new ProjectAlertRecipientResponseDto
-                            {
-                                Id = anr.Id,
-                                Role = anr.Role,
-                                Organization = anr.Organization
-                            }).ToList()
+                        IsClosed = p.State == ProjectState.Closed
                     })
                     .ToListAsync()
             };
@@ -154,8 +140,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                 {
                     Id = supervisor.CurrentProject.Id,
                     Name = supervisor.CurrentProject.Name,
-                    IsClosed = supervisor.CurrentProject.IsClosed,
-                    AlertRecipients = supervisor.CurrentProject.AlertRecipients
+                    IsClosed = supervisor.CurrentProject.IsClosed
                 });
             }
 

@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="projectId">An identifier of a project</param>
         /// <param name="pageNumber">Page number</param>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber) =>
             _alertService.List(projectId, pageNumber);
@@ -40,7 +40,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         [HttpGet("{alertId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertAssessmentResponseDto>> Get(int alertId) =>
             _alertService.Get(alertId);
@@ -51,7 +51,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         [HttpGet("{alertId:int}/alertRecipients")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertRecipientsResponseDto>> GetAlertRecipients(int alertId) =>
             _alertService.GetAlertRecipientsByAlertId(alertId);
@@ -62,7 +62,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="reportId">An identifier of the report</param>
         [HttpPost("{alertId:int}/acceptReport")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId) =>
             _alertReportService.AcceptReport(alertId, reportId);
@@ -73,7 +73,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="reportId">An identifier of the report</param>
         [HttpPost("{alertId:int}/dismissReport")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId) =>
             _alertReportService.DismissReport(alertId, reportId);
@@ -84,7 +84,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="reportId">An identifier of the report</param>
         [HttpPost("{alertId:int}/resetReport")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<ResetReportResponseDto>> ResetReport(int alertId, int reportId) =>
             _alertReportService.ResetReport(alertId, reportId);
@@ -95,7 +95,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="dto">A parameter enabling/disabling notifications</param>
         [HttpPost("{alertId:int}/escalate")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Escalate(int alertId, [FromBody] EscalateAlertRequestDto dto) =>
             _alertService.Escalate(alertId, dto.SendNotification);
@@ -105,7 +105,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         [HttpPost("{alertId:int}/dismiss")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Dismiss(int alertId) =>
             _alertService.Dismiss(alertId);
@@ -116,7 +116,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="dto">Details related to closing process</param>
         [HttpPost("{alertId:int}/close")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Close(int alertId, [FromBody] CloseAlertRequestDto dto) =>
             _alertService.Close(alertId, dto.Comments, dto.CloseOption);
@@ -126,7 +126,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         [HttpGet("{alertId:int}/getLogs")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.DataConsumer, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertLogResponseDto>> GetLogs(int alertId) =>
             _alertService.GetLogs(alertId);
