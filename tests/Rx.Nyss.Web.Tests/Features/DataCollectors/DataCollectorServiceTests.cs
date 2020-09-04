@@ -534,9 +534,54 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             // Act
             var result = await _dataCollectorService.Performance(ProjectId, new DataCollectorPerformanceFiltersRequestDto
             {
-                NotReporting = true,
-                ReportingCorrectly = true,
-                ReportingWithErrors = true
+                LastWeek = new PerformanceStatusFilterDto
+                {
+                    NotReporting = true,
+                    ReportingCorrectly = true,
+                    ReportingWithErrors = true
+                },
+                TwoWeeksAgo = new PerformanceStatusFilterDto
+                {
+                    NotReporting = true,
+                    ReportingCorrectly = true,
+                    ReportingWithErrors = true
+                },
+                ThreeWeeksAgo = new PerformanceStatusFilterDto
+                {
+                    NotReporting = true,
+                    ReportingCorrectly = true,
+                    ReportingWithErrors = true
+                },
+                FourWeeksAgo = new PerformanceStatusFilterDto
+                {
+                    NotReporting = true,
+                    ReportingCorrectly = true,
+                    ReportingWithErrors = true
+                },
+                FiveWeeksAgo = new PerformanceStatusFilterDto
+                {
+                    NotReporting = true,
+                    ReportingCorrectly = true,
+                    ReportingWithErrors = true
+                },
+                SixWeeksAgo = new PerformanceStatusFilterDto
+                {
+                    NotReporting = true,
+                    ReportingCorrectly = true,
+                    ReportingWithErrors = true
+                },
+                SevenWeeksAgo = new PerformanceStatusFilterDto
+                {
+                    NotReporting = true,
+                    ReportingCorrectly = true,
+                    ReportingWithErrors = true
+                },
+                EightWeeksAgo = new PerformanceStatusFilterDto
+                {
+                    NotReporting = true,
+                    ReportingCorrectly = true,
+                    ReportingWithErrors = true
+                }
             });
 
             // Assert
