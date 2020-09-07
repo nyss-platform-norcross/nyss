@@ -10,8 +10,9 @@ import DialogContent from "@material-ui/core/DialogContent";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
+import { Loading } from '../../common/loading/Loading';
 
-export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating, escalateAlert, notificationEmails, notificationPhoneNumbers }) => {
+export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating, isFetchingRecipients, escalateAlert, notificationEmails, notificationPhoneNumbers }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
@@ -19,18 +20,21 @@ export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating,
     <Dialog onClose={close} open={isOpened} fullScreen={fullScreen}>
       <DialogTitle>{strings(stringKeys.alerts.assess.alert.escalateConfirmation)}</DialogTitle>
       <DialogContent>
-        <DisplayField label={strings(stringKeys.alerts.assess.alert.escalateNotificationEmails)}>
-          {notificationEmails.map(email => (
-            <div key={`email_${email}`}>{email}</div>
-          ))}
-        </DisplayField>
-        {notificationPhoneNumbers.length > 0 &&
+        {notificationEmails.length > 0 && (
+          <DisplayField label={strings(stringKeys.alerts.assess.alert.escalateNotificationEmails)}>
+            {notificationEmails.map(email => (
+              <div key={`email_${email}`}>{email}</div>
+            ))}
+          </DisplayField>
+        )}
+
+        {notificationPhoneNumbers.length > 0 && (
           <DisplayField label={strings(stringKeys.alerts.assess.alert.escalateNotificationSmses)}>
             {notificationPhoneNumbers.map(phoneNumber => (
               <div key={`phone_${phoneNumber}`}>{phoneNumber}</div>
             ))}
           </DisplayField>
-        }
+        )}
 
         <Typography variant="body1">
           {strings(stringKeys.alerts.assess.alert.escalateConfirmationInformDataCollectors)}

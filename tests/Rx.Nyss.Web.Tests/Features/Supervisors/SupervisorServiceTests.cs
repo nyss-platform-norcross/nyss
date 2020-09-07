@@ -316,7 +316,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userName,
                 Email = userEmail,
-                SupervisorAlertRecipients = new List<int>(),
                 OrganizationId = 1
             };
 
@@ -336,7 +335,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userEmail,
                 Email = userEmail,
-                SupervisorAlertRecipients = new List<int>(),
                 OrganizationId = 1
             };
 
@@ -355,7 +353,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userEmail,
                 Email = userEmail,
-                SupervisorAlertRecipients = new List<int>(),
                 OrganizationId = 1
             };
 
@@ -378,7 +375,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userEmail,
                 Email = userEmail,
-                SupervisorAlertRecipients = new List<int>(),
                 OrganizationId = 1
             };
 
@@ -401,7 +397,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userEmail,
                 Email = userEmail,
-                SupervisorAlertRecipients = new List<int>(),
                 OrganizationId = 1
             };
 
@@ -417,8 +412,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             var registerSupervisorRequestDto = new CreateSupervisorRequestDto
             {
                 Name = userEmail,
-                Email = userEmail,
-                SupervisorAlertRecipients = new List<int>()
+                Email = userEmail
             };
 
             //Act
@@ -440,7 +434,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Name = userEmail,
                 Email = userEmail,
                 ProjectId = 1,
-                SupervisorAlertRecipients = new List<int>(),
                 OrganizationId = 1
             };
 
@@ -461,7 +454,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
             {
                 Name = userEmail,
                 Email = userEmail,
-                SupervisorAlertRecipients = new List<int>(),
                 OrganizationId = 1
             };
 
@@ -482,7 +474,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Name = userEmail,
                 Email = userEmail,
                 ProjectId = 666,
-                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act
@@ -503,7 +494,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Name = userEmail,
                 Email = userEmail,
                 ProjectId = _projectId5,
-                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act
@@ -518,7 +508,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingNonExistingUser_ReturnsErrorResult()
         {
-            var result = await _supervisorService.Edit(999, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
+            var result = await _supervisorService.Edit(999, new EditSupervisorRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -526,7 +516,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingUserThatIsNotSupervisor_ReturnsErrorResult()
         {
-            var result = await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
+            var result = await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto());
 
             result.IsSuccess.ShouldBeFalse();
         }
@@ -534,7 +524,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingUserThatIsNotSupervisor_SaveChangesShouldNotBeCalled()
         {
-            await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
+            await _supervisorService.Edit(_administratorId, new EditSupervisorRequestDto());
 
             await _nyssContext.DidNotReceive().SaveChangesAsync();
         }
@@ -543,7 +533,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingExistingSupervisor_ReturnsSuccess()
         {
-            var result = await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
+            var result = await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto());
 
             result.IsSuccess.ShouldBeTrue();
         }
@@ -551,7 +541,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
         [Fact]
         public async Task Edit_WhenEditingExistingSupervisor_SaveChangesAsyncIsCalled()
         {
-            await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto { SupervisorAlertRecipients = new List<int>() });
+            await _supervisorService.Edit(_supervisorWithDataCollectorsId, new EditSupervisorRequestDto());
 
             await _nyssContext.Received().SaveChangesAsync();
         }
@@ -568,8 +558,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 PhoneNumber = "432432",
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
-                AdditionalPhoneNumber = "123123",
-                SupervisorAlertRecipients = new List<int>()
+                AdditionalPhoneNumber = "123123"
             };
 
             await _supervisorService.Edit(_supervisorWithDataCollectorsId, editRequest);
@@ -595,8 +584,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
                 AdditionalPhoneNumber = "123123",
-                ProjectId = null,
-                SupervisorAlertRecipients = new List<int>()
+                ProjectId = null
             };
 
             //Act
@@ -617,8 +605,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
                 AdditionalPhoneNumber = "123123",
-                ProjectId = 2,
-                SupervisorAlertRecipients = new List<int>()
+                ProjectId = 2
             };
             var projectReferenceToBeRemoved = _nyssContext.SupervisorUserProjects.Single(x => x.ProjectId == _projectId1 && x.SupervisorUserId == _supervisorWithDataCollectorsId);
 
@@ -643,8 +630,7 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 Sex = Sex.Female,
                 DecadeOfBirth = 1980,
                 AdditionalPhoneNumber = "123123",
-                ProjectId = 1,
-                SupervisorAlertRecipients = new List<int>()
+                ProjectId = 1
             };
 
             //Act
@@ -668,7 +654,6 @@ namespace RX.Nyss.Web.Tests.Features.Supervisors
                 DecadeOfBirth = 1980,
                 AdditionalPhoneNumber = "123123",
                 ProjectId = 4,
-                SupervisorAlertRecipients = new List<int>()
             };
 
             //Act

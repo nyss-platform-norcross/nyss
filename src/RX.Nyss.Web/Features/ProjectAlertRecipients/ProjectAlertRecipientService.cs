@@ -6,6 +6,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -14,11 +15,12 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 {
     public interface IProjectAlertRecipientService
     {
-        Task<Result<List<ProjectAlertRecipientListResponseDto>>> List(int nationalSocietyId, int projectId);
-        Task<Result<ProjectAlertRecipientListResponseDto>> Get(int alertRecipientId);
+        Task<Result<List<ProjectAlertRecipientResponseDto>>> List(int nationalSocietyId, int projectId);
+        Task<Result<ProjectAlertRecipientResponseDto>> Get(int alertRecipientId);
         Task<Result<int>> Create(int nationalSocietyId, int projectId, ProjectAlertRecipientRequestDto createDto);
         Task<Result> Edit(int alertRecipientId, ProjectAlertRecipientRequestDto editDto);
         Task<Result> Delete(int alertRecipientId);
+        Task<Result<ProjectAlertRecipientFormDataDto>> GetFormData(int projectId);
     }
 
     public class ProjectAlertRecipientService : IProjectAlertRecipientService
@@ -34,7 +36,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             _authorizationService = authorizationService;
         }
 
-        public async Task<Result<List<ProjectAlertRecipientListResponseDto>>> List(int nationalSocietyId, int projectId)
+        public async Task<Result<List<ProjectAlertRecipientResponseDto>>> List(int nationalSocietyId, int projectId)
         {
             var alertRecipientsQuery = _nyssContext.AlertNotificationRecipients
                 .Where(anr => anr.ProjectId == projectId);
@@ -52,13 +54,24 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
             var alertRecipients = await alertRecipientsQuery
                 .OrderBy(anr => anr.Id)
-                .Select(anr => new ProjectAlertRecipientListResponseDto
+                .Select(anr => new ProjectAlertRecipientResponseDto
                 {
                     Id = anr.Id,
                     Role = anr.Role,
                     Organization = anr.Organization,
                     Email = anr.Email,
-                    PhoneNumber = anr.PhoneNumber
+                    PhoneNumber = anr.PhoneNumber,
+                    HealthRisks = anr.ProjectHealthRiskAlertRecipients.Select(phr => new ProjectAlertHealthRiskDto
+                    {
+                        Id = phr.ProjectHealthRiskId,
+                        HealthRiskName = phr.ProjectHealthRisk.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguageId == phr.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id).Name
+                    }),
+                    Supervisors = anr.SupervisorAlertRecipients.Select(sr => new ProjectAlertSupervisorsDto
+                    {
+                        Id = sr.SupervisorId,
+                        Name = sr.Supervisor.Name,
+                        OrganizationId = sr.Supervisor.UserNationalSocieties.Single(uns => uns.NationalSocietyId == nationalSocietyId).OrganizationId.Value
+                    })
                 })
                 .ToListAsync();
 
@@ -67,23 +80,34 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             return result;
         }
 
-        public async Task<Result<ProjectAlertRecipientListResponseDto>> Get(int alertRecipientId)
+        public async Task<Result<ProjectAlertRecipientResponseDto>> Get(int alertRecipientId)
         {
             var alertRecipient = await _nyssContext.AlertNotificationRecipients
                 .Where(anr => anr.Id == alertRecipientId)
-                .Select(anr => new ProjectAlertRecipientListResponseDto
+                .Select(anr => new ProjectAlertRecipientResponseDto
                 {
                     Id = anr.Id,
+                    OrganizationId = anr.OrganizationId,
                     Role = anr.Role,
                     Organization = anr.Organization,
                     Email = anr.Email,
-                    PhoneNumber = anr.PhoneNumber
-                })
-                .SingleOrDefaultAsync();
+                    PhoneNumber = anr.PhoneNumber,
+                    HealthRisks = anr.ProjectHealthRiskAlertRecipients.Select(phr => new ProjectAlertHealthRiskDto
+                    {
+                        Id = phr.ProjectHealthRiskId,
+                        HealthRiskName = phr.ProjectHealthRisk.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguageId == phr.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id).Name
+                    }),
+                    Supervisors = anr.SupervisorAlertRecipients.Select(sr => new ProjectAlertSupervisorsDto
+                    {
+                        Id = sr.SupervisorId,
+                        Name = sr.Supervisor.Name,
+                        OrganizationId = sr.Supervisor.UserNationalSocieties.Single().OrganizationId.Value
+                    })
+                }).SingleOrDefaultAsync();
 
             if (alertRecipient == null)
             {
-                return Error<ProjectAlertRecipientListResponseDto>(ResultKey.AlertRecipient.AlertRecipientDoesNotExist);
+                return Error<ProjectAlertRecipientResponseDto>(ResultKey.AlertRecipient.AlertRecipientDoesNotExist);
             }
 
             return Success(alertRecipient);
@@ -103,24 +127,35 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 return Error<int>(ResultKey.AlertRecipient.ProjectIsClosed);
             }
 
-            var organizationId = createDto.OrganizationId ?? await _nyssContext.UserNationalSocieties
-                    .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
-                    .Select(uns => uns.OrganizationId)
-                    .SingleOrDefaultAsync();
 
-            if (!organizationId.HasValue)
+            var organization = await _nyssContext.Organizations
+                .Where(org => currentUser.Role == Role.Administrator
+                    ? org.Id == createDto.OrganizationId && org.NationalSocietyId == nationalSocietyId
+                    : org.NationalSocietyUsers.Any(nsu => nsu.UserId == currentUser.Id && org.NationalSocietyId == nationalSocietyId))
+                .Select(org => new
+                {
+                    Id = org.Id,
+                    OrganizationUsers = org.NationalSocietyUsers.Where(ns => ns.User.Role == Role.Supervisor).Select(u => u.UserId)
+                })
+                .SingleOrDefaultAsync();
+
+            if (organization == null)
             {
                 return Error<int>(ResultKey.AlertRecipient.CurrentUserMustBeTiedToAnOrganization);
             }
 
+            if (!createDto.Supervisors.All(s => organization.OrganizationUsers.Contains(s)))
+            {
+                return Error<int>(ResultKey.AlertRecipient.AllSupervisorsMustBeTiedToSameOrganization);
+            }
+
             var alertRecipientExistsForCurrentOrganization = await _nyssContext.AlertNotificationRecipients
-                .AnyAsync(anr => anr.Email == createDto.Email && anr.PhoneNumber == createDto.PhoneNumber && anr.OrganizationId == organizationId);
+                .AnyAsync(anr => anr.Email == createDto.Email && anr.PhoneNumber == createDto.PhoneNumber && anr.OrganizationId == organization.Id);
 
             if (alertRecipientExistsForCurrentOrganization)
             {
                 return Error<int>(ResultKey.AlertRecipient.AlertRecipientAlreadyAdded);
             }
-
 
             var alertRecipientToAdd = new AlertNotificationRecipient
             {
@@ -129,18 +164,32 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 Email = createDto.Email,
                 PhoneNumber = createDto.PhoneNumber,
                 ProjectId = projectId,
-                OrganizationId = organizationId.Value
+                OrganizationId = organization.Id
             };
 
             await _nyssContext.AlertNotificationRecipients.AddAsync(alertRecipientToAdd);
-            await _nyssContext.SaveChangesAsync();
 
+            _nyssContext.SupervisorUserAlertRecipients.AddRange(createDto.Supervisors.Select(supervisorId => new SupervisorUserAlertRecipient
+            {
+                SupervisorId = supervisorId,
+                AlertNotificationRecipient = alertRecipientToAdd
+            }));
+
+            _nyssContext.ProjectHealthRiskAlertRecipients.AddRange(createDto.HealthRisks.Select(healthRiskId => new ProjectHealthRiskAlertRecipient
+            {
+                ProjectHealthRiskId = healthRiskId,
+                AlertNotificationRecipient = alertRecipientToAdd
+            }));
+
+            await _nyssContext.SaveChangesAsync();
             return Success(alertRecipientToAdd.Id);
         }
 
         public async Task<Result> Edit(int alertRecipientId, ProjectAlertRecipientRequestDto editDto)
         {
             var alertRecipient = await _nyssContext.AlertNotificationRecipients
+                .Include(ar => ar.ProjectHealthRiskAlertRecipients)
+                .Include(ar => ar.SupervisorAlertRecipients)
                 .Where(anr => anr.Id == alertRecipientId)
                 .SingleOrDefaultAsync();
 
@@ -159,10 +208,39 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 return Error(ResultKey.AlertRecipient.ProjectIsClosed);
             }
 
+            var applicableSupervisors = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.OrganizationId == alertRecipient.OrganizationId && uns.User.Role == Role.Supervisor)
+                .Select(u => u.UserId).ToListAsync();
+
+            if (!editDto.Supervisors.All(s => applicableSupervisors.Contains(s)))
+            {
+                return Error<int>(ResultKey.AlertRecipient.AllSupervisorsMustBeTiedToSameOrganization);
+            }
+
             alertRecipient.Role = editDto.Role;
             alertRecipient.Organization = editDto.Organization;
             alertRecipient.Email = editDto.Email;
             alertRecipient.PhoneNumber = editDto.PhoneNumber;
+
+            var supervisorsToAdd = editDto.Supervisors.Where(s => !alertRecipient.SupervisorAlertRecipients.Any(sar => sar.SupervisorId == s));
+            var supervisorsToRemove = alertRecipient.SupervisorAlertRecipients.Where(sar => !editDto.Supervisors.Contains(sar.SupervisorId));
+
+            var healthRisksToAdd = editDto.HealthRisks.Where(s => !alertRecipient.ProjectHealthRiskAlertRecipients.Any(har => har.ProjectHealthRiskId == s));
+            var healthRisksToRemove = alertRecipient.ProjectHealthRiskAlertRecipients.Where(sar => !editDto.HealthRisks.Contains(sar.ProjectHealthRiskId));
+
+            _nyssContext.SupervisorUserAlertRecipients.AddRange(supervisorsToAdd.Select(supervisorId => new SupervisorUserAlertRecipient
+            {
+                SupervisorId = supervisorId,
+                AlertNotificationRecipientId = alertRecipientId
+            }));
+            _nyssContext.SupervisorUserAlertRecipients.RemoveRange(supervisorsToRemove);
+
+            _nyssContext.ProjectHealthRiskAlertRecipients.AddRange(healthRisksToAdd.Select(healthRiskId => new ProjectHealthRiskAlertRecipient
+            {
+                ProjectHealthRiskId = healthRiskId,
+                AlertNotificationRecipientId = alertRecipientId
+            }));
+            _nyssContext.ProjectHealthRiskAlertRecipients.RemoveRange(healthRisksToRemove);
 
             await _nyssContext.SaveChangesAsync();
 
@@ -181,15 +259,57 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 return Error<int>(ResultKey.AlertRecipient.AlertRecipientDoesNotExist);
             }
 
-            if (alertRecipient.SupervisorAlertRecipients.Any())
-            {
-                return Error<int>(ResultKey.AlertRecipient.CannotDeleteAlertRecipientTiedToSupervisors);
-            }
-
             _nyssContext.AlertNotificationRecipients.Remove(alertRecipient);
 
             await _nyssContext.SaveChangesAsync();
             return Success();
+        }
+
+        public async Task<Result<ProjectAlertRecipientFormDataDto>> GetFormData(int projectId)
+        {
+            var isAdmin = _authorizationService.IsCurrentUserInRole(Role.Administrator);
+            var nationalSocietyId = await _nyssContext.Projects.Where(p => p.Id == projectId).Select(p => p.NationalSocietyId).SingleOrDefaultAsync();
+
+            var currentUserOrganizationId = isAdmin
+                ? 0
+                : await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.NationalSocietyId == nationalSocietyId && uns.User.EmailAddress == _authorizationService.GetCurrentUserName())
+                    .Select(uns => uns.Organization.Id)
+                    .SingleOrDefaultAsync();
+
+            var organizations = await _nyssContext.Organizations.Where(o => isAdmin
+                    ? o.NationalSocietyId == nationalSocietyId
+                    : o.NationalSocietyId == nationalSocietyId && o.Id == currentUserOrganizationId)
+                .Select(o => new ProjectAlertOrganization
+                {
+                    Id = o.Id,
+                    Name = o.Name
+                }).ToListAsync();
+
+            var supervisors = await _nyssContext.SupervisorUserProjects.FilterAvailableUsers().Where(sup => isAdmin
+                    ? sup.SupervisorUser.CurrentProject.Id == projectId
+                    : sup.SupervisorUser.CurrentProject.Id == projectId && sup.SupervisorUser.UserNationalSocieties.Any(uns => uns.OrganizationId == currentUserOrganizationId))
+                .Select(s => new ProjectAlertSupervisorsDto
+                {
+                    Id = s.SupervisorUser.Id,
+                    Name = s.SupervisorUser.Name,
+                    OrganizationId = s.SupervisorUser.UserNationalSocieties.Single(uns => uns.NationalSocietyId == nationalSocietyId).OrganizationId.Value
+                }).ToListAsync();
+
+            var healthRisks = await _nyssContext.ProjectHealthRisks
+                .Where(phr => phr.Project.Id == projectId && phr.HealthRisk.HealthRiskType != HealthRiskType.Activity)
+                .Select(phr => new ProjectAlertHealthRiskDto
+                {
+                    Id = phr.Id,
+                    HealthRiskName = phr.HealthRisk.LanguageContents.Single(lc => lc.ContentLanguageId == phr.Project.NationalSociety.ContentLanguage.Id).Name
+                }).ToListAsync();
+
+            return Success(new ProjectAlertRecipientFormDataDto
+            {
+                Supervisors = supervisors,
+                ProjectOrganizations = organizations,
+                HealthRisks = healthRisks
+            });
         }
     }
 }

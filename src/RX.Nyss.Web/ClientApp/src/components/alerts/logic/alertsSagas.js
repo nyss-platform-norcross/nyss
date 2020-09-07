@@ -17,7 +17,8 @@ export const alertsSagas = () => [
   takeEvery(consts.ESCALATE_ALERT.INVOKE, escalateAlert),
   takeEvery(consts.DISMISS_ALERT.INVOKE, dismissAlert),
   takeEvery(consts.CLOSE_ALERT.INVOKE, closeAlert),
-  takeEvery(consts.RESET_REPORT.INVOKE, resetReport)
+  takeEvery(consts.RESET_REPORT.INVOKE, resetReport),
+  takeEvery(consts.FETCH_RECIPIENTS.INVOKE, fetchRecipients)
 ];
 
 function* openAlertsList({ projectId }) {
@@ -43,6 +44,16 @@ function* getAlerts({ projectId, pageNumber }) {
     yield put(actions.getList.failure(error.message));
   }
 };
+
+function* fetchRecipients({alertId}) {
+  yield put(actions.fetchRecipients.request());
+  try {
+    const response = yield call(http.get, `/api/alert/${alertId}/alertRecipients`);
+    yield put(actions.fetchRecipients.success(response.value))
+  } catch (error) {
+    yield put(actions.fetchRecipients.failure(error.message));
+  }
+}
 
 function* openAlertsAssessment({ projectId, alertId }) {
   yield put(actions.openAssessment.request());

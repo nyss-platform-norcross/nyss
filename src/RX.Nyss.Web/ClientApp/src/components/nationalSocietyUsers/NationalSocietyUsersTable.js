@@ -62,7 +62,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
         </TableHead>
         <TableBody>
           {list.map(row => (
-            <TableRow key={row.id} onClick={() => canBeEdited(row) && goToEdition(nationalSocietyId, row.id)} hover className={canBeEdited(row) && styles.clickableRow}>
+            <TableRow key={row.id} onClick={() => canBeEdited(row) && goToEdition(nationalSocietyId, row.id)} hover className={(canBeEdited(row) && styles.clickableRow) || ''}>
               <TableCell>{row.name}</TableCell>
               <TableCell>{(row.role !== Roles.DataConsumer || row.isVerified) ? row.email : strings(stringKeys.nationalSocietyUser.list.notVerified)}</TableCell>
               <TableCell>{(row.role !== Roles.DataConsumer || row.isVerified) ? row.phoneNumber : strings(stringKeys.nationalSocietyUser.list.notVerified)}</TableCell>

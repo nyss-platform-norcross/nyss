@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Extensions;
-using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
@@ -15,7 +14,6 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
-using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -33,6 +31,7 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<Result> Close(int alertId, string comments, CloseAlertOptions closeOption);
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
         Task<Result<AlertLogResponseDto>> GetLogs(int alertId);
+        Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
     }
 
     public class AlertService : IAlertService
@@ -114,7 +113,7 @@ namespace RX.Nyss.Web.Features.Alerts
                             DistrictName = ar.Report.RawReport.Village.District.Name,
                             RegionName = ar.Report.RawReport.Village.District.Region.Name,
                             IsAnonymized = currentRole != Role.Administrator && !ar.Report.RawReport.NationalSociety.NationalSocietyUsers.Any(
-                                nsu => nsu.UserId == ar.Report.RawReport.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId),
+                                nsu => nsu.UserId == ar.Report.RawReport.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId)
                         }).First(),
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
@@ -139,7 +138,9 @@ namespace RX.Nyss.Web.Features.Alerts
                     CloseOption = a.CloseOption,
                     Comments = a.Comments,
                     ReportCount = a.ReportCount,
-                    LastReportVillage = a.LastReport.IsAnonymized ? "" : a.LastReport.VillageName,
+                    LastReportVillage = a.LastReport.IsAnonymized
+                        ? ""
+                        : a.LastReport.VillageName,
                     LastReportDistrict = a.LastReport.DistrictName,
                     LastReportRegion = a.LastReport.RegionName,
                     HealthRisk = a.HealthRisk
@@ -188,12 +189,7 @@ namespace RX.Nyss.Web.Features.Alerts
                         District = ar.Report.RawReport.Village.District.Name,
                         Region = ar.Report.RawReport.Village.District.Region.Name,
                         ReportedCase = ar.Report.ReportedCase,
-                        Status = ar.Report.Status,
-                        AlertRecipients = ar.Report.DataCollector.Supervisor.SupervisorAlertRecipients.Select(sar => new
-                        {
-                            Email = sar.AlertNotificationRecipient.Email,
-                            PhoneNumber = sar.AlertNotificationRecipient.PhoneNumber
-                        })
+                        Status = ar.Report.Status
                     })
                 })
                 .AsNoTracking()
@@ -211,17 +207,19 @@ namespace RX.Nyss.Web.Features.Alerts
                 Comments = alert.Comments,
                 CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(alert.CreatedAt, projectTimeZone),
                 CaseDefinition = alert.CaseDefinition,
-                NotificationEmails = alert.Reports.SelectMany(r => r.AlertRecipients.Select(ar => ar.Email)).Distinct(),
-                NotificationPhoneNumbers = alert.Reports.SelectMany(r => r.AlertRecipients.Select(ar => ar.PhoneNumber)).Distinct(),
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 CloseOption = alert.CloseOption,
                 Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
                     ? new AlertAssessmentResponseDto.ReportDto
                     {
                         Id = ar.Id,
-                        DataCollector = ar.IsAnonymized ? ar.SupervisorName : ar.DataCollector,
+                        DataCollector = ar.IsAnonymized
+                            ? ar.SupervisorName
+                            : ar.DataCollector,
                         ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
-                        PhoneNumber = ar.IsAnonymized ? "***" : ar.PhoneNumber,
+                        PhoneNumber = ar.IsAnonymized
+                            ? "***"
+                            : ar.PhoneNumber,
                         Status = ar.Status.ToString(),
                         Village = ar.Village,
                         District = ar.District,
@@ -263,12 +261,6 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Single(),
                     Project = alert.ProjectHealthRisk.Project.Name,
                     LanguageCode = alert.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
-                    NotificationRecipients =
-                        alert.AlertReports.SelectMany(ar => ar.Report.DataCollector.Supervisor.SupervisorAlertRecipients.Select(sar => new
-                        {
-                            Email = sar.AlertNotificationRecipient.Email,
-                            PhoneNumber = sar.AlertNotificationRecipient.PhoneNumber
-                        })).ToList(),
                     CountThreshold = alert.ProjectHealthRisk.AlertRule.CountThreshold,
                     AcceptedReportCount = alert.AlertReports.Count(r => r.Report.Status == ReportStatus.Accepted),
                     NationalSocietyId = alert.ProjectHealthRisk.Project.NationalSociety.Id
@@ -292,12 +284,13 @@ namespace RX.Nyss.Web.Features.Alerts
 
             if (sendNotification)
             {
+                var notificationRecipients = await GetAlertRecipients(alertId);
                 try
                 {
-                    var notificationEmails = alertData.NotificationRecipients
+                    var notificationEmails = notificationRecipients
                         .Where(nr => !string.IsNullOrEmpty(nr.Email))
                         .Select(nr => nr.Email).Distinct().ToList();
-                    var notificationPhoneNumbers = alertData.NotificationRecipients
+                    var notificationPhoneNumbers = notificationRecipients
                         .Where(nr => !string.IsNullOrEmpty(nr.PhoneNumber))
                         .Select(nr => nr.PhoneNumber).Distinct().ToList();
 
@@ -433,18 +426,18 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.CloseOption,
                     a.Comments,
                     EscalatedBy = a.EscalatedBy.DeletedAt.HasValue ||
-                        currentUser.Role != Role.Administrator &&
-                        currentUserOrganization != a.EscalatedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
+                        (currentUser.Role != Role.Administrator &&
+                            currentUserOrganization != a.EscalatedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
                             ? a.EscalatedBy.UserNationalSocieties.Single(eduns => eduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                             : a.EscalatedBy.Name,
                     DismissedBy = a.DismissedBy.DeletedAt.HasValue ||
-                        currentUser.Role != Role.Administrator &&
-                        currentUserOrganization != a.DismissedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
+                        (currentUser.Role != Role.Administrator &&
+                            currentUserOrganization != a.DismissedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
                             ? a.DismissedBy.UserNationalSocieties.Single(dbuns => dbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                             : a.DismissedBy.Name,
                     ClosedBy = a.ClosedBy.DeletedAt.HasValue ||
-                        currentUser.Role != Role.Administrator &&
-                        currentUserOrganization != a.ClosedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
+                        (currentUser.Role != Role.Administrator &&
+                            currentUserOrganization != a.ClosedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
                             ? a.ClosedBy.UserNationalSocieties.Single(cbuns => cbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                             : a.ClosedBy.Name,
                     ProjectTimeZone = a.ProjectHealthRisk.Project.TimeZone,
@@ -461,18 +454,20 @@ namespace RX.Nyss.Web.Features.Alerts
                             ar.Report.RejectedAt,
                             ar.Report.ResetAt,
                             AcceptedBy = ar.Report.AcceptedBy.DeletedAt.HasValue ||
-                                currentUser.Role != Role.Administrator &&
-                                currentUserOrganization != ar.Report.AcceptedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
+                                (currentUser.Role != Role.Administrator &&
+                                    currentUserOrganization != ar.Report.AcceptedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety)
+                                        .Organization)
                                     ? ar.Report.AcceptedBy.UserNationalSocieties.Single(abuns => abuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                                     : ar.Report.AcceptedBy.Name,
                             RejectedBy = ar.Report.RejectedBy.DeletedAt.HasValue ||
-                                currentUser.Role != Role.Administrator &&
-                                currentUserOrganization != ar.Report.RejectedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
+                                (currentUser.Role != Role.Administrator &&
+                                    currentUserOrganization != ar.Report.RejectedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety)
+                                        .Organization)
                                     ? ar.Report.RejectedBy.UserNationalSocieties.Single(rejecteduns => rejecteduns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                                     : ar.Report.RejectedBy.Name,
                             ResetBy = ar.Report.ResetBy.DeletedAt.HasValue ||
-                                currentUser.Role != Role.Administrator &&
-                                currentUserOrganization != ar.Report.ResetBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization
+                                (currentUser.Role != Role.Administrator &&
+                                    currentUserOrganization != ar.Report.ResetBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
                                     ? ar.Report.ResetBy.UserNationalSocieties.Single(resetuns => resetuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                                     : ar.Report.ResetBy.Name
                         })
@@ -529,6 +524,55 @@ namespace RX.Nyss.Web.Features.Alerts
             });
         }
 
+        public async Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId)
+        {
+            var currentUserOrganization = await _nyssContext.Alerts.Where(a => a.Id == alertId)
+                .SelectMany(a => a.ProjectHealthRisk.Project.ProjectOrganizations
+                    .Where(po => po.Organization.NationalSocietyUsers.Any(nsu => nsu.User.EmailAddress == _authorizationService.GetCurrentUserName())))
+                .SingleOrDefaultAsync();
+
+            var recipients = (await GetAlertRecipients(alertId)).Select(r => new
+            {
+                IsAnonymized = !_authorizationService.IsCurrentUserInRole(Role.Administrator) && r.OrganizationId != currentUserOrganization.OrganizationId,
+                r.PhoneNumber,
+                r.Email
+            }).ToList();
+
+            return Success(new AlertRecipientsResponseDto
+            {
+                Emails = recipients.Where(r => !string.IsNullOrEmpty(r.Email)).Select(r => r.IsAnonymized
+                    ? "***"
+                    : r.Email).ToList(),
+                PhoneNumbers = recipients.Where(r => !string.IsNullOrEmpty(r.PhoneNumber)).Select(r => r.IsAnonymized
+                    ? "***"
+                    : r.PhoneNumber).ToList(),
+            });
+        }
+
+        private async Task<List<AlertNotificationRecipient>> GetAlertRecipients(int alertId)
+        {
+            var alert = await _nyssContext.Alerts
+                .Where(a => a.Id == alertId)
+                .Select(a => new
+                {
+                    ProjectId = a.ProjectHealthRisk.Project.Id,
+                    ProjectHealthRiskId = a.ProjectHealthRisk.Id,
+                    InvolvedSupervisors = a.AlertReports.Select(ar => ar.Report.DataCollector.Supervisor.Id).Distinct().ToList(),
+                    InvolvedOrganizations = a.AlertReports
+                        .Select(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId).Distinct().ToList()
+                })
+                .SingleOrDefaultAsync();
+
+            var recipients = await _nyssContext.AlertNotificationRecipients.Where(ar =>
+                    ar.ProjectId == alert.ProjectId &&
+                    alert.InvolvedOrganizations.Contains(ar.OrganizationId) &&
+                    (ar.SupervisorAlertRecipients.Count == 0 || ar.SupervisorAlertRecipients.Any(sar => alert.InvolvedSupervisors.Contains(sar.SupervisorId))) &&
+                    (ar.ProjectHealthRiskAlertRecipients.Count == 0 || ar.ProjectHealthRiskAlertRecipients.Any(phr => phr.ProjectHealthRiskId == alert.ProjectHealthRiskId)))
+                .ToListAsync();
+
+            return recipients;
+        }
+
         private async Task<bool> HasCurrentUserAlertEditAccess(int alertId)
         {
             var currentUser = await _authorizationService.GetCurrentUserAsync();
@@ -552,25 +596,25 @@ namespace RX.Nyss.Web.Features.Alerts
             alertStatus switch
             {
                 AlertStatus.Escalated =>
-                AlertAssessmentStatus.Escalated,
+                    AlertAssessmentStatus.Escalated,
 
                 AlertStatus.Dismissed =>
-                AlertAssessmentStatus.Dismissed,
+                    AlertAssessmentStatus.Dismissed,
 
                 AlertStatus.Closed =>
-                AlertAssessmentStatus.Closed,
+                    AlertAssessmentStatus.Closed,
 
                 AlertStatus.Rejected =>
-                AlertAssessmentStatus.Rejected,
+                    AlertAssessmentStatus.Rejected,
 
                 AlertStatus.Pending when acceptedReports >= countThreshold =>
-                AlertAssessmentStatus.ToEscalate,
+                    AlertAssessmentStatus.ToEscalate,
 
                 AlertStatus.Pending when acceptedReports + pendingReports >= countThreshold =>
-                AlertAssessmentStatus.Open,
+                    AlertAssessmentStatus.Open,
 
                 _ =>
-                AlertAssessmentStatus.ToDismiss
+                    AlertAssessmentStatus.ToDismiss
             };
 
         private static string GetSex(ReportCase reportedCase)

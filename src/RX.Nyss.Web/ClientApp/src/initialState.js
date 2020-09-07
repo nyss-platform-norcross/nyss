@@ -107,7 +107,8 @@ export const initialState = {
     listData: [],
     formFetching: false,
     formSaving: false,
-    formData: null
+    formData: null,
+    recipient: null
   },
   projects: {
     listFetching: false,
@@ -235,7 +236,11 @@ export const initialState = {
     listFetching: false,
     listRemoving: {},
     listProjectId: null,
-    listData: null
+    listData: null,
+    formData: null,
+    isFetchingRecipients: false,
+    notificationPhoneNumbers: [],
+    notificationEmails: []
   },
   translations: {
     listFetching: false,

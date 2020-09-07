@@ -19,6 +19,22 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
     return <Loading />;
   }
 
+  const renderHealthRisks = (healthRisks) => {
+    if (healthRisks.length > 0) {
+      return healthRisks.length > 1 ? `${healthRisks[0].healthRiskName} (+ ${healthRisks.length - 1})` : `${healthRisks[0].healthRiskName}`;
+    }
+
+    return 'Any';
+  }
+
+  const renderSupervisors = (supervisors) => {
+    if (supervisors.length > 0) {
+      return supervisors.length > 1 ? `${supervisors[0].name} (+ ${supervisors.length - 1})` : `${supervisors[0].name}`;
+    }
+
+    return 'Any';
+  }
+
   return (
     <TableContainer sticky>
       <Table>
@@ -28,6 +44,8 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
             <TableCell>{strings(stringKeys.projectAlertRecipient.list.organization)}</TableCell>
             <TableCell>{strings(stringKeys.projectAlertRecipient.list.email)}</TableCell>
             <TableCell>{strings(stringKeys.projectAlertRecipient.list.phoneNumber)}</TableCell>
+            <TableCell>{strings(stringKeys.projectAlertRecipient.list.healthRisks)}</TableCell>
+            <TableCell>{strings(stringKeys.projectAlertRecipient.list.supervisors)}</TableCell>
             <TableCell style={{ width: "10%" }} />
           </TableRow>
         </TableHead>
@@ -38,6 +56,8 @@ export const ProjectAlertRecipientsTable = ({ isListFetching, isRemoving, goToEd
               <TableCell>{row.organization}</TableCell>
               <TableCell>{row.email}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
+              <TableCell>{renderHealthRisks(row.healthRisks)}</TableCell>
+              <TableCell>{renderSupervisors(row.supervisors)}</TableCell>
               <TableCell>
                 {!isClosed &&
                   <TableRowActions>

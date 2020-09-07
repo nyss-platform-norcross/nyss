@@ -259,8 +259,6 @@ namespace RX.Nyss.Web.Features.Projects
                     .Include(p => p.ProjectOrganizations)
                     .Include(p => p.ProjectHealthRisks)
                     .ThenInclude(phr => phr.AlertRule)
-                    .Include(p => p.AlertNotificationRecipients)
-                    .ThenInclude(anr => anr.SupervisorAlertRecipients)
                     .FirstOrDefaultAsync(p => p.Id == projectId);
 
                 if (projectToUpdate == null)

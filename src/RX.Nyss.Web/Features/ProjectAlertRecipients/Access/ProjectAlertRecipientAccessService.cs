@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Access
                 .Where(anr => anr.Id == alertRecipientId)
                 .SingleAsync();
 
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUserAsync();
 
             if (currentUser.Role == Role.Administrator)
             {

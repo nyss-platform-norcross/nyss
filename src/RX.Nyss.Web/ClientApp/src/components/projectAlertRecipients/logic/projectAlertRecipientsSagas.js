@@ -5,7 +5,6 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { stringKeys } from "../../../strings";
-import { Administrator } from "../../../authentication/roles";
 
 export const projectAlertRecipientsSagas = () => [
   takeEvery(consts.OPEN_ALERT_RECIPIENTS_LIST.INVOKE, openProjectAlertRecipientsList),
@@ -34,11 +33,12 @@ function* openProjectAlertRecipientsList({ projectId }) {
 function* openAlertRecipientCreation({ projectId }) {
   yield put(actions.openCreation.request());
   try {
-    const userRoles = yield select(state => state.appData.user.roles);
-    const response = userRoles.some(r => r === Administrator) ? yield call(http.get, `/api/projectOrganization/list?projectId=${projectId}`) : null;
-    const organizations = response ? response.value : [];
     yield openProjectAlertRecipientsModule(projectId);
-    yield put(actions.openCreation.success(organizations));
+    if (yield select(state => state.projectAlertRecipients.listStale)) {
+      yield call(getProjectAlertRecipients, projectId);
+    }
+    const formData = yield call(http.get, `/api/projectAlertRecipient/formData?projectId=${projectId}`);
+    yield put(actions.openCreation.success(formData.value));
   } catch (error) {
     yield put(actions.openCreation.failure(error.message));
   }
@@ -61,9 +61,10 @@ function* openAlertRecipientEdition({ alertRecipientId }) {
   yield put(actions.openEdition.request());
   try {
     const projectId = yield select(state => state.appData.route.params.projectId);
-    const response = yield call(http.get, `/api/projectAlertRecipient/${alertRecipientId}/get`);
+    const recipient = yield call(http.get, `/api/projectAlertRecipient/${alertRecipientId}/get`);
     yield openProjectAlertRecipientsModule(projectId);
-    yield put(actions.openEdition.success(response.value));
+    const formData = yield call(http.get, `/api/projectAlertRecipient/formData?projectId=${projectId}`);
+    yield put(actions.openEdition.success(recipient.value, formData.value));
   } catch (error) {
     yield put(actions.openEdition.failure(error.message));
   }

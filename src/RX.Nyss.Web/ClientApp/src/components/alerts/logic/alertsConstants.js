@@ -10,6 +10,7 @@ export const RESET_REPORT = action("RESET_REPORT");
 export const ESCALATE_ALERT = action("ESCALATE_ALERT");
 export const DISMISS_ALERT = action("DISMISS_ALERT");
 export const CLOSE_ALERT = action("CLOSE_ALERT");
+export const FETCH_RECIPIENTS = action("FETCH_RECIPIENTS");
 
 export const assessmentStatus = {
   escalated: "Escalated",

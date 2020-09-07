@@ -30,6 +30,7 @@ namespace RX.Nyss.Data
         DbSet<Project> Projects { get; set; }
         DbSet<SupervisorUserProject> SupervisorUserProjects { get; set; }
         DbSet<SupervisorUserAlertRecipient> SupervisorUserAlertRecipients { get; set; }
+        DbSet<ProjectHealthRiskAlertRecipient> ProjectHealthRiskAlertRecipients { get; set; }
         DbSet<ProjectHealthRisk> ProjectHealthRisks { get; set; }
         DbSet<RawReport> RawReports { get; set; }
         DbSet<Region> Regions { get; set; }

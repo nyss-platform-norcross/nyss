@@ -244,6 +244,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string CurrentUserMustBeTiedToAnOrganization = "alertRecipient.currentUserMustBeTiedToAnOrganization";
             public const string CannotDeleteAlertRecipientTiedToSupervisors = "alertRecipient.cannotDeleteAlertRecipientTiedToSupervisors";
             public const string ProjectIsClosed = "alertRecipient.projectIsClosed";
+            public const string AllSupervisorsMustBeTiedToSameOrganization = "alertRecipient.allSupervisorsMustBeTiedToSameOrganization ";
         }
 
         public class SqlExceptions

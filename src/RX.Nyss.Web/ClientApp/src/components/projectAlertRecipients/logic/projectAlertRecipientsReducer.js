@@ -27,7 +27,7 @@ export function projectAlertRecipientsReducer(state = initialState.projectAlertR
       return { ...state, formData: action.formData };
 
       case actions.OPEN_ALERT_RECIPIENT_EDITION.SUCCESS:
-        return { ...state, formData: action.formData };
+        return { ...state, recipient: action.recipient, formData: action.formData };
 
     case actions.CREATE_ALERT_RECIPIENT.REQUEST:
       return { ...state, formSaving: true };

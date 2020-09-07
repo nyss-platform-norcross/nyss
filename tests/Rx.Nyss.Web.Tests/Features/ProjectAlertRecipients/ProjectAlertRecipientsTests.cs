@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.ProjectAlertRecipients;
 using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
@@ -39,6 +41,12 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 {
                     Id = 2,
                     EmailAddress = "manager2@example.com"
+                },
+                new SupervisorUser
+                {
+                    Id = 3,
+                    EmailAddress = "supervisor@example.com",
+                    Role = Role.Supervisor
                 }
             };
 
@@ -48,12 +56,22 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 {
                     NationalSocietyId = 1,
                     UserId = 1,
-                    OrganizationId = 1
+                    OrganizationId = 1,
+                    User = _users[0]
                 },
                 new UserNationalSociety
                 {
                     NationalSocietyId = 1,
-                    UserId = 2
+                    UserId = 2,
+                    OrganizationId = 2,
+                    User = _users[0]
+                },
+                new UserNationalSociety
+                {
+                    NationalSocietyId = 1,
+                    UserId = 3,
+                    OrganizationId = 1,
+                    User = _users[2]
                 }
             };
 
@@ -70,7 +88,20 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                     PhoneNumber = "+123456",
                     OrganizationId = 1,
                     ProjectId = 1,
-                    SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>()
+                    SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>(),
+                    ProjectHealthRiskAlertRecipients = new List<ProjectHealthRiskAlertRecipient>()
+                }
+            };
+            var orgs = new List<Organization>
+            {
+                new Organization
+                {
+                    Id = 1,
+                    NationalSocietyId = 1,
+                    NationalSocietyUsers = new List<UserNationalSociety>
+                    {
+                        new UserNationalSociety { UserId = 1, User = _users[2]}
+                    }
                 }
             };
 
@@ -78,12 +109,14 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
             var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             var alertRecipientsDbSet = alertRecipients.AsQueryable().BuildMockDbSet();
             var projectsDbSet = projects.AsQueryable().BuildMockDbSet();
+            var orgDbSet = orgs.AsQueryable().BuildMockDbSet();
 
             _authorizationServiceMock.GetCurrentUserAsync().Returns(_users[0]);
             _nyssContextMock.Users.Returns(usersDbSet);
             _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
             _nyssContextMock.AlertNotificationRecipients.Returns(alertRecipientsDbSet);
             _nyssContextMock.Projects.Returns(projectsDbSet);
+            _nyssContextMock.Organizations.Returns(orgDbSet);
 
             _projectAlertRecipientService = new ProjectAlertRecipientService(_nyssContextMock, _authorizationServiceMock);
         }
@@ -97,7 +130,10 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Role = "Head",
                 Organization = "RCRC",
                 Email = "head@rcrc.org",
-                PhoneNumber = "+35235243"
+                PhoneNumber = "+35235243",
+                OrganizationId = 1,
+                Supervisors = new List<int>(),
+                HealthRisks = new List<int>()
             };
 
             // Act
@@ -116,7 +152,10 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Role = "Head",
                 Organization = "RCRC",
                 Email = "test@example.com",
-                PhoneNumber = "+123456"
+                PhoneNumber = "+123456",
+                OrganizationId = 1,
+                Supervisors = new List<int>(),
+                HealthRisks = new List<int>()
             };
 
             // Act
@@ -137,7 +176,10 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Role = "Head",
                 Organization = "RCRC",
                 Email = "head@rcrc.org",
-                PhoneNumber = "+35235243"
+                PhoneNumber = "+35235243",
+                OrganizationId = 3,
+                Supervisors = new List<int>(),
+                HealthRisks = new List<int>()
             };
 
             // Act
@@ -159,7 +201,10 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Role = "Head",
                 Organization = "RCRC",
                 Email = "head@rcrc.org",
-                PhoneNumber = "+35235243"
+                PhoneNumber = "+35235243",
+                OrganizationId = 1,
+                Supervisors = new List<int>(),
+                HealthRisks = new List<int>()
             };
 
             // Act
@@ -181,7 +226,10 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 Role = "Head",
                 Organization = "RCRC",
                 Email = "head@rcrc.org",
-                PhoneNumber = "+35235243"
+                PhoneNumber = "+35235243",
+                OrganizationId = 1,
+                Supervisors = new List<int>(),
+                HealthRisks = new List<int>()
             };
 
             // Act

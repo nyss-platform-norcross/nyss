@@ -298,7 +298,13 @@ export const stringKeys = {
       email: "projectAlertRecipient.form.email",
       phoneNumber: "projectAlertRecipient.form.phoneNumber",
       create: "projectAlertRecipient.form.create",
-      update: "projectAlertRecipient.form.update"
+      update: "projectAlertRecipient.form.update",
+      supervisors: "projectAlertRecipient.form.supervisors",
+      healthRisks: "projectAlertRecipient.form.healthRisks",
+      anyHealthRisk: "projectAlertRecipient.form.anyHealthRisk",
+      triggerDetails: "projectAlertRecipient.form.triggerDetails",
+      receiverDetails: "projectAlertRecipient.form.receiverDetails",
+      anySupervisor: "projectAlertRecipient.form.anySupervisor"
     },
     create: {
       success: "projectAlertRecipient.create.success"
@@ -314,7 +320,9 @@ export const stringKeys = {
       organization: "projectAlertRecipient.list.organization",
       email: "projectAlertRecipient.list.email",
       phoneNumber: "projectAlertRecipient.list.phoneNumber",
-      removalConfirmation: "projectAlertRecipient.list.removalConfirmation"
+      removalConfirmation: "projectAlertRecipient.list.removalConfirmation",
+      supervisors: "projectAlertRecipient.list.supervisors",
+      healthRisks: "projectAlertRecipient.list.healthRisks"
     },
   },
   project: {

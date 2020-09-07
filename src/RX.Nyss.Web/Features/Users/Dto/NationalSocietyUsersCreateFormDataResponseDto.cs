@@ -41,6 +41,6 @@ namespace RX.Nyss.Web.Features.Users.Dto
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public List<ProjectAlertRecipientListResponseDto> AlertRecipients { get; set; }
+        public List<ProjectAlertRecipientResponseDto> AlertRecipients { get; set; }
     }
 }

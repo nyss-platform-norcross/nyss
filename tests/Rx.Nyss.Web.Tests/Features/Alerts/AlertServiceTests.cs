@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Castle.Components.DictionaryAdapter;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Extensions;
@@ -36,6 +37,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly User _currentUser = new GlobalCoordinatorUser();
         private readonly ISmsPublisherService _smsPublisherService;
         private readonly List<GatewaySetting> _gatewaySettings;
+        private readonly List<AlertNotificationRecipient> _alertNotificationRecipients;
 
         public AlertServiceTests()
         {
@@ -63,6 +65,22 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
             _nyssContext.Alerts.Returns(alertsDbSet);
+
+
+            _alertNotificationRecipients = new List<AlertNotificationRecipient>
+            {
+                new AlertNotificationRecipient
+                {
+                    ProjectId = 1,
+                    OrganizationId = 1,
+                    Email = "test@test.com",
+                    PhoneNumber = "+1234578",
+                    SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>(),
+                    ProjectHealthRiskAlertRecipients = new List<ProjectHealthRiskAlertRecipient>()
+                }
+            };
+            var alertNotificationDbSet = _alertNotificationRecipients.AsQueryable().BuildMockDbSet();
+            _nyssContext.AlertNotificationRecipients.Returns(alertNotificationDbSet);
 
             _gatewaySettings = TestData.GetGatewaySettings();
             var gatewaySettingsDbSet = _gatewaySettings.AsQueryable().BuildMockDbSet();
@@ -178,15 +196,15 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task EscalateAlert_WhenAlertMeetsTheCriteria_ShouldSendEmailAndSmsMessages()
         {
-            var emailAddress = "test@test.com";
-            var phonenumber = "+1234578";
             var smsText = "hey";
 
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
 
-            _alerts.First().Status = AlertStatus.Pending;
-
-            _alerts.First().AlertReports = new List<AlertReport>
+            var alert = _alerts.First();
+            alert.Status = AlertStatus.Pending;
+            alert.ProjectHealthRisk.Id = 1;
+            alert.ProjectHealthRisk.Project.Id = 1;
+            alert.AlertReports = new List<AlertReport>
             {
                 new AlertReport
                 {
@@ -210,15 +228,12 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             Supervisor = new SupervisorUser
                             {
-                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>
+                                Id = 1,
+                                UserNationalSocieties = new List<UserNationalSociety>
                                 {
-                                    new SupervisorUserAlertRecipient
+                                    new UserNationalSociety
                                     {
-                                        AlertNotificationRecipient = new AlertNotificationRecipient
-                                        {
-                                            Email = emailAddress,
-                                            PhoneNumber = phonenumber
-                                        }
+                                        OrganizationId = 1
                                     }
                                 }
                             }
@@ -227,26 +242,17 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 }
             };
 
-            _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient>
-            {
-                new AlertNotificationRecipient
-                {
-                    Email = emailAddress,
-                    PhoneNumber = phonenumber
-                }
-            };
-
+            alert.ProjectHealthRisk.AlertRule.CountThreshold = 1;
 
             await _alertService.Escalate(TestData.AlertId, true);
 
             await _emailPublisherService.ReceivedWithAnyArgs(2).SendEmail((null, null), null, null);
 
             await _emailPublisherService.Received(1)
-                .SendEmail((emailAddress, emailAddress), TestData.EscalationEmailSubject, TestData.EscalationEmailBody);
+                .SendEmail(("test@test.com", "test@test.com"), TestData.EscalationEmailSubject, TestData.EscalationEmailBody);
 
             await _emailPublisherService.Received(1)
-                .SendEmail((TestData.GatewayEmail, TestData.GatewayEmail), phonenumber, smsText, true);
+                .SendEmail((TestData.GatewayEmail, TestData.GatewayEmail), "+1234578", smsText, true);
         }
 
         [Fact]
@@ -255,13 +261,23 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var emailAddress = "test@test.com";
             var phonenumber = "+1234578";
             var smsText = "hey";
-
+            _alertNotificationRecipients.Add(new AlertNotificationRecipient
+            {
+                ProjectId = 1,
+                OrganizationId = 1,
+                Email = emailAddress,
+                PhoneNumber = phonenumber,
+                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>(),
+                ProjectHealthRiskAlertRecipients = new List<ProjectHealthRiskAlertRecipient>()
+            });
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
             _gatewaySettings.First().IotHubDeviceName = "TestDevice";
 
-            _alerts.First().Status = AlertStatus.Pending;
-
-            _alerts.First().AlertReports = new List<AlertReport>
+            var alert = _alerts.First();
+            alert.Status = AlertStatus.Pending;
+            alert.ProjectHealthRisk.Id = 1;
+            alert.ProjectHealthRisk.Project.Id = 1;
+            alert.AlertReports = new List<AlertReport>
             {
                 new AlertReport
                 {
@@ -285,15 +301,12 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             Supervisor = new SupervisorUser
                             {
-                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>
+                                Id = 1,
+                                UserNationalSocieties = new List<UserNationalSociety>
                                 {
-                                    new SupervisorUserAlertRecipient
+                                    new UserNationalSociety
                                     {
-                                        AlertNotificationRecipient = new AlertNotificationRecipient
-                                        {
-                                            Email = emailAddress,
-                                            PhoneNumber = phonenumber
-                                        }
+                                        OrganizationId = 1
                                     }
                                 }
                             }
@@ -302,15 +315,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 }
             };
 
-            _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient>
-            {
-                new AlertNotificationRecipient
-                {
-                    Email = emailAddress,
-                    PhoneNumber = phonenumber
-                }
-            };
+            alert.ProjectHealthRisk.AlertRule.CountThreshold = 1;
 
             await _alertService.Escalate(TestData.AlertId, true);
 
@@ -331,9 +336,12 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var smsText = "hey";
             _smsTextGeneratorService.GenerateEscalatedAlertSms(TestData.ContentLanguageCode).Returns(smsText);
 
-            _alerts.First().Status = AlertStatus.Pending;
+            var alert = _alerts.First();
+            alert.Status = AlertStatus.Pending;
+            alert.ProjectHealthRisk.Id = 1;
+            alert.ProjectHealthRisk.Project.Id = 1;
 
-            _alerts.First().AlertReports = new List<AlertReport>
+            alert.AlertReports = new List<AlertReport>
             {
                 new AlertReport
                 {
@@ -357,9 +365,13 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         {
                             Supervisor = new SupervisorUser
                             {
-                                SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>
+                                Id = 1,
+                                UserNationalSocieties = new List<UserNationalSociety>
                                 {
-                                    new SupervisorUserAlertRecipient { AlertNotificationRecipient = new AlertNotificationRecipient { PhoneNumber = phonenumber } }
+                                    new UserNationalSociety
+                                    {
+                                        OrganizationId = 1
+                                    }
                                 }
                             }
                         }
@@ -367,8 +379,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 }
             };
 
-            _alerts.First().ProjectHealthRisk.AlertRule.CountThreshold = 1;
-            _alerts.First().ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> { new AlertNotificationRecipient { PhoneNumber = phonenumber } };
+            alert.ProjectHealthRisk.AlertRule.CountThreshold = 1;
+            alert.ProjectHealthRisk.Project.AlertNotificationRecipients = new List<AlertNotificationRecipient> { new AlertNotificationRecipient { PhoneNumber = phonenumber } };
 
             // Act
             await _alertService.Escalate(TestData.AlertId, true);

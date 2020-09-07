@@ -2,7 +2,7 @@ import { push } from "connected-react-router";
 import {
   OPEN_ALERTS_LIST, GET_ALERTS, OPEN_ALERTS_ASSESSMENT,
   ACCEPT_REPORT, DISMISS_REPORT, RESET_REPORT, ESCALATE_ALERT,
-  DISMISS_ALERT, CLOSE_ALERT, OPEN_ALERTS_LOGS
+  DISMISS_ALERT, CLOSE_ALERT, OPEN_ALERTS_LOGS, FETCH_RECIPIENTS
 } from "./alertsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/alerts`);
@@ -76,4 +76,11 @@ export const closeAlert = {
   request: () => ({ type: CLOSE_ALERT.REQUEST }),
   success: () => ({ type: CLOSE_ALERT.SUCCESS }),
   failure: (message) => ({ type: CLOSE_ALERT.FAILURE, message })
+};
+
+export const fetchRecipients = {
+  invoke: (alertId) => ({ type: FETCH_RECIPIENTS.INVOKE, alertId }),
+  request: () => ({ type: FETCH_RECIPIENTS.REQUEST }),
+  success: (data) => ({ type: FETCH_RECIPIENTS.SUCCESS, data }),
+  failure: (message) => ({ type: FETCH_RECIPIENTS.FAILURE, message })
 };
