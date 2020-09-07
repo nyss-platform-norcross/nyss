@@ -557,8 +557,8 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     ProjectId = a.ProjectHealthRisk.Project.Id,
                     ProjectHealthRiskId = a.ProjectHealthRisk.Id,
-                    InvolvedSupervisors = a.AlertReports.Where(ar => ar.Report.Status == ReportStatus.Accepted).Select(ar => ar.Report.DataCollector.Supervisor.Id).Distinct().ToList(),
-                    InvolvedOrganizations = a.AlertReports.Where(ar => ar.Report.Status == ReportStatus.Accepted)
+                    InvolvedSupervisors = a.AlertReports.Select(ar => ar.Report.DataCollector.Supervisor.Id).Distinct().ToList(),
+                    InvolvedOrganizations = a.AlertReports
                         .Select(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId).Distinct().ToList()
                 })
                 .SingleOrDefaultAsync();
