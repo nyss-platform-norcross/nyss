@@ -36,6 +36,7 @@ const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
+          isFetching={isFetching}
         />
       </Grid>
 

@@ -1,5 +1,5 @@
 import styles from "./ProjectsDashboardFilters.module.scss";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -10,14 +10,13 @@ import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 import { ExpandMore, DateRange } from '@material-ui/icons';
-import { Switch, FormControl, LinearProgress, FormLabel, Chip, IconButton, useTheme } from "@material-ui/core";
+import { Switch, FormControl, LinearProgress, FormLabel, Chip, IconButton } from "@material-ui/core";
 import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching }) => {
   const [value, setValue] = useState(filters);
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('lg'));
+  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('lg'));
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   const updateValue = (change) => {
@@ -67,7 +66,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
   }
 
   return (
-    <Card>
+    <Card className={styles.filters}>
       {isFetching && (<LinearProgress color="primary" />)}
       {isSmallScreen && (
         <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }} >
