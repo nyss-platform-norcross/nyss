@@ -4,7 +4,7 @@
 
 .sideMenu {
   flex: 1;
-  width: 260px;
+  width: 221px;
   background: linear-gradient(90deg, #f1f1f1 90%, #ececec);
 }
 
@@ -37,6 +37,6 @@
 
 .drawer {
   @media screen and (min-width: 1280px) {
-    width: 260px;
+    width: 221px;
   }
 }
