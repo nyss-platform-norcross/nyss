@@ -53,7 +53,7 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
   return (
     <Card className={styles.filters}>
       <CardContent>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item>
             <DatePicker
               className={styles.filterDate}

@@ -76,7 +76,7 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
 
         <div className={styles.reportsTitle}>{strings(stringKeys.alerts.assess.reports)}</div>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {data.reports.map(report => (
             <Grid item xs={12} key={`report_${report.id}`}>
               <AlertsAssessmentReport

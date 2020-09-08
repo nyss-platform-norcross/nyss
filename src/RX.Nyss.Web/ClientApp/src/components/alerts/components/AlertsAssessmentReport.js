@@ -52,7 +52,7 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
         </div>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails className={styles.form}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={6} xl={3}>
             <ReportFormLabel
               label={strings(stringKeys.alerts.assess.report.phoneNumber)}

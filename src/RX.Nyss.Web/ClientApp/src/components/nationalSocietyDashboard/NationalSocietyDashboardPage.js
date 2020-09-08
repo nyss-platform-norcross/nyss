@@ -28,7 +28,7 @@ const NationalSocietyDashboardPageComponent = ({ openDashbaord, getDashboardData
   }
 
   return (
-    <Grid container spacing={3} ref={dashboardElement}>
+    <Grid container spacing={2} ref={dashboardElement}>
       <Grid item xs={12} className={styles.filtersGrid}>
         <NationalSocietyDashboardFilters
           healthRisks={props.healthRisks}

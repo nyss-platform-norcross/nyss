@@ -107,11 +107,11 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
       {props.error && <ValidationMessage message={props.error} />}
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
 
                   <Grid item xs={12}>
                     <Typography variant="h3">{strings(stringKeys.projectAlertRecipient.form.receiverDetails)}</Typography>
@@ -159,7 +159,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
           <Grid item xs={12} md={6}>
             <Card style={{ overflow: "visible" }}>
               <CardContent>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
 
                   <Grid item xs={12}>
                     <Typography variant="h3">{strings(stringKeys.projectAlertRecipient.form.triggerDetails)}</Typography>

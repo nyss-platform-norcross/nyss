@@ -86,9 +86,9 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
         submit={() => closeConfirmed()}
         close={() => setRemoveConfirmationDialog({ isOpen: false })}
       >
-        <Grid container spacing={3} alignItems="center">
+        <Grid container spacing={2} alignItems="center">
           <Grid item>
-            <Grid container direction="row" spacing={3} alignItems="center">
+            <Grid container direction="row" spacing={2} alignItems="center">
               <Grid item xs={2} style={{ textAlign: "center" }}>
                 <WarningIcon color="error" style={{ fontSize: "45px", verticalAlign: "bottom" }} />
               </Grid>

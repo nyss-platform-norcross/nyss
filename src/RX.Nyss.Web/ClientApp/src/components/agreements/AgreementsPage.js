@@ -50,7 +50,7 @@ const AgreementsPageComponent = (props) => {
     <div className={styles.consentWrapper}>
       <Paper className={styles.consentPaper}>
         <div className={styles.aboveDocument}>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
               <Typography variant="h2">{strings(stringKeys.nationalSocietyConsents.title)}</Typography>
 

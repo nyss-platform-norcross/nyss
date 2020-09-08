@@ -118,7 +118,7 @@ const LoginPageComponent = (props) => {
               {props.loginResponse && <ValidationMessage message={props.loginResponse} />}
 
               <form onSubmit={handleSubmit}>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <TextInputField
                       label={strings(stringKeys.login.email)}

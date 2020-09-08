@@ -25,7 +25,7 @@ export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
     handleChange({ endDate: date.format('YYYY-MM-DD') });
 
   return (
-    <Grid container spacing={3} className={styles.filters}>
+    <Grid container spacing={2} className={styles.filters}>
       <Grid item>
         <DatePicker
           onChange={handleDateFromChange}

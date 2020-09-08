@@ -92,7 +92,7 @@ const ProjectsCreatePageComponent = (props) => {
       {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={9}>
             <TextInputField
               label={strings(stringKeys.project.form.name)}

@@ -59,7 +59,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
       <CardContent>
         <Typography variant="h2" display="inline">{healthRisk.healthRiskCode}</Typography>
         <Typography variant="h3" style={{ marginLeft: "10px" }} display="inline"> {healthRisk.healthRiskName}</Typography>
-        <Grid container spacing={3} style={{marginTop: "10px;"}}>
+        <Grid container spacing={2} style={{marginTop: "10px;"}}>
           <Grid item xs={12} sm={6}>
             <TextInputField
               label={strings(stringKeys.project.form.caseDefinition)}
@@ -79,7 +79,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
         </Grid>
 
         <Typography variant="h3">{strings(stringKeys.project.form.alertsSetion)}</Typography>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
             <TextInputField
               label={strings(stringKeys.project.form.alertRuleCountThreshold)}

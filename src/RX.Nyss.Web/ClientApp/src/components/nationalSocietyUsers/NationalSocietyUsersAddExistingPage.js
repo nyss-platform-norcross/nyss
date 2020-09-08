@@ -56,7 +56,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
           <Typography variant="body1">{strings(stringKeys.nationalSocietyUser.form.addExistingDescription)}</Typography>
         </Box>
 
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
 
           <Grid item xs={12}>
             <TextInputField

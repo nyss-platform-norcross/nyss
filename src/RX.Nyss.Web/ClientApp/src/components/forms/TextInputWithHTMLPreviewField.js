@@ -7,7 +7,7 @@ import { Grid } from '@material-ui/core';
 
 const TextInputWithHTMLPreview = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type }) => {
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={2}>
       <Grid item xs={6}>
         <TextField
           name={name}

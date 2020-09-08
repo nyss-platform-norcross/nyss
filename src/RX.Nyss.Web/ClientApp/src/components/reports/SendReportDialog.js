@@ -77,7 +77,7 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
         <DialogTitle id="form-dialog-title">{strings(stringKeys.reports.sendReport.sendReport)}</DialogTitle>
         <DialogContent>
           <Form onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
+            <Grid container spacing={2}>
               <Grid item xs={12}>
                 <AutocompleteTextInputField
                   label={strings(stringKeys.reports.sendReport.dataCollector)}
@@ -88,7 +88,7 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
                   name="dataCollectors"
                 />
               </Grid>
-              
+
               <Grid item xs={6}>
                 <DatePicker
                   label={strings(stringKeys.reports.sendReport.dateOfReport)}
@@ -97,7 +97,7 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
                   value={date}
                 />
               </Grid>
-              
+
               <Grid item xs={6}>
                 <TextInputField
                   label={strings(stringKeys.reports.sendReport.timeOfReport)}

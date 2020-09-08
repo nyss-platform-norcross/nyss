@@ -73,8 +73,8 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
     <Card>
       {isFetching && (<LinearProgress color="primary" />)}
       {isSmallScreen && (
-        <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }}>
-          <Grid container spacing={1} alignItems="center">
+        <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }} data-printable={true}>
+          <Grid container spacing={2} alignItems="center">
             <Grid item>
               <Chip icon={<DateRange />} label={`${value.startDate} - ${value.endDate}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
             </Grid>
@@ -96,9 +96,9 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
           </Grid>
         </CardContent>
       )}
-      <Collapse in={isFilterExpanded} timeout="auto" unmountOnExit>
+      <Collapse in={isFilterExpanded} timeout="auto" unmountOnExit data-printable={isFilterExpanded}>
         <CardContent>
-          <Grid container spacing={1}>
+          <Grid container spacing={2}>
             <Grid item>
               <DatePicker
                 className={styles.filterDate}

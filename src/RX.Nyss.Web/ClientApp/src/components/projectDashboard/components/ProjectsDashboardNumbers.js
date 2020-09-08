@@ -14,14 +14,14 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
   }
 
   const renderNumber = (label, value) => (
-    <Grid container spacing={3}>
+    <Grid container spacing={2}>
       <Grid item className={styles.numberName}>{label}</Grid>
       <Grid item className={styles.numberValue}>{value}</Grid>
     </Grid>
   );
 
   return (
-    <Grid container spacing={3} data-printable={true}>
+    <Grid container spacing={2} data-printable={true}>
       <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.project.dashboard.numbers.totalReportCountTitle)} />

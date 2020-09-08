@@ -89,7 +89,7 @@ export const EmailStringsEditorDialog = ({ stringKey, close }) => {
     <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} onKeyDown={handleKeyDown} fullScreen={fullScreen} maxWidth="md">
       <DialogTitle id="form-dialog-title">Edit string resource</DialogTitle>
       <DialogContent>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {!form && <Loading />}
           {form && (
             <Fragment>
