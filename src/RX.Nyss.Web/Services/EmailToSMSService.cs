@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using RX.Nyss.Data.Models;
 
@@ -25,8 +26,9 @@ namespace RX.Nyss.Web.Services
                 return;
             }
 
-            var recipients = string.Join(",", recipientPhoneNumbers);
-            await _emailPublisherService.SendEmail((gatewaySetting.EmailAddress, gatewaySetting.Name), recipients, body, true);
+            await Task.WhenAll(recipientPhoneNumbers.Select(recipient =>
+                _emailPublisherService.SendEmail((gatewaySetting.EmailAddress, gatewaySetting.Name), recipient, body, true)
+            ));
         }
     }
 }
