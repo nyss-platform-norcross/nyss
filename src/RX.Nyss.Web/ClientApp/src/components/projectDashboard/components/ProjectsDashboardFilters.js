@@ -10,7 +10,8 @@ import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 import { ExpandMore, DateRange } from '@material-ui/icons';
-import { Switch, FormControl, LinearProgress, FormLabel, Chip, IconButton, Collapse, useTheme } from "@material-ui/core";
+import { Switch, FormControl, LinearProgress, FormLabel, Chip, IconButton, useTheme } from "@material-ui/core";
+import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching }) => {
   const [value, setValue] = useState(filters);
@@ -28,10 +29,6 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
     setValue(newValue);
     return newValue;
   };
-
-  useEffect(() => {
-    setIsFilterExpanded(!isSmallScreen)
-  }, [isSmallScreen])
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
@@ -73,7 +70,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
     <Card>
       {isFetching && (<LinearProgress color="primary" />)}
       {isSmallScreen && (
-        <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }} data-printable={true}>
+        <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }} >
           <Grid container spacing={2} alignItems="center">
             <Grid item>
               <Chip icon={<DateRange />} label={`${value.startDate} - ${value.endDate}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
@@ -96,7 +93,8 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
           </Grid>
         </CardContent>
       )}
-      <Collapse in={isFilterExpanded} timeout="auto" unmountOnExit data-printable={isFilterExpanded}>
+
+      <ConditionalCollapse collapsible={isSmallScreen} expanded={isFilterExpanded}>
         <CardContent>
           <Grid container spacing={2}>
             <Grid item>
@@ -104,8 +102,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
                 className={styles.filterDate}
                 onChange={handleDateFromChange}
                 label={strings(stringKeys.project.dashboard.filters.startDate)}
-                value={value.startDate}
-              />
+                value={value.startDate} />
             </Grid>
 
             <Grid item>
@@ -113,8 +110,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
                 className={styles.filterDate}
                 onChange={handleDateToChange}
                 label={strings(stringKeys.project.dashboard.filters.endDate)}
-                value={value.endDate}
-              />
+                value={value.endDate} />
             </Grid>
 
             <Grid item>
@@ -135,8 +131,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
               <AreaFilter
                 nationalSocietyId={nationalSocietyId}
                 selectedItem={selectedArea}
-                onChange={handleAreaChange}
-              />
+                onChange={handleAreaChange} />
             </Grid>
 
             <Grid item>
@@ -206,7 +201,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
             </Grid>
           </Grid>
         </CardContent>
-      </Collapse>
+      </ConditionalCollapse>
     </Card>
   );
 }
