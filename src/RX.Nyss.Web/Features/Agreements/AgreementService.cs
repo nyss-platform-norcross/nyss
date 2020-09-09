@@ -11,7 +11,6 @@ using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Agreements.Dto;
-using RX.Nyss.Web.Features.NationalSocieties.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
@@ -32,7 +31,8 @@ namespace RX.Nyss.Web.Features.Agreements
         private readonly IDataBlobService _dataBlobService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public AgreementService(IAuthorizationService authorizationService, INyssContext nyssContext, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService, IDateTimeProvider dateTimeProvider)
+        public AgreementService(IAuthorizationService authorizationService, INyssContext nyssContext, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService,
+            IDateTimeProvider dateTimeProvider)
         {
             _authorizationService = authorizationService;
             _nyssContext = nyssContext;
@@ -61,32 +61,38 @@ namespace RX.Nyss.Web.Features.Agreements
             var sourceUri = _generalBlobProvider.GetPlatformAgreementUrl(languageCode);
             await _dataBlobService.StorePlatformAgreement(sourceUri, consentDocumentFileName);
 
-            foreach (var staleSociety in staleSocieties)
+            foreach (var nationalSociety in staleSocieties.Union(pendingSocieties))
             {
                 var existingConsent = await _nyssContext.NationalSocietyConsents
-                    .Where(consent => consent.NationalSocietyId == staleSociety.Id && consent.UserEmailAddress == user.EmailAddress && !consent.ConsentedUntil.HasValue).SingleAsync();
-                existingConsent.ConsentedUntil = utcNow;
-
-                await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent
+                    .Where(consent => consent.NationalSocietyId == nationalSociety.Id && consent.UserEmailAddress == user.EmailAddress && !consent.ConsentedUntil.HasValue).SingleOrDefaultAsync();
+                if (existingConsent != null)
                 {
-                    ConsentedFrom = utcNow,
-                    NationalSocietyId = staleSociety.Id,
-                    UserEmailAddress = user.EmailAddress,
-                    UserPhoneNumber = user.PhoneNumber,
-                    ConsentDocument = consentDocumentFileName
-                });
-            }
+                    existingConsent.ConsentedUntil = utcNow;
+                }
 
-            foreach (var nationalSociety in pendingSocieties)
-            {
                 if (user.Role == Role.Manager || user.Role == Role.TechnicalAdvisor)
                 {
                     var ns = await _nyssContext.NationalSocieties
                         .Include(society => society.DefaultOrganization)
-                        .Where(society => society.Id == nationalSociety.Id).FirstOrDefaultAsync();
+                        .ThenInclude(o => o.HeadManager)
+                        .Where(society => society.Id == nationalSociety.Id &&
+                            society.DefaultOrganization.NationalSocietyUsers.Any(nsu => nsu.UserId == user.Id)).FirstOrDefaultAsync();
 
-                    ns.DefaultOrganization.PendingHeadManager = null;
-                    ns.DefaultOrganization.HeadManager = user;
+                    if (ns != null)
+                    {
+                        var oldHeadManager = ns.DefaultOrganization.HeadManager;
+                        var oldHeadManagerConsent = await _nyssContext.NationalSocietyConsents
+                            .Where(consent => consent.NationalSocietyId == nationalSociety.Id &&
+                                consent.UserEmailAddress == oldHeadManager.EmailAddress && !consent.ConsentedUntil.HasValue)
+                            .SingleOrDefaultAsync();
+                        if (oldHeadManagerConsent != null)
+                        {
+                            oldHeadManagerConsent.ConsentedUntil = utcNow;
+                        }
+
+                        ns.DefaultOrganization.PendingHeadManager = null;
+                        ns.DefaultOrganization.HeadManager = user;
+                    }
                 }
 
                 await _nyssContext.NationalSocietyConsents.AddAsync(new NationalSocietyConsent
@@ -110,8 +116,8 @@ namespace RX.Nyss.Web.Features.Agreements
             {
                 return Success(new AgreementsStatusesDto
                 {
-                    PendingSocieties = new List<string>(),
-                    StaleSocieties = new List<string>()
+                    StaleSocieties = new List<string>(),
+                    PendingSocieties = new List<string>()
                 });
             }
 
@@ -120,7 +126,7 @@ namespace RX.Nyss.Web.Features.Agreements
             var userEntity = await _nyssContext.Users.FilterAvailable()
                 .Include(x => x.ApplicationLanguage)
                 .SingleOrDefaultAsync(u => u.EmailAddress == identityUserName);
-            
+
             var (pending, stale) = await GetPendingAndStaleNationalSocieties(userEntity);
             return Success(new AgreementsStatusesDto
             {
@@ -179,7 +185,8 @@ namespace RX.Nyss.Web.Features.Agreements
         {
             var applicableNationalSocieties = _nyssContext.NationalSocieties.Where(x =>
                 (_authorizationService.IsCurrentUserInRole(Role.Coordinator) && x.NationalSocietyUsers.Any(y => y.UserId == userEntity.Id)) ||
-                (_authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor) && (x.DefaultOrganization.HeadManager == userEntity || x.DefaultOrganization.PendingHeadManager == userEntity)));
+                (_authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor) &&
+                    (x.DefaultOrganization.HeadManager == userEntity || x.DefaultOrganization.PendingHeadManager == userEntity)));
 
             var activeAgreements = _nyssContext.NationalSocietyConsents.Where(nsc => !nsc.ConsentedUntil.HasValue && nsc.UserEmailAddress == userEntity.EmailAddress);
             var pendingNationalSocieties = await applicableNationalSocieties.Where(ns => activeAgreements.All(aa => aa.NationalSocietyId != ns.Id)).ToListAsync();
