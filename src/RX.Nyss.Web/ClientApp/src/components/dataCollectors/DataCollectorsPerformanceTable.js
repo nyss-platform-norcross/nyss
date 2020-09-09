@@ -56,11 +56,17 @@ export const DataCollectorsPerformanceTable = ({ list, isListFetching, filters, 
   }
 
   const handleClose = (fields) => {
-    statusFilters.reportingCorrectly = fields.reportingCorrectly.value;
-    statusFilters.reportingWithErrors = fields.reportingWithErrors.value;
-    statusFilters.notReporting = fields.notReporting.value;
+    if (
+      statusFilters.reportingCorrectly !== fields.reportingCorrectly.value ||
+      statusFilters.reportingWithErrors !== fields.reportingWithErrors.value ||
+      statusFilters.notReporting !== fields.notReporting.value
+    ) {
+      statusFilters.reportingCorrectly = fields.reportingCorrectly.value;
+      statusFilters.reportingWithErrors = fields.reportingWithErrors.value;
+      statusFilters.notReporting = fields.notReporting.value;
+      getDataCollectorPerformanceList(projectId, filters);
+    }
     setIsOpen(false);
-    getDataCollectorPerformanceList(projectId, filters);
   }
 
   return !!filters && (
@@ -71,76 +77,52 @@ export const DataCollectorsPerformanceTable = ({ list, isListFetching, filters, 
             <TableCell>{strings(stringKeys.dataCollector.performanceList.name)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
             <TableCell>
-              <div className={styles.filterHeader}>
+              <div id="lastWeek" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusLastWeek)}
-                {filterIsActive('lastWeek') &&
-                  <Icon className={styles.filterActiveIcon}>arrow_drop_down</Icon>
-                }
-                <Icon id="lastWeek" onClick={openFilter} style={{ fontSize: 15 }}>filter_alt</Icon>
+                <Icon className={styles.filterIcon}>{filterIsActive('lastWeek') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
 
             </TableCell>
             <TableCell>
-              <div className={styles.filterHeader}>
+              <div id="twoWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusTwoWeeksAgo)}
-                {filterIsActive('twoWeeksAgo') &&
-                  <Icon className={styles.filterActiveIcon}>arrow_drop_down</Icon>
-                }
-                <Icon id="twoWeeksAgo" onClick={openFilter} className={styles.filterIcon}>filter_alt</Icon>
+                <Icon className={styles.filterIcon}>{filterIsActive('twoWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
             </TableCell>
             <TableCell>
-              <div className={styles.filterHeader}>
+              <div id="threeWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusThreeWeeksAgo)}
-                {filterIsActive('threeWeeksAgo') &&
-                  <Icon className={styles.filterActiveIcon}>arrow_drop_down</Icon>
-                }
-                <Icon id="threeWeeksAgo" onClick={openFilter} className={styles.filterIcon}>filter_alt</Icon>
+                <Icon className={styles.filterIcon}>{filterIsActive('threeWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
             </TableCell>
             <TableCell>
-              <div className={styles.filterHeader}>
+              <div id="fourWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusFourWeeksAgo)}
-                {filterIsActive('fourWeeksAgo') &&
-                  <Icon className={styles.filterActiveIcon}>arrow_drop_down</Icon>
-                }
-                <Icon id="fourWeeksAgo" onClick={openFilter} className={styles.filterIcon}>filter_alt</Icon>
+                <Icon className={styles.filterIcon}>{filterIsActive('fourWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
             </TableCell>
             <TableCell>
-              <div className={styles.filterHeader}>
+              <div id="fiveWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusFiveWeeksAgo)}
-                {filterIsActive('fiveWeeksAgo') &&
-                  <Icon className={styles.filterActiveIcon}>arrow_drop_down</Icon>
-                }
-                <Icon id="fiveWeeksAgo" onClick={openFilter} className={styles.filterIcon}>filter_alt</Icon>
+                <Icon className={styles.filterIcon}>{filterIsActive('fiveWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
             </TableCell>
             <TableCell>
-              <div className={styles.filterHeader}>
+              <div id="sixWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusSixWeeksAgo)}
-                {filterIsActive('sixWeeksAgo') &&
-                  <Icon className={styles.filterActiveIcon}>arrow_drop_down</Icon>
-                }
-                <Icon id="sixWeeksAgo" onClick={openFilter} className={styles.filterIcon}>filter_alt</Icon>
+                <Icon className={styles.filterIcon}>{filterIsActive('sixWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
             </TableCell>
             <TableCell>
-              <div className={styles.filterHeader}>
+              <div id="sevenWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusSevenWeeksAgo)}
-                {filterIsActive('sevenWeeksAgo') &&
-                  <Icon className={styles.filterActiveIcon}>arrow_drop_down</Icon>
-                }
-                <Icon id="sevenWeeksAgo" onClick={openFilter} className={styles.filterIcon}>filter_alt</Icon>
+                <Icon className={styles.filterIcon}>{filterIsActive('sevenWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
             </TableCell>
             <TableCell>
-              <div className={styles.filterHeader}>
+              <div id="eightWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusEightWeeksAgo)}
-                {filterIsActive('eightWeeksAgo') &&
-                  <Icon className={styles.filterActiveIcon}>arrow_drop_down</Icon>
-                }
-                <Icon id="eightWeeksAgo" onClick={openFilter} className={styles.filterIcon}>filter_alt</Icon>
+                <Icon className={styles.filterIcon}>{filterIsActive('eightWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
             </TableCell>
             <TableCell />

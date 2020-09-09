@@ -45,32 +45,30 @@ export const DataCollectorsPerformanceColumnFilters = ({ filters, anchorEl, open
         horizontal: 'center',
       }}
     >
-      <Form>
-        <Grid container spacing={1} className={styles.filterContainer}>
-          <Grid item xs={12}>
-            <CheckboxWithIcon
-              labelicon={
-                <DataCollectorStatusIcon status={performanceStatus.reportingCorrectly} icon={getIconFromStatus(performanceStatus.reportingCorrectly)} />
-              }
-              field={form.fields.reportingCorrectly}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <CheckboxWithIcon
-              labelicon={
-                <DataCollectorStatusIcon status={performanceStatus.reportingWithErrors} icon={getIconFromStatus(performanceStatus.reportingWithErrors)} />
-              }
-              field={form.fields.reportingWithErrors}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <CheckboxWithIcon
-              labelicon={
-                <DataCollectorStatusIcon status={performanceStatus.notReporting} icon={getIconFromStatus(performanceStatus.notReporting)} />
-              }
-              field={form.fields.notReporting}
-            />
-          </Grid>
+      <Form className={styles.filterContainer}>
+        <Grid item xs={12}>
+          <CheckboxWithIcon
+            labelicon={
+              <DataCollectorStatusIcon status={performanceStatus.reportingCorrectly} icon={getIconFromStatus(performanceStatus.reportingCorrectly)} />
+            }
+            field={form.fields.reportingCorrectly}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <CheckboxWithIcon
+            labelicon={
+              <DataCollectorStatusIcon status={performanceStatus.reportingWithErrors} icon={getIconFromStatus(performanceStatus.reportingWithErrors)} />
+            }
+            field={form.fields.reportingWithErrors}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <CheckboxWithIcon
+            labelicon={
+              <DataCollectorStatusIcon status={performanceStatus.notReporting} icon={getIconFromStatus(performanceStatus.notReporting)} />
+            }
+            field={form.fields.notReporting}
+          />
         </Grid>
       </Form>
     </Popover>

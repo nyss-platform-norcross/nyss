@@ -2,9 +2,8 @@ import styles from './DataCollectorsPerformanceFilters.module.scss';
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { AreaFilter } from "../common/filters/AreaFilter";
-import { Card, CardContent } from "@material-ui/core";
+import { Card, CardContent, Button } from "@material-ui/core";
 import { useSelector } from "react-redux";
-import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 import { strings, stringKeys } from '../../strings';
 
 export const DataCollectorsPerformanceFilters = ({ onChange }) => {
@@ -14,6 +13,8 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   const handleAreaChange = (item) => {
     onChange({ ...filtersValue, area: item ? { type: item.type, id: item.id, name: item.name } : null });
   }
+
+  const filterIsSet = filtersValue && (filtersValue.area !== null || Object.values(filtersValue).slice(1).some(f => Object.values(f).some(v => !v)));
 
   const resetFilters = () => {
     onChange({
@@ -76,13 +77,15 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
               onChange={handleAreaChange}
             />
           </Grid>
-          <Grid item className={styles.resetButton}>
-            <TableActionsButton onClick={resetFilters}>
-              {strings(stringKeys.dataCollector.filters.resetAll)}
-            </TableActionsButton>
-          </Grid>
+          {filterIsSet && (
+            <Grid item className={styles.resetButton}>
+              <Button onClick={resetFilters}>
+                {strings(stringKeys.dataCollector.filters.resetAll)}
+              </Button>
+            </Grid>
+          )}
         </Grid>
       </CardContent>
-    </Card>
+    </Card >
   );
 }

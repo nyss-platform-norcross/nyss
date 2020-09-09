@@ -7,7 +7,6 @@ import { useMount } from '../../utils/lifecycle';
 import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
-import { DataCollectorsPerformanceMapLegend } from './DataCollectorsPerformanceMapLegend';
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 
 const DataCollectorsPerformancePageComponent = (props) => {
