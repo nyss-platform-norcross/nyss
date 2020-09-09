@@ -13,11 +13,10 @@ import { ExpandMore, DateRange } from '@material-ui/icons';
 import { Switch, FormControl, LinearProgress, FormLabel, Chip, IconButton } from "@material-ui/core";
 import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
 
-export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching }) => {
+export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, isGeneratingPdf, isFilterExpanded, setIsFilterExpanded }) => {
   const [value, setValue] = useState(filters);
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
   const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('lg'));
-  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   const updateValue = (change) => {
     const newValue = {
@@ -93,8 +92,8 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
         </CardContent>
       )}
 
-      <ConditionalCollapse collapsible={isSmallScreen} expanded={isFilterExpanded}>
-        <CardContent>
+      <ConditionalCollapse collapsible={isSmallScreen && !isGeneratingPdf} expanded={isFilterExpanded}>
+        <CardContent data-printable={true}>
           <Grid container spacing={2}>
             <Grid item>
               <DatePicker

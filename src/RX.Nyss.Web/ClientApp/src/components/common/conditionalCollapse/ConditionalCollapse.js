@@ -4,7 +4,7 @@ import { Collapse } from '@material-ui/core';
 export const ConditionalCollapse = ({ children, collapsible, expanded }) => (
   <Fragment>
     {collapsible && (
-      <Collapse in={expanded} timeout="auto" unmountOnExit data-printable={true}>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
         {children}
       </Collapse>
     )}
