@@ -80,11 +80,11 @@ namespace RX.Nyss.Web.Features.Agreements
 
                     if (ns != null)
                     {
-                        var oldHeadManager = ns.DefaultOrganization.HeadManager;
-                        var oldHeadManagerConsent = await _nyssContext.NationalSocietyConsents
+                        var oldHeadManagerConsent = ns.DefaultOrganization.HeadManager != null ? await _nyssContext.NationalSocietyConsents
                             .Where(consent => consent.NationalSocietyId == nationalSociety.Id &&
-                                consent.UserEmailAddress == oldHeadManager.EmailAddress && !consent.ConsentedUntil.HasValue)
-                            .SingleOrDefaultAsync();
+                                consent.UserEmailAddress == ns.DefaultOrganization.HeadManager.EmailAddress && !consent.ConsentedUntil.HasValue)
+                            .SingleOrDefaultAsync() : null;
+
                         if (oldHeadManagerConsent != null)
                         {
                             oldHeadManagerConsent.ConsentedUntil = utcNow;
