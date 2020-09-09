@@ -6,6 +6,25 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
     {
         public AreaDto Area { get; set; }
 
+        public PerformanceStatusFilterDto LastWeek { get; set; }
+
+        public PerformanceStatusFilterDto TwoWeeksAgo { get; set; }
+
+        public PerformanceStatusFilterDto ThreeWeeksAgo { get; set; }
+
+        public PerformanceStatusFilterDto FourWeeksAgo { get; set; }
+
+        public PerformanceStatusFilterDto FiveWeeksAgo { get; set; }
+
+        public PerformanceStatusFilterDto SixWeeksAgo { get; set; }
+
+        public PerformanceStatusFilterDto SevenWeeksAgo { get; set; }
+
+        public PerformanceStatusFilterDto EightWeeksAgo { get; set; }
+    }
+
+    public class PerformanceStatusFilterDto
+    {
         public bool ReportingCorrectly { get; set; }
 
         public bool ReportingWithErrors { get; set; }

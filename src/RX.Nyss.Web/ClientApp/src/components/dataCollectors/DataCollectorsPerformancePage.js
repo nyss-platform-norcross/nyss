@@ -7,6 +7,7 @@ import { useMount } from '../../utils/lifecycle';
 import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
+import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
 
 const DataCollectorsPerformancePageComponent = (props) => {
   useMount(() => {
@@ -22,11 +23,14 @@ const DataCollectorsPerformancePageComponent = (props) => {
       <DataCollectorsPerformanceFilters
         onChange={onFilterChange}
       />
+      <DataCollectorsPerformanceTableLegend />
       <DataCollectorsPerformanceTable
         list={props.list}
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
         projectId={props.projectId}
+        filters={props.filters}
+        getDataCollectorPerformanceList={props.getDataCollectorPerformanceList}
       />
     </Fragment>
   );

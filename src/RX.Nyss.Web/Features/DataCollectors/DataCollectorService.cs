@@ -505,7 +505,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
-            var reportingStatusFilter = MapToReportingStatusFilterType(dataCollectorsFilters.ReportingCorrectly, dataCollectorsFilters.ReportingWithErrors, dataCollectorsFilters.NotReporting);
 
             var dataCollectorsWithReportsData = await dataCollectors
                 .FilterOnlyNotDeleted()
@@ -521,8 +520,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                             ReceivedAt = r.ReceivedAt.Date
                         })
                 }).ToListAsync();
-
-            dataCollectorsWithReportsData = FilterByReportingStatus(dataCollectorsWithReportsData, reportingStatusFilter);
 
             var dataCollectorPerformances = dataCollectorsWithReportsData.Select(r => new
                 {
@@ -544,6 +541,14 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     StatusSevenWeeksAgo = GetDataCollectorStatus(6, dc.ReportsGroupedByWeek),
                     StatusEightWeeksAgo = GetDataCollectorStatus(7, dc.ReportsGroupedByWeek)
                 })
+                .FilterByStatusLastWeek(dataCollectorsFilters.LastWeek)
+                .FilterByStatusTwoWeeksAgo(dataCollectorsFilters.TwoWeeksAgo)
+                .FilterByStatusThreeWeeksAgo(dataCollectorsFilters.ThreeWeeksAgo)
+                .FilterByStatusFourWeeksAgo(dataCollectorsFilters.FourWeeksAgo)
+                .FilterByStatusFiveWeeksAgo(dataCollectorsFilters.FiveWeeksAgo)
+                .FilterByStatusSixWeeksAgo(dataCollectorsFilters.SixWeeksAgo)
+                .FilterByStatusSevenWeeksAgo(dataCollectorsFilters.SevenWeeksAgo)
+                .FilterByStatusEightWeeksAgo(dataCollectorsFilters.EightWeeksAgo)
                 .ToList();
 
             return Success(dataCollectorPerformances);
