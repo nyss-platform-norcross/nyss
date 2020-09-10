@@ -85,10 +85,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   }, [hasAnyRole, props.data, selectedRole]);
 
   const form = useMemo(() => {
-    if (!props.data) {
-      return null;
-    }
-
     const fields = {
       nationalSocietyId: parseInt(props.nationalSocietyId),
       role: '',
@@ -119,7 +115,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.data, props.nationalSocietyId]);
+  }, [props.nationalSocietyId]);
 
   useEffect(() => {
     if (!form || selectedRole) {
@@ -130,6 +126,10 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     setRole(newRole);
     form.fields.role.update(newRole);
   }, [availableUserRoles, selectedRole, form]);
+
+  useEffect(() => {
+    form && form.fields.organizationId.setValidators([validators.requiredWhen(_ => canChangeOrganization)]);
+  }, [form, canChangeOrganization]);
 
   useEffect(() => {
     if (!form) {
@@ -143,9 +143,6 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     form.fields.organizationId.update(organizationId);
   }, [availableOrganizations, availableUserRoles, form]);
 
-  useEffect(() => {
-    form && form.fields.organizationId.setValidators([validators.requiredWhen(_ => canChangeOrganization)]);
-  }, [form, canChangeOrganization]);
 
   useCustomErrors(form, props.error);
 
