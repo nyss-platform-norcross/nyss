@@ -74,15 +74,15 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
               <Chip icon={<DateRange />} label={`${value.startDate} - ${value.endDate}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
             </Grid>
             <Grid item>
-              <Chip label={
+              <Chip onClick={() => setIsFilterExpanded(!isFilterExpanded)} label={
                 value.groupingType === "Day" ? strings(stringKeys.project.dashboard.filters.timeGroupingDay) : strings(stringKeys.project.dashboard.filters.timeGroupingWeek)
               } />
             </Grid>
-            {selectedArea && (<Grid item><Chip label={selectedArea.name} onDelete={() => handleAreaChange(null)} /></Grid>)}
-            {value.healthRiskId && (<Grid item><Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name} onDelete={() => onChange(updateValue({ healthRiskId: null }))} /></Grid>)}
-            {value.reportsType !== "all" && (<Grid item><Chip label={collectionsTypes[value.reportsType]} onDelete={() => onChange(updateValue({ reportsType: "all" }))} /></Grid>)}
-            {value.organizationId && (<Grid item><Chip label={organizations.filter(o => o.id === value.organizationId)[0].name} onDelete={() => onChange(updateValue({ organizationId: null }))} /></Grid>)}
-            {value.isTraining && (<Grid item><Chip label={strings(stringKeys.project.dashboard.filters.inTraining)} onDelete={handleIsTrainingChange} /></Grid>)}
+            {selectedArea && (<Grid item><Chip label={selectedArea.name} onDelete={() => handleAreaChange(null)} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {value.healthRiskId && (<Grid item><Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name} onDelete={() => onChange(updateValue({ healthRiskId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {value.reportsType !== "all" && (<Grid item><Chip label={collectionsTypes[value.reportsType]} onDelete={() => onChange(updateValue({ reportsType: "all" }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {value.organizationId && (<Grid item><Chip label={organizations.filter(o => o.id === value.organizationId)[0].name} onDelete={() => onChange(updateValue({ organizationId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {value.isTraining && (<Grid item><Chip label={strings(stringKeys.project.dashboard.filters.inTraining)} onDelete={handleIsTrainingChange} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
             <Grid item className={styles.expandFilterButton}>
               <IconButton data-expanded={isFilterExpanded} onClick={() => setIsFilterExpanded(!isFilterExpanded)}>
                 <ExpandMore />

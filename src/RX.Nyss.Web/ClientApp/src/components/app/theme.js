@@ -139,6 +139,11 @@ export const theme = createMuiTheme({
         textOverflow: "ellipsis"
       }
     },
+    MuiInputAdornment: {
+      positionEnd: {
+        marginLeft: '3px'
+      }
+    },
     MuiLink: {
       underlineHover: {
         textDecoration: "underline"
