@@ -62,7 +62,7 @@ const GlobalCoordinatorsEditPageComponent = (props) => {
   return (
     <Fragment>
       <Form onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.globalCoordinator.form.name)}

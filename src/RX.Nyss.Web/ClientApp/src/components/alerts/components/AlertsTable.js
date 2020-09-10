@@ -13,7 +13,7 @@ import dayjs from "dayjs";
 import TablePager from '../../common/tablePagination/TablePager';
 import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
-import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 import { assessmentStatus, closeOptions } from '../logic/alertsConstants';
 import { Tooltip } from '@material-ui/core';
 
@@ -37,7 +37,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
         <div className={alertTableStyles.closeStatus}>
           {strings(stringKeys.alerts.constants.alertStatus[alert.status])}
           <Tooltip title={tooltipText} onClick={handleTooltipClick} arrow className={alertTableStyles.tooltip}>
-            <HelpOutlineOutlinedIcon fontSize="small" />
+            <InfoIcon fontSize="small" />
           </Tooltip>
         </div>
       );

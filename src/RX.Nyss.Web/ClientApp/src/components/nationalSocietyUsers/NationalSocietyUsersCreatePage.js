@@ -191,7 +191,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       {props.error && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextInputField
               label={strings(stringKeys.nationalSocietyUser.form.email)}

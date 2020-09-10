@@ -69,7 +69,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   return (
     <Card>
       <CardContent>
-        <Grid container spacing={3} className={styles.filterContainer}>
+        <Grid container spacing={2}>
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}

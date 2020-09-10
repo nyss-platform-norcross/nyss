@@ -11,10 +11,18 @@
 }
 
 .trainingStateLabel {
-  margin-top: 6px;
+  color: #000000 !important;
+  right: 0;
+  line-height: inherit !important;
 }
 
-.trainingStateRadioGroup {
-  flex-direction: row !important;
-  margin-top: 10px;
+.expandFilterButton {
+  margin-left: auto !important;
+  > button {
+    transform: rotate(0deg);
+    transition: transform 150ms;
+    &[data-expanded="true"] {
+      transform: rotate(180deg);
+    }
+  }
 }

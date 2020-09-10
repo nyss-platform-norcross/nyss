@@ -8,11 +8,15 @@ import CardContent from '@material-ui/core/CardContent';
 import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
+import { useMediaQuery, LinearProgress, Chip, IconButton } from "@material-ui/core";
+import { DateRange, ExpandMore } from "@material-ui/icons";
+import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
 
-export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange }) => {
+export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching }) => {
   const [value, setValue] = useState(filters);
-
   const [selectedArea, setSelectedArea] = useState(filters && filters.area);
+  const isSmallScreen = useMediaQuery(theme => theme.breakpoints.down('lg'));
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   const updateValue = (change) => {
     const newValue = {
@@ -23,6 +27,12 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
     setValue(newValue);
     return newValue;
   };
+
+  const collectionsTypes = {
+    "all": strings(stringKeys.project.dashboard.filters.allReportsType),
+    "dataCollector": strings(stringKeys.project.dashboard.filters.dataCollectorReportsType),
+    "dataCollectionPoint": strings(stringKeys.project.dashboard.filters.dataCollectionPointReportsType)
+  }
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
@@ -52,108 +62,134 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
 
   return (
     <Card className={styles.filters}>
-      <CardContent>
-        <Grid container spacing={3}>
-          <Grid item>
-            <DatePicker
-              className={styles.filterDate}
-              onChange={handleDateFromChange}
-              label={strings(stringKeys.nationalSociety.dashboard.filters.startDate)}
-              value={value.startDate}
-            />
+      {isFetching && (<LinearProgress color="primary" />)}
+      {isSmallScreen && (
+        <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }} >
+          <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              <Chip icon={<DateRange />} label={`${value.startDate} - ${value.endDate}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
+            </Grid>
+            <Grid item>
+              <Chip label={
+                value.groupingType === "Day" ? strings(stringKeys.project.dashboard.filters.timeGroupingDay) : strings(stringKeys.project.dashboard.filters.timeGroupingWeek)
+              } onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
+            </Grid>
+            {selectedArea && (<Grid item><Chip label={selectedArea.name} onDelete={() => handleAreaChange(null)} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {value.healthRiskId && (<Grid item><Chip label={healthRisks.filter(hr => hr.id === value.healthRiskId)[0].name} onDelete={() => onChange(updateValue({ healthRiskId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {value.reportsType !== "all" && (<Grid item><Chip label={collectionsTypes[value.reportsType]} onDelete={() => onChange(updateValue({ reportsType: "all" }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            {value.organizationId && (<Grid item><Chip label={organizations.filter(o => o.id === value.organizationId)[0].name} onDelete={() => onChange(updateValue({ organizationId: null }))} onClick={() => setIsFilterExpanded(!isFilterExpanded)} /></Grid>)}
+            <Grid item className={styles.expandFilterButton}>
+              <IconButton data-expanded={isFilterExpanded} onClick={() => setIsFilterExpanded(!isFilterExpanded)}>
+                <ExpandMore />
+              </IconButton>
+            </Grid>
           </Grid>
+        </CardContent>
+      )}
+      <ConditionalCollapse collapsible={isSmallScreen} expanded={isFilterExpanded}>
+        <CardContent>
+          <Grid container spacing={2}>
+            <Grid item>
+              <DatePicker
+                className={styles.filterDate}
+                onChange={handleDateFromChange}
+                label={strings(stringKeys.nationalSociety.dashboard.filters.startDate)}
+                value={value.startDate}
+              />
+            </Grid>
 
-          <Grid item>
-            <DatePicker
-              className={styles.filterDate}
-              onChange={handleDateToChange}
-              label={strings(stringKeys.nationalSociety.dashboard.filters.endDate)}
-              value={value.endDate}
-            />
-          </Grid>
+            <Grid item>
+              <DatePicker
+                className={styles.filterDate}
+                onChange={handleDateToChange}
+                label={strings(stringKeys.nationalSociety.dashboard.filters.endDate)}
+                value={value.endDate}
+              />
+            </Grid>
 
-          <Grid item>
-            <TextField
-              select
-              label={strings(stringKeys.nationalSociety.dashboard.filters.timeGrouping)}
-              onChange={handleGroupingTypeChange}
-              value={value.groupingType}
-              style={{ width: 130 }}
-              InputLabelProps={{ shrink: true }}
-            >
-              <MenuItem value="Day">{strings(stringKeys.nationalSociety.dashboard.filters.timeGroupingDay)}</MenuItem>
-              <MenuItem value="Week">{strings(stringKeys.nationalSociety.dashboard.filters.timeGroupingWeek)}</MenuItem>
-            </TextField>
-          </Grid>
+            <Grid item>
+              <TextField
+                select
+                label={strings(stringKeys.nationalSociety.dashboard.filters.timeGrouping)}
+                onChange={handleGroupingTypeChange}
+                value={value.groupingType}
+                style={{ width: 130 }}
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value="Day">{strings(stringKeys.nationalSociety.dashboard.filters.timeGroupingDay)}</MenuItem>
+                <MenuItem value="Week">{strings(stringKeys.nationalSociety.dashboard.filters.timeGroupingWeek)}</MenuItem>
+              </TextField>
+            </Grid>
 
-          <Grid item>
-            <AreaFilter
-              nationalSocietyId={nationalSocietyId}
-              selectedItem={selectedArea}
-              onChange={handleAreaChange}
-            />
-          </Grid>
+            <Grid item>
+              <AreaFilter
+                nationalSocietyId={nationalSocietyId}
+                selectedItem={selectedArea}
+                onChange={handleAreaChange}
+              />
+            </Grid>
 
-          <Grid item>
-            <TextField
-              select
-              label={strings(stringKeys.nationalSociety.dashboard.filters.healthRisk)}
-              onChange={handleHealthRiskChange}
-              value={value.healthRiskId || 0}
-              className={styles.filterItem}
-              InputLabelProps={{ shrink: true }}
-            >
-              <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.healthRiskAll)}</MenuItem>
+            <Grid item>
+              <TextField
+                select
+                label={strings(stringKeys.nationalSociety.dashboard.filters.healthRisk)}
+                onChange={handleHealthRiskChange}
+                value={value.healthRiskId || 0}
+                className={styles.filterItem}
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.healthRiskAll)}</MenuItem>
 
-              {healthRisks.map(healthRisk => (
-                <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
-                  {healthRisk.name}
+                {healthRisks.map(healthRisk => (
+                  <MenuItem key={`filter_healthRisk_${healthRisk.id}`} value={healthRisk.id}>
+                    {healthRisk.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid item>
+              <TextField
+                select
+                label={strings(stringKeys.nationalSociety.dashboard.filters.reportsType)}
+                onChange={handleReportsTypeChange}
+                value={value.reportsType || "all"}
+                className={styles.filterItem}
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value="all">
+                  {collectionsTypes["all"]}
                 </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item>
-            <TextField
-              select
-              label={strings(stringKeys.nationalSociety.dashboard.filters.reportsType)}
-              onChange={handleReportsTypeChange}
-              value={value.reportsType || "all"}
-              className={styles.filterItem}
-              InputLabelProps={{ shrink: true }}
-            >
-              <MenuItem value="all">
-                {strings(stringKeys.nationalSociety.dashboard.filters.allReportsType)}
-              </MenuItem>
-              <MenuItem value="dataCollector">
-                {strings(stringKeys.nationalSociety.dashboard.filters.dataCollectorReportsType)}
-              </MenuItem>
-              <MenuItem value="dataCollectionPoint">
-                {strings(stringKeys.nationalSociety.dashboard.filters.dataCollectionPointReportsType)}
-              </MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid item>
-            <TextField
-              select
-              label={strings(stringKeys.nationalSociety.dashboard.filters.organization)}
-              onChange={handleOrganizationChange}
-              value={value.organizationId || 0}
-              className={styles.filterItem}
-              InputLabelProps={{ shrink: true }}
-            >
-              <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.organizationsAll)}</MenuItem>
-
-              {organizations.map(organization => (
-                <MenuItem key={`filter_organization_${organization.id}`} value={organization.id}>
-                  {organization.name}
+                <MenuItem value="dataCollector">
+                  {collectionsTypes["dataCollector"]}
                 </MenuItem>
-              ))}
-            </TextField>
+                <MenuItem value="dataCollectionPoint">
+                  {collectionsTypes["dataCollectionPoint"]}
+                </MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item>
+              <TextField
+                select
+                label={strings(stringKeys.nationalSociety.dashboard.filters.organization)}
+                onChange={handleOrganizationChange}
+                value={value.organizationId || 0}
+                className={styles.filterItem}
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value={0}>{strings(stringKeys.nationalSociety.dashboard.filters.organizationsAll)}</MenuItem>
+
+                {organizations.map(organization => (
+                  <MenuItem key={`filter_organization_${organization.id}`} value={organization.id}>
+                    {organization.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
           </Grid>
-        </Grid>
-      </CardContent>
+        </CardContent>
+      </ConditionalCollapse>
     </Card>
   );
 }

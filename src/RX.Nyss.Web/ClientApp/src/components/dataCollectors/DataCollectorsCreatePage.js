@@ -159,7 +159,7 @@ const DataCollectorsCreatePageComponent = (props) => {
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit} fullWidth>
-        <Grid container spacing={3} className={formStyles.shrinked}>
+        <Grid container spacing={2} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <RadioGroupField
               name="dataCollectorType"
@@ -234,7 +234,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             />
           </Grid>)}
         </Grid>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item xs={12}>
             <div>Location</div>
             <DataCollectorMap
@@ -245,7 +245,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>
 
         </Grid>
-        <Grid container spacing={3} className={formStyles.shrinked}>
+        <Grid container spacing={2} className={formStyles.shrinked}>
 
           <Grid item className={styles.locationButton}>
             <TableActionsButton

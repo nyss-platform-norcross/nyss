@@ -51,7 +51,7 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
   return (
     <Card className={styles.filters}>
       <CardContent>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}

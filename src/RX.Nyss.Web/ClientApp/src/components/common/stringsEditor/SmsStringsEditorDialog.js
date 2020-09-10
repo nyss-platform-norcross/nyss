@@ -89,7 +89,7 @@ export const SmsStringsEditorDialog = ({ stringKey, close }) => {
     <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} onKeyDown={handleKeyDown}>
       <DialogTitle id="form-dialog-title">Edit string resource</DialogTitle>
       <DialogContent style={{ width: 500 }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           {!form && <Loading />}
           {form && (
             <Fragment>

@@ -14,14 +14,14 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
   }
 
   const renderNumber = (label, value) => (
-    <Grid container spacing={3}>
+    <Grid container spacing={2}>
       <Grid item className={styles.numberName}>{label}</Grid>
       <Grid item className={styles.numberValue}>{value}</Grid>
     </Grid>
   );
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={2}>
       <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.nationalSociety.dashboard.numbers.totalReportCountTitle)} />

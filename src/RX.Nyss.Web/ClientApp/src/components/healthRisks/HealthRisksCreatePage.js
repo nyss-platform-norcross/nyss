@@ -102,7 +102,7 @@ const HealthRisksCreatePageComponent = (props) => {
       {props.formError && <ValidationMessage message={props.formError.message} />}
 
       <Form onSubmit={handleSubmit} fullWidth style={{ maxWidth: 800 }}>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
 
           <Grid item xs={3}>
             <TextInputField
@@ -129,7 +129,7 @@ const HealthRisksCreatePageComponent = (props) => {
               <Grid item xs={12}>
                 <Typography variant="h3">{stringsFormat(stringKeys.healthRisk.form.translationsSetion, { language: lang.name })}</Typography>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                   <Grid item xs={12}>
                     <TextInputField
                       label={strings(stringKeys.healthRisk.form.contentLanguageName)}

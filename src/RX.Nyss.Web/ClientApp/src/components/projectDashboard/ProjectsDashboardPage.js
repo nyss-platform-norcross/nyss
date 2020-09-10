@@ -1,5 +1,5 @@
 import styles from "./ProjectsDashboardPage.module.scss";
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as projectDashboardActions from './logic/projectDashboardActions';
@@ -25,6 +25,7 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
   });
 
   const dashboardElement = useRef(null);
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
 
   const handleFiltersChange = (filters) =>
     getDashboardData(projectId, filters);
@@ -34,11 +35,17 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
   }
 
   const handleGeneratePdf = () => {
-    generatePdf(dashboardElement.current);
+    const initialState = isFilterExpanded;
+    setIsFilterExpanded(true);
+    const timer = setTimeout(() => {
+      generatePdf(dashboardElement.current);
+      setIsFilterExpanded(initialState);
+    }, 200);
+    return () => clearTimeout(timer);
   }
 
   return (
-    <Grid container spacing={3} ref={dashboardElement}>
+    <Grid container spacing={2} ref={dashboardElement}>
       <Grid item xs={12} className={styles.filtersGrid}>
         <ProjectsDashboardFilters
           healthRisks={props.healthRisks}
@@ -46,6 +53,10 @@ const ProjectDashboardPageComponent = ({ openDashbaord, getDashboardData, genera
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
+          isFetching={isFetching}
+          isGeneratingPdf={isGeneratingPdf}
+          isFilterExpanded={isFilterExpanded}
+          setIsFilterExpanded={setIsFilterExpanded}
         />
       </Grid>
 

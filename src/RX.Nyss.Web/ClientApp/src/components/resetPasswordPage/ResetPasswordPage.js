@@ -53,7 +53,7 @@ class ResetPasswordPageComponent extends PureComponent {
             {this.props.resetPasswordErrorMessage && <ValidationMessage message={this.props.resetPasswordErrorMessage} />}
 
             <form onSubmit={this.handleSubmit}>
-              <Grid container spacing={3}>
+              <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <TextInputField
                     label={strings(stringKeys.user.resetPassword.emailAddress)}

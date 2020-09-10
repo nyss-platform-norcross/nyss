@@ -46,7 +46,7 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
       <DialogContent>
 
         <Form onSubmit={handleSubmit} fullWidth>
-          <Grid container spacing={3}>
+          <Grid container spacing={2}>
             <Grid item xs={12}>
               <RadioGroupField
                 name="closeOption"

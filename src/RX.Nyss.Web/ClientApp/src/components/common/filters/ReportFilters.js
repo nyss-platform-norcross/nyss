@@ -53,7 +53,7 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
   return (
     <Card>
       <CardContent>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
           <Grid item>
             <FormControl className={styles.filterItem}>
               <InputLabel>{strings(stringKeys.filters.report.selectReportListType)}</InputLabel>

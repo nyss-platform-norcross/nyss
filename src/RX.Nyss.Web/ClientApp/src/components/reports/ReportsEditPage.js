@@ -90,7 +90,7 @@ const ReportsEditPageComponent = (props) => {
         <Fragment>
             {props.error && <ValidationMessage message={props.error} />}
             <Form onSubmit={handleSubmit}>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <DateInputField
                             className={styles.fullWidth}
@@ -100,7 +100,7 @@ const ReportsEditPageComponent = (props) => {
                         />
                     </Grid>
                 </Grid>
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <SelectField
                             label={strings(stringKeys.reports.form.healthRisk)}
@@ -116,7 +116,7 @@ const ReportsEditPageComponent = (props) => {
                     </Grid>
                 </Grid>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextInputField
                             label={strings(stringKeys.reports.form.malesBelowFive)}
@@ -126,7 +126,7 @@ const ReportsEditPageComponent = (props) => {
                     </Grid>
                 </Grid>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextInputField
                             label={strings(stringKeys.reports.form.malesAtLeastFive)}
@@ -136,7 +136,7 @@ const ReportsEditPageComponent = (props) => {
                     </Grid>
                 </Grid>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextInputField
                             label={strings(stringKeys.reports.form.femalesBelowFive)}
@@ -146,7 +146,7 @@ const ReportsEditPageComponent = (props) => {
                     </Grid>
                 </Grid>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextInputField
                             label={strings(stringKeys.reports.form.femalesAtLeastFive)}
@@ -156,7 +156,7 @@ const ReportsEditPageComponent = (props) => {
                     </Grid>
                 </Grid>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextInputField
                             label={strings(stringKeys.reports.form.referredCount)}
@@ -167,7 +167,7 @@ const ReportsEditPageComponent = (props) => {
                     </Grid>
                 </Grid>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextInputField
                             label={strings(stringKeys.reports.form.deathCount)}
@@ -178,7 +178,7 @@ const ReportsEditPageComponent = (props) => {
                     </Grid>
                 </Grid>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextInputField
                             label={strings(stringKeys.reports.form.fromOtherVillagesCount)}

@@ -128,17 +128,20 @@ export const theme = createMuiTheme({
     },
     MuiInputLabel: {
       root: {
-        //padding: "5px 10px",
         zIndex: 1
       },
       shrink: {
-        //padding: 0,
         color: "#000000 !important",
         transform: "translate(0, 2px);",
         right: 0,
         lineHeight: "inherit",
         overflow: "hidden",
         textOverflow: "ellipsis"
+      }
+    },
+    MuiInputAdornment: {
+      positionEnd: {
+        marginLeft: '3px'
       }
     },
     MuiLink: {
@@ -271,6 +274,17 @@ export const theme = createMuiTheme({
       tooltip: {
         fontSize: '1rem',
         padding: '8px'
+      }
+    },
+    MuiSwitch: {
+      root: {
+        marginTop: '7px !important'
+      }
+    },
+    MuiLinearProgress: {
+      root: {
+        marginBottom: "-3px",
+        height: "3px"
       }
     }
   },
