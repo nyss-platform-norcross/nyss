@@ -32,6 +32,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const string DataCollectorPhoneNumber1 = "+4712345678";
         private const string DataCollectorPhoneNumber2 = "+4712345679";
         private const string DataCollectorPhoneNumber3 = "+4712345680";
+        private const string DataCollectorName1 = "simon";
+        private const string DataCollectorName2 = "garfunkel";
         private const int ProjectId = 1;
         private const int SupervisorId = 1;
         private const string SupervisorEmail = "supervisor@example.com";
@@ -211,7 +213,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                     DataCollectorType = DataCollectorType.Human,
                     DisplayName = "",
                     Location = new Point(0, 0),
-                    Name = "",
+                    Name = DataCollectorName1,
                     Sex = Sex.Male
                 },
                 new DataCollector
@@ -226,7 +228,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                     DataCollectorType = DataCollectorType.Human,
                     DisplayName = "",
                     Location = new Point(0, 0),
-                    Name = "",
+                    Name = DataCollectorName2,
                     Sex = Sex.Female
                 }
             };
@@ -423,7 +425,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 Area = null,
                 Sex = null,
                 SupervisorId = null,
-                TrainingStatus = null
+                TrainingStatus = null,
+                Name = null
             };
             var result = await _dataCollectorService.List(ProjectId, filters);
 
@@ -431,18 +434,18 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             result.IsSuccess.ShouldBeTrue();
             result.Value.Count().ShouldBe(2);
             var dataCollector = result.Value.First();
-            dataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
+            dataCollector.Id.ShouldBe(DataCollectorWithReportsId);
             dataCollector.DisplayName.ShouldBe("");
-            dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
+            dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber2);
             dataCollector.Village.ShouldBe(Village);
             dataCollector.District.ShouldBe("Layuna");
-            dataCollector.Name.ShouldBe("");
-            dataCollector.Sex.ShouldBe(Sex.Male);
+            dataCollector.Name.ShouldBe(DataCollectorName2);
+            dataCollector.Sex.ShouldBe(Sex.Female);
             dataCollector.Region.ShouldBe("Layuna");
 
             var secondDataCollector = result.Value.Last();
-            secondDataCollector.Id.ShouldBe(DataCollectorWithReportsId);
-            secondDataCollector.Sex.ShouldBe(Sex.Female);
+            secondDataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
+            secondDataCollector.Sex.ShouldBe(Sex.Male);
         }
 
         [Fact]
@@ -454,7 +457,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 Area = null,
                 Sex = SexDto.Male,
                 SupervisorId = null,
-                TrainingStatus = null
+                TrainingStatus = null,
+                Name = null
             };
             var result = await _dataCollectorService.List(ProjectId, filters);
 
@@ -467,7 +471,35 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
             dataCollector.Village.ShouldBe(Village);
             dataCollector.District.ShouldBe("Layuna");
-            dataCollector.Name.ShouldBe("");
+            dataCollector.Name.ShouldBe(DataCollectorName1);
+            dataCollector.Sex.ShouldBe(Sex.Male);
+            dataCollector.Region.ShouldBe("Layuna");
+        }
+
+        [Fact]
+        public async Task ListDataCollector_WhenFilteredByName_ShouldReturnFilteredList()
+        {
+            // Act
+            var filters = new DataCollectorsFiltersRequestDto
+            {
+                Area = null,
+                Sex = null,
+                SupervisorId = null,
+                TrainingStatus = null,
+                Name = "simon"
+            };
+            var result = await _dataCollectorService.List(ProjectId, filters);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Value.Count().ShouldBe(1);
+            var dataCollector = result.Value.First();
+            dataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
+            dataCollector.DisplayName.ShouldBe("");
+            dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
+            dataCollector.Village.ShouldBe(Village);
+            dataCollector.District.ShouldBe("Layuna");
+            dataCollector.Name.ShouldBe(DataCollectorName1);
             dataCollector.Sex.ShouldBe(Sex.Male);
             dataCollector.Region.ShouldBe("Layuna");
         }
