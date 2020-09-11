@@ -212,6 +212,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
                 .FilterBySex(dataCollectorsFilters.Sex)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
+                .FilterByName(dataCollectorsFilters.Name)
                 .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new DataCollectorResponseDto
                 {
@@ -513,6 +514,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorsWithReportsData = await dataCollectors
                 .FilterOnlyNotDeleted()
                 .FilterByArea(dataCollectorsFilters.Area)
+                .FilterByName(dataCollectorsFilters.Name)
                 .Select(dc => new DataCollectorWithRawReportData
                 {
                     Name = dc.Name,

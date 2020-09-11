@@ -44,6 +44,9 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
   const handleTrainingStatusChange = event =>
     onChange(updateValue({ trainingStatus: event.target.value }));
 
+  const handleNameChange = event =>
+    onChange(updateValue({ name: event.target.value }));
+
   if (!value) {
     return null;
   }
@@ -52,6 +55,15 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
     <Card className={styles.filters}>
       <CardContent>
         <Grid container spacing={2}>
+          <Grid item>
+            <TextField
+              label={strings(stringKeys.dataCollector.filters.name)}
+              onChange={handleNameChange}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+            </TextField>
+          </Grid>
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}

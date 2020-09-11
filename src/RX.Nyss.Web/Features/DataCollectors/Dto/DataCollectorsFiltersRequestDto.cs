@@ -11,5 +11,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public int? SupervisorId { get; set; }
 
         public TrainingStatusDto? TrainingStatus { get; set; }
+
+        public string Name { get; set; }
     }
 }

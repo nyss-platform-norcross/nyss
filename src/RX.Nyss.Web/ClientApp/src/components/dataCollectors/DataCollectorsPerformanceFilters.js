@@ -2,7 +2,7 @@ import styles from './DataCollectorsPerformanceFilters.module.scss';
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { AreaFilter } from "../common/filters/AreaFilter";
-import { Card, CardContent, Button } from "@material-ui/core";
+import { Card, CardContent, Button, TextField } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { strings, stringKeys } from '../../strings';
 
@@ -14,7 +14,14 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
     onChange({ ...filtersValue, area: item ? { type: item.type, id: item.id, name: item.name } : null });
   }
 
-  const filterIsSet = filtersValue && (filtersValue.area !== null || Object.values(filtersValue).slice(1).some(f => Object.values(f).some(v => !v)));
+  const handleNameChange = event =>
+    onChange({ ...filtersValue, name: event.target.value });
+
+  const filterIsSet = filtersValue && (
+    filtersValue.area !== null ||
+    (filtersValue.name !== null && filtersValue.name !== '') ||
+    Object.values(filtersValue).slice(2).some(f => Object.values(f).some(v => !v))
+    );
 
   const resetFilters = () => {
     onChange({
@@ -70,6 +77,15 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
     <Card>
       <CardContent>
         <Grid container spacing={2}>
+          <Grid item>
+            <TextField
+              label={strings(stringKeys.dataCollector.performanceListFilters.name)}
+              onChange={handleNameChange}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+            </TextField>
+          </Grid>
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}

@@ -6,6 +6,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
     {
         public AreaDto Area { get; set; }
 
+        public string Name { get; set; }
+
         public PerformanceStatusFilterDto LastWeek { get; set; }
 
         public PerformanceStatusFilterDto TwoWeeksAgo { get; set; }
