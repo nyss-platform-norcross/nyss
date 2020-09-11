@@ -10,7 +10,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
-import { Loading } from '../../common/loading/Loading';
 
 export const AlertsEscalationDialog = ({ isOpened, close, alertId, isEscalating, isFetchingRecipients, escalateAlert, notificationEmails, notificationPhoneNumbers }) => {
   const theme = useTheme();
