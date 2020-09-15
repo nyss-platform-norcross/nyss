@@ -521,16 +521,17 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<PaginatedList<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters)
         {
-            var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
+            var dataCollectors = (await GetDataCollectorsForCurrentUserInProject(projectId))
+                .FilterOnlyNotDeleted()
+                .FilterByArea(dataCollectorsFilters.Area)
+                .FilterByName(dataCollectorsFilters.Name);
+
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
             var rowsPerPage = _config.PaginationRowsPerPage;
             var totalRows = await dataCollectors.CountAsync();
 
             var dataCollectorsWithReportsData = await dataCollectors
-                .FilterOnlyNotDeleted()
-                .FilterByArea(dataCollectorsFilters.Area)
-                .FilterByName(dataCollectorsFilters.Name)
                 .Select(dc => new DataCollectorWithRawReportData
                 {
                     Name = dc.Name,

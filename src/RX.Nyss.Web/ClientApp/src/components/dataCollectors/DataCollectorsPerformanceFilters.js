@@ -11,25 +11,25 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   const nationalSocietyId = useSelector(state => state.dataCollectors.filtersData.nationalSocietyId);
   const [name, setName] = useState(null);
 
-  const handleAreaChange = (item) => {
-    onChange({ ...filtersValue, area: item ? { type: item.type, id: item.id, name: item.name } : null });
-  }
+  const handleAreaChange = (item) =>
+    onChange({ ...filtersValue, area: item ? { type: item.type, id: item.id, name: item.name } : null, pageNumber: 1 });
 
   const handleNameChange = event => {
     setName(event.target.value);
-    onChange({ ...filtersValue, name: event.target.value });
+    onChange({ ...filtersValue, name: event.target.value, pageNumber: 1 });
   }
 
   const filterIsSet = filtersValue && (
     filtersValue.area !== null ||
     (filtersValue.name !== null && filtersValue.name !== '') ||
-    Object.values(filtersValue).slice(2).some(f => Object.values(f).some(v => !v))
+    Object.values(filtersValue).slice(3).some(f => Object.values(f).some(v => !v))
     );
 
   const resetFilters = () => {
     setName('');
     onChange({
       area: null,
+      pageNumber: 1,
       lastWeek: {
         reportingCorrectly: true,
         reportingWithErrors: true,
@@ -106,6 +106,6 @@ export const DataCollectorsPerformanceFilters = ({ onChange }) => {
           )}
         </Grid>
       </CardContent>
-    </Card >
+    </Card>
   );
 }
