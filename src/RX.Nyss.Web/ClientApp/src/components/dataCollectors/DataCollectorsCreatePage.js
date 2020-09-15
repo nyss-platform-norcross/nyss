@@ -1,5 +1,5 @@
 import formStyles from "../forms/form/Form.module.scss";
-import styles from './DataCollectorsCreatePage.module.scss';
+import styles from './DataCollectorsCreateOrEditPage.module.scss';
 
 import React, { useState, Fragment, useEffect, useReducer, useMemo } from 'react';
 import { connect } from "react-redux";
@@ -269,30 +269,30 @@ const DataCollectorsCreatePageComponent = (props) => {
                       zoom={6}
                     />
                   </Grid>
-                  <Grid item className={styles.locationButton}>
-                    <TableActionsButton
-                      onClick={onRetrieveLocation}
-                      isFetching={isFetchingLocation}
-                    >
-                      {strings(stringKeys.dataCollector.form.retrieveLocation)}
-                    </TableActionsButton>
-                  </Grid>
-                  <Grid item xs={12} md={3}>
-                    <TextInputField
-                      label={strings(stringKeys.dataCollector.form.latitude)}
-                      name="latitude"
-                      field={form.fields.latitude}
-                      type="number"
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={3}>
-                    <TextInputField
-                      label={strings(stringKeys.dataCollector.form.longitude)}
-                      name="longitude"
-                      field={form.fields.longitude}
-                      type="number"
-                    />
-                  </Grid>
+                    <Grid item xs={12} className={styles.locationButton}>
+                      <TableActionsButton
+                        onClick={onRetrieveLocation}
+                        isFetching={isFetchingLocation}
+                      >
+                        {strings(stringKeys.dataCollector.form.retrieveLocation)}
+                      </TableActionsButton>
+                    </Grid>
+                    <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
+                      <TextInputField
+                        label={strings(stringKeys.dataCollector.form.latitude)}
+                        name="latitude"
+                        field={form.fields.latitude}
+                        type="number"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
+                      <TextInputField
+                        label={strings(stringKeys.dataCollector.form.longitude)}
+                        name="longitude"
+                        field={form.fields.longitude}
+                        type="number"
+                      />
+                    </Grid>
                 </Grid>
               </CardContent>
             </Card>
