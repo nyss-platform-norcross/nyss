@@ -13,5 +13,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public TrainingStatusDto? TrainingStatus { get; set; }
 
         public string Name { get; set; }
+        
+        public int PageNumber { get; set; }
     }
 }

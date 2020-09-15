@@ -175,7 +175,12 @@ export const initialState = {
     listFetching: false,
     listRemoving: {},
     listStale: true,
-    listData: [],
+    listData: {
+      data: [],
+      page: null,
+      rowsPerPage: null,
+      totalRows: null
+    },
     listSelectedAll: false,
     formRegions: [],
     formSupervisors: [],
@@ -189,7 +194,12 @@ export const initialState = {
     mapOverviewDetailsFetching: false,
     updatingDataCollector: {},
     replacingSupervisor: false,
-    performanceListData: [],
+    performanceListData: {
+      data: [],
+      page: null,
+      rowsPerPage: null,
+      totalRows: null
+    },
     performanceListFetching: false,
     performanceListFilters: null,
     filtersData: {

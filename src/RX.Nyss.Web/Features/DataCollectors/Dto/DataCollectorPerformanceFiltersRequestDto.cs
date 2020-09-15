@@ -23,6 +23,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public PerformanceStatusFilterDto SevenWeeksAgo { get; set; }
 
         public PerformanceStatusFilterDto EightWeeksAgo { get; set; }
+
+        public int PageNumber { get; set; }
     }
 
     public class PerformanceStatusFilterDto

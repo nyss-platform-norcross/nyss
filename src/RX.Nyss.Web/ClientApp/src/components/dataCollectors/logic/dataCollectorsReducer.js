@@ -13,7 +13,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formData: null, formError: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null };
 
     case actions.OPEN_DATA_COLLECTORS_LIST.INVOKE:
-      return { ...state, filters: action.projectId === state.projectId ? state.filters : null, listData: action.projectId === state.projectId ? state.listData : [] };
+      return { ...state, filters: action.projectId === state.projectId ? state.filters : null, listData: action.projectId === state.projectId ? state.listData : { data: [], page: null, rowsPerPage: null, totalRows: null } };
 
     case actions.OPEN_DATA_COLLECTORS_LIST.SUCCESS:
       return { ...state, projectId: action.projectId, filtersData: action.filtersData };
@@ -113,7 +113,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, filtersData: action.filtersData };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.REQUEST:
-      return { ...state, performanceListFetching: true, performanceListData: [] };
+      return { ...state, performanceListFetching: true, performanceListData: { data: [], page: null, rowsPerPage: null, totalRows: null } };
 
     case actions.GET_DATA_COLLECTORS_PERFORMANCE.SUCCESS:
       return { ...state, performanceListFetching: false, performanceListData: action.list, performanceListFilters: action.filters };

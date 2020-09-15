@@ -13,6 +13,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
@@ -22,6 +23,8 @@ using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Utils;
+using RX.Nyss.Web.Utils.DataContract;
+using RX.Nyss.Web.Utils.Extensions;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.DataCollectors
@@ -33,11 +36,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result> Delete(int dataCollectorId);
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
         Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId);
-        Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
+        Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
-        Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters);
+        Task<Result<PaginatedList<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters);
         Task AnonymizeDataCollectorsWithReports(int projectId);
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
         Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto);
@@ -56,9 +59,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private readonly IEmailToSMSService _emailToSMSService;
         private readonly ISmsPublisherService _smsPublisherService;
         private readonly ISmsTextGeneratorService _smsTextGeneratorService;
+        private readonly INyssWebConfig _config;
 
         public DataCollectorService(
             INyssContext nyssContext,
+            INyssWebConfig config,
             INationalSocietyStructureService nationalSocietyStructureService,
             IGeolocationService geolocationService,
             IDateTimeProvider dateTimeProvider,
@@ -68,6 +73,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             ISmsTextGeneratorService smsTextGeneratorService)
         {
             _nyssContext = nyssContext;
+            _config = config;
             _nationalSocietyStructureService = nationalSocietyStructureService;
             _geolocationService = geolocationService;
             _dateTimeProvider = dateTimeProvider;
@@ -203,9 +209,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success(filtersData);
         }
 
-        public async Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters)
+        public async Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters)
         {
             var dataCollectorsQuery = await GetDataCollectorsForCurrentUserInProject(projectId);
+
+            var rowsPerPage = _config.PaginationRowsPerPage;
+            var totalCount = await dataCollectorsQuery.CountAsync();
 
             var dataCollectors = await dataCollectorsQuery
                 .FilterByArea(dataCollectorsFilters.Area)
@@ -230,9 +239,14 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 })
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
+                .Page(dataCollectorsFilters.PageNumber, rowsPerPage)
+                .AsNoTracking()
                 .ToListAsync();
 
-            return Success((IEnumerable<DataCollectorResponseDto>)dataCollectors);
+            var paginatedDataCollectors = dataCollectors
+                .AsPaginatedList(dataCollectorsFilters.PageNumber, totalCount, rowsPerPage);
+
+            return Success(paginatedDataCollectors);
         }
 
         public async Task<Result> Create(int projectId, CreateDataCollectorRequestDto createDto)
@@ -505,11 +519,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 : ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
-        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters)
+        public async Task<Result<PaginatedList<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters)
         {
             var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
+            var rowsPerPage = _config.PaginationRowsPerPage;
+            var totalRows = await dataCollectors.CountAsync();
 
             var dataCollectorsWithReportsData = await dataCollectors
                 .FilterOnlyNotDeleted()
@@ -525,7 +541,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
                             IsValid = r.ReportId.HasValue,
                             ReceivedAt = r.ReceivedAt.Date
                         })
-                }).ToListAsync();
+                })
+                .Page(dataCollectorsFilters.PageNumber, rowsPerPage)
+                .AsNoTracking()
+                .ToListAsync();
 
             var dataCollectorPerformances = dataCollectorsWithReportsData.Select(r => new
                 {
@@ -555,7 +574,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterByStatusSixWeeksAgo(dataCollectorsFilters.SixWeeksAgo)
                 .FilterByStatusSevenWeeksAgo(dataCollectorsFilters.SevenWeeksAgo)
                 .FilterByStatusEightWeeksAgo(dataCollectorsFilters.EightWeeksAgo)
-                .ToList();
+                .AsPaginatedList(dataCollectorsFilters.PageNumber, totalRows, rowsPerPage);
 
             return Success(dataCollectorPerformances);
         }

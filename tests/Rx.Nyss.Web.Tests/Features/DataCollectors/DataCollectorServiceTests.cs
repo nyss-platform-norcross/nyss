@@ -11,6 +11,7 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.DataCollectors;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -52,6 +53,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         public DataCollectorServiceTests()
         {
             _nyssContextMock = Substitute.For<INyssContext>();
+            var config = Substitute.For<INyssWebConfig>();
             var nationalSocietyStructureService = Substitute.For<INationalSocietyStructureService>();
             var geolocationService = Substitute.For<IGeolocationService>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
@@ -62,10 +64,12 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             _smsPublisherService = Substitute.For<ISmsPublisherService>();
             var smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
             smsTextGeneratorService.GenerateReplaceSupervisorSms("en").Returns("Test");
+            config.PaginationRowsPerPage.Returns(5);
 
             dateTimeProvider.UtcNow.Returns(DateTime.UtcNow);
             _dataCollectorService = new DataCollectorService(
                 _nyssContextMock,
+                config,
                 nationalSocietyStructureService,
                 geolocationService,
                 dateTimeProvider,
@@ -432,8 +436,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Count().ShouldBe(2);
-            var dataCollector = result.Value.First();
+            result.Value.Data.Count().ShouldBe(2);
+            var dataCollector = result.Value.Data.First();
             dataCollector.Id.ShouldBe(DataCollectorWithReportsId);
             dataCollector.DisplayName.ShouldBe("");
             dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber2);
@@ -443,7 +447,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             dataCollector.Sex.ShouldBe(Sex.Female);
             dataCollector.Region.ShouldBe("Layuna");
 
-            var secondDataCollector = result.Value.Last();
+            var secondDataCollector = result.Value.Data.Last();
             secondDataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
             secondDataCollector.Sex.ShouldBe(Sex.Male);
         }
@@ -464,8 +468,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Count().ShouldBe(1);
-            var dataCollector = result.Value.First();
+            result.Value.Data.Count().ShouldBe(1);
+            var dataCollector = result.Value.Data.First();
             dataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
             dataCollector.DisplayName.ShouldBe("");
             dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
@@ -492,8 +496,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Count().ShouldBe(1);
-            var dataCollector = result.Value.First();
+            result.Value.Data.Count().ShouldBe(1);
+            var dataCollector = result.Value.Data.First();
             dataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
             dataCollector.DisplayName.ShouldBe("");
             dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
@@ -617,14 +621,14 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             });
 
             // Assert
-            result.Value[0].StatusLastWeek.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 0)));
-            result.Value[0].StatusTwoWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 1)));
-            result.Value[0].StatusThreeWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 2)));
-            result.Value[0].StatusFourWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 3)));
-            result.Value[0].StatusFiveWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 4)));
-            result.Value[0].StatusSixWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 5)));
-            result.Value[0].StatusSevenWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 6)));
-            result.Value[0].StatusEightWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 7)));
+            result.Value.Data[0].StatusLastWeek.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 0)));
+            result.Value.Data[0].StatusTwoWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 1)));
+            result.Value.Data[0].StatusThreeWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 2)));
+            result.Value.Data[0].StatusFourWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 3)));
+            result.Value.Data[0].StatusFiveWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 4)));
+            result.Value.Data[0].StatusSixWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 5)));
+            result.Value.Data[0].StatusSevenWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 6)));
+            result.Value.Data[0].StatusEightWeeksAgo.ShouldBe(DataCollectorStatusFromReports(reports.Where(r => (int)(dateTimeNow - r.ReceivedAt).TotalDays / 7 == 7)));
         }
         
         [Fact]

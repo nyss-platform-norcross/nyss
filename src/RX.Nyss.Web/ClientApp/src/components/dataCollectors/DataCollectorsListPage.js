@@ -30,6 +30,10 @@ const DataCollectorsListPageComponent = (props) => {
     setReplaceSupervisorDialogOpened(true);
   }
 
+  const onChangePage = (e, page) => {
+    props.getDataCollectorList(props.projectId, { ...props.filters, pageNumber: page });
+  }
+
   return (
     <Fragment>
       {!props.isClosed &&
@@ -54,7 +58,10 @@ const DataCollectorsListPageComponent = (props) => {
         callingUserRoles={props.callingUserRoles} />
 
       <DataCollectorsTable
-        list={props.list}
+        list={props.listData.data}
+        page={props.listData.page}
+        rowsPerPage={props.listData.rowsPerPage}
+        totalRows={props.listData.totalRows}
         goToEdition={props.goToEdition}
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
@@ -67,6 +74,7 @@ const DataCollectorsListPageComponent = (props) => {
         selectAllDataCollectors={props.selectAllDataCollectors}
         listSelectedAll={props.listSelectedAll}
         replaceSupervisor={handleReplaceSupervisor}
+        onChangePage={onChangePage}
       />
 
       <ReplaceSupervisorDialog
@@ -86,14 +94,14 @@ DataCollectorsListPageComponent.propTypes = {
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
   isFetching: PropTypes.bool,
-  list: PropTypes.array,
+  listData: PropTypes.object,
   isClosed: PropTypes.bool
 };
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   isClosed: state.appData.siteMap.parameters.projectIsClosed,
-  list: state.dataCollectors.listData,
+  listData: state.dataCollectors.listData,
   isListFetching: state.dataCollectors.listFetching,
   isRemoving: state.dataCollectors.listRemoving,
   isUpdatingDataCollector: state.dataCollectors.updatingDataCollector,

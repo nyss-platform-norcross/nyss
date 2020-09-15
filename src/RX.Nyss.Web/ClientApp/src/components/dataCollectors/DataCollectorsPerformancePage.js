@@ -25,7 +25,10 @@ const DataCollectorsPerformancePageComponent = (props) => {
       />
       <DataCollectorsPerformanceTableLegend />
       <DataCollectorsPerformanceTable
-        list={props.list}
+        list={props.listData.data}
+        rowsPerPage={props.listData.rowsPerPage}
+        totalRows={props.listData.totalRows}
+        page={props.listData.page}
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
         projectId={props.projectId}
@@ -46,7 +49,7 @@ const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
   filters: state.dataCollectors.performanceListFilters,
-  list: state.dataCollectors.performanceListData,
+  listData: state.dataCollectors.performanceListData,
   isListFetching: state.dataCollectors.performanceListFetching,
 });
 

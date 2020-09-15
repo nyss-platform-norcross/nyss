@@ -40,7 +40,7 @@ function* openDataCollectorsList({ projectId }) {
       : yield select(state => state.dataCollectors.filtersData);
 
     const filters = (yield select(state => state.dataCollectors.filters))
-      || { supervisorId: null, area: null, sex: null, trainingStatus: 'All', name: null };
+      || { supervisorId: null, area: null, sex: null, trainingStatus: 'All', name: null, pageNumber: 1 };
 
     if (listStale || listProjectId !== projectId) {
       yield call(getDataCollectors, { projectId, filters });
@@ -203,6 +203,7 @@ function* openDataCollectorsPerformanceList({ projectId }) {
       {
         area: null,
         name: null,
+        pageNumber: 1,
         lastWeek: {
           reportingCorrectly: true,
           reportingWithErrors: true,

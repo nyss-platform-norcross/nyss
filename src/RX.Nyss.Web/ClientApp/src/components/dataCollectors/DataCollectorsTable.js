@@ -18,8 +18,11 @@ import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { accessMap } from '../../authentication/accessMap';
 import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';
 import { Checkbox } from '@material-ui/core';
+import TablePager from '../common/tablePagination/TablePager';
 
-export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, projectId, setTrainingState, isUpdatingDataCollector, selectDataCollector, selectAllDataCollectors, replaceSupervisor }) => {
+export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, page, rowsPerPage, totalRows, projectId,
+  setTrainingState, isUpdatingDataCollector, selectDataCollector, selectAllDataCollectors, replaceSupervisor, onChangePage }) => {
+  
   const [isSelected, setIsSelected] = useState(false);
   useEffect(() => setIsSelected(list.some(i => i.isSelected)), [list]);
 
@@ -121,6 +124,7 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
           ))}
         </TableBody>
       </Table>
+      {!!list.length && <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />}
     </TableContainer>
   );
 }
