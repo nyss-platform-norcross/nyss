@@ -3,3 +3,9 @@
     display: none;
   }
 }
+
+.requiredMapLocation {
+  &[data-missing-location=true] {
+    border-color: #f44336;
+  }
+}
