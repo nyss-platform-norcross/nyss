@@ -590,7 +590,8 @@ export const stringKeys = {
       retrieveLocation: "dataCollectors.form.retrieveLocation",
       replaceSupervisor: "dataCollectors.form.replaceSupervisor",
       newSupervisor: "dataCollectors.form.newSupervisor",
-      replaceSupervisorWarning: "dataCollectors.form.replaceSupervisorWarning"
+      replaceSupervisorWarning: "dataCollectors.form.replaceSupervisorWarning",
+      selectLocation: "dataCollectors.form.selectLocation"
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",

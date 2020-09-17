@@ -1,0 +1,11 @@
+.locationButton {
+  @media screen and (min-width: 600px) {
+    display: none;
+  }
+}
+
+.requiredMapLocation {
+  &[data-missing-location=true] {
+    border-color: #f44336;
+  }
+}

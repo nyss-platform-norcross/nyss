@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet'
 
-export const DataCollectorMap = ({ onChange, location, zoom }) => {
-  const [markerLocation, setMarkerLocation] = useState(location);
+export const DataCollectorMap = ({ onChange, location, zoom, centerLocation }) => {
+  const [markerLocation, setMarkerLocation] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(zoom || 13);
 
   useEffect(() => {
+    if (!location?.lat || !location?.lng) {
+      setMarkerLocation(null);
+      return;
+    }
+
     setMarkerLocation(location);
   }, [location]);
 
@@ -16,7 +21,7 @@ export const DataCollectorMap = ({ onChange, location, zoom }) => {
     if (!map) {
       return;
     }
-    setMarkerLocation(e.latlng);
+
     onChange(e.latlng);
   }
 
@@ -25,7 +30,7 @@ export const DataCollectorMap = ({ onChange, location, zoom }) => {
 
   return (
     <Map
-      center={location}
+      center={centerLocation || markerLocation}
       length={4}
       onClick={handleClick}
       onLocationfound={handleLocationFound}
@@ -38,9 +43,11 @@ export const DataCollectorMap = ({ onChange, location, zoom }) => {
         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={markerLocation}>
-        <Popup>You are here</Popup>
-      </Marker>
+      {markerLocation && (
+        <Marker position={markerLocation}>
+          <Popup>You are here</Popup>
+        </Marker>
+      )}
     </Map>
   )
 }

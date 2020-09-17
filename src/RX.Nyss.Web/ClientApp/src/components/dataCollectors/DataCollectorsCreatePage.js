@@ -1,7 +1,7 @@
 import formStyles from "../forms/form/Form.module.scss";
-import styles from './DataCollectorsCreatePage.module.scss';
+import styles from './DataCollectorsCreateOrEditPage.module.scss';
 
-import React, { useState, Fragment, useEffect, useReducer } from 'react';
+import React, { useState, Fragment, useEffect, useReducer, useMemo } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -24,21 +24,28 @@ import { getBirthDecades } from './logic/dataCollectorsService';
 import { DataCollectorMap } from './DataCollectorMap';
 import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
-import { Radio, FormControlLabel } from "@material-ui/core";
+import { Radio, FormControlLabel, Card, CardContent, InputLabel } from "@material-ui/core";
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { retrieveGpsLocation } from "../../utils/map";
 
 const DataCollectorsCreatePageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
-  const [form, setForm] = useState(null);
   const [type, setType] = useState(dataCollectorType.human);
+  const [centerLocation, setCenterLocation] = useState(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+  const [selectedVillage, setSelectedVillage] = useReducer((state, action) => {
+    if (state.value !== action) {
+      return { ...state, changed: true, value: action }
+    } else {
+      return { ...state, changed: false }
+    }
+  }, { value: "", changed: false });
 
   const [location, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case "latitude": return { ...state, lat: action.value };
       case "longitude": return { ...state, lng: action.value };
-      case "latlng": return { lat: action.lat, lng: action.lng };
+      case "latlng": return (action && { lat: action.lat, lng: action.lng }) || null;
       default: return state;
     }
   }, null);
@@ -47,13 +54,12 @@ const DataCollectorsCreatePageComponent = (props) => {
     props.openCreation(props.projectId);
   })
 
-  useEffect(() => {
+  const form = useMemo(() => {
     if (!props.defaultLocation) {
-      setForm(null);
-      return;
+      return null;
     }
 
-    dispatch({ type: "latlng", lat: props.defaultLocation.latitude, lng: props.defaultLocation.longitude });
+    setCenterLocation({ lat: props.defaultLocation.latitude, lng: props.defaultLocation.longitude });
 
     const fields = {
       dataCollectorType: dataCollectorType.human,
@@ -64,8 +70,8 @@ const DataCollectorsCreatePageComponent = (props) => {
       birthGroupDecade: "",
       phoneNumber: "",
       additionalPhoneNumber: "",
-      latitude: props.defaultLocation.latitude,
-      longitude: props.defaultLocation.longitude,
+      latitude: "",
+      longitude: "",
       villageId: "",
       districtId: "",
       regionId: "",
@@ -89,11 +95,19 @@ const DataCollectorsCreatePageComponent = (props) => {
     };
 
     const newForm = createForm(fields, validation);
-    setForm(newForm);
-    newForm.fields.dataCollectorType.subscribe(({newValue}) => setType(newValue));
-    newForm.fields.latitude.subscribe(({newValue}) => dispatch({ type: "latitude", value: newValue}));
-    newForm.fields.longitude.subscribe(({newValue}) => dispatch({ type: "longitude", value: newValue}));
-  }, [props.regions, props.defaultSupervisorId, props.defaultLocation]);
+    newForm.fields.dataCollectorType.subscribe(({ newValue }) => setType(newValue));
+    newForm.fields.latitude.subscribe(({ newValue }) => dispatch({ type: "latitude", value: newValue }));
+    newForm.fields.longitude.subscribe(({ newValue }) => dispatch({ type: "longitude", value: newValue }));
+    newForm.fields.villageId.subscribe(({ newValue }) => setSelectedVillage(newValue));
+    return newForm;
+  }, [props.defaultSupervisorId, props.defaultLocation]);
+
+  useEffect(() => {
+    if (form && form.fields && selectedVillage.changed) {
+      form.fields.latitude.update("");
+      form.fields.longitude.update("");
+    }
+  }, [form, selectedVillage])
 
   const onLocationChange = (e) => {
     form.fields.latitude.update(e.lat);
@@ -103,7 +117,7 @@ const DataCollectorsCreatePageComponent = (props) => {
   const onRetrieveLocation = () => {
     setIsFetchingLocation(true);
     retrieveGpsLocation(location => {
-      if (location === null){
+      if (location === null) {
         setIsFetchingLocation(false);
         return;
       }
@@ -115,7 +129,6 @@ const DataCollectorsCreatePageComponent = (props) => {
       setIsFetchingLocation(false);
     });
   }
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -190,18 +203,18 @@ const DataCollectorsCreatePageComponent = (props) => {
 
           {type === dataCollectorType.human && (
             <Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.dataCollector.form.sex)}
-              field={form.fields.sex}
-              name="sex"
-            >
-              {sexValues.map(type => (
-                <MenuItem key={`sex${type}`} value={type}>
-                  {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
-                </MenuItem>
-              ))}
-            </SelectField>
-          </Grid>
+              <SelectField
+                label={strings(stringKeys.dataCollector.form.sex)}
+                field={form.fields.sex}
+                name="sex"
+              >
+                {sexValues.map(type => (
+                  <MenuItem key={`sex${type}`} value={type}>
+                    {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
           )}
 
           {type === dataCollectorType.human && (<Grid item xs={12}>
@@ -233,44 +246,6 @@ const DataCollectorsCreatePageComponent = (props) => {
               field={form.fields.additionalPhoneNumber}
             />
           </Grid>)}
-        </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <div>Location</div>
-            <DataCollectorMap
-              onChange={onLocationChange}
-              location={location}
-              zoom={6}
-            />
-          </Grid>
-
-        </Grid>
-        <Grid container spacing={2} className={formStyles.shrinked}>
-
-          <Grid item className={styles.locationButton}>
-            <TableActionsButton
-              onClick={onRetrieveLocation}
-              isFetching={isFetchingLocation}
-            >
-              {strings(stringKeys.dataCollector.form.retrieveLocation)}
-            </TableActionsButton>
-          </Grid>
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.dataCollector.form.latitude)}
-              name="latitude"
-              field={form.fields.latitude}
-              type="number"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.dataCollector.form.longitude)}
-              name="longitude"
-              field={form.fields.longitude}
-              type="number"
-            />
-          </Grid>
 
           <GeoStructureSelect
             regions={props.regions}
@@ -279,7 +254,51 @@ const DataCollectorsCreatePageComponent = (props) => {
             villageIdField={form.fields.villageId}
             zoneIdField={form.fields.zoneId}
           />
-
+        </Grid>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Card className={styles.requiredMapLocation} data-missing-location={form.fields.latitude.error !== null || form.fields.longitude.error !== null}>
+              <CardContent>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <InputLabel style={{ marginBottom: "10px" }}>{strings(stringKeys.dataCollector.form.selectLocation)}</InputLabel>
+                    <DataCollectorMap
+                      onChange={onLocationChange}
+                      location={location}
+                      centerLocation={centerLocation}
+                      zoom={6}
+                    />
+                  </Grid>
+                    <Grid item xs={12} className={styles.locationButton}>
+                      <TableActionsButton
+                        onClick={onRetrieveLocation}
+                        isFetching={isFetchingLocation}
+                      >
+                        {strings(stringKeys.dataCollector.form.retrieveLocation)}
+                      </TableActionsButton>
+                    </Grid>
+                    <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
+                      <TextInputField
+                        label={strings(stringKeys.dataCollector.form.latitude)}
+                        name="latitude"
+                        field={form.fields.latitude}
+                        type="number"
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
+                      <TextInputField
+                        label={strings(stringKeys.dataCollector.form.longitude)}
+                        name="longitude"
+                        field={form.fields.longitude}
+                        type="number"
+                      />
+                    </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <SelectField
               label={strings(stringKeys.dataCollector.form.supervisor)}
@@ -300,7 +319,7 @@ const DataCollectorsCreatePageComponent = (props) => {
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.create)}</SubmitButton>
         </FormActions>
       </Form>
-    </Fragment>
+    </Fragment >
   );
 }
 

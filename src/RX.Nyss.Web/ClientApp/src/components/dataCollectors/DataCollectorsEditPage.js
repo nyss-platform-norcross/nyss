@@ -1,5 +1,5 @@
 import formStyles from "../forms/form/Form.module.scss";
-import styles from './DataCollectorsEditPage.module.scss';
+import styles from './DataCollectorsCreateOrEditPage.module.scss';
 
 import React, { useEffect, useState, useReducer, Fragment } from 'react';
 import { connect } from "react-redux";
@@ -25,11 +25,22 @@ import { DataCollectorMap } from './DataCollectorMap';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { retrieveGpsLocation } from "../../utils/map";
+import { Card, CardContent, InputLabel } from "@material-ui/core";
 
 const DataCollectorsEditPageComponent = (props) => {
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
+  const [selectedVillage, setSelectedVillage] = useReducer((state, action) => {
+    if (action.initialValue) {
+      return { value: action.initialValue, changed: false }
+    }
+    if (state.value !== action) {
+      return { ...state, changed: true, value: action }
+    } else {
+      return { ...state, changed: false }
+    }
+  }, { value: "", changed: false });
 
   const [location, dispatch] = useReducer((state, action) => {
     switch (action.type) {
@@ -58,7 +69,7 @@ const DataCollectorsEditPageComponent = (props) => {
       displayName: props.data.dataCollectorType === dataCollectorType.human ? props.data.displayName : null,
       sex: props.data.dataCollectorType === dataCollectorType.human ? props.data.sex : null,
       supervisorId: props.data.supervisorId.toString(),
-      birthGroupDecade: props.data.dataCollectorType === dataCollectorType.human ? props.data.birthGroupDecade.toString(): null,
+      birthGroupDecade: props.data.dataCollectorType === dataCollectorType.human ? props.data.birthGroupDecade.toString() : null,
       phoneNumber: props.data.phoneNumber,
       additionalPhoneNumber: props.data.additionalPhoneNumber,
       latitude: props.data.latitude,
@@ -85,10 +96,20 @@ const DataCollectorsEditPageComponent = (props) => {
     };
 
     const newForm = createForm(fields, validation);
-    newForm.fields.latitude.subscribe(({newValue}) => dispatch({ type: "latitude", value: newValue}));
-    newForm.fields.longitude.subscribe(({newValue}) => dispatch({ type: "longitude", value: newValue}));
+    newForm.fields.latitude.subscribe(({ newValue }) => dispatch({ type: "latitude", value: newValue }));
+    newForm.fields.longitude.subscribe(({ newValue }) => dispatch({ type: "longitude", value: newValue }));
+
+    newForm.fields.villageId.subscribe(({ newValue }) => setSelectedVillage(newValue));
+    setSelectedVillage({ initialValue: props.data.villageId.toString() });
     setForm(newForm);
   }, [props.data, props.match]);
+
+  useEffect(() => {
+    if (form && form.fields && selectedVillage.changed) {
+      form.fields.latitude.update("");
+      form.fields.longitude.update("");
+    }
+  }, [form, selectedVillage])
 
   const onLocationChange = (e) => {
     form.fields.latitude.update(e.lat);
@@ -98,7 +119,7 @@ const DataCollectorsEditPageComponent = (props) => {
   const onRetrieveLocation = () => {
     setIsFetchingLocation(true);
     retrieveGpsLocation(location => {
-      if (location === null){
+      if (location === null) {
         setIsFetchingLocation(false);
         return;
       }
@@ -214,43 +235,6 @@ const DataCollectorsEditPageComponent = (props) => {
               field={form.fields.additionalPhoneNumber}
             />
           </Grid>)}
-        </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <div>Location</div>
-            <DataCollectorMap
-              onChange={onLocationChange}
-              location={location}
-              zoom={15}
-            />
-          </Grid>
-        </Grid>
-        <Grid container spacing={2} className={formStyles.shrinked}>
-
-          <Grid item className={styles.locationButton}>
-            <TableActionsButton
-              onClick={onRetrieveLocation}
-              isFetching={isFetchingLocation}
-            >
-              {strings(stringKeys.dataCollector.form.retrieveLocation)}
-            </TableActionsButton>
-          </Grid>
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.dataCollector.form.latitude)}
-              name="latitude"
-              field={form.fields.latitude}
-              type="number"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextInputField
-              label={strings(stringKeys.dataCollector.form.longitude)}
-              name="longitude"
-              field={form.fields.longitude}
-              type="number"
-            />
-          </Grid>
 
           <GeoStructureSelect
             regions={props.data.formData.regions}
@@ -263,6 +247,52 @@ const DataCollectorsEditPageComponent = (props) => {
             initialZones={props.data.formData.zones}
           />
 
+        </Grid>
+
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <Card className={styles.requiredMapLocation} data-missing-location={form.fields.latitude.error !== null || form.fields.longitude.error !== null}>
+              <CardContent>
+                <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <InputLabel style={{ marginBottom: "10px" }}>{strings(stringKeys.dataCollector.form.selectLocation)}</InputLabel>
+                    <DataCollectorMap
+                      onChange={onLocationChange}
+                      location={location}
+                      zoom={6}
+                    />
+                  </Grid>
+                  <Grid item className={styles.locationButton}>
+                    <TableActionsButton
+                      onClick={onRetrieveLocation}
+                      isFetching={isFetchingLocation}
+                    >
+                      {strings(stringKeys.dataCollector.form.retrieveLocation)}
+                    </TableActionsButton>
+                  </Grid>
+                  <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
+                    <TextInputField
+                      label={strings(stringKeys.dataCollector.form.latitude)}
+                      name="latitude"
+                      field={form.fields.latitude}
+                      type="number"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
+                    <TextInputField
+                      label={strings(stringKeys.dataCollector.form.longitude)}
+                      name="longitude"
+                      field={form.fields.longitude}
+                      type="number"
+                    />
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={2} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <SelectField
               label={strings(stringKeys.dataCollector.form.supervisor)}
