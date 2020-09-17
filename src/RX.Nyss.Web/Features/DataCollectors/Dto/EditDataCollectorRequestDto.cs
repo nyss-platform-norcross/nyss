@@ -51,6 +51,9 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                 RuleFor(dc => dc.VillageId).GreaterThan(0);
                 RuleFor(dc => dc.ZoneId);
                 RuleFor(dc => dc.SupervisorId).GreaterThan(0);
+                RuleFor(dc => dc.SupervisorId)
+                    .MustAsync(async (model, supervisorId, t) => await dataCollectorValidationService.IsAllowedToCreateForSupervisor(supervisorId))
+                    .WithMessageKey(ResultKey.DataCollector.NotAllowedToSelectSupervisor);
 
                 When(dc => dc.DataCollectorType == DataCollectorType.Human, () =>
                 {
