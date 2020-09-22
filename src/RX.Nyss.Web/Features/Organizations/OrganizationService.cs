@@ -212,7 +212,7 @@ namespace RX.Nyss.Web.Features.Organizations
 
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
-                var currentUser = _authorizationService.GetCurrentUser();
+                var currentUser = await _authorizationService.GetCurrentUser();
 
                 var currentUserLink = await _nyssContext.UserNationalSocieties
                     .Where(un => un.UserId == currentUser.Id)

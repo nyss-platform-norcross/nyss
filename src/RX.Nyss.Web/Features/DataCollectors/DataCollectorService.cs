@@ -79,7 +79,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Project)
@@ -135,7 +135,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var projectData = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
@@ -181,7 +181,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
             var projectData = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
                 .Select(dc => new

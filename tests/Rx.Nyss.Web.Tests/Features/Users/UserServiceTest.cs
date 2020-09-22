@@ -28,7 +28,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             _nyssContext = Substitute.For<INyssContext>();
             _authorizationService = Substitute.For<IAuthorizationService>();
             _authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor).Returns(true);
-            _authorizationService.GetCurrentUserAsync().Returns(new AdministratorUser());
+            _authorizationService.GetCurrentUser().Returns(new AdministratorUser());
             _userService = new UserService(_nyssContext, _authorizationService);
             ArrangeNationalSocieties();
         }
@@ -129,7 +129,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
         public async Task GetUsersInNationalSociety_WhenCallingRoleIsGlobalCoordinator_ShouldNotReturnSupervisors()
         {
             //arrange
-            _authorizationService.GetCurrentUserAsync().Returns(new GlobalCoordinatorUser());
+            _authorizationService.GetCurrentUser().Returns(new GlobalCoordinatorUser());
 
             //act
             var users = await _userService.List(1);
@@ -268,7 +268,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
             ArrangeSupervisorUserProjects();
 
             _authorizationService.GetCurrentUser().Returns(users[2]);
-            _authorizationService.GetCurrentUserAsync().Returns(users[2]);
+            _authorizationService.GetCurrentUser().Returns(users[2]);
         }
 
         private void ArrangeSupervisorUserProjects()

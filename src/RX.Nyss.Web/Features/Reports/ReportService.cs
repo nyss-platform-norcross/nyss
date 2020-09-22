@@ -124,7 +124,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
-            var currentRole = _authorizationService.GetCurrentUser().Role;
+            var currentRole = (await _authorizationService.GetCurrentUser()).Role;
 
             var result = baseQuery.Select(r => new ReportListResponseDto
                 {
@@ -210,9 +210,9 @@ namespace RX.Nyss.Web.Features.Reports
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
-            var currentRole = _authorizationService.GetCurrentUser().Role;
+            var currentRole = (await _authorizationService.GetCurrentUser()).Role;
 
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var currentUserOrganization = await _nyssContext
                 .Projects
@@ -403,7 +403,7 @@ namespace RX.Nyss.Web.Features.Reports
 
         private async Task<bool> HasAccessToReport(int reportId)
         {
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var currentUserOrganizationId = await _nyssContext.Reports
                 .Where(p => p.Id == reportId)

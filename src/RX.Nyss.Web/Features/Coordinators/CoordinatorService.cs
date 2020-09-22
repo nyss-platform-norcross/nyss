@@ -203,7 +203,7 @@ namespace RX.Nyss.Web.Features.Coordinators
             }
             else
             {
-                var currentUser = _authorizationService.GetCurrentUser();
+                var currentUser = await _authorizationService.GetCurrentUser();
 
                 userNationalSociety.Organization = await _dataContext.UserNationalSocieties
                         .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)

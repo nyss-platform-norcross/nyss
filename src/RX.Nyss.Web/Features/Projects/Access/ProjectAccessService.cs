@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Features.Projects.Access
                 return await HasSupervisorAccessToProject(_authorizationService.GetCurrentUserName(), projectId);
             }
 
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var data = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)

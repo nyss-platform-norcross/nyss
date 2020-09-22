@@ -176,7 +176,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, string> stringResources, DataCollectorsFiltersRequestDto dataCollectorsFilter)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
             var nationalSocietyId = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
                 .Select(p => p.NationalSocietyId)

@@ -142,7 +142,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
 
         public async Task<Result> Edit(int nationalSocietyId, EditNationalSocietyRequestDto dto)
         {
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var nationalSocietyData = await _nyssContext.NationalSocieties
                 .Where(n => n.Id == nationalSocietyId)

@@ -67,7 +67,7 @@ namespace RX.Nyss.Web.Features.Users
 
         public async Task<Result<NationalSocietyUsersCreateFormDataResponseDto>> GetCreateFormData(int nationalSocietyId)
         {
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUser();
             var organizationId = await _nyssContext.UserNationalSocieties
                 .Where(un => un.UserId == currentUser.Id && un.NationalSocietyId == nationalSocietyId)
                 .Select(un => un.OrganizationId)
@@ -173,7 +173,7 @@ namespace RX.Nyss.Web.Features.Users
                 UserId = userData.Id
             };
 
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
             userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                 .Select(uns => uns.Organization)
@@ -192,7 +192,7 @@ namespace RX.Nyss.Web.Features.Users
 
         private async Task<IQueryable<UserNationalSociety>> GetFilteredUsersQuery(int nationalSocietyId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
             var query = _nyssContext.UserNationalSocieties
                 .Where(uns => uns.NationalSocietyId == nationalSocietyId);
 

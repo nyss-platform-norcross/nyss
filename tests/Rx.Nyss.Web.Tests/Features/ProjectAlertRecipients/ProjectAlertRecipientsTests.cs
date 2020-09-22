@@ -111,7 +111,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
             var projectsDbSet = projects.AsQueryable().BuildMockDbSet();
             var orgDbSet = orgs.AsQueryable().BuildMockDbSet();
 
-            _authorizationServiceMock.GetCurrentUserAsync().Returns(_users[0]);
+            _authorizationServiceMock.GetCurrentUser().Returns(_users[0]);
             _nyssContextMock.Users.Returns(usersDbSet);
             _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
             _nyssContextMock.AlertNotificationRecipients.Returns(alertRecipientsDbSet);
@@ -170,7 +170,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
         public async Task Create_WhenUserIsNotTiedToOrganization_ShouldFail()
         {
             // Arrange
-            _authorizationServiceMock.GetCurrentUserAsync().Returns(_users[1]);
+            _authorizationServiceMock.GetCurrentUser().Returns(_users[1]);
             var alertRecipient = new ProjectAlertRecipientRequestDto
             {
                 Role = "Head",
@@ -288,7 +288,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
         {
             // Arrange
             var user = _users.First(u => u.EmailAddress == userName);
-            _authorizationServiceMock.GetCurrentUserAsync().Returns(user);
+            _authorizationServiceMock.GetCurrentUser().Returns(user);
             var nationalSocietyId = 1;
             var projectId = 1;
 

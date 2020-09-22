@@ -391,7 +391,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             //assert
             _loggerAdapterMock.Received(1).Warn(Arg.Any<string>());
             await _nyssContextMock.Received(0).SaveChangesAsync();
-            _nyssContextMock.Received(0).SaveChanges();
+            await _nyssContextMock.Received(0).SaveChangesAsync();
             await _nyssContextMock.Received(0).ExecuteSqlInterpolatedAsync(Arg.Any<FormattableString>());
         }
 

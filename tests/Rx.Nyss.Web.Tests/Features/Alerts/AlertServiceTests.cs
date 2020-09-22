@@ -95,7 +95,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _dateTimeProvider.UtcNow.Returns(_now);
             _authorizationService.GetCurrentUser().Returns(_currentUser);
-            _authorizationService.GetCurrentUserAsync().Returns(_currentUser);
+            _authorizationService.GetCurrentUser().Returns(_currentUser);
         }
 
         [Theory]

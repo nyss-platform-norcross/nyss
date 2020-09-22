@@ -83,7 +83,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             var rowsPerPage = _config.PaginationRowsPerPage;
             var totalCount = await alertsQuery.CountAsync();
-            var currentRole = _authorizationService.GetCurrentUser().Role;
+            var currentRole = (await _authorizationService.GetCurrentUser()).Role;
             var currentUserName = _authorizationService.GetCurrentUserName();
             var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
             var currentUserId = await _nyssContext.Users.FilterAvailable()
@@ -152,7 +152,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<AlertAssessmentResponseDto>> Get(int alertId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var userOrganizations = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == currentUser.Id)
@@ -287,7 +287,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             alertData.Alert.Status = AlertStatus.Escalated;
             alertData.Alert.EscalatedAt = _dateTimeProvider.UtcNow;
-            alertData.Alert.EscalatedBy = _authorizationService.GetCurrentUser();
+            alertData.Alert.EscalatedBy = await _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
             if (sendNotification)
@@ -346,7 +346,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             alertData.Alert.Status = AlertStatus.Dismissed;
             alertData.Alert.DismissedAt = _dateTimeProvider.UtcNow;
-            alertData.Alert.DismissedBy = _authorizationService.GetCurrentUser();
+            alertData.Alert.DismissedBy = await _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
             return Success();
@@ -380,7 +380,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             alertData.Alert.Status = AlertStatus.Closed;
             alertData.Alert.ClosedAt = _dateTimeProvider.UtcNow;
-            alertData.Alert.ClosedBy = _authorizationService.GetCurrentUser();
+            alertData.Alert.ClosedBy = await _authorizationService.GetCurrentUser();
             alertData.Alert.CloseOption = closeOption;
             alertData.Alert.Comments = comments;
 
@@ -413,7 +413,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<AlertLogResponseDto>> GetLogs(int alertId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
             var currentUserOrganization = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == currentUser.Id && uns.NationalSociety == _nyssContext.Alerts
                     .Where(a => a.Id == alertId)
@@ -583,7 +583,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
         private async Task<bool> HasCurrentUserAlertEditAccess(int alertId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var currentUserOrgs = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == currentUser.Id)
