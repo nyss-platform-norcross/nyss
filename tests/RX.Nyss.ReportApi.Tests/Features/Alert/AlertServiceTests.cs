@@ -69,7 +69,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(report);
 
             //assert
-            result.ShouldBeNull();
+            result.Alert.ShouldBeNull();
         }
 
         [Fact]
@@ -85,7 +85,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(report);
 
             //assert
-            result.ShouldBeNull();
+            result.Alert.ShouldBeNull();
         }
 
         [Theory]
@@ -104,7 +104,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(report);
 
             //assert
-            result.ShouldBeNull();
+            result.Alert.ShouldBeNull();
         }
 
         [Fact]
@@ -130,9 +130,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(report);
 
             //assert
-            result.ShouldBeOfType<Data.Models.Alert>();
-            result.Status.ShouldBe(AlertStatus.Pending);
-            existingAlerts.ShouldNotContain(result);
+            result.Alert.ShouldBeOfType<Data.Models.Alert>();
+            result.Alert.Status.ShouldBe(AlertStatus.Pending);
+            existingAlerts.ShouldNotContain(result.Alert);
         }
 
         [Fact]
@@ -162,7 +162,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
             //assert
             await _nyssContextMock.AlertReports.Received(1).AddRangeAsync(Arg.Is<IEnumerable<AlertReport>>(list =>
-                list.Count() == 1 && list.Any(ar => ar.Alert == result && ar.Report == report)
+                list.Count() == 1 && list.Any(ar => ar.Alert == result.Alert && ar.Report == report)
             ));
         }
 
@@ -192,7 +192,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(report);
 
             //assert
-            result.ShouldBeNull();
+            result.Alert.ShouldBeNull();
         }
 
         [Fact]
@@ -222,9 +222,9 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(reportBeingAdded);
 
             //assert
-            result.ShouldBeOfType<Data.Models.Alert>();
-            result.Status.ShouldBe(AlertStatus.Pending);
-            existingAlerts.ShouldNotContain(result);
+            result.Alert.ShouldBeOfType<Data.Models.Alert>();
+            result.Alert.Status.ShouldBe(AlertStatus.Pending);
+            existingAlerts.ShouldNotContain(result.Alert);
         }
 
         [Fact]
@@ -241,8 +241,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             //assert
             await _nyssContextMock.AlertReports.Received(1).AddRangeAsync(Arg.Is<IEnumerable<AlertReport>>(list =>
                 list.Count() == 3
-                && list.Any(ar => ar.Alert == result && ar.Report == reportBeingAdded)
-                && list.All(ar => ar.Alert == result)
+                && list.Any(ar => ar.Alert == result.Alert && ar.Report == reportBeingAdded)
+                && list.All(ar => ar.Alert == result.Alert)
             ));
         }
 
@@ -261,7 +261,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         }
 
         [Fact]
-        public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ShouldReturnNull()
+        public async Task ReportAdded_WhenAddingToGroupWithAnExistingAlert_ShouldReturnAlertAndFlagToNotifyNewSupervisors()
         {
             //arrange
             _testData.WhenAddingToGroupWithAnExistingAlert.GenerateData().AddToDbContext();
@@ -271,7 +271,8 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(reportBeingAdded);
 
             //assert
-            result.ShouldBeNull();
+            result.Alert.ShouldBeOfType<Data.Models.Alert>();
+            result.IsExistingAlert.ShouldBeTrue();
         }
 
         [Fact]
@@ -347,7 +348,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(reportBeingAdded);
 
             //assert
-            result.ShouldBeNull();
+            result.Alert.ShouldBeNull();
         }
 
         [Fact]
@@ -361,7 +362,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(reportBeingAdded);
 
             //assert
-            result.ShouldBeNull();
+            result.Alert.ShouldBeNull();
         }
 
         [Fact]
@@ -375,7 +376,25 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             var result = await _alertService.ReportAdded(reportBeingAdded);
 
             //assert
-            result.ShouldBeNull();
+            result.Alert.ShouldBeNull();
+        }
+
+        [Fact]
+        public async Task ReportAdded_WhenNewSupervisorIsLinkedToAlert_ShouldReturnAlertWithListOfNewSupervisors()
+        {
+            // arrange
+            _testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.GenerateData().AddToDbContext();
+            var reportBeingAdded = _testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.EntityData.Reports.First(r => r.DataCollector.Id == 2);
+            var supervisorAddedToAlert = _testData.WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert.EntityData.Reports
+                .Where(r => r.DataCollector.Id == 2).Select(r => r.DataCollector.Supervisor).First();
+            
+            // act
+            var result = await _alertService.ReportAdded(reportBeingAdded);
+
+            //assert
+            result.Alert.ShouldBeOfType<Data.Models.Alert>();
+            result.IsExistingAlert.ShouldBeTrue();
+            result.SupervisorsAddedToExistingAlert.ShouldContain(supervisorAddedToAlert);
         }
 
 
