@@ -2,7 +2,7 @@ import formStyles from "../forms/form/Form.module.scss";
 import styles from './DataCollectorsCreateOrEditPage.module.scss';
 
 import React, { useEffect, useState, useReducer, Fragment } from 'react';
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
@@ -26,8 +26,10 @@ import { ValidationMessage } from "../forms/ValidationMessage";
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { retrieveGpsLocation } from "../../utils/map";
 import { Card, CardContent, InputLabel } from "@material-ui/core";
+import { Supervisor } from "../../authentication/roles";
 
 const DataCollectorsEditPageComponent = (props) => {
+  const currentUserRoles = useSelector(state => state.appData.user.roles);
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
@@ -292,22 +294,23 @@ const DataCollectorsEditPageComponent = (props) => {
           </Grid>
         </Grid>
 
-        <Grid container spacing={2} className={formStyles.shrinked}>
-          <Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.dataCollector.form.supervisor)}
-              field={form.fields.supervisorId}
-              name="supervisorId"
-            >
-              {props.data.formData.supervisors.map(supervisor => (
-                <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
-                  {supervisor.name}
-                </MenuItem>
-              ))}
-            </SelectField>
+        {!currentUserRoles.some(r => r === Supervisor) &&
+          <Grid container spacing={2} className={formStyles.shrinked}>
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.dataCollector.form.supervisor)}
+                field={form.fields.supervisorId}
+                name="supervisorId"
+              >
+                {props.data.formData.supervisors.map(supervisor => (
+                  <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
+                    {supervisor.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
           </Grid>
-        </Grid>
-
+        }
         <FormActions className={formStyles.shrinked}>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.update)}</SubmitButton>

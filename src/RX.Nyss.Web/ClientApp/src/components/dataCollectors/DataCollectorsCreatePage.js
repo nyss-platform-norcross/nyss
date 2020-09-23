@@ -2,7 +2,7 @@ import formStyles from "../forms/form/Form.module.scss";
 import styles from './DataCollectorsCreateOrEditPage.module.scss';
 
 import React, { useState, Fragment, useEffect, useReducer, useMemo } from 'react';
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
@@ -27,8 +27,10 @@ import { ValidationMessage } from "../forms/ValidationMessage";
 import { Radio, FormControlLabel, Card, CardContent, InputLabel } from "@material-ui/core";
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { retrieveGpsLocation } from "../../utils/map";
+import { Supervisor } from "../../authentication/roles";
 
 const DataCollectorsCreatePageComponent = (props) => {
+  const currentUserRoles = useSelector(state => state.appData.user.roles);
   const [birthDecades] = useState(getBirthDecades());
   const [type, setType] = useState(dataCollectorType.human);
   const [centerLocation, setCenterLocation] = useState(null);
@@ -269,50 +271,53 @@ const DataCollectorsCreatePageComponent = (props) => {
                       zoom={6}
                     />
                   </Grid>
-                    <Grid item xs={12} className={styles.locationButton}>
-                      <TableActionsButton
-                        onClick={onRetrieveLocation}
-                        isFetching={isFetchingLocation}
-                      >
-                        {strings(stringKeys.dataCollector.form.retrieveLocation)}
-                      </TableActionsButton>
-                    </Grid>
-                    <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
-                      <TextInputField
-                        label={strings(stringKeys.dataCollector.form.latitude)}
-                        name="latitude"
-                        field={form.fields.latitude}
-                        type="number"
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
-                      <TextInputField
-                        label={strings(stringKeys.dataCollector.form.longitude)}
-                        name="longitude"
-                        field={form.fields.longitude}
-                        type="number"
-                      />
-                    </Grid>
+                  <Grid item xs={12} className={styles.locationButton}>
+                    <TableActionsButton
+                      onClick={onRetrieveLocation}
+                      isFetching={isFetchingLocation}
+                    >
+                      {strings(stringKeys.dataCollector.form.retrieveLocation)}
+                    </TableActionsButton>
+                  </Grid>
+                  <Grid item xs={12} md={3} style={{ maxWidth: "190px" }}>
+                    <TextInputField
+                      label={strings(stringKeys.dataCollector.form.latitude)}
+                      name="latitude"
+                      field={form.fields.latitude}
+                      type="number"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3} style={{ maxWidth: "190px" }}>
+                    <TextInputField
+                      label={strings(stringKeys.dataCollector.form.longitude)}
+                      name="longitude"
+                      field={form.fields.longitude}
+                      type="number"
+                    />
+                  </Grid>
                 </Grid>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
-        <Grid container spacing={2} className={formStyles.shrinked}>
-          <Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.dataCollector.form.supervisor)}
-              field={form.fields.supervisorId}
-              name="supervisorId"
-            >
-              {props.supervisors.map(supervisor => (
-                <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
-                  {supervisor.name}
-                </MenuItem>
-              ))}
-            </SelectField>
+
+        {!currentUserRoles.some(r => r === Supervisor) &&
+          <Grid container spacing={2} className={formStyles.shrinked}>
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.dataCollector.form.supervisor)}
+                field={form.fields.supervisorId}
+                name="supervisorId"
+              >
+                {props.supervisors.map(supervisor => (
+                  <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
+                    {supervisor.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
           </Grid>
-        </Grid>
+        }
 
         <FormActions className={formStyles.shrinked}>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
