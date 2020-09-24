@@ -139,6 +139,16 @@ export const theme = createMuiTheme({
         textOverflow: "ellipsis"
       }
     },
+    MuiFormLabel: {
+      root: {
+        transform: "translate(0, 2px);",
+        lineHeight: "inherit",
+        '&$focused': {
+          color: '#000',
+        }
+      },
+      focused: {},
+    },
     MuiInputAdornment: {
       positionEnd: {
         marginLeft: '3px'
