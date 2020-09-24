@@ -1,5 +1,3 @@
-# Nyss
-
 <img src="src\RX.Nyss.Web\ClientApp\public\images\logo.svg" alt="The Nyss logo" width="200"/>
 
 ### Welcome to the repository for the new community-based surveillance solution, called *Nyss*!
@@ -9,54 +7,79 @@ Nyss is a Norwegian word and means to "get the wind of something". The first Nor
 Nyss is a reimplementation of [the previous CBS solution](https://github.com/IFRCGo/cbs) and proudly extending all the great work done there.
 
 ## Getting started
+How to run and develop everything on your local machine.
 
 ### Prerequisites
 
 * [.NET Core Installer - SDK 3.1.100](https://dotnet.microsoft.com/download/dotnet-core/3.1)
-* [Visual Studio 2019](https://visualstudio.microsoft.com/pl/downloads/)
-* [Visual Studio Code](https://code.visualstudio.com/Download)
+* [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local)
+* [Microsoft Azure Storage Emulator](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator). Alternatively, especially if you are using mac/linux: [Azurite](https://github.com/azure/azurite)
 * [Microsoft Azure Storage Explorer](https://azure.microsoft.com/pl-pl/features/storage-explorer/)
-* ...or if you are using mac/linux: [Azurite](https://github.com/azure/azurite)
 
-### Recommended plugins and extensions
+### Recommended tools
 
-* [ReSharper](https://www.jetbrains.com/resharper/download/)
-* [C# for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode.csharp)
-* [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+* IDE:
+  * [Visual Studio 2019](https://visualstudio.microsoft.com/pl/downloads/) (and [ReSharper](https://www.jetbrains.com/resharper/download/))
+  * [Rider](https://www.jetbrains.com/rider/)
+  * [Visual Studio Code](https://code.visualstudio.com/Download)
+* Git client:
+  * [TortoiseGit](https://tortoisegit.org/)(Windows only)
+  * [Fork](https://git-fork.com/)
+  * [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) (Extension for VS code)
+* [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver15) or [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15)
+* [Service Bus Explorer](https://github.com/paolosalvatori/ServiceBusExplorer/releases) (Windows only)
 
-### How to run the web application (_RX.Nyss.Web_) locally
+### Run database migrations
 
-1. Open command prompt (`cmd`) in the root of the application repository.
-2. Navigate to the web application directory:
-   1. `cd src/RX.Nyss.Web`
-3. Run database migrations:
-   1. Make sure that a connection string for _NyssDatabase_ set in `appsettings.Development.json` is correct. By default, [SQL Server Express LocalDB](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) instance is used.
-   2. `dotnet ef database update --context NyssContext`
-   3. `dotnet ef database update --context ApplicationDbContext`\
-  See [Database and migrations](src/RX.Nyss.Data/README.MD) for further details on working with the database.
-4. Set up Blob Object connection string
-   1. Make sure that a shared access signature for _SmsGatewayBlobContainer_ set in `appsettings.Development.json` is correct. You can generate a new one by opening Microsoft Azure Storage Explorer, then clicking right mouse button on _Local & Attached &rarr; Storage Accounts &rarr; (Emulator - Default Ports)(Key) &rarr; Blob Containers &rarr; sms-gateway_ node and selecting _Get Shared Access Signature..._ In a pop-up window ensure that the _Expiry time_ is set far in the future enough and _Write_ checkbox on the _Permissions_ list is selected. The _SmsGatewayBlobContainer_ should have the following format: `BlobEndpoint=https://{Environment URL}/sms-gateway;SharedAccessSignature={Query string without question mark at the beginning}`.
-5. Start the application:
-   1. `dotnet run` - the first build may take up to 5 minutes, the applicatiion is ready to open when you see _Compiled successfully!_ in the _npm_ command prompt.
-   2. Open page [https://localhost:5001/](https://localhost:5001/).
-   3. A default login of System Administrator is "admin@domain.com" and a password is "P@ssw0rd".
+* Make sure the connection string for `NyssDatabase` in `appsettings.Development.json` is correct. By default, a [SQL Server Express LocalDB](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/sql-server-express-localdb) instance is used, which should work out of the box if you are using Visual Studio on Windows. On mac, an alternative can be to run SQL Server in in a docker container. ([A nice guide](https://getadigital.com/blog/setting-up-sql-server-on-docker-in-mac-os/))
+* Ensure you have the ef core dotnet tool installed:
+```
+  dotnet tool install --global dotnet-ef
+```
+* Update the two data base contextes:
+```
+  dotnet ef database update --context NyssContext
+  dotnet ef database update --context ApplicationDbContext
+```
+See [Database and migrations](src/RX.Nyss.Data/README.MD) for further details on working with the database.
 
-### How to run the function app (_RX.Nyss.FuncApp_) locally
+### Set up Blob storage
 
-1. Set _SERVICEBUS_CONNECTIONSTRING_, _SERVICEBUS_REPORTQUEUE_, _MailjetApiKey_, _MailjetApiSecret_ and _MailjetFromAddress_ in your `local.settings.json` or in the user secrets (`secrets.json`) file. 
-    * The user secrets file is the same for the FuncApp as for the WebApp. 
-    * To access it: In VS2019, right-clicking either the FuncApp or WebApp project, and click "Manage User Secrets". If you are using Linux/MacOs, it should be located here: `~/.microsoft/usersecrets/<user_secrets_id>/secrets.json` (the _user_secrets_id_ can be found in the .csproj files)
-2. Open Microsoft Azure Storage Explorer.
-3. Add a new blob container called "sms-gateway" to the Local Storage Account Emulator. If you are not running on Windows, you need to use another emulator called [Azurite](https://github.com/azure/azurite).
-4. Create a new text file `authorized-api-keys.txt` with a content "api-key" and upload it to _sms-gateway_ container.
-4. If you want to test sending emails locally, create a new text file `whitelisted-email-addresses` with a list of email addresses that you want to use (separated by newline) and upload it to the _sms-gateway_ container.
-5. Open Visual Studio.
-6. In _Solution Explorer_ window, set _RX.Nyss.FuncApp_ as a startup project.
-7. Debug &rarr; Start Debugging.
+* Make sure that the Azure storage emulator is running, and open the emulator connection in Azure Storage Explorer.
+* Open Microsoft Azure Storage Explorer and create the containers that are needed (they are listed in the AppSettings.json file in the Nyss.Web project):
+    * `sms-gateway`
+    * `nyss-blob-container`
+    * `nyss-agreements-container`
+* Create a new text file `authorized-api-keys.txt` with and upload it to the `sms-gateway` container.
+* If you want to test sending emails locally, create a new text file `whitelisted-email-addresses.txt` with a list of email addresses that you want to use (separated by newline) and upload it to the `sms-gateway` container.
+* If you want to test sending SMSes locally, create a new text file `whitelisted-phone-numbers.txt` with a list of email addresses that you want to use (separated by newline) and upload it to the `sms-gateway` container.
 
+### Add UserSecrets
+
+In order to test everything locally, there are a couple of sensitive configuration variables that should be set. We store these as UserSecrets in order make them less prone to being checked in to our git repository. Most should work without these, but some parts of nyss uses some services that you can't run locally and therefore need a connection string, api key of some sort. You can find all keys values in the `appsettings.json` files. The most important ones to think of is:
+
+  * `SERVICEBUS_CONNECTIONSTRING`/`ConnectionStrings.ServiceBus` (in order to send service bus messages locally)
+  * `MailConfig.Sendgrid.ApiKey` (if you are going to test sending emails locally)
+
+The user secrets file is the same for all running applications. How to access it: 
+  * In VS2019, right-click either a FunctionApp or WebApp project, and click "Manage User Secrets". 
+  * On Windows this file is normally located at `%AppData%\Microsoft\UserSecrets\<user_secrets_id>\secrets.json`
+  * On Linux/MacOs, it should be located here: `~/.microsoft/usersecrets/<user_secrets_id>/secrets.json` (the `user_secrets_id` can be found in the .csproj files)
+
+### Run the web applications (`RX.Nyss.Web` and `RX.Nyss.ReportApi`)
+
+* Naviagte to `src/RX.Nyss.Web` or `src/RX.Nyss.ReportApi` directory and in a terminal run `dotnet run`. The first build may take up to 5 minutes, the applicatiion is ready to open when you see _Compiled Successfully!_ in the _npm_ command prompt.
+* Each application should open a browser window, or you can manually open [https://localhost:5001/](https://localhost:5001/) (Web application) or [https://localhost:5003/swagger](https://localhost:5003/swagger) (Report Api).
+* A default login of System Administrator is `admin@domain.com` and a password is `P@ssw0rd`.
+
+### Run the function apps (`RX.Nyss.FuncApp` and `RX.Nyss.ReportFuncApp`)
+
+* Naviagte to `src/RX.Nyss.FuncApp` or `src/RX.Nyss.ReportFuncApp` directory and in a terminal run `func host start`.
 References: [Code and test Azure Functions locally](https://docs.microsoft.com/en-us/azure/azure-functions/functions-develop-local)
 
-## How to contribute
+**And you are done!**
+
+## Some contribution notes
 
 ### Code review checklist
 
@@ -69,17 +92,6 @@ References: [Code and test Azure Functions locally](https://docs.microsoft.com/e
 * The code is formatted according to code conventions
 * If data model changes, ER diagram needs to be updated
 
-### Documentation
-
-* How to run locally
-  * Tools and frameworks needed
-  * Local configuration
-  * Useful commands
-* High-level architecture diagram
-* Data model ER diagram
-* The code should be self-explanatory, but when not it should be possible for the developer looking at to get some help by comments.
-* Swagger: xmldoc should be used for specifying endpoints in API controllers.
-
 ### Code conventions
 
 * C# code style should be specified in the [.editorconfig](./.editorconfig) file in the repository root directory. Examples:
@@ -87,7 +99,6 @@ References: [Code and test Azure Functions locally](https://docs.microsoft.com/e
   * public members on top
   * object initializers
   * usings
-* Keep it simple
 
 ### Git commit message style
 
