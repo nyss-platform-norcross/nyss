@@ -418,8 +418,12 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 {
                     r.Location.X,
                     r.Location.Y,
-                    InvalidReport = r.RawReports.Count(rr => !rr.ReportId.HasValue),
-                    ValidReport = r.RawReports.Count(rr => rr.ReportId.HasValue),
+                    InvalidReport = r.RawReports
+                        .Count(rr => !rr.ReportId.HasValue && rr.IsTraining.HasValue && !rr.IsTraining.Value
+                            && rr.ReceivedAt >= from.Date && rr.ReceivedAt < endDate),
+                    ValidReport = r.RawReports
+                        .Count(rr => rr.ReportId.HasValue && rr.IsTraining.HasValue && !rr.IsTraining.Value
+                            && rr.ReceivedAt >= from.Date && rr.ReceivedAt < endDate),
                     NoReport = 0
                 });
 
