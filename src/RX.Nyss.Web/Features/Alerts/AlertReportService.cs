@@ -137,14 +137,12 @@ namespace RX.Nyss.Web.Features.Alerts
             {
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongReportStatus);
             }
-
-            alertReport.Report.Status = ReportStatus.Pending;
             alertReport.Report.ResetAt = _dateTimeProvider.UtcNow;
             alertReport.Report.ResetBy = _authorizationService.GetCurrentUser();
+            
+            await _nyssContext.SaveChangesAsync();
 
             await ResetAlertReport(reportId);
-
-            await _nyssContext.SaveChangesAsync();
 
             var response = new ResetReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
 

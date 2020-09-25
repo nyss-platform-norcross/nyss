@@ -125,7 +125,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var inspectedAlert = await _nyssContext.AlertReports
                 .Where(ar => ar.ReportId == reportId)
-                .Where(ar => ar.Alert.Status == AlertStatus.Pending)
+                .Where(ar => StatusConstants.AlertStatusesAllowingCrossChecks.Contains(ar.Alert.Status))
                 .Select(ar => ar.Alert)
                 .SingleOrDefaultAsync();
 
@@ -147,19 +147,16 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 return;
             }
 
-            var shouldBeRecalculated = report.Status == ReportStatus.Rejected;
-            
-            if (report.Status == ReportStatus.Accepted || report.Status == ReportStatus.Rejected)
-            {
-                report.Status = ReportStatus.Pending;
-            }
+            var shouldBeRecalculated = report.Status == ReportStatus.Rejected && inspectedAlert.Status != AlertStatus.Escalated;
+
+            report.Status = ReportStatus.Pending;
 
             if (shouldBeRecalculated)
             {
                 var alertRule = report.ProjectHealthRisk.AlertRule;
 
-                await RecalculateAlert(report, alertRule);
-                await RejectAlertWhenRequirementsAreNotMet(reportId, alertRule, inspectedAlert);
+                await _reportLabelingService.ResolveLabelsOnReportAdded(report, report.ProjectHealthRisk);
+                await ResetAlertStatusAfterReportReset(alertRule, inspectedAlert);
             }
 
             await _nyssContext.SaveChangesAsync();
@@ -359,6 +356,22 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     var reportGroupLabel = groupNotSatisfyingThreshold.Key;
                     await IncludeAllReportsWithLabelInExistingAlert(reportGroupLabel, inspectedAlert.Id);
                 }
+            }
+        }
+
+        private async Task ResetAlertStatusAfterReportReset(AlertRule alertRule, Alert inspectedAlert)
+        {
+            var alertReportsWitUpdatedLabels = await _nyssContext.AlertReports
+                .Where(ar => ar.AlertId == inspectedAlert.Id)
+                .Select(ar => ar.Report)
+                .ToListAsync();
+
+            var updatedReportsGroupedByLabel = alertReportsWitUpdatedLabels.GroupBy(r => r.ReportGroupLabel).ToList();
+
+            var stillValidReportGroup = updatedReportsGroupedByLabel.Any(g => g.Count() >= alertRule.CountThreshold);
+            if (stillValidReportGroup && inspectedAlert.Status == AlertStatus.Rejected)
+            {
+                    inspectedAlert.Status = AlertStatus.Pending;
             }
         }
 
