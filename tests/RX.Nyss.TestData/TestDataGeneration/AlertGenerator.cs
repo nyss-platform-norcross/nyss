@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -43,6 +44,7 @@ namespace RX.Nyss.TestData.TestDataGeneration
             var newAlert = new Alert
             {
                 Id = _numerator.Next,
+                EscalatedAt = new DateTime(2020, 2, 2),
                 Status = AlertStatus.Escalated,
                 ProjectHealthRisk = projectHealthRisk,
                 AlertReports = new List<AlertReport>()

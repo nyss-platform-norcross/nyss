@@ -4,6 +4,8 @@
     {
         public static readonly ReportStatus[] ReportStatusesConsideredForAlertProcessing = { ReportStatus.Pending, ReportStatus.New, ReportStatus.Accepted };
 
+        public static readonly ReportStatus[] ReportStatusesAllowedToBeReset = { ReportStatus.Accepted, ReportStatus.Rejected };
+
         public static readonly AlertStatus[] AlertStatusesAllowingCrossChecks = { AlertStatus.Pending, AlertStatus.Rejected, AlertStatus.Dismissed, AlertStatus.Escalated };
     }
 }

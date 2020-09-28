@@ -166,6 +166,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 {
                     Status = a.Status,
                     CreatedAt = a.CreatedAt,
+                    EscalatedAt = a.EscalatedAt,
                     Comments = a.Comments,
                     CloseOption = a.CloseOption,
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
@@ -189,7 +190,10 @@ namespace RX.Nyss.Web.Features.Alerts
                         District = ar.Report.RawReport.Village.District.Name,
                         Region = ar.Report.RawReport.Village.District.Region.Name,
                         ReportedCase = ar.Report.ReportedCase,
-                        Status = ar.Report.Status
+                        Status = ar.Report.Status,
+                        AcceptedAt = ar.Report.AcceptedAt,
+                        RejectedAt = ar.Report.RejectedAt,
+                        ResetAt = ar.Report.ResetAt
                     })
                 })
                 .AsNoTracking()
@@ -206,6 +210,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 HealthRisk = alert.HealthRisk,
                 Comments = alert.Comments,
                 CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(alert.CreatedAt, projectTimeZone),
+                EscalatedAt = alert.EscalatedAt,
                 CaseDefinition = alert.CaseDefinition,
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 CloseOption = alert.CloseOption,
@@ -226,7 +231,10 @@ namespace RX.Nyss.Web.Features.Alerts
                         Region = ar.Region,
                         Sex = GetSex(ar.ReportedCase),
                         Age = GetAge(ar.ReportedCase),
-                        IsAnonymized = ar.IsAnonymized
+                        IsAnonymized = ar.IsAnonymized,
+                        AcceptedAt = ar.AcceptedAt,
+                        RejectedAt = ar.RejectedAt,
+                        ResetAt = ar.ResetAt
                     }
                     : new AlertAssessmentResponseDto.ReportDto
                     {

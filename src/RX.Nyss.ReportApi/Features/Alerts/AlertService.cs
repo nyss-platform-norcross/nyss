@@ -139,11 +139,20 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Include(r => r.ProjectHealthRisk)
                 .ThenInclude(phr => phr.AlertRule)
                 .Where(r => r.Id == reportId)
+                .Where(r => StatusConstants.ReportStatusesAllowedToBeReset.Contains(r.Status))
                 .SingleOrDefaultAsync();
 
             if (report == null)
             {
-                _loggerAdapter.Warn($"The report with id {reportId} does not exist.");
+                _loggerAdapter.Warn($"The report with id {reportId} does not exist or is not kept or dismissed.");
+                return;
+            }
+
+            var reportUpdatedTime = report.Status == ReportStatus.Accepted ? report.AcceptedAt : report.RejectedAt;
+
+            if (inspectedAlert.Status == AlertStatus.Escalated && reportUpdatedTime < inspectedAlert.EscalatedAt)
+            {
+                _loggerAdapter.Warn($"The report with id {reportId} was cross-checked before the alert was escalated.");
                 return;
             }
 

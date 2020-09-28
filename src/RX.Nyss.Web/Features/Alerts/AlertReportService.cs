@@ -137,6 +137,14 @@ namespace RX.Nyss.Web.Features.Alerts
             {
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongReportStatus);
             }
+
+            var reportUpdatedTime = alertReport.Report.Status == ReportStatus.Accepted ? alertReport.Report.AcceptedAt : alertReport.Report.RejectedAt;
+
+            if (alertReport.Alert.Status == AlertStatus.Escalated && reportUpdatedTime < alertReport.Alert.EscalatedAt)
+            {
+                return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.ReportWasCrossCheckedBeforeAlertEscalation);
+            }
+
             alertReport.Report.ResetAt = _dateTimeProvider.UtcNow;
             alertReport.Report.ResetBy = _authorizationService.GetCurrentUser();
             
