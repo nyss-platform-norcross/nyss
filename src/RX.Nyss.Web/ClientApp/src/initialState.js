@@ -239,6 +239,7 @@ export const initialState = {
     listData: null,
     formData: null,
     isFetchingRecipients: false,
+    isPendingAlertState: false,
     notificationPhoneNumbers: [],
     notificationEmails: []
   },

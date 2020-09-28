@@ -1,4 +1,4 @@
-import { call, put, takeEvery, select } from "redux-saga/effects";
+import { call, put, takeEvery, select, delay } from "redux-saga/effects";
 import * as consts from "./alertsConstants";
 import * as actions from "./alertsActions";
 import * as appActions from "../../app/logic/appActions";
@@ -18,7 +18,8 @@ export const alertsSagas = () => [
   takeEvery(consts.DISMISS_ALERT.INVOKE, dismissAlert),
   takeEvery(consts.CLOSE_ALERT.INVOKE, closeAlert),
   takeEvery(consts.RESET_REPORT.INVOKE, resetReport),
-  takeEvery(consts.FETCH_RECIPIENTS.INVOKE, fetchRecipients)
+  takeEvery(consts.FETCH_RECIPIENTS.INVOKE, fetchRecipients),
+  takeEvery(consts.REFRESH_ALERT_STATUS.INVOKE, refreshAlertStatus)
 ];
 
 function* openAlertsList({ projectId }) {
@@ -45,7 +46,7 @@ function* getAlerts({ projectId, pageNumber }) {
   }
 };
 
-function* fetchRecipients({alertId}) {
+function* fetchRecipients({ alertId }) {
   yield put(actions.fetchRecipients.request());
   try {
     const response = yield call(http.get, `/api/alert/${alertId}/alertRecipients`);
@@ -126,6 +127,8 @@ function* resetReport({ alertId, reportId }) {
     const response = yield call(http.post, `/api/alert/${alertId}/resetReport?reportId=${reportId}`);
     const newAssessmentStatus = response.value.assessmentStatus;
     yield put(actions.resetReport.success(reportId, newAssessmentStatus));
+
+    yield call(refreshAlertStatus, {alertId});
   } catch (error) {
     yield put(actions.resetReport.failure(reportId, error.message));
   }
@@ -191,4 +194,17 @@ function* openAlertsModule(projectId, title) {
     title: title,
     projectIsClosed: project.value.isClosed
   }));
+}
+
+function* refreshAlertStatus({ alertId }) {
+  yield put(actions.refreshAlertStatus.request());
+  try {
+    yield delay(3000);
+    const response = yield call(http.get, `/api/alert/${alertId}/get`);
+    const data = response.value;
+
+    yield put(actions.refreshAlertStatus.success(data));
+  } catch (error) {
+    yield put(actions.refreshAlertStatus.failure(error.message));
+  }
 }

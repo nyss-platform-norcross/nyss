@@ -18,6 +18,8 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
 
         public DateTime CreatedAt { get; set; }
 
+        public DateTime? EscalatedAt { get; set; }
+
         public AlertAssessmentStatus AssessmentStatus { get; set; }
 
         public CloseAlertOptions? CloseOption { get; set; }
@@ -49,6 +51,9 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
             public string Region { get; set; }
 
             public bool IsAnonymized { get; set; }
+            public DateTime? AcceptedAt { get; set; }
+            public DateTime? RejectedAt { get; set; }
+            public DateTime? ResetAt { get; set; }
         }
     }
 }

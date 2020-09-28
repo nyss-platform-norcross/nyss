@@ -31,11 +31,12 @@ const getReportIcon = (status) => {
   }
 }
 
-export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissReport, resetReport, status, projectIsClosed }) => {
+export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptReport, dismissReport, resetReport, status, projectIsClosed }) => {
   const showActions = status !== assessmentStatus.closed && report.status === "Pending" && !report.isAnonymized;
   const showResetOption = status !== assessmentStatus.closed
     && status !== assessmentStatus.dismissed
     && (report.status === "Accepted" || report.status === "Rejected")
+    && (escalatedAt ? dayjs(report.acceptedAt || report.rejectedAt).isAfter(dayjs(escalatedAt)) : true)
     && !report.isAnonymized;
 
   const fromOtherOrg = report.dataCollector == null;
@@ -46,6 +47,7 @@ export const AlertsAssessmentReport = ({ alertId, report, acceptReport, dismissR
         <span className={styles.time}>{dayjs(report.receivedAt).format('YYYY-MM-DD HH:mm')}</span>
         <div className={styles.senderContainer}>
           <span className={styles.senderLabel}>
+
             {strings(stringKeys.alerts.assess.report.sender)} {report.isAnonymized && strings(stringKeys.alerts.assess.report.linkedToSupervisor)}
           </span>
           <span className={styles.sender}>{report.dataCollector || report.organization}</span>
