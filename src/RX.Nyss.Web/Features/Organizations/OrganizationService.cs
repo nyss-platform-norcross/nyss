@@ -190,6 +190,11 @@ namespace RX.Nyss.Web.Features.Organizations
                 return true;
             }
 
+            if (_authorizationService.IsCurrentUserInRole(Role.GlobalCoordinator) && !nationalSociety.HasCoordinator)
+            {
+                return true;
+            }
+
             if (_authorizationService.IsCurrentUserInRole(Role.Coordinator))
             {
                 return true;
