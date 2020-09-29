@@ -36,7 +36,7 @@ export function alertsReducer(state = initialState.alerts, action) {
         return { ...state, isPendingAlertState: true };
 
     case actions.REFRESH_ALERT_STATUS.SUCCESS:
-      return { ...state, formFetching: false, formData: { ...state.formData, assessmentStatus: action.data.assessmentStatus }, isPendingAlertState: false };
+      return { ...state, formFetching: false, formData: setProperty(state.formData, 'assessmentStatus', action.data.assessmentStatus), isPendingAlertState: false };
 
       case actions.REFRESH_ALERT_STATUS.FAILURE:
         return { ...state, isPendingAlertState: false };

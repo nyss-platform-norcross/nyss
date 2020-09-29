@@ -1,5 +1,5 @@
 import styles from "./AlertsAssessment.module.scss";
-import React, { useEffect, Fragment, useState } from 'react';
+import React, { useEffect, Fragment } from 'react';
 import { connect } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import * as alertsActions from './logic/alertsActions';
