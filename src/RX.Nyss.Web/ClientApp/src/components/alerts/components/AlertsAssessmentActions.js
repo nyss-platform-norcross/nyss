@@ -40,59 +40,63 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
       <FormActions>
         <Button onClick={() => props.goToList(projectId)}>{strings(stringKeys.form.cancel)}</Button>
 
-        {alertAssessmentStatus === assessmentStatus.toEscalate && (
+        {!props.isPendingAlertState && (
           <Fragment>
-            <AlertsEscalationDialog
-              alertId={alertId}
-              escalateAlert={props.escalateAlert}
-              isEscalating={props.isEscalating}
-              isFetchingRecipients={props.isFetchingRecipients}
-              notificationEmails={props.notificationEmails}
-              notificationPhoneNumbers={props.notificationPhoneNumbers}
-              isOpened={escalationDialogOpened}
-              close={() => setEscalationDialogOpened(false)}
-            />
+            {alertAssessmentStatus === assessmentStatus.toEscalate && (
+              <Fragment>
+                <AlertsEscalationDialog
+                  alertId={alertId}
+                  escalateAlert={props.escalateAlert}
+                  isEscalating={props.isEscalating}
+                  isFetchingRecipients={props.isFetchingRecipients}
+                  notificationEmails={props.notificationEmails}
+                  notificationPhoneNumbers={props.notificationPhoneNumbers}
+                  isOpened={escalationDialogOpened}
+                  close={() => setEscalationDialogOpened(false)}
+                />
 
-            <AlertsEscalationWithoutNotificationDialog
-              alertId={alertId}
-              escalateAlert={props.escalateAlert}
-              isEscalating={props.isEscalating}
-              isOpened={escalationWithoutNotificationDialogOpened}
-              close={() => setEscalationWithoutNotificationDialogOpened(false)}
-            />
+                <AlertsEscalationWithoutNotificationDialog
+                  alertId={alertId}
+                  escalateAlert={props.escalateAlert}
+                  isEscalating={props.isEscalating}
+                  isOpened={escalationWithoutNotificationDialogOpened}
+                  close={() => setEscalationWithoutNotificationDialogOpened(false)}
+                />
 
-            <div className={styles.escalateWithoutNotificationWrapper}>
-              <CheckboxField className={styles.escalateWithoutNotificationCheckbox}
-                name="escalateWithoutNotification"
-                label={strings(stringKeys.alerts.assess.alert.escalateWithoutNotification)}
-                field={form.fields.escalateWithoutNotification}
-              />
+                <div className={styles.escalateWithoutNotificationWrapper}>
+                  <CheckboxField className={styles.escalateWithoutNotificationCheckbox}
+                    name="escalateWithoutNotification"
+                    label={strings(stringKeys.alerts.assess.alert.escalateWithoutNotification)}
+                    field={form.fields.escalateWithoutNotification}
+                  />
 
-              <SubmitButton onClick={handleEscalateAlert}>
-                {strings(stringKeys.alerts.assess.alert.escalate)}
+                  <SubmitButton onClick={handleEscalateAlert}>
+                    {strings(stringKeys.alerts.assess.alert.escalate)}
+                  </SubmitButton>
+                </div>
+              </Fragment>
+            )}
+
+            {(alertAssessmentStatus === assessmentStatus.toDismiss || alertAssessmentStatus === assessmentStatus.rejected) && (
+              <SubmitButton isFetching={props.isDismissing} onClick={() => props.dismissAlert(alertId)}>
+                {strings(stringKeys.alerts.assess.alert.dismiss)}
               </SubmitButton>
-            </div>
-          </Fragment>
-        )}
+            )}
 
-        {(alertAssessmentStatus === assessmentStatus.toDismiss || alertAssessmentStatus === assessmentStatus.rejected) && (
-          <SubmitButton isFetching={props.isDismissing} onClick={() => props.dismissAlert(alertId)}>
-            {strings(stringKeys.alerts.assess.alert.dismiss)}
-          </SubmitButton>
-        )}
-
-        {alertAssessmentStatus === assessmentStatus.escalated && (
-          <Fragment>
-            <AlertsCloseDialog
-              alertId={alertId}
-              closeAlert={props.closeAlert}
-              isClosing={props.isClosing}
-              isOpened={closeDialogOpened}
-              close={() => setCloseDialogOpened(false)}
-            />
-            <SubmitButton onClick={() => setCloseDialogOpened(true)}>
-              {strings(stringKeys.alerts.assess.alert.close)}
-            </SubmitButton>
+            {alertAssessmentStatus === assessmentStatus.escalated && (
+              <Fragment>
+                <AlertsCloseDialog
+                  alertId={alertId}
+                  closeAlert={props.closeAlert}
+                  isClosing={props.isClosing}
+                  isOpened={closeDialogOpened}
+                  close={() => setCloseDialogOpened(false)}
+                />
+                <SubmitButton onClick={() => setCloseDialogOpened(true)}>
+                  {strings(stringKeys.alerts.assess.alert.close)}
+                </SubmitButton>
+              </Fragment>
+            )}
           </Fragment>
         )}
       </FormActions>

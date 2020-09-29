@@ -39,6 +39,10 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
     props.openAssessment(projectId, alertId);
   });
 
+  const handleReset = (alertId, reportId) => {
+    props.resetReport(alertId, reportId);
+  }
+
   useEffect(() => {
     if (!props.data) {
       return;
@@ -54,9 +58,9 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
     <Fragment>
       <div className={styles.form}>
         <DisplayField
-            label={strings(getAssessmentStatusInformation(data.assessmentStatus))}
-            value={strings(stringKeys.alerts.constants.closeOptions[data.closeOption])}
-          />
+          label={strings(getAssessmentStatusInformation(data.assessmentStatus))}
+          value={strings(stringKeys.alerts.constants.closeOptions[data.closeOption])}
+        />
 
         {data.assessmentStatus === assessmentStatus.closed && data.comments && (
           <DisplayField
@@ -85,8 +89,9 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
                 status={data.assessmentStatus}
                 acceptReport={props.acceptReport}
                 dismissReport={props.dismissReport}
-                resetReport={props.resetReport}
+                resetReport={handleReset}
                 projectIsClosed={props.projectIsClosed}
+                escalatedAt={data.escalatedAt}
               />
             </Grid>
           ))}
@@ -110,6 +115,8 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
 
           fetchRecipients={props.fetchRecipients}
           isFetchingRecipients={props.isFetchingRecipients}
+
+          isPendingAlertState={props.isPendingAlertState}
 
           notificationEmails={props.notificationEmails}
           notificationPhoneNumbers={props.notificationPhoneNumbers}
@@ -135,6 +142,7 @@ const mapStateToProps = (state, ownProps) => ({
   notificationEmails: state.alerts.notificationEmails,
   notificationPhoneNumbers: state.alerts.notificationPhoneNumbers,
   projectIsClosed: state.appData.siteMap.parameters.projectIsClosed,
+  isPendingAlertState: state.alerts.isPendingAlertState
 });
 
 const mapDispatchToProps = {
@@ -146,7 +154,8 @@ const mapDispatchToProps = {
   escalateAlert: alertsActions.escalateAlert.invoke,
   closeAlert: alertsActions.closeAlert.invoke,
   dismissAlert: alertsActions.dismissAlert.invoke,
-  fetchRecipients: alertsActions.fetchRecipients.invoke
+  fetchRecipients: alertsActions.fetchRecipients.invoke,
+  refreshAlertState: alertsActions.refreshAlertStatus.invoke
 };
 
 export const AlertsAssessmentPage = useLayout(

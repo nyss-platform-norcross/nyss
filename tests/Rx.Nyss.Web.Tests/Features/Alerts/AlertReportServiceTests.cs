@@ -208,6 +208,40 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             result.Value.AssessmentStatus.ShouldBe(alertAssessmentStatus);
         }
 
+        [Fact]
+        public async Task ResetReport_CrossCheckedBeforeAlertEscalation_ShouldNotBeAllowed()
+        {
+            var alertAssessmentStatus = AlertAssessmentStatus.Escalated;
+            _alertService.GetAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
+
+            var report = _alertReports.First();
+            report.Report.Status = ReportStatus.Accepted;
+            report.Alert.Status = AlertStatus.Escalated;
+            report.Report.AcceptedAt = new DateTime(2020, 2, 1);
+            report.Alert.EscalatedAt = new DateTime(2020, 2, 2);
+
+            var result = await _alertReportService.ResetReport(TestData.AlertId, TestData.ReportId);
+
+            result.IsSuccess.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task ResetReport_WhenReportIsNotAcceptedOrRejected_ShouldNotBeAllowed()
+        {
+            var alertAssessmentStatus = AlertAssessmentStatus.Open;
+            _alertService.GetAssessmentStatus(TestData.AlertId).Returns(alertAssessmentStatus);
+
+            var report = _alertReports.First();
+            report.Report.Status = ReportStatus.Pending;
+            report.Alert.Status = AlertStatus.Pending;
+            report.Report.AcceptedAt = new DateTime(2020, 2, 1);
+            report.Alert.EscalatedAt = new DateTime(2020, 2, 2);
+
+            var result = await _alertReportService.ResetReport(TestData.AlertId, TestData.ReportId);
+
+            result.IsSuccess.ShouldBeFalse();    
+        }
+
         private static class TestData
         {
             public const int AlertId = 1;

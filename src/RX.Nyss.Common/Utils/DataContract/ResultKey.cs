@@ -299,6 +299,7 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string WrongAlertStatus = "alert.resetReport.wrongAlertStatus";
                 public const string WrongReportStatus = "alert.resetReport.wrongReportStatus";
                 public const string NoPermission = "alert.resetReport.noPermission";
+                public const string ReportWasCrossCheckedBeforeAlertEscalation = "alert.resetReport.reportWasCrossCheckedBeforeAlertEscalation";
             }
 
             public static class EscalateAlert
