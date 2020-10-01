@@ -10,10 +10,17 @@ import { strings, stringKeys } from "../../strings";
 import { sexValues, trainingStatus } from './logic/dataCollectorsConstants';
 import { InputLabel, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
 import * as roles from '../../authentication/roles';
+import useDebounce from "../../utils/debounce";
 
 export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors, onChange, callingUserRoles }) => {
   const [value, setValue] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
+  const [name, setName] = useState(null);
+  const debouncedName = useDebounce(name, 500);
+
+  useEffect(() => {
+    value && onChange(value);
+  }, [value, onChange]);
 
   useEffect(() => {
     filters && setValue(filters);
@@ -21,31 +28,28 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
   }, [filters]);
 
   const updateValue = (change) => {
-    const newValue = {
-      ...value,
-      ...change
-    }
-
-    setValue(newValue);
-    return newValue;
+    setValue((v) => { return {...v, ...change}});
   };
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
-    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }));
+    updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null });
   }
 
   const handleSupervisorChange = event =>
-    onChange(updateValue({ supervisorId: event.target.value === 0 ? null : event.target.value }));
+    updateValue({ supervisorId: event.target.value === 0 ? null : event.target.value });
 
   const handleSexChange = event =>
-    onChange(updateValue({ sex: event.target.value }));
+    updateValue({ sex: event.target.value });
 
   const handleTrainingStatusChange = event =>
-    onChange(updateValue({ trainingStatus: event.target.value }));
+    updateValue({ trainingStatus: event.target.value });
 
-  const handleNameChange = event =>
-    onChange(updateValue({ name: event.target.value }));
+  const handleNameChange = (event) => setName(event.target.value);
+
+  useEffect(() => {
+    updateValue({ name: debouncedName });
+  }, [debouncedName])
 
   if (!value) {
     return null;

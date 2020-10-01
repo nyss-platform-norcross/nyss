@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
@@ -14,16 +14,16 @@ import { accessMap } from '../../authentication/accessMap';
 import { DataCollectorsFilters } from './DataCollectorsFilters';
 import { ReplaceSupervisorDialog } from './ReplaceSupervisorDialog';
 
-const DataCollectorsListPageComponent = (props) => {
+const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...props}) => {
   useMount(() => {
-    props.openDataCollectorsList(props.projectId, props.filters);
+    props.openDataCollectorsList(projectId, props.filters);
   });
 
   const [replaceSupervisorDialogOpened, setReplaceSupervisorDialogOpened] = useState(false);
   const [selectedDataCollectors, setSelectedDataCollectors] = useState([]);
 
-  const handleFilterChange = (filters) =>
-    props.getDataCollectorList(props.projectId, filters);
+  const handleFilterChange = useCallback((filters) =>
+    getDataCollectorList(projectId, filters), [getDataCollectorList, projectId]);
 
   const handleReplaceSupervisor = (dataCollectors) => {
     setSelectedDataCollectors(dataCollectors);
@@ -31,20 +31,20 @@ const DataCollectorsListPageComponent = (props) => {
   }
 
   const onChangePage = (e, page) => {
-    props.getDataCollectorList(props.projectId, { ...props.filters, pageNumber: page });
+    getDataCollectorList(projectId, { ...props.filters, pageNumber: page });
   }
 
   return (
     <Fragment>
       {!props.isClosed &&
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
+          <TableActionsButton onClick={() => props.goToCreation(projectId)} icon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToCsv(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportToCsv(projectId, props.filters)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.exportCsv)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportToExcel(projectId, props.filters)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.exportExcel)}
           </TableActionsButton>
         </TableActions>
@@ -67,7 +67,7 @@ const DataCollectorsListPageComponent = (props) => {
         isListFetching={props.isListFetching}
         isRemoving={props.isRemoving}
         remove={props.remove}
-        projectId={props.projectId}
+        projectId={projectId}
         setTrainingState={props.setTrainingState}
         isUpdatingDataCollector={props.isUpdatingDataCollector}
         selectDataCollector={props.selectDataCollector}
