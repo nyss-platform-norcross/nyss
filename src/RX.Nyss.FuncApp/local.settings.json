@@ -5,12 +5,14 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
     "SERVICEBUS_CONNECTIONSTRING": "",
+    "GENERALBLOBSTORAGE_CONNECTIONSTRING": "",
     "SERVICEBUS_REPORTQUEUE": "nrx-cbs-nyss-bus-report-queue-dev",
     "SERVICEBUS_SENDEMAILQUEUE": "nrx-cbs-nyss-bus-send-email-queue-dev",
     "SERVICEBUS_SENDSMSQUEUE": "nrx-cbs-nyss-bus-send-sms-queue-dev",
     "AuthorizedApiKeysBlobPath": "sms-gateway/authorized-api-keys.txt",
     "WhitelistedEmailAddressesBlobPath": "sms-gateway/whitelisted-email-addresses.txt",
-    "WhitelistedPhoneNumbersBlobPath": "sms-gateway/whitelisted-phone-numbers.txt"
+    "WhitelistedPhoneNumbersBlobPath": "sms-gateway/whitelisted-phone-numbers.txt",
+    "GeneralBlobContainerName": "nyss-blob-container"
   },
   "ReleaseName": "1.0.0.1",
   "MaxContentLength": 500, 
