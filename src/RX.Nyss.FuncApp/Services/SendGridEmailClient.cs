@@ -13,10 +13,12 @@ namespace RX.Nyss.FuncApp.Services
     public class SendGridEmailClient : IEmailClient
     {
         private readonly IConfig _config;
+        private readonly IEmailAttachmentService _emailAttachmentService;
 
-        public SendGridEmailClient(IConfig config)
+        public SendGridEmailClient(IConfig config, IEmailAttachmentService emailAttachmentService)
         {
             _config = config;
+            _emailAttachmentService = emailAttachmentService;
         }
 
         public async Task SendEmail(SendEmailMessage message, bool sandboxMode, CloudBlobContainer blobContainer)
@@ -62,25 +64,13 @@ namespace RX.Nyss.FuncApp.Services
 
         private async Task AttachFile(SendGridMessage message, string filename, CloudBlobContainer blobContainer)
         {
-            var attachment = await DownloadAndEncodeAttachment(filename, blobContainer);
+            var attachment = await _emailAttachmentService.DownloadAndEncodeAttachment(filename, blobContainer);
             message.AddAttachment(new Attachment
             {
                 Content = attachment,
                 Filename = filename,
                 Type = "application/pdf"
             });
-        }
-
-        private async Task<string> DownloadAndEncodeAttachment(string filename, CloudBlobContainer blobContainer)
-        {
-            var attachment = blobContainer.GetBlockBlobReference(filename);
-            using (var ms = new MemoryStream())
-            {
-                await attachment.DownloadToStreamAsync(ms);
-
-                var byteArray = ms.ToArray();
-                return Convert.ToBase64String(byteArray);
-            }
         }
     }
 }
