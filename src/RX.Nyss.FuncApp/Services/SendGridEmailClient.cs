@@ -1,74 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Blob;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace RX.Nyss.FuncApp.Services
 {
     public class SendGridEmailClient : IEmailClient
     {
-        private readonly IHttpPostClient _httpPostClient;
         private readonly IConfig _config;
-        private readonly string _basicAuthHeader;
-        private readonly Uri _sendGridSendMailUrl;
 
-        public SendGridEmailClient(IHttpPostClient httpPostClient, IConfig config)
+        public SendGridEmailClient(IConfig config)
         {
-            _httpPostClient = httpPostClient;
             _config = config;
-            _basicAuthHeader = $"Bearer {_config.MailConfig.SendGrid.ApiKey}";
-            _sendGridSendMailUrl = new Uri(_config.MailConfig.SendGrid.SendMailUrl, UriKind.Absolute);
         }
 
-        public async Task SendEmail(SendEmailMessage message, bool sandboxMode)
+        public async Task SendEmail(SendEmailMessage message, bool sandboxMode, CloudBlobContainer blobContainer)
         {
-            var sendGridMessage = CreateSendGridMessage(message: message, sandboxMode: sandboxMode, "text/html");
+            var sendGridClient = new SendGridClient(_config.MailConfig.SendGrid.ApiKey);
+            var sendGridMessage = CreateSendGridMessage(message: message, sandboxMode: sandboxMode, MimeType.Html);
 
-            await _httpPostClient.PostJsonAsync(_sendGridSendMailUrl, sendGridMessage, new[] { ("Authorization", _basicAuthHeader) });
+            if (!string.IsNullOrEmpty(message.AttachmentFilename))
+            {
+                await AttachFile(sendGridMessage, message.AttachmentFilename, blobContainer);
+            }
+
+            await sendGridClient.SendEmailAsync(sendGridMessage).ConfigureAwait(false);
         }
 
         public async Task SendEmailAsTextOnly(SendEmailMessage message, bool sandboxMode)
         {
-            var sendGridMessage = CreateSendGridMessage(message: message, sandboxMode: sandboxMode, "text/plain");
+            var sendGridClient = new SendGridClient(_config.MailConfig.SendGrid.ApiKey);
+            var sendGridMessage = CreateSendGridMessage(message: message, sandboxMode: sandboxMode, MimeType.Text);
 
-            await _httpPostClient.PostJsonAsync(_sendGridSendMailUrl, sendGridMessage, new[] { ("Authorization", _basicAuthHeader) });
+            await sendGridClient.SendEmailAsync(sendGridMessage).ConfigureAwait(false);
         }
 
-        private SendGridSendEmailRequest CreateSendGridMessage(SendEmailMessage message, bool sandboxMode, string contentType) =>
-            new SendGridSendEmailRequest
+        private SendGridMessage CreateSendGridMessage(SendEmailMessage message, bool sandboxMode, string contentType)
+        {
+            var msg = new SendGridMessage
             {
-                Personalizations = new List<SendGridPersonalizationsOptions>
+                From = new EmailAddress(_config.MailConfig.FromAddress, _config.MailConfig.FromName),
+                Subject = message.Subject,
+                MailSettings = new MailSettings
                 {
-                    new SendGridPersonalizationsOptions
+                    SandboxMode = new SandboxMode
                     {
-                        Subject = message.Subject,
-                        To = new List<SendGridEmailObject>
-                        {
-                            new SendGridEmailObject
-                            {
-                                Email = message.To.Email,
-                                Name = message.To.Name
-                            }
-                        }
+                        Enable = sandboxMode
                     }
-                },
-                From = new SendGridEmailObject
-                {
-                    Email = _config.MailConfig.FromAddress,
-                    Name = _config.MailConfig.FromName
-                },
-                Content = new List<SendGridEmailContent>
-                {
-                    new SendGridEmailContent
-                    {
-                        Type = contentType,
-                        Value = message.Body
-                    }
-                },
-                Mail_settings = sandboxMode
-                    ? new SendGridMailSettings { Sandbox_mode = new SendGridSandBoxMode { Enable = true } }
-                    : null
+                }
             };
+
+            msg.AddTo(message.To.Email, message.To.Name);
+            msg.AddContent(contentType, message.Body);
+            return msg;
+        }
+
+        private async Task AttachFile(SendGridMessage message, string filename, CloudBlobContainer blobContainer)
+        {
+            var attachment = await DownloadAndEncodeAttachment(filename, blobContainer);
+            message.AddAttachment(new Attachment
+            {
+                Content = attachment,
+                Filename = filename,
+                Type = "application/pdf"
+            });
+        }
+
+        private async Task<string> DownloadAndEncodeAttachment(string filename, CloudBlobContainer blobContainer)
+        {
+            var attachment = blobContainer.GetBlockBlobReference(filename);
+            using (var ms = new MemoryStream())
+            {
+                await attachment.DownloadToStreamAsync(ms);
+
+                var byteArray = ms.ToArray();
+                return Convert.ToBase64String(byteArray);
+            }
+        }
     }
 }

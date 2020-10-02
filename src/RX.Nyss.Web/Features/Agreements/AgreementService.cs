@@ -10,7 +10,9 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Agreements.Dto;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
@@ -25,20 +27,26 @@ namespace RX.Nyss.Web.Features.Agreements
 
     public class AgreementService : IAgreementService
     {
+        private readonly INyssWebConfig _config;
         private readonly IAuthorizationService _authorizationService;
         private readonly INyssContext _nyssContext;
         private readonly IGeneralBlobProvider _generalBlobProvider;
         private readonly IDataBlobService _dataBlobService;
         private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly IEmailPublisherService _emailPublisherService;
+        private readonly IEmailTextGeneratorService _emailTextGeneratorService;
 
         public AgreementService(IAuthorizationService authorizationService, INyssContext nyssContext, IGeneralBlobProvider generalBlobProvider, IDataBlobService dataBlobService,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider, IEmailPublisherService emailPublisherService, INyssWebConfig config, IEmailTextGeneratorService emailTextGeneratorService)
         {
             _authorizationService = authorizationService;
             _nyssContext = nyssContext;
             _generalBlobProvider = generalBlobProvider;
             _dataBlobService = dataBlobService;
             _dateTimeProvider = dateTimeProvider;
+            _emailPublisherService = emailPublisherService;
+            _config = config;
+            _emailTextGeneratorService = emailTextGeneratorService;
         }
 
         public async Task<Result> AcceptAgreement(string languageCode)
@@ -106,6 +114,8 @@ namespace RX.Nyss.Web.Features.Agreements
             }
 
             await _nyssContext.SaveChangesAsync();
+
+            await SendAgreementDocumentToUser(user, languageCode);
 
             return Success();
         }
@@ -200,6 +210,12 @@ namespace RX.Nyss.Web.Features.Agreements
             }
 
             return (pendingNationalSocieties, staleNationalSocieties);
+        }
+
+        private async Task SendAgreementDocumentToUser(User user, string languageCode)
+        {
+            var (subject, body) = await _emailTextGeneratorService.GenerateAgreementDocumentEmail(languageCode);
+            await _emailPublisherService.SendEmailWithAttachment((user.EmailAddress, user.Name), subject, body, _config.PlatformAgreementBlobObjectName.Replace("{languageCode}", languageCode));
         }
     }
 }

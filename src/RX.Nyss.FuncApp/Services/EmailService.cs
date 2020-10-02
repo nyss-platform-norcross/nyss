@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.Extensions.Logging;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
+using System.IO;
 
 namespace RX.Nyss.FuncApp.Services
 {
     public interface IEmailService
     {
-        Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers);
+        Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers, CloudBlobContainer blobContainer);
     }
 
     public class EmailService : IEmailService
@@ -27,7 +29,7 @@ namespace RX.Nyss.FuncApp.Services
             _whitelistValidator = whitelistValidator;
         }
 
-        public async Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers)
+        public async Task SendEmail(SendEmailMessage message, string whitelistedEmailAddresses, string whitelistedPhoneNumbers, CloudBlobContainer blobContainer)
         {
             if (message.SendAsTextOnly)
             {
@@ -46,7 +48,7 @@ namespace RX.Nyss.FuncApp.Services
                 }
 
                 _logger.LogDebug($"Sending email to '{message.To.Email.Substring(0, Math.Min(message.To.Email.Length, 4))}...' SandboxMode: {sandboxMode}");
-                await _emailClient.SendEmail(message, sandboxMode);
+                await _emailClient.SendEmail(message, sandboxMode, blobContainer);
             }
         }
     }

@@ -8,6 +8,8 @@
 
         public string Body { get; set; }
 
+        public string AttachmentFilename { get; set; }
+
         public bool SendAsTextOnly { get; set; }
     }
 

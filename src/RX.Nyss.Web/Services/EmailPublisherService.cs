@@ -9,6 +9,7 @@ namespace RX.Nyss.Web.Services
     public interface IEmailPublisherService
     {
         Task SendEmail((string email, string name) to, string subject, string body, bool sendAsTextOnly = false);
+        Task SendEmailWithAttachment((string email, string name) to, string subject, string body, string filename);
     }
 
     public class EmailPublisherService : IEmailPublisherService
@@ -38,6 +39,25 @@ namespace RX.Nyss.Web.Services
 
             await _queueClient.SendAsync(message);
         }
+
+        public async Task SendEmailWithAttachment((string email, string name) to, string subject, string body, string filename)
+        {
+            var sendEmail = new SendEmailMessage
+            {
+                To = new Contact
+                {
+                    Email = to.email,
+                    Name = to.name
+                },
+                Body = body,
+                Subject = subject,
+                AttachmentFilename = filename
+            };
+
+            var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendEmail))) { Label = "RX.Nyss.Web" };
+
+            await _queueClient.SendAsync(message);
+        }
     }
 
     public class SendEmailMessage
@@ -47,6 +67,8 @@ namespace RX.Nyss.Web.Services
         public string Subject { get; set; }
 
         public string Body { get; set; }
+
+        public string AttachmentFilename { get; set; }
 
         public bool SendAsTextOnly { get; set; }
     }

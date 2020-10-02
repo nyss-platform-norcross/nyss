@@ -14,6 +14,7 @@ namespace RX.Nyss.Web.Services
         Task<(string subject, string body)> GenerateEmailVerificationEmail(Role role, string callbackUrl, string name, string languageCode);
         Task<(string subject, string body)> GenerateEscalatedAlertEmail(string languageCode);
         Task<(string subject, string body)> GenerateEmailVerificationForDataConsumersEmail(Role role, string callbackUrl, string organizations, string name, string languageCode);
+        Task<(string subject, string body)> GenerateAgreementDocumentEmail(string languageCode);
     }
 
     public class EmailTextGeneratorService : IEmailTextGeneratorService
@@ -28,8 +29,8 @@ namespace RX.Nyss.Web.Services
         public async Task<(string subject, string body)> GenerateEscalatedAlertEmail(string languageCode)
         {
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
-            var subject = GetTranslation("email.alertEscalated.subject", emailContents.Value);
-            var body = GetTranslation("email.alertEscalated.body", emailContents.Value);
+            var subject = GetTranslation(EmailContentKey.AlertEscalated.Subject, emailContents.Value);
+            var body = GetTranslation(EmailContentKey.AlertEscalated.Body, emailContents.Value);
 
             return (subject, body);
         }
@@ -37,15 +38,8 @@ namespace RX.Nyss.Web.Services
         public async Task<(string subject, string body)> GenerateResetPasswordEmail(string resetUrl, string name, string languageCode)
         {
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
-            if (!emailContents.Value.TryGetValue("email.reset.subject", out var subject))
-            {
-                throw new Exception($"Could not find translations for email.reset.subject with language: {languageCode}");
-            }
-
-            if (!emailContents.Value.TryGetValue("email.reset.body", out var body))
-            {
-                throw new Exception($"Could not find translations for email.reset.body with language: {languageCode}");
-            }
+            var subject = GetTranslation(EmailContentKey.ResetPassword.Subject, emailContents.Value);
+            var body = GetTranslation(EmailContentKey.ResetPassword.Body, emailContents.Value);
 
             body = body
                 .Replace("{{name}}", name)
@@ -60,8 +54,8 @@ namespace RX.Nyss.Web.Services
             var roleName = GetTranslation($"roles.{role.ToString().ToCamelCase()}", stringTranslations.Value);
 
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
-            var subject = GetTranslation("email.verification.subject", emailContents.Value);
-            var body = GetTranslation("email.verification.body", emailContents.Value);
+            var subject = GetTranslation(EmailContentKey.EmailVerification.Subject, emailContents.Value);
+            var body = GetTranslation(EmailContentKey.EmailVerification.Body, emailContents.Value);
 
             body = body
                 .Replace("{{username}}", name)
@@ -77,8 +71,8 @@ namespace RX.Nyss.Web.Services
             var roleName = GetTranslation($"roles.{role.ToString().ToCamelCase()}", stringTranslations.Value);
 
             var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
-            var subject = GetTranslation("email.verification.subject", emailContents.Value);
-            var body = GetTranslation("email.dataConsumerVerification.body", emailContents.Value);
+            var subject = GetTranslation(EmailContentKey.EmailVerification.Subject, emailContents.Value);
+            var body = GetTranslation(EmailContentKey.EmailVerification.DataConsumerBody, emailContents.Value);
 
             body = body
                 .Replace("{{username}}", name)
@@ -88,7 +82,16 @@ namespace RX.Nyss.Web.Services
 
             return (subject, body);
         }
-        
+
+        public async Task<(string subject, string body)> GenerateAgreementDocumentEmail(string languageCode)
+        {
+            var emailContents = await _stringsResourcesService.GetEmailContentResources(languageCode);
+            var subject = GetTranslation(EmailContentKey.Consent.Subject, emailContents.Value);
+            var body = GetTranslation(EmailContentKey.Consent.Body, emailContents.Value);
+
+            return (subject, body);
+        }
+
         private static string GetTranslation(string key, IDictionary<string, string> translations)
         {
             if (!translations.TryGetValue(key, out var value))
