@@ -19,7 +19,7 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
   const debouncedName = useDebounce(name, 500);
 
   useEffect(() => {
-    value && onChange(value);
+    value && Object.keys(value).length > 1 && onChange(value);
   }, [value, onChange]);
 
   useEffect(() => {
@@ -49,13 +49,9 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
 
   useEffect(() => {
     updateValue({ name: debouncedName });
-  }, [debouncedName])
+  }, [debouncedName]);
 
-  if (!value) {
-    return null;
-  }
-
-  return (
+  return !!value && (
     <Card className={styles.filters}>
       <CardContent>
         <Grid container spacing={2}>
@@ -121,7 +117,7 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
           <Grid item>
             <InputLabel>{strings(stringKeys.dataCollector.filters.trainingStatus)}</InputLabel>
             <RadioGroup
-              value={value.trainingStatus}
+              value={value.trainingStatus || 'All'}
               onChange={handleTrainingStatusChange}
               className={styles.filterRadioGroup}>
               {trainingStatus.map(status => (

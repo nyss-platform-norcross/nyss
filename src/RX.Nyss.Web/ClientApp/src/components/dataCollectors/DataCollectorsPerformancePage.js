@@ -8,19 +8,20 @@ import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
+import { useCallback } from 'react';
 
-const DataCollectorsPerformancePageComponent = (props) => {
+const DataCollectorsPerformancePageComponent = ({filters, projectId, getDataCollectorPerformanceList, ...props}) => {
   useMount(() => {
-    props.openDataCollectorsPerformanceList(props.projectId, props.filters);
+    props.openDataCollectorsPerformanceList(projectId, filters);
   });
 
-  const onFilterChange = (filters) => {
-    props.getDataCollectorPerformanceList(props.projectId, filters);
-  }
+  const onFilterChange = useCallback((filters) =>
+    getDataCollectorPerformanceList(projectId, filters), [projectId, getDataCollectorPerformanceList]);
 
   return (
     <Fragment>
       <DataCollectorsPerformanceFilters
+        filters={filters}
         onChange={onFilterChange}
       />
       <DataCollectorsPerformanceTableLegend />
@@ -31,9 +32,9 @@ const DataCollectorsPerformancePageComponent = (props) => {
         page={props.listData.page}
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
-        projectId={props.projectId}
-        filters={props.filters}
-        getDataCollectorPerformanceList={props.getDataCollectorPerformanceList}
+        projectId={projectId}
+        filters={filters}
+        getDataCollectorPerformanceList={getDataCollectorPerformanceList}
       />
     </Fragment>
   );
