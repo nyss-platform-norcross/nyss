@@ -1,7 +1,7 @@
 import styles from "./DataCollectorsPerformanceMap.module.scss"
 
 import React, { useState, useEffect } from 'react';
-import { Map, TileLayer, Popup, Marker } from 'react-leaflet';
+import { Map, TileLayer, Popup, Marker, ScaleControl } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { Loading } from "../common/loading/Loading";
 import Icon from "@material-ui/core/Icon";
@@ -119,6 +119,7 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
           ))}
         </MarkerClusterGroup>
       )}
+      <ScaleControl imperial={false}></ScaleControl>
     </Map>
   );
 }

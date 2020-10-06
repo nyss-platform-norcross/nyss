@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet'
+import { Map, TileLayer, Marker, Popup, ScaleControl } from 'react-leaflet'
 
 export const DataCollectorMap = ({ onChange, location, zoom, centerLocation }) => {
   const [markerLocation, setMarkerLocation] = useState(null);
@@ -48,6 +48,7 @@ export const DataCollectorMap = ({ onChange, location, zoom, centerLocation }) =
           <Popup>You are here</Popup>
         </Marker>
       )}
+      <ScaleControl imperial={false}></ScaleControl>
     </Map>
   )
 }
