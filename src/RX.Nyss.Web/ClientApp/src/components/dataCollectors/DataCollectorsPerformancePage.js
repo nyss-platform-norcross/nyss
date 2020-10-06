@@ -21,7 +21,6 @@ const DataCollectorsPerformancePageComponent = ({filters, projectId, getDataColl
   return (
     <Fragment>
       <DataCollectorsPerformanceFilters
-        filters={filters}
         onChange={onFilterChange}
       />
       <DataCollectorsPerformanceTableLegend />

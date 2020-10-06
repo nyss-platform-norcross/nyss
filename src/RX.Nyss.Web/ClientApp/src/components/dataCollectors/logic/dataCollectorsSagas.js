@@ -39,8 +39,7 @@ function* openDataCollectorsList({ projectId }) {
       ? (yield call(http.get, `/api/dataCollector/filters?projectId=${projectId}`)).value
       : yield select(state => state.dataCollectors.filtersData);
 
-    const filters = (yield select(state => state.dataCollectors.filters))
-      || { supervisorId: null, area: null, sex: null, trainingStatus: 'All', name: null, pageNumber: 1 };
+    const filters = yield select(state => state.dataCollectors.filters);
 
     if (listStale || listProjectId !== projectId) {
       yield call(getDataCollectors, { projectId, filters });
@@ -199,52 +198,7 @@ function* openDataCollectorsPerformanceList({ projectId }) {
   try {
     yield openDataCollectorsModule(projectId);
 
-    const filters = (yield select(state => state.dataCollectors.dataCollectorPerformanceFilters)) ||
-      {
-        area: null,
-        name: null,
-        pageNumber: 1,
-        lastWeek: {
-          reportingCorrectly: true,
-          reportingWithErrors: true,
-          notReporting: true
-        },
-        twoWeeksAgo: {
-          reportingCorrectly: true,
-          reportingWithErrors: true,
-          notReporting: true
-        },
-        threeWeeksAgo: {
-          reportingCorrectly: true,
-          reportingWithErrors: true,
-          notReporting: true
-        },
-        fourWeeksAgo: {
-          reportingCorrectly: true,
-          reportingWithErrors: true,
-          notReporting: true
-        },
-        fiveWeeksAgo: {
-          reportingCorrectly: true,
-          reportingWithErrors: true,
-          notReporting: true
-        },
-        sixWeeksAgo: {
-          reportingCorrectly: true,
-          reportingWithErrors: true,
-          notReporting: true
-        },
-        sevenWeeksAgo: {
-          reportingCorrectly: true,
-          reportingWithErrors: true,
-          notReporting: true
-        },
-        eightWeeksAgo: {
-          reportingCorrectly: true,
-          reportingWithErrors: true,
-          notReporting: true
-        }
-      };
+    const filters = yield select(state => state.dataCollectors.performanceListFilters);
 
     let filtersData = yield select(state => state.dataCollectors.filtersData);
 

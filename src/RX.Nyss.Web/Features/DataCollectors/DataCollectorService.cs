@@ -211,18 +211,18 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters)
         {
-            var dataCollectorsQuery = await GetDataCollectorsForCurrentUserInProject(projectId);
+            var dataCollectorsQuery = (await GetDataCollectorsForCurrentUserInProject(projectId))
+                .FilterOnlyNotDeleted()
+                .FilterByArea(dataCollectorsFilters.Area)
+                .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
+                .FilterBySex(dataCollectorsFilters.Sex)
+                .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
+                .FilterByName(dataCollectorsFilters.Name);
 
             var rowsPerPage = _config.PaginationRowsPerPage;
             var totalCount = await dataCollectorsQuery.CountAsync();
 
             var dataCollectors = await dataCollectorsQuery
-                .FilterByArea(dataCollectorsFilters.Area)
-                .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
-                .FilterBySex(dataCollectorsFilters.Sex)
-                .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
-                .FilterByName(dataCollectorsFilters.Name)
-                .Where(dc => dc.DeletedAt == null)
                 .Select(dc => new DataCollectorResponseDto
                 {
                     Id = dc.Id,

@@ -11,7 +11,6 @@ import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { getIconFromStatus } from './logic/dataCollectorsService';
 import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
-import { Loading } from '../common/loading/Loading';
 import Icon from '@material-ui/core/Icon';
 import { DataCollectorsPerformanceColumnFilters } from './DataCollectorsPerformanceColumnFilters';
 import TablePager from '../common/tablePagination/TablePager';
@@ -75,7 +74,7 @@ export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalR
   }
 
   return !!filters && (
-    <TableContainer sticky>
+    <TableContainer sticky isFetching={isListFetching}>
       <Table>
         <TableHead>
           <TableRow>
@@ -134,8 +133,6 @@ export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalR
           </TableRow>
         </TableHead>
         <TableBody>
-          {isListFetching && <Loading />}
-
           {!isListFetching && (
             list.map((row, index) => (
               <TableRow key={index} hover>

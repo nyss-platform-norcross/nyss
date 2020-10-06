@@ -13,7 +13,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formData: null, formError: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null };
 
     case actions.OPEN_DATA_COLLECTORS_LIST.INVOKE:
-      return { ...state, filters: action.projectId === state.projectId ? state.filters : null, listData: action.projectId === state.projectId ? state.listData : { data: [], page: null, rowsPerPage: null, totalRows: null } };
+      return { ...state, filters: action.projectId === state.projectId ? state.filters : initialState.dataCollectors.filters, listData: action.projectId === state.projectId ? state.listData : { data: [], page: null, rowsPerPage: null, totalRows: null } };
 
     case actions.OPEN_DATA_COLLECTORS_LIST.SUCCESS:
       return { ...state, projectId: action.projectId, filtersData: action.filtersData };

@@ -1,28 +1,41 @@
 import styles from './DataCollectorsPerformanceFilters.module.scss';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { AreaFilter } from "../common/filters/AreaFilter";
 import { Card, CardContent, Button, TextField } from "@material-ui/core";
-import { useSelector } from "react-redux";
+import { useSelector, shallowEqual } from "react-redux";
 import { strings, stringKeys } from '../../strings';
 import useDebounce from '../../utils/debounce';
+import { initialState } from '../../initialState';
 
-export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
-  const [filterValue, setFilterValue] = useState(null);
+export const DataCollectorsPerformanceFilters = ({ onChange }) => {
   const nationalSocietyId = useSelector(state => state.dataCollectors.filtersData.nationalSocietyId);
-  const [name, setName] = useState('');
+  
+  const [filter, setFilter] = useReducer((state, action) => {
+    const newState = { ...state.value, ...action };
+    if (!shallowEqual(newState, state.value)) {
+      return { ...state, changed: true, value: newState }
+    } else {
+      return state
+    }
+  }, { value: initialState.dataCollectors.performanceListFilters, changed: false });
+
+  const [name, setName] = useReducer((state, action) => {
+    if (state.value !== action) {
+      return { changed: true, value: action };
+    } else {
+      return state;
+    }
+  }, { value: '', changed: false });
+
   const debouncedName = useDebounce(name, 500);
 
   useEffect(() => {
-    filters && setFilterValue(filters);
-  }, [filters]);
-
-  useEffect(() => {
-    filterValue && Object.keys(filterValue).length > 1 && onChange(filterValue);
-  }, [filterValue, onChange]);
+    filter.changed && onChange(filter.value);
+  }, [filter, onChange]);
 
   const updateValue = (newVal) =>
-    setFilterValue((v) => { return { ...v, ...newVal } });
+    setFilter(newVal);
 
   const handleAreaChange = (item) =>
     updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null, pageNumber: 1 });
@@ -31,64 +44,21 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
     setName(event.target.value);
 
   useEffect(() => {
-    updateValue({ name: debouncedName });
+    debouncedName.changed && setFilter({ name: debouncedName.value });
   }, [debouncedName]);
 
-  const filterIsSet = filterValue && (
-    filterValue.area !== null ||
-    (filterValue.name !== null && filterValue.name !== '') ||
-    Object.values(filterValue).slice(3).some(f => Object.values(f).some(v => !v))
+  const filterIsSet = filter.value && (
+    filter.value.area !== null ||
+    (filter.value.name !== null && filter.value.name !== '') ||
+    Object.values(filter.value).slice(3).some(f => Object.values(f).some(v => !v))
   );
 
   const resetFilters = () => {
     setName('');
-    updateValue({
-      area: null,
-      pageNumber: 1,
-      lastWeek: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      twoWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      threeWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      fourWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      fiveWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      sixWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      sevenWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      },
-      eightWeeksAgo: {
-        reportingCorrectly: true,
-        reportingWithErrors: true,
-        notReporting: true
-      }
-    });
+    updateValue(initialState.dataCollectors.performanceListFilters);
   }
 
-  if (!filterValue || !nationalSocietyId) {
+  if (!filter.value || !nationalSocietyId) {
     return null;
   }
 
@@ -100,7 +70,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
             <TextField
               label={strings(stringKeys.dataCollector.performanceListFilters.name)}
               onChange={handleNameChange}
-              value={name}
+              value={name.value}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             />
@@ -108,7 +78,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}
-              selectedItem={filterValue.area}
+              selectedItem={filter.value.area}
               onChange={handleAreaChange}
             />
           </Grid>

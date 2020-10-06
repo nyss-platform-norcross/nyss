@@ -53,7 +53,6 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
       <DataCollectorsFilters
         nationalSocietyId={props.nationalSocietyId}
         supervisors={props.supervisors}
-        filters={props.filters}
         onChange={handleFilterChange}
         callingUserRoles={props.callingUserRoles} />
 
