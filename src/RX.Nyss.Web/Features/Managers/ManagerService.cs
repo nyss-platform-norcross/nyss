@@ -153,7 +153,7 @@ namespace RX.Nyss.Web.Features.Managers
             {
                 await _deleteUserService.EnsureCanDeleteUser(managerId, Role.Manager);
 
-                var currentUser = await _authorizationService.GetCurrentUserAsync();
+                var currentUser = await _authorizationService.GetCurrentUser();
                 var canDeleteHeadManager = currentUser.Role == Role.Administrator || currentUser.Role == Role.Coordinator;
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -228,7 +228,7 @@ namespace RX.Nyss.Web.Features.Managers
             }
             else
             {
-                var currentUser = await _authorizationService.GetCurrentUserAsync();
+                var currentUser = await _authorizationService.GetCurrentUser();
 
                 userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
@@ -298,7 +298,7 @@ namespace RX.Nyss.Web.Features.Managers
                     throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadManager);
                 }
 
-                var currentUser = await _authorizationService.GetCurrentUserAsync();
+                var currentUser = await _authorizationService.GetCurrentUser();
                 var organizationHasUsers = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.NationalSocietyId == organization.NationalSocietyId
                         && uns.OrganizationId == organization.Id

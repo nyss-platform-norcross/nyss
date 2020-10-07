@@ -290,7 +290,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             nationalSocietyStructureService.ListVillages(VillageId).Returns(Success(new List<VillageResponseDto>()));
             nationalSocietyStructureService.ListZones(Arg.Any<int>()).Returns(Success(new List<ZoneResponseDto>()));
 
-            authorizationService.GetCurrentUserAsync().Returns(Task.FromResult((User)new AdministratorUser()));
+            authorizationService.GetCurrentUser().Returns(Task.FromResult((User)new AdministratorUser()));
         }
 
         [Theory]

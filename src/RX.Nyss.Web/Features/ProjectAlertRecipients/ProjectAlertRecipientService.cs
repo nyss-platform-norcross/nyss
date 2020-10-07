@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
             if (!_authorizationService.IsCurrentUserInRole(Role.Administrator))
             {
-                var currentUser = await _authorizationService.GetCurrentUserAsync();
+                var currentUser = await _authorizationService.GetCurrentUser();
                 var organizationId = _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                     .Select(uns => uns.OrganizationId)
@@ -115,7 +115,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
         public async Task<Result<int>> Create(int nationalSocietyId, int projectId, ProjectAlertRecipientRequestDto createDto)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var projectIsClosed = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
@@ -169,13 +169,13 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
             await _nyssContext.AlertNotificationRecipients.AddAsync(alertRecipientToAdd);
 
-            _nyssContext.SupervisorUserAlertRecipients.AddRange(createDto.Supervisors.Select(supervisorId => new SupervisorUserAlertRecipient
+            await _nyssContext.SupervisorUserAlertRecipients.AddRangeAsync(createDto.Supervisors.Select(supervisorId => new SupervisorUserAlertRecipient
             {
                 SupervisorId = supervisorId,
                 AlertNotificationRecipient = alertRecipientToAdd
             }));
 
-            _nyssContext.ProjectHealthRiskAlertRecipients.AddRange(createDto.HealthRisks.Select(healthRiskId => new ProjectHealthRiskAlertRecipient
+            await _nyssContext.ProjectHealthRiskAlertRecipients.AddRangeAsync(createDto.HealthRisks.Select(healthRiskId => new ProjectHealthRiskAlertRecipient
             {
                 ProjectHealthRiskId = healthRiskId,
                 AlertNotificationRecipient = alertRecipientToAdd
@@ -228,14 +228,14 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
             var healthRisksToAdd = editDto.HealthRisks.Where(s => !alertRecipient.ProjectHealthRiskAlertRecipients.Any(har => har.ProjectHealthRiskId == s));
             var healthRisksToRemove = alertRecipient.ProjectHealthRiskAlertRecipients.Where(sar => !editDto.HealthRisks.Contains(sar.ProjectHealthRiskId));
 
-            _nyssContext.SupervisorUserAlertRecipients.AddRange(supervisorsToAdd.Select(supervisorId => new SupervisorUserAlertRecipient
+            await _nyssContext.SupervisorUserAlertRecipients.AddRangeAsync(supervisorsToAdd.Select(supervisorId => new SupervisorUserAlertRecipient
             {
                 SupervisorId = supervisorId,
                 AlertNotificationRecipientId = alertRecipientId
             }));
             _nyssContext.SupervisorUserAlertRecipients.RemoveRange(supervisorsToRemove);
 
-            _nyssContext.ProjectHealthRiskAlertRecipients.AddRange(healthRisksToAdd.Select(healthRiskId => new ProjectHealthRiskAlertRecipient
+            await _nyssContext.ProjectHealthRiskAlertRecipients.AddRangeAsync(healthRisksToAdd.Select(healthRiskId => new ProjectHealthRiskAlertRecipient
             {
                 ProjectHealthRiskId = healthRiskId,
                 AlertNotificationRecipientId = alertRecipientId

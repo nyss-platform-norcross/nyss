@@ -71,7 +71,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             alertReport.Report.Status = ReportStatus.Accepted;
             alertReport.Report.AcceptedAt = _dateTimeProvider.UtcNow;
-            alertReport.Report.AcceptedBy = _authorizationService.GetCurrentUser();
+            alertReport.Report.AcceptedBy = await _authorizationService.GetCurrentUser();
             await _nyssContext.SaveChangesAsync();
 
             var response = new AcceptReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
@@ -104,7 +104,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
             alertReport.Report.Status = ReportStatus.Rejected;
             alertReport.Report.RejectedAt = _dateTimeProvider.UtcNow;
-            alertReport.Report.RejectedBy = _authorizationService.GetCurrentUser();
+            alertReport.Report.RejectedBy = await _authorizationService.GetCurrentUser();
 
             await DismissAlertReport(reportId);
 
@@ -146,7 +146,7 @@ namespace RX.Nyss.Web.Features.Alerts
             }
 
             alertReport.Report.ResetAt = _dateTimeProvider.UtcNow;
-            alertReport.Report.ResetBy = _authorizationService.GetCurrentUser();
+            alertReport.Report.ResetBy = await _authorizationService.GetCurrentUser();
             
             await _nyssContext.SaveChangesAsync();
 
@@ -159,7 +159,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
         private async Task<bool> HasCurrentUserReportAssessAccess(int reportId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var userOrganizations = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.UserId == currentUser.Id)

@@ -31,7 +31,7 @@ namespace RX.Nyss.Web.Features.SmsGateways.Access
 
         public async Task<bool> HasCurrentUserAccessToSmsGateway(int smsGatewayId)
         {
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var nationalSocietyData = await _nyssContext.GatewaySettings
                 .Where(g => g.Id == smsGatewayId)

@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(_authorizationService.GetCurrentUserName());
             var rowsPerPage = _config.PaginationRowsPerPage;
 
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var currentUserOrganizationId = await _nyssContext.UserNationalSocieties
                 .Where(uns => uns.NationalSocietyId == nationalSocietyId && uns.User == currentUser)

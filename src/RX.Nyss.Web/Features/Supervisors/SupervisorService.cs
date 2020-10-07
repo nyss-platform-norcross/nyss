@@ -81,7 +81,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
         public async Task<Result<GetSupervisorResponseDto>> Get(int supervisorId, int nationalSocietyId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var supervisor = await _nyssContext.UserNationalSocieties.FilterAvailable()
                 .Where(un => un.UserId == supervisorId && un.NationalSocietyId == nationalSocietyId)
@@ -297,7 +297,7 @@ namespace RX.Nyss.Web.Features.Supervisors
             }
             else
             {
-                var currentUser = _authorizationService.GetCurrentUser();
+                var currentUser = await _authorizationService.GetCurrentUser();
 
                 userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
                     .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)

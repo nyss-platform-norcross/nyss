@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
                 return true;
             }
 
-            var currentUser = _authorizationService.GetCurrentUser();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var query = _nyssContext.DataCollectors
                 .Where(dc => dataCollectorIds.Contains(dc.Id))

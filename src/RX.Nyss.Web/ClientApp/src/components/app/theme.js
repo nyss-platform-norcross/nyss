@@ -126,12 +126,19 @@ export const theme = createMuiTheme({
       }
 
     },
+    MuiFormLabel: {
+      root: {
+        color: "#333333 !important",
+        transform: "translate(0, 2px);",
+        lineHeight: "inherit"
+      },
+      focused: {},
+    },
     MuiInputLabel: {
       root: {
         zIndex: 1
       },
       shrink: {
-        color: "#000000 !important",
         transform: "translate(0, 2px);",
         right: 0,
         lineHeight: "inherit",

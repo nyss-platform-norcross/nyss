@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
 
         public async Task<bool> IsAllowedToCreateForSupervisor(int supervisorId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
             return currentUser.Role != Role.Supervisor || currentUser.Id == supervisorId;
         }
     }

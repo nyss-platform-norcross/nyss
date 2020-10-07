@@ -114,7 +114,7 @@ namespace RX.Nyss.Web.Features.Projects
 
         public async Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId)
         {
-            var currentUser = await _authorizationService.GetCurrentUserAsync();
+            var currentUser = await _authorizationService.GetCurrentUser();
 
             var projectsQuery = currentUser.Role == Role.Supervisor
                 ? _nyssContext.SupervisorUserProjects
@@ -176,7 +176,7 @@ namespace RX.Nyss.Web.Features.Projects
         {
             try
             {
-                var currentUser = _authorizationService.GetCurrentUser();
+                var currentUser = await _authorizationService.GetCurrentUser();
 
                 var data = await _nyssContext.NationalSocieties
                     .Where(ns => ns.Id == nationalSocietyId)

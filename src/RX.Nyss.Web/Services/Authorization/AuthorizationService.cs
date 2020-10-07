@@ -13,11 +13,10 @@ namespace RX.Nyss.Web.Services.Authorization
 {
     public interface IAuthorizationService
     {
-        User GetCurrentUser();
         bool IsCurrentUserInRole(Role role);
         string GetCurrentUserName();
         bool IsCurrentUserInAnyRole(params Role[] roles);
-        Task<User> GetCurrentUserAsync();
+        Task<User> GetCurrentUser();
     }
 
     public class AuthorizationService : IAuthorizationService
@@ -32,14 +31,8 @@ namespace RX.Nyss.Web.Services.Authorization
             _httpContextAccessor = httpContextAccessor;
             _nyssContext = nyssContext;
         }
-
-        public User GetCurrentUser()
-        {
-            var userName = GetCurrentUserName();
-            return _nyssContext.Users.FilterAvailable().SingleOrDefault(u => u.EmailAddress == userName);
-        }
-
-        public async Task<User> GetCurrentUserAsync()
+        
+        public async Task<User> GetCurrentUser()
         {
             var userName = GetCurrentUserName();
             return await _nyssContext.Users.FilterAvailable().SingleOrDefaultAsync(u => u.EmailAddress == userName);
