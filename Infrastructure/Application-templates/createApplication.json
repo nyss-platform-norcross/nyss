@@ -207,6 +207,7 @@
             "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
             "SERVICEBUS_SENDSMSQUEUE": "[variables('sendSmsQueueName')]",
             "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]",
+            "GENERALBLOBSTORAGE_CONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('generalStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName')), '2018-07-01').keys[0].value,';')]",
             "AzureWebJobsSecretStorageType": "Blob"
           }
         },
