@@ -6,6 +6,7 @@ using NSubstitute;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 using RX.Nyss.FuncApp.Services;
+using SendGrid.Helpers.Mail;
 using Xunit;
 
 namespace RX.Nyss.FuncApp.Tests
@@ -191,7 +192,7 @@ namespace RX.Nyss.FuncApp.Tests
             }, whitelist, "", _blobContainer);
 
             // Assert
-            await _emailAttachmentServiceMock.Received(1).DownloadAndEncodeAttachment(Arg.Any<string>(), Arg.Any<CloudBlobContainer>());
+            await _emailAttachmentServiceMock.Received(1).AttachPdf(Arg.Any<SendGridMessage>(), Arg.Any<string>(), Arg.Any<CloudBlobContainer>());
         }
     }
 }
