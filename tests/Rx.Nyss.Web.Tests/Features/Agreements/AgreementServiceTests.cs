@@ -10,7 +10,9 @@ using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Agreements;
+using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
@@ -25,7 +27,9 @@ namespace RX.Nyss.Web.Tests.Features.Agreements
         private readonly IDataBlobService _dataBlobServiceMock;
         private readonly IAuthorizationService _authorizationServiceMock;
         private readonly IDateTimeProvider _dateTimeProviderMock;
-
+        private readonly IEmailTextGeneratorService _emailTextGeneratorService;
+        private readonly IEmailPublisherService _emailPublisherService;
+        private readonly INyssWebConfig _config;
 
         public AgreementServiceTests()
         {
@@ -34,12 +38,15 @@ namespace RX.Nyss.Web.Tests.Features.Agreements
             _generalBlobProviderMock = Substitute.For<IGeneralBlobProvider>();
             _dataBlobServiceMock = Substitute.For<IDataBlobService>();
             _dateTimeProviderMock = Substitute.For<IDateTimeProvider>();
+            _emailPublisherService = Substitute.For<IEmailPublisherService>();
+            _emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
+            _config = Substitute.For<INyssWebConfig>();
 
             // Current user stuff
             _authorizationServiceMock.GetCurrentUserName().Returns("yo");
             _authorizationServiceMock.IsCurrentUserInAnyRole(Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator).Returns(true);
 
-            _agreementService = new AgreementService(_authorizationServiceMock, _nyssContextMock, _generalBlobProviderMock, _dataBlobServiceMock, _dateTimeProviderMock);
+            _agreementService = new AgreementService(_authorizationServiceMock, _nyssContextMock, _generalBlobProviderMock, _dataBlobServiceMock, _dateTimeProviderMock, _emailPublisherService, _config, _emailTextGeneratorService);
         }
 
         [Fact]
