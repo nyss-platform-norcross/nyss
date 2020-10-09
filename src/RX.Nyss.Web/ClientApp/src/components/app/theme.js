@@ -207,7 +207,11 @@ export const theme = createMuiTheme({
     },
     MuiTab: {
       root: {
-        fontSize: "1rem !important"
+        fontSize: "1rem !important",
+        "&:hover": {
+          backgroundColor: "rgba(0, 0, 0, 0.04)",
+          opacity: 1
+        },
       },
       textColorInherit: {
         opacity: 1
