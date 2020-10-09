@@ -26,6 +26,8 @@ export const NationalSocietyDashboardNumbers = ({ isFetching, summary, reportsTy
         <Card className={styles.card}>
           <CardHeader title={strings(stringKeys.nationalSociety.dashboard.numbers.totalReportCountTitle)} />
           <CardContent>
+            {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.keptReportCount), summary.keptReportCount)}
+            {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.dismissedReportCount), summary.dismissedReportCount)}
             {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.totalReportCount), summary.reportCount)}
             {renderNumber(strings(stringKeys.nationalSociety.dashboard.numbers.totalErrorReportCount), summary.errorReportCount)}
           </CardContent>

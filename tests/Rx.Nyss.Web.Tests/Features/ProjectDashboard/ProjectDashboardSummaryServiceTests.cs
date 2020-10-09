@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.ProjectDashboard;
 using RX.Nyss.Web.Features.Reports;
@@ -70,13 +71,33 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         public async Task GetSummaryData_ReturnsCorrectReportCount()
         {
             var filters = new ReportsFilter { ProjectId = ProjectId };
-            var reports = new List<Report>
+            var reports = new List<RawReport>
             {
-                new Report { ReportedCaseCount = 2 },
-                new Report { ReportedCaseCount = 3 }
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 2,
+                        Status = ReportStatus.New,
+                        RawReport = new RawReport { Village = new Village { District = new District() } }
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 3,
+                        Status = ReportStatus.New,
+                        RawReport = new RawReport { Village = new Village { District = new District() } }
+                    }
+                }
             };
 
-            _reportService.GetHealthRiskEventReportsQuery(filters).Returns(reports.AsQueryable());
+
+            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetSuccessReportsNotDismissedQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
 
             var summaryData = await _projectDashboardDataService.GetData(filters);
 
@@ -194,7 +215,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 Village = new Village { District = new District() }
             });
 
-            _reportService.GetSuccessReportsQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetSuccessReportsNotDismissedQuery(filters).Returns(reports.AsQueryable());
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
 
             var summaryData = await _projectDashboardDataService.GetData(filters);
