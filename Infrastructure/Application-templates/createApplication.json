@@ -198,6 +198,8 @@
           ],
           "properties": {
             "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "WEBSITE_CONTENTSHARE": "[concat(toLower(variables('funcAppName')),uniqueString(variables('funcAppName')))]",
             "FUNCTIONS_EXTENSION_VERSION": "~3",
             "FUNCTIONS_WORKER_RUNTIME": "dotnet",
             "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('funcAppName')), '2015-05-01').InstrumentationKey]",
@@ -207,6 +209,7 @@
             "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
             "SERVICEBUS_SENDSMSQUEUE": "[variables('sendSmsQueueName')]",
             "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleResourceId'), variables('sbVersion')).primaryConnectionString]",
+            "GENERALBLOBSTORAGE_CONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('generalStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName')), '2018-07-01').keys[0].value,';')]",
             "AzureWebJobsSecretStorageType": "Blob"
           }
         },
@@ -248,6 +251,7 @@
                 "SERVICEBUS_SENDEMAILQUEUE": "[variables('sendEmailQueueName')]",
                 "SERVICEBUS_SENDSMSQUEUE": "[variables('sendSmsQueueName')]",
                 "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleSbStaging'), variables('sbVersion')).primaryConnectionString]",
+                "GENERALBLOBSTORAGE_CONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('generalStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName')), '2018-07-01').keys[0].value,';')]",
                 "AzureWebJobsSecretStorageType": "Blob"
               }
             }
