@@ -14,6 +14,10 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.Common;
+using RX.Nyss.Web.Features.Common.Dto;
+using RX.Nyss.Web.Features.Common.Extensions;
+using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -24,7 +28,7 @@ namespace RX.Nyss.Web.Features.Alerts
 {
     public interface IAlertService
     {
-        Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber);
+        Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, AlertListFilterRequestDto filterRequestDto);
         Task<Result<AlertAssessmentResponseDto>> Get(int alertId);
         Task<Result> Escalate(int alertId, bool sendNotification);
         Task<Result> Dismiss(int alertId);
@@ -32,6 +36,7 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
         Task<Result<AlertLogResponseDto>> GetLogs(int alertId);
         Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
+        Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId);
     }
 
     public class AlertService : IAlertService
@@ -50,6 +55,7 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IProjectService _projectService;
 
         public AlertService(
             INyssContext nyssContext,
@@ -60,7 +66,8 @@ namespace RX.Nyss.Web.Features.Alerts
             ILoggerAdapter loggerAdapter,
             IDateTimeProvider dateTimeProvider,
             IAuthorizationService authorizationService,
-            ISmsPublisherService smsPublisherService)
+            ISmsPublisherService smsPublisherService,
+            IProjectService projectService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
@@ -71,21 +78,41 @@ namespace RX.Nyss.Web.Features.Alerts
             _authorizationService = authorizationService;
             _smsPublisherService = smsPublisherService;
             _config = config;
+            _projectService = projectService;
         }
 
-        public async Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber)
+        public async Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId)
+        {
+            var healthRiskTypes = new List<HealthRiskType>
+            {
+                HealthRiskType.Human,
+                HealthRiskType.NonHuman,
+                HealthRiskType.UnusualEvent
+            };
+            var healthRisks = await _projectService.GetHealthRiskNames(projectId, healthRiskTypes);
+
+            return Success(new AlertListFilterResponseDto
+            {
+                HealthRisks = healthRisks
+            });
+        }
+
+        public async Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, AlertListFilterRequestDto filterRequestDto)
         {
             var project = await _nyssContext.Projects.FindAsync(projectId);
             var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
 
             var alertsQuery = _nyssContext.Alerts
-                .Where(a => a.ProjectHealthRisk.Project.Id == projectId);
+                .FilterByProject(projectId)
+                .FilterByHealthRisk(filterRequestDto.HealthRiskId)
+                .FilterByArea(MapToArea(filterRequestDto.Area))
+                .FilterByStatus(filterRequestDto.Status)
+                .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
 
             var rowsPerPage = _config.PaginationRowsPerPage;
             var totalCount = await alertsQuery.CountAsync();
             var currentRole = (await _authorizationService.GetCurrentUser()).Role;
             var currentUserName = _authorizationService.GetCurrentUserName();
-            var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
             var currentUserId = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == currentUserName)
                 .Select(u => u.Id)
@@ -120,11 +147,6 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Select(lc => lc.Name)
                         .Single()
                 })
-                .OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
-                    a.Status == AlertStatus.Escalated ? 1 :
-                    a.Status == AlertStatus.Rejected ? 2 :
-                    a.Status == AlertStatus.Closed ? 3 : 4) // ...and Dismissed last
-                .ThenByDescending(a => a.CreatedAt)
                 .Page(pageNumber, rowsPerPage)
                 .AsNoTracking()
                 .ToListAsync();
@@ -614,7 +636,7 @@ namespace RX.Nyss.Web.Features.Alerts
 
                 AlertStatus.Rejected =>
                     AlertAssessmentStatus.Rejected,
-                
+
                 AlertStatus.Pending when acceptedReports >= countThreshold =>
                     AlertAssessmentStatus.ToEscalate,
 
@@ -723,5 +745,14 @@ namespace RX.Nyss.Web.Features.Alerts
                 throw new ResultException(ResultKey.Alert.EscalateAlert.SmsNotificationFailed);
             }
         }
+
+        private static Area MapToArea(AreaDto area) =>
+            area == null
+                ? null
+                : new Area
+                {
+                    AreaType = area.Type,
+                    AreaId = area.Id
+                };
     }
 }

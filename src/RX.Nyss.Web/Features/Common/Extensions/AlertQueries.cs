@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
+using Microsoft.Azure.Devices;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.Alerts.Dto;
 
 namespace RX.Nyss.Web.Features.Common.Extensions
 {
@@ -33,19 +36,54 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             area?.AreaType switch
             {
                 AreaType.Region =>
-                alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.District.Region.Id == area.AreaId)),
+                    alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.District.Region.Id == area.AreaId)),
 
                 AreaType.District =>
-                alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.District.Id == area.AreaId)),
+                    alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.District.Id == area.AreaId)),
 
                 AreaType.Village =>
-                alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.Id == area.AreaId)),
+                    alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Village.Id == area.AreaId)),
 
                 AreaType.Zone =>
-                alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Zone.Id == area.AreaId)),
+                    alerts.Where(a => a.AlertReports.Any(ar => ar.Report.RawReport.Zone.Id == area.AreaId)),
 
                 _ =>
-                alerts
+                    alerts
+            };
+
+        public static IQueryable<Alert> FilterByStatus(this IQueryable<Alert> alerts, AlertStatusFilter status) =>
+            status switch
+            {
+                AlertStatusFilter.All => alerts,
+                AlertStatusFilter.Open => alerts.Where(a => a.Status == AlertStatus.Pending),
+                AlertStatusFilter.Escalated => alerts.Where(a => a.Status == AlertStatus.Escalated),
+                AlertStatusFilter.Dismissed => alerts.Where(a => a.Status == AlertStatus.Dismissed),
+                AlertStatusFilter.NotValid => alerts.Where(a => a.Status == AlertStatus.Rejected),
+                AlertStatusFilter.Closed => alerts.Where(a => a.Status == AlertStatus.Closed),
+                _ => alerts
+            };
+
+        public static IQueryable<Alert> Sort(this IQueryable<Alert> alerts, string orderBy, bool sortAscending) =>
+            orderBy switch
+            {
+                AlertListFilterRequestDto.TimeTriggeredColumnName => sortAscending
+                    ? alerts.OrderBy(a => a.CreatedAt)
+                    : alerts.OrderByDescending(a => a.CreatedAt),
+                AlertListFilterRequestDto.TimeOfLastReportColumnName => sortAscending
+                    ? alerts.OrderBy(a => a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt).First().Report.ReceivedAt)
+                    : alerts.OrderByDescending(a => a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt).First().Report.ReceivedAt),
+                AlertListFilterRequestDto.StatusColumnName => sortAscending
+                    ? alerts.OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
+                            a.Status == AlertStatus.Escalated ? 1 :
+                            a.Status == AlertStatus.Rejected ? 2 :
+                            a.Status == AlertStatus.Closed ? 3 : 4)
+                        .ThenByDescending(a => a.CreatedAt)
+                    : alerts.OrderBy(a => a.Status == AlertStatus.Dismissed ? 0 :
+                            a.Status == AlertStatus.Closed ? 1 :
+                            a.Status == AlertStatus.Rejected ? 2 :
+                            a.Status == AlertStatus.Escalated ? 3 : 4)
+                        .ThenByDescending(a => a.CreatedAt),
+                _ => alerts
             };
     }
 }
