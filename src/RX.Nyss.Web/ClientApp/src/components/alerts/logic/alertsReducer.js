@@ -15,13 +15,13 @@ export function alertsReducer(state = initialState.alerts, action) {
       return { ...state };
 
     case actions.OPEN_ALERTS_LIST.SUCCESS:
-      return { ...state, listProjectId: action.projectId };
+      return { ...state, listProjectId: action.projectId, filtersData: action.filtersData };
 
     case actions.GET_ALERTS.REQUEST:
       return { ...state, listData: state.listData, listFetching: true };
 
     case actions.GET_ALERTS.SUCCESS:
-      return { ...state, listFetching: false, listData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows } };
+      return { ...state, listFetching: false, listData: { data: action.data, page: action.page, rowsPerPage: action.rowsPerPage, totalRows: action.totalRows }, filters: action.filters };
 
     case actions.GET_ALERTS.FAILURE:
       return { ...state, listFetching: false, listData: null };

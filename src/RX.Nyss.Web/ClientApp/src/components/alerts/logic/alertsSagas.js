@@ -23,24 +23,33 @@ export const alertsSagas = () => [
 ];
 
 function* openAlertsList({ projectId }) {
+  const listProjectId = yield select(state => state.alerts.listProjectId);
+
   yield put(actions.openList.request());
   try {
     yield openAlertsModule(projectId);
 
-    yield call(getAlerts, { projectId });
+    const filtersData = listProjectId !== projectId
+      ? (yield call(http.get, `/api/alert/getFiltersData?projectId=${projectId}`)).value
+      : yield select(state => state.alerts.filtersData);
 
-    yield put(actions.openList.success(projectId));
+    const filters = (yield select(state => state.alerts.filters)) ||
+      { area: null, healthRiskId: null, status: consts.alertStatusFilters.all, orderBy: consts.statusColumn, sortAscending: false };
+
+    yield call(getAlerts, { projectId, filters });
+
+    yield put(actions.openList.success(projectId, filtersData));
 
   } catch (error) {
     yield put(actions.openList.failure(error.message));
   }
 };
 
-function* getAlerts({ projectId, pageNumber }) {
+function* getAlerts({ projectId, pageNumber, filters }) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/alert/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`);
-    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows));
+    const response = yield call(http.post, `/api/alert/list?projectId=${projectId}&pageNumber=${pageNumber || 1}`, filters);
+    yield put(actions.getList.success(response.value.data, response.value.page, response.value.rowsPerPage, response.value.totalRows, filters));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
   }

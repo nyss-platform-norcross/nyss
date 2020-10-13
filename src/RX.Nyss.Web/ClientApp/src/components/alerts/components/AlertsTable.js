@@ -7,20 +7,31 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { Loading } from '../../common/loading/Loading';
 import { strings, stringKeys } from '../../../strings';
 import dayjs from "dayjs";
 import TablePager from '../../common/tablePagination/TablePager';
 import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
-import { assessmentStatus, closeOptions } from '../logic/alertsConstants';
-import { Tooltip } from '@material-ui/core';
+import { assessmentStatus, closeOptions, statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
+import { TableSortLabel, Tooltip } from '@material-ui/core';
+import { useSelector } from 'react-redux';
 
-export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, getList, page, rowsPerPage, totalRows }) => {
-  const onChangePage = (event, page) => {
-    getList(projectId, page);
+export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, onChangePage, onSort, page, rowsPerPage, totalRows }) => {
+  const filters = useSelector(state => state.alerts.filters);
+
+  const handlePageChange = (event, page) => {
+    onChangePage(page);
   };
+
+  const createSortHandler = column => event => {
+    handleSortChange(event, column);
+  };
+
+  const handleSortChange = (event, column) => {
+    const isAscending = filters.orderBy === column && filters.sortAscending;
+    onSort({ ...filters, orderBy: column, sortAscending: !isAscending });
+  }
 
   const handleTooltipClick = (event) => {
     event.stopPropagation();
@@ -46,17 +57,32 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
     }
   }
 
-  return (
-    <TableContainer sticky>
-      {isListFetching && <Loading absolute />}
+  return !!filters && (
+    <TableContainer sticky isFetching={isListFetching}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell style={{ width: "6%", "minWidth": "100px" }}>{strings(stringKeys.alerts.list.dateTime)}</TableCell>
+            <TableCell style={{ width: "6%", "minWidth": "100px" }}>
+              <TableSortLabel
+                active={filters.orderBy === timeTriggeredColumn}
+                direction={filters.sortAscending ? 'asc' : 'desc'}
+                onClick={createSortHandler(timeTriggeredColumn)}
+              >
+                {strings(stringKeys.alerts.list.dateTime)}
+              </TableSortLabel>
+            </TableCell>
             <TableCell style={{ width: "10%", "minWidth": "200px" }}>{strings(stringKeys.alerts.list.healthRisk)}</TableCell>
             <TableCell style={{ width: "6%" }}>{strings(stringKeys.alerts.list.reportCount)}</TableCell>
             <TableCell style={{ width: "18%" }}>{strings(stringKeys.alerts.list.village)}</TableCell>
-            <TableCell style={{ width: "7%" }}>{strings(stringKeys.alerts.list.status)}</TableCell>
+            <TableCell style={{ width: "7%" }}>
+              <TableSortLabel
+                active={filters.orderBy === statusColumn}
+                direction={filters.sortAscending ? 'asc' : 'desc'}
+                onClick={createSortHandler(statusColumn)}
+              >
+                {strings(stringKeys.alerts.list.status)}
+              </TableSortLabel>
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -71,7 +97,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, g
           ))}
         </TableBody>
       </Table>
-      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />
+      <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={handlePageChange} />
     </TableContainer>
   );
 }

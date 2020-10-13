@@ -73,15 +73,15 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                     ? alerts.OrderBy(a => a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt).First().Report.ReceivedAt)
                     : alerts.OrderByDescending(a => a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt).First().Report.ReceivedAt),
                 AlertListFilterRequestDto.StatusColumnName => sortAscending
-                    ? alerts.OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
-                            a.Status == AlertStatus.Escalated ? 1 :
-                            a.Status == AlertStatus.Rejected ? 2 :
-                            a.Status == AlertStatus.Closed ? 3 : 4)
-                        .ThenByDescending(a => a.CreatedAt)
-                    : alerts.OrderBy(a => a.Status == AlertStatus.Dismissed ? 0 :
+                    ? alerts.OrderBy(a => a.Status == AlertStatus.Dismissed ? 0 :
                             a.Status == AlertStatus.Closed ? 1 :
                             a.Status == AlertStatus.Rejected ? 2 :
                             a.Status == AlertStatus.Escalated ? 3 : 4)
+                        .ThenByDescending(a => a.CreatedAt)
+                    : alerts.OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
+                            a.Status == AlertStatus.Escalated ? 1 :
+                            a.Status == AlertStatus.Rejected ? 2 :
+                            a.Status == AlertStatus.Closed ? 3 : 4)
                         .ThenByDescending(a => a.CreatedAt),
                 _ => alerts
             };

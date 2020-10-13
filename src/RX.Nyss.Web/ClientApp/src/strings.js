@@ -776,6 +776,11 @@ export const stringKeys = {
       success: "alerts.list.success",
       error: "alerts.list.error"
     },
+    filters: {
+      healthRisks: "alerts.filters.healthRisks",
+      healthRisksAll: "alerts.filters.healthRisksAll",
+      status: "alerts.filters.status"
+    },
     details: {
       title: "alerts.details.title"
     },
