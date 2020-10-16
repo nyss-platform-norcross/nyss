@@ -8,15 +8,15 @@ import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
+import { useCallback } from 'react';
 
-const DataCollectorsPerformancePageComponent = (props) => {
+const DataCollectorsPerformancePageComponent = ({filters, projectId, getDataCollectorPerformanceList, ...props}) => {
   useMount(() => {
-    props.openDataCollectorsPerformanceList(props.projectId, props.filters);
+    props.openDataCollectorsPerformanceList(projectId, filters);
   });
 
-  const onFilterChange = (filters) => {
-    props.getDataCollectorPerformanceList(props.projectId, filters);
-  }
+  const onFilterChange = useCallback((filters) =>
+    getDataCollectorPerformanceList(projectId, filters), [projectId, getDataCollectorPerformanceList]);
 
   return (
     <Fragment>
@@ -25,12 +25,15 @@ const DataCollectorsPerformancePageComponent = (props) => {
       />
       <DataCollectorsPerformanceTableLegend />
       <DataCollectorsPerformanceTable
-        list={props.list}
+        list={props.listData.data}
+        rowsPerPage={props.listData.rowsPerPage}
+        totalRows={props.listData.totalRows}
+        page={props.listData.page}
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
-        projectId={props.projectId}
-        filters={props.filters}
-        getDataCollectorPerformanceList={props.getDataCollectorPerformanceList}
+        projectId={projectId}
+        filters={filters}
+        getDataCollectorPerformanceList={getDataCollectorPerformanceList}
       />
     </Fragment>
   );
@@ -46,7 +49,7 @@ const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
   filters: state.dataCollectors.performanceListFilters,
-  list: state.dataCollectors.performanceListData,
+  listData: state.dataCollectors.performanceListData,
   isListFetching: state.dataCollectors.performanceListFetching,
 });
 

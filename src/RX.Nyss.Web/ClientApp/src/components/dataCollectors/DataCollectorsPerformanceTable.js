@@ -11,11 +11,11 @@ import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { getIconFromStatus } from './logic/dataCollectorsService';
 import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
-import { Loading } from '../common/loading/Loading';
 import Icon from '@material-ui/core/Icon';
 import { DataCollectorsPerformanceColumnFilters } from './DataCollectorsPerformanceColumnFilters';
+import TablePager from '../common/tablePagination/TablePager';
 
-export const DataCollectorsPerformanceTable = ({ list, isListFetching, filters, getDataCollectorPerformanceList }) => {
+export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalRows, isListFetching, filters, getDataCollectorPerformanceList }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [statusFilters, setStatusFilters] = useState(null);
@@ -55,6 +55,10 @@ export const DataCollectorsPerformanceTable = ({ list, isListFetching, filters, 
     }
   }
 
+  const onChangePage = (e, page) => {
+    getDataCollectorPerformanceList(projectId, { ...filters, pageNumber: page });
+  }
+
   const handleClose = (fields) => {
     if (
       statusFilters.reportingCorrectly !== fields.reportingCorrectly.value ||
@@ -70,7 +74,7 @@ export const DataCollectorsPerformanceTable = ({ list, isListFetching, filters, 
   }
 
   return !!filters && (
-    <TableContainer sticky>
+    <TableContainer sticky isFetching={isListFetching}>
       <Table>
         <TableHead>
           <TableRow>
@@ -129,8 +133,6 @@ export const DataCollectorsPerformanceTable = ({ list, isListFetching, filters, 
           </TableRow>
         </TableHead>
         <TableBody>
-          {isListFetching && <Loading />}
-
           {!isListFetching && (
             list.map((row, index) => (
               <TableRow key={index} hover>
@@ -165,6 +167,7 @@ export const DataCollectorsPerformanceTable = ({ list, isListFetching, filters, 
           )}
         </TableBody>
       </Table>
+      {!!list.length && <TablePager totalRows={totalRows} rowsPerPage={rowsPerPage} page={page} onChangePage={onChangePage} />}
 
       <DataCollectorsPerformanceColumnFilters
         open={isOpen}

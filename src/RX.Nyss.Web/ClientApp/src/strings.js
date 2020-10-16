@@ -634,7 +634,11 @@ export const stringKeys = {
       supervisorsAll: "dataCollectors.filters.supervisorsAll",
       sexAll: "dataCollectors.filters.sexAll",
       trainingStatus: "dataCollectors.filters.trainingStatus",
-      resetAll: "dataCollectors.filters.resetAll"
+      resetAll: "dataCollectors.filters.resetAll",
+      name: "dataCollectors.filters.name"
+    },
+    performanceListFilters: {
+      name: "dataCollectors.performanceListFilters.name"
     },
     constants: {
       sex: {

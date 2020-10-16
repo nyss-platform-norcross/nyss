@@ -1,5 +1,5 @@
 import styles from "./DataCollectorsFilters.module.scss";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import Grid from '@material-ui/core/Grid';
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -10,48 +10,71 @@ import { strings, stringKeys } from "../../strings";
 import { sexValues, trainingStatus } from './logic/dataCollectorsConstants';
 import { InputLabel, RadioGroup, FormControlLabel, Radio } from "@material-ui/core";
 import * as roles from '../../authentication/roles';
+import useDebounce from "../../utils/debounce";
+import { shallowEqual } from "react-redux";
+import { initialState } from "../../initialState";
 
-export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors, onChange, callingUserRoles }) => {
-  const [value, setValue] = useState(null);
+export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange, callingUserRoles }) => {
+  const [filter, setFilter] = useReducer((state, action) => {
+    const newState = { ...state.value, ...action };
+    if (!shallowEqual(newState, state.value)) {
+      return { ...state, changed: true, value: newState }
+    } else {
+      return state
+    }
+  }, { value: initialState.dataCollectors.filters, changed: false });
+
   const [selectedArea, setSelectedArea] = useState(null);
+  const [name, setName] = useReducer((state, action) => {
+    if (state.value !== action) {
+      return { changed: true, value: action };
+    } else {
+      return state;
+    }
+  }, { value: '', changed: false });
+  const debouncedName = useDebounce(name, 500);
 
   useEffect(() => {
-    filters && setValue(filters);
-    filters && setSelectedArea(filters.area);
-  }, [filters]);
+    filter.changed && onChange(filter.value);
+  }, [filter, onChange]);
 
   const updateValue = (change) => {
-    const newValue = {
-      ...value,
-      ...change
-    }
-
-    setValue(newValue);
-    return newValue;
+    setFilter(change);
   };
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
-    onChange(updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null }));
+    updateValue({ area: item ? { type: item.type, id: item.id, name: item.name } : null });
   }
 
   const handleSupervisorChange = event =>
-    onChange(updateValue({ supervisorId: event.target.value === 0 ? null : event.target.value }));
+    updateValue({ supervisorId: event.target.value === 0 ? null : event.target.value });
 
   const handleSexChange = event =>
-    onChange(updateValue({ sex: event.target.value }));
+    updateValue({ sex: event.target.value });
 
   const handleTrainingStatusChange = event =>
-    onChange(updateValue({ trainingStatus: event.target.value }));
+    updateValue({ trainingStatus: event.target.value });
 
-  if (!value) {
-    return null;
-  }
+  const handleNameChange = (event) => setName(event.target.value);
 
-  return (
+  useEffect(() => {
+    debouncedName.changed && updateValue({ name: debouncedName.value });
+  }, [debouncedName]);
+
+  return !!filter && (
     <Card className={styles.filters}>
       <CardContent>
         <Grid container spacing={2}>
+          <Grid item>
+            <TextField
+              label={strings(stringKeys.dataCollector.filters.name)}
+              onChange={handleNameChange}
+              className={styles.filterItem}
+              InputLabelProps={{ shrink: true }}
+            >
+            </TextField>
+          </Grid>
           <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}
@@ -66,7 +89,7 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
                 select
                 label={strings(stringKeys.dataCollector.filters.supervisors)}
                 onChange={handleSupervisorChange}
-                value={value.supervisorId || 0}
+                value={filter.value.supervisorId || 0}
                 className={styles.filterItem}
                 InputLabelProps={{ shrink: true }}
               >
@@ -86,7 +109,7 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
               select
               label={strings(stringKeys.dataCollector.filters.sex)}
               onChange={handleSexChange}
-              value={value.sex || "all"}
+              value={filter.value.sex || "all"}
               className={styles.filterItem}
               InputLabelProps={{ shrink: true }}
             >
@@ -105,7 +128,7 @@ export const DataCollectorsFilters = ({ filters, nationalSocietyId, supervisors,
           <Grid item>
             <InputLabel>{strings(stringKeys.dataCollector.filters.trainingStatus)}</InputLabel>
             <RadioGroup
-              value={value.trainingStatus}
+              value={filter.value.trainingStatus || 'All'}
               onChange={handleTrainingStatusChange}
               className={styles.filterRadioGroup}>
               {trainingStatus.map(status => (

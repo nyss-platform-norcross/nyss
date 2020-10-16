@@ -96,5 +96,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
 
         public static IQueryable<DataCollector> FilterByOrganization(this IQueryable<DataCollector> dataCollectors, Organization organization) =>
             organization == null ? dataCollectors : dataCollectors.Where(dc => dc.Supervisor.UserNationalSocieties.Any(uns => uns.Organization == organization));
+
+        public static IQueryable<DataCollector> FilterByName(this IQueryable<DataCollector> dataCollectors, string name) =>
+            string.IsNullOrEmpty(name) ? dataCollectors : dataCollectors.Where(dc => dc.Name.ToLower().Contains(name.ToLower()) || dc.DisplayName.ToLower().Contains(name.ToLower()));
     }
 }

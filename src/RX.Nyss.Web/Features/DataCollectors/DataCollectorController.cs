@@ -8,6 +8,7 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.DataCollectors.Access;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Utils;
+using RX.Nyss.Web.Utils.DataContract;
 
 namespace RX.Nyss.Web.Features.DataCollectors
 {
@@ -40,7 +41,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<IEnumerable<DataCollectorResponseDto>>> List(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
+        public Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
             _dataCollectorService.List(projectId, dataCollectorsFiltersDto);
 
         [HttpPost, Route("create")]
@@ -80,7 +81,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         [HttpPost, Route("performance")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
-        public async Task<Result<List<DataCollectorPerformanceResponseDto>>> Performance(int projectId, [FromBody] DataCollectorPerformanceFiltersRequestDto dataCollectorsFiltersDto) =>
+        public async Task<Result<PaginatedList<DataCollectorPerformanceResponseDto>>> Performance(int projectId, [FromBody] DataCollectorPerformanceFiltersRequestDto dataCollectorsFiltersDto) =>
             await _dataCollectorService.Performance(projectId, dataCollectorsFiltersDto);
 
         [HttpPost, Route("exportToExcel")]

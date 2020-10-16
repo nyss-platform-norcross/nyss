@@ -175,7 +175,12 @@ export const initialState = {
     listFetching: false,
     listRemoving: {},
     listStale: true,
-    listData: [],
+    listData: {
+      data: [],
+      page: null,
+      rowsPerPage: null,
+      totalRows: null
+    },
     listSelectedAll: false,
     formRegions: [],
     formSupervisors: [],
@@ -189,14 +194,70 @@ export const initialState = {
     mapOverviewDetailsFetching: false,
     updatingDataCollector: {},
     replacingSupervisor: false,
-    performanceListData: [],
+    performanceListData: {
+      data: [],
+      page: null,
+      rowsPerPage: null,
+      totalRows: null
+    },
     performanceListFetching: false,
-    performanceListFilters: null,
+    performanceListFilters: {
+      area: null,
+      name: '',
+      pageNumber: 1,
+      lastWeek: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      twoWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      threeWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      fourWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      fiveWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      sixWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      sevenWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      },
+      eightWeeksAgo: {
+        reportingCorrectly: true,
+        reportingWithErrors: true,
+        notReporting: true
+      }
+    },
     filtersData: {
       supervisors: [],
       nationalSocietyId: null
     },
-    filters: null
+    filters: {
+      supervisorId: null,
+      area: null,
+      sex: null,
+      trainingStatus: 'All',
+      name: null,
+      pageNumber: 1
+    }
   },
   agreements: {
     pendingSocieties: [],

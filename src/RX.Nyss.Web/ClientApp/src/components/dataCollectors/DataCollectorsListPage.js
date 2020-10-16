@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useCallback, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
@@ -14,33 +14,37 @@ import { accessMap } from '../../authentication/accessMap';
 import { DataCollectorsFilters } from './DataCollectorsFilters';
 import { ReplaceSupervisorDialog } from './ReplaceSupervisorDialog';
 
-const DataCollectorsListPageComponent = (props) => {
+const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...props}) => {
   useMount(() => {
-    props.openDataCollectorsList(props.projectId, props.filters);
+    props.openDataCollectorsList(projectId, props.filters);
   });
 
   const [replaceSupervisorDialogOpened, setReplaceSupervisorDialogOpened] = useState(false);
   const [selectedDataCollectors, setSelectedDataCollectors] = useState([]);
 
-  const handleFilterChange = (filters) =>
-    props.getDataCollectorList(props.projectId, filters);
+  const handleFilterChange = useCallback((filters) =>
+    getDataCollectorList(projectId, filters), [getDataCollectorList, projectId]);
 
   const handleReplaceSupervisor = (dataCollectors) => {
     setSelectedDataCollectors(dataCollectors);
     setReplaceSupervisorDialogOpened(true);
   }
 
+  const onChangePage = (e, page) => {
+    getDataCollectorList(projectId, { ...props.filters, pageNumber: page });
+  }
+
   return (
     <Fragment>
       {!props.isClosed &&
         <TableActions>
-          <TableActionsButton onClick={() => props.goToCreation(props.projectId)} icon={<AddIcon />}>
+          <TableActionsButton onClick={() => props.goToCreation(projectId)} icon={<AddIcon />}>
             {strings(stringKeys.dataCollector.addNew)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToCsv(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportToCsv(projectId, props.filters)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.exportCsv)}
           </TableActionsButton>
-          <TableActionsButton onClick={() => props.exportToExcel(props.projectId, props.filters)} roles={accessMap.dataCollectors.export}>
+          <TableActionsButton onClick={() => props.exportToExcel(projectId, props.filters)} roles={accessMap.dataCollectors.export}>
             {strings(stringKeys.dataCollector.exportExcel)}
           </TableActionsButton>
         </TableActions>
@@ -49,24 +53,27 @@ const DataCollectorsListPageComponent = (props) => {
       <DataCollectorsFilters
         nationalSocietyId={props.nationalSocietyId}
         supervisors={props.supervisors}
-        filters={props.filters}
         onChange={handleFilterChange}
         callingUserRoles={props.callingUserRoles} />
 
       <DataCollectorsTable
-        list={props.list}
+        list={props.listData.data}
+        page={props.listData.page}
+        rowsPerPage={props.listData.rowsPerPage}
+        totalRows={props.listData.totalRows}
         goToEdition={props.goToEdition}
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
         isRemoving={props.isRemoving}
         remove={props.remove}
-        projectId={props.projectId}
+        projectId={projectId}
         setTrainingState={props.setTrainingState}
         isUpdatingDataCollector={props.isUpdatingDataCollector}
         selectDataCollector={props.selectDataCollector}
         selectAllDataCollectors={props.selectAllDataCollectors}
         listSelectedAll={props.listSelectedAll}
         replaceSupervisor={handleReplaceSupervisor}
+        onChangePage={onChangePage}
       />
 
       <ReplaceSupervisorDialog
@@ -86,14 +93,14 @@ DataCollectorsListPageComponent.propTypes = {
   goToEdition: PropTypes.func,
   remove: PropTypes.func,
   isFetching: PropTypes.bool,
-  list: PropTypes.array,
+  listData: PropTypes.object,
   isClosed: PropTypes.bool
 };
 
 const mapStateToProps = (state, ownProps) => ({
   projectId: ownProps.match.params.projectId,
   isClosed: state.appData.siteMap.parameters.projectIsClosed,
-  list: state.dataCollectors.listData,
+  listData: state.dataCollectors.listData,
   isListFetching: state.dataCollectors.listFetching,
   isRemoving: state.dataCollectors.listRemoving,
   isUpdatingDataCollector: state.dataCollectors.updatingDataCollector,
