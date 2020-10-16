@@ -4,6 +4,16 @@ import { initialState } from "../../../initialState";
 import { setProperty, removeProperty, assignInArray } from "../../../utils/immutable";
 import { LOCATION_CHANGE } from "connected-react-router";
 
+const filterIsSet = (filters) => {
+  const initialFilters = initialState.dataCollectors.filters;
+  return filters.name !== initialFilters.name
+  || filters.area !== initialFilters.area
+  || filters.supervisorId !== initialFilters.supervisorId
+  || filters.sex !== initialFilters.sex
+  || filters.pageNumber !== initialFilters.pageNumber
+  || filters.trainingStatus !== initialFilters.trainingStatus;
+}
+
 export function dataCollectorsReducer(state = initialState.dataCollectors, action) {
   switch (action.type) {
     case projectsActions.CLOSE_PROJECT.SUCCESS:
@@ -44,7 +54,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formFetching: true, formData: null };
 
     case actions.OPEN_DATA_COLLECTOR_EDITION.SUCCESS:
-      return { ...state, formFetching: false, formData: action.data };
+      return { ...state, formFetching: false, formData: action.data, filters: initialState.dataCollectors.filters, listStale: filterIsSet(state.filters) };
 
     case actions.OPEN_DATA_COLLECTOR_EDITION.FAILURE:
       return { ...state, formFetching: false };
@@ -53,7 +63,7 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formFetching: true, nationalSocietyId: null, formDefaultSupervisorId: null, formRegions: [], formSupervisors: [], formDefaultLocation: null };
 
     case actions.OPEN_DATA_COLLECTOR_CREATION.SUCCESS:
-      return { ...state, formFetching: false, nationalSocietyId: action.nationalSocietyId, formDefaultSupervisorId: action.defaultSupervisorId, formRegions: action.regions, formSupervisors: action.supervisors, formDefaultLocation: action.defaultLocation };
+      return { ...state, formFetching: false, nationalSocietyId: action.nationalSocietyId, formDefaultSupervisorId: action.defaultSupervisorId, formRegions: action.regions, formSupervisors: action.supervisors, formDefaultLocation: action.defaultLocation, filters: initialState.dataCollectors.filters, listStale: filterIsSet(state.filters) };
 
     case actions.OPEN_DATA_COLLECTOR_CREATION.FAILURE:
       return { ...state, formFetching: false, formError: action.message };
@@ -108,6 +118,9 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
 
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE:
       return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.updatingDataCollector) };
+
+    case actions.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE:
+      return { ...state, performanceListFilters: initialState.dataCollectors.performanceListFilters };
 
     case actions.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS:
       return { ...state, filtersData: action.filtersData };
