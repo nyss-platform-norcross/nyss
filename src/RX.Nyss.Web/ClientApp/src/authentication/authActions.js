@@ -11,7 +11,7 @@ export const login = {
     ({ type: LOGIN.SUCCESS }),
 
   failure: (message) =>
-    ({ type: LOGIN.FAILURE, message })
+    ({ type: LOGIN.FAILURE, message, suppressPopup: true })
 };
 
 export const logout = {
