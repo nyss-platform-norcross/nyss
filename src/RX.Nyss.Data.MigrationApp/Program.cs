@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Web.Data;
 
@@ -19,11 +20,12 @@ namespace RX.Nyss.Data.MigrationApp
             var dbConnectionString = args[0];
             var createDemoData = args.Any(a => a == "createDemoData");
             var password = args.FirstOrDefault(a => a.StartsWith("password="))?.Split("=")[1];
+            var adminPassword = args.FirstOrDefault(a => a.StartsWith("adminPassword="))?.Split("=")[1];
 
             try
             {
                 MigrateNyssContext(dbConnectionString);
-                MigrateApplicationDbContext(dbConnectionString);
+                MigrateApplicationDbContext(dbConnectionString, adminPassword);
 
                 if (createDemoData)
                 {
@@ -52,7 +54,7 @@ namespace RX.Nyss.Data.MigrationApp
             Console.WriteLine("Successfully migrated NyssContext");
         }
 
-        private static void MigrateApplicationDbContext(string dbConnectionString)
+        private static void MigrateApplicationDbContext(string dbConnectionString, string adminPassword)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             optionsBuilder.UseSqlServer(dbConnectionString);
@@ -60,6 +62,17 @@ namespace RX.Nyss.Data.MigrationApp
             using (var context = new ApplicationDbContext(optionsBuilder.Options))
             {
                 context.Database.Migrate();
+                var hasher = new PasswordHasher<IdentityUser>();
+
+                if (!string.IsNullOrEmpty(adminPassword))
+                {
+                    Console.WriteLine("Updating admin pwd...");
+
+                    var adminUser = context.Users.Single(u => u.Id == "9c1071c1-fa69-432a-9cd0-2c4baa703a67");
+                    adminUser.PasswordHash = hasher.HashPassword(adminUser, adminPassword);
+
+                    context.SaveChanges();
+                }
             }
 
             Console.WriteLine("Successfully migrated ApplicationDbContext");
