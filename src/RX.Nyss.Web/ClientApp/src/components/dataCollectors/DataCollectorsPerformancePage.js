@@ -47,6 +47,7 @@ const DataCollectorsPerformancePageComponent = ({projectId, getDataCollectorPerf
     switch (action.type) {
       case 'updateArea': return { value: { ...state.value, area: action.area, pageNumber: action.pageNumber }, changed: !shallowEqual(state.value.area, action.area) };
       case 'updateName': return { value: { ...state.value, name: action.name }, changed: state.value.name !== action.name };
+      case 'updateSupervisor': return { value: { ...state.value, supervisorId: action.supervisorId }, changed: state.value.supervisorId !== action.supervisorId };
       case 'updateSorting': return onSort(state.value, action.week, action.filters);
       case 'changePage': return { value: { ...state.value, pageNumber: action.pageNumber }, changed: state.value.pageNumber !== action.pageNumber };
       case 'reset': return resetFilter(initialState.dataCollectors.performanceListFilters);
