@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useReducer, useEffect } from 'react';
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
+import { connect, shallowEqual } from "react-redux";
 import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
@@ -8,20 +8,63 @@ import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
 import * as dataCollectorActions from './logic/dataCollectorsActions';
 import { DataCollectorsPerformanceFilters } from './DataCollectorsPerformanceFilters';
 import { DataCollectorsPerformanceTableLegend } from './DataCollectorsPerformanceTableLegend';
-import { useCallback } from 'react';
+import { initialState } from '../../initialState';
 
-const DataCollectorsPerformancePageComponent = ({filters, projectId, getDataCollectorPerformanceList, ...props}) => {
+const initFilter = (filters) => {
+  return {
+    value: filters,
+    changed: false
+  }
+}
+
+const resetFilter = (filters) => {
+  return {
+    value: filters,
+    changed: true
+  }
+}
+
+const onSort = (state, week, filters) => {
+  return {
+    value: {
+      ...state,
+      [week]: {
+        reportingCorrectly: filters.reportingCorrectly,
+        reportingWithErrors: filters.reportingWithErrors,
+        notReporting: filters.notReporting
+      }
+    },
+    changed: !shallowEqual(state[week], filters)
+  }
+}
+
+const DataCollectorsPerformancePageComponent = ({projectId, getDataCollectorPerformanceList, ...props}) => {
   useMount(() => {
-    props.openDataCollectorsPerformanceList(projectId, filters);
+    props.openDataCollectorsPerformanceList(projectId, props.filters);
   });
 
-  const onFilterChange = useCallback((filters) =>
-    getDataCollectorPerformanceList(projectId, filters), [projectId, getDataCollectorPerformanceList]);
+  const filterReducer = (state, action) => {
+    switch (action.type) {
+      case 'updateArea': return { value: { ...state.value, area: action.area, pageNumber: action.pageNumber }, changed: !shallowEqual(state.value.area, action.area) };
+      case 'updateName': return { value: { ...state.value, name: action.name }, changed: state.value.name !== action.name };
+      case 'updateSorting': return onSort(state.value, action.week, action.filters);
+      case 'changePage': return { value: { ...state.value, pageNumber: action.pageNumber }, changed: state.value.pageNumber !== action.pageNumber };
+      case 'reset': return resetFilter(initialState.dataCollectors.performanceListFilters);
+      default: return state;
+    }
+  }
+  
+  const [filters, setFilters] = useReducer(filterReducer, initialState.dataCollectors.performanceListFilters, initFilter);
+
+  useEffect(() => {
+    filters.changed && getDataCollectorPerformanceList(projectId, filters.value);
+  }, [filters, projectId, getDataCollectorPerformanceList]);
 
   return (
     <Fragment>
       <DataCollectorsPerformanceFilters
-        onChange={onFilterChange}
+        onChange={setFilters}
+        filters={filters.value}
       />
       <DataCollectorsPerformanceTableLegend />
       <DataCollectorsPerformanceTable
@@ -32,8 +75,8 @@ const DataCollectorsPerformancePageComponent = ({filters, projectId, getDataColl
         goToDashboard={props.goToDashboard}
         isListFetching={props.isListFetching}
         projectId={projectId}
-        filters={filters}
-        getDataCollectorPerformanceList={getDataCollectorPerformanceList}
+        filters={filters.value}
+        onChange={setFilters}
       />
     </Fragment>
   );

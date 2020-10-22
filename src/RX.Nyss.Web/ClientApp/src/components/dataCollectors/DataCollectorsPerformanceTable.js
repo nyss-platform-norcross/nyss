@@ -1,6 +1,5 @@
 import styles from './DataCollectorsPerformanceTable.module.scss';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from "prop-types";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,28 +14,29 @@ import Icon from '@material-ui/core/Icon';
 import { DataCollectorsPerformanceColumnFilters } from './DataCollectorsPerformanceColumnFilters';
 import TablePager from '../common/tablePagination/TablePager';
 
-export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalRows, isListFetching, filters, getDataCollectorPerformanceList }) => {
+export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(null);
   const [statusFilters, setStatusFilters] = useState(null);
-  const projectId = useSelector(state => state.appData.siteMap.parameters.projectId);
 
   const openFilter = (event) => {
     setAnchorEl(event.currentTarget);
+    setSelectedWeek(event.currentTarget.id);
     setStatusFilters(getStatusFilter(event.currentTarget.id));
     setIsOpen(true);
   }
 
   const getStatusFilter = (status) => {
     switch (status) {
-      case 'lastWeek': return filters.lastWeek;
-      case 'twoWeeksAgo': return filters.twoWeeksAgo;
-      case 'threeWeeksAgo': return filters.threeWeeksAgo;
-      case 'fourWeeksAgo': return filters.fourWeeksAgo;
-      case 'fiveWeeksAgo': return filters.fiveWeeksAgo;
-      case 'sixWeeksAgo': return filters.sixWeeksAgo;
-      case 'sevenWeeksAgo': return filters.sevenWeeksAgo;
-      case 'eightWeeksAgo': return filters.eightWeeksAgo;
+      case 'lastWeek': return Object.assign({}, filters.lastWeek);
+      case 'twoWeeksAgo': return Object.assign({}, filters.twoWeeksAgo);
+      case 'threeWeeksAgo': return Object.assign({}, filters.threeWeeksAgo);
+      case 'fourWeeksAgo': return Object.assign({}, filters.fourWeeksAgo);
+      case 'fiveWeeksAgo': return Object.assign({}, filters.fiveWeeksAgo);
+      case 'sixWeeksAgo': return Object.assign({}, filters.sixWeeksAgo);
+      case 'sevenWeeksAgo': return Object.assign({}, filters.sevenWeeksAgo);
+      case 'eightWeeksAgo': return Object.assign({}, filters.eightWeeksAgo);
       default: return null;
     }
   }
@@ -56,20 +56,11 @@ export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalR
   }
 
   const onChangePage = (e, page) => {
-    getDataCollectorPerformanceList(projectId, { ...filters, pageNumber: page });
+    onChange({ type: 'changePage', pageNumber: page });
   }
 
   const handleClose = (fields) => {
-    if (
-      statusFilters.reportingCorrectly !== fields.reportingCorrectly.value ||
-      statusFilters.reportingWithErrors !== fields.reportingWithErrors.value ||
-      statusFilters.notReporting !== fields.notReporting.value
-    ) {
-      statusFilters.reportingCorrectly = fields.reportingCorrectly.value;
-      statusFilters.reportingWithErrors = fields.reportingWithErrors.value;
-      statusFilters.notReporting = fields.notReporting.value;
-      getDataCollectorPerformanceList(projectId, filters);
-    }
+    onChange({ type: 'updateSorting', week: selectedWeek, filters: fields });
     setIsOpen(false);
   }
 
