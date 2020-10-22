@@ -119,9 +119,6 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
     case actions.SET_DATA_COLLECTORS_TRAINING_STATE.FAILURE:
       return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((trainingState, id) => removeProperty(trainingState, id), state.updatingDataCollector) };
 
-    case actions.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.INVOKE:
-      return { ...state, performanceListFilters: initialState.dataCollectors.performanceListFilters };
-
     case actions.OPEN_DATA_COLLECTORS_PERFORMANCE_LIST.SUCCESS:
       return { ...state, filtersData: action.filtersData };
 

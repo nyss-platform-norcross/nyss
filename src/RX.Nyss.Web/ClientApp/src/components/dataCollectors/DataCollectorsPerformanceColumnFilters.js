@@ -28,7 +28,11 @@ export const DataCollectorsPerformanceColumnFilters = ({ filters, anchorEl, open
 
 
   const handleClose = () => {
-    onClose(form.fields);
+    onClose({
+      reportingCorrectly: form.fields.reportingCorrectly.value,
+      reportingWithErrors: form.fields.reportingWithErrors.value,
+      notReporting: form.fields.notReporting.value
+    });
   }
 
   return !!form && (
