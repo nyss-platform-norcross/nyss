@@ -44,6 +44,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
         public Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
             _dataCollectorService.List(projectId, dataCollectorsFiltersDto);
 
+        [HttpPost, Route("listAll")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        public Task<Result<List<DataCollectorResponseDto>>> ListAll(int projectId, [FromBody] DataCollectorsFiltersRequestDto dataCollectorsFiltersDto) =>
+            _dataCollectorService.ListAll(projectId, dataCollectorsFiltersDto);
+
         [HttpPost, Route("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result> Create(int projectId, [FromBody] CreateDataCollectorRequestDto createDataCollectorDto) =>

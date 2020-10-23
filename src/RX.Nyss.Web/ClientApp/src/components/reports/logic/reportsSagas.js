@@ -158,9 +158,10 @@ function* openSendReport({ projectId }) {
       area: null,
       sex: null,
       supervisorId: null,
-      trainingStatus: null
+      trainingStatus: null,
+      name: null
     };
-    const dataCollectors = yield call(http.post, `/api/dataCollector/list?projectId=${projectId}`, filters);
+    const dataCollectors = yield call(http.post, `/api/dataCollector/listAll?projectId=${projectId}`, filters);
     yield put(actions.openSendReport.success(dataCollectors.value));
   } catch (error) {
     yield put(actions.openSendReport.failure(error.message));

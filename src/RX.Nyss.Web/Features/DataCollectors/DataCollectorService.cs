@@ -37,6 +37,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result<GetDataCollectorResponseDto>> Get(int dataCollectorId);
         Task<Result<DataCollectorFiltersReponseDto>> GetFiltersData(int projectId);
         Task<Result<PaginatedList<DataCollectorResponseDto>>> List(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
+        Task<Result<List<DataCollectorResponseDto>>> ListAll(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters);
+
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
@@ -247,6 +249,38 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .AsPaginatedList(dataCollectorsFilters.PageNumber, totalCount, rowsPerPage);
 
             return Success(paginatedDataCollectors);
+        }
+
+        public async Task<Result<List<DataCollectorResponseDto>>> ListAll(int projectId, DataCollectorsFiltersRequestDto dataCollectorsFilters)
+        {
+            var dataCollectorsQuery = (await GetDataCollectorsForCurrentUserInProject(projectId))
+                .FilterOnlyNotDeleted()
+                .FilterByArea(dataCollectorsFilters.Area)
+                .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
+                .FilterBySex(dataCollectorsFilters.Sex)
+                .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
+                .FilterByName(dataCollectorsFilters.Name);
+
+            var dataCollectors = await dataCollectorsQuery
+                .Select(dc => new DataCollectorResponseDto
+                {
+                    Id = dc.Id,
+                    DataCollectorType = dc.DataCollectorType,
+                    Name = dc.Name,
+                    DisplayName = dc.DisplayName,
+                    PhoneNumber = dc.PhoneNumber,
+                    Village = dc.Village.Name,
+                    District = dc.Village.District.Name,
+                    Region = dc.Village.District.Region.Name,
+                    Sex = dc.Sex,
+                    IsInTrainingMode = dc.IsInTrainingMode,
+                    Supervisor = dc.Supervisor
+                })
+                .OrderBy(dc => dc.Name)
+                .ThenBy(dc => dc.DisplayName)
+                .ToListAsync();
+
+            return Success(dataCollectors);
         }
 
         public async Task<Result> Create(int projectId, CreateDataCollectorRequestDto createDto)
