@@ -76,28 +76,27 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 new RawReport
                 {
                     DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
                     Report = new Report
                     {
                         ReportedCaseCount = 2,
                         Status = ReportStatus.New,
-                        RawReport = new RawReport { Village = new Village { District = new District() } }
                     }
                 },
                 new RawReport
                 {
                     DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
                     Report = new Report
                     {
                         ReportedCaseCount = 3,
                         Status = ReportStatus.New,
-                        RawReport = new RawReport { Village = new Village { District = new District() } }
                     }
                 }
             };
 
-
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
-            _reportService.GetSuccessReportsNotDismissedQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
+            _reportService.GetSuccessReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
 
             var summaryData = await _projectDashboardDataService.GetData(filters);
 
@@ -215,7 +214,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                 Village = new Village { District = new District() }
             });
 
-            _reportService.GetSuccessReportsNotDismissedQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetSuccessReportsQuery(filters).Returns(reports.AsQueryable());
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
 
             var summaryData = await _projectDashboardDataService.GetData(filters);
