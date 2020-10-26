@@ -2,11 +2,11 @@
 {
     public enum ReportStatus
     {
-        New,
-        Pending,
-        Removed,
-        Rejected,
-        Accepted,
-        Closed
+        New,        // Successful but not part of any alert and not cross checked
+        Pending,    // Part of an alert, but not cross checked yet
+        Removed,    // Deleted
+        Rejected,   // Cross checked: Dismissed
+        Accepted,   // Cross checked: Kept
+        Closed      // Previously pending in an escalated alert that have been closed
     }
 }
