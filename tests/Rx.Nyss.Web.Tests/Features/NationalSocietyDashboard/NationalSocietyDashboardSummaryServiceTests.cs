@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.NationalSocietyDashboard;
 using RX.Nyss.Web.Features.Reports;
@@ -82,13 +83,34 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         public async Task GetSummaryData_ReturnsCorrectReportCount()
         {
             var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
-            var reports = new List<Report>
+            var reports = new List<RawReport>
             {
-                new Report { ReportedCaseCount = 2 },
-                new Report { ReportedCaseCount = 3 }
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 2,
+                        Status = ReportStatus.New,
+                        MarkedAsError = false,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 3,
+                        Status = ReportStatus.New,
+                        MarkedAsError = false,
+                    }
+                }
             };
 
-            _reportService.GetHealthRiskEventReportsQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetSuccessReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
 
             var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
@@ -218,16 +240,35 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         public async Task GetSummaryData_ReturnsCorrectGeographicalCoverageCount()
         {
             var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
-            var rawReports = Enumerable.Range(0, 1).Select(i => new RawReport
+            var reports = new List<RawReport>
             {
-                DataCollector = new DataCollector(),
-                Village = _villages.First()
-            });
-            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = _districts[0] },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 2,
+                        Status = ReportStatus.New,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = _districts[0] },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 3,
+                        Status = ReportStatus.New,
+                    }
+                }
+            };
+
+            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
 
             var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
-            summaryData.NumberOfVillages.ShouldBe(1);
+            summaryData.NumberOfVillages.ShouldBe(2);
             summaryData.NumberOfDistricts.ShouldBe(1);
         }
     }

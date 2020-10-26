@@ -97,6 +97,8 @@ export const stringKeys = {
         escalatedAlerts: "nationalsociety.dashboard.numbers.escalatedAlerts",
         closedAlerts: "nationalsociety.dashboard.numbers.closedAlerts",
         totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",
+        keptReportCount: "nationalsociety.dashboard.numbers.keptReportCount",
+        dismissedReportCount: "nationalsociety.dashboard.numbers.dismissedReportCount",
         totalErrorReportCount: "nationalsociety.dashboard.numbers.totalErrorReportCount",
         totalReportCountTitle: "nationalsociety.dashboard.numbers.totalReportCountTitle",
         numberOfVillages: "nationalsociety.dashboard.numbers.numberOfVillages",
@@ -392,6 +394,8 @@ export const stringKeys = {
       printTitle: "project.dashboard.printTitle",
       numbers: {
         totalReportCount: "project.dashboard.numbers.totalReportCount",
+        keptReportCount: "project.dashboard.numbers.keptReportCount",
+        dismissedReportCount: "project.dashboard.numbers.dismissedReportCount",
         totalErrorReportCount: "project.dashboard.numbers.totalErrorReportCount",
         totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle",
         openAlerts: "project.dashboard.numbers.openAlerts",
