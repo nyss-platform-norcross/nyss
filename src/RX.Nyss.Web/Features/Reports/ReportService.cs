@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.Reports
         Task<Result> MarkAsError(int reportId);
         IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
         IQueryable<Report> GetHealthRiskEventReportsQuery(ReportsFilter filters);
-        IQueryable<Report> GetSuccessReportsNotDismissedQuery(ReportsFilter filters);
+        IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters);
     }
 
     public class ReportService : IReportService
@@ -368,14 +368,14 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByDate(filters.StartDate.Date, filters.EndDate.Date)
                 .FilterByHealthRisk(filters.HealthRiskId);
 
-        public IQueryable<Report> GetSuccessReportsNotDismissedQuery(ReportsFilter filters) =>
+        public IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters) =>
             GetRawReportsWithDataCollectorQuery(filters)
                 .AllSuccessfulReports()
                 .Select(r => r.Report)
-                .Where(r => !r.MarkedAsError && r.Status != ReportStatus.Rejected);
+                .Where(r => !r.MarkedAsError);
 
         public IQueryable<Report> GetHealthRiskEventReportsQuery(ReportsFilter filters) =>
-            GetSuccessReportsNotDismissedQuery(filters)
+            GetSuccessReportsQuery(filters)
                 .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
 
         public async Task<Result> MarkAsError(int reportId)
