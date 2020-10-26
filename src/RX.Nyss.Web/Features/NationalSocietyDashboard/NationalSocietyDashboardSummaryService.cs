@@ -41,11 +41,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
             var nationalSocietyId = filters.NationalSocietyId.Value;
 
-            var validReports = _reportService.GetSuccessReportsNotDismissedQuery(filters);
+            var validReports = _reportService.GetSuccessReportsQuery(filters);
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
-            var healthRiskEventReportsQuery = rawReportsWithDataCollector
-                .Where(rr => rr.Report != null)
-                .Select(rr => rr.Report);
 
             return await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
@@ -56,17 +53,17 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 })
                 .Select(data => new NationalSocietySummaryResponseDto
                 {
-                    ReportCount = healthRiskEventReportsQuery.Sum(r => r.ReportedCaseCount),
-                    DismissedReportCount = healthRiskEventReportsQuery.Where(r => r.Status == ReportStatus.Rejected).Sum(r => r.ReportedCaseCount),
-                    KeptReportCount = healthRiskEventReportsQuery.Where(r => r.Status == ReportStatus.Accepted).Sum(r => r.ReportedCaseCount),
-                    PendingReportCount = healthRiskEventReportsQuery.Where(r => r.Status == ReportStatus.Pending).Sum(r => r.ReportedCaseCount),
+                    ReportCount = validReports.Sum(r => r.ReportedCaseCount),
+                    DismissedReportCount = validReports.Where(r => r.Status == ReportStatus.Rejected).Sum(r => r.ReportedCaseCount),
+                    KeptReportCount = validReports.Where(r => r.Status == ReportStatus.Accepted).Sum(r => r.ReportedCaseCount),
+                    PendingReportCount = validReports.Where(r => r.Status == ReportStatus.Pending).Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
                     ErrorReportCount = rawReportsWithDataCollector.Count() - validReports.Count(),
-                    DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(healthRiskEventReportsQuery),
+                    DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(validReports),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
-                    NumberOfDistricts = healthRiskEventReportsQuery.Select(r => r.RawReport.Village.District).Distinct().Count(),
-                    NumberOfVillages = healthRiskEventReportsQuery.Select(r => r.RawReport.Village).Distinct().Count()
+                    NumberOfDistricts = rawReportsWithDataCollector.Select(r => r.Village.District).Distinct().Count(),
+                    NumberOfVillages = rawReportsWithDataCollector.Select(r => r.Village).Distinct().Count()
                 })
                 .FirstOrDefaultAsync();
         }
