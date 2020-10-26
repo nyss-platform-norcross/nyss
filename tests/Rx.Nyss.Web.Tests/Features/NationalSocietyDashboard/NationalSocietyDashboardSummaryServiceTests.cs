@@ -88,26 +88,29 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                 new RawReport
                 {
                     DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
                     Report = new Report
                     {
                         ReportedCaseCount = 2,
                         Status = ReportStatus.New,
-                        RawReport = new RawReport { Village = new Village { District = new District() } }
+                        MarkedAsError = false,
                     }
                 },
                 new RawReport
                 {
                     DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
                     Report = new Report
                     {
                         ReportedCaseCount = 3,
                         Status = ReportStatus.New,
-                        RawReport = new RawReport { Village = new Village { District = new District() } }
+                        MarkedAsError = false,
                     }
                 }
             };
 
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetSuccessReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
 
             var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
@@ -225,7 +228,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                 Village = _villages.First()
             });
 
-            _reportService.GetSuccessReportsNotDismissedQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetSuccessReportsQuery(filters).Returns(reports.AsQueryable());
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
 
             var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
@@ -242,21 +245,21 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                 new RawReport
                 {
                     DataCollector = _dataCollectors[0],
+                    Village = new Village { District = _districts[0] },
                     Report = new Report
                     {
                         ReportedCaseCount = 2,
                         Status = ReportStatus.New,
-                        RawReport = new RawReport { Village = new Village { District = _districts[0] } }
                     }
                 },
                 new RawReport
                 {
                     DataCollector = _dataCollectors[0],
+                    Village = new Village { District = _districts[0] },
                     Report = new Report
                     {
                         ReportedCaseCount = 3,
                         Status = ReportStatus.New,
-                        RawReport = new RawReport { Village = new Village { District = _districts[0] } }
                     }
                 }
             };
