@@ -8,6 +8,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
         public string Name { get; set; }
 
+        public int? SupervisorId { get; set; }
+
         public PerformanceStatusFilterDto LastWeek { get; set; }
 
         public PerformanceStatusFilterDto TwoWeeksAgo { get; set; }

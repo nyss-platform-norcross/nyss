@@ -2,13 +2,16 @@ import styles from './DataCollectorsPerformanceFilters.module.scss';
 import React, { useEffect, useReducer } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { AreaFilter } from "../common/filters/AreaFilter";
-import { Card, CardContent, Button, TextField } from "@material-ui/core";
+import { Card, CardContent, Button, TextField, MenuItem } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { strings, stringKeys } from '../../strings';
 import useDebounce from '../../utils/debounce';
+import * as roles from '../../authentication/roles';
 
 export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
   const nationalSocietyId = useSelector(state => state.dataCollectors.filtersData.nationalSocietyId);
+  const supervisors = useSelector(state => state.dataCollectors.filtersData.supervisors);
+  const callingUserRoles = useSelector(state => state.appData.user.roles);
 
   const [name, setName] = useReducer((state, action) => {
     if (state.value !== action) {
@@ -25,6 +28,9 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
 
   const handleNameChange = event =>
     setName(event.target.value);
+
+  const handleSupervisorChange = event => 
+    onChange({ type: 'updateSupervisor', supervisorId: event.target.value === 0 ? null : event.target.value });
 
   useEffect(() => {
     debouncedName.changed && onChange({ type: 'updateName', name: debouncedName.value });
@@ -65,6 +71,28 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
               onChange={handleAreaChange}
             />
           </Grid>
+
+          {(!callingUserRoles.some(r => r === roles.Supervisor) &&
+            <Grid item>
+              <TextField
+                select
+                label={strings(stringKeys.dataCollector.filters.supervisors)}
+                onChange={handleSupervisorChange}
+                value={filters.supervisorId || 0}
+                className={styles.filterItem}
+                InputLabelProps={{ shrink: true }}
+              >
+                <MenuItem value={0}>{strings(stringKeys.dataCollector.filters.supervisorsAll)}</MenuItem>
+
+                {supervisors.map(supervisor => (
+                  <MenuItem key={`filter_supervisor_${supervisor.id}`} value={supervisor.id}>
+                    {supervisor.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+          )}
+
           {filterIsSet && (
             <Grid item className={styles.resetButton}>
               <Button onClick={resetFilters}>

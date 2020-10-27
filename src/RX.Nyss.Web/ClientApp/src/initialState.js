@@ -204,6 +204,7 @@ export const initialState = {
     performanceListFilters: {
       area: null,
       name: '',
+      supervisorId: null,
       pageNumber: 1,
       lastWeek: {
         reportingCorrectly: true,

@@ -558,7 +558,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = (await GetDataCollectorsForCurrentUserInProject(projectId))
                 .FilterOnlyNotDeleted()
                 .FilterByArea(dataCollectorsFilters.Area)
-                .FilterByName(dataCollectorsFilters.Name);
+                .FilterByName(dataCollectorsFilters.Name)
+                .FilterBySupervisor(dataCollectorsFilters.SupervisorId);
 
             var to = _dateTimeProvider.UtcNow;
             var from = to.AddMonths(-2);
