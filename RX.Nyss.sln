@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RX.Nyss.Common.Tests", "tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.TestData", "tests\RX.Nyss.TestData\RX.Nyss.TestData.csproj", "{225C90E6-5A8E-4CE1-A78C-7F76FF98E225}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RX.Nyss.PublicApiFuncApp", "src\RX.Nyss.PublicApiFuncApp\RX.Nyss.PublicApiFuncApp.csproj", "{6A9D8373-EB3E-48CF-87AC-81860A58BA40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,6 +90,10 @@ Global
 		{225C90E6-5A8E-4CE1-A78C-7F76FF98E225}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{225C90E6-5A8E-4CE1-A78C-7F76FF98E225}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{225C90E6-5A8E-4CE1-A78C-7F76FF98E225}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A9D8373-EB3E-48CF-87AC-81860A58BA40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A9D8373-EB3E-48CF-87AC-81860A58BA40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A9D8373-EB3E-48CF-87AC-81860A58BA40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A9D8373-EB3E-48CF-87AC-81860A58BA40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
