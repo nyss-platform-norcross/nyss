@@ -79,6 +79,7 @@
     "funcAppName": "[concat('nrx-cbs-nyss-funcapp-', parameters('env'))]",
     "reportApiWebAppName": "[concat('nrx-cbs-nyss-reportapi-webapp-', parameters('env'))]",
     "reportFuncAppName": "[concat('nrx-cbs-nyss-report-funcapp-', parameters('env'))]",
+    "publicApiFuncAppName": "[concat('nrx-cbs-nyss-publicapi-funcapp-', parameters('env'))]",
     "standardPlanName": "[concat('nrx-cbs-nyss-sp-', parameters('env'))]",
     "standardPlanId": "[resourceId('Microsoft.Web/serverfarms', variables('standardPlanName'))]",
     "consumptionPlanName": "[concat('nrx-cbs-nyss-consumption-sp-', parameters('env'))]",
@@ -252,6 +253,97 @@
                 "SERVICEBUS_SENDSMSQUEUE": "[variables('sendSmsQueueName')]",
                 "SERVICEBUS_CONNECTIONSTRING": "[listkeys(variables('defaultAuthRuleSbStaging'), variables('sbVersion')).primaryConnectionString]",
                 "GENERALBLOBSTORAGE_CONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('generalStorageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName')), '2018-07-01').keys[0].value,';')]",
+                "AzureWebJobsSecretStorageType": "Blob"
+              }
+            }
+          ]
+        }
+      ]
+    },{
+      "apiVersion": "2018-11-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('publicApiFuncAppName')]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('publicApiFuncAppName')))]",
+      "location": "[variables('location')]",
+      "dependsOn": [
+        "[concat('microsoft.insights/components/', variables('publicApiFuncAppName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('generalStorageAccountName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', variables('consumptionPlanName'))]",
+        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusNamespaceName'))]"
+      ],
+      "kind": "functionapp",
+      "tags": "[parameters('tagValues')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "enabled": true,
+        "serverFarmId": "[variables('consumptionPlanId')]",
+        "httpsOnly": true,
+        "siteConfig": {
+          "cors": {
+            "allowedOrigins": [
+            ]
+          },
+          "use32BitWorkerProcess": true
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2018-11-01",
+          "name": "appsettings",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('publicApiFuncAppName')))]",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('publicApiFuncAppName'))]"
+          ],
+          "properties": {
+            "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+            "WEBSITE_CONTENTSHARE": "[concat(toLower(variables('publicApiFuncAppName')),uniqueString(variables('publicApiFuncAppName')))]",
+            "FUNCTIONS_EXTENSION_VERSION": "~3",
+            "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+            "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('publicApiFuncAppName')), '2015-05-01').InstrumentationKey]",
+            "WEBSITE_RUN_FROM_PACKAGE": "1",
+            "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
+            "AzureWebJobsSecretStorageType": "Blob"
+          }
+        },
+        {
+          "type": "slots",
+          "name": "staging",
+          "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('publicApiFuncAppName')))]",
+          "apiVersion": "2018-11-01",
+          "location": "[variables('location')]",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites/', variables('publicApiFuncAppName'))]"
+          ],
+          "tags": "[parameters('tagValues')]",
+          "properties": {
+            "siteConfig": {
+              "appSettings": [
+              ],
+              "use32BitWorkerProcess": true
+            }
+          },
+          "resources": [
+            {
+              "apiVersion": "2018-11-01",
+              "name": "appsettings",
+              "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('publicApiFuncAppName')))]",
+              "type": "config",
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/', variables('publicApiFuncAppName'))]",
+                "[resourceId('Microsoft.Web/Sites/Slots', variables('publicApiFuncAppName'), 'staging')]"
+              ],
+              "properties": {
+                "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('funcStorageAccountName'),';AccountKey=',listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('funcStorageAccountName')), '2015-05-01-preview').key1,';')]",
+                "FUNCTIONS_EXTENSION_VERSION": "~3",
+                "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(concat('microsoft.insights/components/', variables('publicApiFuncAppName')), '2015-05-01').InstrumentationKey]",
+                "WEBSITE_RUN_FROM_PACKAGE": "1",
+                "WEBSITE_TIME_ZONE": "W. Europe Standard Time",
                 "AzureWebJobsSecretStorageType": "Blob"
               }
             }
@@ -934,6 +1026,19 @@
       "kind": "funcapp",
       "properties": {
         "ApplicationId": "[variables('reportFuncAppName')]",
+        "Application_Type": "other",
+        "Request_Source": "rest"
+      }
+    },{
+      "type": "microsoft.insights/components",
+      "apiVersion": "2015-05-01",
+      "name": "[variables('publicApiFuncAppName')]",
+      "condition": "[or(empty(variables('specificResource')),equals(variables('specificResource'),variables('publicApiFuncAppName')))]",
+      "location": "[variables('location')]",
+      "tags": "[parameters('tagValues')]",
+      "kind": "funcapp",
+      "properties": {
+        "ApplicationId": "[variables('publicApiFuncAppName')]",
         "Application_Type": "other",
         "Request_Source": "rest"
       }
