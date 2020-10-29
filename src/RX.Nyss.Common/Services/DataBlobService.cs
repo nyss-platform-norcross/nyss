@@ -7,6 +7,7 @@ namespace RX.Nyss.Common.Services
     public interface IDataBlobService
     {
         Task StorePlatformAgreement(string sourceAgreement, string blobName);
+        Task StorePublicStats(string stats);
     }
 
     public class DataBlobService : IDataBlobService
@@ -21,5 +22,11 @@ namespace RX.Nyss.Common.Services
         }
 
         public async Task StorePlatformAgreement(string sourceAgreement, string blobName) => await _dataBlobProvider.CopyBlob(sourceAgreement, blobName);
+
+        public async Task StorePublicStats(string stats)
+        {
+            var blobProvider = new BlobProvider(_config.PublicStatsBlobContainerName, _config.ConnectionStrings.DataBlobContainer);
+            await blobProvider.SetBlobValue(_config.PublicStatsBlobObjectName, stats);
+        }
     }
 }

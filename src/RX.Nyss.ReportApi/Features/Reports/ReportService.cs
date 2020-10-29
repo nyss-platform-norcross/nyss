@@ -48,5 +48,33 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
             return true;
         }
+
+        public async Task<bool> DismissReport(int reportId)
+        {
+            try
+            {
+                await _alertService.ReportDismissed(reportId);
+                return true;
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Error(e, $"Could not dismiss a report with id: '{reportId}'.");
+                return false;
+            }
+        }
+
+        public async Task<bool> ResetReport(int reportId)
+        {
+            try
+            {
+                await _alertService.ReportReset(reportId);
+                return true;
+            }
+            catch (Exception e)
+            {
+                _loggerAdapter.Error(e, $"Could not reset a report with id: '{reportId}'.");
+                return false;
+            }
+        }
     }
 }
