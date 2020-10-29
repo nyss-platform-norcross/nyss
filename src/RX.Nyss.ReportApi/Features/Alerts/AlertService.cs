@@ -12,16 +12,18 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
+using RX.Nyss.ReportApi.Features.Reports.Models;
 using RX.Nyss.ReportApi.Services;
 
 namespace RX.Nyss.ReportApi.Features.Alerts
 {
     public interface IAlertService
     {
-        Task<Alert> ReportAdded(Report report);
+        Task<AlertData> ReportAdded(Report report);
         Task ReportDismissed(int reportId);
         Task ReportReset(int reportId);
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
+        Task SendNotificationsForSupervisorsAddedToExistingAlert(Alert alert, List<SupervisorUser> supervisors, GatewaySetting gatewaySetting);
         Task CheckIfAlertHasBeenHandled(int alertId);
     }
 
@@ -47,7 +49,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public async Task<Alert> ReportAdded(Report report)
+        public async Task<AlertData> ReportAdded(Report report)
         {
             var dataCollectorIsNotHuman = report.DataCollector.DataCollectorType != DataCollectorType.Human;
             var reportTypeIsAggregateOrDcp = report.ReportType == ReportType.Aggregate || report.ReportType == ReportType.DataCollectionPoint;
@@ -55,9 +57,13 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             if (report.IsTraining || dataCollectorIsNotHuman || reportTypeIsAggregateOrDcp || healthRiskTypeIsActivity)
             {
-                return null;
+                return new AlertData
+                {
+                    Alert = null,
+                    IsExistingAlert = false
+                };
             }
-        
+
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Where(phr => phr == report.ProjectHealthRisk)
                 .Include(phr => phr.AlertRule)
@@ -66,15 +72,19 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             if (projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Activity)
             {
-                return null;
+                return new AlertData
+                {
+                    Alert = null,
+                    IsExistingAlert = false
+                };
             }
 
             await _reportLabelingService.ResolveLabelsOnReportAdded(report, projectHealthRisk);
             await _nyssContext.SaveChangesAsync();
 
-            var triggeredAlert = await HandleAlerts(report);
+            var triggeredAlertData = await HandleAlerts(report);
             await _nyssContext.SaveChangesAsync();
-            return triggeredAlert;
+            return triggeredAlertData;
         }
 
         public async Task ReportDismissed(int reportId)
@@ -186,6 +196,14 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             await _queuePublisherService.QueueAlertCheck(alert.Id);
         }
 
+        public async Task SendNotificationsForSupervisorsAddedToExistingAlert(Alert alert, List<SupervisorUser> supervisors, GatewaySetting gatewaySetting)
+        {
+            var phoneNumbers = supervisors.Select(s => s.PhoneNumber).ToList();
+            var message = await CreateNotificationMessageForExistingAlert(alert);
+
+            await _queuePublisherService.SendSms(phoneNumbers, gatewaySetting, message);
+        }
+
         public async Task CheckIfAlertHasBeenHandled(int alertId)
         {
             var alert = await _nyssContext.Alerts.Where(a => a.Id == alertId)
@@ -251,16 +269,21 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             }
         }
 
-        private async Task<Alert> HandleAlerts(Report report)
+        private async Task<AlertData> HandleAlerts(Report report)
         {
             var reportGroupLabel = report.ReportGroupLabel;
             var projectHealthRisk = report.ProjectHealthRisk;
 
-            var existingAlert = await IncludeAllReportsWithLabelInExistingAlert(reportGroupLabel);
+            var (existingAlert, addedSupervisors) = await IncludeAllReportsWithLabelInExistingAlert(reportGroupLabel);
 
             if (existingAlert != null)
             {
-                return null;
+                return new AlertData
+                {
+                    Alert = existingAlert,
+                    SupervisorsAddedToExistingAlert = addedSupervisors,
+                    IsExistingAlert = true
+                };
             }
 
             var reportsWithLabel = await _nyssContext.Reports
@@ -273,16 +296,25 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             if (projectHealthRisk.AlertRule.CountThreshold == 0 || reportsWithLabel.Count < projectHealthRisk.AlertRule.CountThreshold)
             {
-                return null;
+                return new AlertData
+                {
+                    Alert = null,
+                    IsExistingAlert = false
+                };
             }
 
             var alert = await CreateNewAlert(projectHealthRisk);
             await AddReportsToAlert(alert, reportsWithLabel);
-            return alert;
+            return new AlertData
+            {
+                Alert = alert,
+                IsExistingAlert = false
+            };
         }
 
-        private async Task<Alert> IncludeAllReportsWithLabelInExistingAlert(Guid reportGroupLabel, int? alertIdToIgnore = null)
+        private async Task<(Alert, List<SupervisorUser>)> IncludeAllReportsWithLabelInExistingAlert(Guid reportGroupLabel, int? alertIdToIgnore = null)
         {
+            var addedSupervisors = new List<SupervisorUser>();
             var existingActiveAlertForLabel = await _nyssContext.Reports
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
                 .Where(r => !r.MarkedAsError)
@@ -303,12 +335,21 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                     .Where(r => r.ReportGroupLabel == reportGroupLabel)
                     .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Pending || ra.Alert.Status == AlertStatus.Escalated || ra.Alert.Status == AlertStatus.Closed)
                         || r.ReportAlerts.Any(ra => ra.AlertId == alertIdToIgnore))
+                    .Include(r => r.DataCollector)
+                    .ThenInclude(dc => dc.Supervisor)
                     .ToListAsync();
+
+                var supervisorsConnectedToExistingAlert = await GetSupervisorsConnectedToExistingAlert(existingActiveAlertForLabel);
+                addedSupervisors = reportsInLabelWithNoActiveAlert
+                    .Select(r => r.DataCollector.Supervisor)
+                    .Distinct()
+                    .Where(s => !supervisorsConnectedToExistingAlert.Any(sup => sup == s))
+                    .ToList();
 
                 await AddReportsToAlert(existingActiveAlertForLabel, reportsInLabelWithNoActiveAlert);
             }
 
-            return existingActiveAlertForLabel;
+            return (existingActiveAlertForLabel, addedSupervisors);
         }
 
         private async Task<Alert> CreateNewAlert(ProjectHealthRisk projectHealthRisk)
@@ -414,6 +455,35 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             return message;
         }
 
+        private async Task<string> CreateNotificationMessageForExistingAlert(Alert alert)
+        {
+            var alertData = await _nyssContext.Alerts.Where(a => a.Id == alert.Id)
+                .Select(a => new
+                {
+                    ProjectId = a.ProjectHealthRisk.Project.Id,
+                    HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage)
+                        .Select(lc => lc.Name)
+                        .FirstOrDefault(),
+                    a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode,
+                    VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
+                        .Select(ar => ar.Report.RawReport.Village.Name)
+                        .FirstOrDefault()
+                })
+                .FirstOrDefaultAsync();
+
+            var message = await GetSmsMessageContent(SmsContentKey.Alerts.SupervisorAddedToExistingAlert, alertData.LanguageCode.ToLower());
+
+            var baseUrl = new Uri(_config.BaseUrl);
+            var relativeUrl = $"projects/{alertData.ProjectId}/alerts/{alert.Id}/assess";
+            var linkToAlert = new Uri(baseUrl, relativeUrl);
+
+            message = message.Replace("{{healthRisk/event}}", alertData.HealthRiskName);
+            message = message.Replace("{{linkToAlert}}", linkToAlert.ToString());
+
+            return message;
+        }
+
         private async Task<string> GetSmsMessageContent(string key, string languageCode)
         {
             var smsContents = await _stringsResourcesService.GetSmsContentResources(!string.IsNullOrEmpty(languageCode)
@@ -447,5 +517,12 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             return message;
         }
+
+        private async Task<IEnumerable<SupervisorUser>> GetSupervisorsConnectedToExistingAlert(Alert alert) =>
+            await _nyssContext.AlertReports
+                .Where(ar => ar.Alert == alert)
+                .Select(ar => ar.Report.DataCollector.Supervisor)
+                .Distinct()
+                .ToListAsync();
     }
 }

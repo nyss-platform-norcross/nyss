@@ -86,7 +86,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
             try
             {
-                Alert triggeredAlert = null;
+                AlertData alertData = null;
                 ProjectHealthRisk projectHealthRisk = null;
                 GatewaySetting gatewaySetting = null;
                 ReportData reportData = null;
@@ -147,7 +147,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                         rawReport.Report = report;
                         await _nyssContext.Reports.AddAsync(report);
-                        triggeredAlert = await _alertService.ReportAdded(report);
+                        alertData = await _alertService.ReportAdded(report);
                     }
                     else
                     {
@@ -172,9 +172,16 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         await _queuePublisherService.SendSms(recipients, gatewaySetting, feedbackMessage);
                     }
 
-                    if (triggeredAlert != null)
+                    if (alertData.Alert != null)
                     {
-                        await _alertService.SendNotificationsForNewAlert(triggeredAlert, gatewaySetting);
+                        if (alertData.IsExistingAlert)
+                        {
+                            await _alertService.SendNotificationsForSupervisorsAddedToExistingAlert(alertData.Alert, alertData.SupervisorsAddedToExistingAlert, gatewaySetting);
+                        }
+                        else
+                        {
+                            await _alertService.SendNotificationsForNewAlert(alertData.Alert, gatewaySetting);
+                        }
                     }
                 }
                 else

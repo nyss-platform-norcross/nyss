@@ -13,6 +13,7 @@ namespace RX.Nyss.Common.Utils.DataContract
         {
             public const string AlertEscalated = "sms.alertEscalated";
             public const string AlertTriggered = "sms.alertTriggered";
+            public const string SupervisorAddedToExistingAlert = "sms.supervisorAddedToExistingAlert";
         }
 
         public static class Reports

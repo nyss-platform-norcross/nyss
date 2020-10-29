@@ -365,7 +365,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
                     .AddReport(ReportStatus.Rejected, projectHealthRiskWithCountThresholdOf3, _dataCollector);
                 data.Reports = reportGroup.Reports;
-                
+
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
 
                 return new ResetReportAdditionalData
@@ -403,7 +403,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
                     .AddReport(ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
                 data.Reports = reportGroup.Reports;
-                
+
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
 
                 return new ResetReportAdditionalData
@@ -441,13 +441,41 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                     .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
                     .AddReport(ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
                 data.Reports = reportGroup.Reports;
-                
+
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddEscalatedAlertForReports(data.Reports);
 
                 return new ResetReportAdditionalData
                 {
                     ReportBeingReset = data.Reports.FirstOrDefault(r => r.Status == ReportStatus.Accepted)
                 };
+            });
+
+        public TestCaseData WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert =>
+            _testCaseDataProvider.GetOrCreate((nameof(WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert)), data =>
+            {
+                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
+                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
+
+                var dc = new DataCollector
+                {
+                    Id = 2,
+                    DataCollectorType = DataCollectorType.Human,
+                    Supervisor = new SupervisorUser
+                    {
+                        Name = "TestSupervisor2",
+                        PhoneNumber = "+123456789",
+                        UserNationalSocieties = new List<UserNationalSociety>()
+                    }
+                };
+                data.DataCollectors.Add(dc);
+
+                var reportGroup = _reportGroupGenerator.Create("c10c7325-3b43-480a-af0b-2dc83ddb5412")
+                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" });
+
+                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(reportGroup.Reports);
+
+                reportGroup.AddReport(ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, dc);
+                data.Reports = reportGroup.Reports;
             });
 
         public AlertServiceTestData(INyssContext nyssContextMock)
