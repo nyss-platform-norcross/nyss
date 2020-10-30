@@ -16,7 +16,7 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { accessMap } from '../../authentication/accessMap';
-import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';
+import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';  
 import { Checkbox } from '@material-ui/core';
 import TablePager from '../common/tablePagination/TablePager';
 

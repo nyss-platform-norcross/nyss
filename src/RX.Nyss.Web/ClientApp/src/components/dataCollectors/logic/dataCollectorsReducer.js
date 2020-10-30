@@ -40,12 +40,16 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
     case actions.SELECT_DATA_COLLECTOR:
       return {
         ...state,
-        listSelectedAll: action.value && state.listData.every(i => i.isSelected || (action.value && i.id === action.dataCollectorId)),
-        listData: assignInArray(state.listData, i => i.id === action.dataCollectorId, item => ({ ...item, isSelected: action.value }))
+        listSelectedAll: action.value && state.listData.data.every(i => i.isSelected || (action.value && i.id === action.dataCollectorId)),
+        listData: {...state.listData, "data" : assignInArray(state.listData.data, i => i.id === action.dataCollectorId, item => ({ ...item, isSelected: action.value }))}
       };
 
     case actions.SELECT_ALL_DATA_COLLECTOR:
-      return { ...state, listSelectedAll: action.value, listData: assignInArray(state.listData, _ => true, item => ({ ...item, isSelected: action.value })) };
+      return { 
+        ...state, 
+        listSelectedAll: action.value, 
+        listData: {...state.listData, 'data' : assignInArray(state.listData.data, _ => true, item => ({ ...item, isSelected: action.value }))}
+      };
 
     case actions.OPEN_DATA_COLLECTOR_EDITION.INVOKE:
       return { ...state, formFetching: true, formData: null };
