@@ -17,7 +17,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         [HttpPost("check")]
         public async Task<IActionResult> CheckAlert(int alertId)
         {
-            await _alertService.CheckIfAlertHasBeenHandled(alertId);
+            await _alertService.EmailHeadManagerIfAlertIsPending(alertId);
 
             return Ok();
         }

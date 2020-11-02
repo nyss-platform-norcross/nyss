@@ -24,7 +24,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task ReportReset(int reportId);
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
         Task SendNotificationsForSupervisorsAddedToExistingAlert(Alert alert, List<SupervisorUser> supervisors, GatewaySetting gatewaySetting);
-        Task CheckIfAlertHasBeenHandled(int alertId);
+        Task EmailHeadManagerIfAlertIsPending(int alertId);
     }
 
     public class AlertService : IAlertService
@@ -204,7 +204,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             await _queuePublisherService.SendSms(phoneNumbers, gatewaySetting, message);
         }
 
-        public async Task CheckIfAlertHasBeenHandled(int alertId)
+        public async Task EmailHeadManagerIfAlertIsPending(int alertId)
         {
             var alert = await _nyssContext.Alerts.Where(a => a.Id == alertId)
                 .Select(a =>

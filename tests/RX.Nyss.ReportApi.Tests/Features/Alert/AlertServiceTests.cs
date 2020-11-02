@@ -621,7 +621,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _testData.SimpleCasesData.GenerateData().AddToDbContext();
 
             // act
-            await _alertService.CheckIfAlertHasBeenHandled(1);
+            await _alertService.EmailHeadManagerIfAlertIsPending(1);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
@@ -634,7 +634,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _testData.SimpleCasesData.GenerateData().AddToDbContext();
 
             // act
-            await _alertService.CheckIfAlertHasBeenHandled(1);
+            await _alertService.EmailHeadManagerIfAlertIsPending(1);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
@@ -674,7 +674,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _nyssReportApiConfigMock.BaseUrl = "http://example.com";
 
             // act
-            await _alertService.CheckIfAlertHasBeenHandled(alert.Id);
+            await _alertService.EmailHeadManagerIfAlertIsPending(alert.Id);
 
             // assert
             await _queuePublisherServiceMock.Received(2).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
@@ -701,7 +701,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _nyssReportApiConfigMock.BaseUrl = "http://example.com";
 
             // act
-            await _alertService.CheckIfAlertHasBeenHandled(alert.Id);
+            await _alertService.EmailHeadManagerIfAlertIsPending(alert.Id);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceive().SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
