@@ -22,9 +22,9 @@ namespace RX.Nyss.PublicApiFuncApp
         [FunctionName("Stats")]
         public async Task<IActionResult> Stats(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "stats")] HttpRequestMessage httpRequestMessage,
-            [Blob("%PublicStatsBlobObjectPath%", FileAccess.Read)] CloudBlockBlob statsBlob)
+            [Blob("%PublicStatsBlobObjectPath%", FileAccess.Read, Connection = "DATABLOBSTORAGE_CONNECTIONSTRING")] CloudBlockBlob statsBlob)
         {
-            _logger.LogInformation("Downloading public stats from blob");
+            _logger.LogInformation("Getting public stats from data blob");
             var stats = await statsBlob.DownloadTextAsync();
             return new OkObjectResult(JsonConvert.DeserializeObject(stats));
         }
