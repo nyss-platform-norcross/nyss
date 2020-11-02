@@ -24,7 +24,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task ReportReset(int reportId);
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
         Task SendNotificationsForSupervisorsAddedToExistingAlert(Alert alert, List<SupervisorUser> supervisors, GatewaySetting gatewaySetting);
-        Task CheckIfAlertHasBeenHandled(int alertId);
+        Task EmailHeadManagerIfAlertIsPending(int alertId);
     }
 
     public class AlertService : IAlertService
@@ -204,14 +204,16 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             await _queuePublisherService.SendSms(phoneNumbers, gatewaySetting, message);
         }
 
-        public async Task CheckIfAlertHasBeenHandled(int alertId)
+        public async Task EmailHeadManagerIfAlertIsPending(int alertId)
         {
             var alert = await _nyssContext.Alerts.Where(a => a.Id == alertId)
                 .Select(a =>
                     new
                     {
+                        a.Id,
                         a.Status,
                         a.CreatedAt,
+                        ProjectId = a.ProjectHealthRisk.Project.Id,
                         HeadManagers = a.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers
                             .Where(nsu => nsu.Organization.HeadManager == nsu.User)
                             .Where(nshm => a.AlertReports.Any(ar => nshm.Organization == ar.Report.DataCollector.Supervisor.UserNationalSocieties
@@ -250,6 +252,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 var emailSubject = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Subject, alert.LanguageCode);
                 var emailBody = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Body, alert.LanguageCode);
 
+                var baseUrl = new Uri(_config.BaseUrl);
+                var relativeUrl = $"projects/{alert.ProjectId}/alerts/{alert.Id}/assess";
+                var linkToAlert = new Uri(baseUrl, relativeUrl);
+
                 foreach (var headManager in alert.HeadManagers)
                 {
                     var supervisors = alert.Supervisors
@@ -262,7 +268,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                         .Replace("{{healthRiskName}}", alert.HealthRiskName)
                         .Replace("{{lastReportVillage}}", alert.VillageOfLastReport)
                         .Replace("{{supervisors}}", string.Join(", ", supervisors))
-                        .Replace("{{timeSinceAlertWasTriggeredInHours}}", timeSinceTriggered.ToString("0.##"));
+                        .Replace("{{timeSinceAlertWasTriggeredInHours}}", timeSinceTriggered.ToString("0.##"))
+                        .Replace("{{linkToAlert}}", linkToAlert.ToString());
 
                     await _queuePublisherService.SendEmail((headManager.Name, headManager.EmailAddress), emailSubject, headManagerEmailBody);
                 }
