@@ -1,6 +1,6 @@
 namespace RX.Nyss.Data.Concepts
 {
-    public enum CloseAlertOptions
+    public enum EscalatedAlertOutcomes
     {
         Dismissed,
         ActionTaken,

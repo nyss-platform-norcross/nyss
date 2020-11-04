@@ -796,10 +796,10 @@ export const stringKeys = {
         dismissed: "alerts.assess.statusDescription.dismissed",
         rejected: "alerts.assess.statusDescription.rejected"
       },
-      closeOptions: {
-        "Dismissed": "alerts.assess.closeOptions.dismiss",
-        "ActionTaken": "alerts.assess.closeOptions.actionTaken",
-        "Other": "alerts.assess.closeOptions.other"
+      escalatedOutcomes: {
+        "Dismissed": "alerts.assess.escalatedOutcomes.dismiss",
+        "ActionTaken": "alerts.assess.escalatedOutcomes.actionTaken",
+        "Other": "alerts.assess.escalatedOutcomes.other"
       },
       alert: {
         close: "alerts.assess.alert.close",
@@ -854,10 +854,10 @@ export const stringKeys = {
         "Escalated": "alerts.alertStatus.escalated",
         "Closed": "alerts.alertStatus.closed"
       },
-      closeOptions: {
-        "Dismissed": "alerts.closeOptions.dismissed",
-        "ActionTaken": "alerts.closeOptions.actionTaken",
-        "Other": "alerts.closeOptions.other"
+      escalatedOutcomes: {
+        "Dismissed": "alerts.escalatedOutcomes.dismissed",
+        "ActionTaken": "alerts.escalatedOutcomes.actionTaken",
+        "Other": "alerts.escalatedOutcomes.other"
       },
       reportStatus: {
         "Rejected": "alerts.reportStatus.rejected",

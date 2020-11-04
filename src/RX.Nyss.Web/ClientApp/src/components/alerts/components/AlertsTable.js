@@ -13,7 +13,7 @@ import TablePager from '../../common/tablePagination/TablePager';
 import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
-import { assessmentStatus, closeOptions, statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
+import { assessmentStatus, escalatedOutcomes, statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
 import { TableSortLabel, Tooltip } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 
@@ -43,7 +43,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, o
 
   const renderStatus = (alert) => {
     if (alert.status === assessmentStatus.closed) {
-      const tooltipText = alert.closeOption === undefined || alert.closeOption === closeOptions.other ? alert.comments : strings(stringKeys.alerts.constants.closeOptions[alert.closeOption]);
+      const tooltipText = alert.escalatedOutcome === undefined || alert.escalatedOutcome === escalatedOutcomes.other ? alert.comments : strings(stringKeys.alerts.constants.escalatedOutcomes[alert.escalatedOutcome]);
       return (
         <div className={alertTableStyles.closeStatus}>
           {strings(stringKeys.alerts.constants.alertStatus[alert.status])}

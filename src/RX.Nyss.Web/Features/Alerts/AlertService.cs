@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<Result<AlertAssessmentResponseDto>> Get(int alertId);
         Task<Result> Escalate(int alertId, bool sendNotification);
         Task<Result> Dismiss(int alertId);
-        Task<Result> Close(int alertId, string comments, CloseAlertOptions closeOption);
+        Task<Result> Close(int alertId, string comments, EscalatedAlertOutcomes escalatedOutcome);
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
         Task<Result<AlertLogResponseDto>> GetLogs(int alertId);
         Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
@@ -130,7 +130,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.Id,
                     a.CreatedAt,
                     a.Status,
-                    a.CloseOption,
+                    a.EscalatedOutcome,
                     a.Comments,
                     ReportCount = a.AlertReports.Count,
                     LastReport = a.AlertReports.OrderByDescending(ar => ar.Report.Id)
@@ -157,7 +157,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     Id = a.Id,
                     CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(a.CreatedAt, projectTimeZone),
                     Status = a.Status.ToString(),
-                    CloseOption = a.CloseOption,
+                    EscalatedOutcome = a.EscalatedOutcome,
                     Comments = a.Comments,
                     ReportCount = a.ReportCount,
                     LastReportVillage = a.LastReport.IsAnonymized
@@ -190,7 +190,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     CreatedAt = a.CreatedAt,
                     EscalatedAt = a.EscalatedAt,
                     Comments = a.Comments,
-                    CloseOption = a.CloseOption,
+                    EscalatedOutcome = a.EscalatedOutcome,
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)
@@ -235,7 +235,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 EscalatedAt = alert.EscalatedAt,
                 CaseDefinition = alert.CaseDefinition,
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
-                CloseOption = alert.CloseOption,
+                EscalatedOutcome = alert.EscalatedOutcome,
                 Reports = alert.Reports.Select(ar => currentUserCanSeeEveryoneData || userOrganizations.Any(uo => ar.OrganizationId == uo.Id)
                     ? new AlertAssessmentResponseDto.ReportDto
                     {
@@ -374,7 +374,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success();
         }
 
-        public async Task<Result> Close(int alertId, string comments, CloseAlertOptions closeOption)
+        public async Task<Result> Close(int alertId, string comments, EscalatedAlertOutcomes escalatedOutcome)
         {
             if (!await HasCurrentUserAlertEditAccess(alertId))
             {
@@ -403,7 +403,7 @@ namespace RX.Nyss.Web.Features.Alerts
             alertData.Alert.Status = AlertStatus.Closed;
             alertData.Alert.ClosedAt = _dateTimeProvider.UtcNow;
             alertData.Alert.ClosedBy = await _authorizationService.GetCurrentUser();
-            alertData.Alert.CloseOption = closeOption;
+            alertData.Alert.EscalatedOutcome = escalatedOutcome;
             alertData.Alert.Comments = comments;
 
             FormattableString updateReportsCommand = $@"UPDATE Nyss.Reports SET Status = {ReportStatus.Closed.ToString()} WHERE Status = {ReportStatus.Pending.ToString()}
@@ -453,7 +453,7 @@ namespace RX.Nyss.Web.Features.Alerts
                     a.EscalatedAt,
                     a.DismissedAt,
                     a.ClosedAt,
-                    a.CloseOption,
+                    a.EscalatedOutcome,
                     a.Comments,
                     EscalatedBy = a.EscalatedBy.DeletedAt.HasValue ||
                         (currentUser.Role != Role.Administrator &&
@@ -523,7 +523,7 @@ namespace RX.Nyss.Web.Features.Alerts
             {
                 list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.ApplyTimeZone(timeZone), alert.ClosedBy, new
                 {
-                    alert.CloseOption,
+                    alert.EscalatedOutcome,
                     alert.Comments
                 }));
             }

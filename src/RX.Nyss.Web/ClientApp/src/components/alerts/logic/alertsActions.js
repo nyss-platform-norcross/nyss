@@ -72,7 +72,7 @@ export const dismissAlert = {
 };
 
 export const closeAlert = {
-  invoke: (alertId, comments, closeOption) => ({ type: CLOSE_ALERT.INVOKE, alertId, comments, closeOption }),
+  invoke: (alertId, comments, escalatedOutcome) => ({ type: CLOSE_ALERT.INVOKE, alertId, comments, escalatedOutcome }),
   request: () => ({ type: CLOSE_ALERT.REQUEST }),
   success: () => ({ type: CLOSE_ALERT.SUCCESS }),
   failure: (message) => ({ type: CLOSE_ALERT.FAILURE, message })

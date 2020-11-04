@@ -32,7 +32,7 @@ export const logType = {
   rejectedReport: "RejectedReport"
 }
 
-export const closeOptions = {
+export const escalatedOutcomes = {
   dismissed: "Dismissed",
   actionTaken: "ActionTaken",
   other: "Other"

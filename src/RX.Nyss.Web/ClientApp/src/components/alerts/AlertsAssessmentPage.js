@@ -59,7 +59,7 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
       <div className={styles.form}>
         <DisplayField
           label={strings(getAssessmentStatusInformation(data.assessmentStatus))}
-          value={strings(stringKeys.alerts.constants.closeOptions[data.closeOption])}
+          value={strings(stringKeys.alerts.constants.escalatedOutcomes[data.escalatedOutcome])}
         />
 
         {data.assessmentStatus === assessmentStatus.closed && data.comments && (

@@ -130,7 +130,7 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Close(int alertId, [FromBody] CloseAlertRequestDto dto) =>
-            _alertService.Close(alertId, dto.Comments, dto.CloseOption);
+            _alertService.Close(alertId, dto.Comments, dto.EscalatedOutcome);
 
         /// <summary>
         /// Retrieves the alert actions' log

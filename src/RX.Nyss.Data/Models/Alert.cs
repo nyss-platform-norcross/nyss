@@ -24,7 +24,7 @@ namespace RX.Nyss.Data.Models
 
         public virtual User ClosedBy { get; set; }
 
-        public CloseAlertOptions? CloseOption { get; set; }
+        public EscalatedAlertOutcomes? EscalatedOutcome { get; set; }
 
         public string Comments { get; set; }
 

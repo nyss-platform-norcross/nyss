@@ -579,7 +579,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().Status = status;
 
-            var result = await _alertService.Close(TestData.AlertId, "", CloseAlertOptions.Dismissed);
+            var result = await _alertService.Close(TestData.AlertId, "", EscalatedAlertOutcomes.Dismissed);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlert.WrongStatus);
@@ -592,7 +592,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().Status = AlertStatus.Escalated;
 
-            var result = await _alertService.Close(TestData.AlertId, comments, CloseAlertOptions.Other);
+            var result = await _alertService.Close(TestData.AlertId, comments, EscalatedAlertOutcomes.Other);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Closed);
             _alerts.First().ClosedAt.ShouldBe(_now);
