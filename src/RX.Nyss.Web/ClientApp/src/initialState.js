@@ -303,7 +303,9 @@ export const initialState = {
     isFetchingRecipients: false,
     isPendingAlertState: false,
     notificationPhoneNumbers: [],
-    notificationEmails: []
+    notificationEmails: [],
+    filters: null,
+    filtersData: null
   },
   translations: {
     listFetching: false,

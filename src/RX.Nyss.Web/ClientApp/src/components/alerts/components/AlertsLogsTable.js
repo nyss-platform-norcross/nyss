@@ -7,11 +7,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { stringKeys, strings, stringsFormat } from "../../../strings";
 import { TableContainer } from "@material-ui/core";
-import { logType, closeOptions } from '../logic/alertsConstants';
+import { logType, escalatedOutcomes } from '../logic/alertsConstants';
 
 const formatString = (row) => {
-  if (row.logType === logType.closedAlert && row.metadata.closeOption !== closeOptions.other) {
-    return `${stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata)} - ${strings(stringKeys.alerts.constants.closeOptions[row.metadata.closeOption])}`;
+  if (row.logType === logType.closedAlert && row.metadata.escalatedOutcome !== escalatedOutcomes.other) {
+    return `${stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata)} - ${strings(stringKeys.alerts.constants.escalatedOutcomes[row.metadata.escalatedOutcome])}`;
   } else {
     return stringsFormat(stringKeys.alerts.constants.logType[row.logType], row.metadata);
   }

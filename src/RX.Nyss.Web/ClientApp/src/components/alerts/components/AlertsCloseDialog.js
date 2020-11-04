@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 import DialogContent from "@material-ui/core/DialogContent";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme, Grid, FormControlLabel, Radio } from "@material-ui/core";
-import { closeOptions } from '../logic/alertsConstants';
+import { escalatedOutcomes } from '../logic/alertsConstants';
 import { validators, createForm } from '../../../utils/forms';
 import Form from '../../forms/form/Form';
 import RadioGroupField from '../../forms/RadioGroupField';
@@ -20,13 +20,13 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
 
   const [form] = useState(() => {
     const fields = {
-      closeOption: closeOptions.dismissed,
+      escalatedOutcome: escalatedOutcomes.dismissed,
       comments: ""
     };
 
     const validation = {
-      closeOption: [validators.required],
-      comments: [validators.maxLength(500), validators.requiredWhen(x => x.closeOption === closeOptions.other)]
+      escalatedOutcome: [validators.required],
+      comments: [validators.maxLength(500), validators.requiredWhen(x => x.escalatedOutcome === escalatedOutcomes.other)]
     };
     return createForm(fields, validation);
   });
@@ -37,7 +37,7 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
     if (!form.isValid()) {
       return;
     }
-    closeAlert(alertId, form.fields.comments.value, form.fields.closeOption.value);
+    closeAlert(alertId, form.fields.comments.value, form.fields.escalatedOutcome.value);
   }
 
   return (
@@ -49,10 +49,10 @@ export const AlertsCloseDialog = ({ isOpened, close, alertId, isClosing, closeAl
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <RadioGroupField
-                name="closeOption"
-                field={form.fields.closeOption} >
-                {Object.keys(closeOptions).map(option => (
-                  <FormControlLabel key={option} control={<Radio />} label={strings(stringKeys.alerts.assess.closeOptions[closeOptions[option]])} value={closeOptions[option]} />
+                name="escalatedOutcome"
+                field={form.fields.escalatedOutcome} >
+                {Object.keys(escalatedOutcomes).map(option => (
+                  <FormControlLabel key={option} control={<Radio />} label={strings(stringKeys.alerts.assess.escalatedOutcomes[escalatedOutcomes[option]])} value={escalatedOutcomes[option]} />
                 ))}
               </RadioGroupField>
             </Grid>

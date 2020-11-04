@@ -25,15 +25,26 @@ namespace RX.Nyss.Web.Features.Alerts
         }
 
         /// <summary>
+        /// Gets filter data
+        /// </summary>
+        /// <param name="projectId">An identifier of a project</param>
+        [HttpGet("getFiltersData")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsPolicy(Policy.ProjectAccess)]
+        public Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId) =>
+            _alertService.GetFiltersData(projectId);
+
+        /// <summary>
         /// Lists alerts for a specific project
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
         /// <param name="pageNumber">Page number</param>
-        [HttpGet("list")]
+        /// <param name="filterRequestDto">Filters</param>
+        [HttpPost("list")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
-        public Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber) =>
-            _alertService.List(projectId, pageNumber);
+        public Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, [FromBody] AlertListFilterRequestDto filterRequestDto) =>
+            _alertService.List(projectId, pageNumber, filterRequestDto);
 
         /// <summary>
         /// Gets information about the alert
@@ -119,7 +130,7 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Close(int alertId, [FromBody] CloseAlertRequestDto dto) =>
-            _alertService.Close(alertId, dto.Comments, dto.CloseOption);
+            _alertService.Close(alertId, dto.Comments, dto.EscalatedOutcome);
 
         /// <summary>
         /// Retrieves the alert actions' log

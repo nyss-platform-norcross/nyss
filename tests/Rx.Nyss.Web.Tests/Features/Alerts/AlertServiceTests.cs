@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Castle.Components.DictionaryAdapter;
+using Microsoft.CodeAnalysis;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Extensions;
@@ -16,11 +17,13 @@ using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts;
 using RX.Nyss.Web.Features.Alerts.Dto;
+using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
+using Project = RX.Nyss.Data.Models.Project;
 
 namespace RX.Nyss.Web.Tests.Features.Alerts
 {
@@ -38,6 +41,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly ISmsPublisherService _smsPublisherService;
         private readonly List<GatewaySetting> _gatewaySettings;
         private readonly List<AlertNotificationRecipient> _alertNotificationRecipients;
+        private readonly IProjectService _projectService;
 
         public AlertServiceTests()
         {
@@ -46,12 +50,14 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var emailTextGeneratorService = Substitute.For<IEmailTextGeneratorService>();
             _smsTextGeneratorService = Substitute.For<ISmsTextGeneratorService>();
             var config = Substitute.For<INyssWebConfig>();
+            config.PaginationRowsPerPage.Returns(5);
             var loggerAdapter = Substitute.For<ILoggerAdapter>();
 
             _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _authorizationService = Substitute.For<IAuthorizationService>();
 
             _smsPublisherService = Substitute.For<ISmsPublisherService>();
+            _projectService = Substitute.For<IProjectService>();
             _alertService = new AlertService(_nyssContext,
                 _emailPublisherService,
                 emailTextGeneratorService,
@@ -60,7 +66,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 loggerAdapter,
                 _dateTimeProvider,
                 _authorizationService,
-                _smsPublisherService);
+                _smsPublisherService,
+                _projectService);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
@@ -229,13 +236,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Supervisor = new SupervisorUser
                             {
                                 Id = 1,
-                                UserNationalSocieties = new List<UserNationalSociety>
-                                {
-                                    new UserNationalSociety
-                                    {
-                                        OrganizationId = 1
-                                    }
-                                }
+                                UserNationalSocieties = new List<UserNationalSociety> { new UserNationalSociety { OrganizationId = 1 } }
                             }
                         }
                     }
@@ -302,13 +303,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Supervisor = new SupervisorUser
                             {
                                 Id = 1,
-                                UserNationalSocieties = new List<UserNationalSociety>
-                                {
-                                    new UserNationalSociety
-                                    {
-                                        OrganizationId = 1
-                                    }
-                                }
+                                UserNationalSocieties = new List<UserNationalSociety> { new UserNationalSociety { OrganizationId = 1 } }
                             }
                         }
                     }
@@ -366,13 +361,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Supervisor = new SupervisorUser
                             {
                                 Id = 1,
-                                UserNationalSocieties = new List<UserNationalSociety>
-                                {
-                                    new UserNationalSociety
-                                    {
-                                        OrganizationId = 1
-                                    }
-                                }
+                                UserNationalSocieties = new List<UserNationalSociety> { new UserNationalSociety { OrganizationId = 1 } }
                             }
                         }
                     }
@@ -590,7 +579,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         {
             _alerts.First().Status = status;
 
-            var result = await _alertService.Close(TestData.AlertId, "", CloseAlertOptions.Dismissed);
+            var result = await _alertService.Close(TestData.AlertId, "", EscalatedAlertOutcomes.Dismissed);
 
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.Alert.CloseAlert.WrongStatus);
@@ -603,7 +592,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _alerts.First().Status = AlertStatus.Escalated;
 
-            var result = await _alertService.Close(TestData.AlertId, comments, CloseAlertOptions.Other);
+            var result = await _alertService.Close(TestData.AlertId, comments, EscalatedAlertOutcomes.Other);
 
             _alerts.First().Status.ShouldBe(AlertStatus.Closed);
             _alerts.First().ClosedAt.ShouldBe(_now);
@@ -747,6 +736,57 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             result.Value.Items.ElementAt(3).Date.ShouldBe(closedAt.ApplyTimeZone(TestData.TimeZone));
         }
 
+        [Theory]
+        [InlineData(AlertStatusFilter.All)]
+        [InlineData(AlertStatusFilter.Open)]
+        [InlineData(AlertStatusFilter.Escalated)]
+        [InlineData(AlertStatusFilter.Dismissed)]
+        [InlineData(AlertStatusFilter.Closed)]
+        public async Task List_WhenFiltering_ShouldReturnSubsetOfAlerts(AlertStatusFilter alertStatusFilter)
+        {
+            var alerts = TestData.GetAlertsForFiltering();
+            var alertsMockDbSet = alerts.AsQueryable().BuildMockDbSet();
+            var projects = new List<Project> { alerts.Select(a => a.ProjectHealthRisk.Project).First() };
+            var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
+            var users = TestData.GetUsers();
+            var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+            _nyssContext.Users.Returns(usersMockDbSet);
+            _nyssContext.Projects.Returns(projectsMockDbSet);
+            _nyssContext.Projects.FindAsync(1).Returns(projects[0]);
+            _nyssContext.Alerts.Returns(alertsMockDbSet);
+            _authorizationService.GetCurrentUser().Returns(users[0]);
+            _authorizationService.GetCurrentUserName().Returns(users[0].EmailAddress);
+
+            var res = await _alertService.List(1, 1, new AlertListFilterRequestDto
+            {
+                Area = null,
+                HealthRiskId = null,
+                OrderBy = "Status",
+                SortAscending = true,
+                Status = alertStatusFilter
+            });
+
+            if (alertStatusFilter == AlertStatusFilter.All)
+            {
+                res.Value.Data.Count.ShouldBe(4);
+            }
+            else
+            {
+                res.Value.Data.All(a => a.Status == MapToAlertStatus(alertStatusFilter).ToString()).ShouldBeTrue();
+                res.Value.Data.Count.ShouldBe(1);
+            }
+        }
+
+        private AlertStatus MapToAlertStatus(AlertStatusFilter filter) =>
+            filter switch
+            {
+                AlertStatusFilter.Open => AlertStatus.Pending,
+                AlertStatusFilter.Escalated => AlertStatus.Escalated,
+                AlertStatusFilter.Dismissed => AlertStatus.Dismissed,
+                AlertStatusFilter.Closed => AlertStatus.Closed,
+                _ => AlertStatus.Pending
+            };
+
         private static class TestData
         {
             public const int AlertId = 1;
@@ -844,6 +884,323 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                     }
                 };
 
+            public static List<Alert> GetAlertsForFiltering() =>
+                new List<Alert>
+                {
+                    new Alert
+                    {
+                        Id = 1,
+                        Status = AlertStatus.Escalated,
+                        CreatedAt = new DateTime(2020, 1, 1),
+                        EscalatedBy = DefaultUser,
+                        DismissedBy = DefaultUser,
+                        ClosedBy = DefaultUser,
+                        AlertReports = new List<AlertReport>
+                        {
+                            new AlertReport
+                            {
+                                Report = new Report
+                                {
+                                    Id = ReportId,
+                                    Status = ReportStatus.Pending,
+                                    AcceptedBy = DefaultUser,
+                                    RejectedBy = DefaultUser,
+                                    ResetBy = DefaultUser,
+                                    RawReport = new RawReport
+                                    {
+                                        ApiKey = ApiKey,
+                                        Village = new Village
+                                        {
+                                            Name = "Village 1",
+                                            District = new District
+                                            {
+                                                Name = "District 9",
+                                                Region = new Region { Name = "Region 1" }
+                                            }
+                                        }
+                                    },
+                                    DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
+                                }
+                            }
+                        },
+                        ProjectHealthRisk = new ProjectHealthRisk
+                        {
+                            AlertRule = new AlertRule(),
+                            HealthRisk = new HealthRisk
+                            {
+                                LanguageContents = new List<HealthRiskLanguageContent>
+                                {
+                                    new HealthRiskLanguageContent
+                                    {
+                                        ContentLanguage = new ContentLanguage
+                                        {
+                                            Id = ContentLanguageId,
+                                            LanguageCode = ContentLanguageCode
+                                        }
+                                    }
+                                }
+                            },
+                            Project = new Project
+                            {
+                                Id = 1,
+                                TimeZone = TimeZoneName,
+                                AlertNotificationRecipients = new List<AlertNotificationRecipient>
+                                {
+                                    new AlertNotificationRecipient
+                                    {
+                                        Email = "aaaa@example.com",
+                                        PhoneNumber = "+423423223"
+                                    }
+                                },
+                                NationalSociety = new NationalSociety
+                                {
+                                    Id = NationalSocietyId,
+                                    ContentLanguage = new ContentLanguage
+                                    {
+                                        Id = ContentLanguageId,
+                                        LanguageCode = ContentLanguageCode
+                                    },
+                                    NationalSocietyUsers = new List<UserNationalSociety>()
+                                }
+                            }
+                        }
+                    },
+                    new Alert
+                    {
+                        Id = 1,
+                        Status = AlertStatus.Pending,
+                        CreatedAt = new DateTime(2020, 1, 2),
+                        EscalatedBy = DefaultUser,
+                        DismissedBy = DefaultUser,
+                        ClosedBy = DefaultUser,
+                        AlertReports = new List<AlertReport>
+                        {
+                            new AlertReport
+                            {
+                                Report = new Report
+                                {
+                                    Id = ReportId,
+                                    Status = ReportStatus.Pending,
+                                    AcceptedBy = DefaultUser,
+                                    RejectedBy = DefaultUser,
+                                    ResetBy = DefaultUser,
+                                    RawReport = new RawReport
+                                    {
+                                        ApiKey = ApiKey,
+                                        Village = new Village
+                                        {
+                                            Name = "Village 1",
+                                            District = new District
+                                            {
+                                                Name = "District 9",
+                                                Region = new Region { Name = "Region 1" }
+                                            }
+                                        }
+                                    },
+                                    DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
+                                }
+                            }
+                        },
+                        ProjectHealthRisk = new ProjectHealthRisk
+                        {
+                            AlertRule = new AlertRule(),
+                            HealthRisk = new HealthRisk
+                            {
+                                LanguageContents = new List<HealthRiskLanguageContent>
+                                {
+                                    new HealthRiskLanguageContent
+                                    {
+                                        ContentLanguage = new ContentLanguage
+                                        {
+                                            Id = ContentLanguageId,
+                                            LanguageCode = ContentLanguageCode
+                                        }
+                                    }
+                                }
+                            },
+                            Project = new Project
+                            {
+                                Id = 1,
+                                TimeZone = TimeZoneName,
+                                AlertNotificationRecipients = new List<AlertNotificationRecipient>
+                                {
+                                    new AlertNotificationRecipient
+                                    {
+                                        Email = "aaaa@example.com",
+                                        PhoneNumber = "+423423223"
+                                    }
+                                },
+                                NationalSociety = new NationalSociety
+                                {
+                                    Id = NationalSocietyId,
+                                    ContentLanguage = new ContentLanguage
+                                    {
+                                        Id = ContentLanguageId,
+                                        LanguageCode = ContentLanguageCode
+                                    },
+                                    NationalSocietyUsers = new List<UserNationalSociety>()
+                                }
+                            }
+                        }
+                    },
+                    new Alert
+                    {
+                        Id = 1,
+                        Status = AlertStatus.Dismissed,
+                        CreatedAt = new DateTime(2020, 1, 3),
+                        EscalatedBy = DefaultUser,
+                        DismissedBy = DefaultUser,
+                        ClosedBy = DefaultUser,
+                        AlertReports = new List<AlertReport>
+                        {
+                            new AlertReport
+                            {
+                                Report = new Report
+                                {
+                                    Id = ReportId,
+                                    Status = ReportStatus.Pending,
+                                    AcceptedBy = DefaultUser,
+                                    RejectedBy = DefaultUser,
+                                    ResetBy = DefaultUser,
+                                    RawReport = new RawReport
+                                    {
+                                        ApiKey = ApiKey,
+                                        Village = new Village
+                                        {
+                                            Name = "Village 1",
+                                            District = new District
+                                            {
+                                                Name = "District 9",
+                                                Region = new Region { Name = "Region 1" }
+                                            }
+                                        }
+                                    },
+                                    DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
+                                }
+                            }
+                        },
+                        ProjectHealthRisk = new ProjectHealthRisk
+                        {
+                            AlertRule = new AlertRule(),
+                            HealthRisk = new HealthRisk
+                            {
+                                LanguageContents = new List<HealthRiskLanguageContent>
+                                {
+                                    new HealthRiskLanguageContent
+                                    {
+                                        ContentLanguage = new ContentLanguage
+                                        {
+                                            Id = ContentLanguageId,
+                                            LanguageCode = ContentLanguageCode
+                                        }
+                                    }
+                                }
+                            },
+                            Project = new Project
+                            {
+                                Id = 1,
+                                TimeZone = TimeZoneName,
+                                AlertNotificationRecipients = new List<AlertNotificationRecipient>
+                                {
+                                    new AlertNotificationRecipient
+                                    {
+                                        Email = "aaaa@example.com",
+                                        PhoneNumber = "+423423223"
+                                    }
+                                },
+                                NationalSociety = new NationalSociety
+                                {
+                                    Id = NationalSocietyId,
+                                    ContentLanguage = new ContentLanguage
+                                    {
+                                        Id = ContentLanguageId,
+                                        LanguageCode = ContentLanguageCode
+                                    },
+                                    NationalSocietyUsers = new List<UserNationalSociety>()
+                                }
+                            }
+                        }
+                    },
+                    new Alert
+                    {
+                        Id = 1,
+                        Status = AlertStatus.Closed,
+                        CreatedAt = new DateTime(2020, 1, 4),
+                        EscalatedBy = DefaultUser,
+                        DismissedBy = DefaultUser,
+                        ClosedBy = DefaultUser,
+                        AlertReports = new List<AlertReport>
+                        {
+                            new AlertReport
+                            {
+                                Report = new Report
+                                {
+                                    Id = ReportId,
+                                    Status = ReportStatus.Pending,
+                                    AcceptedBy = DefaultUser,
+                                    RejectedBy = DefaultUser,
+                                    ResetBy = DefaultUser,
+                                    RawReport = new RawReport
+                                    {
+                                        ApiKey = ApiKey,
+                                        Village = new Village
+                                        {
+                                            Name = "Village 1",
+                                            District = new District
+                                            {
+                                                Name = "District 9",
+                                                Region = new Region { Name = "Region 1" }
+                                            }
+                                        }
+                                    },
+                                    DataCollector = new DataCollector { Supervisor = new SupervisorUser { SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>() } }
+                                }
+                            }
+                        },
+                        ProjectHealthRisk = new ProjectHealthRisk
+                        {
+                            AlertRule = new AlertRule(),
+                            HealthRisk = new HealthRisk
+                            {
+                                LanguageContents = new List<HealthRiskLanguageContent>
+                                {
+                                    new HealthRiskLanguageContent
+                                    {
+                                        ContentLanguage = new ContentLanguage
+                                        {
+                                            Id = ContentLanguageId,
+                                            LanguageCode = ContentLanguageCode
+                                        }
+                                    }
+                                }
+                            },
+                            Project = new Project
+                            {
+                                Id = 1,
+                                TimeZone = TimeZoneName,
+                                AlertNotificationRecipients = new List<AlertNotificationRecipient>
+                                {
+                                    new AlertNotificationRecipient
+                                    {
+                                        Email = "aaaa@example.com",
+                                        PhoneNumber = "+423423223"
+                                    }
+                                },
+                                NationalSociety = new NationalSociety
+                                {
+                                    Id = NationalSocietyId,
+                                    ContentLanguage = new ContentLanguage
+                                    {
+                                        Id = ContentLanguageId,
+                                        LanguageCode = ContentLanguageCode
+                                    },
+                                    NationalSocietyUsers = new List<UserNationalSociety>()
+                                }
+                            }
+                        }
+                    }
+                };
+
             public static List<GatewaySetting> GetGatewaySettings() =>
                 new List<GatewaySetting>
                 {
@@ -853,6 +1210,16 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                         GatewayType = GatewayType.SmsEagle,
                         EmailAddress = GatewayEmail,
                         NationalSocietyId = NationalSocietyId
+                    }
+                };
+
+            public static List<User> GetUsers() =>
+                new List<User>
+                {
+                    new AdministratorUser
+                    {
+                        EmailAddress = "admin@domain.com",
+                        Id = 1
                     }
                 };
         }

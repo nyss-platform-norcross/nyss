@@ -32,8 +32,21 @@ export const logType = {
   rejectedReport: "RejectedReport"
 }
 
-export const closeOptions = {
+export const escalatedOutcomes = {
   dismissed: "Dismissed",
   actionTaken: "ActionTaken",
   other: "Other"
 }
+
+export const alertStatusFilters = {
+  all: "All",
+  open: "Open",
+  escalated: "Escalated",
+  dismissed: "Dismissed",
+  notValid: "NotValid",
+  closed: "Closed"
+}
+
+export const timeTriggeredColumn = "TimeTriggered";
+export const timeOfLastReportColumn = "TimeOfLastReport";
+export const statusColumn = "Status";

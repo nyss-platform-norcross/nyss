@@ -17,7 +17,7 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
 
         public string Status { get; set; }
 
-        public CloseAlertOptions? CloseOption { get; set; }
+        public EscalatedAlertOutcomes? EscalatedOutcome { get; set; }
 
         public string Comments { get; set; }
 

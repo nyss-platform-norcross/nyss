@@ -11,14 +11,14 @@ export const goToAssessment = (projectId, alertId) => push(`/projects/${projectI
 export const openList = {
   invoke: (projectId) => ({ type: OPEN_ALERTS_LIST.INVOKE, projectId }),
   request: () => ({ type: OPEN_ALERTS_LIST.REQUEST }),
-  success: (projectId) => ({ type: OPEN_ALERTS_LIST.SUCCESS, projectId }),
+  success: (projectId, filtersData) => ({ type: OPEN_ALERTS_LIST.SUCCESS, projectId, filtersData }),
   failure: (message) => ({ type: OPEN_ALERTS_LIST.FAILURE, message })
 };
 
 export const getList = {
-  invoke: (projectId, pageNumber) => ({ type: GET_ALERTS.INVOKE, projectId, pageNumber }),
+  invoke: (projectId, pageNumber, filters) => ({ type: GET_ALERTS.INVOKE, projectId, pageNumber, filters }),
   request: () => ({ type: GET_ALERTS.REQUEST }),
-  success: (data, page, rowsPerPage, totalRows) => ({ type: GET_ALERTS.SUCCESS, data, page, rowsPerPage, totalRows }),
+  success: (data, page, rowsPerPage, totalRows, filters) => ({ type: GET_ALERTS.SUCCESS, data, page, rowsPerPage, totalRows, filters }),
   failure: (message) => ({ type: GET_ALERTS.FAILURE, message })
 };
 
@@ -72,7 +72,7 @@ export const dismissAlert = {
 };
 
 export const closeAlert = {
-  invoke: (alertId, comments, closeOption) => ({ type: CLOSE_ALERT.INVOKE, alertId, comments, closeOption }),
+  invoke: (alertId, comments, escalatedOutcome) => ({ type: CLOSE_ALERT.INVOKE, alertId, comments, escalatedOutcome }),
   request: () => ({ type: CLOSE_ALERT.REQUEST }),
   success: () => ({ type: CLOSE_ALERT.SUCCESS }),
   failure: (message) => ({ type: CLOSE_ALERT.FAILURE, message })
