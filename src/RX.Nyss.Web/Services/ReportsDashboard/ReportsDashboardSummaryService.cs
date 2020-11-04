@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 
             return new AlertsSummaryResponseDto
             {
-                Escalated = alerts.Count(a => a.EscalatedAt.HasValue && a.EscalatedAt >= filter.StartDate && a.EscalatedAt <= filter.EndDate),
+                Escalated = alerts.Count(a => a.Status == AlertStatus.Escalated && a.EscalatedAt.HasValue && a.EscalatedAt >= filter.StartDate && a.EscalatedAt <= filter.EndDate),
                 Dismissed = alerts.Count(a => a.DismissedAt.HasValue && a.DismissedAt >= filter.StartDate && a.DismissedAt <= filter.EndDate),
                 Closed = alerts.Count(a => a.ClosedAt.HasValue && a.ClosedAt >= filter.StartDate && a.ClosedAt <= filter.EndDate),
                 Open = alerts.Count(a => a.Status == AlertStatus.Pending)
