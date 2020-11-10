@@ -106,8 +106,6 @@ namespace RX.Nyss.Web.Features.Alerts
             alertReport.Report.RejectedAt = _dateTimeProvider.UtcNow;
             alertReport.Report.RejectedBy = await _authorizationService.GetCurrentUser();
 
-            await DismissAlertReport(reportId);
-
             await _nyssContext.SaveChangesAsync();
 
             var response = new DismissReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
@@ -145,12 +143,11 @@ namespace RX.Nyss.Web.Features.Alerts
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.ReportWasCrossCheckedBeforeAlertEscalation);
             }
 
+            alertReport.Report.Status = ReportStatus.Pending;
             alertReport.Report.ResetAt = _dateTimeProvider.UtcNow;
             alertReport.Report.ResetBy = await _authorizationService.GetCurrentUser();
-            
-            await _nyssContext.SaveChangesAsync();
 
-            await ResetAlertReport(reportId);
+            await _nyssContext.SaveChangesAsync();
 
             var response = new ResetReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
 
@@ -178,19 +175,5 @@ namespace RX.Nyss.Web.Features.Alerts
 
         private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
             StatusConstants.AlertStatusesAllowingCrossChecks.Contains(alertReport.Alert.Status);
-
-        private Task DismissAlertReport(int reportId)
-        {
-            var message = new DismissReportMessage { ReportId = reportId };
-
-            return _queueService.Send(_config.ServiceBusQueues.ReportDismissalQueue, message);
-        }
-
-        private Task ResetAlertReport(int reportId)
-        {
-            var message = new ResetReportMessage { ReportId = reportId };
-
-            return _queueService.Send(_config.ServiceBusQueues.ReportResetQueue, message);
-        }
     }
 }

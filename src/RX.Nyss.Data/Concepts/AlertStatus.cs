@@ -3,7 +3,6 @@
     public enum AlertStatus
     {
         Pending,
-        Rejected,
         Dismissed,
         Escalated,
         Closed

@@ -85,10 +85,3 @@ export const fetchRecipients = {
   failure: (message) => ({ type: FETCH_RECIPIENTS.FAILURE, message })
 };
 
-export const refreshAlertStatus = {
-  invoke: (alertId) => ({ type: REFRESH_ALERT_STATUS.INVOKE, alertId }),
-  request: () => ({ type: REFRESH_ALERT_STATUS.REQUEST }),
-  success: (data) => ({ type: REFRESH_ALERT_STATUS.SUCCESS, data }),
-  failure: (message) => ({ type: REFRESH_ALERT_STATUS.FAILURE, message })
-};
-

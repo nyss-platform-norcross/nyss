@@ -5,7 +5,6 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         All,
         Open,
         Escalated,
-        NotValid,
         Dismissed,
         Closed
     }

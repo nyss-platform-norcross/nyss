@@ -356,12 +356,12 @@ namespace RX.Nyss.Web.Features.Alerts
                 })
                 .SingleAsync();
 
-            if (alertData.Alert.Status != AlertStatus.Pending && alertData.Alert.Status != AlertStatus.Rejected)
+            if (alertData.Alert.Status != AlertStatus.Pending)
             {
                 return Error(ResultKey.Alert.DismissAlert.WrongStatus);
             }
 
-            if (alertData.MaximumAcceptedReportCount >= alertData.CountThreshold && alertData.Alert.Status != AlertStatus.Rejected)
+            if (alertData.MaximumAcceptedReportCount >= alertData.CountThreshold)
             {
                 return Error(ResultKey.Alert.DismissAlert.PossibleEscalation);
             }
@@ -633,9 +633,6 @@ namespace RX.Nyss.Web.Features.Alerts
 
                 AlertStatus.Closed =>
                     AlertAssessmentStatus.Closed,
-
-                AlertStatus.Rejected =>
-                    AlertAssessmentStatus.Rejected,
 
                 AlertStatus.Pending when acceptedReports >= countThreshold =>
                     AlertAssessmentStatus.ToEscalate,

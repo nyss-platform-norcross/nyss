@@ -154,8 +154,7 @@ const mapDispatchToProps = {
   escalateAlert: alertsActions.escalateAlert.invoke,
   closeAlert: alertsActions.closeAlert.invoke,
   dismissAlert: alertsActions.dismissAlert.invoke,
-  fetchRecipients: alertsActions.fetchRecipients.invoke,
-  refreshAlertState: alertsActions.refreshAlertStatus.invoke
+  fetchRecipients: alertsActions.fetchRecipients.invoke
 };
 
 export const AlertsAssessmentPage = useLayout(

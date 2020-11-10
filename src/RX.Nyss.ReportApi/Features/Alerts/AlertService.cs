@@ -93,7 +93,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var inspectedAlert = await _nyssContext.AlertReports
                 .Where(ar => ar.ReportId == reportId)
-                .Where(ar => ar.Alert.Status == AlertStatus.Pending)
+                .Where(ar => StatusConstants.AlertStatusesAllowingCrossChecks.Contains(ar.Alert.Status))
                 .Select(ar => ar.Alert)
                 .SingleOrDefaultAsync();
 
@@ -172,10 +172,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             if (shouldBeRecalculated)
             {
-                var alertRule = report.ProjectHealthRisk.AlertRule;
-
                 await _reportLabelingService.ResolveLabelsOnReportAdded(report, report.ProjectHealthRisk);
-                await ResetAlertStatusAfterReportReset(alertRule, inspectedAlert);
             }
 
             await _nyssContext.SaveChangesAsync();
@@ -403,11 +400,6 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var noGroupWithinAlertSatisfiesCountThreshold = !updatedReportsGroupedByLabel.Any(g => g.Count() >= alertRule.CountThreshold);
             if (noGroupWithinAlertSatisfiesCountThreshold)
             {
-                if (inspectedAlert.Status != AlertStatus.Dismissed)
-                {
-                    inspectedAlert.Status = AlertStatus.Rejected;
-                }
-
                 foreach (var groupNotSatisfyingThreshold in updatedReportsGroupedByLabel)
                 {
                     var reportGroupLabel = groupNotSatisfyingThreshold.Key;
@@ -426,7 +418,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             var updatedReportsGroupedByLabel = alertReportsWitUpdatedLabels.GroupBy(r => r.ReportGroupLabel).ToList();
 
             var stillValidReportGroup = updatedReportsGroupedByLabel.Any(g => g.Count() >= alertRule.CountThreshold);
-            if (stillValidReportGroup && inspectedAlert.Status == AlertStatus.Rejected)
+            if (stillValidReportGroup)
             {
                     inspectedAlert.Status = AlertStatus.Pending;
             }
