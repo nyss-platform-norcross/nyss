@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
+            if (!AlertHasStatusThatAllowsReportCrossChecks(alertReport))
             {
                 return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReport.WrongAlertStatus);
             }
@@ -92,7 +92,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
+            if (!AlertHasStatusThatAllowsReportCrossChecks(alertReport))
             {
                 return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReport.WrongAlertStatus);
             }
@@ -126,12 +126,12 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
+            if (!AlertHasStatusThatAllowsReportCrossChecks(alertReport))
             {
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongAlertStatus);
             }
 
-            if (alertReport.Report.Status != ReportStatus.Accepted && alertReport.Report.Status != ReportStatus.Rejected)
+            if (!ReportHasStatusThatAllowsReset(alertReport))
             {
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongReportStatus);
             }
@@ -173,7 +173,10 @@ namespace RX.Nyss.Web.Features.Alerts
             return canAssess;
         }
 
-        private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
+        private static bool AlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
             StatusConstants.AlertStatusesAllowingCrossChecks.Contains(alertReport.Alert.Status);
+
+        private static bool ReportHasStatusThatAllowsReset(AlertReport alertReport) =>
+            StatusConstants.ReportStatusesAllowedToBeReset.Contains(alertReport.Report.Status);
     }
 }
