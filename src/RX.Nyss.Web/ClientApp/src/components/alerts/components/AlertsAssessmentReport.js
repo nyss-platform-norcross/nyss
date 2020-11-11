@@ -32,7 +32,7 @@ const getReportIcon = (status) => {
 }
 
 export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptReport, dismissReport, resetReport, status, projectIsClosed }) => {
-  const showActions = status !== assessmentStatus.closed && report.status === "Pending" && !report.isAnonymized;
+  const showActions = status !== assessmentStatus.closed && status !== assessmentStatus.dismissed && report.status === "Pending" && !report.isAnonymized;
   const showResetOption = status !== assessmentStatus.closed
     && status !== assessmentStatus.dismissed
     && (report.status === "Accepted" || report.status === "Rejected")

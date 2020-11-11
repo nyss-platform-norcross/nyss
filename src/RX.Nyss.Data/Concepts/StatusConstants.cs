@@ -6,6 +6,6 @@
 
         public static readonly ReportStatus[] ReportStatusesAllowedToBeReset = { ReportStatus.Accepted, ReportStatus.Rejected };
 
-        public static readonly AlertStatus[] AlertStatusesAllowingCrossChecks = { AlertStatus.Pending, AlertStatus.Dismissed, AlertStatus.Escalated };
+        public static readonly AlertStatus[] AlertStatusesAllowingCrossChecks = { AlertStatus.Pending, AlertStatus.Escalated };
     }
 }

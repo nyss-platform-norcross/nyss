@@ -70,7 +70,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         }
 
         [Theory]
-        [InlineData(AlertStatus.Dismissed)]
+        [InlineData(AlertStatus.Pending)]
         [InlineData(AlertStatus.Escalated)]
         public async Task AcceptReport_WhenAlertIsInRightStatus_ShouldReturnSuccess(AlertStatus status)
         {

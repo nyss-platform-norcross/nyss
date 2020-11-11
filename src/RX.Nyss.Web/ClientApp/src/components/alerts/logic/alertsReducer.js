@@ -96,7 +96,7 @@ export function alertsReducer(state = initialState.alerts, action) {
         ...state,
         formData: {
           ...state.formData,
-          reports: updateReport(state.formData.reports, action.reportId, { isResetting: false })
+          reports: updateReport(state.formData.reports, action.reportId, { isDismissing: false })
         }
       };
 
