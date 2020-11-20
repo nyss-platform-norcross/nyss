@@ -19,8 +19,20 @@ namespace RX.Nyss.Data.MigrationApp
 
             var dbConnectionString = args[0];
             var createDemoData = args.Any(a => a == "createDemoData");
+            var createTrainingData = args.Any(a => a == "createTrainingData");
             var password = args.FirstOrDefault(a => a.StartsWith("password="))?.Split("=")[1];
             var adminPassword = args.FirstOrDefault(a => a.StartsWith("adminPassword="))?.Split("=")[1];
+            var groups = args.FirstOrDefault(a => a.StartsWith("groups="))?.Split("=")[1];
+
+            if (createDemoData && createTrainingData)
+            {
+                throw new ArgumentException("Arguments 'createDemoData' and 'createTrainingData' cannot be used together");
+            }
+
+            if (createTrainingData && groups == null)
+            {
+                throw new ArgumentException("Argument 'groups' is missing");
+            }
 
             try
             {
@@ -29,8 +41,14 @@ namespace RX.Nyss.Data.MigrationApp
 
                 if (createDemoData)
                 {
-                    Console.WriteLine("About to add demo data...");
+                    Console.WriteLine("About to add demo data …");
                     DemoDataCreator.CreateDemoData(dbConnectionString, password);
+                }
+
+                if (createTrainingData)
+                {
+                    Console.WriteLine("About to add training data …");
+                    TrainingDataCreator.CreateTrainingData(dbConnectionString, int.Parse(groups), password);
                 }
             }
             catch (Exception ex)
