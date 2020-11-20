@@ -6,25 +6,41 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Data;
+using NyssUser = RX.Nyss.Data.Models.User;
 
 namespace RX.Nyss.Data.MigrationApp
 {
     public class TrainingDataCreator
     {
-        public static void CreateTrainingData(string dbConnectionString, int groups, string password = "nysstraining")
+        private class User
         {
-            var usersToCreate = new (string roleName, string id, string name, string phone, int organizationId)[groups];
+            public string RoleName { get; set; }
+            public string Id { get; set; }
+            public string Name { get; set; }
+            public string Phone { get; set; }
+            public int OrganizationId { get; set; }
+        }
+        public static void CreateTrainingData(string dbConnectionString, int groupCount, string password = "nysstraining")
+        {
+            var usersToCreate = new User[groupCount];
 
-            for (var i = 0; i < groups; i++)
+            for (var i = 0; i < groupCount; i++)
             {
-                usersToCreate[i] = ("GlobalCoordinator", Guid.NewGuid().ToString(), $"Global Coordinator {i+1}", $"+123456{i+1}", 1);
+                usersToCreate[i] = new User
+                {
+                    RoleName = "GlobalCoordinator",
+                    Id = Guid.NewGuid().ToString(),
+                    Name = $"Global Coordinator {i+1}",
+                    Phone = $"+123456{i+1}",
+                    OrganizationId =  1
+                };
             }
 
             SeedIdentityUsers(dbConnectionString, usersToCreate, password);
-            SeedTrainingData(dbConnectionString, groups, usersToCreate);
+            SeedTrainingData(dbConnectionString, groupCount, usersToCreate);
         }
 
-        private static void SeedIdentityUsers(string dbConnectionString, (string roleName, string id, string name, string phone, int organizationId)[] usersToCreate, string password)
+        private static void SeedIdentityUsers(string dbConnectionString, User[] usersToCreate, string password)
         {
             var hasher = new PasswordHasher<IdentityUser>();
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
@@ -32,21 +48,21 @@ namespace RX.Nyss.Data.MigrationApp
 
             var identityUsers = usersToCreate.Select(user => new IdentityUser
             {
-                Id = user.id,
+                Id = user.Id,
                 AccessFailedCount = 0,
                 ConcurrencyStamp = Guid.NewGuid().ToString(),
-                Email = $"{user.name.Replace(" ", "_")}@example.com".ToLower(),
+                Email = $"{user.Name.Replace(" ", "_")}@example.com".ToLower(),
                 EmailConfirmed = true,
                 LockoutEnabled = false,
                 LockoutEnd = null,
-                NormalizedEmail = $"{user.name.Replace(" ", "_")}@example.com".ToUpper(),
-                NormalizedUserName = $"{user.name.Replace(" ", "_")}@example.com".ToUpper(),
+                NormalizedEmail = $"{user.Name.Replace(" ", "_")}@example.com".ToUpper(),
+                NormalizedUserName = $"{user.Name.Replace(" ", "_")}@example.com".ToUpper(),
                 PasswordHash = hasher.HashPassword(null, password),
                 PhoneNumber = null,
                 PhoneNumberConfirmed = false,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 TwoFactorEnabled = false,
-                UserName = $"{user.name.Replace(" ", "_")}@example.com".ToLower()
+                UserName = $"{user.Name.Replace(" ", "_")}@example.com".ToLower()
             });
 
             using (var context = new ApplicationDbContext(optionsBuilder.Options))
@@ -58,22 +74,28 @@ namespace RX.Nyss.Data.MigrationApp
 
                 context.Users.AddRange(identityUsers);
                 context.SaveChanges();
-                context.UserRoles.AddRange(usersToCreate.Select(user => new IdentityUserRole<string>
-                {
-                    RoleId = context.Roles.First(r => r.Name == user.roleName).Id,
-                    UserId = user.id
-                }));
 
+                context.UserRoles
+                    .AddRange(usersToCreate
+                        .Select(user =>
+                            new IdentityUserRole<string>
+                            {
+                                RoleId = context.Roles.First(r => r.Name == user.RoleName).Id,
+                                UserId = user.Id
+                            }));
                 context.SaveChanges();
             }
 
             Console.WriteLine("Successfully added ApplicationDbContext demo data");
         }
 
-        private static void SeedTrainingData(string dbConnectionString, int numberOfGroups, (string roleName, string id, string name, string phone, int organizationId)[] usersToCreate)
+        private static void SeedTrainingData(string dbConnectionString, int numberOfGroups, IEnumerable<User> usersToCreate)
         {
             var optionsBuilder = new DbContextOptionsBuilder<NyssContext>();
-            optionsBuilder.UseSqlServer(dbConnectionString, x => x.UseNetTopologySuite());
+            optionsBuilder.UseSqlServer(dbConnectionString, options =>
+            {
+                options.UseNetTopologySuite();
+            });
 
             using (var context = new NyssContext(optionsBuilder.Options))
             {
@@ -109,50 +131,33 @@ namespace RX.Nyss.Data.MigrationApp
 
                 context.Users.AddRange(usersToCreate.Select(user =>
                 {
-                    User nyssUser = null;
-                    var (roleName, id, name, phone, organizationId) = user;
-
-                    switch (roleName)
+                    NyssUser nyssUser = user.RoleName switch
                     {
-                        case "Supervisor":
-                            nyssUser = new SupervisorUser
-                            {
-                                Role = Role.Supervisor,
-                                CurrentProject = context.Projects.First(),
-                                Sex = Sex.Other,
-                                DecadeOfBirth = 1980
-                            };
-                            break;
-                        case "DataConsumer":
-                            nyssUser = new DataConsumerUser();
-                            break;
-                        case "GlobalCoordinator":
-                            nyssUser = new GlobalCoordinatorUser();
-                            break;
-                        case "Coordinator":
-                            nyssUser = new CoordinatorUser();
-                            break;
-                        case "Manager":
-                            nyssUser = new ManagerUser();
-                            break;
-                        case "TechnicalAdvisor":
-                            nyssUser = new TechnicalAdvisorUser();
-                            break;
-                    }
+                        "Supervisor" => new SupervisorUser
+                        {
+                            Role = Role.Supervisor,
+                            CurrentProject = context.Projects.First(),
+                            Sex = Sex.Other,
+                            DecadeOfBirth = 1980
+                        },
+                        "DataConsumer" => new DataConsumerUser(),
+                        "GlobalCoordinator" => new GlobalCoordinatorUser(),
+                        "Coordinator" => new CoordinatorUser(),
+                        "Manager" => new ManagerUser(),
+                        "TechnicalAdvisor" => new TechnicalAdvisorUser(),
+                        _ => null
+                    };
 
-                    nyssUser.Name = $"{name}";
-                    nyssUser.PhoneNumber = phone;
-                    nyssUser.IdentityUserId = id;
+                    nyssUser.Name = $"{user.Name}";
+                    nyssUser.PhoneNumber = user.Phone;
+                    nyssUser.IdentityUserId = user.Id;
                     nyssUser.ApplicationLanguage = context.ApplicationLanguages.First();
-                    nyssUser.EmailAddress = $"{user.name.Replace(" ", "_")}@example.com".ToLower();
+                    nyssUser.EmailAddress = $"{user.Name.Replace(" ", "_")}@example.com".ToLower();
                     nyssUser.IsFirstLogin = false;
-
                     return nyssUser;
                 }));
-
                 context.SaveChanges();
             }
-
             Console.WriteLine("Successfully added NyssContext training data");
         }
     }
