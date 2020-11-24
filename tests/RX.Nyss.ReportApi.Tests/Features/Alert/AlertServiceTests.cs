@@ -398,6 +398,36 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         }
 
         [Fact]
+        public async Task ReportAdded_WhenExistingEscalatedAlert_ShouldNotAddReport()
+        {
+            // Arrange
+            _testData.WhenReportIsAddedAndEscalatedAlertExists.GenerateData().AddToDbContext();
+            var reportBeingAdded = _testData.WhenReportIsAddedAndEscalatedAlertExists.EntityData.Reports.First(r => r.Status == ReportStatus.New);
+
+            // Act
+            var result = await _alertService.ReportAdded(reportBeingAdded);
+
+            // Assert
+            result.Alert.ShouldBeNull();
+            result.IsExistingAlert.ShouldBeFalse();
+        }
+
+        [Fact]
+        public async Task ReportAdded_WhenMeetingThresholdAndExistingEscalatedAlert_ShouldTriggerNewAlert()
+        {
+            // Arrange
+            _testData.WhenReportsAreAddedMeetingThresholdAndEscalatedAlertExists.GenerateData().AddToDbContext();
+            var reportBeingAdded = _testData.WhenReportsAreAddedMeetingThresholdAndEscalatedAlertExists.EntityData.Reports.First(r => r.Status == ReportStatus.New);
+
+            // Act
+            var result = await _alertService.ReportAdded(reportBeingAdded);
+
+            // Assert
+            result.Alert.ShouldNotBe(null);
+            result.IsExistingAlert.ShouldBeFalse();
+        }
+
+        [Fact]
         public async Task CheckAlert_WhenAlertIsStillPending_ShouldSendAlert()
         {
             // arrange

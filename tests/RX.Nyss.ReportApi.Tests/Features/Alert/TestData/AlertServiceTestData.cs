@@ -108,99 +108,6 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(reportsToCreateAlertFor);
             });
 
-        public TestCaseData WhenDismissingReportInAlertWithCountThreshold1 =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenDismissingReportInAlertWithCountThreshold1), data =>
-            {
-                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
-                var projectHealthRiskWithCountThresholdOf1 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 1);
-
-                var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
-                    .AddReport(ReportStatus.Pending, projectHealthRiskWithCountThresholdOf1, _dataCollector);
-                data.Reports = reportGroup.Reports;
-
-                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
-            });
-
-        public TestCaseData WhenTheReportStillHasAGroupThatMeetsCountThreshold =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenTheReportStillHasAGroupThatMeetsCountThreshold), data =>
-
-            {
-                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
-
-                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
-
-                var group1 = _reportGroupGenerator.Create("652b2605-18e5-4ab6-9d4f-185b664a7517")
-                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-                var group2 = _reportGroupGenerator.Create("af1681b6-da9d-4790-81de-62584bcf835b")
-                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-                data.Reports = group1.Reports.Concat(group2.Reports).ToList();
-
-                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
-            });
-
-        public TestCaseData<DismissReportAdditionalData> WhenNoGroupInAlertSatisfiesCountThresholdAnymore =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenNoGroupInAlertSatisfiesCountThresholdAnymore), data =>
-            {
-                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
-                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
-
-                var group1 = _reportGroupGenerator.Create("652b2605-18e5-4ab6-9d4f-185b664a7517")
-                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-                var group2 = _reportGroupGenerator.Create("af1681b6-da9d-4790-81de-62584bcf835b")
-                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-                data.Reports = group1.Reports.Concat(group2.Reports).ToList();
-
-                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
-
-                var additionalData = new DismissReportAdditionalData { ReportBeingDismissed = group2.Reports.First() };
-                return additionalData;
-            });
-
-        public TestCaseData<DismissReportAdditionalData> WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenNoGroupInAlertSatisfiesCountThresholdAnymoreButOneWentToGroupOfAnotherAlert), data =>
-            {
-                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
-                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
-
-                var group1InInvalidatedAlert = _reportGroupGenerator.Create("652b2605-18e5-4ab6-9d4f-185b664a7517")
-                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-                var group2InInvalidatedAlert = _reportGroupGenerator.Create("af1681b6-da9d-4790-81de-62584bcf835b")
-                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-
-                var groupOfDismissedReport = _reportGroupGenerator.Create("945f1b55-4129-4829-9bd9-01e8323b564a")
-                    .AddReport(ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-
-                var group4InBothAlerts = _reportGroupGenerator.Create("6b257702-57d1-45c0-9a0d-e02f61d20f00")
-                    .AddReport(ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector)
-                    .AddReport(ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector)
-                    .AddNReports(3, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-
-                data.Reports = group1InInvalidatedAlert.Reports.Concat(group2InInvalidatedAlert.Reports).Concat(groupOfDismissedReport.Reports).Concat(group4InBothAlerts.Reports).ToList();
-
-                var reportsBeingMoved = group4InBothAlerts.Reports.Take(2).ToList();
-                var reportsInAlert1 = group1InInvalidatedAlert.Reports
-                    .Concat(group2InInvalidatedAlert.Reports)
-                    .Concat(groupOfDismissedReport.Reports)
-                    .Concat(reportsBeingMoved)
-                    .ToList();
-
-                var reportsInAlert2 = group4InBothAlerts.Reports.Concat(group4InBothAlerts.Reports.Skip(2)).ToList();
-
-                var (alerts1, alertReports1) = _alertGenerator.AddPendingAlertForReports(reportsInAlert1);
-                var (alerts2, alertReports2) = _alertGenerator.AddPendingAlertForReports(reportsInAlert2);
-
-                data.Alerts = alerts1.Concat(alerts2).ToList();
-                data.AlertReports = alertReports1.Concat(alertReports2).ToList();
-
-                var additionalData = new DismissReportAdditionalData
-                {
-                    ReportBeingDismissed = groupOfDismissedReport.Reports.Single(),
-                    AlertThatReceivedNewReports = alerts2.Single(),
-                    ReportsBeingMoved = reportsBeingMoved
-                };
-                return additionalData;
-            });
-
         public TestCaseData WhenCountThresholdIsZero =>
             _testCaseDataProvider.GetOrCreate(nameof(WhenCountThresholdIsZero), data =>
             {
@@ -337,119 +244,6 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(reportsToCreateAlertFor);
             });
 
-        public TestCaseData<ResetReportAdditionalData> WhenADismissedReportIsReset =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenADismissedReportIsReset), data =>
-            {
-                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
-                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
-                var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
-                projectHealthRiskWithCountThresholdOf3.Project = new Project
-                {
-                    NationalSociety = new NationalSociety
-                    {
-                        ContentLanguage = contentLanguage,
-                        DefaultOrganization = new Organization
-                        {
-                            HeadManager = new ManagerUser
-                            {
-                                EmailAddress = "test@example.com",
-                                Name = "HeadManager Name"
-                            }
-                        }
-                    }
-                };
-
-                projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent> { new HealthRiskLanguageContent { ContentLanguage = contentLanguage } };
-
-                var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
-                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
-                    .AddReport(ReportStatus.Rejected, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-                data.Reports = reportGroup.Reports;
-
-                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
-
-                return new ResetReportAdditionalData
-                {
-                    ReportBeingReset = data.Reports.FirstOrDefault(r => r.Status == ReportStatus.Rejected),
-                    AlertRule = data.AlertRules.FirstOrDefault(ar => ar.CountThreshold == 3)
-                };
-            });
-
-        public TestCaseData<ResetReportAdditionalData> WhenAnAcceptedReportIsReset =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenAnAcceptedReportIsReset), data =>
-            {
-                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
-                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
-                var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
-                projectHealthRiskWithCountThresholdOf3.Project = new Project
-                {
-                    NationalSociety = new NationalSociety
-                    {
-                        ContentLanguage = contentLanguage,
-                        DefaultOrganization = new Organization
-                        {
-                            HeadManager = new ManagerUser
-                            {
-                                EmailAddress = "test@example.com",
-                                Name = "HeadManager Name"
-                            }
-                        }
-                    }
-                };
-
-                projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent> { new HealthRiskLanguageContent { ContentLanguage = contentLanguage } };
-
-                var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
-                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
-                    .AddReport(ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-                data.Reports = reportGroup.Reports;
-
-                (data.Alerts, data.AlertReports) = _alertGenerator.AddPendingAlertForReports(data.Reports);
-
-                return new ResetReportAdditionalData
-                {
-                    ReportBeingReset = data.Reports.FirstOrDefault(r => r.Status == ReportStatus.Accepted),
-                    AlertRule = data.AlertRules.FirstOrDefault(ar => ar.CountThreshold == 3)
-                };
-            });
-
-        public TestCaseData<ResetReportAdditionalData> WhenResettingAReportInAlertWithStatusNotPending =>
-            _testCaseDataProvider.GetOrCreate(nameof(WhenResettingAReportInAlertWithStatusNotPending), data =>
-            {
-                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
-                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
-                var contentLanguage = new ContentLanguage { LanguageCode = "testLanguageCode" };
-                projectHealthRiskWithCountThresholdOf3.Project = new Project
-                {
-                    NationalSociety = new NationalSociety
-                    {
-                        ContentLanguage = contentLanguage,
-                        DefaultOrganization = new Organization
-                        {
-                            HeadManager = new ManagerUser
-                            {
-                                EmailAddress = "test@example.com",
-                                Name = "HeadManager Name"
-                            }
-                        }
-                    }
-                };
-
-                projectHealthRiskWithCountThresholdOf3.HealthRisk.LanguageContents = new List<HealthRiskLanguageContent> { new HealthRiskLanguageContent { ContentLanguage = contentLanguage } };
-
-                var reportGroup = _reportGroupGenerator.Create("CF03F15E-96C4-4CAB-A33F-3E725CD057B5")
-                    .AddNReports(2, ReportStatus.Pending, projectHealthRiskWithCountThresholdOf3, _dataCollector, village: new Village { Name = "VillageName" })
-                    .AddReport(ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
-                data.Reports = reportGroup.Reports;
-
-                (data.Alerts, data.AlertReports) = _alertGenerator.AddEscalatedAlertForReports(data.Reports);
-
-                return new ResetReportAdditionalData
-                {
-                    ReportBeingReset = data.Reports.FirstOrDefault(r => r.Status == ReportStatus.Accepted)
-                };
-            });
-
         public TestCaseData WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert =>
             _testCaseDataProvider.GetOrCreate((nameof(WhenAReportIsAddedToExistingAlertLinkedToSupervisorNotAlreadyInTheAlert)), data =>
             {
@@ -478,22 +272,39 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
                 data.Reports = reportGroup.Reports;
             });
 
+        public TestCaseData WhenReportIsAddedAndEscalatedAlertExists =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenReportIsAddedAndEscalatedAlertExists), data =>
+            {
+                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
+                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
+
+                var existingReports = _reportGroupGenerator.Create("AAF7C49B-DCC8-4DCD-BC8F-B8BA226BE19C")
+                    .AddNReports(3, ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+
+                (data.Alerts, data.AlertReports) = _alertGenerator.AddEscalatedAlertForReports(existingReports.Reports);
+
+                existingReports.AddReport(ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                data.Reports = existingReports.Reports;
+            });
+
+        public TestCaseData WhenReportsAreAddedMeetingThresholdAndEscalatedAlertExists =>
+            _testCaseDataProvider.GetOrCreate(nameof(WhenReportsAreAddedMeetingThresholdAndEscalatedAlertExists), data =>
+            {
+                (data.AlertRules, data.HealthRisks, data.ProjectHealthRisks) = ProjectHealthRiskData.Create();
+                var projectHealthRiskWithCountThresholdOf3 = data.ProjectHealthRisks.Single(hr => hr.AlertRule.CountThreshold == 3);
+
+                var existingReports = _reportGroupGenerator.Create("AAF7C49B-DCC8-4DCD-BC8F-B8BA226BE19C")
+                    .AddNReports(3, ReportStatus.Accepted, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+
+                (data.Alerts, data.AlertReports) = _alertGenerator.AddEscalatedAlertForReports(existingReports.Reports);
+
+                existingReports.AddNReports(3, ReportStatus.New, projectHealthRiskWithCountThresholdOf3, _dataCollector);
+                data.Reports = existingReports.Reports;
+            });
+
         public AlertServiceTestData(INyssContext nyssContextMock)
         {
             _testCaseDataProvider = new TestCaseDataProvider(nyssContextMock);
-        }
-
-        public class DismissReportAdditionalData
-        {
-            public Report ReportBeingDismissed { get; set; }
-            public Data.Models.Alert AlertThatReceivedNewReports { get; set; }
-            public List<Report> ReportsBeingMoved { get; set; }
-        }
-
-        public class ResetReportAdditionalData
-        {
-            public Report ReportBeingReset { get; set; }
-            public AlertRule AlertRule { get; set; }
         }
 
         public class SimpleTestCaseAdditionalData
