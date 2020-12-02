@@ -616,6 +616,9 @@ export const stringKeys = {
     },
     performanceList: {
       title: "dataCollectors.performanceList.title",
+      completenessTitle: "dataCollectors.performanceList.completenessTitle",
+      completenessDescription: "dataCollectors.performanceList.completenessDescription",
+      completenessValueDescirption: "dataCollectors.performanceList.completenessValueDescription",
       name: "dataCollectors.performanceList.name",
       daysSinceLastReport: "dataCollectors.performanceList.daysSinceLastReport",
       statusLastWeek: "dataCollectors.performanceList.statusLastWeek",

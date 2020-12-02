@@ -218,7 +218,7 @@ function* getDataCollectorsPerformance({ projectId, filters }) {
   yield put(actions.getDataCollectorsPerformanceList.request());
   try {
     const response = yield call(http.post, `/api/dataCollector/performance?projectId=${projectId}`, filters);
-    yield put(actions.getDataCollectorsPerformanceList.success(response.value, filters));
+    yield put(actions.getDataCollectorsPerformanceList.success(response.value.performance, response.value.completeness, filters));
   } catch (error) {
     yield put(actions.getDataCollectorsPerformanceList.failure(error.message));
   }

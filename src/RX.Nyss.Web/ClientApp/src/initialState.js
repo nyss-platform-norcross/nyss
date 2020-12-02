@@ -200,6 +200,7 @@ export const initialState = {
       rowsPerPage: null,
       totalRows: null
     },
+    completeness: null,
     performanceListFetching: false,
     performanceListFilters: {
       area: null,

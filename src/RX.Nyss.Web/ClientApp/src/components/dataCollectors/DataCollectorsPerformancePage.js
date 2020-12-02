@@ -70,6 +70,7 @@ const DataCollectorsPerformancePageComponent = ({projectId, getDataCollectorPerf
       <DataCollectorsPerformanceTableLegend />
       <DataCollectorsPerformanceTable
         list={props.listData.data}
+        completeness={props.completeness}
         rowsPerPage={props.listData.rowsPerPage}
         totalRows={props.listData.totalRows}
         page={props.listData.page}
@@ -94,6 +95,7 @@ const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: state.dataCollectors.filtersData.nationalSocietyId,
   filters: state.dataCollectors.performanceListFilters,
   listData: state.dataCollectors.performanceListData,
+  completeness: state.dataCollectors.completeness,
   isListFetching: state.dataCollectors.performanceListFetching,
 });
 
