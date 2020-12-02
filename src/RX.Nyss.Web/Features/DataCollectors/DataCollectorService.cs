@@ -42,7 +42,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId);
         Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to);
         Task<Result<List<MapOverviewDataCollectorResponseDto>>> MapOverviewDetails(int projectId, DateTime from, DateTime to, double lat, double lng);
-        Task<Result<PaginatedList<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters);
+        Task<Result<DataCollectorPerformanceResponseDto>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters);
         Task AnonymizeDataCollectorsWithReports(int projectId);
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
         Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto);
@@ -553,7 +553,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 : ResultKey.DataCollector.SetOutOfTrainingSuccess);
         }
 
-        public async Task<Result<PaginatedList<DataCollectorPerformanceResponseDto>>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters)
+        public async Task<Result<DataCollectorPerformanceResponseDto>> Performance(int projectId, DataCollectorPerformanceFiltersRequestDto dataCollectorsFilters)
         {
             var dataCollectors = (await GetDataCollectorsForCurrentUserInProject(projectId))
                 .FilterOnlyNotDeleted()
@@ -577,17 +577,19 @@ namespace RX.Nyss.Web.Features.DataCollectors
                             IsValid = r.ReportId.HasValue,
                             ReceivedAt = r.ReceivedAt.Date
                         })
-                })
-                .Page(dataCollectorsFilters.PageNumber, rowsPerPage)
-                .AsNoTracking()
-                .ToListAsync();
+                }).ToListAsync();
 
-            var dataCollectorPerformances = dataCollectorsWithReportsData.Select(r => new
+            var dataCollectorCompleteness = GetDataCollectorCompleteness(dataCollectorsFilters, dataCollectorsWithReportsData, totalRows, to);
+
+            var paginatedDataCollectorsWithReportsData = dataCollectorsWithReportsData
+                .Page(dataCollectorsFilters.PageNumber, rowsPerPage);
+
+            var dataCollectorPerformances = paginatedDataCollectorsWithReportsData.Select(r => new
                 {
                     r.Name,
                     ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(ritr => (int)(to - ritr.ReceivedAt).TotalDays / 7)
                 })
-                .Select(dc => new DataCollectorPerformanceResponseDto
+                .Select(dc => new DataCollectorPerformance
                 {
                     Name = dc.Name,
                     DaysSinceLastReport = dc.ReportsGroupedByWeek.Any()
@@ -612,7 +614,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterByStatusEightWeeksAgo(dataCollectorsFilters.EightWeeksAgo)
                 .AsPaginatedList(dataCollectorsFilters.PageNumber, totalRows, rowsPerPage);
 
-            return Success(dataCollectorPerformances);
+            var dataCollectorPerformanceDto = new DataCollectorPerformanceResponseDto
+            {
+                Completeness = dataCollectorCompleteness,
+                Performance = dataCollectorPerformances
+            };
+
+            return Success(dataCollectorPerformanceDto);
         }
 
         public async Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto)
@@ -646,19 +654,102 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success();
         }
 
-        private List<DataCollectorWithRawReportData> FilterByReportingStatus(List<DataCollectorWithRawReportData> dataCollectors, ReportingStatusFilterType filter) =>
-            filter switch
+        private DataCollectorCompleteness GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IEnumerable<DataCollectorWithRawReportData> dataCollectors, int totalDataCollectors, DateTime to)
+        {
+            if (IsWeekFiltersActive(filters))
             {
-                ReportingStatusFilterType.All => dataCollectors,
-                ReportingStatusFilterType.Correct => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => rrd.IsValid)).ToList(),
-                ReportingStatusFilterType.Error => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => !rrd.IsValid)).ToList(),
-                ReportingStatusFilterType.CorrectAndError => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any()).ToList(),
-                ReportingStatusFilterType.CorrectAndNotReporting => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => rrd.IsValid) || !dc.ReportsInTimeRange.Any()).ToList(),
-                ReportingStatusFilterType.ErrorAndNotReporting => dataCollectors.Where(dc => dc.ReportsInTimeRange.Any(rrd => !rrd.IsValid) || !dc.ReportsInTimeRange.Any()).ToList(),
-                ReportingStatusFilterType.NotReporting => dataCollectors.Where(dc => !dc.ReportsInTimeRange.Any()).ToList(),
-                ReportingStatusFilterType.None => dataCollectors.Take(0).ToList(),
-                _ => dataCollectors
+                return null;
+            }
+
+            var dataCollectorCompleteness = dataCollectors
+                .Select(dc => new
+                {
+                    ReportsGroupedByWeek = dc.ReportsInTimeRange.GroupBy(ritr => (int)(to - ritr.ReceivedAt).TotalDays / 7)
+                }).Select(dc => new
+                {
+                    HasReportedLastWeek = dc.ReportsGroupedByWeek.Where(g => g.Key == 0).SelectMany(g => g).Any(),
+                    HasReportedTwoWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 1).SelectMany(g => g).Any(),
+                    HasReportedThreeWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 2).SelectMany(g => g).Any(),
+                    HasReportedFourWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 3).SelectMany(g => g).Any(),
+                    HasReportedFiveWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 4).SelectMany(g => g).Any(),
+                    HasReportedSixWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 5).SelectMany(g => g).Any(),
+                    HasReportedSevenWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 6).SelectMany(g => g).Any(),
+                    HasReportedEightWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 7).SelectMany(g => g).Any()
+                }).Aggregate(new
+                {
+                    ActiveLastWeek = 0,
+                    ActiveTwoWeeksAgo = 0,
+                    ActiveThreeWeeksAgo = 0,
+                    ActiveFourWeeksAgo = 0,
+                    ActiveFiveWeeksAgo = 0,
+                    ActiveSixWeeksAgo = 0,
+                    ActiveSevenWeeksAgo = 0,
+                    ActiveEightWeeksAgo = 0
+                }, (a, dc) => new
+                {
+                    ActiveLastWeek = a.ActiveLastWeek + (dc.HasReportedLastWeek ? 1 : 0),
+                    ActiveTwoWeeksAgo = a.ActiveTwoWeeksAgo + (dc.HasReportedTwoWeeksAgo ? 1 : 0),
+                    ActiveThreeWeeksAgo = a.ActiveThreeWeeksAgo + (dc.HasReportedThreeWeeksAgo ? 1 : 0),
+                    ActiveFourWeeksAgo = a.ActiveFourWeeksAgo + (dc.HasReportedFourWeeksAgo ? 1 : 0),
+                    ActiveFiveWeeksAgo = a.ActiveFiveWeeksAgo + (dc.HasReportedFiveWeeksAgo ? 1 : 0),
+                    ActiveSixWeeksAgo = a.ActiveSixWeeksAgo + (dc.HasReportedSixWeeksAgo ? 1 : 0),
+                    ActiveSevenWeeksAgo = a.ActiveSevenWeeksAgo + (dc.HasReportedSevenWeeksAgo ? 1 : 0),
+                    ActiveEightWeeksAgo = a.ActiveEightWeeksAgo + (dc.HasReportedEightWeeksAgo ? 1 : 0)
+                });
+
+            return new DataCollectorCompleteness
+            {
+                LastWeek = new Completeness
+                {
+                    TotalDataCollectors = totalDataCollectors,
+                    ActiveDataCollectors = dataCollectorCompleteness.ActiveLastWeek,
+                    Percentage = (dataCollectorCompleteness.ActiveLastWeek * 100) / totalDataCollectors
+                },
+                TwoWeeksAgo = new Completeness
+                {
+                    TotalDataCollectors = totalDataCollectors,
+                    ActiveDataCollectors = dataCollectorCompleteness.ActiveTwoWeeksAgo,
+                    Percentage = (dataCollectorCompleteness.ActiveTwoWeeksAgo * 100) / totalDataCollectors
+                },
+                ThreeWeeksAgo = new Completeness
+                {
+                    TotalDataCollectors = totalDataCollectors,
+                    ActiveDataCollectors = dataCollectorCompleteness.ActiveThreeWeeksAgo,
+                    Percentage = (dataCollectorCompleteness.ActiveThreeWeeksAgo * 100) / totalDataCollectors
+                },
+                FourWeeksAgo = new Completeness
+                {
+                    TotalDataCollectors = totalDataCollectors,
+                    ActiveDataCollectors = dataCollectorCompleteness.ActiveFourWeeksAgo,
+                    Percentage = (dataCollectorCompleteness.ActiveFourWeeksAgo * 100) / totalDataCollectors
+                },
+                FiveWeeksAgo = new Completeness
+                {
+                    TotalDataCollectors = totalDataCollectors,
+                    ActiveDataCollectors = dataCollectorCompleteness.ActiveFiveWeeksAgo,
+                    Percentage = (dataCollectorCompleteness.ActiveFiveWeeksAgo * 100) / totalDataCollectors
+                },
+                SixWeeksAgo = new Completeness
+                {
+                    TotalDataCollectors = totalDataCollectors,
+                    ActiveDataCollectors = dataCollectorCompleteness.ActiveSixWeeksAgo,
+                    Percentage = (dataCollectorCompleteness.ActiveSixWeeksAgo * 100) / totalDataCollectors
+                },
+                SevenWeeksAgo = new Completeness
+                {
+
+                    TotalDataCollectors = totalDataCollectors,
+                    ActiveDataCollectors = dataCollectorCompleteness.ActiveSevenWeeksAgo,
+                    Percentage = (dataCollectorCompleteness.ActiveSevenWeeksAgo * 100) / totalDataCollectors
+                },
+                EightWeeksAgo = new Completeness
+                {
+                    TotalDataCollectors = totalDataCollectors,
+                    ActiveDataCollectors = dataCollectorCompleteness.ActiveEightWeeksAgo,
+                    Percentage = (dataCollectorCompleteness.ActiveEightWeeksAgo * 100) / totalDataCollectors
+                }
             };
+        }
 
         private async Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId)
         {
@@ -739,45 +830,20 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 : ReportingStatus.NotReporting;
         }
 
-        private ReportingStatusFilterType MapToReportingStatusFilterType(bool reportingCorrectly, bool reportingWithErrors, bool notReporting)
-        {
-            if (reportingCorrectly && reportingWithErrors && notReporting)
-            {
-                return ReportingStatusFilterType.All;
-            }
+        private bool IsWeekFiltersActive(DataCollectorPerformanceFiltersRequestDto filters) =>
+            IsReportingStatusFilterActiveForWeek(filters.LastWeek)
+            || IsReportingStatusFilterActiveForWeek(filters.TwoWeeksAgo)
+            || IsReportingStatusFilterActiveForWeek(filters.ThreeWeeksAgo)
+            || IsReportingStatusFilterActiveForWeek(filters.FourWeeksAgo)
+            || IsReportingStatusFilterActiveForWeek(filters.FiveWeeksAgo)
+            || IsReportingStatusFilterActiveForWeek(filters.SixWeeksAgo)
+            || IsReportingStatusFilterActiveForWeek(filters.SevenWeeksAgo)
+            || IsReportingStatusFilterActiveForWeek(filters.EightWeeksAgo);
 
-            if (reportingCorrectly && !reportingWithErrors && !notReporting)
-            {
-                return ReportingStatusFilterType.Correct;
-            }
-
-            if (reportingCorrectly && reportingWithErrors && !notReporting)
-            {
-                return ReportingStatusFilterType.CorrectAndError;
-            }
-
-            if (reportingCorrectly && !reportingWithErrors && notReporting)
-            {
-                return ReportingStatusFilterType.CorrectAndNotReporting;
-            }
-
-            if (!reportingCorrectly && reportingWithErrors && notReporting)
-            {
-                return ReportingStatusFilterType.ErrorAndNotReporting;
-            }
-
-            if (!reportingCorrectly && reportingWithErrors && !notReporting)
-            {
-                return ReportingStatusFilterType.Error;
-            }
-
-            if (!reportingCorrectly && !reportingWithErrors && notReporting)
-            {
-                return ReportingStatusFilterType.NotReporting;
-            }
-
-            return ReportingStatusFilterType.None;
-        }
+        private bool IsReportingStatusFilterActiveForWeek(PerformanceStatusFilterDto weekFilter) =>
+            !weekFilter.NotReporting
+            || !weekFilter.ReportingCorrectly
+            || !weekFilter.ReportingWithErrors;
 
         private async Task<LocationDto> GetCountryLocationFromProject(int projectId)
         {
