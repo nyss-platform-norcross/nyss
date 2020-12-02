@@ -109,7 +109,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [InlineData(AlertStatus.Closed)]
         [InlineData(AlertStatus.Dismissed)]
         [InlineData(AlertStatus.Escalated)]
-        [InlineData(AlertStatus.Rejected)]
         public async Task EscalateAlert_WhenAlertIsNotPending_ShouldReturnError(AlertStatus status)
         {
             _alerts.First().Status = status;
@@ -572,7 +571,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
         [Theory]
         [InlineData(AlertStatus.Closed)]
-        [InlineData(AlertStatus.Rejected)]
         [InlineData(AlertStatus.Dismissed)]
         [InlineData(AlertStatus.Pending)]
         public async Task CloseAlert_WhenAlertIsNotPending_ShouldReturnError(AlertStatus status)

@@ -59,7 +59,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
+            if (!AlertHasStatusThatAllowsReportCrossChecks(alertReport))
             {
                 return Error<AcceptReportResponseDto>(ResultKey.Alert.AcceptReport.WrongAlertStatus);
             }
@@ -92,7 +92,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
+            if (!AlertHasStatusThatAllowsReportCrossChecks(alertReport))
             {
                 return Error<DismissReportResponseDto>(ResultKey.Alert.DismissReport.WrongAlertStatus);
             }
@@ -105,8 +105,6 @@ namespace RX.Nyss.Web.Features.Alerts
             alertReport.Report.Status = ReportStatus.Rejected;
             alertReport.Report.RejectedAt = _dateTimeProvider.UtcNow;
             alertReport.Report.RejectedBy = await _authorizationService.GetCurrentUser();
-
-            await DismissAlertReport(reportId);
 
             await _nyssContext.SaveChangesAsync();
 
@@ -128,12 +126,12 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(ar => ar.AlertId == alertId && ar.ReportId == reportId)
                 .SingleAsync();
 
-            if (!GetAlertHasStatusThatAllowsReportCrossChecks(alertReport))
+            if (!AlertHasStatusThatAllowsReportCrossChecks(alertReport))
             {
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongAlertStatus);
             }
 
-            if (alertReport.Report.Status != ReportStatus.Accepted && alertReport.Report.Status != ReportStatus.Rejected)
+            if (!ReportHasStatusThatAllowsReset(alertReport))
             {
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.WrongReportStatus);
             }
@@ -145,12 +143,11 @@ namespace RX.Nyss.Web.Features.Alerts
                 return Error<ResetReportResponseDto>(ResultKey.Alert.ResetReport.ReportWasCrossCheckedBeforeAlertEscalation);
             }
 
+            alertReport.Report.Status = ReportStatus.Pending;
             alertReport.Report.ResetAt = _dateTimeProvider.UtcNow;
             alertReport.Report.ResetBy = await _authorizationService.GetCurrentUser();
-            
-            await _nyssContext.SaveChangesAsync();
 
-            await ResetAlertReport(reportId);
+            await _nyssContext.SaveChangesAsync();
 
             var response = new ResetReportResponseDto { AssessmentStatus = await _alertService.GetAssessmentStatus(alertId) };
 
@@ -176,21 +173,10 @@ namespace RX.Nyss.Web.Features.Alerts
             return canAssess;
         }
 
-        private static bool GetAlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
+        private static bool AlertHasStatusThatAllowsReportCrossChecks(AlertReport alertReport) =>
             StatusConstants.AlertStatusesAllowingCrossChecks.Contains(alertReport.Alert.Status);
 
-        private Task DismissAlertReport(int reportId)
-        {
-            var message = new DismissReportMessage { ReportId = reportId };
-
-            return _queueService.Send(_config.ServiceBusQueues.ReportDismissalQueue, message);
-        }
-
-        private Task ResetAlertReport(int reportId)
-        {
-            var message = new ResetReportMessage { ReportId = reportId };
-
-            return _queueService.Send(_config.ServiceBusQueues.ReportResetQueue, message);
-        }
+        private static bool ReportHasStatusThatAllowsReset(AlertReport alertReport) =>
+            StatusConstants.ReportStatusesAllowedToBeReset.Contains(alertReport.Report.Status);
     }
 }

@@ -32,15 +32,6 @@ export function alertsReducer(state = initialState.alerts, action) {
     case actions.OPEN_ALERTS_ASSESSMENT.SUCCESS:
       return { ...state, formFetching: false, formData: action.data };
 
-      case actions.REFRESH_ALERT_STATUS.REQUEST:
-        return { ...state, isPendingAlertState: true };
-
-    case actions.REFRESH_ALERT_STATUS.SUCCESS:
-      return { ...state, formFetching: false, formData: setProperty(state.formData, 'assessmentStatus', action.data.assessmentStatus), isPendingAlertState: false };
-
-      case actions.REFRESH_ALERT_STATUS.FAILURE:
-        return { ...state, isPendingAlertState: false };
-
     case actions.OPEN_ALERTS_ASSESSMENT.FAILURE:
       return { ...state, formFetching: false };
 
@@ -105,7 +96,7 @@ export function alertsReducer(state = initialState.alerts, action) {
         ...state,
         formData: {
           ...state.formData,
-          reports: updateReport(state.formData.reports, action.reportId, { isResetting: false })
+          reports: updateReport(state.formData.reports, action.reportId, { isDismissing: false })
         }
       };
 

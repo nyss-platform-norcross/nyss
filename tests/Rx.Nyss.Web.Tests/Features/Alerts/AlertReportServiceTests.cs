@@ -70,9 +70,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         }
 
         [Theory]
-        [InlineData(AlertStatus.Dismissed)]
+        [InlineData(AlertStatus.Pending)]
         [InlineData(AlertStatus.Escalated)]
-        [InlineData(AlertStatus.Rejected)]
         public async Task AcceptReport_WhenAlertIsInRightStatus_ShouldReturnSuccess(AlertStatus status)
         {
             _alertReports.First().Alert.Status = status;
@@ -167,18 +166,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         }
 
         [Fact]
-        public async Task DismissReport_WhenCriteriaAreMet_ShouldSendMessageToTheQueue()
-        {
-            _alertReports.First().Alert.Status = AlertStatus.Pending;
-            _alertReports.First().Report.Status = ReportStatus.Pending;
-
-            await _alertReportService.DismissReport(TestData.AlertId, TestData.ReportId);
-
-            _alertReports.First().Report.Status.ShouldBe(ReportStatus.Rejected);
-            await _queueService.Received(1).Send(TestData.ReportDismissalQueue, Arg.Is<DismissReportMessage>(x => x.ReportId == TestData.ReportId));
-        }
-
-        [Fact]
         public async Task DismissReport_WhenCriteriaAreMet_ShouldReturnAssessmentStatus()
         {
             var alertAssessmentStatus = AlertAssessmentStatus.ToEscalate;
@@ -206,6 +193,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.AssessmentStatus.ShouldBe(alertAssessmentStatus);
+            _alertReports.First().Report.Status.ShouldBe(ReportStatus.Pending);
         }
 
         [Fact]
@@ -239,7 +227,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             var result = await _alertReportService.ResetReport(TestData.AlertId, TestData.ReportId);
 
-            result.IsSuccess.ShouldBeFalse();    
+            result.IsSuccess.ShouldBeFalse();
         }
 
         private static class TestData

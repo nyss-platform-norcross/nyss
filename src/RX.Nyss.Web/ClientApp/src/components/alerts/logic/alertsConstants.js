@@ -43,7 +43,6 @@ export const alertStatusFilters = {
   open: "Open",
   escalated: "Escalated",
   dismissed: "Dismissed",
-  notValid: "NotValid",
   closed: "Closed"
 }
 

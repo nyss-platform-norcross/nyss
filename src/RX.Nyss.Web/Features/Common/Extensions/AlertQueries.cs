@@ -58,7 +58,6 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 AlertStatusFilter.Open => alerts.Where(a => a.Status == AlertStatus.Pending),
                 AlertStatusFilter.Escalated => alerts.Where(a => a.Status == AlertStatus.Escalated),
                 AlertStatusFilter.Dismissed => alerts.Where(a => a.Status == AlertStatus.Dismissed),
-                AlertStatusFilter.NotValid => alerts.Where(a => a.Status == AlertStatus.Rejected),
                 AlertStatusFilter.Closed => alerts.Where(a => a.Status == AlertStatus.Closed),
                 _ => alerts
             };
@@ -75,13 +74,11 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 AlertListFilterRequestDto.StatusColumnName => sortAscending
                     ? alerts.OrderBy(a => a.Status == AlertStatus.Dismissed ? 0 :
                             a.Status == AlertStatus.Closed ? 1 :
-                            a.Status == AlertStatus.Rejected ? 2 :
-                            a.Status == AlertStatus.Escalated ? 3 : 4)
+                            a.Status == AlertStatus.Escalated ? 2 : 3)
                         .ThenByDescending(a => a.CreatedAt)
                     : alerts.OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
                             a.Status == AlertStatus.Escalated ? 1 :
-                            a.Status == AlertStatus.Rejected ? 2 :
-                            a.Status == AlertStatus.Closed ? 3 : 4)
+                            a.Status == AlertStatus.Closed ? 2 : 3)
                         .ThenByDescending(a => a.CreatedAt),
                 _ => alerts
             };
