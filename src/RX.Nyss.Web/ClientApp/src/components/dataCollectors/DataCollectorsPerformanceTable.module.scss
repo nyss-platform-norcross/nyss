@@ -8,3 +8,13 @@
 .filterIcon {
   font-size: 15px !important;
 }
+
+.completeness {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.completenessTooltip {
+  margin-left: 5px;
+}

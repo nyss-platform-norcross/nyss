@@ -13,5 +13,8 @@ namespace RX.Nyss.Web.Utils.Extensions
 
         public static async Task<PaginatedList<T>> ToPaginatedListAsync<T>(this IQueryable<T> data, int page, int totalRows, int rowsPerPage) =>
             new PaginatedList<T>(await data.ToListAsync(), page, totalRows, rowsPerPage);
+
+        public static IEnumerable<T> Page<T>(this IEnumerable<T> data, int pageNumber, int rowsPerPage) =>
+            data.Skip((pageNumber - 1) * rowsPerPage).Take(rowsPerPage);
     }
 }

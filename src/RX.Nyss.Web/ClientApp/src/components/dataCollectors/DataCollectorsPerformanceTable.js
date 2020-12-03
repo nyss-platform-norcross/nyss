@@ -13,8 +13,10 @@ import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon'
 import Icon from '@material-ui/core/Icon';
 import { DataCollectorsPerformanceColumnFilters } from './DataCollectorsPerformanceColumnFilters';
 import TablePager from '../common/tablePagination/TablePager';
+import { Tooltip } from '@material-ui/core';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 
-export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
+export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedWeek, setSelectedWeek] = useState(null);
@@ -62,6 +64,15 @@ export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalR
   const handleClose = (fields) => {
     onChange({ type: 'updateSorting', week: selectedWeek, filters: fields });
     setIsOpen(false);
+  }
+
+  const handleTooltipClick = e => e.stopPropagation();
+
+  const renderTooltipText = (completeness) => {
+    let text = strings(stringKeys.dataCollector.performanceList.completenessValueDescirption);
+    text = text.replace('{{active}}', completeness.activeDataCollectors);
+    text = text.replace('{{total}}', completeness.totalDataCollectors);
+    return text;
   }
 
   return !!filters && (
@@ -124,6 +135,59 @@ export const DataCollectorsPerformanceTable = ({ list, page, rowsPerPage, totalR
           </TableRow>
         </TableHead>
         <TableBody>
+          {!isListFetching && completeness != null && (
+            <TableRow hover>
+              <TableCell>
+                <span className={styles.completeness}>
+                  {strings(stringKeys.dataCollector.performanceList.completenessTitle)}
+                  <Tooltip title={strings(stringKeys.dataCollector.performanceList.completenessDescription)} onClick={handleTooltipClick} arrow>
+                    <InfoIcon fontSize="small" className={styles.completenessTooltip} />
+                  </Tooltip>
+                </span>
+              </TableCell>
+              <TableCell style={{ textAlign: "center" }}>-</TableCell>
+              <TableCell style={{ textAlign: "center" }}>
+                <Tooltip title={renderTooltipText(completeness.lastWeek)} onClick={handleTooltipClick} arrow>
+                  <span>{`${completeness.lastWeek.percentage} %`}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell style={{ textAlign: "center" }}>
+                <Tooltip title={renderTooltipText(completeness.twoWeeksAgo)} onClick={handleTooltipClick} arrow>
+                  <span>{`${completeness.twoWeeksAgo.percentage} %`}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell style={{ textAlign: "center" }}>
+                <Tooltip title={renderTooltipText(completeness.threeWeeksAgo)} onClick={handleTooltipClick} arrow>
+                  <span>{`${completeness.threeWeeksAgo.percentage} %`}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell style={{ textAlign: "center" }}>
+                <Tooltip title={renderTooltipText(completeness.fourWeeksAgo)} onClick={handleTooltipClick} arrow>
+                  <span>{`${completeness.fourWeeksAgo.percentage} %`}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell style={{ textAlign: "center" }}>
+                <Tooltip title={renderTooltipText(completeness.fiveWeeksAgo)} onClick={handleTooltipClick} arrow>
+                  <span>{`${completeness.fiveWeeksAgo.percentage} %`}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell style={{ textAlign: "center" }}>
+                <Tooltip title={renderTooltipText(completeness.sixWeeksAgo)} onClick={handleTooltipClick} arrow>
+                  <span>{`${completeness.sixWeeksAgo.percentage} %`}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell style={{ textAlign: "center" }}>
+                <Tooltip title={renderTooltipText(completeness.sevenWeeksAgo)} onClick={handleTooltipClick} arrow>
+                  <span>{`${completeness.sevenWeeksAgo.percentage} %`}</span>
+                </Tooltip>
+              </TableCell>
+              <TableCell style={{ textAlign: "center" }}>
+                <Tooltip title={renderTooltipText(completeness.eightWeeksAgo)} onClick={handleTooltipClick} arrow>
+                  <span>{`${completeness.eightWeeksAgo.percentage} %`}</span>
+                </Tooltip>
+              </TableCell>
+            </TableRow>
+          )}
           {!isListFetching && (
             list.map((row, index) => (
               <TableRow key={index} hover>
