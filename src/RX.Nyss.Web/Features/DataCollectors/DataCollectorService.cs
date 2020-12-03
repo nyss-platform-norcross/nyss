@@ -561,8 +561,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterByName(dataCollectorsFilters.Name)
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId);
 
-            var to = _dateTimeProvider.UtcNow;
-            var from = to.AddMonths(-2);
+            var toDate = _dateTimeProvider.UtcNow;
+            var fromDate = toDate.AddMonths(-2);
             var rowsPerPage = _config.PaginationRowsPerPage;
             var totalRows = await dataCollectors.CountAsync();
 
@@ -571,7 +571,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 {
                     Name = dc.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
-                            && r.ReceivedAt >= from.Date && r.ReceivedAt < to.Date.AddDays(1))
+                            && r.ReceivedAt >= fromDate.Date && r.ReceivedAt < toDate.Date.AddDays(1))
                         .Select(r => new RawReportData
                         {
                             IsValid = r.ReportId.HasValue,
@@ -579,7 +579,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                         })
                 }).ToListAsync();
 
-            var dataCollectorCompleteness = GetDataCollectorCompleteness(dataCollectorsFilters, dataCollectorsWithReportsData, totalRows, to);
+            var dataCollectorCompleteness = GetDataCollectorCompleteness(dataCollectorsFilters, dataCollectorsWithReportsData, totalRows, toDate);
 
             var paginatedDataCollectorsWithReportsData = dataCollectorsWithReportsData
                 .Page(dataCollectorsFilters.PageNumber, rowsPerPage);
@@ -587,13 +587,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorPerformances = paginatedDataCollectorsWithReportsData.Select(r => new
                 {
                     r.Name,
-                    ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(ritr => (int)(to - ritr.ReceivedAt).TotalDays / 7)
+                    ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(report => (int)(toDate - report.ReceivedAt).TotalDays / 7)
                 })
                 .Select(dc => new DataCollectorPerformance
                 {
                     Name = dc.Name,
                     DaysSinceLastReport = dc.ReportsGroupedByWeek.Any()
-                        ? (int)(to - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).FirstOrDefault().ReceivedAt).TotalDays
+                        ? (int)(toDate - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).First().ReceivedAt).TotalDays
                         : -1,
                     StatusLastWeek = GetDataCollectorStatus(0, dc.ReportsGroupedByWeek),
                     StatusTwoWeeksAgo = GetDataCollectorStatus(1, dc.ReportsGroupedByWeek),
@@ -654,7 +654,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success();
         }
 
-        private DataCollectorCompleteness GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IEnumerable<DataCollectorWithRawReportData> dataCollectors, int totalDataCollectors, DateTime to)
+        private DataCollectorCompleteness GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IEnumerable<DataCollectorWithRawReportData> dataCollectors, int totalDataCollectors, DateTime toDate)
         {
             if (IsWeekFiltersActive(filters))
             {
@@ -664,7 +664,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorCompleteness = dataCollectors
                 .Select(dc => new
                 {
-                    ReportsGroupedByWeek = dc.ReportsInTimeRange.GroupBy(ritr => (int)(to - ritr.ReceivedAt).TotalDays / 7)
+                    ReportsGroupedByWeek = dc.ReportsInTimeRange.GroupBy(report => (int)(toDate - report.ReceivedAt).TotalDays / 7)
                 }).Select(dc => new
                 {
                     HasReportedLastWeek = dc.ReportsGroupedByWeek.Where(g => g.Key == 0).SelectMany(g => g).Any(),
