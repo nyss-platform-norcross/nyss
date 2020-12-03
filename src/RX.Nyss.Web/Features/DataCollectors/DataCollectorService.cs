@@ -656,7 +656,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         private DataCollectorCompleteness GetDataCollectorCompleteness(DataCollectorPerformanceFiltersRequestDto filters, IEnumerable<DataCollectorWithRawReportData> dataCollectors, int totalDataCollectors, DateTime toDate)
         {
-            if (IsWeekFiltersActive(filters))
+            if (IsWeekFiltersActive(filters) || totalDataCollectors == 0)
             {
                 return null;
             }
