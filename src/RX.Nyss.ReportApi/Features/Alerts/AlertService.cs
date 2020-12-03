@@ -198,7 +198,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             var reportsWithLabel = await _nyssContext.Reports
                 .Where(r => r.ReportGroupLabel == reportGroupLabel)
-                .Where(r => !r.ReportAlerts.Any(ra => ra.Alert.Status == AlertStatus.Closed))
+                .Where(r => !r.ReportAlerts.Any(ra => StatusConstants.AlertStatusesNotAllowingReportsToTriggerNewAlert.Contains(ra.Alert.Status)))
                 .Where(r => StatusConstants.ReportStatusesConsideredForAlertProcessing.Contains(r.Status))
                 .Where(r => !r.IsTraining)
                 .Where(r => !r.MarkedAsError)
@@ -233,8 +233,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .SelectMany(r => r.ReportAlerts)
                 .Where(ar => !alertIdToIgnore.HasValue || ar.AlertId != alertIdToIgnore.Value)
                 .Select(ra => ra.Alert)
-                .OrderByDescending(a => a.Status == AlertStatus.Escalated)
-                .FirstOrDefaultAsync(a => a.Status == AlertStatus.Pending || a.Status == AlertStatus.Escalated);
+                .FirstOrDefaultAsync(a => a.Status == AlertStatus.Pending);
 
             if (existingActiveAlertForLabel != null)
             {
