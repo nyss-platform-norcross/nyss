@@ -770,6 +770,7 @@ export const stringKeys = {
   },
   alerts: {
     list: {
+      id: "alerts.list.id",
       title: "alerts.list.title",
       dateTime: "alerts.list.dateTime",
       healthRisk: "alerts.list.healthRisk",

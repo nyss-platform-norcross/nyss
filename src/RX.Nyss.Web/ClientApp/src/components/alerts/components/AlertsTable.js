@@ -83,6 +83,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, o
                 {strings(stringKeys.alerts.list.status)}
               </TableSortLabel>
             </TableCell>
+            <TableCell style={{ width: "6%" }}>{strings(stringKeys.alerts.list.id)}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -93,6 +94,7 @@ export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, o
               <TableCell>{row.reportCount}</TableCell>
               <TableCell>{[row.lastReportRegion, row.lastReportDistrict, row.lastReportVillage].filter(l => l).join(", ")}</TableCell>
               <TableCell>{renderStatus(row)}</TableCell>
+              <TableCell>{row.id}</TableCell>
             </TableRow>
           ))}
         </TableBody>
