@@ -25,6 +25,12 @@ namespace RX.Nyss.PublicApiFuncApp
             [Blob("%PublicStatsBlobObjectPath%", FileAccess.Read, Connection = "DATABLOBSTORAGE_CONNECTIONSTRING")] CloudBlockBlob statsBlob)
         {
             _logger.LogInformation("Getting public stats from data blob");
+
+            if (!await statsBlob.ExistsAsync())
+            {
+                return new NotFoundResult();
+            }
+
             var stats = await statsBlob.DownloadTextAsync();
             return new OkObjectResult(JsonConvert.DeserializeObject(stats));
         }

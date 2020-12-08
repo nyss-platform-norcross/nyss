@@ -240,7 +240,10 @@
               "apiVersion": "2018-07-01",
               "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
-              ]
+              ],
+              "properties": {
+                "publicAccess": "None"
+              }
             },
             {
               "name": "nyss-agreements-container-test",
@@ -249,7 +252,10 @@
               "apiVersion": "2018-07-01",
               "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
-              ]
+              ],
+              "properties": {
+                "publicAccess": "None"
+              }
             },
             {
               "name": "nyss-agreements-container-demo",
@@ -258,7 +264,10 @@
               "apiVersion": "2018-07-01",
               "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
-              ]
+              ],
+              "properties": {
+                "publicAccess": "None"
+              }
             },
             {
               "name": "[variables('publicStatsContainerName')]",
@@ -266,7 +275,34 @@
               "apiVersion": "2018-07-01",
               "dependsOn": [
                 "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
-              ]
+              ],
+              "properties": {
+                "publicAccess": "None"
+              }
+            },
+            {
+              "name": "nyss-public-stats-test",
+              "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
+              ],
+              "properties": {
+                "publicAccess": "None"
+              }
+            },
+            {
+              "name": "nyss-public-stats-demo",
+              "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
+              ],
+              "properties": {
+                "publicAccess": "None"
+              }
             }
           ]
         }
