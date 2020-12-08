@@ -4,4 +4,9 @@ namespace RX.Nyss.PublicApiFuncApp.Configuration
     {
         string ReleaseName { get; set; }
     }
+
+    public class NyssPublicApiFuncAppConfig : IConfig
+    {
+        public string ReleaseName { get; set; }
+    }
 }

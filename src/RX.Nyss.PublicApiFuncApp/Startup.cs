@@ -4,6 +4,7 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RX.Nyss.PublicApiFuncApp;
+using RX.Nyss.PublicApiFuncApp.Configuration;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 
@@ -33,7 +34,9 @@ namespace RX.Nyss.PublicApiFuncApp
                 .AddUserSecrets(Assembly.GetExecutingAssembly(), false);
 
             var newConfiguration = configurationBuilder.Build();
+            var nyssPublicApiFuncAppConfig = newConfiguration.Get<NyssPublicApiFuncAppConfig>();
             builder.Services.AddSingleton<IConfiguration>(newConfiguration);
+            builder.Services.AddSingleton<IConfig>(nyssPublicApiFuncAppConfig);
             builder.Services.AddLogging();
         }
     }
