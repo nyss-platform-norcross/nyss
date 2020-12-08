@@ -92,7 +92,8 @@
   "variables": {
     "resourceGroupName": "[resourceGroup().name]",
     "dataStorageAccountName": "[concat('nrxcbsnyssdatast', parameters('env'))]",
-    "platformAgreementsContainerName": "nyss-agreements-container"
+    "platformAgreementsContainerName": "nyss-agreements-container",
+    "publicStatsContainerName": "nyss-public-stats"
   },
   "resources": [
     {
@@ -253,6 +254,14 @@
             {
               "name": "nyss-agreements-container-demo",
               "condition": "[equals(variables('resourceGroupName'), 'nrx-cbsdb-dev-rg')]",
+              "type": "containers",
+              "apiVersion": "2018-07-01",
+              "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('dataStorageAccountName'), '/blobServices/default')]"
+              ]
+            },
+            {
+              "name": "[variables('publicStatsContainerName')]",
               "type": "containers",
               "apiVersion": "2018-07-01",
               "dependsOn": [

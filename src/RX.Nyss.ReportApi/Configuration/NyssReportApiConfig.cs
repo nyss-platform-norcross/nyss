@@ -19,9 +19,11 @@ namespace RX.Nyss.ReportApi.Configuration
         public string GeneralBlobContainerName { get; set; }
         public string SmsGatewayBlobContainerName { get; set; }
         public string PlatformAgreementsContainerName { get; set; }
+        public string PublicStatsBlobContainerName { get; set; }
         public string StringsResourcesBlobObjectName { get; set; }
         public string EmailContentResourcesBlobObjectName { get; set; }
         public string PlatformAgreementBlobObjectName { get; set; }
         public string SmsContentResourcesBlobObjectName { get; set; }
+        public string PublicStatsBlobObjectName { get; set; }
     }
 }

@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "DATABLOBSTORAGE_CONNECTIONSTRING": "",
+    "PublicStatsBlobObjectPath": "nyss-public-stats/nyssPublicStats.json"
+  },
+  "ReleaseName": "1.0.0.1",
+  "Host": {
+    "LocalHttpPort": 7072
+  }
+}
