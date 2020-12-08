@@ -92,6 +92,15 @@ steps:
     zipAfterPublish: true
     modifyOutputPath: false
 
+- task: DotNetCoreCLI@2
+  displayName: 'Publish RX.Nyss.PublicApiFuncApp'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    arguments: 'src/RX.Nyss.PublicApiFuncApp/RX.Nyss.PublicApiFuncApp.csproj -c Release -o "$(Build.ArtifactStagingDirectory)/publicapifuncapp" /p:Version=$(GitVersion.MajorMinorPatch) --self-contained false'
+    zipAfterPublish: true
+    modifyOutputPath: false
+
 - task: CopyFiles@2
   inputs:
     SourceFolder: 'Infrastructure'
