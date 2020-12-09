@@ -1,9 +1,5 @@
 .filtersGrid {
   position: sticky;
-  top: -12px;
+  top: -10px;
   z-index: 1001;
-
-  @media screen and (max-width: 1279px) {
-      position: unset;
-  }
 }
