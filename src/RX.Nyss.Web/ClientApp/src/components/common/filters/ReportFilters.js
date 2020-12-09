@@ -55,28 +55,6 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
       <CardContent>
         <Grid container spacing={2}>
           <Grid item>
-            <FormControl className={styles.filterItem}>
-              <InputLabel>{strings(stringKeys.filters.report.selectReportListType)}</InputLabel>
-              <Select
-                onChange={handleReportsTypeChange}
-                value={filters.reportsType}
-              >
-                {showUnknownSenderOption &&
-                  <MenuItem value={ReportListType.unknownSender}>
-                    {strings(stringKeys.filters.report.unknownSenderReportListType)}
-                  </MenuItem>
-                }
-                <MenuItem value={ReportListType.main}>
-                  {strings(stringKeys.filters.report.mainReportsListType)}
-                </MenuItem>
-                <MenuItem value={ReportListType.fromDcp}>
-                  {strings(stringKeys.filters.report.dcpReportListType)}
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item>
             <AreaFilter
               nationalSocietyId={nationalSocietyId}
               selectedItem={selectedArea}
@@ -101,6 +79,27 @@ export const ReportFilters = ({ filters, nationalSocietyId, healthRisks, onChang
                 </MenuItem>
               ))}
             </TextField>
+          </Grid>
+          <Grid item>
+            <FormControl className={styles.filterItem}>
+              <InputLabel>{strings(stringKeys.filters.report.selectReportListType)}</InputLabel>
+              <Select
+                onChange={handleReportsTypeChange}
+                value={filters.reportsType}
+              >
+                {showUnknownSenderOption &&
+                <MenuItem value={ReportListType.unknownSender}>
+                  {strings(stringKeys.filters.report.unknownSenderReportListType)}
+                </MenuItem>
+                }
+                <MenuItem value={ReportListType.main}>
+                  {strings(stringKeys.filters.report.mainReportsListType)}
+                </MenuItem>
+                <MenuItem value={ReportListType.fromDcp}>
+                  {strings(stringKeys.filters.report.dcpReportListType)}
+                </MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
 
           <Grid item>
