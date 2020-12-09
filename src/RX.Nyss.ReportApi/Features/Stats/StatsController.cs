@@ -14,8 +14,8 @@ namespace RX.Nyss.ReportApi.Features.Stats
             _statsService = statsService;
         }
 
-        [HttpPost("stats")]
-        public async Task<IActionResult> Stats()
+        [HttpPost("calculate")]
+        public async Task<IActionResult> Calculate()
         {
             await _statsService.CalculateStats();
 
