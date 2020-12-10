@@ -1,7 +1,7 @@
 import * as actions from "./alertsConstants";
 import { initialState } from "../../../initialState";
 import { LOCATION_CHANGE } from "connected-react-router";
-import { assignInArray, setProperty } from "../../../utils/immutable";
+import { assignInArray } from "../../../utils/immutable";
 
 const updateReport = (reports, reportId, changes) =>
   assignInArray(reports, r => r.id === reportId, item => ({ ...item, ...changes }));

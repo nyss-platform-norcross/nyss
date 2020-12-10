@@ -2,7 +2,7 @@ import { push } from "connected-react-router";
 import {
   OPEN_ALERTS_LIST, GET_ALERTS, OPEN_ALERTS_ASSESSMENT,
   ACCEPT_REPORT, DISMISS_REPORT, RESET_REPORT, ESCALATE_ALERT,
-  DISMISS_ALERT, CLOSE_ALERT, OPEN_ALERTS_LOGS, FETCH_RECIPIENTS, REFRESH_ALERT_STATUS
+  DISMISS_ALERT, CLOSE_ALERT, OPEN_ALERTS_LOGS, FETCH_RECIPIENTS
 } from "./alertsConstants";
 
 export const goToList = (projectId) => push(`/projects/${projectId}/alerts`);
