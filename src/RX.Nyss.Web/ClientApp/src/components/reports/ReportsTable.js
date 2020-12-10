@@ -71,7 +71,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
     {
       title: strings(stringKeys.reports.list.goToAlert),
       roles: accessMap.reports.goToAlert,
-      condition: !row.isAnonymized && !!row.alertId,
+      condition: !!row.alertId,
       action: () => goToAlert(projectId, row.alertId)
     }
   ];
