@@ -38,7 +38,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int? FromOtherVillagesCount { get; set; }
         public bool? IsMarkedAsError { get; set; }
         public bool UserHasAccessToReportDataCollector { get; set; }
-        public bool IsInAlert { get; set; }
+        public int? AlertId { get; set; }
         public int? ReportId { get; set; }
         public ReportType? ReportType { get; set; }
         public DateTime DateTime { get; set; }

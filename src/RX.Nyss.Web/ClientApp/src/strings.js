@@ -715,7 +715,8 @@ export const stringKeys = {
       markedAsError: "reports.list.markedAsError",
       editReport: "reports.list.editReport",
       editedSuccesfully: "reports.list.editedSuccessfully",
-      sendReport: "reports.list.sendReport"
+      sendReport: "reports.list.sendReport",
+      goToAlert: "reports.list.goToAlert"
     },
     form: {
       title: "reports.form.editionTitle",

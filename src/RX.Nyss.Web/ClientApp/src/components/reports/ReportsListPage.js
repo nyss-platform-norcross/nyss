@@ -113,6 +113,7 @@ const ReportsListPageComponent = (props) => {
         isMarkingAsError={props.isMarkingAsError}
         user={props.user}
         projectIsClosed={props.projectIsClosed}
+        goToAlert={props.goToAlert}
       />
     </Fragment>
   );
@@ -146,7 +147,8 @@ const mapDispatchToProps = {
   markAsError: reportsActions.markAsError.invoke,
   goToEdition: reportsActions.goToEdition,
   openSendReport: reportsActions.openSendReport.invoke,
-  sendReport: reportsActions.sendReport.invoke
+  sendReport: reportsActions.sendReport.invoke,
+  goToAlert: reportsActions.goToAlert
 };
 
 export const ReportsListPage = useLayout(
