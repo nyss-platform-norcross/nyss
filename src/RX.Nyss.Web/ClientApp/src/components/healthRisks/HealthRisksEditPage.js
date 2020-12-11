@@ -72,14 +72,12 @@ const HealthRisksEditPageComponent = (props) => {
           [`contentLanguage_${lang.id}_caseDefinition`]: content && content.caseDefinition,
           [`contentLanguage_${lang.id}_feedbackMessage`]: content && content.feedbackMessage
         },
-        validation: lang.name.toLowerCase() === "english"
-          ? {
+        validation: {
             ...result.validation,
             [`contentLanguage_${lang.id}_name`]: [validators.required, validators.maxLength(100)],
             [`contentLanguage_${lang.id}_caseDefinition`]: [validators.required, validators.maxLength(500)],
             [`contentLanguage_${lang.id}_feedbackMessage`]: [validators.required, validators.maxLength(160)]
           }
-          : result.validation
       }), { fields, validation });
 
     const newForm = createForm(finalFormData.fields, finalFormData.validation);
