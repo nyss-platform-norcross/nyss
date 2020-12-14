@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -73,9 +74,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 })
                 .ToListAsync();
 
-            var missingDays = Enumerable
-                .Range(0, endDate.Subtract(startDate).Days + 1)
-                .Select(i => startDate.AddDays(i))
+            var missingDays = startDate.GetDaysRange(endDate)
                 .Where(day => !groupedReports.Any(r => r.Period == day))
                 .Select(day => new
                 {
