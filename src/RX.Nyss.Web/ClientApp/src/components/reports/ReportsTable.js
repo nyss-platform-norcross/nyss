@@ -24,8 +24,8 @@ import { DateColumnName } from './logic/reportsConstants'
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import { Typography } from "@material-ui/core";
 
-export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId, user, list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort, projectIsClosed }) => {
-
+export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId, user, list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort, projectIsClosed, goToAlert }) => {
+  
   const [markErrorConfirmationDialog, setMarkErrorConfirmationDialog] = useState({ isOpen: false, reportId: null, isMarkedAsError: null });
   const [value, setValue] = useState(sorting);
 
@@ -65,8 +65,14 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
     {
       title: strings(stringKeys.reports.list.markAsError),
       roles: accessMap.reports.markAsError,
-      condition: !projectIsClosed && !row.isAnonymized && row.isValid && !row.isInAlert && !row.isMarkedAsError && row.userHasAccessToReportDataCollector,
+      condition: !projectIsClosed && !row.isAnonymized && row.isValid && !row.alertId && !row.isMarkedAsError && row.userHasAccessToReportDataCollector,
       action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
+    },
+    {
+      title: strings(stringKeys.reports.list.goToAlert),
+      roles: accessMap.reports.goToAlert,
+      condition: !!row.alertId,
+      action: () => goToAlert(projectId, row.alertId)
     }
   ];
 

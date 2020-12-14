@@ -2,7 +2,7 @@ import styles from "./ReportsMap.module.scss";
 
 import React, { useEffect, useState } from 'react';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
-import { Map, TileLayer, Popup, Marker, MapControl, ScaleControl } from 'react-leaflet'
+import { Map, TileLayer, Popup, Marker, ScaleControl } from 'react-leaflet';
 import { calculateBounds, calculateCenter, calculateIconSize } from '../../utils/map';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from "../../strings";

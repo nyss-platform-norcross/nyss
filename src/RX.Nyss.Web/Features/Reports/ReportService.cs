@@ -154,7 +154,12 @@ namespace RX.Nyss.Web.Features.Reports
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
                     UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
-                    IsInAlert = r.Report.ReportAlerts.Any(),
+                    AlertId = r.Report.ReportAlerts
+                        .Select(ra => ra.Alert)
+                        .OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
+                            a.Status == AlertStatus.Escalated ? 1 : 2)
+                        .Select(a => a.Id)
+                        .FirstOrDefault(),
                     ReportId = r.ReportId,
                     ReportType = r.Report.ReportType,
                     Message = r.Text,
