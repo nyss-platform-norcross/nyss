@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Castle.Components.DictionaryAdapter;
-using Microsoft.CodeAnalysis;
 using MockQueryable.NSubstitute;
 using NSubstitute;
+using OfficeOpenXml;
 using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
@@ -24,6 +23,7 @@ using RX.Nyss.Web.Services.Authorization;
 using Shouldly;
 using Xunit;
 using Project = RX.Nyss.Data.Models.Project;
+using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Tests.Features.Alerts
 {
@@ -42,6 +42,8 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         private readonly List<GatewaySetting> _gatewaySettings;
         private readonly List<AlertNotificationRecipient> _alertNotificationRecipients;
         private readonly IProjectService _projectService;
+        private readonly IExcelExportService _excelExportService;
+        private readonly IStringsResourcesService _stringsResourcesService;
 
         public AlertServiceTests()
         {
@@ -58,6 +60,9 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
 
             _smsPublisherService = Substitute.For<ISmsPublisherService>();
             _projectService = Substitute.For<IProjectService>();
+            _excelExportService = Substitute.For<IExcelExportService>();
+            _stringsResourcesService = Substitute.For<IStringsResourcesService>();
+            var userService = Substitute.For<IUserService>();
             _alertService = new AlertService(_nyssContext,
                 _emailPublisherService,
                 emailTextGeneratorService,
@@ -67,7 +72,10 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 _dateTimeProvider,
                 _authorizationService,
                 _smsPublisherService,
-                _projectService);
+                _projectService,
+                _excelExportService,
+                _stringsResourcesService,
+                userService);
 
             _alerts = TestData.GetAlerts();
             var alertsDbSet = _alerts.AsQueryable().BuildMockDbSet();
@@ -773,6 +781,41 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                 res.Value.Data.All(a => a.Status == MapToAlertStatus(alertStatusFilter).ToString()).ShouldBeTrue();
                 res.Value.Data.Count.ShouldBe(1);
             }
+        }
+
+        [Fact]
+        public async Task Export_WhenExporting_ShouldCallExportServiceToExcel()
+        {
+            // Arrange
+            var alerts = TestData.GetAlerts();
+            var alertsMockDbSet = alerts.AsQueryable().BuildMockDbSet();
+            var projects = new List<Project> { alerts.Select(a => a.ProjectHealthRisk.Project).First() };
+            var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
+            var users = TestData.GetUsers();
+            var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+            var stringResources = new Dictionary<string, string>();
+            var excelDoc = new ExcelPackage();
+            excelDoc.Workbook.Worksheets.Add("title");
+            _nyssContext.Users.Returns(usersMockDbSet);
+            _nyssContext.Projects.Returns(projectsMockDbSet);
+            _nyssContext.Projects.FindAsync(1).Returns(projects[0]);
+            _nyssContext.Alerts.Returns(alertsMockDbSet);
+            _authorizationService.GetCurrentUser().Returns(users[0]);
+            _authorizationService.GetCurrentUserName().Returns(users[0].EmailAddress);
+            _stringsResourcesService.GetStringsResources("").Returns(Success<IDictionary<string, string>>(stringResources));
+            _excelExportService.ToExcel(Arg.Any<List<AlertListExportResponseDto>>(), Arg.Any<List<string>>(), Arg.Any<string>()).Returns(excelDoc);
+
+            // Act
+            await _alertService.Export(1, new AlertListFilterRequestDto
+            {
+                Area = null,
+                Status = AlertStatusFilter.All,
+                OrderBy = "Status",
+                SortAscending = true
+            });
+
+            // Assert
+            _excelExportService.Received(1).ToExcel(Arg.Any<List<AlertListExportResponseDto>>(), Arg.Any<List<string>>(), Arg.Any<string>());
         }
 
         private AlertStatus MapToAlertStatus(AlertStatusFilter filter) =>
