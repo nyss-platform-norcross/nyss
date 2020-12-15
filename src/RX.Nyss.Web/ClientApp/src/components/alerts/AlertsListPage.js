@@ -7,6 +7,9 @@ import Layout from '../layout/Layout';
 import AlertsTable from './components/AlertsTable';
 import { useMount } from '../../utils/lifecycle';
 import { AlertsFilters } from './components/AlertsFilters';
+import TableActions from '../common/tableActions/TableActions';
+import { TableActionsButton } from '../common/tableActions/TableActionsButton';
+import { stringKeys, strings } from '../../strings';
 
 const AlertsListPageComponent = (props) => {
   useMount(() => {
@@ -27,6 +30,13 @@ const AlertsListPageComponent = (props) => {
 
   return (
     <Fragment>
+      
+      <TableActions>
+        <TableActionsButton onClick={() => props.export(props.projectId, props.filters)}>
+          {strings(stringKeys.alerts.list.export)}
+        </TableActionsButton>
+      </TableActions>
+
       <AlertsFilters 
         filters={props.filters}
         filtersData={props.filtersData}
@@ -66,7 +76,8 @@ const mapStateToProps = (state, ownProps) => ({
 const mapDispatchToProps = {
   openAlertsList: alertsActions.openList.invoke,
   goToAssessment: alertsActions.goToAssessment,
-  getList: alertsActions.getList.invoke
+  getList: alertsActions.getList.invoke,
+  export: alertsActions.exportAlerts.invoke
 };
 
 export const AlertsListPage = useLayout(

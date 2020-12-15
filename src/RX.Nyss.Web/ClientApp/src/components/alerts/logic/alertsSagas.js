@@ -6,6 +6,7 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { strings, stringKeys } from "../../../strings";
 import dayjs from "dayjs";
+import { downloadFile } from "../../../utils/downloadFile";
 
 export const alertsSagas = () => [
   takeEvery(consts.OPEN_ALERTS_LIST.INVOKE, openAlertsList),
@@ -18,7 +19,8 @@ export const alertsSagas = () => [
   takeEvery(consts.DISMISS_ALERT.INVOKE, dismissAlert),
   takeEvery(consts.CLOSE_ALERT.INVOKE, closeAlert),
   takeEvery(consts.RESET_REPORT.INVOKE, resetReport),
-  takeEvery(consts.FETCH_RECIPIENTS.INVOKE, fetchRecipients)
+  takeEvery(consts.FETCH_RECIPIENTS.INVOKE, fetchRecipients),
+  takeEvery(consts.EXPORT_ALERTS.INVOKE, exportAlerts)
 ];
 
 function* openAlertsList({ projectId }) {
@@ -184,6 +186,22 @@ function* closeAlert({ alertId, comments, escalatedOutcome }) {
     yield put(actions.closeAlert.failure(error.message));
   }
 };
+
+function* exportAlerts({ projectId, filters }) {
+  yield put(actions.exportAlerts.request());
+
+  try {
+    yield downloadFile({
+      url: `/api/alert/export?projectId=${projectId}`,
+      fileName: `alerts.xlsx`,
+      data: { ...filters }
+    });
+
+    yield put(actions.exportAlerts.success());
+  } catch (error) {
+    yield put(actions.exportAlerts.failure(error.message));
+  }
+}
 
 function* openAlertsModule(projectId, title) {
   const project = yield call(http.getCached, {
