@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using OfficeOpenXml;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
 
 namespace RX.Nyss.Web.Services
@@ -11,6 +12,7 @@ namespace RX.Nyss.Web.Services
     {
         byte[] ToCsv<T>(IEnumerable<T> data, IEnumerable<string> columnLabels) where T : class;
         ExcelPackage ToExcel(List<IReportListResponseDto> exportReportListResponseDtos, List<string> columnLabels, string title, ReportListType reportListType);
+        ExcelPackage ToExcel(List<AlertListExportResponseDto> exportAlertListResponseDtos, List<string> columnLabels, string title);
     }
 
     public class ExcelExportService : IExcelExportService
@@ -112,6 +114,58 @@ namespace RX.Nyss.Web.Services
             {
                 worksheet.Column(20).Width = 30;
             }
+
+            return package;
+        }
+
+        public ExcelPackage ToExcel(List<AlertListExportResponseDto> exportAlertListResponseDtos, List<string> columnLabels, string title)
+        {
+            var package = new ExcelPackage();
+            package.Workbook.Properties.Title = title;
+
+            var worksheet = package.Workbook.Worksheets.Add(title);
+
+            foreach (var label in columnLabels)
+            {
+                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Value = label;
+                worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Style.Font.Bold = true;
+            }
+
+            foreach (var alert in exportAlertListResponseDtos)
+            {
+                var columnIndex = exportAlertListResponseDtos.IndexOf(alert) + 2;
+                worksheet.Cells[columnIndex, 1].Value = alert.Id;
+                worksheet.Cells[columnIndex, 2].Value = alert.TriggeredAt.ToOADate();
+                worksheet.Cells[columnIndex, 2].Style.Numberformat.Format = "yyyy-MM-dd HH:mm";
+                worksheet.Cells[columnIndex, 3].Value = alert.LastReportTimestamp.ToOADate();
+                worksheet.Cells[columnIndex, 3].Style.Numberformat.Format = "yyyy-MM-dd HH:mm";
+                worksheet.Cells[columnIndex, 4].Value = alert.HealthRisk;
+                worksheet.Cells[columnIndex, 5].Value = alert.ReportCount;
+                worksheet.Cells[columnIndex, 6].Value = alert.Status;
+                worksheet.Cells[columnIndex, 7].Value = alert.LastReportRegion;
+                worksheet.Cells[columnIndex, 8].Value = alert.LastReportDistrict;
+                worksheet.Cells[columnIndex, 9].Value = alert.LastReportVillage;
+                worksheet.Cells[columnIndex, 10].Value = alert.LastReportZone;
+                worksheet.Cells[columnIndex, 11].Value = alert.EscalatedAt?.ToOADate();
+                worksheet.Cells[columnIndex, 11].Style.Numberformat.Format = "yyyy-MM-dd HH:mm";
+                worksheet.Cells[columnIndex, 12].Value = alert.ClosedAt?.ToOADate();
+                worksheet.Cells[columnIndex, 12].Style.Numberformat.Format = "yyyy-MM-dd HH:mm";
+                worksheet.Cells[columnIndex, 13].Value = alert.DismissedAt?.ToOADate();
+                worksheet.Cells[columnIndex, 13].Style.Numberformat.Format = "yyyy-MM-dd HH:mm";
+                worksheet.Cells[columnIndex, 14].Value = alert.EscalatedOutcome;
+                worksheet.Cells[columnIndex, 15].Value = alert.Comments;
+            }
+
+            worksheet.Column(2).Width = 20;
+            worksheet.Column(3).Width = 20;
+            worksheet.Column(4).Width = 20;
+            worksheet.Column(7).Width = 10;
+            worksheet.Column(8).Width = 10;
+            worksheet.Column(9).Width = 10;
+            worksheet.Column(11).Width = 20;
+            worksheet.Column(12).Width = 20;
+            worksheet.Column(13).Width = 20;
+            worksheet.Column(15).Width = 20;
 
             return package;
         }

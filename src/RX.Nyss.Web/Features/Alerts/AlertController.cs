@@ -141,5 +141,20 @@ namespace RX.Nyss.Web.Features.Alerts
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertLogResponseDto>> GetLogs(int alertId) =>
             _alertService.GetLogs(alertId);
+
+        /// <summary>
+        /// Exports the alert list to excel
+        /// </summary>
+        /// <param name="projectId">An identifier of the project</param>
+        /// <param name="alertListFilterRequestDto">Filters</param>
+        /// <returns>An excel export of the alert list</returns>
+        [HttpPost("export")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.Coordinator)]
+        [NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<IActionResult> Export(int projectId, [FromBody] AlertListFilterRequestDto alertListFilterRequestDto)
+        {
+            var excelSheetBytes = await _alertService.Export(projectId, alertListFilterRequestDto);
+            return File(excelSheetBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        }
     }
 }
