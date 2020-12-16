@@ -15,6 +15,7 @@ import { DataCollectorsPerformanceColumnFilters } from './DataCollectorsPerforma
 import TablePager from '../common/tablePagination/TablePager';
 import { Tooltip } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
+import Divider from "@material-ui/core/Divider";
 
 export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,13 +86,13 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
         <TableHead>
           <TableRow>
             <TableCell>{strings(stringKeys.dataCollector.performanceList.name)}</TableCell>
+            <TableCell>{strings(stringKeys.dataCollector.performanceList.villageName)}</TableCell>
             <TableCell>{strings(stringKeys.dataCollector.performanceList.daysSinceLastReport)}</TableCell>
             <TableCell>
               <div id="lastWeek" onClick={openFilter} className={styles.filterHeader}>
                 {strings(stringKeys.dataCollector.performanceList.statusLastWeek)}
                 <Icon className={styles.filterIcon}>{filterIsActive('lastWeek') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
-
             </TableCell>
             <TableCell>
               <div id="twoWeeksAgo" onClick={openFilter} className={styles.filterHeader}>
@@ -196,6 +197,12 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
           {!isListFetching && (
             list.map((row, index) => (
               <TableRow key={index} hover>
+                <TableCell>
+                  {row.name}
+                <Divider />
+                  {row.phoneNumber}
+                </TableCell>
+                <TableCell>{row.villageName}</TableCell>
                 <TableCell className={styles.centeredText}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
                 <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusLastWeek} icon={getIconFromStatus(row.statusLastWeek)} />

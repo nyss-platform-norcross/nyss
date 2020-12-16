@@ -12,6 +12,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
     public class DataCollectorPerformance
     {
         public string Name { get; set; }
+        public string PhoneNumber { get; set; }
+        public string VillageName { get; set; }
         public int? DaysSinceLastReport { get; set; }
         public ReportingStatus StatusLastWeek { get; set; }
         public ReportingStatus StatusTwoWeeksAgo { get; set; }

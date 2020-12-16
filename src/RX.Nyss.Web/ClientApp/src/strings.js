@@ -620,6 +620,8 @@ export const stringKeys = {
       completenessDescription: "dataCollectors.performanceList.completenessDescription",
       completenessValueDescription: "dataCollectors.performanceList.completenessValueDescription",
       name: "dataCollectors.performanceList.name",
+      phoneNumber: "dataCollectors.performanceList.phoneNumber",
+      villageName: "dataCollectors.performanceList.village",
       daysSinceLastReport: "dataCollectors.performanceList.daysSinceLastReport",
       statusLastWeek: "dataCollectors.performanceList.statusLastWeek",
       statusTwoWeeksAgo: "dataCollectors.performanceList.statusTwoWeeksAgo",

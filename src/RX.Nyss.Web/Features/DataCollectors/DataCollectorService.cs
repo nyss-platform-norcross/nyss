@@ -559,7 +559,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterOnlyNotDeleted()
                 .FilterByArea(dataCollectorsFilters.Area)
                 .FilterByName(dataCollectorsFilters.Name)
-                .FilterBySupervisor(dataCollectorsFilters.SupervisorId);
+                .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
+                .Include(dc => dc.Village);
 
             var toDate = _dateTimeProvider.UtcNow;
             var fromDate = toDate.AddMonths(-2);
@@ -570,6 +571,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Select(dc => new DataCollectorWithRawReportData
                 {
                     Name = dc.Name,
+                    PhoneNumber = dc.PhoneNumber,
+                    VillageName = dc.Village.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
                             && r.ReceivedAt >= fromDate.Date && r.ReceivedAt < toDate.Date.AddDays(1))
                         .Select(r => new RawReportData
@@ -587,13 +590,20 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorPerformances = paginatedDataCollectorsWithReportsData.Select(r => new
                 {
                     r.Name,
+                    r.PhoneNumber,
+                    r.VillageName,
                     ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(report => (int)(toDate - report.ReceivedAt).TotalDays / 7)
                 })
                 .Select(dc => new DataCollectorPerformance
                 {
                     Name = dc.Name,
+                    PhoneNumber = dc.PhoneNumber,
+                    VillageName = dc.VillageName,
                     DaysSinceLastReport = dc.ReportsGroupedByWeek.Any()
-                        ? (int)(toDate - dc.ReportsGroupedByWeek.SelectMany(g => g).OrderByDescending(r => r.ReceivedAt).First().ReceivedAt).TotalDays
+                        ? (int)(toDate - dc.ReportsGroupedByWeek
+                            .SelectMany(g => g)
+                            .OrderByDescending(r => r.ReceivedAt)
+                            .First().ReceivedAt).TotalDays
                         : -1,
                     StatusLastWeek = GetDataCollectorStatus(0, dc.ReportsGroupedByWeek),
                     StatusTwoWeeksAgo = GetDataCollectorStatus(1, dc.ReportsGroupedByWeek),
@@ -884,6 +894,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private class DataCollectorWithRawReportData
         {
             public string Name { get; set; }
+            public string VillageName { get; set; }
+            public string PhoneNumber { get; set; }
             public IEnumerable<RawReportData> ReportsInTimeRange { get; set; }
         }
     }
