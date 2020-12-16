@@ -141,7 +141,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
         <TableBody>
           {!isListFetching && completeness != null && (
             <TableRow hover>
-              <TableCell>
+              <TableCell className={styles.completenessBorderBottomColor}>
                 <span className={styles.completeness}>
                   {strings(stringKeys.dataCollector.performanceList.completenessTitle)}
                   <Tooltip title={strings(stringKeys.dataCollector.performanceList.completenessDescription)} onClick={handleTooltipClick} arrow>
@@ -149,43 +149,44 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
                   </Tooltip>
                 </span>
               </TableCell>
-              <TableCell style={{ textAlign: "center" }}>-</TableCell>
-              <TableCell style={{ textAlign: "center" }}>
+              <TableCell className={styles.completenessAlignmentAndBorder}>-</TableCell>
+              <TableCell className={styles.completenessAlignmentAndBorder}>-</TableCell>
+              <TableCell className={styles.completenessAlignmentAndBorder}>
                 <Tooltip title={renderTooltipText(completeness.lastWeek)} onClick={handleTooltipClick} arrow>
                   <span>{`${completeness.lastWeek.percentage} %`}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell style={{ textAlign: "center" }}>
+              <TableCell className={styles.completenessAlignmentAndBorder}>
                 <Tooltip title={renderTooltipText(completeness.twoWeeksAgo)} onClick={handleTooltipClick} arrow>
                   <span>{`${completeness.twoWeeksAgo.percentage} %`}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell style={{ textAlign: "center" }}>
+              <TableCell className={styles.completenessAlignmentAndBorder}>
                 <Tooltip title={renderTooltipText(completeness.threeWeeksAgo)} onClick={handleTooltipClick} arrow>
                   <span>{`${completeness.threeWeeksAgo.percentage} %`}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell style={{ textAlign: "center" }}>
+              <TableCell className={styles.completenessAlignmentAndBorder}>
                 <Tooltip title={renderTooltipText(completeness.fourWeeksAgo)} onClick={handleTooltipClick} arrow>
                   <span>{`${completeness.fourWeeksAgo.percentage} %`}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell style={{ textAlign: "center" }}>
+              <TableCell className={styles.completenessAlignmentAndBorder}>
                 <Tooltip title={renderTooltipText(completeness.fiveWeeksAgo)} onClick={handleTooltipClick} arrow>
                   <span>{`${completeness.fiveWeeksAgo.percentage} %`}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell style={{ textAlign: "center" }}>
+              <TableCell className={styles.completenessAlignmentAndBorder}>
                 <Tooltip title={renderTooltipText(completeness.sixWeeksAgo)} onClick={handleTooltipClick} arrow>
                   <span>{`${completeness.sixWeeksAgo.percentage} %`}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell style={{ textAlign: "center" }}>
+              <TableCell className={styles.completenessAlignmentAndBorder}>
                 <Tooltip title={renderTooltipText(completeness.sevenWeeksAgo)} onClick={handleTooltipClick} arrow>
                   <span>{`${completeness.sevenWeeksAgo.percentage} %`}</span>
                 </Tooltip>
               </TableCell>
-              <TableCell style={{ textAlign: "center" }}>
+              <TableCell className={styles.completenessAlignmentAndBorder}>
                 <Tooltip title={renderTooltipText(completeness.eightWeeksAgo)} onClick={handleTooltipClick} arrow>
                   <span>{`${completeness.eightWeeksAgo.percentage} %`}</span>
                 </Tooltip>
@@ -195,30 +196,29 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
           {!isListFetching && (
             list.map((row, index) => (
               <TableRow key={index} hover>
-                <TableCell>{row.name}</TableCell>
-                <TableCell style={{ textAlign: "center" }}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell className={styles.centeredText}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
+                <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusLastWeek} icon={getIconFromStatus(row.statusLastWeek)} />
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusTwoWeeksAgo} icon={getIconFromStatus(row.statusTwoWeeksAgo)} />
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusThreeWeeksAgo} icon={getIconFromStatus(row.statusThreeWeeksAgo)} />
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusFourWeeksAgo} icon={getIconFromStatus(row.statusFourWeeksAgo)} />
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusFiveWeeksAgo} icon={getIconFromStatus(row.statusFiveWeeksAgo)} />
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusSixWeeksAgo} icon={getIconFromStatus(row.statusSixWeeksAgo)} />
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusSevenWeeksAgo} icon={getIconFromStatus(row.statusSevenWeeksAgo)} />
                 </TableCell>
-                <TableCell style={{ textAlign: "center" }}>
+                <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusEightWeeksAgo} icon={getIconFromStatus(row.statusEightWeeksAgo)} />
                 </TableCell>
               </TableRow>
