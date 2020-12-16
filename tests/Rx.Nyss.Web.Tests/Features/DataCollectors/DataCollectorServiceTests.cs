@@ -551,6 +551,10 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 new DataCollector
                 {
                     PhoneNumber = phoneNumber,
+                    Village = new Village
+                    {
+                        Name = "Coronia"
+                    },
                     Project = new Project
                     {
                         Id = ProjectId,

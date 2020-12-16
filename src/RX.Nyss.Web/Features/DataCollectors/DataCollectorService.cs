@@ -587,32 +587,32 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var paginatedDataCollectorsWithReportsData = dataCollectorsWithReportsData
                 .Page(dataCollectorsFilters.PageNumber, rowsPerPage);
 
-            var dataCollectorPerformances = paginatedDataCollectorsWithReportsData.Select(r => new
+            var dataCollectorPerformances = paginatedDataCollectorsWithReportsData
+                .Select(dc =>
                 {
-                    r.Name,
-                    r.PhoneNumber,
-                    r.VillageName,
-                    ReportsGroupedByWeek = r.ReportsInTimeRange.GroupBy(report => (int)(toDate - report.ReceivedAt).TotalDays / 7)
-                })
-                .Select(dc => new DataCollectorPerformance
-                {
-                    Name = dc.Name,
-                    PhoneNumber = dc.PhoneNumber,
-                    VillageName = dc.VillageName,
-                    DaysSinceLastReport = dc.ReportsGroupedByWeek.Any()
-                        ? (int)(toDate - dc.ReportsGroupedByWeek
-                            .SelectMany(g => g)
-                            .OrderByDescending(r => r.ReceivedAt)
-                            .First().ReceivedAt).TotalDays
-                        : -1,
-                    StatusLastWeek = GetDataCollectorStatus(0, dc.ReportsGroupedByWeek),
-                    StatusTwoWeeksAgo = GetDataCollectorStatus(1, dc.ReportsGroupedByWeek),
-                    StatusThreeWeeksAgo = GetDataCollectorStatus(2, dc.ReportsGroupedByWeek),
-                    StatusFourWeeksAgo = GetDataCollectorStatus(3, dc.ReportsGroupedByWeek),
-                    StatusFiveWeeksAgo = GetDataCollectorStatus(4, dc.ReportsGroupedByWeek),
-                    StatusSixWeeksAgo = GetDataCollectorStatus(5, dc.ReportsGroupedByWeek),
-                    StatusSevenWeeksAgo = GetDataCollectorStatus(6, dc.ReportsGroupedByWeek),
-                    StatusEightWeeksAgo = GetDataCollectorStatus(7, dc.ReportsGroupedByWeek)
+                    var reportsGroupedByWeek = dc.ReportsInTimeRange
+                        .GroupBy(report => (int)(toDate - report.ReceivedAt).TotalDays / 7)
+                        .ToList();
+                    return new DataCollectorPerformance
+                    {
+                        Name = dc.Name,
+                        PhoneNumber = dc.PhoneNumber,
+                        VillageName = dc.VillageName,
+                        DaysSinceLastReport = reportsGroupedByWeek.Any()
+                            ? (int)(toDate - reportsGroupedByWeek
+                                .SelectMany(g => g)
+                                .OrderByDescending(r => r.ReceivedAt)
+                                .First().ReceivedAt).TotalDays
+                            : -1,
+                        StatusLastWeek = GetDataCollectorStatus(0, reportsGroupedByWeek),
+                        StatusTwoWeeksAgo = GetDataCollectorStatus(1, reportsGroupedByWeek),
+                        StatusThreeWeeksAgo = GetDataCollectorStatus(2, reportsGroupedByWeek),
+                        StatusFourWeeksAgo = GetDataCollectorStatus(3, reportsGroupedByWeek),
+                        StatusFiveWeeksAgo = GetDataCollectorStatus(4, reportsGroupedByWeek),
+                        StatusSixWeeksAgo = GetDataCollectorStatus(5, reportsGroupedByWeek),
+                        StatusSevenWeeksAgo = GetDataCollectorStatus(6, reportsGroupedByWeek),
+                        StatusEightWeeksAgo = GetDataCollectorStatus(7, reportsGroupedByWeek)
+                    };
                 })
                 .FilterByStatusLastWeek(dataCollectorsFilters.LastWeek)
                 .FilterByStatusTwoWeeksAgo(dataCollectorsFilters.TwoWeeksAgo)
@@ -672,19 +672,46 @@ namespace RX.Nyss.Web.Features.DataCollectors
             }
 
             var dataCollectorCompleteness = dataCollectors
-                .Select(dc => new
+                .Select(dc =>
                 {
-                    ReportsGroupedByWeek = dc.ReportsInTimeRange.GroupBy(report => (int)(toDate - report.ReceivedAt).TotalDays / 7)
-                }).Select(dc => new
-                {
-                    HasReportedLastWeek = dc.ReportsGroupedByWeek.Where(g => g.Key == 0).SelectMany(g => g).Any(),
-                    HasReportedTwoWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 1).SelectMany(g => g).Any(),
-                    HasReportedThreeWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 2).SelectMany(g => g).Any(),
-                    HasReportedFourWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 3).SelectMany(g => g).Any(),
-                    HasReportedFiveWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 4).SelectMany(g => g).Any(),
-                    HasReportedSixWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 5).SelectMany(g => g).Any(),
-                    HasReportedSevenWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 6).SelectMany(g => g).Any(),
-                    HasReportedEightWeeksAgo = dc.ReportsGroupedByWeek.Where(g => g.Key == 7).SelectMany(g => g).Any()
+                    var reportsGroupedByWeek = dc.ReportsInTimeRange
+                        .GroupBy(report => (int)(toDate - report.ReceivedAt).TotalDays / 7)
+                        .ToList();
+                    return new
+                    {
+                        HasReportedLastWeek = reportsGroupedByWeek
+                            .Where(g => g.Key == 0)
+                            .SelectMany(g => g)
+                            .Any(),
+                        HasReportedTwoWeeksAgo = reportsGroupedByWeek
+                            .Where(g => g.Key == 1)
+                            .SelectMany(g => g)
+                            .Any(),
+                        HasReportedThreeWeeksAgo = reportsGroupedByWeek
+                            .Where(g => g.Key == 2)
+                            .SelectMany(g => g)
+                            .Any(),
+                        HasReportedFourWeeksAgo = reportsGroupedByWeek
+                            .Where(g => g.Key == 3)
+                            .SelectMany(g => g)
+                            .Any(),
+                        HasReportedFiveWeeksAgo = reportsGroupedByWeek
+                            .Where(g => g.Key == 4)
+                            .SelectMany(g => g)
+                            .Any(),
+                        HasReportedSixWeeksAgo = reportsGroupedByWeek
+                            .Where(g => g.Key == 5)
+                            .SelectMany(g => g)
+                            .Any(),
+                        HasReportedSevenWeeksAgo = reportsGroupedByWeek
+                            .Where(g => g.Key == 6)
+                            .SelectMany(g => g)
+                            .Any(),
+                        HasReportedEightWeeksAgo = reportsGroupedByWeek
+                            .Where(g => g.Key == 7)
+                            .SelectMany(g => g)
+                            .Any()
+                    };
                 }).Aggregate(new
                 {
                     ActiveLastWeek = 0,
