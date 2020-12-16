@@ -70,8 +70,12 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
 
   const renderTooltipText = (completeness) => {
     let text = strings(stringKeys.dataCollector.performanceList.completenessValueDescirption);
-    text = text.replace('{{active}}', completeness.activeDataCollectors);
-    text = text.replace('{{total}}', completeness.totalDataCollectors);
+
+    if (typeof(text) === 'string') { // only replace values when not in "strings editing" mode
+      text = text.replace('{{active}}', completeness.activeDataCollectors);
+      text = text.replace('{{total}}', completeness.totalDataCollectors);
+    }
+    
     return text;
   }
 
