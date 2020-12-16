@@ -15,7 +15,6 @@ import { DataCollectorsPerformanceColumnFilters } from './DataCollectorsPerforma
 import TablePager from '../common/tablePagination/TablePager';
 import { Tooltip } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
-import Divider from "@material-ui/core/Divider";
 
 export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -198,9 +197,13 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
             list.map((row, index) => (
               <TableRow key={index} hover>
                 <TableCell>
-                  {row.name}
-                <Divider />
-                  {row.phoneNumber}
+                  <span>
+                    {row.name}
+                  </span>
+                  <br/>
+                  <span>
+                     {row.phoneNumber}
+                  </span>
                 </TableCell>
                 <TableCell>{row.villageName}</TableCell>
                 <TableCell className={styles.centeredText}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
