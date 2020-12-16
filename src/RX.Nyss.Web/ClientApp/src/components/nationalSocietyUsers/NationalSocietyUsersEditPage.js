@@ -115,6 +115,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
               label={strings(stringKeys.nationalSocietyUser.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
+              inputMode={"tel"}
             />
           </Grid>
 
@@ -123,6 +124,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
               label={strings(stringKeys.nationalSocietyUser.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
+              inputMode={"tel"}
             />
           </Grid>
 

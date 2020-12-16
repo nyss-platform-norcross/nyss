@@ -135,6 +135,7 @@ const SmsGatewaysEditPageComponent = (props) => {
               label={strings(stringKeys.smsGateway.form.emailAddress)}
               name="emailAddress"
               field={form.fields.emailAddress}
+              inputMode={"email"}
             />
           </Grid>
 

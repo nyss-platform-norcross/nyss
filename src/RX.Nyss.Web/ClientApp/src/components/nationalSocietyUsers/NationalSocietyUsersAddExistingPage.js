@@ -64,6 +64,7 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
               name="email"
               field={form.fields.email}
               autoFocus
+              inputMode={"email"}
             />
           </Grid>
 

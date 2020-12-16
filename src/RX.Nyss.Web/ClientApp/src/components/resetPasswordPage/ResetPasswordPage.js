@@ -60,15 +60,24 @@ class ResetPasswordPageComponent extends PureComponent {
                     name="emailAddress"
                     field={this.form.fields.emailAddress}
                     autoFocus
+                    inputMode={"email"}
                   />
                 </Grid>
               </Grid>
 
               <FormActions>
-                <Link href="/">{strings(stringKeys.user.resetPassword.goToLoginPage)}</Link>
-                <SubmitButton isFetching={this.props.isFetching}>
-                  {strings(stringKeys.user.resetPassword.submit)}
-                </SubmitButton>
+                <Grid container spacing={2}>
+                  <Grid item xs={12} lg={6}>
+                    <Link href="/">{strings(stringKeys.user.resetPassword.goToLoginPage)}</Link>
+
+                  </Grid>
+                  <Grid item xs={12} lg={6}>
+                    <SubmitButton isFetching={this.props.isFetching}>
+                      {strings(stringKeys.user.resetPassword.submit)}
+                    </SubmitButton>
+
+                  </Grid>
+                </Grid>
               </FormActions>
             </form>
           </div>

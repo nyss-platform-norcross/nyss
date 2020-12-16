@@ -150,6 +150,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                       label={strings(stringKeys.projectAlertRecipient.form.email)}
                       field={form.fields.email}
                       name="email"
+                      inputMode={"email"}
                     />
                   </Grid>
 
@@ -158,6 +159,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                       label={strings(stringKeys.projectAlertRecipient.form.phoneNumber)}
                       field={form.fields.phoneNumber}
                       name="phoneNumber"
+                      inputMode={"tel"}
                     />
                   </Grid>
                 </Grid>
