@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Extensions;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
@@ -113,9 +114,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 })
                 .ToList();
 
-            var allPeriods = Enumerable
-                .Range(0, endDate.Subtract(startDate).Days + 1)
-                .Select(i => startDate.AddDays(i).ToString("dd/MM", CultureInfo.InvariantCulture))
+            var allPeriods = startDate.GetDaysRange(endDate)
+                .Select(i => i.ToString("dd/MM", CultureInfo.InvariantCulture))
                 .ToList();
 
             return new ReportByVillageAndDateResponseDto

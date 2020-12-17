@@ -11,7 +11,7 @@ namespace RX.Nyss.Common.Extensions
 
         public static IEnumerable<DateTime> GetDaysRange(this DateTime startDate, DateTime endDate) =>
             Enumerable
-                .Range(0, endDate.Subtract(startDate).Days + 1)
+                .Range(0, endDate.Subtract(startDate).Days)
                 .Select(i => startDate.AddDays(i));
     }
 }
