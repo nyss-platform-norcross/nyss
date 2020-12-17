@@ -621,7 +621,7 @@ export const stringKeys = {
       completenessValueDescription: "dataCollectors.performanceList.completenessValueDescription",
       name: "dataCollectors.performanceList.name",
       phoneNumber: "dataCollectors.performanceList.phoneNumber",
-      villageName: "dataCollectors.performanceList.village",
+      villageName: "dataCollectors.performanceList.villageName",
       daysSinceLastReport: "dataCollectors.performanceList.daysSinceLastReport",
       statusLastWeek: "dataCollectors.performanceList.statusLastWeek",
       statusTwoWeeksAgo: "dataCollectors.performanceList.statusTwoWeeksAgo",

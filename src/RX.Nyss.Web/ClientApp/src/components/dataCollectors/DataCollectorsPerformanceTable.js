@@ -71,11 +71,11 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
   const renderTooltipText = (completeness) => {
     let text = strings(stringKeys.dataCollector.performanceList.completenessValueDescription);
 
-    if (typeof(text) === 'string') { // only replace values when not in "strings editing" mode
+    if (typeof (text) === 'string') { // only replace values when not in "strings editing" mode
       text = text.replace('{{active}}', completeness.activeDataCollectors);
       text = text.replace('{{total}}', completeness.totalDataCollectors);
     }
-    
+
     return text;
   }
 
@@ -135,7 +135,6 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
                 <Icon className={styles.filterIcon}>{filterIsActive('eightWeeksAgo') ? 'filter_alt' : 'expand_more'}</Icon>
               </div>
             </TableCell>
-            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>
@@ -197,15 +196,11 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
             list.map((row, index) => (
               <TableRow key={index} hover>
                 <TableCell>
-                  <span>
-                    {row.name}
-                  </span>
-                  <br/>
-                  <span>
-                     {row.phoneNumber}
-                  </span>
+                  {row.name}
+                  <br />
+                  {row.phoneNumber}
                 </TableCell>
-                <TableCell>{row.villageName}</TableCell>
+                <TableCell className={styles.centeredText}>{row.villageName}</TableCell>
                 <TableCell className={styles.centeredText}>{row.daysSinceLastReport > -1 ? row.daysSinceLastReport : '-'}</TableCell>
                 <TableCell className={styles.centeredText}>
                   <DataCollectorStatusIcon status={row.statusLastWeek} icon={getIconFromStatus(row.statusLastWeek)} />
