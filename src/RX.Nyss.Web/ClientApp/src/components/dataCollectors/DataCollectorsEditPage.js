@@ -227,6 +227,7 @@ const DataCollectorsEditPageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.phoneNumber)}
               name="phoneNumber"
               field={form.fields.phoneNumber}
+              inputMode={"tel"}
             />
           </Grid>
 
@@ -235,6 +236,7 @@ const DataCollectorsEditPageComponent = (props) => {
               label={strings(stringKeys.dataCollector.form.additionalPhoneNumber)}
               name="additionalPhoneNumber"
               field={form.fields.additionalPhoneNumber}
+              inputMode={"tel"}
             />
           </Grid>)}
 
@@ -278,6 +280,7 @@ const DataCollectorsEditPageComponent = (props) => {
                       name="latitude"
                       field={form.fields.latitude}
                       type="number"
+                      inputMode={"decimal"}
                     />
                   </Grid>
                   <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
@@ -286,6 +289,7 @@ const DataCollectorsEditPageComponent = (props) => {
                       name="longitude"
                       field={form.fields.longitude}
                       type="number"
+                      inputMode={"decimal"}
                     />
                   </Grid>
                 </Grid>

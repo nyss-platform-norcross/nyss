@@ -114,6 +114,7 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
                   label={strings(stringKeys.reports.sendReport.message)}
                   name="message"
                   field={form.fields.message}
+                  inputMode={"tel"}
                 />
               </Grid>
             </Grid>

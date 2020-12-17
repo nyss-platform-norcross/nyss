@@ -125,6 +125,7 @@ const LoginPageComponent = (props) => {
                       name="userName"
                       field={form.fields.userName}
                       autoFocus
+                      inputMode={"email"}
                     />
                   </Grid>
 
