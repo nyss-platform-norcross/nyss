@@ -10,6 +10,7 @@ using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.ReportApi.Configuration;
 using RX.Nyss.ReportApi.Features.Stats;
 using RX.Nyss.ReportApi.Features.Stats.Contracts;
 using Xunit;
@@ -26,9 +27,10 @@ namespace RX.Nyss.ReportApi.Tests.Features.Stats
         {
             _nyssContext = Substitute.For<INyssContext>();
             _dataBlobService = Substitute.For<IDataBlobService>();
+            var config = Substitute.For<INyssReportApiConfig>();
             var dateTimeProvider = Substitute.For<IDateTimeProvider>();
             dateTimeProvider.UtcNow.Returns(new DateTime(2020, 2, 6));
-            _statsService = new StatsService(_nyssContext, _dataBlobService, dateTimeProvider);
+            _statsService = new StatsService(_nyssContext, _dataBlobService, dateTimeProvider, config);
         }
 
         [Fact]
