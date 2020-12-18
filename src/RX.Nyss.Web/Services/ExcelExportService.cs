@@ -156,15 +156,19 @@ namespace RX.Nyss.Web.Services
                 worksheet.Cells[columnIndex, 15].Value = alert.Comments;
             }
 
-            worksheet.Column(2).Width = 20;
-            worksheet.Column(3).Width = 20;
+            worksheet.Column(2).Width = 16;
+            worksheet.Column(3).Width = 16;
             worksheet.Column(4).Width = 20;
+            worksheet.Column(5).Width = 16;
+            worksheet.Column(6).Width = 10;
             worksheet.Column(7).Width = 10;
-            worksheet.Column(8).Width = 10;
-            worksheet.Column(9).Width = 10;
-            worksheet.Column(11).Width = 20;
-            worksheet.Column(12).Width = 20;
-            worksheet.Column(13).Width = 20;
+            worksheet.Column(8).Width = 15;
+            worksheet.Column(9).Width = 15;
+            worksheet.Column(10).Width = 14;
+            worksheet.Column(11).Width = 15;
+            worksheet.Column(12).Width = 15;
+            worksheet.Column(13).Width = 15;
+            worksheet.Column(14).Width = 16;
             worksheet.Column(15).Width = 20;
 
             return package;
