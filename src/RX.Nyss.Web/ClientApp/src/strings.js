@@ -781,7 +781,8 @@ export const stringKeys = {
       village: "alerts.list.village",
       status: "alerts.list.status",
       success: "alerts.list.success",
-      error: "alerts.list.error"
+      error: "alerts.list.error",
+      export: "alerts.list.export"
     },
     filters: {
       healthRisks: "alerts.filters.healthRisks",

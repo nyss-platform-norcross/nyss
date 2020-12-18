@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Transactions;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Extensions;
+using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
@@ -18,6 +19,7 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Projects;
+using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -37,6 +39,7 @@ namespace RX.Nyss.Web.Features.Alerts
         Task<Result<AlertLogResponseDto>> GetLogs(int alertId);
         Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
         Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId);
+        Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto);
     }
 
     public class AlertService : IAlertService
@@ -56,6 +59,9 @@ namespace RX.Nyss.Web.Features.Alerts
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IAuthorizationService _authorizationService;
         private readonly IProjectService _projectService;
+        private readonly IExcelExportService _excelExportService;
+        private readonly IStringsResourcesService _stringsResourcesService;
+        private readonly IUserService _userService;
 
         public AlertService(
             INyssContext nyssContext,
@@ -67,7 +73,10 @@ namespace RX.Nyss.Web.Features.Alerts
             IDateTimeProvider dateTimeProvider,
             IAuthorizationService authorizationService,
             ISmsPublisherService smsPublisherService,
-            IProjectService projectService)
+            IProjectService projectService,
+            IExcelExportService excelExportService,
+            IStringsResourcesService stringsResourcesService,
+            IUserService userService)
         {
             _nyssContext = nyssContext;
             _emailPublisherService = emailPublisherService;
@@ -79,6 +88,9 @@ namespace RX.Nyss.Web.Features.Alerts
             _smsPublisherService = smsPublisherService;
             _config = config;
             _projectService = projectService;
+            _excelExportService = excelExportService;
+            _stringsResourcesService = stringsResourcesService;
+            _userService = userService;
         }
 
         public async Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId)
@@ -554,6 +566,92 @@ namespace RX.Nyss.Web.Features.Alerts
             });
         }
 
+        public async Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto)
+        {
+            var project = await _nyssContext.Projects.FindAsync(projectId);
+            var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
+
+            var currentRole = (await _authorizationService.GetCurrentUser()).Role;
+            var currentUserName = _authorizationService.GetCurrentUserName();
+            var currentUserId = await _nyssContext.Users.FilterAvailable()
+                .Where(u => u.EmailAddress == currentUserName)
+                .Select(u => u.Id)
+                .SingleAsync();
+            var currentUserOrganizationId = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .SelectMany(p => p.NationalSociety.NationalSocietyUsers)
+                .Where(uns => uns.User.Id == currentUserId)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
+
+            var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
+            var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
+
+            var alertsQuery = _nyssContext.Alerts
+                .FilterByProject(projectId)
+                .FilterByHealthRisk(filterRequestDto.HealthRiskId)
+                .FilterByArea(MapToArea(filterRequestDto.Area))
+                .FilterByStatus(filterRequestDto.Status)
+                .Sort(filterRequestDto.OrderBy, filterRequestDto.SortAscending);
+
+            var alerts = await alertsQuery
+                .Select(a => new
+                {
+                    a.Id,
+                    a.CreatedAt,
+                    a.EscalatedAt,
+                    a.DismissedAt,
+                    a.ClosedAt,
+                    a.Status,
+                    a.EscalatedOutcome,
+                    a.Comments,
+                    ReportCount = a.AlertReports.Count,
+                    LastReport = a.AlertReports.OrderByDescending(ar => ar.Report.Id)
+                        .Select(ar => new
+                        {
+                            ZoneName = ar.Report.RawReport.Zone.Name,
+                            VillageName = ar.Report.RawReport.Village.Name,
+                            DistrictName = ar.Report.RawReport.Village.District.Name,
+                            RegionName = ar.Report.RawReport.Village.District.Region.Name,
+                            Timestamp = ar.Report.ReceivedAt,
+                            IsAnonymized = currentRole != Role.Administrator && !ar.Report.RawReport.NationalSociety.NationalSocietyUsers.Any(
+                                nsu => nsu.UserId == ar.Report.RawReport.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId)
+                        }).First(),
+                    HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
+                        .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
+                        .Select(lc => lc.Name)
+                        .Single()
+                })
+                .ToListAsync();
+
+            var dtos = alerts
+                .Select(a => new AlertListExportResponseDto
+                {
+                    Id = a.Id,
+                    LastReportTimestamp = a.LastReport.Timestamp,
+                    TriggeredAt = TimeZoneInfo.ConvertTimeFromUtc(a.CreatedAt, projectTimeZone),
+                    EscalatedAt = a.EscalatedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.EscalatedAt.Value, projectTimeZone) : (DateTime?)null,
+                    DismissedAt = a.DismissedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.DismissedAt.Value, projectTimeZone) : (DateTime?)null,
+                    ClosedAt = a.ClosedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.ClosedAt.Value, projectTimeZone) : (DateTime?)null,
+                    Status = a.Status.ToString(),
+                    EscalatedOutcome = a.EscalatedOutcome,
+                    Comments = a.Comments,
+                    ReportCount = a.ReportCount,
+                    LastReportVillage = a.LastReport.IsAnonymized
+                        ? ""
+                        : a.LastReport.VillageName,
+                    LastReportDistrict = a.LastReport.DistrictName,
+                    LastReportRegion = a.LastReport.RegionName,
+                    HealthRisk = a.HealthRisk
+                }).ToList();
+
+            var documentTitle = GetStringResource(stringResources, "alerts.export.title");
+            var columnLabels = GetColumnLabels(stringResources);
+            var excelDoc = _excelExportService.ToExcel(dtos, columnLabels, documentTitle);
+
+            return excelDoc.GetAsByteArray();
+        }
+
         public async Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId)
         {
             var currentUserOrganization = await _nyssContext.Alerts.Where(a => a.Id == alertId)
@@ -578,6 +676,31 @@ namespace RX.Nyss.Web.Features.Alerts
                     : r.PhoneNumber).ToList(),
             });
         }
+
+        private List<string> GetColumnLabels(IDictionary<string, string> stringResources) =>
+            new List<string>
+            {
+                GetStringResource(stringResources, "alerts.export.id"),
+                GetStringResource(stringResources, "alerts.export.timeTriggered"),
+                GetStringResource(stringResources, "alerts.export.timeOfLastReport"),
+                GetStringResource(stringResources, "alerts.export.healthRisk"),
+                GetStringResource(stringResources, "alerts.export.reports"),
+                GetStringResource(stringResources, "alerts.export.status"),
+                GetStringResource(stringResources, "alerts.export.lastReportRegion"),
+                GetStringResource(stringResources, "alerts.export.lastReportDistrict"),
+                GetStringResource(stringResources, "alerts.export.lastReportVillage"),
+                GetStringResource(stringResources, "alerts.export.lastReportZone"),
+                GetStringResource(stringResources, "alerts.export.timeEscalated"),
+                GetStringResource(stringResources, "alerts.export.timeClosed"),
+                GetStringResource(stringResources, "alerts.export.timeDismissed"),
+                GetStringResource(stringResources, "alerts.export.escalatedOutcome"),
+                GetStringResource(stringResources, "alerts.export.closedComments")
+            };
+
+        private static string GetStringResource(IDictionary<string, string> stringResources, string key) =>
+            stringResources.Keys.Contains(key)
+                ? stringResources[key]
+                : key;
 
         private async Task<List<AlertNotificationRecipient>> GetAlertRecipients(int alertId)
         {
