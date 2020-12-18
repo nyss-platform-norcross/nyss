@@ -18,15 +18,18 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private readonly IDataCollectorService _dataCollectorService;
         private readonly IDataCollectorExportService _dataCollectorExportService;
         private readonly IDataCollectorAccessService _dataCollectorAccessService;
+        private readonly IDataCollectorPerformanceService _dataCollectorPerformanceService;
 
         public DataCollectorController(
             IDataCollectorService dataCollectorService,
             IDataCollectorExportService dataCollectorExportService,
-            IDataCollectorAccessService dataCollectorAccessService)
+            IDataCollectorAccessService dataCollectorAccessService,
+            IDataCollectorPerformanceService dataCollectorPerformanceService)
         {
             _dataCollectorService = dataCollectorService;
             _dataCollectorExportService = dataCollectorExportService;
             _dataCollectorAccessService = dataCollectorAccessService;
+            _dataCollectorPerformanceService = dataCollectorPerformanceService;
         }
 
         [HttpGet, Route("{dataCollectorId:int}/get")]
@@ -87,7 +90,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [HttpPost, Route("performance")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<DataCollectorPerformanceResponseDto>> Performance(int projectId, [FromBody] DataCollectorPerformanceFiltersRequestDto dataCollectorsFiltersDto) =>
-            await _dataCollectorService.Performance(projectId, dataCollectorsFiltersDto);
+            await _dataCollectorPerformanceService.Performance(projectId, dataCollectorsFiltersDto);
 
         [HttpPost, Route("exportToExcel")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]

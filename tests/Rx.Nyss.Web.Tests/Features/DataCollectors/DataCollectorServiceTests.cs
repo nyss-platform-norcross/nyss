@@ -46,6 +46,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         private const int VillageId = 1;
         private readonly INyssContext _nyssContextMock;
         private readonly IDataCollectorService _dataCollectorService;
+        private readonly IDataCollectorPerformanceService _dataCollectorPerformanceService;
         private readonly IEmailToSMSService _emailToSMSService;
         private readonly ISmsPublisherService _smsPublisherService;
         private List<NationalSociety> _nationalSocieties;
@@ -77,6 +78,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 _emailToSMSService,
                 _smsPublisherService,
                 smsTextGeneratorService);
+
+            _dataCollectorPerformanceService = new DataCollectorPerformanceService(config, dateTimeProvider, _dataCollectorService);
 
             // Arrange
             _nationalSocieties = new List<NationalSociety>
@@ -551,6 +554,10 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 new DataCollector
                 {
                     PhoneNumber = phoneNumber,
+                    Village = new Village
+                    {
+                        Name = "Coronia"
+                    },
                     Project = new Project
                     {
                         Id = ProjectId,
@@ -568,7 +575,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             var dateTimeNow = DateTime.UtcNow;
 
             // Act
-            var result = await _dataCollectorService.Performance(ProjectId, new DataCollectorPerformanceFiltersRequestDto
+            var result = await _dataCollectorPerformanceService.Performance(ProjectId, new DataCollectorPerformanceFiltersRequestDto
             {
                 LastWeek = new PerformanceStatusFilterDto
                 {
