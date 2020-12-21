@@ -27,6 +27,12 @@ namespace RX.Nyss.Data
                     Id = 2,
                     LanguageCode = "fr",
                     DisplayName = "Français"
+                },
+                new ApplicationLanguage
+                {
+                    Id = 3,
+                    LanguageCode = "es",
+                    DisplayName = "Español"
                 });
 
         private static void SeedAdministrator(ModelBuilder modelBuilder) =>
@@ -1511,6 +1517,13 @@ namespace RX.Nyss.Data
                     Id = 2,
                     DisplayName = "Français",
                     LanguageCode = "fr"
+                },
+                new ContentLanguage
+                {
+                    Id = 3,
+
+                    DisplayName = "Español",
+                    LanguageCode = "es"
                 }
             );
     }
