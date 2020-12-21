@@ -16,6 +16,7 @@ namespace RX.Nyss.Web.Features.Resources.Dto
         public class TranslationsResponseDto
         {
             public string Key { get; set; }
+            public bool NeedsImprovement { get; set; }
             public IDictionary<string, string> Translations { get; set; }
         }
     }

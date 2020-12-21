@@ -677,7 +677,7 @@ namespace RX.Nyss.Web.Features.Alerts
             });
         }
 
-        private List<string> GetColumnLabels(IDictionary<string, string> stringResources) =>
+        private List<string> GetColumnLabels(IDictionary<string, StringResourceValue> stringResources) =>
             new List<string>
             {
                 GetStringResource(stringResources, "alerts.export.id"),
@@ -697,9 +697,9 @@ namespace RX.Nyss.Web.Features.Alerts
                 GetStringResource(stringResources, "alerts.export.closedComments")
             };
 
-        private static string GetStringResource(IDictionary<string, string> stringResources, string key) =>
+        private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
             stringResources.Keys.Contains(key)
-                ? stringResources[key]
+                ? stringResources[key].Value
                 : key;
 
         private async Task<List<AlertNotificationRecipient>> GetAlertRecipients(int alertId)

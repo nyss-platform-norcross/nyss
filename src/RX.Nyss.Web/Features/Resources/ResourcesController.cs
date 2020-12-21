@@ -85,17 +85,17 @@ namespace RX.Nyss.Web.Features.Resources
 
         [HttpGet("listStringsTranslations")]
         [NeedsRole(Role.Administrator)]
-        public async Task<Result<ListTranslationsResponseDto>> ListStringsTranslations() =>
-            await _resourcesService.ListStringsTranslations();
+        public async Task<Result<ListTranslationsResponseDto>> ListStringsTranslations(bool needsImprovementOnly) =>
+            await _resourcesService.ListStringsTranslations(needsImprovementOnly);
 
         [HttpGet("listEmailTranslations")]
         [NeedsRole(Role.Administrator)]
-        public async Task<Result<ListTranslationsResponseDto>> ListEmailTranslations() =>
-            await _resourcesService.ListEmailTranslations();
+        public async Task<Result<ListTranslationsResponseDto>> ListEmailTranslations(bool needsImprovementOnly) =>
+            await _resourcesService.ListEmailTranslations(needsImprovementOnly);
 
         [HttpGet("listSmsTranslations")]
         [NeedsRole(Role.Administrator)]
-        public async Task<Result<ListTranslationsResponseDto>> ListSmsTranslations() =>
-            await _resourcesService.ListSmsTranslations();
+        public async Task<Result<ListTranslationsResponseDto>> ListSmsTranslations(bool needsImprovementOnly) =>
+            await _resourcesService.ListSmsTranslations(needsImprovementOnly);
     }
 }

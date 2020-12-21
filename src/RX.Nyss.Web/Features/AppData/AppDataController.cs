@@ -43,7 +43,7 @@ namespace RX.Nyss.Web.Features.AppData
         /// </summary>
         /// <returns></returns>
         [Route("getStrings/{languageCode}"), HttpGet, AllowAnonymous]
-        public async Task<Result<IDictionary<string, string>>> GetStrings(string languageCode) =>
+        public async Task<Result<IDictionary<string, StringResourceValue>>> GetStrings(string languageCode) =>
             await _inMemoryCache.GetCachedResult(
                 $"{nameof(GetStrings)}.{languageCode}",
                 TimeSpan.FromMinutes(5),

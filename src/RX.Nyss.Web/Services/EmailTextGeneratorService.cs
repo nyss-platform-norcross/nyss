@@ -101,5 +101,15 @@ namespace RX.Nyss.Web.Services
 
             return value;
         }
+
+        private static string GetTranslation(string key, IDictionary<string, StringResourceValue> translations)
+        {
+            if (!translations.TryGetValue(key, out var value))
+            {
+                throw new Exception($"Could not find translations for {key}");
+            }
+
+            return value.Value;
+        }
     }
 }

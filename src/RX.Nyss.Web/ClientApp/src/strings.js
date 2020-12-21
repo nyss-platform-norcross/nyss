@@ -988,7 +988,8 @@ export const stringKeys = {
     smsParts: "translations.smsParts",
     list: {
       key: "translations.list.key"
-    }
+    },
+    needsImprovement: "translations.needsImprovement"
   }
 };
 
@@ -1004,10 +1005,10 @@ export const strings = (key, noEditor) => {
   if (showKeys) {
     return noEditor
       ? key
-      : <StringsEditor stringKey={key} type="strings" />;
+      : <StringsEditor stringKey={key} type="strings" needsImprovement={value.needsImprovement} />;
   }
 
-  return value === undefined ? key : value;
+  return value === undefined ? key : value.value;
 }
 
 export const stringsFormat = (key, data, noEditor) => {
@@ -1016,14 +1017,14 @@ export const stringsFormat = (key, data, noEditor) => {
   if (showKeys) {
     return noEditor
       ? key
-      : <StringsEditor stringKey={key} type="strings" />;
+      : <StringsEditor stringKey={key} type="strings" needsImprovement={value.needsImprovement} />;
   }
 
   if (value === undefined) {
     return key;
   }
 
-  return Object.keys(data || {}).reduce((result, stringKey) => result.replace(`{${stringKey}}`, data[stringKey]), value || "");
+  return Object.keys(data || {}).reduce((result, stringKey) => result.replace(`{${stringKey}}`, data[stringKey]), value.value || "");
 }
 
 const stringPrefix = "string:";
