@@ -8,6 +8,7 @@ import TranslationsTable from './TranslationsTable';
 import { useMount } from '../../utils/lifecycle';
 import { Fragment } from 'react';
 import { TranslationsFilters } from './TranslationsFilters';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const SmsTranslationsListPageComponent = (props) => {
   useMount(() => {
@@ -19,6 +20,7 @@ const SmsTranslationsListPageComponent = (props) => {
       <TranslationsFilters
         onChange={props.getSmsTranslations}
       />
+      {props.isListFetching && <LinearProgress />}
       <TranslationsTable
         isListFetching={props.isListFetching}
         languages={props.languages}
