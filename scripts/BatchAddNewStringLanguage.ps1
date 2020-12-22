@@ -3,6 +3,11 @@
 # 2. Download all blobs in the dev container
 # 3. Set the needsImprovement value to true for all strings in the strings blobs
 # 4. Batch upload the blob to dev
+param (
+  [Parameter(Position=0,mandatory=$true)]
+  [string] $lang,
+  [switch] $defaultToEnglish
+)
 
 $ScriptPath = Split-Path -parent $MyInvocation.MyCommand.Definition;
 $folderForNewBlobs = Join-Path -Path $ScriptPath -ChildPath "tmp-new"
@@ -39,6 +44,11 @@ $stringsBlob.strings | ForEach-Object {
   } else {
     $_ | Add-Member -Name "needsImprovement" -Value $true -MemberType NoteProperty
   }
+
+  if (-Not ($_.translations.PSObject.Properties.Name -contains $lang)) {
+    $newVal = if ($defaultToEnglish){$_.translations.en} else {""}
+    $_.translations | Add-Member -Name $lang -Value $newVal -MemberType NoteProperty
+  }
 }
 $stringsBlob | ConvertTo-Json -depth 32| set-content $pathToNewStringsBlob
 
@@ -50,6 +60,11 @@ $emailStringsBlob.strings | ForEach-Object {
   } else {
     $_ | Add-Member -Name "needsImprovement" -Value $true -MemberType NoteProperty
   }
+
+  if (-Not ($_.translations.PSObject.Properties.Name -contains $lang)) {
+    $newVal = if ($defaultToEnglish){$_.translations.en} else {""}
+    $_.translations | Add-Member -Name $lang -Value $newVal -MemberType NoteProperty
+  }
 }
 $emailStringsBlob | ConvertTo-Json -depth 32| set-content $pathToNewEmailStringsBlob
 
@@ -60,6 +75,11 @@ $smsStringsBlob.strings | ForEach-Object {
     $_.needsImprovement=$true
   } else {
     $_ | Add-Member -Name "needsImprovement" -Value $true -MemberType NoteProperty
+  }
+
+  if (-Not ($_.translations.PSObject.Properties.Name -contains $lang)) {
+    $newVal = if ($defaultToEnglish){$_.translations.en} else {""}
+    $_.translations | Add-Member -Name $lang -Value $newVal -MemberType NoteProperty
   }
 }
 $smsStringsBlob | ConvertTo-Json -depth 32| set-content $pathToNewSmsStringsBlob
