@@ -60,32 +60,30 @@ namespace RX.Nyss.Web
             });
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles(new StaticFileOptions
+            app.UseSpaStaticFiles();
+
+            app.UseResponseCaching();
+            app.Use(async (context, next) =>
             {
-                OnPrepareResponse = ctx =>
+                if (context.Request.Path.StartsWithSegments("/static"))
                 {
-                    if (ctx.Context.Request.Path.StartsWithSegments("/static"))
+                    context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
                     {
-                        // Cache all static resources for 1 year (versioned filenames)
-                        var headers = ctx.Context.Response.GetTypedHeaders();
-                        headers.CacheControl = new CacheControlHeaderValue
-                        {
-                            Public = true,
-                            MaxAge = TimeSpan.FromDays(365)
-                        };
-                    }
-                    else
-                    {
-                        // Do not cache explicit `/index.html` or any other files.  See also: `DefaultPageStaticFileOptions` below for implicit "/index.html"
-                        var headers = ctx.Context.Response.GetTypedHeaders();
-                        headers.CacheControl = new CacheControlHeaderValue
-                        {
-                            Public = true,
-                            MaxAge = TimeSpan.FromDays(0)
-                        };
-                    }
+                        Public = true,
+                        MaxAge = TimeSpan.FromDays(365)
+                    };
                 }
+                else if (!context.Request.Path.StartsWithSegments("/api"))
+                {
+                    // don't cache index.html, manifest.json etc
+                    context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromDays(0)
+                    };
+                }
+
+                await next();
             });
 
             if (Configuration["Environment"] != NyssEnvironments.Prod && Configuration["Environment"] != NyssEnvironments.Demo)
@@ -109,18 +107,6 @@ namespace RX.Nyss.Web
             app.UseSpa(spa =>
             {
                 spa.Options.SourcePath = "ClientApp";
-                spa.Options.DefaultPageStaticFileOptions = new StaticFileOptions
-                {
-                    OnPrepareResponse = ctx => {
-                        // Do not cache implicit `/index.html`.  See also: `UseSpaStaticFiles` above
-                        var headers = ctx.Context.Response.GetTypedHeaders();
-                        headers.CacheControl = new CacheControlHeaderValue
-                        {
-                            Public = true,
-                            MaxAge = TimeSpan.FromDays(0)
-                        };
-                    }
-                };
 
                 if (env.IsDevelopment())
                 {
