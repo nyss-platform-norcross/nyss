@@ -7,6 +7,7 @@ import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesCons
 import { stringKeys } from "../../../strings";
 import dayjs from "dayjs";
 import { downloadFile } from "../../../utils/downloadFile";
+import { formatDate } from "../../../utils/date";
 
 export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
@@ -227,9 +228,10 @@ function* getDataCollectorsPerformance({ projectId, filters }) {
 function* getExcelExportData({ projectId, filters }) {
   yield put(actions.exportToExcel.request());
   try {
+    const date = new Date(Date.now());
     yield downloadFile({
       url: `/api/dataCollector/exportToExcel?projectId=${projectId}`,
-      fileName: `dataCollectors.xlsx`,
+      fileName: `dataCollectors_${formatDate(date)}.xlsx`,
       data: filters
     });
 
@@ -242,9 +244,10 @@ function* getExcelExportData({ projectId, filters }) {
 function* getCsvExportData({ projectId, filters }) {
   yield put(actions.exportToCsv.request());
   try {
+    const date = new Date(Date.now());
     yield downloadFile({
       url: `/api/dataCollector/exportToCsv?projectId=${projectId}`,
-      fileName: `dataCollectors.csv`,
+      fileName: `dataCollectors_${formatDate(date)}.csv`,
       data: filters
     });
 
