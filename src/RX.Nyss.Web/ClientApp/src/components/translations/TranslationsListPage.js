@@ -6,6 +6,9 @@ import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import TranslationsTable from './TranslationsTable';
 import { useMount } from '../../utils/lifecycle';
+import { Fragment } from 'react';
+import { TranslationsFilters } from './TranslationsFilters';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const TranslationsListPageComponent = (props) => {
   useMount(() => {
@@ -13,12 +16,18 @@ const TranslationsListPageComponent = (props) => {
   });
 
   return (
-    <TranslationsTable
-      isListFetching={props.isListFetching}
-      languages={props.languages}
-      translations={props.translations}
-      type="strings"
-    />
+    <Fragment>
+      <TranslationsFilters
+        onChange={props.getTranslations}
+      />
+      {props.isListFetching && <LinearProgress />}
+      <TranslationsTable
+        isListFetching={props.isListFetching}
+        languages={props.languages}
+        translations={props.translations}
+        type="strings"
+      />
+    </Fragment>
   );
 }
 
@@ -35,7 +44,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  openTranslationsList: translationsActions.openTranslationsList.invoke
+  openTranslationsList: translationsActions.openTranslationsList.invoke,
+  getTranslations: translationsActions.getTranslationsList.invoke
 };
 
 export const TranslationsListPage = useLayout(

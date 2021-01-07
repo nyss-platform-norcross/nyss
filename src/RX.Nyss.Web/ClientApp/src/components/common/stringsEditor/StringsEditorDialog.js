@@ -13,6 +13,7 @@ import { updateStrings } from '../../../strings';
 import Grid from '@material-ui/core/Grid';
 import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
+import CheckboxField from '../../forms/CheckboxField';
 
 export const StringsEditorDialog = ({ stringKey, close }) => {
   const [form, setForm] = useState(null);
@@ -35,6 +36,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
 
         const fields = {
           key: stringKey,
+          needsImprovement: response.value.needsImprovement,
           ...translationFields
         }
 
@@ -51,6 +53,7 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
 
     const dto = {
       key: values.key,
+      needsImprovement: values.needsImprovement,
       translations: languageCodes.map(lang => ({
         languageCode: lang.languageCode,
         value: values[`value_${lang.languageCode}`]
@@ -60,7 +63,10 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
     post('/api/resources/saveString', dto)
       .then(() => {
         updateStrings({
-          [values.key]: values[`value_${currentLanguageCode}`]
+          [values.key]: {
+            needsImprovement: values.needsImprovement,
+            value: values[`value_${currentLanguageCode}`]
+          }
         });
 
         dispatch(stringsUpdated(dto.key, dto.translations.reduce((prev, current) => ({ ...prev, [current.languageCode]: current.value }), {})));
@@ -111,13 +117,19 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
         </Grid>
         <br />
       </DialogContent>
-      {form && <DialogActions>
+      {form && 
+      <DialogActions>
+        <CheckboxField 
+          name="needsImprovement"
+          label="Needs improvement"
+          field={form.fields.needsImprovement}
+        />
         <Button onClick={close} color="primary" variant="outlined">
           Cancel
-      </Button>
+        </Button>
         <Button onClick={handleSave} color="primary" variant="outlined">
           Save
-      </Button>
+        </Button>
       </DialogActions>}
     </Dialog>
   );

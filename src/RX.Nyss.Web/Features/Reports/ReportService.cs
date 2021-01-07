@@ -421,7 +421,7 @@ namespace RX.Nyss.Web.Features.Reports
                 nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId));
         }
 
-        private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, string> stringResources, ReportListType reportListType)
+        private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
         {
             var documentTitle = GetStringResource(stringResources, "reports.export.title");
             var columnLabels = GetColumnLabels(stringResources, reportListType);
@@ -429,7 +429,7 @@ namespace RX.Nyss.Web.Features.Reports
             return excelDoc.GetAsByteArray();
         }
 
-        private byte[] GetCsvData(List<IReportListResponseDto> reports, IDictionary<string, string> stringResources, ReportListType reportListType)
+        private byte[] GetCsvData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
         {
             var columnLabels = GetColumnLabels(stringResources, reportListType);
 
@@ -505,7 +505,7 @@ namespace RX.Nyss.Web.Features.Reports
             return _excelExportService.ToCsv(reportData, columnLabels);
         }
 
-        private static string GetReportStatus(bool isValid, bool markedAsError, IDictionary<string, string> stringResources) =>
+        private static string GetReportStatus(bool isValid, bool markedAsError, IDictionary<string, StringResourceValue> stringResources) =>
             markedAsError switch
             {
                 true => GetStringResource(stringResources, "reports.list.markedAsError"),
@@ -514,7 +514,7 @@ namespace RX.Nyss.Web.Features.Reports
                     : GetStringResource(stringResources, "reports.list.error")
             };
 
-        private List<string> GetColumnLabels(IDictionary<string, string> stringResources, ReportListType reportListType) =>
+        private List<string> GetColumnLabels(IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType) =>
             reportListType == ReportListType.FromDcp
                 ? new List<string>
                 {
@@ -572,9 +572,9 @@ namespace RX.Nyss.Web.Features.Reports
                     GetStringResource(stringResources, "reports.export.epiWeek")
                 };
 
-        private static string GetStringResource(IDictionary<string, string> stringResources, string key) =>
+        private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
             stringResources.Keys.Contains(key)
-                ? stringResources[key]
+                ? stringResources[key].Value
                 : key;
 
         private async Task UpdateTimeZoneInReports(int projectId, List<IReportListResponseDto> reports)
@@ -584,7 +584,7 @@ namespace RX.Nyss.Web.Features.Reports
             reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
         }
 
-        private static void AnonymizeCrossOrganizationReports(IEnumerable<IReportListResponseDto> reports, string currentUserOrganizationName, IDictionary<string, string> stringsResources) =>
+        private static void AnonymizeCrossOrganizationReports(IEnumerable<IReportListResponseDto> reports, string currentUserOrganizationName, IDictionary<string, StringResourceValue> stringsResources) =>
             reports
                 .Where(r => r.IsAnonymized)
                 .ToList()

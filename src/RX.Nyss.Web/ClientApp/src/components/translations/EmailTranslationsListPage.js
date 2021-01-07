@@ -6,6 +6,9 @@ import { useLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import TranslationsTable from './TranslationsTable';
 import { useMount } from '../../utils/lifecycle';
+import { Fragment } from 'react';
+import { TranslationsFilters } from './TranslationsFilters';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 const EmailTranslationsListPageComponent = (props) => {
   useMount(() => {
@@ -13,12 +16,18 @@ const EmailTranslationsListPageComponent = (props) => {
   });
 
   return (
-    <TranslationsTable
-      isListFetching={props.isListFetching}
-      languages={props.languages}
-      translations={props.translations}
-      type="email"
-    />
+    <Fragment>
+      <TranslationsFilters
+        onChange={props.getEmailTranslations}
+      />
+      {props.isListFetching && <LinearProgress />}
+      <TranslationsTable
+        isListFetching={props.isListFetching}
+        languages={props.languages}
+        translations={props.translations}
+        type="email"
+      />
+    </Fragment>
   );
 }
 
@@ -35,7 +44,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = {
-  openTranslationsList: translationsActions.openEmailTranslationsList.invoke
+  openTranslationsList: translationsActions.openEmailTranslationsList.invoke,
+  getEmailTranslations: translationsActions.getEmailTranslationsList.invoke
 };
 
 export const EmailTranslationsListPage = useLayout(

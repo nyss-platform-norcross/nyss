@@ -13,7 +13,7 @@ export const openTranslationsList = {
 };
 
 export const getTranslationsList = {
-  invoke: () => ({ type: GET_TRANSLATIONS.INVOKE }),
+  invoke: (needsImprovementOnly) => ({ type: GET_TRANSLATIONS.INVOKE, needsImprovementOnly }),
   request: () => ({ type: GET_TRANSLATIONS.REQUEST }),
   success: (data) => ({ type: GET_TRANSLATIONS.SUCCESS, data }),
   failure: (message) => ({ type: GET_TRANSLATIONS.FAILURE, message })
@@ -27,7 +27,7 @@ export const openEmailTranslationsList = {
 };
 
 export const getEmailTranslationsList = {
-  invoke: () => ({ type: GET_EMAIL_TRANSLATIONS.INVOKE }),
+  invoke: (needsImprovementOnly) => ({ type: GET_EMAIL_TRANSLATIONS.INVOKE, needsImprovementOnly }),
   request: () => ({ type: GET_EMAIL_TRANSLATIONS.REQUEST }),
   success: (data) => ({ type: GET_EMAIL_TRANSLATIONS.SUCCESS, data }),
   failure: (message) => ({ type: GET_EMAIL_TRANSLATIONS.FAILURE, message })
@@ -41,7 +41,7 @@ export const openSmsTranslationsList = {
 };
 
 export const getSmsTranslationsList = {
-  invoke: () => ({ type: GET_SMS_TRANSLATIONS.INVOKE }),
+  invoke: (needsImprovementOnly) => ({ type: GET_SMS_TRANSLATIONS.INVOKE, needsImprovementOnly }),
   request: () => ({ type: GET_SMS_TRANSLATIONS.REQUEST }),
   success: (data) => ({ type: GET_SMS_TRANSLATIONS.SUCCESS, data }),
   failure: (message) => ({ type: GET_SMS_TRANSLATIONS.FAILURE, message })

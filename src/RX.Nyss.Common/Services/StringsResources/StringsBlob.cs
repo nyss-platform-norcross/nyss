@@ -12,6 +12,8 @@ namespace RX.Nyss.Common.Services.StringsResources
 
             public string DefaultValue { get; set; }
 
+            public bool NeedsImprovement { get; set; }
+
             public IDictionary<string, string> Translations { get; set; }
 
             public string GetTranslation(string languageCode) =>

@@ -793,7 +793,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
             var users = TestData.GetUsers();
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
-            var stringResources = new Dictionary<string, string>();
+            var stringResources = new Dictionary<string, StringResourceValue>();
             var excelDoc = new ExcelPackage();
             excelDoc.Workbook.Worksheets.Add("title");
             _nyssContext.Users.Returns(usersMockDbSet);
@@ -802,7 +802,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _nyssContext.Alerts.Returns(alertsMockDbSet);
             _authorizationService.GetCurrentUser().Returns(users[0]);
             _authorizationService.GetCurrentUserName().Returns(users[0].EmailAddress);
-            _stringsResourcesService.GetStringsResources("").Returns(Success<IDictionary<string, string>>(stringResources));
+            _stringsResourcesService.GetStringsResources("").Returns(Success<IDictionary<string, StringResourceValue>>(stringResources));
             _excelExportService.ToExcel(Arg.Any<List<AlertListExportResponseDto>>(), Arg.Any<List<string>>(), Arg.Any<string>()).Returns(excelDoc);
 
             // Act

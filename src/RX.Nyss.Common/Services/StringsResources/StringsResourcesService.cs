@@ -11,7 +11,7 @@ namespace RX.Nyss.Common.Services.StringsResources
 {
     public interface IStringsResourcesService
     {
-        Task<Result<IDictionary<string, string>>> GetStringsResources(string languageCode);
+        Task<Result<IDictionary<string, StringResourceValue>>> GetStringsResources(string languageCode);
         Task<Result<IDictionary<string, string>>> GetEmailContentResources(string languageCode);
         Task<StringsBlob> GetStringsBlob();
         Task<StringsBlob> GetEmailContentBlob();
@@ -35,7 +35,7 @@ namespace RX.Nyss.Common.Services.StringsResources
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<Result<IDictionary<string, string>>> GetStringsResources(string languageCode)
+        public async Task<Result<IDictionary<string, StringResourceValue>>> GetStringsResources(string languageCode)
         {
             try
             {
@@ -45,15 +45,19 @@ namespace RX.Nyss.Common.Services.StringsResources
                     .Select(entry => new
                     {
                         entry.Key,
-                        Value = entry.GetTranslation(languageCode)
+                        Value = new StringResourceValue
+                        {
+                            Value = entry.GetTranslation(languageCode),
+                            NeedsImprovement = entry.NeedsImprovement
+                        }
                     }).ToDictionary(x => x.Key, x => x.Value);
 
-                return Success<IDictionary<string, string>>(dictionary);
+                return Success<IDictionary<string, StringResourceValue>>(dictionary);
             }
             catch (Exception exception)
             {
                 _loggerAdapter.Error(exception, "There was a problem during fetching the strings resources");
-                return Error<IDictionary<string, string>>(ResultKey.UnexpectedError);
+                return Error<IDictionary<string, StringResourceValue>>(ResultKey.UnexpectedError);
             }
         }
 

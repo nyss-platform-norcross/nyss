@@ -61,7 +61,7 @@ namespace RX.Nyss.Web.Tests.Services
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.ShouldContainKey(key);
-            result.Value[key].ShouldBe(value);
+            result.Value[key].Value.ShouldBe(value);
         }
     }
 }

@@ -37,7 +37,7 @@ export const TranslationsTable = ({ isListFetching, languages, translations, typ
   }
 
   return (
-    <TableContainer sticky>
+    <TableContainer sticky isFetching={isListFetching}>
       <Table>
         <TableHead>
           <TableRow>
@@ -67,7 +67,7 @@ export const TranslationsTable = ({ isListFetching, languages, translations, typ
           {sortedTranslations().map(translation => (
             <TableRow key={translation.key}>
               <TableCell>
-                <StringsEditor stringKey={translation.key} type={type} />
+                <StringsEditor stringKey={translation.key} type={type} needsImprovement={translation.needsImprovement} />
               </TableCell>
               {languages.map(language => (
                 <TableCell key={`translation_${translation.key}_${language.languageCode}`}>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using RX.Nyss.Common.Services.StringsResources;
+using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Queries;
@@ -70,7 +71,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return excelSheet.GetAsByteArray();
         }
 
-        private byte[] GetCsvData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
+        private byte[] GetCsvData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, StringResourceValue> stringResources)
         {
             var columnLabels = new List<string>
             {
@@ -114,7 +115,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return _excelExportService.ToCsv(dataCollectorsData, columnLabels);
         }
 
-        private ExcelPackage GetExcelData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, string> stringResources)
+        private ExcelPackage GetExcelData(List<ExportDataCollectorsResponseDto> dataCollectors, IDictionary<string, StringResourceValue> stringResources)
         {
             var columnLabels = new List<string>
             {
@@ -174,7 +175,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return package;
         }
 
-        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, string> stringResources, DataCollectorsFiltersRequestDto dataCollectorsFilter)
+        private async Task<List<ExportDataCollectorsResponseDto>> GetDataCollectorsExportData(int projectId, IDictionary<string, StringResourceValue> stringResources, DataCollectorsFiltersRequestDto dataCollectorsFilter)
         {
             var currentUser = await _authorizationService.GetCurrentUser();
             var nationalSocietyId = await _nyssContext.Projects
@@ -221,9 +222,9 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .ToListAsync();
         }
 
-        private string GetStringResource(IDictionary<string, string> stringResources, string key) =>
+        private string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
             stringResources.Keys.Contains(key)
-                ? stringResources[key]
+                ? stringResources[key].Value
                 : key;
     }
 }

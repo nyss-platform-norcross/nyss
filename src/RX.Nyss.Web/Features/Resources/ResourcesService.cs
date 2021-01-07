@@ -19,9 +19,9 @@ namespace RX.Nyss.Web.Features.Resources
         Task<Result<GetStringResponseDto>> GetString(string key);
         Task<Result<GetStringResponseDto>> GetEmailString(string key);
         Task<Result<GetStringResponseDto>> GetSmsString(string key);
-        Task<Result<ListTranslationsResponseDto>> ListStringsTranslations();
-        Task<Result<ListTranslationsResponseDto>> ListEmailTranslations();
-        Task<Result<ListTranslationsResponseDto>> ListSmsTranslations();
+        Task<Result<ListTranslationsResponseDto>> ListStringsTranslations(bool needsImprovementOnly);
+        Task<Result<ListTranslationsResponseDto>> ListEmailTranslations(bool needsImprovementOnly);
+        Task<Result<ListTranslationsResponseDto>> ListSmsTranslations(bool needsImprovementOnly);
     }
 
     public class ResourcesService : IResourcesService
@@ -55,6 +55,7 @@ namespace RX.Nyss.Web.Features.Resources
             var dto = new GetStringResponseDto
             {
                 Key = key,
+                NeedsImprovement = entry == null || entry.NeedsImprovement,
                 Translations = contentLanguages.Select(cl =>
                 {
                     var languageCode = cl.LanguageCode.ToLower();
@@ -88,6 +89,7 @@ namespace RX.Nyss.Web.Features.Resources
             var dto = new GetStringResponseDto
             {
                 Key = key,
+                NeedsImprovement = entry == null || entry.NeedsImprovement,
                 Translations = contentLanguages.Select(cl =>
                 {
                     var languageCode = cl.LanguageCode.ToLower();
@@ -121,6 +123,7 @@ namespace RX.Nyss.Web.Features.Resources
             var dto = new GetStringResponseDto
             {
                 Key = key,
+                NeedsImprovement = entry == null || entry.NeedsImprovement,
                 Translations = contentLanguages.Select(cl =>
                 {
                     var languageCode = cl.LanguageCode.ToLower();
@@ -149,6 +152,7 @@ namespace RX.Nyss.Web.Features.Resources
             var stringsBlob = await _stringsResourcesService.GetStringsBlob();
             var strings = stringsBlob.Strings.ToList();
             var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
+            entry.NeedsImprovement = dto.NeedsImprovement;
 
             foreach (var dtoTranslation in dto.Translations)
             {
@@ -179,6 +183,7 @@ namespace RX.Nyss.Web.Features.Resources
             var stringsBlob = await _stringsResourcesService.GetEmailContentBlob();
             var strings = stringsBlob.Strings.ToList();
             var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
+            entry.NeedsImprovement = dto.NeedsImprovement;
 
             foreach (var dtoTranslation in dto.Translations)
             {
@@ -209,6 +214,7 @@ namespace RX.Nyss.Web.Features.Resources
             var stringsBlob = await _stringsResourcesService.GetSmsContentBlob();
             var strings = stringsBlob.Strings.ToList();
             var entry = strings.FirstOrDefault(x => x.Key == dto.Key) ?? CreateEntry(strings, dto.Key);
+            entry.NeedsImprovement = dto.NeedsImprovement;
 
             foreach (var dtoTranslation in dto.Translations)
             {
@@ -229,7 +235,7 @@ namespace RX.Nyss.Web.Features.Resources
             return Success("Success");
         }
 
-        public async Task<Result<ListTranslationsResponseDto>> ListStringsTranslations()
+        public async Task<Result<ListTranslationsResponseDto>> ListStringsTranslations(bool needsImprovementOnly)
         {
             if (_config.IsProduction)
             {
@@ -251,9 +257,11 @@ namespace RX.Nyss.Web.Features.Resources
             {
                 Languages = languages,
                 Translations = translations
+                    .Where(t => !needsImprovementOnly || t.NeedsImprovement)
                     .Select(t => new ListTranslationsResponseDto.TranslationsResponseDto
                     {
                         Key = t.Key,
+                        NeedsImprovement = t.NeedsImprovement,
                         Translations = t.Translations
                     })
                     .ToList()
@@ -262,7 +270,7 @@ namespace RX.Nyss.Web.Features.Resources
             return Success(dto);
         }
 
-        public async Task<Result<ListTranslationsResponseDto>> ListEmailTranslations()
+        public async Task<Result<ListTranslationsResponseDto>> ListEmailTranslations(bool needsImprovementOnly)
         {
             if (_config.IsProduction)
             {
@@ -284,9 +292,11 @@ namespace RX.Nyss.Web.Features.Resources
             {
                 Languages = languages,
                 Translations = translations
+                    .Where(t => !needsImprovementOnly || t.NeedsImprovement)
                     .Select(t => new ListTranslationsResponseDto.TranslationsResponseDto
                     {
                         Key = t.Key,
+                        NeedsImprovement = t.NeedsImprovement,
                         Translations = t.Translations
                     })
                     .ToList()
@@ -295,7 +305,7 @@ namespace RX.Nyss.Web.Features.Resources
             return Success(dto);
         }
 
-        public async Task<Result<ListTranslationsResponseDto>> ListSmsTranslations()
+        public async Task<Result<ListTranslationsResponseDto>> ListSmsTranslations(bool needsImprovementOnly)
         {
             if (_config.IsProduction)
             {
@@ -317,9 +327,11 @@ namespace RX.Nyss.Web.Features.Resources
             {
                 Languages = languages,
                 Translations = translations
+                    .Where(t => !needsImprovementOnly || t.NeedsImprovement)
                     .Select(t => new ListTranslationsResponseDto.TranslationsResponseDto
                     {
                         Key = t.Key,
+                        NeedsImprovement = t.NeedsImprovement,
                         Translations = t.Translations
                     })
                     .ToList()
