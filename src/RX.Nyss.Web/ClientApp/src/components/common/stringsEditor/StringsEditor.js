@@ -16,7 +16,7 @@ export const StringsEditor = ({ stringKey, type, needsImprovement }) => {
 
   return (
     <Fragment>
-      <span onClick={onStringClick} className={styles.stringKey} title={stringKey}>{`${stringKey} ${needsImprovement ? '*' : ''}`}</span>
+      <span onClick={onStringClick} className={styles.stringKey} title={stringKey}>{`${stringKey}${needsImprovement ? '*' : ''}`}</span>
 
       {open && type === 'strings' &&
         <StringsEditorDialog stringKey={stringKey} close={(e) => { setOpen(false); }} />
