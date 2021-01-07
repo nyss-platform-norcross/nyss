@@ -7,6 +7,7 @@ import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesCons
 import { strings, stringKeys } from "../../../strings";
 import dayjs from "dayjs";
 import { downloadFile } from "../../../utils/downloadFile";
+import { formatDate } from "../../../utils/date";
 
 export const alertsSagas = () => [
   takeEvery(consts.OPEN_ALERTS_LIST.INVOKE, openAlertsList),
@@ -191,9 +192,10 @@ function* exportAlerts({ projectId, filters }) {
   yield put(actions.exportAlerts.request());
 
   try {
+    const date = new Date(Date.now());
     yield downloadFile({
       url: `/api/alert/export?projectId=${projectId}`,
-      fileName: `alerts.xlsx`,
+      fileName: `alerts_${formatDate(date)}.xlsx`,
       data: { ...filters }
     });
 

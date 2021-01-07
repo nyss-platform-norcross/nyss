@@ -8,6 +8,7 @@ import { downloadFile } from "../../../utils/downloadFile";
 import { stringKeys } from "../../../strings";
 import { ReportListType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './reportsConstants'
+import { formatDate } from "../../../utils/date";
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
@@ -94,9 +95,10 @@ function* editReport({ projectId, reportId, data }) {
 function* getCsvExportData({ projectId, filters, sorting }) {
   yield put(actions.exportToExcel.request());
   try {
+    const date = new Date(Date.now());
     yield downloadFile({
       url: `/api/report/exportToCsv?projectId=${projectId}`,
-      fileName: `reports.csv`,
+      fileName: `reports_${formatDate(date)}.csv`,
       data: { ...filters, ...sorting }
     });
 
@@ -109,9 +111,10 @@ function* getCsvExportData({ projectId, filters, sorting }) {
 function* getExcelExportData({ projectId, filters, sorting }) {
   yield put(actions.exportToExcel.request());
   try {
+    const date = new Date(Date.now());
     yield downloadFile({
       url: `/api/report/exportToExcel?projectId=${projectId}`,
-      fileName: `reports.xlsx`,
+      fileName: `reports_${formatDate(date)}.xlsx`,
       data: { ...filters, ...sorting }
     });
 
@@ -179,4 +182,3 @@ function* sendReport({ report }) {
     yield put(appActions.showMessage(error.message));
   }
 };
-
