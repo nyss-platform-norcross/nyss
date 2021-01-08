@@ -628,12 +628,12 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(a => new AlertListExportResponseDto
                 {
                     Id = a.Id,
-                    LastReportTimestamp = a.LastReport.Timestamp,
+                    LastReportTimestamp = TimeZoneInfo.ConvertTimeFromUtc(a.LastReport.Timestamp, projectTimeZone),
                     TriggeredAt = TimeZoneInfo.ConvertTimeFromUtc(a.CreatedAt, projectTimeZone),
                     EscalatedAt = a.EscalatedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.EscalatedAt.Value, projectTimeZone) : (DateTime?)null,
                     DismissedAt = a.DismissedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.DismissedAt.Value, projectTimeZone) : (DateTime?)null,
                     ClosedAt = a.ClosedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.ClosedAt.Value, projectTimeZone) : (DateTime?)null,
-                    Status = a.Status.ToString(),
+                    Status = GetStringResource(stringResources, $"alerts.alertStatus.{a.Status.ToString().ToLower()}"),
                     EscalatedOutcome = a.EscalatedOutcome,
                     Comments = a.Comments,
                     ReportCount = a.ReportCount,
