@@ -1,13 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using RX.Nyss.Common.Configuration;
 using RX.Nyss.Web.Configuration;
 
@@ -59,6 +62,30 @@ namespace RX.Nyss.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
+            app.UseResponseCaching();
+            app.Use(async (context, next) =>
+            {
+                if (context.Request.Path.StartsWithSegments("/static"))
+                {
+                    context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromDays(365)
+                    };
+                }
+                else if (!context.Request.Path.StartsWithSegments("/api"))
+                {
+                    // don't cache index.html, manifest.json etc
+                    context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
+                    {
+                        Public = true,
+                        MaxAge = TimeSpan.FromDays(0)
+                    };
+                }
+
+                await next();
+            });
 
             if (Configuration["Environment"] != NyssEnvironments.Prod && Configuration["Environment"] != NyssEnvironments.Demo)
             {
