@@ -60,6 +60,7 @@ namespace RX.Nyss.Web
             });
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseResponseCaching();
