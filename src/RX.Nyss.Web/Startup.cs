@@ -60,7 +60,6 @@ namespace RX.Nyss.Web
             });
 
             app.UseHttpsRedirection();
-//            app.UseStaticFiles();
             app.UseSpaStaticFiles(new StaticFileOptions
             {
                 OnPrepareResponse = ctx =>
@@ -73,7 +72,7 @@ namespace RX.Nyss.Web
                             MaxAge = TimeSpan.FromDays(365)
                         };
                     }
-                    else if (!ctx.Context.Request.Path.StartsWithSegments("/api"))
+                    else
                     {
                         // don't cache index.html, manifest.json etc
                         ctx.Context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue
