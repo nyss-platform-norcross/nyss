@@ -10,6 +10,8 @@ namespace RX.Nyss.Web.Features.Users.Dto
 
         public List<OrganizationsDto> Organizations { get; set; }
 
+        public List<HeadSupervisorResponseDto> HeadSupervisors { get; set; }
+
         public bool HasCoordinator { get; set; }
 
         public bool IsHeadManager { get; set; }
@@ -42,5 +44,11 @@ namespace RX.Nyss.Web.Features.Users.Dto
         public int Id { get; set; }
         public string Name { get; set; }
         public List<ProjectAlertRecipientResponseDto> AlertRecipients { get; set; }
+    }
+
+    public class HeadSupervisorResponseDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }

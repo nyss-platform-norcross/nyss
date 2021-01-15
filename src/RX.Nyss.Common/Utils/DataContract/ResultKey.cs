@@ -54,6 +54,11 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string CannotChangeProjectSupervisorHasDataCollectors = "user.registration.cannotChangeProjectSupervisorHasDataCollectors";
             }
 
+            public static class HeadSupervisor
+            {
+                public const string CannotChangeProjectHeadSupervisorHasSupervisors = "user.registration.cannotChangeProjectHeadSupervisorHasSupervisors";
+            }
+
             public static class ResetPassword
             {
                 public const string Success = "user.resetPassword.success";

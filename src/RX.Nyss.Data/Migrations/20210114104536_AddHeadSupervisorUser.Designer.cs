@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20210114104536_AddHeadSupervisorUser")]
+    partial class AddHeadSupervisorUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2713,7 +2715,8 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(10)")
                         .HasMaxLength(10);
 
-                    b.HasIndex("CurrentProjectId");
+                    b.HasIndex("CurrentProjectId")
+                        .HasName("IX_Users_CurrentProjectId1");
 
                     b.HasIndex("HeadSupervisorId");
 
@@ -3228,6 +3231,7 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.Project", "CurrentProject")
                         .WithMany()
                         .HasForeignKey("CurrentProjectId")
+                        .HasConstraintName("FK_Users_Projects_CurrentProjectId1")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 

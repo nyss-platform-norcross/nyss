@@ -1,8 +1,8 @@
 ﻿using RX.Nyss.Data.Concepts;
 
-namespace RX.Nyss.Web.Features.Supervisors.Dto
+namespace RX.Nyss.Web.Features.HeadSupervisors.Dto
 {
-    public class GetSupervisorResponseDto
+    public class GetHeadSupervisorResponseDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -16,8 +16,7 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
         public string Organization { get; set; }
         public int? OrganizationId { get; set; }
         public int NationalSocietyId { get; set; }
-        public int? HeadSupervisorId { get; set; }
-        public EditSupervisorFormDataDto.ListProjectsResponseDto CurrentProject { get; set; }
-        public EditSupervisorFormDataDto EditSupervisorFormData { get; set; }
+        public EditHeadSupervisorFormDataDto.ListProjectsResponseDto CurrentProject { get; set; }
+        public EditHeadSupervisorFormDataDto EditSupervisorFormData { get; set; }
     }
 }

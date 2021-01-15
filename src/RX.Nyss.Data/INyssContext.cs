@@ -42,6 +42,8 @@ namespace RX.Nyss.Data
         DatabaseFacade Database { get; }
         DbSet<Organization> Organizations { get; set; }
         DbSet<ProjectOrganization> ProjectOrganizations { get; set; }
+        DbSet<HeadSupervisorUserProject> HeadSupervisorUserProjects { get; set; }
+        DbSet<HeadSupervisorUserAlertRecipient> HeadSupervisorUserAlertRecipients { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;

@@ -7,9 +7,9 @@ using RX.Nyss.Web.Features.Projects.Access;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Utils.Extensions;
 
-namespace RX.Nyss.Web.Features.Supervisors.Dto
+namespace RX.Nyss.Web.Features.HeadSupervisors.Dto
 {
-    public class EditSupervisorRequestDto
+    public class EditHeadSupervisorRequestDto
     {
         public string Name { get; set; }
         public Sex Sex { get; set; }
@@ -20,11 +20,10 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
         public int? OrganizationId { get; set; }
         public string Organization { get; set; }
         public int NationalSocietyId { get; set; }
-        public int? HeadSupervisorId { get; set; }
 
-        public class EditSupervisorRequestValidator : AbstractValidator<EditSupervisorRequestDto>
+        public class EditHeadSupervisorRequestValidator : AbstractValidator<EditHeadSupervisorRequestDto>
         {
-            public EditSupervisorRequestValidator(IProjectAccessService projectAccessService)
+            public EditHeadSupervisorRequestValidator(IProjectAccessService projectAccessService)
             {
                 RuleFor(m => m.Name).NotEmpty().MaximumLength(100);
                 RuleFor(m => m.Sex).IsInEnum();
