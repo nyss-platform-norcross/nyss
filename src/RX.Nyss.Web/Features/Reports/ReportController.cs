@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// Gets a list of reports in a project.
         /// </summary>
         [HttpPost("list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, [FromBody] ReportListFilterRequestDto filterRequest) =>
             await _reportService.List(projectId, pageNumber, filterRequest);
 
@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
         [HttpGet("filters")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<ReportListFilterResponseDto>> GetFilters(int projectId) =>
             await _reportService.GetFilters(projectId);
 
@@ -54,7 +54,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// <param name="projectId">The ID of the project to export the reports from</param>
         /// <param name="filterRequest">The filters object</param>
         [HttpPost("exportToCsv")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
         {
             var excelSheetBytes = await _reportService.Export(projectId, filterRequest);
@@ -67,7 +67,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// <param name="projectId">The ID of the project to export the reports from</param>
         /// <param name="filterRequest">The filters object</param>
         [HttpPost("exportToExcel")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
         {
             var excelSheetBytes = await _reportService.Export(projectId, filterRequest, useExcelFormat: true);
@@ -79,7 +79,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// </summary>
         /// <param name="reportId">The ID of the report to be marked as error</param>
         [HttpPost("{reportId:int}/markAsError")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor), NeedsPolicy(Policy.ReportAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ReportAccess)]
         public async Task<Result> MarkAsError(int reportId) =>
             await _reportService.MarkAsError(reportId);
 
@@ -107,7 +107,7 @@ namespace RX.Nyss.Web.Features.Reports
         /// </summary>
         /// <param name="report">The report to send</param>
         [HttpPost("sendReport")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
         public async Task<Result> SendReport([FromBody]SendReportRequestDto report) =>
             await _reportSenderService.SendReport(report);
     }

@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
         [HttpGet("filters")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<ProjectDashboardFiltersResponseDto>> Filters(int projectId) =>
             _projectDashboardService.GetFiltersData(projectId);
 
@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// <param name="dto">Filter</param>
         /// <returns>A summary of specified project</returns>
         [HttpPost("data")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<ProjectDashboardResponseDto>> Data(int projectId, [FromBody] FiltersRequestDto dto) =>
             _projectDashboardService.GetData(projectId, dto);
 
@@ -48,7 +48,7 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
         /// <param name="longitude">Longitude of chosen location</param>
         /// <param name="filters">Filters</param>
         [HttpPost("reportHealthRisks")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<IEnumerable<ReportsSummaryHealthRiskResponseDto>>> GetReportHealthRisks(int projectId, double latitude, double longitude, [FromBody] FiltersRequestDto filters) =>
             await _projectDashboardService.GetProjectReportHealthRisks(projectId, latitude, longitude, filters);
     }

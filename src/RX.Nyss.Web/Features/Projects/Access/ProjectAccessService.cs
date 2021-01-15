@@ -38,6 +38,11 @@ namespace RX.Nyss.Web.Features.Projects.Access
                 return await HasSupervisorAccessToProject(_authorizationService.GetCurrentUserName(), projectId);
             }
 
+            if (_authorizationService.IsCurrentUserInRole(Role.HeadSupervisor))
+            {
+                return await HasHeadSupervisorAccessToProject(_authorizationService.GetCurrentUserName(), projectId);
+            }
+
             var currentUser = await _authorizationService.GetCurrentUser();
 
             var data = await _nyssContext.Projects
@@ -54,7 +59,7 @@ namespace RX.Nyss.Web.Features.Projects.Access
                     )
                 })
                 .SingleAsync();
-                
+
             if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator, Role.DataConsumer) && data.HasCoordinator && !data.HasSameOrganization)
             {
                 return false;
@@ -68,5 +73,8 @@ namespace RX.Nyss.Web.Features.Projects.Access
 
         private async Task<bool> HasSupervisorAccessToProject(string supervisorIdentityName, int projectId) =>
             await _nyssContext.SupervisorUserProjects.FilterAvailableUsers().AnyAsync(sup => sup.SupervisorUser.EmailAddress == supervisorIdentityName && sup.ProjectId == projectId);
+
+        private async Task<bool> HasHeadSupervisorAccessToProject(string headSupervisorIdentityName, int projectId) =>
+            await _nyssContext.HeadSupervisorUserProjects.FilterAvailableUsers().AnyAsync(sup => sup.HeadSupervisorUser.EmailAddress == headSupervisorIdentityName && sup.ProjectId == projectId);
     }
 }

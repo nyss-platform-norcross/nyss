@@ -95,7 +95,9 @@ namespace RX.Nyss.Web.Features.Reports
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter)
         {
             var currentUserName = _authorizationService.GetCurrentUserName();
-            var isSupervisor = _authorizationService.IsCurrentUserInRole(Role.Supervisor);
+            var currentRole = (await _authorizationService.GetCurrentUser()).Role;
+            var isSupervisor = currentRole == Role.Supervisor;
+            var isHeadSupervisor = currentRole == Role.HeadSupervisor;
             var currentUserId = await _nyssContext.Users.FilterAvailable()
                 .Where(u => u.EmailAddress == currentUserName)
                 .Select(u => u.Id)
@@ -124,13 +126,13 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
 
-            var currentRole = (await _authorizationService.GetCurrentUser()).Role;
 
             var result = baseQuery.Select(r => new ReportListResponseDto
                 {
                     Id = r.Id,
-                    IsAnonymized = isSupervisor
-                        ? r.DataCollector.Supervisor.Id != currentUserId
+                    IsAnonymized = isSupervisor || isHeadSupervisor
+                        ? (currentRole == Role.HeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id != currentUserId)
+                        || (currentRole == Role.Supervisor && r.DataCollector.Supervisor.Id != currentUserId)
                         : currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
                             nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id),
                     OrganizationName = r.NationalSociety.NationalSocietyUsers
@@ -153,7 +155,7 @@ namespace RX.Nyss.Web.Features.Reports
                     SupervisorName = r.DataCollector.Supervisor.Name,
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
-                    UserHasAccessToReportDataCollector = !isSupervisor || r.DataCollector.Supervisor.Id == currentUserId,
+                    UserHasAccessToReportDataCollector = !(isSupervisor || isHeadSupervisor) || HeadSupervisorOrSupervisorIsConnectedToDataCollector(currentRole, currentUserId, r.DataCollector),
                     AlertId = r.Report.ReportAlerts
                         .Select(ra => ra.Alert)
                         .OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
@@ -246,8 +248,9 @@ namespace RX.Nyss.Web.Features.Reports
                         .Select(lc => lc.Name)
                         .Single(),
                     IsValid = r.Report != null,
-                    IsAnonymized = currentRole == Role.Supervisor
-                        ? r.DataCollector.Supervisor.Id != currentUser.Id
+                    IsAnonymized = currentRole == Role.Supervisor || currentRole == Role.HeadSupervisor
+                        ? (currentRole == Role.Supervisor && r.DataCollector.Supervisor.Id != currentUser.Id)
+                        || (currentRole == Role.HeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id == currentUser.Id)
                         : currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
                             nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id),
                     OrganizationName = r.NationalSociety.NationalSocietyUsers
@@ -404,6 +407,11 @@ namespace RX.Nyss.Web.Features.Reports
 
             return Success();
         }
+
+        private bool HeadSupervisorOrSupervisorIsConnectedToDataCollector(Role currentUserRole, int currentUserId, DataCollector dataCollector) =>
+            currentUserRole == Role.HeadSupervisor
+                ? dataCollector.Supervisor.HeadSupervisor.Id == currentUserId
+                : dataCollector.Supervisor.Id == currentUserId;
 
         private async Task<bool> HasAccessToReport(int reportId)
         {

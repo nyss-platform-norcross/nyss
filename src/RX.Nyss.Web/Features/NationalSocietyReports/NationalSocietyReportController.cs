@@ -23,7 +23,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         /// Gets a list of reports in a national society.
         /// </summary>
         [HttpPost("list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, [FromBody] NationalSocietyReportListFilterRequestDto filterRequest) =>
             await _nationalSocietyReportService.List(nationalSocietyId, pageNumber, filterRequest);
 
@@ -32,7 +32,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         [HttpGet("filters")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<NationalSocietyReportListFilterResponseDto>> Filters(int nationalSocietyId) =>
             await _nationalSocietyReportService.Filters(nationalSocietyId);
     }

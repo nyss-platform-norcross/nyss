@@ -195,7 +195,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
         {
             try
             {
-                await _deleteUserService.EnsureCanDeleteUser(headSupervisorId, Role.Supervisor);
+                await _deleteUserService.EnsureCanDeleteUser(headSupervisorId, Role.HeadSupervisor);
 
                 using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 

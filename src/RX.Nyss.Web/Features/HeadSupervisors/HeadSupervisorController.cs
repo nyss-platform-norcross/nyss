@@ -36,7 +36,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
         /// <param name="nationalSocietyId">The ID of the national society</param>
         /// <returns></returns>
         [HttpGet("{headSupervisorId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.HeadSupervisorAccess)]
         public async Task<Result> Get(int headSupervisorId, int nationalSocietyId) =>
             await _headSupervisorService.Get(headSupervisorId, nationalSocietyId);
 
@@ -47,7 +47,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
         /// <param name="editHeadSupervisorRequestDto">The data used to update the specified supervisor</param>
         /// <returns></returns>
         [HttpPost("{headSupervisorId:int}/edit")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.HeadSupervisorAccess)]
         public async Task<Result> Edit(int headSupervisorId, [FromBody] EditHeadSupervisorRequestDto editHeadSupervisorRequestDto) =>
             await _headSupervisorService.Edit(headSupervisorId, editHeadSupervisorRequestDto);
 
@@ -57,7 +57,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
         /// <param name="headSupervisorId">The ID of the supervisor to be deleted</param>
         /// <returns></returns>
         [HttpPost("{headSupervisorId:int}/delete")]
-        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.SupervisorAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager), NeedsPolicy(Policy.HeadSupervisorAccess)]
         public async Task<Result> Delete(int headSupervisorId) =>
             await _headSupervisorService.Delete(headSupervisorId);
     }

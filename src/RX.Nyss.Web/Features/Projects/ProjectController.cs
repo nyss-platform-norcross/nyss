@@ -25,7 +25,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="projectId">An identifier of a project</param>
         /// <returns>A project</returns>
         [HttpGet("{projectId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<ProjectResponseDto>> Get(int projectId) =>
             _projectService.Get(projectId);
 
@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="nationalSocietyId">An identifier of a national society</param>
         /// <returns>A list of projects assigned to the national society</returns>
         [HttpGet("list")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId) =>
             _projectService.List(nationalSocietyId);
 
@@ -77,7 +77,7 @@ namespace RX.Nyss.Web.Features.Projects
         /// <param name="projectId">An identifier of a project</param>
         /// <returns>Basic information about a project</returns>
         [HttpGet("{projectId:int}/basicData")]
-        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.ProjectAccess)]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<ProjectBasicDataResponseDto>> GetBasicData(int projectId) =>
             await _projectService.GetBasicData(projectId);
 

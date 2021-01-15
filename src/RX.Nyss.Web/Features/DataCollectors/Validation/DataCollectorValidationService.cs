@@ -1,7 +1,9 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Services.Authorization;
 
 namespace RX.Nyss.Web.Features.DataCollectors.Validation
@@ -24,7 +26,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
             _authorizationService = authorizationService;
         }
 
-        public async Task<bool> PhoneNumberExists(string phoneNumber) => 
+        public async Task<bool> PhoneNumberExists(string phoneNumber) =>
             await _nyssContext.DataCollectors.AnyAsync(dc => dc.PhoneNumber == phoneNumber);
 
         public async Task<bool> PhoneNumberExistsToOther(int currentDataCollectorId, string phoneNumber) =>
@@ -33,7 +35,11 @@ namespace RX.Nyss.Web.Features.DataCollectors.Validation
         public async Task<bool> IsAllowedToCreateForSupervisor(int supervisorId)
         {
             var currentUser = await _authorizationService.GetCurrentUser();
-            return currentUser.Role != Role.Supervisor || currentUser.Id == supervisorId;
+
+            return !_authorizationService.IsCurrentUserInAnyRole(Role.Supervisor, Role.HeadSupervisor)
+                || (_authorizationService.IsCurrentUserInRole(Role.Supervisor) && currentUser.Id == supervisorId)
+                || (_authorizationService.IsCurrentUserInRole(Role.HeadSupervisor)
+                    && await _nyssContext.Users.Where(u => u.Id == supervisorId).Select(u => (SupervisorUser)u).Select(u => u.HeadSupervisor.Id).FirstOrDefaultAsync() == currentUser.Id);
         }
     }
 }

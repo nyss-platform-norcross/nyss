@@ -25,6 +25,7 @@
         CoordinatorAccess,
         OrganizationAccess,
         ProjectOrganizationAccess,
-        AlertRecipientAccess
+        AlertRecipientAccess,
+        HeadSupervisorAccess
     }
 }
