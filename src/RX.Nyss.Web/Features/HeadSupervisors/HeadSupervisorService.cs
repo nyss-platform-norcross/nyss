@@ -324,7 +324,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
 
             if (hasSupervisors)
             {
-                throw new ResultException(ResultKey.User.HeadSupervisor.CannotChangeProjectHeadSupervisorHasSupervisors);
+                throw new ResultException(ResultKey.User.Deletion.CannotDeleteHeadSupervisorHasSupervisors);
             }
         }
 
@@ -344,7 +344,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
 
             if (selectedProjectId.HasValue)
             {
-                var userData = await _nyssContext.Projects
+                var userProjectData = await _nyssContext.Projects
                     .Where(p => p.State == ProjectState.Open)
                     .Where(p => user.UserNationalSocieties.Select(uns => uns.NationalSocietyId).Contains(p.NationalSociety.Id))
                     .Select(p => new
@@ -356,17 +356,17 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
                             .Any(su => su.HeadSupervisor == user)
                     }).SingleOrDefaultAsync(p => p.Project.Id == selectedProjectId.Value);
 
-                if (userData.Project == null)
+                if (userProjectData == null)
                 {
                     throw new ResultException(ResultKey.User.Supervisor.ProjectDoesNotExistOrNoAccess);
                 }
 
-                if (!userData.HasSupervisors)
+                if (!userProjectData.HasSupervisors)
                 {
                     throw new ResultException(ResultKey.User.HeadSupervisor.CannotChangeProjectHeadSupervisorHasSupervisors);
                 }
 
-                await AttachHeadSupervisorToProject(user, userData.Project);
+                await AttachHeadSupervisorToProject(user, userProjectData.Project);
             }
 
             RemoveExistingProjectReference(currentProjectReference);

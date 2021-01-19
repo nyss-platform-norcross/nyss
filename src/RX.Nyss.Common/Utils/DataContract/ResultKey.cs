@@ -22,6 +22,7 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string CannotDeleteHeadManager = "user.deletion.cannotDeleteHeadManager";
                 public const string CannotDeleteHeadManagerWithUsers = "user.deletion.cannotDeleteHeadManagerWithUsers";
                 public const string CannotDeleteSupervisorWithDataCollectors = "user.deletion.cannotDeleteSupervisorWithDataCollectors";
+                public const string CannotDeleteHeadSupervisorHasSupervisors = "user.deletion.cannotDeleteHeadSupervisorHasSupervisors";
                 public const string CannotDeleteYourself = "user.deletion.cannotDeleteYourself";
                 public const string MoreUsersExists  = "user.deletion.moreUsersExists";
                 public const string UserNotFound = "user.deletion.userNotFound ";

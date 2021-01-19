@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -109,7 +108,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Name = u.User.CurrentProject.Name,
                         IsClosed = u.User.CurrentProject.State == ProjectState.Closed
                     },
-                    HeadSupervisorId = u.User.HeadSupervisor.Id
+                    HeadSupervisorId = u.User.HeadSupervisor != null ? u.User.HeadSupervisor.Id : (int?)null
                 })
                 .SingleOrDefaultAsync();
 
