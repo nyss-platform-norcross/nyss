@@ -21,7 +21,7 @@ import { useState } from "react";
 const ReportsListPageComponent = (props) => {
   const [open, setOpen] = useState(false);
 
-  const canSendReport = props.user && [roles.Administrator, roles.Manager, roles.TechnicalAdvisor, roles.Supervisor]
+  const canSendReport = props.user && [roles.Administrator, roles.Manager, roles.TechnicalAdvisor, roles.Supervisor, roles.HeadSupervisor]
     .some(neededRole => props.user.roles.some(userRole => userRole === neededRole));
 
   useMount(() => {

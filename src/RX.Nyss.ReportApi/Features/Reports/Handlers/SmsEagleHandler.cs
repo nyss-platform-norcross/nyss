@@ -43,6 +43,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private const string ModemNumberParameterName = "modemno";
         private const string ApiKeyParameterName = "apikey";
         private const string SourceParameterName = "source";
+        private const string SentByHeadSupervisorSourceParameterName = "headsupervisor";
 
         private readonly IReportMessageService _reportMessageService;
         private readonly INyssContext _nyssContext;
@@ -81,6 +82,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
             var apiKey = parsedQueryString[ApiKeyParameterName];
             var source = parsedQueryString[SourceParameterName];
+            var sentByHeadSupervisor = parsedQueryString[SentByHeadSupervisorSourceParameterName] == "true";
 
             ErrorReportData reportErrorData = null;
 
@@ -164,7 +166,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     if (projectHealthRisk != null)
                     {
                         var recipients = new List<string> { sender };
-                        var feedbackForReportSentThroughNyss = !string.IsNullOrEmpty(source) && source == "Nyss" ? await GetFeedbackMessageForReportSentThroughNyss(reportData, gatewaySetting) : null;
+                        var feedbackForReportSentThroughNyss = !string.IsNullOrEmpty(source) && source == "Nyss" ? await GetFeedbackMessageForReportSentThroughNyss(reportData, gatewaySetting, sentByHeadSupervisor) : null;
                         var feedbackMessage = !string.IsNullOrEmpty(feedbackForReportSentThroughNyss)
                             ? $"{feedbackForReportSentThroughNyss} {projectHealthRisk.FeedbackMessage}"
                             : projectHealthRisk.FeedbackMessage;
@@ -226,11 +228,12 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
             var dataCollector = await _nyssContext.DataCollectors
                 .Include(dc => dc.Supervisor)
+                .ThenInclude(s => s.HeadSupervisor)
                 .Include(dc => dc.Project)
                 .Include(dc => dc.Village)
                 .Include(dc => dc.Zone)
                 .SingleOrDefaultAsync(dc => dc.PhoneNumber == phoneNumber ||
-                    dc.AdditionalPhoneNumber != null && dc.AdditionalPhoneNumber == phoneNumber);
+                    (dc.AdditionalPhoneNumber != null && dc.AdditionalPhoneNumber == phoneNumber));
 
             if (dataCollector == null)
             {
@@ -440,7 +443,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private async Task<string> GetFeedbackMessageForReportSentThroughNyss(ReportData reportData, GatewaySetting gatewaySetting)
+        private async Task<string> GetFeedbackMessageForReportSentThroughNyss(ReportData reportData, GatewaySetting gatewaySetting, bool sentByHeadSupervisor)
         {
             var languageCode = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == gatewaySetting.NationalSocietyId)
@@ -448,12 +451,12 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 .FirstOrDefaultAsync();
 
             var feedbackMessage = await GetFeedbackMessageContent(SmsContentKey.Reports.ReportSentFromNyss, languageCode);
-            var supervisor = reportData.DataCollector.Supervisor;
+            var senderName = sentByHeadSupervisor ? reportData.DataCollector.Supervisor.HeadSupervisor.Name : reportData.DataCollector.Supervisor.Name;
 
             var languageContents = await _nyssContext.HealthRiskLanguageContents
                 .SingleAsync(hlc => hlc.HealthRisk == reportData.ProjectHealthRisk.HealthRisk && hlc.ContentLanguage.LanguageCode == languageCode);
 
-            feedbackMessage = feedbackMessage.Replace("{{supervisor}}", supervisor.Name);
+            feedbackMessage = feedbackMessage.Replace("{{supervisor}}", senderName);
             feedbackMessage = feedbackMessage.Replace("{{date/time}}", reportData.ReceivedAt.ToString("yyyy-MM-dd HH:mm"));
             feedbackMessage = feedbackMessage.Replace("{{health risk/event}}", languageContents.Name);
 

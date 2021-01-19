@@ -105,6 +105,7 @@ namespace RX.Nyss.Web.Features.Authentication
                 GlobalCoordinatorUser user => GetRootHomePage(),
                 AdministratorUser user => GetRootHomePage(),
                 CoordinatorUser user => await GetNationalSocietyHomePage(user, HomePageType.NationalSociety),
+                HeadSupervisorUser user => await GetProjectHomePage(user),
                 _ => GetRootHomePage()
             };
 
@@ -146,6 +147,38 @@ namespace RX.Nyss.Web.Features.Authentication
                     Page = HomePageType.Project,
                     ProjectId = supervisorActiveProject.projectId,
                     NationalSocietyId = supervisorActiveProject.nationalSocietyId
+                };
+            }
+
+            return new StatusResponseDto.HomePageDto
+            {
+                Page = HomePageType.ProjectList,
+                NationalSocietyId = await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.UserId == user.Id)
+                    .Select(uns => uns.NationalSocietyId)
+                    .SingleAsync()
+            };
+        }
+
+        private async Task<StatusResponseDto.HomePageDto> GetProjectHomePage(HeadSupervisorUser user)
+        {
+            var headSpervisorActiveProject = await _nyssContext.HeadSupervisorUserProjects
+                .Where(sup => sup.HeadSupervisorUserId == user.Id)
+                .Where(sup => sup.Project.State == ProjectState.Open)
+                .Select(sup => new
+                {
+                    projectId = sup.ProjectId,
+                    nationalSocietyId = sup.Project.NationalSociety.Id
+                })
+                .SingleOrDefaultAsync();
+
+            if (headSpervisorActiveProject != null)
+            {
+                return new StatusResponseDto.HomePageDto
+                {
+                    Page = HomePageType.Project,
+                    ProjectId = headSpervisorActiveProject.projectId,
+                    NationalSocietyId = headSpervisorActiveProject.nationalSocietyId
                 };
             }
 

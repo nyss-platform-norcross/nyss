@@ -214,7 +214,7 @@ namespace RX.Nyss.Web.Features.Alerts
                         OrganizationId = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().OrganizationId,
                         OrganizationName = ar.Report.DataCollector.Supervisor.UserNationalSocieties.Single().Organization.Name,
                         IsAnonymized = (currentUser.Role == Role.Supervisor && ar.Report.DataCollector.Supervisor.Id != currentUser.Id)
-                            || (currentUser.Role == Role.HeadSupervisor && ar.Report.DataCollector.Supervisor.HeadSupervisor.Id == currentUser.Id),
+                            || (currentUser.Role == Role.HeadSupervisor && ar.Report.DataCollector.Supervisor.HeadSupervisor.Id != currentUser.Id),
                         SupervisorName = ar.Report.DataCollector.Supervisor.Name,
                         ReceivedAt = ar.Report.ReceivedAt,
                         PhoneNumber = ar.Report.PhoneNumber,

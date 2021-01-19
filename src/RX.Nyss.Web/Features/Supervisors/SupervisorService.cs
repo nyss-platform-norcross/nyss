@@ -363,7 +363,7 @@ namespace RX.Nyss.Web.Features.Supervisors
         {
             if (headSupervisorId.HasValue)
             {
-                if (user.HeadSupervisor.Id != headSupervisorId)
+                if (user.HeadSupervisor == null || user.HeadSupervisor.Id != headSupervisorId)
                 {
                     user.HeadSupervisor = (HeadSupervisorUser)await _nyssContext.Users.FirstOrDefaultAsync(u => u.Id == headSupervisorId);
                 }

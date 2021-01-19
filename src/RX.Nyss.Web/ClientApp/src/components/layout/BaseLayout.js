@@ -11,6 +11,7 @@ import { StringsSwitcher } from './StringsSwitcher';
 import { pageFocused } from '../app/logic/appActions';
 import { checkIsIOS, addMaximumScaleToMetaViewport } from '../../utils/disableFormZoom';
 import { useMount } from '../../utils/lifecycle';
+import { stringKeys, strings } from '../../strings';
 
 const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocused }) => {
   useEffect(() => {
@@ -44,14 +45,14 @@ const BaseLayoutComponent = ({ appReady, children, moduleError, push, pageFocuse
       {moduleError && (
         <div className={styles.centeredLayoutMessage}>
           <Typography variant="h2">
-            We're sorry, but there was a problem with accessing the page.
+            {strings(stringKeys.error.errorPage.message)}
           </Typography>
           <Typography variant="subtitle1">
-            {moduleError}
+            {strings(moduleError)}
           </Typography>
           <br />
           <Button variant="outlined" color="primary" onClick={() => push("/")}>
-            Go back to the main page
+            {strings(stringKeys.error.errorPage.goHome)}
           </Button>
         </div>
       )}

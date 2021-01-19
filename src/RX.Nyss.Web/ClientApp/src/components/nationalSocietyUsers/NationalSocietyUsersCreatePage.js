@@ -96,7 +96,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       decadeOfBirth: '',
       projectId: '',
       sex: '',
-      organizationId: ''
+      organizationId: '',
+      headSupervisorId: ''
     };
 
     const validation = {
@@ -106,9 +107,9 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
       organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
-      decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)]
+      decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
+      sex: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
+      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)]
     };
 
     const newForm = createForm(fields, validation);
@@ -155,7 +156,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organizationId: (canChangeOrganization && values.organizationId) ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
-      setAsHeadManager: hasAnyRole(roles.Coordinator, roles.GlobalCoordinator) ? true : null
+      setAsHeadManager: hasAnyRole(roles.Coordinator, roles.GlobalCoordinator) ? true : null,
+      headSupervisorId: values.headSupervisorId ? parseInt(values.headSupervisorId) : null
     });
   }, [hasAnyRole, canChangeOrganization, form, create, props.nationalSocietyId]);
 
@@ -268,7 +270,7 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
             </Grid>
           )}
 
-          {selectedRole === roles.Supervisor && (
+          {(selectedRole === roles.Supervisor || selectedRole === roles.HeadSupervisor) && (
             <Fragment>
               <Grid item xs={12}>
                 <SelectField
@@ -310,6 +312,22 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
                 </SelectField>
               </Grid>
             </Fragment>
+          )}
+
+          {selectedRole === roles.Supervisor && props.data.headSupervisors.length > 0 && (
+            <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.headSupervisor)}
+                  field={form.fields.headSupervisorId}
+                  name="headSupervisorId"
+                >
+                  {props.data.headSupervisors.map(headSupervisor => (
+                    <MenuItem key={`headSupervisor_${headSupervisor.id}`} value={headSupervisor.id.toString()}>
+                      {headSupervisor.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
           )}
         </Grid>
 

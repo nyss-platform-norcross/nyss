@@ -5,3 +5,4 @@ export const DataConsumer = "DataConsumer";
 export const Manager = "Manager";
 export const Supervisor = "Supervisor";
 export const Coordinator = "Coordinator";
+export const HeadSupervisor = "HeadSupervisor";

@@ -155,7 +155,9 @@ namespace RX.Nyss.Web.Features.Reports
                     SupervisorName = r.DataCollector.Supervisor.Name,
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
-                    UserHasAccessToReportDataCollector = !(isSupervisor || isHeadSupervisor) || HeadSupervisorOrSupervisorIsConnectedToDataCollector(currentRole, currentUserId, r.DataCollector),
+                    UserHasAccessToReportDataCollector = !(isSupervisor || isHeadSupervisor)
+                        || (isHeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id == currentUserId)
+                        || (isSupervisor && r.DataCollector.Supervisor.Id == currentUserId),
                     AlertId = r.Report.ReportAlerts
                         .Select(ra => ra.Alert)
                         .OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
@@ -250,7 +252,7 @@ namespace RX.Nyss.Web.Features.Reports
                     IsValid = r.Report != null,
                     IsAnonymized = currentRole == Role.Supervisor || currentRole == Role.HeadSupervisor
                         ? (currentRole == Role.Supervisor && r.DataCollector.Supervisor.Id != currentUser.Id)
-                        || (currentRole == Role.HeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id == currentUser.Id)
+                        || (currentRole == Role.HeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id != currentUser.Id)
                         : currentRole != Role.Administrator && !r.NationalSociety.NationalSocietyUsers.Any(
                             nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganization.Id),
                     OrganizationName = r.NationalSociety.NationalSocietyUsers
@@ -407,11 +409,6 @@ namespace RX.Nyss.Web.Features.Reports
 
             return Success();
         }
-
-        private bool HeadSupervisorOrSupervisorIsConnectedToDataCollector(Role currentUserRole, int currentUserId, DataCollector dataCollector) =>
-            currentUserRole == Role.HeadSupervisor
-                ? dataCollector.Supervisor.HeadSupervisor.Id == currentUserId
-                : dataCollector.Supervisor.Id == currentUserId;
 
         private async Task<bool> HasAccessToReport(int reportId)
         {
