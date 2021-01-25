@@ -611,7 +611,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Fact]
         public async Task GetAlertLogs_ShouldMapAlertCreation()
         {
-            var result = await _alertService.GetLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(0).Date.ShouldBe(TestData.AlertCreatedAt.ApplyTimeZone(TestData.TimeZone));
@@ -630,7 +630,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().AlertReports.First().Report.AcceptedAt = date;
             _alerts.First().AlertReports.First().Report.AcceptedBy = user;
 
-            var result = await _alertService.GetLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -649,7 +649,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().AlertReports.First().Report.RejectedAt = date;
             _alerts.First().AlertReports.First().Report.RejectedBy = user;
 
-            var result = await _alertService.GetLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -668,7 +668,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().EscalatedAt = date;
             _alerts.First().EscalatedBy = user;
 
-            var result = await _alertService.GetLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -687,7 +687,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().DismissedAt = date;
             _alerts.First().DismissedBy = user;
 
-            var result = await _alertService.GetLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -706,7 +706,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().ClosedAt = date;
             _alerts.First().ClosedBy = user;
 
-            var result = await _alertService.GetLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
@@ -732,7 +732,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().AlertReports.First().Report.AcceptedAt = reportAcceptedAt;
             _alerts.First().AlertReports.First().Report.AcceptedBy = user;
 
-            var result = await _alertService.GetLogs(TestData.AlertId);
+            var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.Count().ShouldBe(4);

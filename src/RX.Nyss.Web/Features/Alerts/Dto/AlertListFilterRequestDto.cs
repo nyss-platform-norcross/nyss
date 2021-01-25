@@ -13,5 +13,6 @@ namespace RX.Nyss.Web.Features.Alerts.Dto
         public AlertStatusFilter Status { get; set; }
         public string OrderBy { get; set; }
         public bool SortAscending { get; set; }
+        public int UtcOffset { get; set; }
     }
 }
