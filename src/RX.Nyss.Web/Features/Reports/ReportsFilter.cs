@@ -12,9 +12,9 @@ namespace RX.Nyss.Web.Features.Reports
 
         public int? ProjectId { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
 
         public Area Area { get; set; }
 
@@ -23,5 +23,7 @@ namespace RX.Nyss.Web.Features.Reports
         public DataCollectorType? DataCollectorType { get; set; }
 
         public bool IsTraining { get; set; }
+
+        public int TimezoneOffset { get; set; }
     }
 }

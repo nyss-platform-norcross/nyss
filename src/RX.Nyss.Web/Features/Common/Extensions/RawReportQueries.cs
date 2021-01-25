@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<RawReport> AllSuccessfulReports(this IQueryable<RawReport> reports) =>
             reports.Where(r => r.Report != null);
 
-        public static IQueryable<RawReport> FilterByDate(this IQueryable<RawReport> reports, DateTime startDate, DateTime endDate) =>
+        public static IQueryable<RawReport> FilterByDate(this IQueryable<RawReport> reports, DateTimeOffset startDate, DateTimeOffset endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 
         public static IQueryable<RawReport> FilterByHealthRisk(this IQueryable<RawReport> reports, int? healthRiskId) =>

@@ -170,7 +170,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                     },
                 ProjectId = projectId,
                 DataCollectorType = MapToDataCollectorType(filtersDto.ReportsType),
-                IsTraining = filtersDto.IsTraining
+                IsTraining = filtersDto.IsTraining,
+                TimezoneOffset = filtersDto.TimezoneOffset
             };
 
         private DataCollectorType? MapToDataCollectorType(FiltersRequestDto.ReportsTypeDto reportsType) =>

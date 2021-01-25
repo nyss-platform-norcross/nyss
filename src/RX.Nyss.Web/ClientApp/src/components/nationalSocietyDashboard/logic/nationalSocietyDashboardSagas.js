@@ -5,6 +5,8 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import dayjs from "dayjs";
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 export const nationalSocietyDashboardSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_DASHBOARD.INVOKE, openNationalSocietyDashboard),
@@ -17,17 +19,23 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
   try {
     yield call(openNationalSocietyDashboardModule, nationalSocietyId);
     const filtersData = yield call(http.get, `/api/nationalSocietyDashboard/filters?nationalSocietyId=${nationalSocietyId}`);
-    const endDate = dayjs(new Date());
+    const localDate = dayjs();
+    const utcOffset = localDate.utcOffset() / 60;
+    let endDate = localDate.add(-utcOffset, 'hour');
+    endDate = endDate.set('hour', 0);
+    endDate = endDate.set('minute', 0);
+    endDate = endDate.set('second', 0);
     const filters = (yield select(state => state.nationalSocietyDashboard.filters)) ||
     {
       healthRiskId: null,
       organizationId: null,
       area: null,
-      startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
-      endDate: endDate.format('YYYY-MM-DD'),
+      startDate: endDate.add(-7, "day"),
+      endDate: endDate,
       groupingType: "Day",
       isTraining: false,
-      reportsType: "all"
+      reportsType: "all",
+      timezoneOffset: utcOffset
     };
 
     yield call(getNationalSocietyDashboardData, { nationalSocietyId, filters })

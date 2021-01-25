@@ -137,7 +137,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                         AreaId = filtersDto.Area.Id
                     },
                 DataCollectorType = MapToDataCollectorType(filtersDto.ReportsType),
-                IsTraining = filtersDto.IsTraining
+                IsTraining = filtersDto.IsTraining,
+                TimezoneOffset = filtersDto.TimezoneOffset
             };
 
         private static DataCollectorType? MapToDataCollectorType(NationalSocietyDashboardFiltersRequestDto.NationalSocietyReportsTypeDto nationalSocietyReportsType) =>

@@ -370,7 +370,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByOrganization(filters.OrganizationId)
                 .FilterByProject(filters.ProjectId)
                 .FilterReportsByNationalSociety(filters.NationalSocietyId)
-                .FilterByDate(filters.StartDate.Date, filters.EndDate.Date)
+                .FilterByDate(filters.StartDate, filters.EndDate)
                 .FilterByHealthRisk(filters.HealthRiskId);
 
         public IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters) =>

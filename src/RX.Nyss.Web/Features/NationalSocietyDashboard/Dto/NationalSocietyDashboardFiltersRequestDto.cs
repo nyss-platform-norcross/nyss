@@ -15,9 +15,9 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
 
         public int? HealthRiskId { get; set; }
 
-        public DateTime StartDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
 
-        public DateTime EndDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
 
         public AreaDto Area { get; set; }
 
@@ -28,5 +28,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard.Dto
         public NationalSocietyReportsTypeDto ReportsType { get; set; }
 
         public bool IsTraining { get; set; }
+
+        public int TimezoneOffset { get; set; }
     }
 }
