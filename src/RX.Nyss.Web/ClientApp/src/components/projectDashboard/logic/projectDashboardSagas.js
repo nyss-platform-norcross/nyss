@@ -23,7 +23,7 @@ function* openProjectDashboard({ projectId }) {
     yield call(openProjectDashboardModule, projectId);
     const filtersData = yield call(http.get, `/api/projectDashboard/filters?projectId=${projectId}`);
     const localDate = dayjs();
-    const utcOffset = localDate.utcOffset() / 60;
+    const utcOffset = Math.floor(localDate.utcOffset() / 60);
     let endDate = localDate.add(-utcOffset, 'hour');
     endDate = endDate.set('hour', 0);
     endDate = endDate.set('minute', 0);
@@ -37,7 +37,7 @@ function* openProjectDashboard({ projectId }) {
         groupingType: 'Day',
         isTraining: false,
         reportsType: 'all',
-        timezoneOffset: utcOffset
+        utcOffset: utcOffset
       };
 
     yield call(getProjectDashboardData, { projectId, filters })

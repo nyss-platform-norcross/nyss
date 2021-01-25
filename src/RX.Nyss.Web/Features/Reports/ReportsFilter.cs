@@ -24,6 +24,6 @@ namespace RX.Nyss.Web.Features.Reports
 
         public bool IsTraining { get; set; }
 
-        public int TimezoneOffset { get; set; }
+        public int UtcOffset { get; set; }
     }
 }

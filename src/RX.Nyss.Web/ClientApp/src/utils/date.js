@@ -13,13 +13,16 @@ export const formatDate = (date) => {
 }
 
 export const convertToLocalDate = (date) => {
-  const utcOffset = dayjs().utcOffset() / 60;
+  const utcOffset = Math.floor(dayjs().utcOffset() / 60);
   const utcDate = dayjs(date);
   return utcDate.add(utcOffset, 'hour');
 }
 
 export const convertToUtc = (date) => {
-  const utcOffset = dayjs().utcOffset() / 60;
+  const utcOffset = Math.floor(dayjs().utcOffset() / 60);
   const localeDate = dayjs(date);
   return localeDate.add(-utcOffset, 'hour');
 }
+
+export const getUtcOffset = () => 
+  Math.floor(dayjs().utcOffset() / 60);

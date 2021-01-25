@@ -20,7 +20,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
     yield call(openNationalSocietyDashboardModule, nationalSocietyId);
     const filtersData = yield call(http.get, `/api/nationalSocietyDashboard/filters?nationalSocietyId=${nationalSocietyId}`);
     const localDate = dayjs();
-    const utcOffset = localDate.utcOffset() / 60;
+    const utcOffset = Math.floor(localDate.utcOffset() / 60);
     let endDate = localDate.add(-utcOffset, 'hour');
     endDate = endDate.set('hour', 0);
     endDate = endDate.set('minute', 0);
@@ -35,7 +35,7 @@ function* openNationalSocietyDashboard({ nationalSocietyId }) {
       groupingType: "Day",
       isTraining: false,
       reportsType: "all",
-      timezoneOffset: utcOffset
+      utcOffset: utcOffset
     };
 
     yield call(getNationalSocietyDashboardData, { nationalSocietyId, filters })

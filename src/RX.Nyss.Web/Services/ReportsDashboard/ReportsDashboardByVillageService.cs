@@ -40,22 +40,22 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             return groupingType switch
             {
                 DatesGroupingType.Day =>
-                await GroupReportsByVillageAndDay(reports, filters.StartDate.DateTime.AddHours(filters.TimezoneOffset), filters.EndDate.DateTime.AddHours(filters.TimezoneOffset), filters.TimezoneOffset),
+                await GroupReportsByVillageAndDay(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), filters.UtcOffset),
 
                 DatesGroupingType.Week =>
-                await GroupReportsByVillageAndWeek(reports, filters.StartDate.DateTime.AddHours(filters.TimezoneOffset), filters.EndDate.DateTime.AddHours(filters.TimezoneOffset)),
+                await GroupReportsByVillageAndWeek(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset)),
 
                 _ =>
                 throw new InvalidOperationException()
             };
         }
 
-        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate, int timezoneOffset)
+        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate, int utcOffset)
         {
             var groupedReports = await reports
                 .GroupBy(r => new
                 {
-                    Date = r.ReceivedAt.AddHours(timezoneOffset).Date,
+                    Date = r.ReceivedAt.AddHours(utcOffset).Date,
                     VillageId = r.RawReport.Village.Id,
                     VillageName = r.RawReport.Village.Name
                 })

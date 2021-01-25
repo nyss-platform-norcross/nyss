@@ -29,6 +29,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 
         public int? OrganizationId { get; set; }
 
-        public int TimezoneOffset { get; set; }
+        public int UtcOffset { get; set; }
     }
 }

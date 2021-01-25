@@ -39,8 +39,8 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         public NationalSocietyReportService(
             INyssContext nyssContext,
             IUserService userService,
-            IProjectService projectService, 
-            INationalSocietyService nationalSocietyService, 
+            IProjectService projectService,
+            INationalSocietyService nationalSocietyService,
             INyssWebConfig config,
             IAuthorizationService authorizationService
             )
@@ -69,14 +69,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var baseQuery = _nyssContext.RawReports
                 .Where(r => r.NationalSociety.Id == nationalSocietyId)
                 .Where(r => r.IsTraining == null || r.IsTraining == false)
-                .Where(r =>
-                    filter.ReportsType == NationalSocietyReportListType.FromDcp
-                        ? r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint
-                        : (filter.ReportsType == NationalSocietyReportListType.Main 
-                            ? r.DataCollector.DataCollectorType == DataCollectorType.Human
-                            : r.DataCollector == null
-                        )
-                )
+                .FilterByReportType(filter.ReportsType)
                 .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
                 .Where(r => filter.Status
                     ? r.Report != null && !r.Report.MarkedAsError
@@ -92,7 +85,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
             var result = await baseQuery.Select(r => new NationalSocietyReportListResponseDto
                 {
                     Id = r.Id,
-                    DateTime = r.ReceivedAt,
+                    DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents.Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode).Select(lc => lc.Name).Single(),
                     IsValid = r.Report != null,
                     IsMarkedAsError = r.Report.MarkedAsError,
@@ -132,11 +125,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
 
             foreach (var report in result)
             {
-                if (report.ProjectTimeZone != null)
-                {
-                    report.DateTime = TimeZoneInfo.ConvertTimeFromUtc(report.DateTime, TimeZoneInfo.FindSystemTimeZoneById(report.ProjectTimeZone));
-                }
-
                 if (report.IsAnonymized)
                 {
                     report.DataCollectorDisplayName = report.OrganizationName;

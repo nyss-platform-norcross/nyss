@@ -42,22 +42,22 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             return groupingType switch
             {
                 DatesGroupingType.Day =>
-                await GroupReportsByFeaturesAndDay(humanReports, filters.StartDate.DateTime.AddHours(filters.TimezoneOffset), filters.EndDate.DateTime.AddHours(filters.TimezoneOffset), filters.TimezoneOffset),
+                await GroupReportsByFeaturesAndDay(humanReports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), filters.UtcOffset),
 
                 DatesGroupingType.Week =>
-                await GroupReportsByFeaturesAndWeek(humanReports, filters.StartDate.DateTime.AddHours(filters.TimezoneOffset), filters.EndDate.DateTime.AddHours(filters.TimezoneOffset)),
+                await GroupReportsByFeaturesAndWeek(humanReports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset)),
 
                 _ =>
                 throw new InvalidOperationException()
             };
         }
 
-        private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate, int timezoneOffset)
+        private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate, int utcOffset)
         {
             var groupedReports = await reports
                 .Select(r => new
                 {
-                    Date = r.ReceivedAt.AddHours(timezoneOffset).Date,
+                    Date = r.ReceivedAt.AddHours(utcOffset).Date,
                     r.ReportedCase.CountFemalesAtLeastFive,
                     r.ReportedCase.CountFemalesBelowFive,
                     r.ReportedCase.CountMalesAtLeastFive,
