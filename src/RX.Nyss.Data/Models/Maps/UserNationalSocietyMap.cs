@@ -14,9 +14,22 @@ namespace RX.Nyss.Data.Models.Maps
                 uns.UserId,
                 uns.NationalSocietyId
             });
-            builder.HasOne(uns => uns.User).WithMany(u => u.UserNationalSocieties).HasForeignKey(uns => uns.UserId).IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(uns => uns.NationalSociety).WithMany(ns => ns.NationalSocietyUsers).HasForeignKey(uns => uns.NationalSocietyId).IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(uns => uns.Organization).WithMany(o => o.NationalSocietyUsers).HasForeignKey(uns => uns.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(uns => uns.User)
+                .WithMany(u => u.UserNationalSocieties)
+                .HasForeignKey(uns => uns.UserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(uns => uns.NationalSociety)
+                .WithMany(ns => ns.NationalSocietyUsers)
+                .HasForeignKey(uns => uns.NationalSocietyId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(uns => uns.Organization)
+                .WithMany(o => o.NationalSocietyUsers)
+                .HasForeignKey(uns => uns.OrganizationId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -12,12 +12,13 @@ namespace RX.Nyss.Data.Models.Maps
                 x.SupervisorId,
                 x.AlertNotificationRecipientId
             });
-            
+
             builder.HasOne(x => x.Supervisor)
                 .WithMany(x => x.SupervisorAlertRecipients)
                 .HasForeignKey(sar => sar.SupervisorId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasOne(x => x.AlertNotificationRecipient)
                 .WithMany(x => x.SupervisorAlertRecipients)
                 .HasForeignKey(sar => sar.AlertNotificationRecipientId)

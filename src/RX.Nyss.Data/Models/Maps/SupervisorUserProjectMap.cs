@@ -12,10 +12,15 @@ namespace RX.Nyss.Data.Models.Maps
                 sup.SupervisorUserId,
                 sup.ProjectId
             });
-            builder.HasOne(uns => uns.SupervisorUser).WithMany(su => su.SupervisorUserProjects)
-                .HasForeignKey(uns => uns.SupervisorUserId).IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(uns => uns.Project).WithMany(p => p.SupervisorUserProjects)
-                .HasForeignKey(uns => uns.ProjectId).IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(uns => uns.SupervisorUser)
+                .WithMany(su => su.SupervisorUserProjects)
+                .HasForeignKey(uns => uns.SupervisorUserId)
+                .IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(uns => uns.Project)
+                .WithMany(p => p.SupervisorUserProjects)
+                .HasForeignKey(uns => uns.ProjectId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

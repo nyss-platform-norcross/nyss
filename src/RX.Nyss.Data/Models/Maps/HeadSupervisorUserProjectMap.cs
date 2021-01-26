@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace RX.Nyss.Data.Models.Maps
 {
-    public class LeadSupervisorUserProjectMap : IEntityTypeConfiguration<HeadSupervisorUserProject>
+    public class HeadSupervisorUserProjectMap : IEntityTypeConfiguration<HeadSupervisorUserProject>
     {
         public void Configure(EntityTypeBuilder<HeadSupervisorUserProject> builder)
         {
@@ -12,10 +12,19 @@ namespace RX.Nyss.Data.Models.Maps
                 x.HeadSupervisorUserId,
                 x.ProjectId
             });
-            builder.HasOne(lsup => lsup.HeadSupervisorUser).WithMany(lsu => lsu.HeadSupervisorUserProjects)
-                .HasForeignKey(lsup => lsup.HeadSupervisorUserId).IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(lsup => lsup.Project).WithMany(p => p.HeadSupervisorUserProjects)
-                .HasForeignKey(lsup => lsup.ProjectId).IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder
+                .HasOne(hsup => hsup.HeadSupervisorUser)
+                .WithMany(hsu => hsu.HeadSupervisorUserProjects)
+                .HasForeignKey(hsup => hsup.HeadSupervisorUserId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .HasOne(hsup => hsup.Project)
+                .WithMany(p => p.HeadSupervisorUserProjects)
+                .HasForeignKey(hsup => hsup.ProjectId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

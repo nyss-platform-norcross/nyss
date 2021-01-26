@@ -5,9 +5,6 @@ namespace RX.Nyss.Data.Models.Maps
 {
     public class GlobalCoordinatorUserMap : IEntityTypeConfiguration<GlobalCoordinatorUser>
     {
-        public void Configure(EntityTypeBuilder<GlobalCoordinatorUser> builder)
-        {
-            builder.HasBaseType<User>();
-        }
+        public void Configure(EntityTypeBuilder<GlobalCoordinatorUser> builder) => builder.HasBaseType<User>();
     }
 }
