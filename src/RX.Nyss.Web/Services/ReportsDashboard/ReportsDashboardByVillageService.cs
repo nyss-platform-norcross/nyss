@@ -40,22 +40,22 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             return groupingType switch
             {
                 DatesGroupingType.Day =>
-                await GroupReportsByVillageAndDay(reports, filters.StartDate.Date, filters.EndDate.Date),
+                await GroupReportsByVillageAndDay(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), filters.UtcOffset),
 
                 DatesGroupingType.Week =>
-                await GroupReportsByVillageAndWeek(reports, filters.StartDate.Date, filters.EndDate.Date),
+                await GroupReportsByVillageAndWeek(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset)),
 
                 _ =>
                 throw new InvalidOperationException()
             };
         }
 
-        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<ReportByVillageAndDateResponseDto> GroupReportsByVillageAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate, int utcOffset)
         {
             var groupedReports = await reports
                 .GroupBy(r => new
                 {
-                    r.ReceivedAt.Date,
+                    Date = r.ReceivedAt.AddHours(utcOffset).Date,
                     VillageId = r.RawReport.Village.Id,
                     VillageName = r.RawReport.Village.Name
                 })
@@ -131,7 +131,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .GroupBy(r => new
                 {
                     r.EpiWeek,
-                    ReceivedAt = r.ReceivedAt.Date,
+                    r.EpiYear,
                     VillageId = r.RawReport.Village.Id,
                     VillageName = r.RawReport.Village.Name
                 })
@@ -140,7 +140,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     Period = new
                     {
                         grouping.Key.EpiWeek,
-                        grouping.Key.ReceivedAt.Year
+                        grouping.Key.EpiYear
                     },
                     Count = grouping.Sum(g => g.ReportedCaseCount),
                     grouping.Key.VillageId,
@@ -184,7 +184,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .Select(x => new ReportByVillageAndDateResponseDto.VillageDto
                 {
                     Name = x.Village.VillageName,
-                    Periods = x.Data.GroupBy(v => v.Period).OrderBy(g => g.Key.Year).ThenBy(g => g.Key.EpiWeek)
+                    Periods = x.Data.GroupBy(v => v.Period).OrderBy(g => g.Key.EpiYear).ThenBy(g => g.Key.EpiWeek)
                         .Select(g => new PeriodDto
                         {
                             Period = g.Key.EpiWeek.ToString(),

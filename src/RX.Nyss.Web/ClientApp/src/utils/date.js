@@ -1,3 +1,7 @@
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
+
 export const formatDate = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -7,3 +11,18 @@ export const formatDate = (date) => {
 
   return `${year}-${humanReadableMonth}-${humanReadableDay}`;
 }
+
+export const convertToLocalDate = (date) => {
+  const utcOffset = Math.floor(dayjs().utcOffset() / 60);
+  const utcDate = dayjs(date);
+  return utcDate.add(utcOffset, 'hour');
+}
+
+export const convertToUtc = (date) => {
+  const utcOffset = Math.floor(dayjs().utcOffset() / 60);
+  const localeDate = dayjs(date);
+  return localeDate.add(-utcOffset, 'hour');
+}
+
+export const getUtcOffset = () => 
+  Math.floor(dayjs().utcOffset() / 60);

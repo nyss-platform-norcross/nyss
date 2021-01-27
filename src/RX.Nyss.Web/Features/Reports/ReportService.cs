@@ -137,7 +137,7 @@ namespace RX.Nyss.Web.Features.Reports
                         .Where(nsu => nsu.UserId == r.DataCollector.Supervisor.Id)
                         .Select(nsu => nsu.Organization.Name)
                         .FirstOrDefault(),
-                    DateTime = r.ReceivedAt,
+                    DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
@@ -179,7 +179,6 @@ namespace RX.Nyss.Web.Features.Reports
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync<IReportListResponseDto>();
 
-            await UpdateTimeZoneInReports(projectId, reports);
             AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
 
             return Success(reports.Cast<ReportListResponseDto>().AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
@@ -370,7 +369,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByOrganization(filters.OrganizationId)
                 .FilterByProject(filters.ProjectId)
                 .FilterReportsByNationalSociety(filters.NationalSocietyId)
-                .FilterByDate(filters.StartDate.Date, filters.EndDate.Date)
+                .FilterByDate(filters.StartDate, filters.EndDate)
                 .FilterByHealthRisk(filters.HealthRiskId);
 
         public IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters) =>

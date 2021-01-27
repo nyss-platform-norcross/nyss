@@ -7,7 +7,7 @@ import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesCons
 import { strings, stringKeys } from "../../../strings";
 import dayjs from "dayjs";
 import { downloadFile } from "../../../utils/downloadFile";
-import { formatDate } from "../../../utils/date";
+import { formatDate, getUtcOffset } from "../../../utils/date";
 
 export const alertsSagas = () => [
   takeEvery(consts.OPEN_ALERTS_LIST.INVOKE, openAlertsList),
@@ -36,7 +36,14 @@ function* openAlertsList({ projectId }) {
       : yield select(state => state.alerts.filtersData);
 
     const filters = (yield select(state => state.alerts.filters)) ||
-      { area: null, healthRiskId: null, status: consts.alertStatusFilters.all, orderBy: consts.statusColumn, sortAscending: false };
+      {
+        area: null,
+        healthRiskId: null,
+        status: consts.alertStatusFilters.all,
+        orderBy: consts.statusColumn,
+        sortAscending: false,
+        utcOffset: getUtcOffset()
+      };
 
     yield call(getAlerts, { projectId, filters });
 
@@ -70,7 +77,7 @@ function* fetchRecipients({ alertId }) {
 function* openAlertsAssessment({ projectId, alertId }) {
   yield put(actions.openAssessment.request());
   try {
-    const response = yield call(http.get, `/api/alert/${alertId}/get`);
+    const response = yield call(http.get, `/api/alert/${alertId}/get?utcOffset=${getUtcOffset()}`);
     const data = response.value;
 
     const title = `${strings(stringKeys.alerts.details.title, true)} - ${data.healthRisk} ${dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}`;
@@ -85,7 +92,7 @@ function* openAlertsAssessment({ projectId, alertId }) {
 function* openAlertsLogs({ projectId, alertId }) {
   yield put(actions.openLogs.request());
   try {
-    const response = yield call(http.get, `/api/alert/${alertId}/getLogs`);
+    const response = yield call(http.get, `/api/alert/${alertId}/getLogs?utcOffset=${getUtcOffset()}`);
     const data = response.value;
 
     const title = `${strings(stringKeys.alerts.details.title, true)} - ${data.healthRisk} ${dayjs(data.createdAt).format('YYYY-MM-DD HH:mm')}`;

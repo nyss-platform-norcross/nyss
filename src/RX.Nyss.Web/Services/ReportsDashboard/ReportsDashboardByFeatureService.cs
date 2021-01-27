@@ -42,28 +42,28 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             return groupingType switch
             {
                 DatesGroupingType.Day =>
-                await GroupReportsByFeaturesAndDay(humanReports, filters.StartDate.Date, filters.EndDate.Date),
+                await GroupReportsByFeaturesAndDay(humanReports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), filters.UtcOffset),
 
                 DatesGroupingType.Week =>
-                await GroupReportsByFeaturesAndWeek(humanReports, filters.StartDate.Date, filters.EndDate.Date),
+                await GroupReportsByFeaturesAndWeek(humanReports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset)),
 
                 _ =>
                 throw new InvalidOperationException()
             };
         }
 
-        private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
+        private static async Task<IList<ReportByFeaturesAndDateResponseDto>> GroupReportsByFeaturesAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate, int utcOffset)
         {
             var groupedReports = await reports
                 .Select(r => new
                 {
-                    r.ReceivedAt,
+                    Date = r.ReceivedAt.AddHours(utcOffset).Date,
                     r.ReportedCase.CountFemalesAtLeastFive,
                     r.ReportedCase.CountFemalesBelowFive,
                     r.ReportedCase.CountMalesAtLeastFive,
                     r.ReportedCase.CountMalesBelowFive
                 })
-                .GroupBy(r => r.ReceivedAt.Date)
+                .GroupBy(r => r.Date)
                 .Select(grouping => new
                 {
                     Period = grouping.Key,
@@ -75,7 +75,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                 .ToListAsync();
 
             var missingDays = startDate.GetDaysRange(endDate)
-                .Where(day => !groupedReports.Any(r => r.Period == day))
+                .Where(day => !groupedReports.Any(r => r.Period == day.Date))
                 .Select(day => new
                 {
                     Period = day,

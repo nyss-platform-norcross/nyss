@@ -175,7 +175,7 @@ namespace RX.Nyss.Web.Features.HealthRisks
 
             foreach (var languageContentDto in healthRiskRequestDto.LanguageContent)
             {
-                var languageContent = healthRisk.LanguageContents.SingleOrDefault(lc => lc.ContentLanguage.Id == languageContentDto.LanguageId)
+                var languageContent = healthRisk.LanguageContents.SingleOrDefault(lc => lc.ContentLanguage?.Id == languageContentDto.LanguageId)
                     ?? CreateNewLanguageContent(healthRisk, languageContentDto.LanguageId);
 
                 languageContent.FeedbackMessage = languageContentDto.FeedbackMessage;

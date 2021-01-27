@@ -5,8 +5,10 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { stringsFormat, stringKeys } from "../../../strings";
 import { generatePdfDocument } from "../../../utils/pdf";
+dayjs.extend(utc);
 
 export const projectDashboardSagas = () => [
   takeEvery(consts.OPEN_PROJECT_DASHBOARD.INVOKE, openProjectDashboard),
@@ -20,16 +22,22 @@ function* openProjectDashboard({ projectId }) {
   try {
     yield call(openProjectDashboardModule, projectId);
     const filtersData = yield call(http.get, `/api/projectDashboard/filters?projectId=${projectId}`);
-    const endDate = dayjs(new Date());
+    const localDate = dayjs();
+    const utcOffset = Math.floor(localDate.utcOffset() / 60);
+    let endDate = localDate.add(-utcOffset, 'hour');
+    endDate = endDate.set('hour', 0);
+    endDate = endDate.set('minute', 0);
+    endDate = endDate.set('second', 0);
     const filters = (yield select(state => state.projectDashboard.filters)) ||
       {
         healthRiskId: null,
         area: null,
-        startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
-        endDate: endDate.format('YYYY-MM-DD'),
-        groupingType: "Day",
+        startDate: endDate.add(-7, 'day'),
+        endDate: endDate,
+        groupingType: 'Day',
         isTraining: false,
-        reportsType: "all"
+        reportsType: 'all',
+        utcOffset: utcOffset
       };
 
     yield call(getProjectDashboardData, { projectId, filters })

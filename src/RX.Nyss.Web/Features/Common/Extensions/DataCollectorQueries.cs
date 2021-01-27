@@ -76,7 +76,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<DataCollector> FilterByProject(this IQueryable<DataCollector> dataCollectors, int projectId) =>
             dataCollectors.Where(dc => dc.Project.Id == projectId);
 
-        public static IQueryable<DataCollector> FilterOnlyNotDeletedBefore(this IQueryable<DataCollector> dataCollectors, DateTime startDate) =>
+        public static IQueryable<DataCollector> FilterOnlyNotDeletedBefore(this IQueryable<DataCollector> dataCollectors, DateTimeOffset startDate) =>
             dataCollectors.Where(dc => dc.DeletedAt == null || dc.DeletedAt > startDate);
 
         public static IQueryable<DataCollector> FilterOnlyNotDeleted(this IQueryable<DataCollector> dataCollectors) =>

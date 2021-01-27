@@ -12,6 +12,7 @@ import { strings, stringKeys } from "../../../strings";
 import { ExpandMore, DateRange } from '@material-ui/icons';
 import { Switch, FormControl, LinearProgress, FormLabel, Chip, IconButton } from "@material-ui/core";
 import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
+import { convertToLocalDate, convertToUtc } from "../../../utils/date";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, isGeneratingPdf, isFilterExpanded, setIsFilterExpanded }) => {
   const [value, setValue] = useState(filters);
@@ -26,7 +27,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
 
     setValue(newValue);
     return newValue;
-  };
+  }
 
   const handleAreaChange = (item) => {
     setSelectedArea(item);
@@ -40,10 +41,10 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
     onChange(updateValue({ organizationId: event.target.value === 0 ? null : event.target.value }))
 
   const handleDateFromChange = date =>
-    onChange(updateValue({ startDate: date.format('YYYY-MM-DD') }))
+    onChange(updateValue({ startDate: convertToUtc(date) }))
 
   const handleDateToChange = date =>
-    onChange(updateValue({ endDate: date.format('YYYY-MM-DD') }))
+    onChange(updateValue({ endDate: convertToUtc(date) }))
 
   const handleGroupingTypeChange = event =>
     onChange(updateValue({ groupingType: event.target.value }))
@@ -71,7 +72,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
         <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }} >
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <Chip icon={<DateRange />} label={`${value.startDate} - ${value.endDate}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
+              <Chip icon={<DateRange />} label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
             </Grid>
             <Grid item>
               <Chip onClick={() => setIsFilterExpanded(!isFilterExpanded)} label={
@@ -100,7 +101,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
                 className={styles.filterDate}
                 onChange={handleDateFromChange}
                 label={strings(stringKeys.project.dashboard.filters.startDate)}
-                value={value.startDate} />
+                value={convertToLocalDate(value.startDate)} />
             </Grid>
 
             <Grid item>
@@ -108,7 +109,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
                 className={styles.filterDate}
                 onChange={handleDateToChange}
                 label={strings(stringKeys.project.dashboard.filters.endDate)}
-                value={value.endDate} />
+                value={convertToLocalDate(value.endDate)} />
             </Grid>
 
             <Grid item>

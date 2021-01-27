@@ -31,12 +31,12 @@ namespace RX.Nyss.Web.Features.Alerts
     public interface IAlertService
     {
         Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, AlertListFilterRequestDto filterRequestDto);
-        Task<Result<AlertAssessmentResponseDto>> Get(int alertId);
+        Task<Result<AlertAssessmentResponseDto>> Get(int alertId, int utcOffset);
         Task<Result> Escalate(int alertId, bool sendNotification);
         Task<Result> Dismiss(int alertId);
         Task<Result> Close(int alertId, string comments, EscalatedAlertOutcomes escalatedOutcome);
         Task<AlertAssessmentStatus> GetAssessmentStatus(int alertId);
-        Task<Result<AlertLogResponseDto>> GetLogs(int alertId);
+        Task<Result<AlertLogResponseDto>> GetLogs(int alertId, int utcOffset);
         Task<Result<AlertRecipientsResponseDto>> GetAlertRecipientsByAlertId(int alertId);
         Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId);
         Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto);
@@ -111,9 +111,6 @@ namespace RX.Nyss.Web.Features.Alerts
 
         public async Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, AlertListFilterRequestDto filterRequestDto)
         {
-            var project = await _nyssContext.Projects.FindAsync(projectId);
-            var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
-
             var alertsQuery = _nyssContext.Alerts
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filterRequestDto.HealthRiskId)
@@ -140,7 +137,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(a => new
                 {
                     a.Id,
-                    a.CreatedAt,
+                    CreatedAt = a.CreatedAt.AddHours(filterRequestDto.UtcOffset),
                     a.Status,
                     a.EscalatedOutcome,
                     a.Comments,
@@ -167,7 +164,7 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(a => new AlertListItemResponseDto
                 {
                     Id = a.Id,
-                    CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(a.CreatedAt, projectTimeZone),
+                    CreatedAt = a.CreatedAt,
                     Status = a.Status.ToString(),
                     EscalatedOutcome = a.EscalatedOutcome,
                     Comments = a.Comments,
@@ -184,7 +181,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return Success(dtos);
         }
 
-        public async Task<Result<AlertAssessmentResponseDto>> Get(int alertId)
+        public async Task<Result<AlertAssessmentResponseDto>> Get(int alertId, int utcOffset)
         {
             var currentUser = await _authorizationService.GetCurrentUser();
 
@@ -233,8 +230,6 @@ namespace RX.Nyss.Web.Features.Alerts
                 .AsNoTracking()
                 .SingleAsync();
 
-            var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(alert.ProjectTimeZone);
-
             var acceptedReports = alert.Reports.Count(r => r.Status == ReportStatus.Accepted);
             var pendingReports = alert.Reports.Count(r => r.Status == ReportStatus.Pending);
             var currentUserCanSeeEveryoneData = _authorizationService.IsCurrentUserInAnyRole(Role.Administrator);
@@ -243,8 +238,8 @@ namespace RX.Nyss.Web.Features.Alerts
             {
                 HealthRisk = alert.HealthRisk,
                 Comments = alert.Comments,
-                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(alert.CreatedAt, projectTimeZone),
-                EscalatedAt = alert.EscalatedAt,
+                CreatedAt = alert.CreatedAt.AddHours(utcOffset),
+                EscalatedAt = alert.EscalatedAt?.AddHours(utcOffset),
                 CaseDefinition = alert.CaseDefinition,
                 AssessmentStatus = GetAssessmentStatus(alert.Status, acceptedReports, pendingReports, alert.HealthRiskCountThreshold),
                 EscalatedOutcome = alert.EscalatedOutcome,
@@ -255,7 +250,7 @@ namespace RX.Nyss.Web.Features.Alerts
                         DataCollector = ar.IsAnonymized
                             ? ar.SupervisorName
                             : ar.DataCollector,
-                        ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
+                        ReceivedAt = ar.ReceivedAt.AddHours(utcOffset),
                         PhoneNumber = ar.IsAnonymized
                             ? "***"
                             : ar.PhoneNumber,
@@ -266,14 +261,14 @@ namespace RX.Nyss.Web.Features.Alerts
                         Sex = GetSex(ar.ReportedCase),
                         Age = GetAge(ar.ReportedCase),
                         IsAnonymized = ar.IsAnonymized,
-                        AcceptedAt = ar.AcceptedAt,
-                        RejectedAt = ar.RejectedAt,
-                        ResetAt = ar.ResetAt
+                        AcceptedAt = ar.AcceptedAt?.AddHours(utcOffset),
+                        RejectedAt = ar.RejectedAt?.AddHours(utcOffset),
+                        ResetAt = ar.ResetAt?.AddHours(utcOffset)
                     }
                     : new AlertAssessmentResponseDto.ReportDto
                     {
                         Id = ar.Id,
-                        ReceivedAt = TimeZoneInfo.ConvertTimeFromUtc(ar.ReceivedAt, projectTimeZone),
+                        ReceivedAt = ar.ReceivedAt.AddHours(utcOffset),
                         Status = ar.Status.ToString(),
                         Organization = ar.OrganizationName
                     }).ToList()
@@ -445,7 +440,7 @@ namespace RX.Nyss.Web.Features.Alerts
             return GetAssessmentStatus(alertData.Status, alertData.AcceptedReports, alertData.PendingReports, alertData.CountThreshold);
         }
 
-        public async Task<Result<AlertLogResponseDto>> GetLogs(int alertId)
+        public async Task<Result<AlertLogResponseDto>> GetLogs(int alertId, int utcOffset)
         {
             var currentUser = await _authorizationService.GetCurrentUser();
             var currentUserOrganization = await _nyssContext.UserNationalSocieties
@@ -517,23 +512,21 @@ namespace RX.Nyss.Web.Features.Alerts
                 })
                 .SingleAsync();
 
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(alert.ProjectTimeZone);
-
-            var list = new List<AlertLogResponseDto.Item> { new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.TriggeredAlert, alert.CreatedAt.ApplyTimeZone(timeZone), null) };
+            var list = new List<AlertLogResponseDto.Item> { new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.TriggeredAlert, alert.CreatedAt.AddHours(utcOffset), null) };
 
             if (alert.EscalatedAt.HasValue)
             {
-                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.EscalatedAlert, alert.EscalatedAt.Value.ApplyTimeZone(timeZone), alert.EscalatedBy));
+                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.EscalatedAlert, alert.EscalatedAt.Value.AddHours(utcOffset), alert.EscalatedBy));
             }
 
             if (alert.DismissedAt.HasValue)
             {
-                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.DismissedAlert, alert.DismissedAt.Value.ApplyTimeZone(timeZone), alert.DismissedBy));
+                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.DismissedAlert, alert.DismissedAt.Value.AddHours(utcOffset), alert.DismissedBy));
             }
 
             if (alert.ClosedAt.HasValue)
             {
-                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.ApplyTimeZone(timeZone), alert.ClosedBy, new
+                list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ClosedAlert, alert.ClosedAt.Value.AddHours(utcOffset), alert.ClosedBy, new
                 {
                     alert.EscalatedOutcome,
                     alert.Comments
@@ -544,33 +537,30 @@ namespace RX.Nyss.Web.Features.Alerts
             {
                 if (report.AcceptedAt.HasValue)
                 {
-                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.AcceptedReport, report.AcceptedAt.Value.ApplyTimeZone(timeZone), report.AcceptedBy, new { report.ReportId }));
+                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.AcceptedReport, report.AcceptedAt.Value.AddHours(utcOffset), report.AcceptedBy, new { report.ReportId }));
                 }
 
                 if (report.RejectedAt.HasValue)
                 {
-                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.RejectedReport, report.RejectedAt.Value.ApplyTimeZone(timeZone), report.RejectedBy, new { report.ReportId }));
+                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.RejectedReport, report.RejectedAt.Value.AddHours(utcOffset), report.RejectedBy, new { report.ReportId }));
                 }
 
                 if (report.ResetAt.HasValue)
                 {
-                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ResetReport, report.ResetAt.Value.ApplyTimeZone(timeZone), report.ResetBy, new { report.ReportId }));
+                    list.Add(new AlertLogResponseDto.Item(AlertLogResponseDto.LogType.ResetReport, report.ResetAt.Value.AddHours(utcOffset), report.ResetBy, new { report.ReportId }));
                 }
             }
 
             return Success(new AlertLogResponseDto
             {
                 HealthRisk = alert.HealthRisk,
-                CreatedAt = alert.CreatedAt.ApplyTimeZone(timeZone),
+                CreatedAt = alert.CreatedAt.AddHours(utcOffset),
                 Items = list.OrderBy(x => x.Date).ToList()
             });
         }
 
         public async Task<byte[]> Export(int projectId, AlertListFilterRequestDto filterRequestDto)
         {
-            var project = await _nyssContext.Projects.FindAsync(projectId);
-            var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
-
             var currentRole = (await _authorizationService.GetCurrentUser()).Role;
             var currentUserName = _authorizationService.GetCurrentUserName();
             var currentUserId = await _nyssContext.Users.FilterAvailable()
@@ -628,11 +618,11 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Select(a => new AlertListExportResponseDto
                 {
                     Id = a.Id,
-                    LastReportTimestamp = TimeZoneInfo.ConvertTimeFromUtc(a.LastReport.Timestamp, projectTimeZone),
-                    TriggeredAt = TimeZoneInfo.ConvertTimeFromUtc(a.CreatedAt, projectTimeZone),
-                    EscalatedAt = a.EscalatedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.EscalatedAt.Value, projectTimeZone) : (DateTime?)null,
-                    DismissedAt = a.DismissedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.DismissedAt.Value, projectTimeZone) : (DateTime?)null,
-                    ClosedAt = a.ClosedAt.HasValue ? TimeZoneInfo.ConvertTimeFromUtc(a.ClosedAt.Value, projectTimeZone) : (DateTime?)null,
+                    LastReportTimestamp = a.LastReport.Timestamp.AddHours(filterRequestDto.UtcOffset),
+                    TriggeredAt = a.CreatedAt.AddHours(filterRequestDto.UtcOffset),
+                    EscalatedAt = a.EscalatedAt?.AddHours(filterRequestDto.UtcOffset),
+                    DismissedAt = a.DismissedAt?.AddHours(filterRequestDto.UtcOffset),
+                    ClosedAt = a.ClosedAt?.AddHours(filterRequestDto.UtcOffset),
                     Status = GetStringResource(stringResources, $"alerts.alertStatus.{a.Status.ToString().ToLower()}"),
                     EscalatedOutcome = a.EscalatedOutcome,
                     Comments = a.Comments,

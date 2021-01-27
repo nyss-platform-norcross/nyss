@@ -12,6 +12,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
         public bool Status { get; set; }
         public string OrderBy { get; set; }
         public bool SortAscending { get; set; }
+        public int UtcOffset { get; set; }
 
         public class Validator : AbstractValidator<NationalSocietyReportListFilterRequestDto>
         {

@@ -8,7 +8,7 @@ import { downloadFile } from "../../../utils/downloadFile";
 import { stringKeys } from "../../../strings";
 import { ReportListType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './reportsConstants'
-import { formatDate } from "../../../utils/date";
+import { formatDate, getUtcOffset } from "../../../utils/date";
 
 export const reportsSagas = () => [
   takeEvery(consts.OPEN_REPORTS_LIST.INVOKE, openReportsList),
@@ -48,7 +48,8 @@ function* getReports({ projectId, pageNumber, filters, sorting }) {
     area: null,
     healthRiskId: null,
     status: true,
-    isTraining: false
+    isTraining: false,
+    utcOffset: getUtcOffset()
   };
 
   const requestSorting = sorting || (yield select(state => state.reports.sorting)) ||

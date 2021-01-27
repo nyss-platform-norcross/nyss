@@ -45,23 +45,23 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
             return groupingType switch
             {
                 DatesGroupingType.Day =>
-                await GroupReportsByHealthRiskAndDay(reports, filters.StartDate.Date, filters.EndDate.Date),
+                await GroupReportsByHealthRiskAndDay(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset), filters.UtcOffset),
 
                 DatesGroupingType.Week =>
-                await GroupReportsByHealthRiskAndWeek(reports, filters.StartDate.Date, filters.EndDate.Date),
+                await GroupReportsByHealthRiskAndWeek(reports, filters.StartDate.DateTime.AddHours(filters.UtcOffset), filters.EndDate.DateTime.AddHours(filters.UtcOffset)),
 
                 _ =>
                 throw new InvalidOperationException()
             };
         }
 
-        private async Task<ReportByHealthRiskAndDateResponseDto> GroupReportsByHealthRiskAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate)
+        private async Task<ReportByHealthRiskAndDateResponseDto> GroupReportsByHealthRiskAndDay(IQueryable<Report> reports, DateTime startDate, DateTime endDate, int utcOffset)
         {
             var groupedReports = await reports
                 .GroupBy(r => new
                 {
-                    r.ReceivedAt.Date,
-                    HealthRiskId = r.ProjectHealthRisk.HealthRisk.Id,
+                    Date = r.ReceivedAt.AddHours(utcOffset).Date,
+                    HealthRiskId = r.ProjectHealthRisk.HealthRiskId,
                     ContentLanguageId = r.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id
                 })
                 .Select(grouping => new

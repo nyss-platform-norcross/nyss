@@ -2,6 +2,7 @@
 using System.Linq;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
+using RX.Nyss.Web.Features.NationalSocietyReports.Dto;
 
 namespace RX.Nyss.Web.Features.Common.Extensions
 {
@@ -20,6 +21,15 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 reports
             };
 
+        public static IQueryable<RawReport> FilterByReportType(this IQueryable<RawReport> reports, NationalSocietyReportListType reportType) =>
+            reportType switch
+            {
+                NationalSocietyReportListType.Main => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
+                NationalSocietyReportListType.FromDcp => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
+                NationalSocietyReportListType.UnknownSender => reports.Where(r => r.DataCollector == null),
+                _ => reports
+            };
+
         public static IQueryable<RawReport> FilterReportsByNationalSociety(this IQueryable<RawReport> reports, int? nationalSocietyId) =>
             reports.Where(r => !nationalSocietyId.HasValue || r.DataCollector.Project.NationalSocietyId == nationalSocietyId.Value);
 
@@ -34,7 +44,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
         public static IQueryable<RawReport> AllSuccessfulReports(this IQueryable<RawReport> reports) =>
             reports.Where(r => r.Report != null);
 
-        public static IQueryable<RawReport> FilterByDate(this IQueryable<RawReport> reports, DateTime startDate, DateTime endDate) =>
+        public static IQueryable<RawReport> FilterByDate(this IQueryable<RawReport> reports, DateTimeOffset startDate, DateTimeOffset endDate) =>
             reports.Where(r => r.ReceivedAt >= startDate && r.ReceivedAt < endDate);
 
         public static IQueryable<RawReport> FilterByHealthRisk(this IQueryable<RawReport> reports, int? healthRiskId) =>

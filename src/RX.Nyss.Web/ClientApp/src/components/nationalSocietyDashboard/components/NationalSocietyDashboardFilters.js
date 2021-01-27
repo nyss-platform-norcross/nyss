@@ -11,6 +11,7 @@ import { strings, stringKeys } from "../../../strings";
 import { useMediaQuery, LinearProgress, Chip, IconButton } from "@material-ui/core";
 import { DateRange, ExpandMore } from "@material-ui/icons";
 import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
+import { convertToLocalDate, convertToUtc } from "../../../utils/date";
 
 export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching }) => {
   const [value, setValue] = useState(filters);
@@ -45,10 +46,10 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
     onChange(updateValue({ organizationId: event.target.value === 0 ? null : event.target.value }))
 
   const handleDateFromChange = date =>
-    onChange(updateValue({ startDate: date.format('YYYY-MM-DD') }))
+    onChange(updateValue({ startDate: convertToUtc(date) }))
 
   const handleDateToChange = date =>
-    onChange(updateValue({ endDate: date.format('YYYY-MM-DD') }))
+    onChange(updateValue({ endDate: convertToUtc(date) }))
 
   const handleGroupingTypeChange = event =>
     onChange(updateValue({ groupingType: event.target.value }))
@@ -67,7 +68,7 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
         <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }} >
           <Grid container spacing={2} alignItems="center">
             <Grid item>
-              <Chip icon={<DateRange />} label={`${value.startDate} - ${value.endDate}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
+              <Chip icon={<DateRange />} label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
             </Grid>
             <Grid item>
               <Chip label={
@@ -94,7 +95,7 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
                 className={styles.filterDate}
                 onChange={handleDateFromChange}
                 label={strings(stringKeys.nationalSociety.dashboard.filters.startDate)}
-                value={value.startDate}
+                value={convertToLocalDate(value.startDate)}
               />
             </Grid>
 
@@ -103,7 +104,7 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
                 className={styles.filterDate}
                 onChange={handleDateToChange}
                 label={strings(stringKeys.nationalSociety.dashboard.filters.endDate)}
-                value={value.endDate}
+                value={convertToLocalDate(value.endDate)}
               />
             </Grid>
 

@@ -6,6 +6,7 @@ import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { ReportListType } from '../../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './nationalSocietyReportsConstants'
+import { getUtcOffset } from "../../../utils/date";
 
 export const nationalSocietyReportsSagas = () => [
   takeEvery(consts.OPEN_NATIONAL_SOCIETY_REPORTS_LIST.INVOKE, openNationalSocietyReportsList),
@@ -25,7 +26,8 @@ function* openNationalSocietyReportsList({ nationalSocietyId }) {
       reportsType: ReportListType.main,
       area: null,
       healthRiskId: null,
-      status: true
+      status: true,
+      utcOffset: getUtcOffset()
     };
     const sorting = (yield select(state => state.nationalSocietyReports.sorting)) ||
     {
