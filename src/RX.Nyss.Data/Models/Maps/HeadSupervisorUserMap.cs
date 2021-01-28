@@ -19,12 +19,12 @@ namespace RX.Nyss.Data.Models.Maps
                 .IsRequired();
 
             builder.Property(u => u.CurrentProjectId)
-                .HasColumnName("CurrentProjectId")
-                .IsRequired();
+                .HasColumnName("CurrentProjectId");
 
             builder.HasOne(u => u.CurrentProject)
                 .WithMany()
                 .IsRequired()
+                .HasConstraintName("FK_Users_Project_CurrentProjectId")
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }
