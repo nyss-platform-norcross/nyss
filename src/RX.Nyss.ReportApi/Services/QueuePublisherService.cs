@@ -8,6 +8,7 @@ using RX.Nyss.Common.Utils;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
+using RX.Nyss.ReportApi.Features.Common;
 
 namespace RX.Nyss.ReportApi.Services
 {
@@ -15,7 +16,7 @@ namespace RX.Nyss.ReportApi.Services
     {
         Task QueueAlertCheck(int alertId);
         Task SendEmail((string Name, string EmailAddress) to, string emailSubject, string emailBody, bool sendAsTextOnly = false);
-        Task SendSms(List<string> recipients, GatewaySetting gatewaySetting, string message);
+        Task SendSms(List<SendSmsRecipient> recipients, GatewaySetting gatewaySetting, string message);
     }
 
     public class QueuePublisherService : IQueuePublisherService
@@ -37,15 +38,16 @@ namespace RX.Nyss.ReportApi.Services
             _sendSmsQueueClient = queueClientProvider.GetClient(config.ServiceBusQueues.SendSmsQueue);
         }
 
-        public async Task SendSms(List<string> recipients, GatewaySetting gatewaySetting, string message)
+        public async Task SendSms(List<SendSmsRecipient> recipients, GatewaySetting gatewaySetting, string message)
         {
             if (!string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
             {
-                await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message);
+                var specifyModemWhenSending = gatewaySetting.Modems.Any();
+                await SendSmsViaIotHub(gatewaySetting.IotHubDeviceName, recipients, message, specifyModemWhenSending);
             }
             else if (!string.IsNullOrEmpty(gatewaySetting.EmailAddress))
             {
-                await SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients, message);
+                await SendSmsViaEmail(gatewaySetting.EmailAddress, gatewaySetting.Name, recipients.Select(r => r.PhoneNumber).ToList(), message);
             }
             else
             {
@@ -88,14 +90,15 @@ namespace RX.Nyss.ReportApi.Services
                 SendEmail((smsEagleName, smsEagleEmailAddress), recipientPhoneNumber, body, true))
             );
 
-        private async Task SendSmsViaIotHub(string iotHubDeviceName, List<string> recipientPhoneNumbers, string smsMessage) =>
-            await Task.WhenAll(recipientPhoneNumbers.Select(recipientPhoneNumber =>
+        private async Task SendSmsViaIotHub(string iotHubDeviceName, List<SendSmsRecipient> recipients, string smsMessage, bool specifyModemWhenSending) =>
+            await Task.WhenAll(recipients.Select(recipient =>
             {
                 var sendSms = new SendSmsMessage
                 {
                     IotHubDeviceName = iotHubDeviceName,
-                    PhoneNumber = recipientPhoneNumber,
-                    SmsMessage = smsMessage
+                    PhoneNumber = recipient.PhoneNumber,
+                    SmsMessage = smsMessage,
+                    ModemNumber = specifyModemWhenSending ? recipient.Modem : null
                 };
 
                 var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
@@ -133,5 +136,7 @@ namespace RX.Nyss.ReportApi.Services
         public string PhoneNumber { get; set; }
 
         public string SmsMessage { get; set; }
+
+        public int? ModemNumber { get; set; }
     }
 }

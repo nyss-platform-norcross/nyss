@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using RX.Nyss.Common.Utils.Logging;
-using RX.Nyss.ReportApi.Features.Alerts;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Handlers;
 using RX.Nyss.Common.Utils.DataContract;
@@ -17,13 +16,11 @@ namespace RX.Nyss.ReportApi.Features.Reports
     {
         private readonly ISmsEagleHandler _smsEagleHandler;
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly IAlertService _alertService;
 
-        public ReportService(ISmsEagleHandler smsEagleHandler, ILoggerAdapter loggerAdapter, IAlertService alertService)
+        public ReportService(ISmsEagleHandler smsEagleHandler, ILoggerAdapter loggerAdapter)
         {
             _smsEagleHandler = smsEagleHandler;
             _loggerAdapter = loggerAdapter;
-            _alertService = alertService;
         }
 
         public async Task<bool> ReceiveReport(Report report)

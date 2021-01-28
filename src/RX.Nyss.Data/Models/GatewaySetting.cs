@@ -1,4 +1,5 @@
-﻿using RX.Nyss.Data.Concepts;
+﻿using System.Collections.Generic;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Data.Models
 {
@@ -17,7 +18,8 @@ namespace RX.Nyss.Data.Models
         public int NationalSocietyId { get; set; }
 
         public virtual NationalSociety NationalSociety { get; set; }
-        
+
         public string IotHubDeviceName { get; set; }
+        public virtual ICollection<GatewayModem> Modems { get; set; }
     }
 }

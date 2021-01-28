@@ -7,5 +7,6 @@
         public string PhoneNumber { get; set; }
 
         public string SmsMessage { get; set; }
+        public int? ModemNumber { get; set; }
     }
 }
