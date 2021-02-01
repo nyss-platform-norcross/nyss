@@ -67,8 +67,8 @@ const SmsGatewaysEditPageComponent = (props) => {
       gatewayType: [validators.required],
       emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle && _.useIotHub === false)],
       iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)],
-      modemOneName: [validators.maxLength(100)],
-      modemTwoName: [validators.maxLength(100)]
+      modemOneName: [validators.requiredWhen(x => x.useDualModem === true), validators.maxLength(100)],
+      modemTwoName: [validators.requiredWhen(x => x.useDualModem === true), validators.maxLength(100)]
     };
 
     const newForm = createForm(fields, validation)

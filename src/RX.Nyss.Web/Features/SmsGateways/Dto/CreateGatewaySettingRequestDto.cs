@@ -19,8 +19,10 @@ namespace RX.Nyss.Web.Features.SmsGateways.Dto
                 RuleFor(gs => gs.ApiKey)
                     .MustAsync(async (model, apiKey, t) => !await smsGatewayValidationService.ApiKeyExists(apiKey))
                     .WithMessageKey(ResultKey.NationalSociety.SmsGateway.ApiKeyAlreadyExists);
-                RuleFor(x => x.ModemOneName).MaximumLength(100).When(x => !string.IsNullOrEmpty(x.ModemOneName));
-                RuleFor(x => x.ModemTwoName).MaximumLength(100).When(x => !string.IsNullOrEmpty(x.ModemTwoName));
+                RuleFor(x => x.ModemOneName).NotEmpty().MaximumLength(100)
+                    .When(x => !string.IsNullOrEmpty(x.ModemTwoName));
+                RuleFor(x => x.ModemTwoName).NotEmpty().MaximumLength(100)
+                    .When(x => !string.IsNullOrEmpty(x.ModemOneName));
             }
         }
     }
