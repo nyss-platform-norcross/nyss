@@ -50,7 +50,7 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       projectId: props.data.projectId ? props.data.projectId.toString() : "",
       organizationId: props.data.organizationId ? props.data.organizationId.toString() : "",
       sex: props.data.sex ? props.data.sex : "",
-      headSupervisorId: props.data.headSupervisorId ? props.data.headSupervisorId.toString() : ''
+      headSupervisorId: props.data.headSupervisorId ? props.data.headSupervisorId.toString() : ""
     };
 
     const validation = {
@@ -211,6 +211,10 @@ const NationalSocietyUsersEditPageComponent = (props) => {
                 field={form.fields.headSupervisorId}
                 name="headSupervisorId"
               >
+                {!!props.data.headSupervisorId && (
+                  <MenuItem
+                    value={'0'}>{strings(stringKeys.nationalSocietyUser.form.headSupervisorNotAssigned)}</MenuItem>
+                )}
                 {props.data.editSupervisorFormData.headSupervisors.map(headSupervisor => (
                   <MenuItem key={`headSupervisor_${headSupervisor.id}`} value={headSupervisor.id.toString()}>
                     {headSupervisor.name}
@@ -220,7 +224,6 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Grid>
           )}
         </Grid>
-
         <FormActions>
           <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.update)}</SubmitButton>

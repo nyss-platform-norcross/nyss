@@ -546,7 +546,8 @@ export const stringKeys = {
       alertRecipientsAll: "nationalSocietyUser.form.alertRecipientsAll",
       confirmCoordinatorCreation: "nationalSocietyUser.form.confirmCoordinatorCreation",
       confirmCoordinatorCreationText: "nationalSocietyUser.form.confirmCoordinatorCreationText",
-      headSupervisor: "nationalSocietyUser.form.headSupervisor"
+      headSupervisor: "nationalSocietyUser.form.headSupervisor",
+      headSupervisorNotAssigned: "nationalSocietyUser.form.headSupervisorNotAssigned"
     },
     create: {
       success: "nationalSocietyUser.create.success"
