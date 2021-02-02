@@ -153,6 +153,8 @@ function getSpecificRoleUserAdditionUrl(nationalSocietyId, role) {
       return `/api/supervisor/create?nationalSocietyId=${nationalSocietyId}`;
     case roles.Coordinator:
       return `/api/coordinator/create?nationalSocietyId=${nationalSocietyId}`;
+    case roles.HeadSupervisor:
+      return `/api/headSupervisor/create?nationalSocietyId=${nationalSocietyId}`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -170,6 +172,8 @@ function getSpecificRoleUserEditionUrl(userId, role) {
       return `/api/supervisor/${userId}/edit`;
     case roles.Coordinator:
       return `/api/coordinator/${userId}/edit`;
+    case roles.HeadSupervisor:
+      return `/api/headSupervisor/${userId}/edit`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -187,6 +191,8 @@ function getSpecificRoleUserRetrievalUrl(userId, role, nationalSocietyId) {
       return `/api/supervisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     case roles.Coordinator:
       return `/api/coordinator/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
+    case roles.HeadSupervisor:
+      return `/api/headSupervisor/${userId}/get?nationalSocietyId=${nationalSocietyId}`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
@@ -204,6 +210,8 @@ function getSpecificRoleUserRemovalUrl(userId, role, nationalSocietyId) {
       return `/api/supervisor/${userId}/delete`;
     case roles.Coordinator:
       return `/api/coordinator/${userId}/delete`;
+    case roles.HeadSupervisor:
+      return `/api/headSupervisor/${userId}/delete`;
     default:
       throw new Error(stringKey(stringKeys.nationalSocietyUser.messages.roleNotValid));
   }
