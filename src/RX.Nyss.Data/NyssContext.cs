@@ -74,6 +74,10 @@ namespace RX.Nyss.Data
 
         public DbSet<Zone> Zones { get; set; }
 
+        public DbSet<HeadSupervisorUserProject> HeadSupervisorUserProjects { get; set; }
+
+        public DbSet<HeadSupervisorUserAlertRecipient> HeadSupervisorUserAlertRecipients { get; set; }
+
         public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
             Database.ExecuteSqlInterpolatedAsync(sql);
 

@@ -21,6 +21,8 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
 
         public List<int> HealthRisks { get; set; }
 
+        public List<int> HeadSupervisors { get; set; }
+
         public class Validator : AbstractValidator<ProjectAlertRecipientRequestDto>
         {
             public Validator()

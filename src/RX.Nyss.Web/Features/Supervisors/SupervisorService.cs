@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -11,7 +10,6 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
-using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.Supervisors.Dto;
 using RX.Nyss.Web.Features.Supervisors.Models;
@@ -109,7 +107,8 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Id = u.User.CurrentProject.Id,
                         Name = u.User.CurrentProject.Name,
                         IsClosed = u.User.CurrentProject.State == ProjectState.Closed
-                    }
+                    },
+                    HeadSupervisorId = u.User.HeadSupervisor != null ? u.User.HeadSupervisor.Id : (int?)null
                 })
                 .SingleOrDefaultAsync();
 
@@ -131,7 +130,15 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Name = p.Name,
                         IsClosed = p.State == ProjectState.Closed
                     })
-                    .ToListAsync()
+                    .ToListAsync(),
+                HeadSupervisors = await _nyssContext.UserNationalSocieties
+                    .Where(uns => uns.NationalSocietyId == nationalSocietyId && uns.User.Role == Role.HeadSupervisor)
+                    .Where(uns => currentUser.Role == Role.Administrator || uns.OrganizationId == supervisor.OrganizationId)
+                    .Select(uns => new EditSupervisorFormDataDto.HeadSupervisorResponseDto
+                    {
+                        Id = uns.UserId,
+                        Name = uns.User.Name
+                    }).ToListAsync()
             };
 
             if (supervisor.CurrentProject != null && supervisor.CurrentProject.IsClosed)
@@ -163,7 +170,8 @@ namespace RX.Nyss.Web.Features.Supervisors
                 supervisorUser.Organization = editSupervisorRequestDto.Organization;
 
                 await UpdateSupervisorProjectReferences(supervisorUser, supervisorUserData.CurrentProjectReference, editSupervisorRequestDto.ProjectId);
-                
+                await UpdateHeadSupervisor(supervisorUser, editSupervisorRequestDto.HeadSupervisorId);
+
                 if (editSupervisorRequestDto.OrganizationId.HasValue)
                 {
                     var userLink = await _nyssContext.UserNationalSocieties
@@ -282,7 +290,9 @@ namespace RX.Nyss.Web.Features.Supervisors
             };
 
             await AddNewSupervisorToProject(user, createSupervisorRequestDto.ProjectId, nationalSocietyId);
-            
+
+            await AttachSupervisorToHeadSupervisor(user, createSupervisorRequestDto.HeadSupervisorId);
+
             var userNationalSociety = new UserNationalSociety
             {
                 NationalSociety = nationalSociety,
@@ -338,6 +348,25 @@ namespace RX.Nyss.Web.Features.Supervisors
 
             user.CurrentProject = project;
             await _nyssContext.AddAsync(newSupervisorUserProject);
+        }
+
+        private async Task AttachSupervisorToHeadSupervisor(SupervisorUser user, int? headSupervisorId)
+        {
+            if (headSupervisorId.HasValue)
+            {
+                user.HeadSupervisor = (HeadSupervisorUser)await _nyssContext.Users.FirstOrDefaultAsync(u => u.Id == headSupervisorId);
+            }
+        }
+
+        private async Task UpdateHeadSupervisor(SupervisorUser user, int? headSupervisorId)
+        {
+            if (headSupervisorId.HasValue)
+            {
+                if (user.HeadSupervisor == null || user.HeadSupervisor.Id != headSupervisorId)
+                {
+                    user.HeadSupervisor = (HeadSupervisorUser)await _nyssContext.Users.FirstOrDefaultAsync(u => u.Id == headSupervisorId);
+                }
+            }
         }
 
         private void RemoveAlertRecipientsReferences(SupervisorUser user)
@@ -402,6 +431,7 @@ namespace RX.Nyss.Web.Features.Supervisors
                 .Include(u => u.UserNationalSocieties)
                 .ThenInclude(uns => uns.Organization)
                 .Include(u => u.SupervisorAlertRecipients)
+                .Include(u => u.HeadSupervisor)
                 .Where(u => u.Id == supervisorUserId)
                 .Select(u => new SupervisorUserData
                 {

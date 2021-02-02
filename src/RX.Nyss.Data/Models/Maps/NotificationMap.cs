@@ -8,11 +8,25 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<Notification> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.IsOpened).IsRequired();
-            builder.Property(x => x.Content).HasMaxLength(500).IsRequired();
-            builder.Property(x => x.CreatedAt).IsRequired();
-            builder.Property(x => x.NotificationType).HasConversion<string>().HasMaxLength(20).IsRequired();
-            builder.HasOne(x => x.User).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.Property(x => x.IsOpened)
+                .IsRequired();
+
+            builder.Property(x => x.Content)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            builder.Property(x => x.CreatedAt)
+                .IsRequired();
+
+            builder.Property(x => x.NotificationType)
+                .HasConversion<string>()
+                .HasMaxLength(20)
+                .IsRequired();
+
+            builder.HasOne(x => x.User)
+                .WithMany()
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

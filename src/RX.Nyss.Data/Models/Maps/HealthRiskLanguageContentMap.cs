@@ -8,11 +8,28 @@ namespace RX.Nyss.Data.Models.Maps
         public void Configure(EntityTypeBuilder<HealthRiskLanguageContent> builder)
         {
             builder.HasKey(x => x.Id);
-            builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
-            builder.Property(x => x.CaseDefinition).HasMaxLength(500).IsRequired();
-            builder.Property(x => x.FeedbackMessage).HasMaxLength(160).IsRequired();
-            builder.HasOne(x => x.ContentLanguage).WithMany().HasForeignKey(x => x.ContentLanguageId).IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.HealthRisk).WithMany(x => x.LanguageContents).IsRequired().OnDelete(DeleteBehavior.Cascade);
+            builder.Property(x => x.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.CaseDefinition)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            builder.Property(x => x.FeedbackMessage)
+                .HasMaxLength(160)
+                .IsRequired();
+
+            builder.HasOne(x => x.ContentLanguage)
+                .WithMany()
+                .HasForeignKey(x => x.ContentLanguageId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.HealthRisk)
+                .WithMany(x => x.LanguageContents)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

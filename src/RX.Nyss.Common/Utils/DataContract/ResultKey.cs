@@ -22,6 +22,7 @@ namespace RX.Nyss.Common.Utils.DataContract
                 public const string CannotDeleteHeadManager = "user.deletion.cannotDeleteHeadManager";
                 public const string CannotDeleteHeadManagerWithUsers = "user.deletion.cannotDeleteHeadManagerWithUsers";
                 public const string CannotDeleteSupervisorWithDataCollectors = "user.deletion.cannotDeleteSupervisorWithDataCollectors";
+                public const string CannotDeleteHeadSupervisorHasSupervisors = "user.deletion.cannotDeleteHeadSupervisorHasSupervisors";
                 public const string CannotDeleteYourself = "user.deletion.cannotDeleteYourself";
                 public const string MoreUsersExists  = "user.deletion.moreUsersExists";
                 public const string UserNotFound = "user.deletion.userNotFound ";
@@ -52,6 +53,11 @@ namespace RX.Nyss.Common.Utils.DataContract
             {
                 public const string ProjectDoesNotExistOrNoAccess = "user.registration.projectDoesNotExistOrSupervisorDoesntHaveAccess";
                 public const string CannotChangeProjectSupervisorHasDataCollectors = "user.registration.cannotChangeProjectSupervisorHasDataCollectors";
+            }
+
+            public static class HeadSupervisor
+            {
+                public const string CannotChangeProjectHeadSupervisorHasSupervisors = "user.registration.cannotChangeProjectHeadSupervisorHasSupervisors";
             }
 
             public static class ResetPassword
@@ -245,6 +251,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string CannotDeleteAlertRecipientTiedToSupervisors = "alertRecipient.cannotDeleteAlertRecipientTiedToSupervisors";
             public const string ProjectIsClosed = "alertRecipient.projectIsClosed";
             public const string AllSupervisorsMustBeTiedToSameOrganization = "alertRecipient.allSupervisorsMustBeTiedToSameOrganization ";
+            public const string AllHeadSupervisorsMustBeTiedToSameOrganization = "alertRecipient.allHeadSupervisorsMustBeTiedToSameOrganization ";
         }
 
         public class SqlExceptions

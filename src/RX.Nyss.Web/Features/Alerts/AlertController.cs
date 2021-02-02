@@ -29,7 +29,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="projectId">An identifier of a project</param>
         [HttpGet("getFiltersData")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<AlertListFilterResponseDto>> GetFiltersData(int projectId) =>
             _alertService.GetFiltersData(projectId);
@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="pageNumber">Page number</param>
         /// <param name="filterRequestDto">Filters</param>
         [HttpPost("list")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
         public Task<Result<PaginatedList<AlertListItemResponseDto>>> List(int projectId, int pageNumber, [FromBody] AlertListFilterRequestDto filterRequestDto) =>
             _alertService.List(projectId, pageNumber, filterRequestDto);
@@ -52,7 +52,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="utcOffset">The offset from utc in hours</param>
         [HttpGet("{alertId:int}/get")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor, Role.Coordinator)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor, Role.Coordinator)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertAssessmentResponseDto>> Get(int alertId, int utcOffset) =>
             _alertService.Get(alertId, utcOffset);
@@ -63,7 +63,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         [HttpGet("{alertId:int}/alertRecipients")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertRecipientsResponseDto>> GetAlertRecipients(int alertId) =>
             _alertService.GetAlertRecipientsByAlertId(alertId);
@@ -74,7 +74,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="reportId">An identifier of the report</param>
         [HttpPost("{alertId:int}/acceptReport")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AcceptReportResponseDto>> AcceptReport(int alertId, int reportId) =>
             _alertReportService.AcceptReport(alertId, reportId);
@@ -85,7 +85,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="reportId">An identifier of the report</param>
         [HttpPost("{alertId:int}/dismissReport")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<DismissReportResponseDto>> DismissReport(int alertId, int reportId) =>
             _alertReportService.DismissReport(alertId, reportId);
@@ -96,7 +96,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="reportId">An identifier of the report</param>
         [HttpPost("{alertId:int}/resetReport")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<ResetReportResponseDto>> ResetReport(int alertId, int reportId) =>
             _alertReportService.ResetReport(alertId, reportId);
@@ -107,7 +107,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="dto">A parameter enabling/disabling notifications</param>
         [HttpPost("{alertId:int}/escalate")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Escalate(int alertId, [FromBody] EscalateAlertRequestDto dto) =>
             _alertService.Escalate(alertId, dto.SendNotification);
@@ -117,7 +117,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// </summary>
         /// <param name="alertId">An identifier of the alert</param>
         [HttpPost("{alertId:int}/dismiss")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Dismiss(int alertId) =>
             _alertService.Dismiss(alertId);
@@ -128,7 +128,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="dto">Details related to closing process</param>
         [HttpPost("{alertId:int}/close")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result> Close(int alertId, [FromBody] CloseAlertRequestDto dto) =>
             _alertService.Close(alertId, dto.Comments, dto.EscalatedOutcome);
@@ -139,7 +139,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertId">An identifier of the alert</param>
         /// <param name="utcOffset">The offset from utc in hours</param>
         [HttpGet("{alertId:int}/getLogs")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.TechnicalAdvisor)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.Supervisor, Role.HeadSupervisor, Role.TechnicalAdvisor)]
         [NeedsPolicy(Policy.AlertAccess)]
         public Task<Result<AlertLogResponseDto>> GetLogs(int alertId, int utcOffset) =>
             _alertService.GetLogs(alertId, utcOffset);
@@ -151,7 +151,7 @@ namespace RX.Nyss.Web.Features.Alerts
         /// <param name="alertListFilterRequestDto">Filters</param>
         /// <returns>An excel export of the alert list</returns>
         [HttpPost("export")]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.Coordinator)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor, Role.Coordinator)]
         [NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> Export(int projectId, [FromBody] AlertListFilterRequestDto alertListFilterRequestDto)
         {

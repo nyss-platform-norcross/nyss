@@ -24,7 +24,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         /// </summary>
         /// <returns></returns>
         [HttpGet("{nationalSocietyId}/get")]
-        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.GlobalCoordinator, Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<NationalSocietyResponseDto>> Get(int nationalSocietyId) =>
             await _nationalSocietyService.Get(nationalSocietyId);
 
@@ -67,7 +67,7 @@ namespace RX.Nyss.Web.Features.NationalSocieties
         [NeedsRole(Role.GlobalCoordinator, Role.Administrator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> Delete(int nationalSocietyId) =>
             await _nationalSocietyService.Delete(nationalSocietyId);
-        
+
         /// <summary>
         /// Archives an existing National Society.
         /// </summary>

@@ -56,7 +56,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         public async Task<Result<PaginatedList<NationalSocietyReportListResponseDto>>> List(int nationalSocietyId, int pageNumber, NationalSocietyReportListFilterRequestDto filter)
         {
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(_authorizationService.GetCurrentUserName());
-            var supervisorProjectIds = await _projectService.GetSupervisorProjectIds(_authorizationService.GetCurrentUserName());
             var rowsPerPage = _config.PaginationRowsPerPage;
 
             var currentUser = await _authorizationService.GetCurrentUser();
@@ -75,12 +74,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     ? r.Report != null && !r.Report.MarkedAsError
                     : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
                 .FilterByArea(MapToArea(filter.Area));
-
-            if (_authorizationService.IsCurrentUserInRole(Role.Supervisor))
-            {
-                baseQuery = baseQuery
-                    .Where(r => r.DataCollector == null || supervisorProjectIds == null || supervisorProjectIds.Contains(r.DataCollector.Project.Id));
-            }
 
             var result = await baseQuery.Select(r => new NationalSocietyReportListResponseDto
                 {

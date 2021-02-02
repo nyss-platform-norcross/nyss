@@ -16,7 +16,7 @@ namespace RX.Nyss.Web.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("identity")
-                .HasAnnotation("ProductVersion", "3.1.1")
+                .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -113,6 +113,13 @@ namespace RX.Nyss.Web.Migrations
                             ConcurrencyStamp = "9b639463-727b-6ba7-4416-dc8a8d8fdbfc",
                             Name = "Coordinator",
                             NormalizedName = "COORDINATOR"
+                        },
+                        new
+                        {
+                            Id = "5d0fdc73-8e87-4bb9-b98b-1764a4b03a39",
+                            ConcurrencyStamp = "5d0fdc73-8e87-4bb9-b98b-1764a4b03a39",
+                            Name = "HeadSupervisor",
+                            NormalizedName = "HEADSUPERVISOR"
                         });
                 });
 

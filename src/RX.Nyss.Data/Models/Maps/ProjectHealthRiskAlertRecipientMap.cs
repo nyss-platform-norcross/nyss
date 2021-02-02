@@ -12,12 +12,13 @@ namespace RX.Nyss.Data.Models.Maps
                 x.ProjectHealthRiskId,
                 x.AlertNotificationRecipientId
             });
-            
+
             builder.HasOne(x => x.ProjectHealthRisk)
                 .WithMany(x => x.ProjectHealthRiskAlertRecipients)
                 .HasForeignKey(sar => sar.ProjectHealthRiskId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasOne(x => x.AlertNotificationRecipient)
                 .WithMany(x => x.ProjectHealthRiskAlertRecipients)
                 .HasForeignKey(sar => sar.AlertNotificationRecipientId)

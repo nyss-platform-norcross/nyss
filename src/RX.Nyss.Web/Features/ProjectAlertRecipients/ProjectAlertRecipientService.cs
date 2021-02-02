@@ -135,7 +135,8 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 .Select(org => new
                 {
                     Id = org.Id,
-                    OrganizationUsers = org.NationalSocietyUsers.Where(ns => ns.User.Role == Role.Supervisor).Select(u => u.UserId)
+                    OrganizationSupervisors = org.NationalSocietyUsers.Where(ns => ns.User.Role == Role.Supervisor).Select(u => u.UserId),
+                    OrganizationHeadSupervisors = org.NationalSocietyUsers.Where(ns => ns.User.Role == Role.HeadSupervisor).Select(u => u.UserId)
                 })
                 .SingleOrDefaultAsync();
 
@@ -144,9 +145,14 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 return Error<int>(ResultKey.AlertRecipient.CurrentUserMustBeTiedToAnOrganization);
             }
 
-            if (!createDto.Supervisors.All(s => organization.OrganizationUsers.Contains(s)))
+            if (!createDto.Supervisors.All(s => organization.OrganizationSupervisors.Contains(s)))
             {
                 return Error<int>(ResultKey.AlertRecipient.AllSupervisorsMustBeTiedToSameOrganization);
+            }
+
+            if (!createDto.HeadSupervisors.All(s => organization.OrganizationHeadSupervisors.Contains(s)))
+            {
+                return Error<int>(ResultKey.AlertRecipient.AllHeadSupervisorsMustBeTiedToSameOrganization);
             }
 
             var alertRecipientExistsForCurrentOrganization = await _nyssContext.AlertNotificationRecipients
@@ -181,6 +187,12 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 AlertNotificationRecipient = alertRecipientToAdd
             }));
 
+            await _nyssContext.HeadSupervisorUserAlertRecipients.AddRangeAsync(createDto.HeadSupervisors.Select(headSupervisorId => new HeadSupervisorUserAlertRecipient
+            {
+                HeadSupervisorId = headSupervisorId,
+                AlertNotificationRecipient = alertRecipientToAdd
+            }));
+
             await _nyssContext.SaveChangesAsync();
             return Success(alertRecipientToAdd.Id);
         }
@@ -208,13 +220,22 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 return Error(ResultKey.AlertRecipient.ProjectIsClosed);
             }
 
-            var applicableSupervisors = await _nyssContext.UserNationalSocieties
-                .Where(uns => uns.OrganizationId == alertRecipient.OrganizationId && uns.User.Role == Role.Supervisor)
-                .Select(u => u.UserId).ToListAsync();
+            var applicableLinkedUsers = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.OrganizationId == alertRecipient.OrganizationId && (uns.User.Role == Role.Supervisor || uns.User.Role == Role.HeadSupervisor))
+                .Select(u => new
+                {
+                    UserId = u.UserId,
+                    Role = u.User.Role
+                }).ToListAsync();
 
-            if (!editDto.Supervisors.All(s => applicableSupervisors.Contains(s)))
+            if (!editDto.Supervisors.All(s => applicableLinkedUsers.Where(u => u.Role == Role.Supervisor).Select(u => u.UserId).Contains(s)))
             {
                 return Error<int>(ResultKey.AlertRecipient.AllSupervisorsMustBeTiedToSameOrganization);
+            }
+
+            if (!editDto.HeadSupervisors.All(s => applicableLinkedUsers.Where(u => u.Role == Role.HeadSupervisor).Select(u => u.UserId).Contains(s)))
+            {
+                return Error<int>(ResultKey.AlertRecipient.AllHeadSupervisorsMustBeTiedToSameOrganization);
             }
 
             alertRecipient.Role = editDto.Role;
@@ -227,6 +248,9 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
 
             var healthRisksToAdd = editDto.HealthRisks.Where(s => !alertRecipient.ProjectHealthRiskAlertRecipients.Any(har => har.ProjectHealthRiskId == s));
             var healthRisksToRemove = alertRecipient.ProjectHealthRiskAlertRecipients.Where(sar => !editDto.HealthRisks.Contains(sar.ProjectHealthRiskId));
+
+            var headSupervisorsToAdd = editDto.HeadSupervisors.Where(s => !alertRecipient.HeadSupervisorUserAlertRecipients.Any(sar => sar.HeadSupervisorId == s));
+            var headSupervisorsToRemove = alertRecipient.HeadSupervisorUserAlertRecipients.Where(sar => !editDto.HeadSupervisors.Contains(sar.HeadSupervisorId));
 
             await _nyssContext.SupervisorUserAlertRecipients.AddRangeAsync(supervisorsToAdd.Select(supervisorId => new SupervisorUserAlertRecipient
             {
@@ -241,6 +265,13 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients
                 AlertNotificationRecipientId = alertRecipientId
             }));
             _nyssContext.ProjectHealthRiskAlertRecipients.RemoveRange(healthRisksToRemove);
+
+            await _nyssContext.HeadSupervisorUserAlertRecipients.AddRangeAsync(headSupervisorsToAdd.Select(headSupervisorId => new HeadSupervisorUserAlertRecipient
+            {
+                HeadSupervisorId = headSupervisorId,
+                AlertNotificationRecipientId = alertRecipientId
+            }));
+            _nyssContext.HeadSupervisorUserAlertRecipients.RemoveRange(headSupervisorsToRemove);
 
             await _nyssContext.SaveChangesAsync();
 

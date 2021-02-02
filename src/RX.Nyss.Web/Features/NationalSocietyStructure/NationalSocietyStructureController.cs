@@ -133,7 +133,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyStructure
         /// Gets all regions in a National Society
         /// </summary>
         [Route("region/list"), HttpGet]
-        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result<List<RegionResponseDto>>> ListRegions(int nationalSocietyId) =>
             await _nationalSocietyStructureService.ListRegions(nationalSocietyId);
 

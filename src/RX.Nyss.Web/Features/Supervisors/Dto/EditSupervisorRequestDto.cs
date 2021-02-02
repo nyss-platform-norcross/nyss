@@ -20,6 +20,7 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
         public int? OrganizationId { get; set; }
         public string Organization { get; set; }
         public int NationalSocietyId { get; set; }
+        public int? HeadSupervisorId { get; set; }
 
         public class EditSupervisorRequestValidator : AbstractValidator<EditSupervisorRequestDto>
         {

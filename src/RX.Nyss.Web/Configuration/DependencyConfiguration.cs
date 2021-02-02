@@ -27,6 +27,7 @@ using RX.Nyss.Web.Features.Common;
 using RX.Nyss.Web.Features.Coordinators.Access;
 using RX.Nyss.Web.Features.DataCollectors.Access;
 using RX.Nyss.Web.Features.DataConsumers.Access;
+using RX.Nyss.Web.Features.HeadSupervisors.Access;
 using RX.Nyss.Web.Features.Managers.Access;
 using RX.Nyss.Web.Features.NationalSocieties.Access;
 using RX.Nyss.Web.Features.NationalSocietyStructure.Access;
@@ -238,6 +239,9 @@ namespace RX.Nyss.Web.Configuration
 
                 options.AddPolicy(Policy.CoordinatorAccess.ToString(),
                     policy => policy.Requirements.Add(new ResourceAccessHandler<CoordinatorAccessHandler>.Requirement()));
+
+                options.AddPolicy(Policy.HeadSupervisorAccess.ToString(),
+                    policy => policy.Requirements.Add(new ResourceAccessHandler<HeadSupervisorAccessHandler>.Requirement()));
             });
 
             serviceCollection.AddScoped<IAuthorizationHandler, NationalSocietyAccessHandler>();
@@ -260,6 +264,7 @@ namespace RX.Nyss.Web.Configuration
             serviceCollection.AddScoped<IAuthorizationHandler, ProjectAlertRecipientAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, ReportAccessHandler>();
             serviceCollection.AddScoped<IAuthorizationHandler, CoordinatorAccessHandler>();
+            serviceCollection.AddScoped<IAuthorizationHandler, HeadSupervisorAccessHandler>();
         }
 
         private static void RegisterWebFramework(IServiceCollection serviceCollection)

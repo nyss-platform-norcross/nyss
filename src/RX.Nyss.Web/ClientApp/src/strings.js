@@ -13,7 +13,12 @@ export const stringKeys = {
     notAuthenticated: "error.notAuthenticated",
     unauthorized: "error.unauthorized",
     redirected: "error.redirected",
-    tooManyRequests: "error.tooManyRequests"
+    tooManyRequests: "error.tooManyRequests",
+    errorPage: {
+      message: "error.generalErrorMessage",
+      goHome: "error.goHome",
+      notFound: "error.notFound"
+    }
   },
   roles: {
     "TechnicalAdvisor": "roles.technicalAdvisor",
@@ -540,7 +545,9 @@ export const stringKeys = {
       alertRecipientsAllNotAllowed: "nationalSocietyUser.form.alertRecipientsAllNotAllowed",
       alertRecipientsAll: "nationalSocietyUser.form.alertRecipientsAll",
       confirmCoordinatorCreation: "nationalSocietyUser.form.confirmCoordinatorCreation",
-      confirmCoordinatorCreationText: "nationalSocietyUser.form.confirmCoordinatorCreationText"
+      confirmCoordinatorCreationText: "nationalSocietyUser.form.confirmCoordinatorCreationText",
+      headSupervisor: "nationalSocietyUser.form.headSupervisor",
+      headSupervisorNotAssigned: "nationalSocietyUser.form.headSupervisorNotAssigned"
     },
     create: {
       success: "nationalSocietyUser.create.success"
@@ -1005,7 +1012,7 @@ export const strings = (key, noEditor) => {
   if (showKeys) {
     return noEditor
       ? key
-      : <StringsEditor stringKey={key} type="strings" needsImprovement={value.needsImprovement} />;
+      : <StringsEditor stringKey={key} type="strings" needsImprovement={!!value ? value.needsImprovement : true} />;
   }
 
   return value === undefined ? key : value.value;
@@ -1017,7 +1024,7 @@ export const stringsFormat = (key, data, noEditor) => {
   if (showKeys) {
     return noEditor
       ? key
-      : <StringsEditor stringKey={key} type="strings" needsImprovement={value.needsImprovement} />;
+      : <StringsEditor stringKey={key} type="strings" needsImprovement={!!value ? value.needsImprovement : true} />;
   }
 
   if (value === undefined) {

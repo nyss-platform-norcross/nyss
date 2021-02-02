@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Common.Utils.DataContract;
@@ -89,7 +88,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                     OrganizationId = 1,
                     ProjectId = 1,
                     SupervisorAlertRecipients = new List<SupervisorUserAlertRecipient>(),
-                    ProjectHealthRiskAlertRecipients = new List<ProjectHealthRiskAlertRecipient>()
+                    ProjectHealthRiskAlertRecipients = new List<ProjectHealthRiskAlertRecipient>(),
+                    HeadSupervisorUserAlertRecipients = new List<HeadSupervisorUserAlertRecipient>()
                 }
             };
             var orgs = new List<Organization>
@@ -133,7 +133,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 PhoneNumber = "+35235243",
                 OrganizationId = 1,
                 Supervisors = new List<int>(),
-                HealthRisks = new List<int>()
+                HealthRisks = new List<int>(),
+                HeadSupervisors = new List<int>()
             };
 
             // Act
@@ -155,7 +156,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 PhoneNumber = "+123456",
                 OrganizationId = 1,
                 Supervisors = new List<int>(),
-                HealthRisks = new List<int>()
+                HealthRisks = new List<int>(),
+                HeadSupervisors = new List<int>()
             };
 
             // Act
@@ -229,7 +231,8 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertRecipients
                 PhoneNumber = "+35235243",
                 OrganizationId = 1,
                 Supervisors = new List<int>(),
-                HealthRisks = new List<int>()
+                HealthRisks = new List<int>(),
+                HeadSupervisors = new List<int>()
             };
 
             // Act

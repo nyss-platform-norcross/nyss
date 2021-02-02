@@ -7,14 +7,20 @@ namespace RX.Nyss.Data.Models.Maps
     {
         public void Configure(EntityTypeBuilder<LocalizedTemplate> builder)
         {
-            builder.HasOne(u => u.ApplicationLanguage).WithMany()
-                .HasForeignKey(u => u.ApplicationLanguageId).IsRequired().OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(u => u.ApplicationLanguage)
+                .WithMany()
+                .HasForeignKey(u => u.ApplicationLanguageId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasKey(loc => new
             {
                 loc.ApplicationLanguageId,
                 loc.Key
             });
-            builder.Property(lt => lt.Value).HasMaxLength(2000);
+
+            builder.Property(lt => lt.Value)
+                .HasMaxLength(2000);
         }
     }
 }

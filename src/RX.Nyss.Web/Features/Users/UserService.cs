@@ -93,6 +93,13 @@ namespace RX.Nyss.Web.Features.Users
                             IsDefaultOrganization = o == ns.DefaultOrganization,
                             HasHeadManager = o.HeadManagerId.HasValue || o.PendingHeadManagerId.HasValue
                         }).ToList(),
+                    HeadSupervisors = ns.NationalSocietyUsers
+                        .Where(u => u.User.Role == Role.HeadSupervisor && (currentUser.Role == Role.Administrator || u.OrganizationId == organizationId))
+                        .Select(u => new HeadSupervisorResponseDto
+                        {
+                            Id = u.UserId,
+                            Name = u.User.Name
+                        }).ToList(),
                     HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
                     IsHeadManager = ns.DefaultOrganization.HeadManager == currentUser
                 }).SingleAsync();

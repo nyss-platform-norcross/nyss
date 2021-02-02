@@ -116,10 +116,8 @@ namespace RX.Nyss.Web.Features.Projects
         {
             var currentUser = await _authorizationService.GetCurrentUser();
 
-            var projectsQuery = currentUser.Role == Role.Supervisor
-                ? _nyssContext.SupervisorUserProjects
-                    .Where(x => x.SupervisorUser == currentUser)
-                    .Select(x => x.Project)
+            var projectsQuery = _authorizationService.IsCurrentUserInAnyRole(Role.HeadSupervisor, Role.Supervisor)
+                ? GetProjectsForSupervisorOrHeadSupervisor(currentUser)
                 : _nyssContext.Projects;
 
             var nationalSocietyData = await _nyssContext.NationalSocieties
@@ -397,6 +395,15 @@ namespace RX.Nyss.Web.Features.Projects
                 .Where(u => u.EmailAddress == supervisorIdentityName)
                 .SelectMany(u => u.SupervisorUserProjects.Select(sup => sup.ProjectId))
                 .ToListAsync();
+
+        private IQueryable<Project> GetProjectsForSupervisorOrHeadSupervisor(User currentUser) =>
+            currentUser.Role == Role.HeadSupervisor
+                ? _nyssContext.HeadSupervisorUserProjects
+                    .Where(hsup => hsup.HeadSupervisorUser == currentUser)
+                    .Select(hsup => hsup.Project)
+                : _nyssContext.SupervisorUserProjects
+                    .Where(sup => sup.SupervisorUser == currentUser)
+                    .Select(sup => sup.Project);
 
         private async Task<bool> ValidateCoordinatorAccess(int nationalSocietyId) =>
             _authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Coordinator)

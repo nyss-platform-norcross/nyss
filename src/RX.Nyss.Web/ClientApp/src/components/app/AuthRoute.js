@@ -3,6 +3,7 @@ import * as auth from "../../authentication/auth";
 import { Route, Redirect } from "react-router";
 import { BaseLayout } from "../layout/BaseLayout";
 import { ReactReduxContext } from 'react-redux'
+import { stringKeys } from "../../strings";
 
 export const AuthRoute = ({ component: Component, roles, computedMatch, ignoreRedirection, ...rest }) => (
   <Route exact {...rest} render={props => {
@@ -23,7 +24,7 @@ export const AuthRoute = ({ component: Component, roles, computedMatch, ignoreRe
         }
 
         if (roles && roles.length && !roles.some(neededRole => user.roles.some(userRole => userRole === neededRole))) {
-          return <BaseLayout authError={"Not authorized"}></BaseLayout>;
+          return <BaseLayout authError={stringKeys.error.unauthorized}></BaseLayout>;
         }
 
         store.dispatch({ type: "ROUTE_CHANGED", url: computedMatch.url, path: computedMatch.path, params: computedMatch.params })

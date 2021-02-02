@@ -8,6 +8,7 @@
         DataConsumer,
         Manager,
         Supervisor,
-        Coordinator
+        Coordinator,
+        HeadSupervisor
     }
 }

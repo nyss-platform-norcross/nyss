@@ -1,4 +1,4 @@
-import { Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, Coordinator } from "./roles";
+import { Administrator, GlobalCoordinator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, HeadSupervisor, Coordinator } from "./roles";
 
 export const accessMap = {
   nationalSocieties: {
@@ -26,9 +26,9 @@ export const accessMap = {
     delete: [Administrator, Coordinator, Manager, TechnicalAdvisor]
   },
   projects: {
-    get: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, Coordinator],
-    showOverview: [Administrator, Manager, TechnicalAdvisor, Supervisor, Coordinator],
-    showDashboard: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, Coordinator],
+    get: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, HeadSupervisor, Coordinator],
+    showOverview: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor, Coordinator],
+    showDashboard: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Supervisor, HeadSupervisor, Coordinator],
     list: [Administrator, Manager, TechnicalAdvisor, DataConsumer, Coordinator],
     add: [Administrator, Manager, TechnicalAdvisor, Coordinator],
     edit: [Administrator, Manager, TechnicalAdvisor, Coordinator],
@@ -54,11 +54,11 @@ export const accessMap = {
     delete: [Administrator, GlobalCoordinator]
   },
   dataCollectors: {
-    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    performanceList: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    add: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    edit: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    delete: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    performanceList: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    add: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    edit: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    delete: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
     export: [Administrator, Manager, TechnicalAdvisor],
     replaceSupervisor: [Administrator, Manager, TechnicalAdvisor]
   },
@@ -74,18 +74,18 @@ export const accessMap = {
     delete: [Administrator, Manager, TechnicalAdvisor]
   },
   reports: {
-    list: [Administrator, Manager, TechnicalAdvisor, Supervisor],
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
     edit: [Administrator, Manager, TechnicalAdvisor],
-    markAsError: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    sendReport: [Administrator, Manager, TechnicalAdvisor, Supervisor],
-    goToAlert: [Administrator, Manager, TechnicalAdvisor, Supervisor]
+    markAsError: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    sendReport: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    goToAlert: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor]
   },
   nationalSocietyReports: {
     list: [Administrator, Manager, TechnicalAdvisor],
   },
   alerts: {
-    list: [Administrator, Manager, TechnicalAdvisor, Supervisor, Coordinator],
-    assess: [Administrator, Manager, TechnicalAdvisor, Supervisor, Coordinator],
+    list: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor, Coordinator],
+    assess: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor, Coordinator],
   },
   translations: {
     list: [Administrator, GlobalCoordinator]

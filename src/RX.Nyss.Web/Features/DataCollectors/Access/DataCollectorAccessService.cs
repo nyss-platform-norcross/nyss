@@ -56,7 +56,8 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
                         .Select(uns => uns.OrganizationId)
                         .Single(),
                     ProjectId = dc.Project.Id,
-                    SupervisorEmailAddress = dc.Supervisor.EmailAddress
+                    SupervisorEmailAddress = dc.Supervisor.EmailAddress,
+                    HeadSupervisorEmailAddress = dc.Supervisor.HeadSupervisor.EmailAddress
                 });
 
             if (!_authorizationService.IsCurrentUserInAnyRole(Role.Administrator))
@@ -72,14 +73,16 @@ namespace RX.Nyss.Web.Features.DataCollectors.Access
             var projectId = dataCollectorData.Select(d => d.ProjectId).Distinct().Single();
 
             return await _projectAccessService.HasCurrentUserAccessToProject(projectId)
-                && VerifyIfUserIsSupervisor(dataCollectorData.Select(dc => dc.SupervisorEmailAddress));
+                && VerifyAccessIfUserIsSupervisorOrHeadSupervisor(dataCollectorData.Select(dc => dc.SupervisorEmailAddress), dataCollectorData.Select(dc => dc.HeadSupervisorEmailAddress));
         }
 
-        private bool VerifyIfUserIsSupervisor(IEnumerable<string> supervisorEmailAddresses)
+        private bool VerifyAccessIfUserIsSupervisorOrHeadSupervisor(IEnumerable<string> supervisorEmailAddresses, IEnumerable<string> headSupervisorEmailAddresses)
         {
             var currentUserName = _authorizationService.GetCurrentUserName();
 
-            return !_authorizationService.IsCurrentUserInRole(Role.Supervisor) || supervisorEmailAddresses.All(e => e == currentUserName);
+            return !_authorizationService.IsCurrentUserInAnyRole(Role.HeadSupervisor, Role.Supervisor)
+                || (_authorizationService.IsCurrentUserInRole(Role.HeadSupervisor) && headSupervisorEmailAddresses.All(e => e == currentUserName))
+                || (_authorizationService.IsCurrentUserInRole(Role.Supervisor) && supervisorEmailAddresses.All(e => e == currentUserName));
         }
     }
 }

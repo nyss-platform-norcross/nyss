@@ -88,6 +88,13 @@ namespace RX.Nyss.Web.Data
                     Name = "Coordinator",
                     NormalizedName = "COORDINATOR",
                     ConcurrencyStamp = "9b639463-727b-6ba7-4416-dc8a8d8fdbfc"
+                },
+                new IdentityRole
+                {
+                    Id = "5d0fdc73-8e87-4bb9-b98b-1764a4b03a39",
+                    Name = "HeadSupervisor",
+                    NormalizedName = "HEADSUPERVISOR",
+                    ConcurrencyStamp = "5d0fdc73-8e87-4bb9-b98b-1764a4b03a39"
                 });
     }
 }

@@ -49,7 +49,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       decadeOfBirth: props.data.decadeOfBirth ? props.data.decadeOfBirth.toString() : "",
       projectId: props.data.projectId ? props.data.projectId.toString() : "",
       organizationId: props.data.organizationId ? props.data.organizationId.toString() : "",
-      sex: props.data.sex ? props.data.sex : ""
+      sex: props.data.sex ? props.data.sex : "",
+      headSupervisorId: props.data.headSupervisorId ? props.data.headSupervisorId.toString() : ""
     };
 
     const validation = {
@@ -57,9 +58,9 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       phoneNumber: [validators.required, validators.maxLength(20), validators.phoneNumber],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
       organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
-      decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      sex: [validators.requiredWhen(f => f.role === roles.Supervisor)],
-      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor)],
+      decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
+      sex: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
+      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
       organizationId: [validators.requiredWhen(f => f.role === roles.Coordinator || f.role === roles.GlobalCoordinator)]
     };
 
@@ -87,7 +88,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       ...values,
       organizationId: values.organizationId ? parseInt(values.organizationId) : null,
       projectId: values.projectId ? parseInt(values.projectId) : null,
-      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null
+      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
+      headSupervisorId: values.headSupervisorId ? parseInt(values.headSupervisorId) : null
     });
   }, [form, props]);
 
@@ -154,57 +156,74 @@ const NationalSocietyUsersEditPageComponent = (props) => {
             </Grid>
           )}
 
-          {selectedRole === roles.Supervisor && (
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
-                field={form.fields.decadeOfBirth}
-                name="decadeOfBirth"
-              >
-                {birthDecades.map(decade => (
-                  <MenuItem key={`birthDecade_${decade}`} value={decade}>
-                    {decade}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
+          {(selectedRole === roles.Supervisor || selectedRole === roles.HeadSupervisor) && (
+            <Fragment>
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.decadeOfBirth)}
+                  field={form.fields.decadeOfBirth}
+                  name="decadeOfBirth"
+                >
+                  {birthDecades.map(decade => (
+                    <MenuItem key={`birthDecade_${decade}`} value={decade}>
+                      {decade}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.sex)}
+                  field={form.fields.sex}
+                  name="sex"
+                >
+                  {sexValues.map(type => (
+                    <MenuItem key={`sex${type}`} value={type}>
+                      {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+
+              <Grid item xs={12}>
+                <SelectField
+                  label={strings(stringKeys.nationalSocietyUser.form.project)}
+                  field={form.fields.projectId}
+                  name="projectId"
+                >
+                  {props.data.editSupervisorFormData.availableProjects.map(project => (
+                    <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
+                      {project.isClosed
+                        ? stringsFormat(stringKeys.nationalSocietyUser.form.projectIsClosed, { projectName: project.name })
+                        : project.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
+            </Fragment>
           )}
 
-          {selectedRole === roles.Supervisor && (
+          {selectedRole === roles.Supervisor && props.data.editSupervisorFormData.headSupervisors.length > 0 && (
             <Grid item xs={12}>
               <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.sex)}
-                field={form.fields.sex}
-                name="sex"
+                label={strings(stringKeys.nationalSocietyUser.form.headSupervisor)}
+                field={form.fields.headSupervisorId}
+                name="headSupervisorId"
               >
-                {sexValues.map(type => (
-                  <MenuItem key={`sex${type}`} value={type}>
-                    {strings(stringKeys.dataCollector.constants.sex[type.toLowerCase()])}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          )}
-
-          {selectedRole === roles.Supervisor && (
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.nationalSocietyUser.form.project)}
-                field={form.fields.projectId}
-                name="projectId"
-              >
-                {props.data.editSupervisorFormData.availableProjects.map(project => (
-                  <MenuItem key={`project_${project.id}`} value={project.id.toString()}>
-                    {project.isClosed
-                      ? stringsFormat(stringKeys.nationalSocietyUser.form.projectIsClosed, { projectName: project.name })
-                      : project.name}
+                {!!props.data.headSupervisorId && (
+                  <MenuItem
+                    value={'0'}>{strings(stringKeys.nationalSocietyUser.form.headSupervisorNotAssigned)}</MenuItem>
+                )}
+                {props.data.editSupervisorFormData.headSupervisors.map(headSupervisor => (
+                  <MenuItem key={`headSupervisor_${headSupervisor.id}`} value={headSupervisor.id.toString()}>
+                    {headSupervisor.name}
                   </MenuItem>
                 ))}
               </SelectField>
             </Grid>
           )}
         </Grid>
-
         <FormActions>
           <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.nationalSocietyUser.form.update)}</SubmitButton>

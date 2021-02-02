@@ -605,6 +605,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 dataCollectorsQuery = dataCollectorsQuery.Where(dc => dc.Supervisor.EmailAddress == currentUserEmail);
             }
 
+            if (_authorizationService.IsCurrentUserInRole(Role.HeadSupervisor))
+            {
+                dataCollectorsQuery = dataCollectorsQuery.Where(dc => dc.Supervisor.HeadSupervisor.EmailAddress == currentUserEmail);
+            }
+
             if (projectData.HasCoordinator && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator))
             {
                 dataCollectorsQuery = dataCollectorsQuery.FilterByOrganization(projectData.CurrentUserOrganization);
@@ -638,8 +643,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
         private async Task<List<DataCollectorSupervisorResponseDto>> GetSupervisors(int projectId, User currentUser, int? organizationId) =>
             await _nyssContext.SupervisorUserProjects
                 .FilterAvailableUsers()
-                .Where(sup => sup.ProjectId == projectId
-                    && (currentUser.Role == Role.Administrator || sup.Project.NationalSociety.NationalSocietyUsers.Single(nsu => nsu.UserId == sup.SupervisorUserId).OrganizationId == organizationId))
+                .FilterByProject(projectId)
+                .FilterByCurrentUserRole(currentUser, organizationId)
                 .Select(sup => new DataCollectorSupervisorResponseDto
                 {
                     Id = sup.SupervisorUserId,

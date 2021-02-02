@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Reports.Dto;
+using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
 
 namespace RX.Nyss.Web.Features.Reports
@@ -25,18 +27,26 @@ namespace RX.Nyss.Web.Features.Reports
         private readonly ILoggerAdapter _loggerAdapter;
         private readonly INyssWebConfig _config;
         private readonly INyssContext _nyssContext;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ReportSenderService(IHttpClientFactory httpClientFactory, ILoggerAdapter loggerAdapter, INyssWebConfig config, INyssContext nyssContext)
+        public ReportSenderService(
+            IHttpClientFactory httpClientFactory,
+            ILoggerAdapter loggerAdapter,
+            INyssWebConfig config,
+            INyssContext nyssContext,
+            IAuthorizationService authorizationService)
         {
             _httpClientFactory = httpClientFactory;
             _loggerAdapter = loggerAdapter;
             _config = config;
             _nyssContext = nyssContext;
+            _authorizationService = authorizationService;
         }
 
         public async Task<Result> SendReport(SendReportRequestDto report)
         {
             using var httpClient = _httpClientFactory.CreateClient();
+            var isHeadSupervisor = _authorizationService.IsCurrentUserInRole(Role.HeadSupervisor);
 
             var nationalSociety = await _nyssContext.DataCollectors
                 .Where(dc => dc.PhoneNumber == report.Sender)
@@ -60,7 +70,8 @@ namespace RX.Nyss.Web.Features.Reports
                 { "Timestamp", report.Timestamp },
                 { "ApiKey", apiKey },
                 { "Text", report.Text },
-                { "Source", "Nyss" }
+                { "Source", "Nyss" },
+                { "Headsupervisor", isHeadSupervisor ? "true" : null }
             };
             var content = new FormUrlEncodedContent(reportProps);
 

@@ -1,0 +1,22 @@
+﻿using RX.Nyss.Data.Concepts;
+
+namespace RX.Nyss.Web.Features.HeadSupervisors.Dto
+{
+    public class GetHeadSupervisorResponseDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public Sex Sex { get; set; }
+        public int DecadeOfBirth { get; set; }
+        public string PhoneNumber { get; set; }
+        public string AdditionalPhoneNumber { get; set; }
+        public int? ProjectId { get; set; }
+        public Role Role { get; set; }
+        public string Organization { get; set; }
+        public int? OrganizationId { get; set; }
+        public int NationalSocietyId { get; set; }
+        public EditHeadSupervisorFormDataDto.ListProjectsResponseDto CurrentProject { get; set; }
+        public EditHeadSupervisorFormDataDto EditSupervisorFormData { get; set; }
+    }
+}
