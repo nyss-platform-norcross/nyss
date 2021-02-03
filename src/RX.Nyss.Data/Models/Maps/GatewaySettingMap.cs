@@ -11,12 +11,30 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.Name)
                 .HasMaxLength(100)
                 .IsRequired();
-            builder.Property(x => x.Name).HasMaxLength(100).IsRequired();
-            builder.Property(x => x.ApiKey).HasMaxLength(100).IsRequired();
-            builder.Property(x => x.GatewayType).HasConversion<string>().HasMaxLength(100).IsRequired();
-            builder.Property(x => x.EmailAddress).HasMaxLength(100);
-            builder.HasOne(x => x.NationalSociety).WithMany().IsRequired().OnDelete(DeleteBehavior.Restrict);
-            builder.Property(x => x.IotHubDeviceName).HasMaxLength(250);
+
+            builder.Property(x => x.Name)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.ApiKey)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.GatewayType)
+                .HasConversion<string>()
+                .HasMaxLength(100)
+                .IsRequired();
+
+            builder.Property(x => x.EmailAddress)
+                .HasMaxLength(100);
+
+            builder.HasOne(x => x.NationalSociety)
+                .WithMany()
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.IotHubDeviceName)
+                .HasMaxLength(250);
 
             builder.Property(x => x.ApiKey)
                 .HasMaxLength(100)
