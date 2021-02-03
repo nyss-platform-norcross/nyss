@@ -8,5 +8,6 @@ namespace RX.Nyss.Data.Models
         public int ModemId { get; set; }
         public string Name { get; set; }
         public int GatewaySettingId { get; set; }
+        public virtual GatewaySetting GatewaySetting { get; set; }
     }
 }

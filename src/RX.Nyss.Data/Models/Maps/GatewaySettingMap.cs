@@ -43,7 +43,7 @@ namespace RX.Nyss.Data.Models.Maps
 
 
             builder.HasMany(x => x.Modems)
-                .WithOne()
+                .WithOne(gm => gm.GatewaySetting)
                 .HasForeignKey(gm => gm.GatewaySettingId);
         }
     }

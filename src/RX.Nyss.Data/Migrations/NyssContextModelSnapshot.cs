@@ -2836,7 +2836,7 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.GatewayModem", b =>
                 {
-                    b.HasOne("RX.Nyss.Data.Models.GatewaySetting", null)
+                    b.HasOne("RX.Nyss.Data.Models.GatewaySetting", "GatewaySetting")
                         .WithMany("Modems")
                         .HasForeignKey("GatewaySettingId")
                         .OnDelete(DeleteBehavior.Cascade)

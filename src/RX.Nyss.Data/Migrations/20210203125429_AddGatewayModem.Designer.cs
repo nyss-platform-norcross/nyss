@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20210201104632_AddGatewayModem")]
+    [Migration("20210203125429_AddGatewayModem")]
     partial class AddGatewayModem
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1895,6 +1895,36 @@ namespace RX.Nyss.Data.Migrations
                     b.ToTable("GatewaySettings");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.HeadSupervisorUserAlertRecipient", b =>
+                {
+                    b.Property<int>("HeadSupervisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("AlertNotificationRecipientId")
+                        .HasColumnType("int");
+
+                    b.HasKey("HeadSupervisorId", "AlertNotificationRecipientId");
+
+                    b.HasIndex("AlertNotificationRecipientId");
+
+                    b.ToTable("HeadSupervisorUserAlertRecipients");
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.HeadSupervisorUserProject", b =>
+                {
+                    b.Property<int>("HeadSupervisorUserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("HeadSupervisorUserId", "ProjectId");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("HeadSupervisorUserProjects");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.HealthRisk", b =>
                 {
                     b.Property<int>("Id")
@@ -2659,6 +2689,29 @@ namespace RX.Nyss.Data.Migrations
                     b.HasDiscriminator().HasValue("GlobalCoordinator");
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.HeadSupervisorUser", b =>
+                {
+                    b.HasBaseType("RX.Nyss.Data.Models.User");
+
+                    b.Property<int>("CurrentProjectId")
+                        .HasColumnName("CurrentProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DecadeOfBirth")
+                        .HasColumnName("DecadeOfBirth")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Sex")
+                        .IsRequired()
+                        .HasColumnName("Sex")
+                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(10);
+
+                    b.HasIndex("CurrentProjectId");
+
+                    b.HasDiscriminator().HasValue("HeadSupervisor");
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.ManagerUser", b =>
                 {
                     b.HasBaseType("RX.Nyss.Data.Models.User");
@@ -2671,17 +2724,25 @@ namespace RX.Nyss.Data.Migrations
                     b.HasBaseType("RX.Nyss.Data.Models.User");
 
                     b.Property<int>("CurrentProjectId")
+                        .HasColumnName("CurrentProjectId")
                         .HasColumnType("int");
 
                     b.Property<int>("DecadeOfBirth")
+                        .HasColumnName("DecadeOfBirth")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("HeadSupervisorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Sex")
                         .IsRequired()
+                        .HasColumnName("Sex")
                         .HasColumnType("nvarchar(10)")
                         .HasMaxLength(10);
 
                     b.HasIndex("CurrentProjectId");
+
+                    b.HasIndex("HeadSupervisorId");
 
                     b.HasDiscriminator().HasValue("Supervisor");
                 });
@@ -2777,7 +2838,7 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.GatewayModem", b =>
                 {
-                    b.HasOne("RX.Nyss.Data.Models.GatewaySetting", null)
+                    b.HasOne("RX.Nyss.Data.Models.GatewaySetting", "GatewaySetting")
                         .WithMany("Modems")
                         .HasForeignKey("GatewaySettingId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -2789,6 +2850,36 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.NationalSociety", "NationalSociety")
                         .WithMany()
                         .HasForeignKey("NationalSocietyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.HeadSupervisorUserAlertRecipient", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.AlertNotificationRecipient", "AlertNotificationRecipient")
+                        .WithMany("HeadSupervisorUserAlertRecipients")
+                        .HasForeignKey("AlertNotificationRecipientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.HeadSupervisorUser", "HeadSupervisor")
+                        .WithMany("HeadSupervisorUserAlertRecipients")
+                        .HasForeignKey("HeadSupervisorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RX.Nyss.Data.Models.HeadSupervisorUserProject", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.HeadSupervisorUser", "HeadSupervisorUser")
+                        .WithMany("HeadSupervisorUserProjects")
+                        .HasForeignKey("HeadSupervisorUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
+                        .WithMany("HeadSupervisorUserProjects")
+                        .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
@@ -3159,13 +3250,29 @@ namespace RX.Nyss.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RX.Nyss.Data.Models.HeadSupervisorUser", b =>
+                {
+                    b.HasOne("RX.Nyss.Data.Models.Project", "CurrentProject")
+                        .WithMany()
+                        .HasForeignKey("CurrentProjectId")
+                        .HasConstraintName("FK_Users_Project_CurrentProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("RX.Nyss.Data.Models.SupervisorUser", b =>
                 {
                     b.HasOne("RX.Nyss.Data.Models.Project", "CurrentProject")
                         .WithMany()
                         .HasForeignKey("CurrentProjectId")
+                        .HasConstraintName("FK_Users_Project_CurrentProjectId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("RX.Nyss.Data.Models.HeadSupervisorUser", "HeadSupervisor")
+                        .WithMany()
+                        .HasForeignKey("HeadSupervisorId")
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

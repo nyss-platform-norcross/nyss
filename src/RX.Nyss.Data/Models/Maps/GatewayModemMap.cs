@@ -10,7 +10,6 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasKey(gm => gm.Id);
             builder.Property(gm => gm.ModemId).IsRequired();
             builder.Property(gm => gm.Name).HasMaxLength(100).IsRequired();
-            builder.Property(gm => gm.GatewaySettingId).IsRequired();
         }
     }
 }
