@@ -550,7 +550,8 @@ export const stringKeys = {
       confirmCoordinatorCreation: "nationalSocietyUser.form.confirmCoordinatorCreation",
       confirmCoordinatorCreationText: "nationalSocietyUser.form.confirmCoordinatorCreationText",
       headSupervisor: "nationalSocietyUser.form.headSupervisor",
-      headSupervisorNotAssigned: "nationalSocietyUser.form.headSupervisorNotAssigned"
+      headSupervisorNotAssigned: "nationalSocietyUser.form.headSupervisorNotAssigned",
+      modem: "nationalSocietyUser.form.modem"
     },
     create: {
       success: "nationalSocietyUser.create.success"

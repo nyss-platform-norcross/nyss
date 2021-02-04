@@ -31,10 +31,13 @@ export function nationalSocietyUsersReducer(state = initialState.nationalSociety
       return { ...state, formFetching: true, formData: null };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS:
-      return { ...state, formFetching: false, formData: action.data, formOrganizations: action.organizations };
+      return { ...state, formFetching: false, formData: action.data, formOrganizations: action.organizations, formModems: action.modems };
 
     case actions.OPEN_NATIONAL_SOCIETY_USER_EDITION.FAILURE:
       return { ...state, formFetching: false };
+
+    case actions.OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.SUCCESS:
+      return { ...state, formModems: action.modems };
 
     case actions.CREATE_NATIONAL_SOCIETY_USER.REQUEST:
       return { ...state, formSaving: true };

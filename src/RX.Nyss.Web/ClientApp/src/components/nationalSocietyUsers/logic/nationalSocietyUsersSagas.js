@@ -52,7 +52,8 @@ function* openNationalSocietyAddExistingUser({ nationalSocietyId }) {
   yield put(actions.openAddExisting.request());
   try {
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    yield put(actions.openAddExisting.success());
+    const formData = yield call(http.get, `/api/user/addExistingFormData?nationalSocietyId=${nationalSocietyId}`);
+    yield put(actions.openAddExisting.success(formData.value));
   } catch (error) {
     yield put(actions.openAddExisting.failure(error));
   }
@@ -65,7 +66,7 @@ function* openNationalSocietyUserEdition({ nationalSocietyUserId, role }) {
     const formData = yield call(http.get, `/api/user/editFormData?nationalSocietyUserId=${nationalSocietyUserId}&nationalSocietyId=${nationalSocietyId}`);
     const response = yield call(http.get, getSpecificRoleUserRetrievalUrl(nationalSocietyUserId, formData.value.role, nationalSocietyId));
     yield openNationalSocietyUsersModule(nationalSocietyId);
-    yield put(actions.openEdition.success(response.value, formData.value.organizations));
+    yield put(actions.openEdition.success(response.value, formData.value.organizations, formData.value.modems));
   } catch (error) {
     yield put(actions.openEdition.failure(error));
   }
