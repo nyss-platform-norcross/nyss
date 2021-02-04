@@ -94,7 +94,8 @@ namespace RX.Nyss.Web.Features.Managers
                     OrganizationId = u.Organization.Id,
                     PhoneNumber = u.User.PhoneNumber,
                     AdditionalPhoneNumber = u.User.AdditionalPhoneNumber,
-                    Organization = u.User.Organization
+                    Organization = u.User.Organization,
+                    ModemId = ((ManagerUser)u.User).ModemId
                 })
                 .SingleOrDefaultAsync();
 
@@ -136,6 +137,8 @@ namespace RX.Nyss.Web.Features.Managers
                         userLink.Organization = await _nyssContext.Organizations.FindAsync(editDto.OrganizationId.Value);
                     }
                 }
+
+                await UpdateModem(user, editDto.ModemId, editDto.NationalSocietyId);
 
                 await _nyssContext.SaveChangesAsync();
                 return Success();
@@ -259,9 +262,36 @@ namespace RX.Nyss.Web.Features.Managers
                 }
             }
 
+            await AttachManagerToModem(user, createDto.ModemId, nationalSocietyId);
+
             await _nyssContext.AddAsync(userNationalSociety);
             await _nyssContext.SaveChangesAsync();
             return user;
+        }
+
+        private async Task AttachManagerToModem(ManagerUser user, int? modemId, int nationalSocietyId)
+        {
+            if (modemId.HasValue)
+            {
+                var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+                if (modem == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+                }
+
+                user.Modem = modem;
+            }
+        }
+
+        private async Task UpdateModem(ManagerUser user, int? modemId, int nationalSocietyId)
+        {
+            var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+            if (modemId.HasValue && modem == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+            }
+
+            user.Modem = modem;
         }
 
         private async Task DeleteFromDb(int managerId, bool allowHeadManagerDeletion = false)

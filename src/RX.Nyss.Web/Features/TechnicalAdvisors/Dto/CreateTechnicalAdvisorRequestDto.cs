@@ -15,6 +15,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors.Dto
         public string Organization { get; set; }
         public int? OrganizationId { get; set; }
         public int NationalSocietyId { get; set; }
+        public int? ModemId { get; set; }
 
         public class CreateTechnicalAdvisorValidator : AbstractValidator<CreateTechnicalAdvisorRequestDto>
         {
@@ -29,6 +30,9 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors.Dto
                     .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganizationToUser(model.NationalSocietyId))
                     .When(model => model.OrganizationId.HasValue)
                     .WithMessageKey(ResultKey.Organization.NoAccessToChangeOrganization);
+                RuleFor(m => m.ModemId)
+                    .GreaterThan(0)
+                    .When(m => m.ModemId.HasValue);
             }
         }
     }

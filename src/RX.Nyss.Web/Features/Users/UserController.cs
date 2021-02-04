@@ -50,6 +50,16 @@ namespace RX.Nyss.Web.Features.Users
             await _userService.GetEditFormData(nationalSocietyUserId, nationalSocietyId);
 
         /// <summary>
+        /// Gets modem data for adding existing user
+        /// </summary>
+        /// <param name="nationalSocietyId">National society Id</param>
+        /// <returns></returns>
+        [HttpGet("addExistingFormData")]
+        [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor, Role.Coordinator)]
+        public async Task<Result> AddExistingFormData(int nationalSocietyId) =>
+            await _userService.GetAddExistingFormData(nationalSocietyId);
+
+        /// <summary>
         /// Adds an existing technical advisor or a data consumer user to a national society.
         /// </summary>
         /// <param name="nationalSocietyId">The id of the national society</param>
@@ -58,6 +68,6 @@ namespace RX.Nyss.Web.Features.Users
         [HttpPost("addExisting")]
         [NeedsRole(Role.Administrator, Role.GlobalCoordinator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.NationalSocietyAccess)]
         public async Task<Result> AddExisting(int nationalSocietyId, AddExistingUserToNationalSocietyRequestDto existingUser) =>
-            await _userService.AddExisting(nationalSocietyId, existingUser.Email);
+            await _userService.AddExisting(nationalSocietyId, existingUser);
     }
 }

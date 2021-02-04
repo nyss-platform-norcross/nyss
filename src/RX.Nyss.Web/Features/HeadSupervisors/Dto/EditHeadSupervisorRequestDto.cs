@@ -20,6 +20,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors.Dto
         public int? OrganizationId { get; set; }
         public string Organization { get; set; }
         public int NationalSocietyId { get; set; }
+        public int? ModemId { get; set; }
 
         public class EditHeadSupervisorRequestValidator : AbstractValidator<EditHeadSupervisorRequestDto>
         {
@@ -34,6 +35,9 @@ namespace RX.Nyss.Web.Features.HeadSupervisors.Dto
                     .MustAsync((projectId, _) => projectAccessService.HasCurrentUserAccessToProject(projectId.Value))
                     .When(m => m.ProjectId.HasValue)
                     .WithMessageKey(ResultKey.Unauthorized);
+                RuleFor(m => m.ModemId)
+                    .GreaterThan(0)
+                    .When(m => m.ModemId.HasValue);
             }
         }
     }

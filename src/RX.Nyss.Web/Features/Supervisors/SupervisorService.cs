@@ -10,6 +10,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Organizations;
 using RX.Nyss.Web.Features.Supervisors.Dto;
 using RX.Nyss.Web.Features.Supervisors.Models;
@@ -108,7 +109,8 @@ namespace RX.Nyss.Web.Features.Supervisors
                         Name = u.User.CurrentProject.Name,
                         IsClosed = u.User.CurrentProject.State == ProjectState.Closed
                     },
-                    HeadSupervisorId = u.User.HeadSupervisor != null ? u.User.HeadSupervisor.Id : (int?)null
+                    HeadSupervisorId = u.User.HeadSupervisor != null ? u.User.HeadSupervisor.Id : (int?)null,
+                    ModemId = u.User.ModemId
                 })
                 .SingleOrDefaultAsync();
 
@@ -171,6 +173,7 @@ namespace RX.Nyss.Web.Features.Supervisors
 
                 await UpdateSupervisorProjectReferences(supervisorUser, supervisorUserData.CurrentProjectReference, editSupervisorRequestDto.ProjectId);
                 await UpdateHeadSupervisor(supervisorUser, editSupervisorRequestDto.HeadSupervisorId);
+                await UpdateModem(supervisorUser, editSupervisorRequestDto.ModemId, editSupervisorRequestDto.NationalSocietyId);
 
                 if (editSupervisorRequestDto.OrganizationId.HasValue)
                 {
@@ -293,6 +296,8 @@ namespace RX.Nyss.Web.Features.Supervisors
 
             await AttachSupervisorToHeadSupervisor(user, createSupervisorRequestDto.HeadSupervisorId);
 
+            await AttachSupervisorToModem(user, createSupervisorRequestDto.ModemId, nationalSocietyId);
+
             var userNationalSociety = new UserNationalSociety
             {
                 NationalSociety = nationalSociety,
@@ -358,6 +363,20 @@ namespace RX.Nyss.Web.Features.Supervisors
             }
         }
 
+        private async Task AttachSupervisorToModem(SupervisorUser user, int? modemId, int nationalSocietyId)
+        {
+            if (modemId.HasValue)
+            {
+                var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+                if (modem == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+                }
+
+                user.Modem = modem;
+            }
+        }
+
         private async Task UpdateHeadSupervisor(SupervisorUser user, int? headSupervisorId)
         {
             if (headSupervisorId.HasValue)
@@ -367,6 +386,18 @@ namespace RX.Nyss.Web.Features.Supervisors
                     user.HeadSupervisor = (HeadSupervisorUser)await _nyssContext.Users.FirstOrDefaultAsync(u => u.Id == headSupervisorId);
                 }
             }
+        }
+
+        private async Task UpdateModem(SupervisorUser user, int? modemId, int nationalSocietyId)
+        {
+            var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+            if (modemId.HasValue && modem == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+            }
+
+            user.Modem = modem;
         }
 
         private void RemoveAlertRecipientsReferences(SupervisorUser user)
