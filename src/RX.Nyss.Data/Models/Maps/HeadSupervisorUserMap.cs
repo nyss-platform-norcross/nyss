@@ -21,10 +21,18 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(u => u.CurrentProjectId)
                 .HasColumnName("CurrentProjectId");
 
+            builder.Property(u => u.ModemId)
+                .HasColumnName("ModemId");
+
             builder.HasOne(u => u.CurrentProject)
                 .WithMany()
                 .IsRequired()
                 .HasConstraintName("FK_Users_Project_CurrentProjectId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(u => u.Modem)
+                .WithMany()
+                .HasConstraintName("FK_Users_GatewayModem_GatewayModemId")
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

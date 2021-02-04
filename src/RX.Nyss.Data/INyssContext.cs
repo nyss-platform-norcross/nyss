@@ -45,6 +45,7 @@ namespace RX.Nyss.Data
         DbSet<HeadSupervisorUserProject> HeadSupervisorUserProjects { get; set; }
         DbSet<HeadSupervisorUserAlertRecipient> HeadSupervisorUserAlertRecipients { get; set; }
         DbSet<GatewayModem> GatewayModems { get; set; }
+        DbSet<TechnicalAdvisorUserGatewayModem> TechnicalAdvisorUserGatewayModems { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default) where TEntity : class;
