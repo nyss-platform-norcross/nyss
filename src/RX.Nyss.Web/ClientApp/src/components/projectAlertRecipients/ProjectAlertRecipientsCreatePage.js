@@ -28,6 +28,7 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
   const [acceptAnySupervisor, setAcceptAnySupervisor] = useState(true);
   const [acceptAnyHealthRisk, setAcceptAnyHealthRisk] = useState(true);
   const userRoles = useSelector(state => state.appData.user.roles);
+  const canSelectModem = props.formData != null && props.formData.modems.length > 0;
 
   const [form] = useState(() => {
     const fields = {
@@ -35,14 +36,16 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
       organization: '',
       email: '',
       phoneNumber: '',
-      organizationId: ''
+      organizationId: '',
+      modemId: ''
     };
 
     const validation = {
       role: [validators.required],
       organization: [validators.required],
       email: [validators.emailWhen(x => x.phoneNumber === '')],
-      phoneNumber: [validators.phoneNumber, validators.requiredWhen(x => x.email === '')]
+      phoneNumber: [validators.phoneNumber, validators.requiredWhen(x => x.email === '')],
+      modemId: [validators.requiredWhen(_ => canSelectModem)]
     };
 
     const newForm = createForm(fields, validation);
@@ -82,7 +85,9 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
       phoneNumber: values.phoneNumber,
       organizationId: parseInt(values.organizationId),
       supervisors: acceptAnySupervisor ? [] : selectedSupervisors.map(s => s.value),
-      healthRisks: acceptAnyHealthRisk ? [] : selectedHealthRisks.map(hr => hr.value)
+      healthRisks: acceptAnyHealthRisk ? [] : selectedHealthRisks.map(hr => hr.value),
+      headSupervisors: [],
+      modemId: !!values.modemId ? parseInt(values.modemId) : null
     });
   };
 
@@ -162,6 +167,22 @@ const ProjectAlertRecipientsCreatePageComponent = (props) => {
                       inputMode={"tel"}
                     />
                   </Grid>
+
+                  {canSelectModem && (
+                    <Grid item xs={12}>
+                      <SelectField
+                        label={strings(stringKeys.projectAlertRecipient.form.modem)}
+                        field={form.fields.modemId}
+                        name="modemId"
+                      >
+                        {props.formData.modems.map(modem => (
+                          <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
+                            {modem.name}
+                          </MenuItem>
+                        ))}
+                      </SelectField>
+                    </Grid>
+                  )}
                 </Grid>
               </CardContent>
             </Card>

@@ -14,8 +14,9 @@ import Grid from '@material-ui/core/Grid';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import AutocompleteTextInputField from '../forms/AutocompleteTextInputField';
 import TextInputField from '../forms/TextInputField';
-import { CardContent, Card, Typography, FormControlLabel, Checkbox } from '@material-ui/core';
+import { CardContent, Card, Typography, FormControlLabel, Checkbox, MenuItem } from '@material-ui/core';
 import { MultiSelect } from '../forms/MultiSelect';
+import SelectField from '../forms/SelectField';
 
 const ProjectAlertRecipientsEditPageComponent = (props) => {
   const [freeTextOrganizations, setFreeTextOrganizations] = useState([]);
@@ -23,6 +24,7 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
   const [selectedHealthRisks, setSelectedHealthRisks] = useState([]);
   const [acceptAnySupervisor, setAcceptAnySupervisor] = useState(false);
   const [acceptAnyHealthRisk, setAcceptAnyHealthRisk] = useState(false);
+  const canSelectModem = props.formData != null && props.formData.modems.length > 0;
 
   const [form, setForm] = useState(null);
 
@@ -46,18 +48,20 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
       role: props.alertRecipient.role,
       organization: props.alertRecipient.organization,
       email: props.alertRecipient.email || '',
-      phoneNumber: props.alertRecipient.phoneNumber || ''
+      phoneNumber: props.alertRecipient.phoneNumber || '',
+      modemId: props.alertRecipient.modemId || ''
     };
 
     const validation = {
       role: [validators.required],
       organization: [validators.required],
       email: [validators.emailWhen(x => x.phoneNumber === '')],
-      phoneNumber: [validators.phoneNumber, validators.requiredWhen(x => x.email === '')]
+      phoneNumber: [validators.phoneNumber, validators.requiredWhen(x => x.email === '')],
+      modemId: [validators.requiredWhen(_ => canSelectModem)]
     };
 
     setForm(createForm(fields, validation));
-  }, [props.listData, props.alertRecipient, props.formData]);
+  }, [props.listData, props.alertRecipient, props.formData, canSelectModem]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -74,7 +78,9 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
       email: values.email,
       phoneNumber: values.phoneNumber,
       supervisors: acceptAnySupervisor ? [] : selectedSupervisors.map(s => s.value),
-      healthRisks: acceptAnyHealthRisk ? [] : selectedHealthRisks.map(hr => hr.value)
+      healthRisks: acceptAnyHealthRisk ? [] : selectedHealthRisks.map(hr => hr.value),
+      headSupervisors: [],
+      modemId: !!values.modemId ? parseInt(values.modemId) : null
     });
   };
 
@@ -154,6 +160,22 @@ const ProjectAlertRecipientsEditPageComponent = (props) => {
                       inputMode={"tel"}
                     />
                   </Grid>
+
+                  {canSelectModem && (
+                    <Grid item xs={12}>
+                      <SelectField
+                        label={strings(stringKeys.projectAlertRecipient.form.modem)}
+                        field={form.fields.modemId}
+                        name="modemId"
+                      >
+                        {props.formData.modems.map(modem => (
+                          <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
+                            {modem.name}
+                          </MenuItem>
+                        ))}
+                      </SelectField>
+                    </Grid>
+                  )}
                 </Grid>
               </CardContent>
             </Card>

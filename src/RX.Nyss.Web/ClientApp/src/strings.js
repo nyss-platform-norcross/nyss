@@ -314,7 +314,8 @@ export const stringKeys = {
       anyHealthRisk: "projectAlertRecipient.form.anyHealthRisk",
       triggerDetails: "projectAlertRecipient.form.triggerDetails",
       receiverDetails: "projectAlertRecipient.form.receiverDetails",
-      anySupervisor: "projectAlertRecipient.form.anySupervisor"
+      anySupervisor: "projectAlertRecipient.form.anySupervisor",
+      modem: "projectAlertRecipient.form.modem"
     },
     create: {
       success: "projectAlertRecipient.create.success"
