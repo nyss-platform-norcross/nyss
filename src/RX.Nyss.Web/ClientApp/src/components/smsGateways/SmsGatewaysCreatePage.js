@@ -24,6 +24,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
   const [useIotHub, setUseIotHub] = useState(null);
   const [selectedIotDevice, setSelectedIotDevice] = useState("");
   const [pingIsRequired, setPingIsRequired] = useState(null);
+  const [useDualModem, setUseDualModem] = useState(null);
   const [form] = useState(() => {
     const fields = {
       name: "",
@@ -31,7 +32,10 @@ const SmsGatewaysCreatePageComponent = (props) => {
       gatewayType: smsEagle,
       emailAddress: "",
       useIotHub: false,
-      iotHubDeviceName: ""
+      iotHubDeviceName: "",
+      useDualModem: false,
+      modemOneName: "",
+      modemTwoName: ""
     };
 
     const validation = {
@@ -39,13 +43,17 @@ const SmsGatewaysCreatePageComponent = (props) => {
       apiKey: [validators.required, validators.minLength(1), validators.maxLength(100)],
       gatewayType: [validators.required],
       emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle && _.useIotHub === false)],
-      iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)]
+      iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)],
+      modemOneName: [validators.maxLength(100)],
+      modemTwoName: [validators.maxLength(100)],
+      useIotHub: [validators.requiredWhen(x => x.useDualModem === true)]
     };
 
 
     const newForm = createForm(fields, validation)
     newForm.fields.useIotHub.subscribe(({ newValue }) => setUseIotHub(newValue));
     newForm.fields.iotHubDeviceName.subscribe(({ newValue }) => setSelectedIotDevice(newValue));
+    newForm.fields.useDualModem.subscribe(({newValue}) => setUseDualModem(newValue));
     return newForm;
   });
 
@@ -79,7 +87,9 @@ const SmsGatewaysCreatePageComponent = (props) => {
       apiKey: values.apiKey,
       gatewayType: values.gatewayType,
       emailAddress: values.emailAddress,
-      iotHubDeviceName: values.useIotHub ? values.iotHubDeviceName : null
+      iotHubDeviceName: values.useIotHub ? values.iotHubDeviceName : null,
+      modemOneName: values.useDualModem ? values.modemOneName : null,
+      modemTwoName: values.useDualModem ? values.modemTwoName : null
     });
   };
 
@@ -143,7 +153,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
             <CheckboxField
               label={strings(stringKeys.smsGateway.form.useIotHub)}
               name="useIotHub"
-              field={form.fields.useIotHub}>
+              field={form.fields.useIotHub}
+              color="primary">
             </CheckboxField>
           </Grid>
 
@@ -176,6 +187,34 @@ const SmsGatewaysCreatePageComponent = (props) => {
                   </Typography>
                 )}
                 {pingIsRequired && <Typography variant="body1" display="inline">{pingIsRequired}</Typography>}
+              </Grid>
+            </Fragment>
+          )}
+
+          <Grid item xs={12}>
+            <CheckboxField
+              label={strings(stringKeys.smsGateway.form.useDualModem)}
+              name="useDualModem"
+              field={form.fields.useDualModem}
+              color="primary">
+            </CheckboxField>
+          </Grid>
+
+          {form.fields.useDualModem.value && (
+            <Fragment>
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.smsGateway.form.modemOneName)}
+                  name="modemOneName"
+                  field={form.fields.modemOneName}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextInputField
+                  label={strings(stringKeys.smsGateway.form.modemTwoName)}
+                  name="modemTwoName"
+                  field={form.fields.modemTwoName}
+                />
               </Grid>
             </Fragment>
           )}

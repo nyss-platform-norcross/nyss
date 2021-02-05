@@ -15,6 +15,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Features.Alerts;
+using RX.Nyss.ReportApi.Features.Common;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
@@ -165,7 +166,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 {
                     if (projectHealthRisk != null)
                     {
-                        var recipients = new List<string> { sender };
+                        var recipients = new List<SendSmsRecipient>
+                        {
+                            new SendSmsRecipient
+                            {
+                                PhoneNumber = sender,
+                                Modem = modemNumber
+                            }
+                        };
                         var feedbackForReportSentThroughNyss = !string.IsNullOrEmpty(source) && source == "Nyss" ? await GetFeedbackMessageForReportSentThroughNyss(reportData, gatewaySetting, sentByHeadSupervisor) : null;
                         var feedbackMessage = !string.IsNullOrEmpty(feedbackForReportSentThroughNyss)
                             ? $"{feedbackForReportSentThroughNyss} {projectHealthRisk.FeedbackMessage}"
@@ -204,6 +212,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         {
             var gatewaySetting = await _nyssContext.GatewaySettings
                 .Include(gs => gs.NationalSociety)
+                .Include(gs => gs.Modems)
                 .SingleOrDefaultAsync(gs => gs.ApiKey == apiKey);
 
             if (gatewaySetting == null)
@@ -404,7 +413,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         DataCollector = dataCollector,
                         ProjectHealthRisk = projectHealthRisk,
                         ReceivedAt = receivedAt,
-                        ParsedReport = parsedReport
+                        ParsedReport = parsedReport,
+                        ModemNumber = rawReport.ModemNumber
                     },
                     GatewaySetting = gatewaySetting
                 };
@@ -431,7 +441,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     {
                         Sender = sender,
                         LanguageCode = languageCode,
-                        ReportErrorType = e.ErrorType
+                        ReportErrorType = e.ErrorType,
+                        ModemNumber = rawReport.ModemNumber
                     },
                     GatewaySetting = gatewaySetting
                 };
@@ -482,7 +493,14 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     return;
                 }
 
-                var senderList = new List<string>(new[] { errorReport.Sender });
+                var senderList = new List<SendSmsRecipient>
+                {
+                    new SendSmsRecipient
+                    {
+                        PhoneNumber = errorReport.Sender,
+                        Modem = errorReport.ModemNumber
+                    }
+                };
                 await _queuePublisherService.SendSms(senderList, gatewaySetting, feedbackMessage);
             }
         }

@@ -12,6 +12,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.ReportApi.Configuration;
+using RX.Nyss.ReportApi.Features.Common;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 using RX.Nyss.ReportApi.Services;
 
@@ -91,6 +92,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Where(ar => ar.Alert.Id == alert.Id)
                 .Select(ar => ar.Report.DataCollector.Supervisor.PhoneNumber)
                 .Distinct()
+                .Select(pn => new SendSmsRecipient
+                {
+                    PhoneNumber = pn
+                })
                 .ToListAsync();
 
             var message = await CreateNotificationMessageForNewAlert(alert);
@@ -101,7 +106,10 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
         public async Task SendNotificationsForSupervisorsAddedToExistingAlert(Alert alert, List<SupervisorUser> supervisors, GatewaySetting gatewaySetting)
         {
-            var phoneNumbers = supervisors.Select(s => s.PhoneNumber).ToList();
+            var phoneNumbers = supervisors.Select(s => new SendSmsRecipient
+            {
+                PhoneNumber = s.PhoneNumber
+            }).ToList();
             var message = await CreateNotificationMessageForExistingAlert(alert);
 
             await _queuePublisherService.SendSms(phoneNumbers, gatewaySetting, message);

@@ -77,6 +77,7 @@ namespace RX.Nyss.Data
         public DbSet<HeadSupervisorUserProject> HeadSupervisorUserProjects { get; set; }
 
         public DbSet<HeadSupervisorUserAlertRecipient> HeadSupervisorUserAlertRecipients { get; set; }
+        public DbSet<GatewayModem> GatewayModems { get; set; }
 
         public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
             Database.ExecuteSqlInterpolatedAsync(sql);

@@ -11,6 +11,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         public ParsedReport ParsedReport { get; set; }
         public ProjectHealthRisk ProjectHealthRisk { get; set; }
         public DateTime ReceivedAt { get; set; }
+        public int? ModemNumber { get; set; }
     }
 
     public class ErrorReportData
@@ -18,6 +19,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         public string Sender { get; set; }
         public string LanguageCode { get; set; }
         public ReportErrorType ReportErrorType { get; set; }
+        public int? ModemNumber { get; set; }
     }
 
     public class ReportValidationResult

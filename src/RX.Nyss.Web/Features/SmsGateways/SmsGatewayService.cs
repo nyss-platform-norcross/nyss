@@ -55,7 +55,13 @@ namespace RX.Nyss.Web.Features.SmsGateways
                     ApiKey = gs.ApiKey,
                     GatewayType = gs.GatewayType,
                     EmailAddress = gs.EmailAddress,
-                    IotHubDeviceName = gs.IotHubDeviceName
+                    IotHubDeviceName = gs.IotHubDeviceName,
+                    ModemOneName = gs.Modems != null && gs.Modems.Any(gm => gm.ModemId == 1)
+                        ? gs.Modems.First(gm => gm.ModemId == 1).Name
+                        : null,
+                    ModemTwoName = gs.Modems != null && gs.Modems.Any(gm => gm.ModemId == 2)
+                        ? gs.Modems.First(gm => gm.ModemId == 2).Name
+                        : null
                 })
                 .FirstOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
@@ -108,9 +114,11 @@ namespace RX.Nyss.Web.Features.SmsGateways
                     IotHubDeviceName = editGatewaySettingRequestDto.IotHubDeviceName
                 };
 
+                AttachGatewayModems(gatewaySettingToAdd, editGatewaySettingRequestDto);
+
                 await _nyssContext.GatewaySettings.AddAsync(gatewaySettingToAdd);
                 await _nyssContext.SaveChangesAsync();
-                
+
                 await UpdateAuthorizedApiKeys();
 
                 return Success(gatewaySettingToAdd.Id, ResultKey.NationalSociety.SmsGateway.SuccessfullyAdded);
@@ -127,9 +135,9 @@ namespace RX.Nyss.Web.Features.SmsGateways
             try
             {
                 var gatewaySettingToUpdate = await _nyssContext.GatewaySettings
-                    .Include(x => x.NationalSociety.Country)
+                    .Include(x => x.Modems)
                     .SingleOrDefaultAsync(x => x.Id == smsGatewayId);
-                
+
                 if (gatewaySettingToUpdate == null)
                 {
                     return Error(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
@@ -140,6 +148,8 @@ namespace RX.Nyss.Web.Features.SmsGateways
                 gatewaySettingToUpdate.GatewayType = editGatewaySettingRequestDto.GatewayType;
                 gatewaySettingToUpdate.EmailAddress = editGatewaySettingRequestDto.EmailAddress;
                 gatewaySettingToUpdate.IotHubDeviceName = editGatewaySettingRequestDto.IotHubDeviceName;
+
+                EditGatewayModems(gatewaySettingToUpdate, editGatewaySettingRequestDto);
 
                 await _nyssContext.SaveChangesAsync();
                 await UpdateAuthorizedApiKeys();
@@ -169,7 +179,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
                 await _nyssContext.SaveChangesAsync();
 
                 await UpdateAuthorizedApiKeys();
-                
+
                 return SuccessMessage(ResultKey.NationalSociety.SmsGateway.SuccessfullyDeleted);
             }
             catch (ResultException exception)
@@ -204,7 +214,7 @@ namespace RX.Nyss.Web.Features.SmsGateways
 
             return Success(connectionString);
         }
-        
+
         public async Task<Result<IEnumerable<string>>> ListIotHubDevices()
         {
             var allDevices = await _iotHubService.ListDevices();
@@ -217,6 +227,47 @@ namespace RX.Nyss.Web.Features.SmsGateways
             var availableDevices = allDevices.Except(takenDevices);
 
             return Success(availableDevices);
+        }
+
+        private void AttachGatewayModems(GatewaySetting gatewaySetting, EditGatewaySettingRequestDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.ModemOneName) && !string.IsNullOrEmpty(dto.ModemTwoName))
+            {
+                gatewaySetting.Modems = new List<GatewayModem>
+                {
+                    new GatewayModem
+                    {
+                        ModemId = 1,
+                        Name = dto.ModemOneName
+                    },
+                    new GatewayModem
+                    {
+                        ModemId = 2,
+                        Name = dto.ModemTwoName
+                    }
+                };
+            }
+        }
+
+        private void EditGatewayModems(GatewaySetting gatewaySetting, EditGatewaySettingRequestDto dto)
+        {
+            if (!string.IsNullOrEmpty(dto.ModemOneName) && !string.IsNullOrEmpty(dto.ModemTwoName))
+            {
+                if (!gatewaySetting.Modems.Any())
+                {
+                    AttachGatewayModems(gatewaySetting, dto);
+                }
+                else
+                {
+                    gatewaySetting.Modems.First(gm => gm.ModemId == 1).Name = dto.ModemOneName;
+                    gatewaySetting.Modems.First(gm => gm.ModemId == 2).Name = dto.ModemTwoName;
+                }
+            }
+            else
+            {
+                var modemsToRemove = gatewaySetting.Modems;
+                _nyssContext.GatewayModems.RemoveRange(modemsToRemove);
+            }
         }
     }
 }

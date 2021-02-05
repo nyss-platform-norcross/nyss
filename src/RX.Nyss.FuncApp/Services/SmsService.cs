@@ -3,9 +3,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RX.Nyss.FuncApp.Services
 {
@@ -38,15 +40,11 @@ namespace RX.Nyss.FuncApp.Services
                 _logger.LogDebug($"Sending sms to phone number ending with '{message.PhoneNumber.SubstringFromEnd(4)}...' through IOT device {message.IotHubDeviceName}...");
 
                 var cloudToDeviceMethod = new CloudToDeviceMethod("send_sms", TimeSpan.FromSeconds(30));
-                cloudToDeviceMethod.SetPayloadJson(JsonSerializer.Serialize(new
+                cloudToDeviceMethod.SetPayloadJson(JsonConvert.SerializeObject(new SmsIoTHubMessage
                     {
                         To = message.PhoneNumber,
-                        Message = message.SmsMessage
-                    },
-                    new JsonSerializerOptions
-                    {
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                        IgnoreNullValues = true
+                        Message = message.SmsMessage,
+                        ModemNumber = message.ModemNumber
                     }));
 
                 var response = await _iotHubServiceClient.InvokeDeviceMethodAsync(message.IotHubDeviceName, cloudToDeviceMethod);

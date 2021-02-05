@@ -15,7 +15,7 @@ const CheckboxInput = ({ error, name, label, value, controlProps, customProps })
                 name={name}
                 label={label}
             />
-            {error && <FormHelperText>{error}</FormHelperText>}
+            {error && <FormHelperText error>{error}</FormHelperText>}
         </Fragment>
     );
 };
