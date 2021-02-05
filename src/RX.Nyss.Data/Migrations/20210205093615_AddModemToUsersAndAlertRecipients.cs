@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Data.Migrations
 {
-    public partial class AddModemToUsers : Migration
+    public partial class AddModemToUsersAndAlertRecipients : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -10,6 +10,12 @@ namespace RX.Nyss.Data.Migrations
                 name: "ModemId",
                 schema: "nyss",
                 table: "Users",
+                nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "GatewayModemId",
+                schema: "nyss",
+                table: "AlertNotificationRecipients",
                 nullable: true);
 
             migrationBuilder.CreateTable(
@@ -46,10 +52,26 @@ namespace RX.Nyss.Data.Migrations
                 column: "ModemId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AlertNotificationRecipients_GatewayModemId",
+                schema: "nyss",
+                table: "AlertNotificationRecipients",
+                column: "GatewayModemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TechnicalAdvisorUserGatewayModems_GatewayModemId",
                 schema: "nyss",
                 table: "TechnicalAdvisorUserGatewayModems",
                 column: "GatewayModemId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AlertNotificationRecipients_GatewayModems_GatewayModemId",
+                schema: "nyss",
+                table: "AlertNotificationRecipients",
+                column: "GatewayModemId",
+                principalSchema: "nyss",
+                principalTable: "GatewayModems",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Users_GatewayModem_GatewayModemId",
@@ -65,6 +87,11 @@ namespace RX.Nyss.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
+                name: "FK_AlertNotificationRecipients_GatewayModems_GatewayModemId",
+                schema: "nyss",
+                table: "AlertNotificationRecipients");
+
+            migrationBuilder.DropForeignKey(
                 name: "FK_Users_GatewayModem_GatewayModemId",
                 schema: "nyss",
                 table: "Users");
@@ -78,10 +105,20 @@ namespace RX.Nyss.Data.Migrations
                 schema: "nyss",
                 table: "Users");
 
+            migrationBuilder.DropIndex(
+                name: "IX_AlertNotificationRecipients_GatewayModemId",
+                schema: "nyss",
+                table: "AlertNotificationRecipients");
+
             migrationBuilder.DropColumn(
                 name: "ModemId",
                 schema: "nyss",
                 table: "Users");
+
+            migrationBuilder.DropColumn(
+                name: "GatewayModemId",
+                schema: "nyss",
+                table: "AlertNotificationRecipients");
         }
     }
 }

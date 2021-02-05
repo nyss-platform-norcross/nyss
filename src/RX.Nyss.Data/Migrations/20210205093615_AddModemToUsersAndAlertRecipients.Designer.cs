@@ -12,8 +12,8 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20210203132128_AddModemToUsers")]
-    partial class AddModemToUsers
+    [Migration("20210205093615_AddModemToUsersAndAlertRecipients")]
+    partial class AddModemToUsersAndAlertRecipients
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -96,6 +96,9 @@ namespace RX.Nyss.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
+                    b.Property<int?>("GatewayModemId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Organization")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
@@ -117,6 +120,8 @@ namespace RX.Nyss.Data.Migrations
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GatewayModemId");
 
                     b.HasIndex("ProjectId");
 
@@ -2813,6 +2818,11 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertNotificationRecipient", b =>
                 {
+                    b.HasOne("RX.Nyss.Data.Models.GatewayModem", "GatewayModem")
+                        .WithMany()
+                        .HasForeignKey("GatewayModemId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("RX.Nyss.Data.Models.Project", null)
                         .WithMany("AlertNotificationRecipients")
                         .HasForeignKey("ProjectId")

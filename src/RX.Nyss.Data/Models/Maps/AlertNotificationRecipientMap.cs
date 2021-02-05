@@ -14,6 +14,10 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(anr => anr.Role).HasMaxLength(100).IsRequired();
             builder.Property(anr => anr.ProjectId).IsRequired();
             builder.Property(anr => anr.OrganizationId).IsRequired();
+            builder.HasOne(anr => anr.GatewayModem)
+                .WithMany()
+                .HasForeignKey(anr => anr.GatewayModemId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

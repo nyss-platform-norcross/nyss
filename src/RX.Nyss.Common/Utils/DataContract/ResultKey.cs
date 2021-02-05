@@ -253,6 +253,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string ProjectIsClosed = "alertRecipient.projectIsClosed";
             public const string AllSupervisorsMustBeTiedToSameOrganization = "alertRecipient.allSupervisorsMustBeTiedToSameOrganization ";
             public const string AllHeadSupervisorsMustBeTiedToSameOrganization = "alertRecipient.allHeadSupervisorsMustBeTiedToSameOrganization ";
+            public const string ModemMustBeConnectedToSameNationalSociety = "alertRecipient.modemMustBeConnectedToSameNationalSociety";
         }
 
         public class SqlExceptions
