@@ -24,6 +24,7 @@ const SmsGatewaysCreatePageComponent = (props) => {
   const [useIotHub, setUseIotHub] = useState(null);
   const [selectedIotDevice, setSelectedIotDevice] = useState("");
   const [pingIsRequired, setPingIsRequired] = useState(null);
+  const [useDualModem, setUseDualModem] = useState(null);
   const [form] = useState(() => {
     const fields = {
       name: "",
@@ -44,13 +45,15 @@ const SmsGatewaysCreatePageComponent = (props) => {
       emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle && _.useIotHub === false)],
       iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)],
       modemOneName: [validators.maxLength(100)],
-      modemTwoName: [validators.maxLength(100)]
+      modemTwoName: [validators.maxLength(100)],
+      useIotHub: [validators.requiredWhen(x => x.useDualModem === true)]
     };
 
 
     const newForm = createForm(fields, validation)
     newForm.fields.useIotHub.subscribe(({ newValue }) => setUseIotHub(newValue));
     newForm.fields.iotHubDeviceName.subscribe(({ newValue }) => setSelectedIotDevice(newValue));
+    newForm.fields.useDualModem.subscribe(({newValue}) => setUseDualModem(newValue));
     return newForm;
   });
 
@@ -150,7 +153,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
             <CheckboxField
               label={strings(stringKeys.smsGateway.form.useIotHub)}
               name="useIotHub"
-              field={form.fields.useIotHub}>
+              field={form.fields.useIotHub}
+              color="primary">
             </CheckboxField>
           </Grid>
 
@@ -191,7 +195,8 @@ const SmsGatewaysCreatePageComponent = (props) => {
             <CheckboxField
               label={strings(stringKeys.smsGateway.form.useDualModem)}
               name="useDualModem"
-              field={form.fields.useDualModem}>
+              field={form.fields.useDualModem}
+              color="primary">
             </CheckboxField>
           </Grid>
 

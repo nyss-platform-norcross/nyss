@@ -24,9 +24,9 @@ import { Typography } from '@material-ui/core';
 const SmsGatewaysEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
   const [useIotHub, setUseIotHub] = useState(null);
-  const [useDualModem, setUseDualModem] = useState(null);
   const [selectedIotDevice, setSelectedIotDevice] = useState(null);
   const [pingIsRequired, setPingIsRequired] = useState(null);
+  const [useDualModem, setUseDualModem] = useState(null);
 
   useMount(() => {
     props.openEdition(props.nationalSocietyId, props.smsGatewayId);
@@ -55,10 +55,10 @@ const SmsGatewaysEditPageComponent = (props) => {
       gatewayType: props.data.gatewayType.toString(),
       emailAddress: props.data.emailAddress,
       useIotHub: !!props.data.iotHubDeviceName,
-      iotHubDeviceName: props.data.iotHubDeviceName,
+      iotHubDeviceName: props.data.iotHubDeviceName || '',
       useDualModem: !!props.data.modemOneName,
-      modemOneName: props.data.modemOneName,
-      modemTwoName: props.data.modemTwoName
+      modemOneName: props.data.modemOneName || '',
+      modemTwoName: props.data.modemTwoName || ''
     };
 
     const validation = {
@@ -68,7 +68,8 @@ const SmsGatewaysEditPageComponent = (props) => {
       emailAddress: [validators.emailWhen(_ => _.gatewayType.toString() === smsEagle && _.useIotHub === false)],
       iotHubDeviceName: [validators.requiredWhen(x => x.useIotHub === true)],
       modemOneName: [validators.requiredWhen(x => x.useDualModem === true), validators.maxLength(100)],
-      modemTwoName: [validators.requiredWhen(x => x.useDualModem === true), validators.maxLength(100)]
+      modemTwoName: [validators.requiredWhen(x => x.useDualModem === true), validators.maxLength(100)],
+      useIotHub: [validators.requiredWhen(x => x.useDualModem === true)]
     };
 
     const newForm = createForm(fields, validation)
