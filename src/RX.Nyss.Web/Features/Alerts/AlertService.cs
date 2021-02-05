@@ -330,7 +330,11 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Select(nr => nr.Email).Distinct().ToList();
                     var notificationPhoneNumbers = notificationRecipients
                         .Where(nr => !string.IsNullOrEmpty(nr.PhoneNumber))
-                        .Select(nr => nr.PhoneNumber).Distinct().ToList();
+                        .Select(nr => new SendSmsRecipient
+                        {
+                            PhoneNumber = nr.PhoneNumber,
+                            Modem = nr.GatewayModem.ModemId
+                        }).Distinct().ToList();
 
                     await SendNotificationEmails(alertData.LanguageCode, notificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
                     await SendNotificationSmses(alertData.NationalSocietyId, alertData.LanguageCode, notificationPhoneNumbers, alertData.Project,
@@ -707,7 +711,9 @@ namespace RX.Nyss.Web.Features.Alerts
                 })
                 .SingleOrDefaultAsync();
 
-            var recipients = await _nyssContext.AlertNotificationRecipients.Where(ar =>
+            var recipients = await _nyssContext.AlertNotificationRecipients
+                .Include(ar => ar.GatewayModem)
+                .Where(ar =>
                     ar.ProjectId == alert.ProjectId &&
                     alert.InvolvedOrganizations.Contains(ar.OrganizationId) &&
                     (ar.SupervisorAlertRecipients.Count == 0 || ar.SupervisorAlertRecipients.Any(sar => alert.InvolvedSupervisors.Contains(sar.SupervisorId))) &&
@@ -821,12 +827,13 @@ namespace RX.Nyss.Web.Features.Alerts
             }
         }
 
-        private async Task SendNotificationSmses(int nationalSocietyId, string languageCode, List<string> notificationPhoneNumbers, string project, string healthRisk,
+        private async Task SendNotificationSmses(int nationalSocietyId, string languageCode, List<SendSmsRecipient> notificationRecipients, string project, string healthRisk,
             string lastReportVillage)
         {
             try
             {
                 var gatewaySetting = await _nyssContext.GatewaySettings
+                    .Include(gs => gs.Modems)
                     .Where(gs => gs.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
 
                 if (gatewaySetting == null)
@@ -842,12 +849,12 @@ namespace RX.Nyss.Web.Features.Alerts
 
                 if (!string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
                 {
-                    await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, notificationPhoneNumbers, text);
+                    await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, notificationRecipients, text, gatewaySetting.Modems.Any());
                 }
                 else
                 {
-                    await Task.WhenAll(notificationPhoneNumbers
-                        .Select(sms => _emailPublisherService.SendEmail((gatewaySetting.EmailAddress, gatewaySetting.EmailAddress), sms, text, true)));
+                    await Task.WhenAll(notificationRecipients
+                        .Select(sms => _emailPublisherService.SendEmail((gatewaySetting.EmailAddress, gatewaySetting.EmailAddress), sms.PhoneNumber, text, true)));
                 }
             }
             catch (Exception e)

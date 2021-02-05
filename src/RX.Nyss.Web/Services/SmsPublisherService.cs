@@ -10,7 +10,7 @@ namespace RX.Nyss.Web.Services
 {
     public interface ISmsPublisherService
     {
-        Task SendSms(string iotHubDeviceName, List<string> recipientPhoneNumbers, string smsMessage);
+        Task SendSms(string iotHubDeviceName, List<SendSmsRecipient> recipients, string smsMessage, bool specifyModem);
     }
 
     public class SmsPublisherService : ISmsPublisherService
@@ -22,14 +22,15 @@ namespace RX.Nyss.Web.Services
             _queueClient = new QueueClient(config.ConnectionStrings.ServiceBus, config.ServiceBusQueues.SendSmsQueue);
         }
 
-        public async Task SendSms(string iotHubDeviceName, List<string> recipientPhoneNumbers, string smsMessage) =>
-            await Task.WhenAll(recipientPhoneNumbers.Select(recipientPhoneNumber =>
+        public async Task SendSms(string iotHubDeviceName, List<SendSmsRecipient> recipients, string smsMessage, bool specifyModem) =>
+            await Task.WhenAll(recipients.Select(recipient =>
             {
                 var sendSms = new SendSmsMessage
                 {
                     IotHubDeviceName = iotHubDeviceName,
-                    PhoneNumber = recipientPhoneNumber,
-                    SmsMessage = smsMessage
+                    PhoneNumber = recipient.PhoneNumber,
+                    SmsMessage = smsMessage,
+                    Modem = recipient.Modem
                 };
 
                 var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
@@ -49,5 +50,12 @@ namespace RX.Nyss.Web.Services
         public string PhoneNumber { get; set; }
 
         public string SmsMessage { get; set; }
+        public int? Modem { get; set; }
+    }
+
+    public class SendSmsRecipient
+    {
+        public string PhoneNumber { get; set; }
+        public int? Modem { get; set; }
     }
 }
