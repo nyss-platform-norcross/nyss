@@ -262,15 +262,40 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                 TechnicalAdvisorUser = user,
                 GatewayModem = modem
             };
+            var allModemsForUser = await _nyssContext.TechnicalAdvisorUserGatewayModems
+                .Include(tam => tam.GatewayModem)
+                .ThenInclude(gm => gm.GatewaySetting)
+                .Where(tam => tam.TechnicalAdvisorUserId == user.Id)
+                .ToListAsync();
+            var existingModemForCurrentNationalSociety = allModemsForUser
+                .FirstOrDefault(tam => tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId);
 
-            if (user.TechnicalAdvisorUserGatewayModems == null)
+            if (existingModemForCurrentNationalSociety != null)
             {
-                user.TechnicalAdvisorUserGatewayModems = new List<TechnicalAdvisorUserGatewayModem> { technicalAdvisorModem };
+                allModemsForUser.Remove(existingModemForCurrentNationalSociety);
             }
-            else
+
+            allModemsForUser.Add(technicalAdvisorModem);
+
+            user.TechnicalAdvisorUserGatewayModems = allModemsForUser;
+        }
+
+        private async Task RemoveModem(TechnicalAdvisorUser user, int nationalSocietyId)
+        {
+            var allModemsForUser = await _nyssContext.TechnicalAdvisorUserGatewayModems
+                .Include(tam => tam.GatewayModem)
+                .ThenInclude(gm => gm.GatewaySetting)
+                .Where(tam => tam.TechnicalAdvisorUserId == user.Id)
+                .ToListAsync();
+            var existingModemForCurrentNationalSociety = allModemsForUser
+                .FirstOrDefault(tam => tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+            if (existingModemForCurrentNationalSociety != null)
             {
-                user.TechnicalAdvisorUserGatewayModems.Add(technicalAdvisorModem);
+                allModemsForUser.Remove(existingModemForCurrentNationalSociety);
             }
+
+            user.TechnicalAdvisorUserGatewayModems = allModemsForUser;
         }
 
         private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
@@ -295,6 +320,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             _nyssContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
 
             await HandleHeadManagerStatus(technicalAdvisor, nationalSocietyReferenceToRemove, allowHeadManagerDeletion);
+            await RemoveModem(technicalAdvisor, nationalSocietyId);
 
             var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
             if (isUsersLastNationalSociety)
