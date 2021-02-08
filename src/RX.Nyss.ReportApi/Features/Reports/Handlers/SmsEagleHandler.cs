@@ -402,7 +402,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 rawReport.Village = dataCollector.Village;
                 rawReport.Zone = dataCollector.Zone;
 
-                var parsedReport = _reportMessageService.ParseReport(text);
+                var parsedReport = _reportMessageService.ParseReport(text.Trim());
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
 
                 return new ReportValidationResult
