@@ -95,7 +95,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Select(s => new SendSmsRecipient
                 {
                     PhoneNumber = s.PhoneNumber,
-                    Modem = s.Modem.ModemId
+                    Modem = s.Modem != null ? s.Modem.ModemId : (int?)null
                 })
                 .ToListAsync();
 

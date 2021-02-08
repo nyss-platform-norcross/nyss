@@ -270,6 +270,7 @@ namespace RX.Nyss.Web.Tests.Features.HeadSupervisors
             };
 
             var headSupervisorUserAlertRecipients = new List<HeadSupervisorUserAlertRecipient>();
+            var gatewayModems = new List<GatewayModem>();
 
 
             var headSupervisorUserProjectsDbSet = headSupervisorUserProjects.AsQueryable().BuildMockDbSet();
@@ -280,6 +281,7 @@ namespace RX.Nyss.Web.Tests.Features.HeadSupervisors
             var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             var dataCollectorsDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
             var organizationsDbSet = organizations.AsQueryable().BuildMockDbSet();
+            var gatewayModemsDbSet = gatewayModems.AsQueryable().BuildMockDbSet();
 
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContext.Projects.Returns(projectsDbSet);
@@ -289,6 +291,7 @@ namespace RX.Nyss.Web.Tests.Features.HeadSupervisors
             _nyssContext.DataCollectors.Returns(dataCollectorsDbSet);
             _nyssContext.HeadSupervisorUserAlertRecipients.Returns(headSupervisorAlertRecipientsDbSet);
             _nyssContext.Organizations.Returns(organizationsDbSet);
+            _nyssContext.GatewayModems.Returns(gatewayModemsDbSet);
 
 
             _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSocieties[0]);

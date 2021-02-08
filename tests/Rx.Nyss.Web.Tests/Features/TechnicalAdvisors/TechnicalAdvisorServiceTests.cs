@@ -73,6 +73,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             };
 
             SetupTestNationalSocieties(organizations);
+            SetupGatewayModems();
         }
 
         private User ArrangeUsersDbSetWithOneTechnicalAdvisor()
@@ -244,6 +245,13 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
 
             _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSociety1);
             _nyssContext.NationalSocieties.FindAsync(2).Returns(nationalSociety2);
+        }
+
+        private void SetupGatewayModems()
+        {
+            var gatewayModems = new List<GatewayModem>();
+            var gatewayModemsDbSet = gatewayModems.AsQueryable().BuildMockDbSet();
+            _nyssContext.GatewayModems.Returns(gatewayModemsDbSet);
         }
 
         [Fact]

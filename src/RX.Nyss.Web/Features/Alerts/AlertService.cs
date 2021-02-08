@@ -333,8 +333,11 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Select(nr => new SendSmsRecipient
                         {
                             PhoneNumber = nr.PhoneNumber,
-                            Modem = nr.GatewayModem.ModemId
-                        }).Distinct().ToList();
+                            Modem = nr.GatewayModem?.ModemId
+                        })
+                        .GroupBy(nr => nr.PhoneNumber)
+                        .Select(g => g.First())
+                        .ToList();
 
                     await SendNotificationEmails(alertData.LanguageCode, notificationEmails, alertData.Project, alertData.HealthRisk, alertData.LastReportVillage);
                     await SendNotificationSmses(alertData.NationalSocietyId, alertData.LanguageCode, notificationPhoneNumbers, alertData.Project,
