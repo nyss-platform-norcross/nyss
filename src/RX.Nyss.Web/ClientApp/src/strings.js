@@ -96,16 +96,16 @@ export const stringKeys = {
     },
     dashboard: {
       title: "nationalSociety.dashboard.title",
-      numbers: {
+      numbers: {        
+        totalReportCountTitle: "nationalsociety.dashboard.numbers.totalReportCountTitle",
+        keptReportCount: "nationalsociety.dashboard.numbers.keptReportCount",
+        dismissedReportCount: "nationalsociety.dashboard.numbers.dismissedReportCount",
+        notCrossCheckedReportCount: "nationalsociety.dashboard.numbers.notCrossCheckedReportCount",
+        totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",      
         alertsSummaryTitle: "nationalsociety.dashboard.numbers.alertsSummaryTitle",
         dismissedAlerts: "nationalsociety.dashboard.numbers.dismissedAlerts",
         escalatedAlerts: "nationalsociety.dashboard.numbers.escalatedAlerts",
-        closedAlerts: "nationalsociety.dashboard.numbers.closedAlerts",
-        totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",
-        keptReportCount: "nationalsociety.dashboard.numbers.keptReportCount",
-        dismissedReportCount: "nationalsociety.dashboard.numbers.dismissedReportCount",
-        totalErrorReportCount: "nationalsociety.dashboard.numbers.totalErrorReportCount",
-        totalReportCountTitle: "nationalsociety.dashboard.numbers.totalReportCountTitle",
+        closedAlerts: "nationalsociety.dashboard.numbers.closedAlerts",  
         numberOfVillages: "nationalsociety.dashboard.numbers.numberOfVillages",
         numberOfDistricts: "nationalsociety.dashboard.numbers.numberOfDistricts"
       },
@@ -402,11 +402,11 @@ export const stringKeys = {
       title: "project.dashboard.title",
       printTitle: "project.dashboard.printTitle",
       numbers: {
-        totalReportCount: "project.dashboard.numbers.totalReportCount",
+        reportCountTitle: "project.dashboard.numbers.reportCountTitle",      
         keptReportCount: "project.dashboard.numbers.keptReportCount",
         dismissedReportCount: "project.dashboard.numbers.dismissedReportCount",
-        totalErrorReportCount: "project.dashboard.numbers.totalErrorReportCount",
-        totalReportCountTitle: "project.dashboard.numbers.totalReportCountTitle",
+        notCrossCheckedReportCount: "project.dashboard.numbers.notCrossCheckedReportCount",
+        totalReportCount: "project.dashboard.numbers.totalReportCount",
         openAlerts: "project.dashboard.numbers.openAlerts",
         dismissedAlerts: "project.dashboard.numbers.dismissedAlerts",
         escalatedAlerts: "project.dashboard.numbers.escalatedAlerts",
