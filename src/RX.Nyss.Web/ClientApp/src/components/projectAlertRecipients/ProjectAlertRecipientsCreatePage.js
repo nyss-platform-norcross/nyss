@@ -1,6 +1,6 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { connect, useSelector } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
 import * as projectAlertRecipientsActions from './logic/projectAlertRecipientsActions';
 import Layout from '../layout/Layout';
@@ -255,7 +255,7 @@ const mapDispatchToProps = {
   goToList: projectAlertRecipientsActions.goToList
 };
 
-export const ProjectAlertRecipientsCreatePage = useLayout(
+export const ProjectAlertRecipientsCreatePage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(ProjectAlertRecipientsCreatePageComponent)
 );

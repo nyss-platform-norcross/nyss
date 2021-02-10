@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
 import Paper from '@material-ui/core/Paper';
@@ -155,7 +155,7 @@ const mapDispatchToProps = {
   acceptAgreement: agreementsActions.acceptAgreement.invoke
 };
 
-export const AgreementsPage = useLayout(
+export const AgreementsPage = withLayout(
   AnonymousLayout,
   connect(mapStateToProps, mapDispatchToProps)(AgreementsPageComponent)
 );

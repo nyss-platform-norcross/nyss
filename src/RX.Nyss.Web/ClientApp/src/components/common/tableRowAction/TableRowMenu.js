@@ -2,11 +2,12 @@ import styles from "./TableRowAction.module.scss";
 import React, { Fragment, useState } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Menu from "@material-ui/core/Menu";
-import { useUser } from "../hasAccess/HasUser";
 import MenuItem from "@material-ui/core/MenuItem";
+import { useSelector } from "react-redux";
 
-const TableRowMenuComponent = ({ id, icon, items, isFetching, user, alwaysShow, alwaysHighlighted }) => {
+const TableRowMenuComponent = ({ id, icon, items, isFetching, alwaysShow, alwaysHighlighted }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const user = useSelector(state => state.appData.user);
 
   const handleDropdownClick = (e) => {
     e.stopPropagation();
@@ -61,4 +62,4 @@ const TableRowMenuComponent = ({ id, icon, items, isFetching, user, alwaysShow, 
   );
 };
 
-export const TableRowMenu = useUser(TableRowMenuComponent);
+export const TableRowMenu = TableRowMenuComponent;

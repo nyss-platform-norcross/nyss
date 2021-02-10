@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as smsGatewaysActions from './logic/smsGatewaysActions';
 import Layout from '../layout/Layout';
@@ -267,7 +267,7 @@ const mapDispatchToProps = {
   listAvailableIotDevices: smsGatewaysActions.listAvailableIotDevices.invoke
 };
 
-export const SmsGatewaysEditPage = useLayout(
+export const SmsGatewaysEditPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(SmsGatewaysEditPageComponent)
 );

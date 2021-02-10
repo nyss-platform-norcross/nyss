@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
@@ -91,7 +91,7 @@ const mapDispatchToProps = {
   openEdition: nationalSocietiesActions.goToEdition
 };
 
-export const NationalSocietiesOverviewPage = useLayout(
+export const NationalSocietiesOverviewPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(NationalSocietiesOverviewPageComponent)
 );

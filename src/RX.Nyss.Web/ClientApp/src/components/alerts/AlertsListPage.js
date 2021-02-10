@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as alertsActions from './logic/alertsActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AlertsTable from './components/AlertsTable';
 import { useMount } from '../../utils/lifecycle';
@@ -80,7 +80,7 @@ const mapDispatchToProps = {
   export: alertsActions.exportAlerts.invoke
 };
 
-export const AlertsListPage = useLayout(
+export const AlertsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(AlertsListPageComponent)
 );

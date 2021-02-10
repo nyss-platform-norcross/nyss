@@ -11,7 +11,7 @@ import DialogContent from "@material-ui/core/DialogContent";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme } from "@material-ui/core";
 import Typography from '@material-ui/core/Typography';
-import { useAccessRestriction } from "../hasAccess/HasAccess";
+import { withAccessRestriction } from "../hasAccess/HasAccess";
 
 export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, close, submit, titleText, contentText }) => {
   const theme = useTheme();
@@ -42,4 +42,4 @@ export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, cl
   );
 }
 
-export const ConfirmationDialog = useAccessRestriction(ConfirmationDialogComponent)
+export const ConfirmationDialog = withAccessRestriction(ConfirmationDialogComponent)

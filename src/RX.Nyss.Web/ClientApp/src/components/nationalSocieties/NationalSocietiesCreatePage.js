@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import * as appActions from '../app/logic/appActions';
@@ -141,7 +141,7 @@ const mapDispatchToProps = {
   openModule: appActions.openModule.invoke
 };
 
-export const NationalSocietiesCreatePage = useLayout(
+export const NationalSocietiesCreatePage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(NationalSocietiesCreatePageComponent)
 );

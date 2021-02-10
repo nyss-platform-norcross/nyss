@@ -3,7 +3,7 @@ import styles from './DataCollectorsCreateOrEditPage.module.scss';
 
 import React, { useEffect, useState, useReducer, Fragment } from 'react';
 import { connect, useSelector } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
 import Layout from '../layout/Layout';
@@ -342,7 +342,7 @@ const mapDispatchToProps = {
   goToList: dataCollectorsActions.goToList
 };
 
-export const DataCollectorsEditPage = useLayout(
+export const DataCollectorsEditPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(DataCollectorsEditPageComponent)
 );

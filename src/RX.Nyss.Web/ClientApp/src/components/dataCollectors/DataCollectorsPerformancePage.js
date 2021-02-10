@@ -1,7 +1,7 @@
 import React, { Fragment, useReducer, useEffect } from 'react';
 import PropTypes from "prop-types";
 import { connect, shallowEqual } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
 import DataCollectorsPerformanceTable from './DataCollectorsPerformanceTable';
@@ -104,7 +104,7 @@ const mapDispatchToProps = {
   getDataCollectorPerformanceList: dataCollectorActions.getDataCollectorsPerformanceList.invoke
 };
 
-export const DataCollectorsPerformancePage = useLayout(
+export const DataCollectorsPerformancePage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(DataCollectorsPerformancePageComponent)
 );

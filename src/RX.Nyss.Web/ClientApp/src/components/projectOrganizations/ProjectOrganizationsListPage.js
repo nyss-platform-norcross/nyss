@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as projectOrganizationsActions from './logic/projectOrganizationsActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -61,7 +61,7 @@ const mapDispatchToProps = {
   remove: projectOrganizationsActions.remove.invoke
 };
 
-export const ProjectOrganizationsListPage = useLayout(
+export const ProjectOrganizationsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(ProjectOrganizationsListPageComponent)
 );

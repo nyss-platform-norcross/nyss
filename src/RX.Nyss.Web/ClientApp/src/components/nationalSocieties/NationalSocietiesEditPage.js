@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import Layout from '../layout/Layout';
@@ -143,7 +143,7 @@ const mapDispatchToProps = {
   goToOverview: nationalSocietiesActions.goToOverview
 };
 
-export const NationalSocietiesEditPage = useLayout(
+export const NationalSocietiesEditPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(NationalSocietiesEditPageComponent)
 );

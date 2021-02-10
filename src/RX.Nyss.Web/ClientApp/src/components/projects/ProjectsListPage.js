@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as projectsActions from './logic/projectsActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -69,7 +69,7 @@ const mapDispatchToProps = {
   close: projectsActions.close.invoke
 };
 
-export const ProjectsListPage = useLayout(
+export const ProjectsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(ProjectsListPageComponent)
 );

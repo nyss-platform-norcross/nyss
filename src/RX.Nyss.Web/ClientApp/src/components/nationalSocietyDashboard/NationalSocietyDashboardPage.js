@@ -3,7 +3,7 @@ import React, { Fragment, useRef } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as nationalSocietyDashboardActions from './logic/nationalSocietyDashboardActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Grid from '@material-ui/core/Grid';
 import { Loading } from '../common/loading/Loading';
@@ -92,7 +92,7 @@ const mapDispatchToProps = {
   getDashboardData: nationalSocietyDashboardActions.getDashboardData.invoke
 };
 
-export const NationalSocietyDashboardPage = useLayout(
+export const NationalSocietyDashboardPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(NationalSocietyDashboardPageComponent)
 );

@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment } from 'react';
 import { connect } from "react-redux";
 import * as nationalSocietyStructureActions from './logic/nationalSocietyStructureActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Typography from '@material-ui/core/Typography';
 import { strings, stringKeys } from '../../strings';
@@ -95,7 +95,7 @@ const mapDispatchToProps = {
   removeZone: nationalSocietyStructureActions.removeZone.invoke
 };
 
-export const NationalSocietyStructurePage = useLayout(
+export const NationalSocietyStructurePage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(NationalSocietyStructurePageComponent)
 );

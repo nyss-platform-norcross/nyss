@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import { useMount } from '../../utils/lifecycle';
 import { DataCollectorsPerformanceMap } from './DataCollectorsPerformanceMap';
@@ -60,7 +60,7 @@ const mapDispatchToProps = {
   getMapDetails: dataCollectorsActions.getMapDetails.invoke
 };
 
-export const DataCollectorsMapOverviewPage = useLayout(
+export const DataCollectorsMapOverviewPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(DataCollectorsMapOverviewPageComponent)
 );

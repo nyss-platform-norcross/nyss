@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as projectAlertRecipientsActions from './logic/projectAlertRecipientsActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -63,7 +63,7 @@ const mapDispatchToProps = {
   remove: projectAlertRecipientsActions.remove.invoke
 };
 
-export const ProjectAlertRecipientsListPage = useLayout(
+export const ProjectAlertRecipientsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(ProjectAlertRecipientsListPageComponent)
 );

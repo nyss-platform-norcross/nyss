@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as translationsActions from './logic/translationsActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import TranslationsTable from './TranslationsTable';
 import { useMount } from '../../utils/lifecycle';
@@ -48,7 +48,7 @@ const mapDispatchToProps = {
   getSmsTranslations: translationsActions.getSmsTranslationsList.invoke
 };
 
-export const SmsTranslationsListPage = useLayout(
+export const SmsTranslationsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(SmsTranslationsListPageComponent)
 );

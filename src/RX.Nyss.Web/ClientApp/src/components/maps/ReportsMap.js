@@ -2,7 +2,7 @@ import styles from "./ReportsMap.module.scss";
 
 import React, { useEffect, useState } from 'react';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
-import { Map, TileLayer, Popup, Marker, ScaleControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup, Marker, ScaleControl } from 'react-leaflet';
 import { calculateBounds, calculateCenter, calculateIconSize } from '../../utils/map';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from "../../strings";
@@ -49,8 +49,8 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
   const handleMarkerClick = e =>
     onMarkerClick(e.latlng.lat, e.latlng.lng);
 
-  return (
-    <Map
+  return (!!center || !!bounds) && (
+    <MapContainer
       style={{ height: "500px" }}
       zoom={5}
       bounds={bounds}
@@ -59,7 +59,7 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
       maxZoom={19}
     >
       <TileLayer
-        attribution=''
+        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
@@ -74,7 +74,9 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
               position={{ lat: point.location.latitude, lng: point.location.longitude }}
               icon={createIcon(point.reportsCount)}
               reportsCount={point.reportsCount}
-              onclick={handleMarkerClick}
+              eventHandlers={{
+                click: handleMarkerClick
+              }}
             >
               <Popup>
                 <div className={styles.popup}>
@@ -98,6 +100,6 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
         </MarkerClusterGroup>
       )}
       <ScaleControl imperial={false}></ScaleControl>
-    </Map>
+    </MapContainer>
   );
 }

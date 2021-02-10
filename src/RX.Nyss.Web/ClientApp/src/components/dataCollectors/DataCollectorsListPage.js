@@ -2,7 +2,7 @@ import React, { Fragment, useCallback, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -125,7 +125,7 @@ const mapDispatchToProps = {
   replaceSupervisor: dataCollectorsActions.replaceSupervisor.invoke
 };
 
-export const DataCollectorsListPage = useLayout(
+export const DataCollectorsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(DataCollectorsListPageComponent)
 );

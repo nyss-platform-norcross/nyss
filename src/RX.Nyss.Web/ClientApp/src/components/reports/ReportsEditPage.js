@@ -2,7 +2,7 @@ import styles from "./ReportsEditPage.module.scss";
 
 import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
 import * as reportsActions from './logic/reportsActions';
 import Layout from '../layout/Layout';
@@ -217,7 +217,7 @@ const mapDispatchToProps = {
     goToList: reportsActions.goToList
 };
 
-export const ReportsEditPage = useLayout(
+export const ReportsEditPage = withLayout(
     Layout,
     connect(mapStateToProps, mapDispatchToProps)(ReportsEditPageComponent)
 );

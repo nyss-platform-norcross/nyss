@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
 import Paper from '@material-ui/core/Paper';
@@ -190,7 +190,7 @@ const mapDispatchToProps = {
   login: authActions.login.invoke
 };
 
-export const LoginPage = useLayout(
+export const LoginPage = withLayout(
   AnonymousLayout,
   connect(mapStateToProps, mapDispatchToProps)(LoginPageComponent)
 );

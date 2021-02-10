@@ -1,7 +1,7 @@
 import styles from "./DataCollectorsPerformanceMap.module.scss"
 
 import React, { useState, useEffect } from 'react';
-import { Map, TileLayer, Popup, Marker, ScaleControl } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup, Marker, ScaleControl } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { Loading } from "../common/loading/Loading";
 import Icon from "@material-ui/core/Icon";
@@ -74,8 +74,8 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
   const handleMarkerClick = e =>
     getMapDetails(projectId, e.latlng.lat, e.latlng.lng);
 
-  return (
-    <Map
+  return (!!center || !!bounds) && (
+    <MapContainer
       center={center}
       length={4}
       bounds={bounds}
@@ -83,7 +83,9 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
       maxZoom={19}
       className={styles.map}
     >
-      <TileLayer attribution='' url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer 
+        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' 
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
       {!isMapLoading && (
         <MarkerClusterGroup
@@ -95,7 +97,9 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
               key={`marker_${dc.location.latitude}_${dc.location.longitude}`}
               position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
               icon={createIcon(dc)}
-              onclick={handleMarkerClick}
+              eventHandlers={{
+                click: handleMarkerClick
+              }}
               dataCollectorInfo={dc}
             >
               <Popup>
@@ -120,6 +124,6 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
         </MarkerClusterGroup>
       )}
       <ScaleControl imperial={false}></ScaleControl>
-    </Map>
+    </MapContainer>
   );
 }

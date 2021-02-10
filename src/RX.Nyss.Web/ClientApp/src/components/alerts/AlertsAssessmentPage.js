@@ -1,7 +1,7 @@
 import styles from "./AlertsAssessment.module.scss";
 import React, { useEffect, Fragment } from 'react';
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import * as alertsActions from './logic/alertsActions';
 import Layout from '../layout/Layout';
 import { Loading } from '../common/loading/Loading';
@@ -157,7 +157,7 @@ const mapDispatchToProps = {
   fetchRecipients: alertsActions.fetchRecipients.invoke
 };
 
-export const AlertsAssessmentPage = useLayout(
+export const AlertsAssessmentPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(AlertsAssessmentPageComponent)
 );

@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as reportsActions from './logic/reportsActions';
 import TableActions from '../common/tableActions/TableActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import ReportsTable from './ReportsTable';
 import { useMount } from '../../utils/lifecycle';
@@ -151,7 +151,7 @@ const mapDispatchToProps = {
   goToAlert: reportsActions.goToAlert
 };
 
-export const ReportsListPage = useLayout(
+export const ReportsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(ReportsListPageComponent)
 );

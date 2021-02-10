@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from "prop-types";
 import Button from '@material-ui/core/Button';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
 import Paper from '@material-ui/core/Paper';
@@ -88,7 +88,7 @@ const mapDispatchToProps = {
   resetPasswordCallback: authActions.resetPasswordCallback.invoke
 };
 
-export const ResetPasswordCallbackPage = useLayout(
+export const ResetPasswordCallbackPage = withLayout(
   AnonymousLayout,
   connect(mapStateToProps, mapDispatchToProps)(ResetPasswordCallbackPageComponent)
 );
