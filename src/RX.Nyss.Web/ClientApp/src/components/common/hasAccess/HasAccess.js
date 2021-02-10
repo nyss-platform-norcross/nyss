@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from 'react-redux';
 import PropTypes from "prop-types";
 
-export const useAccessRestriction = (Component) => ({ roles, condition, ...props }) =>
+export const withAccessRestriction = (Component) => ({ roles, condition, ...props }) =>
   (roles || condition !== undefined)
     ? <HasAccess roles={roles} condition={condition}><Component {...props} /></HasAccess>
     : <Component {...props} />;

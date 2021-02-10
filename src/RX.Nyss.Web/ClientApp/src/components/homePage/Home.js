@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Layout } from '../layout/Layout';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Typography from '@material-ui/core/Typography';
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
@@ -43,7 +43,7 @@ const mapDispatchToProps = {
   push: push
 };
 
-export const Home = useLayout(
+export const Home = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(HomeComponent)
 );

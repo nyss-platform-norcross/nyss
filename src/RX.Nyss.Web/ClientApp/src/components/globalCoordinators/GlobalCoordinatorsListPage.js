@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as globalCoordinatorsActions from './logic/globalCoordinatorsActions';
 import * as appActions from '../app/logic/appActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -62,7 +62,7 @@ const mapDispatchToProps = {
   openModule: appActions.openModule.invoke
 };
 
-export const GlobalCoordinatorsListPage = useLayout(
+export const GlobalCoordinatorsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(GlobalCoordinatorsListPageComponent)
 );

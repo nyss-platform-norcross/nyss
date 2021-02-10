@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as healthRisksActions from './logic/healthRisksActions';
 import * as appActions from '../app/logic/appActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -61,7 +61,7 @@ const mapDispatchToProps = {
   openModule: appActions.openModule.invoke
 };
 
-export const HealthRisksListPage = useLayout(
+export const HealthRisksListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(HealthRisksListPageComponent)
 );

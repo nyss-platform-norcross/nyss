@@ -3,7 +3,7 @@ import React, { Fragment, useRef, useState } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as projectDashboardActions from './logic/projectDashboardActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import Grid from '@material-ui/core/Grid';
 import { Loading } from '../common/loading/Loading';
@@ -139,7 +139,7 @@ const mapDispatchToProps = {
   generatePdf: projectDashboardActions.generatePdf.invoke
 };
 
-export const ProjectDashboardPage = useLayout(
+export const ProjectDashboardPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(ProjectDashboardPageComponent)
 );

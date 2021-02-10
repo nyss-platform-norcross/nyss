@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as nationalSocietiesActions from './logic/nationalSocietiesActions';
 import * as appActions from '../app/logic/appActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -74,7 +74,7 @@ const mapDispatchToProps = {
   reopen: nationalSocietiesActions.reopen.invoke
 };
 
-export const NationalSocietiesListPage = useLayout(
+export const NationalSocietiesListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(NationalSocietiesListPageComponent)
 );

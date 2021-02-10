@@ -1,6 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { validators, createForm } from '../../utils/forms';
 import * as globalCoordinatorsActions from './logic/globalCoordinatorsActions';
 import Layout from '../layout/Layout';
@@ -120,7 +120,7 @@ const mapDispatchToProps = {
   edit: globalCoordinatorsActions.edit.invoke
 };
 
-export const GlobalCoordinatorsEditPage = useLayout(
+export const GlobalCoordinatorsEditPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(GlobalCoordinatorsEditPageComponent)
 );

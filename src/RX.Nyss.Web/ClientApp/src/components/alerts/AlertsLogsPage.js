@@ -1,6 +1,6 @@
 import React, { useEffect, Fragment } from 'react';
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
@@ -43,7 +43,7 @@ const mapDispatchToProps = {
   openLogs: alertsActions.openLogs.invoke
 };
 
-export const AlertsLogsPage = useLayout(
+export const AlertsLogsPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(AlertsLogsPageComponent)
 );

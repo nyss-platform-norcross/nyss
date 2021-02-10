@@ -2,7 +2,7 @@ import styles from "./ProjectsOverviewPage.module.scss";
 import React, { Fragment } from 'react';
 import { connect } from "react-redux";
 import { stringKeys, strings } from '../../strings';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { useMount } from '../../utils/lifecycle';
 import { Loading } from '../common/loading/Loading';
 import FormActions from '../forms/formActions/FormActions';
@@ -107,7 +107,7 @@ const mapDispatchToProps = {
   goToList: projectsActions.goToList
 };
 
-export const ProjectsOverviewPage = useLayout(
+export const ProjectsOverviewPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(ProjectsOverviewPageComponent)
 );

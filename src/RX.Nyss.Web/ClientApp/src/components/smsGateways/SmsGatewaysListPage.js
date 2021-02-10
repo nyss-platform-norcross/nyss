@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as smsGatewaysActions from './logic/smsGatewaysActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
@@ -74,7 +74,7 @@ const mapDispatchToProps = {
   remove: smsGatewaysActions.remove.invoke
 };
 
-export const SmsGatewaysListPage = useLayout(
+export const SmsGatewaysListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(SmsGatewaysListPageComponent)
 );

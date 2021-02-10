@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import { connect } from "react-redux";
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as nationalSocietyUsersActions from './logic/nationalSocietyUsersActions';
 import Layout from '../layout/Layout';
@@ -94,7 +94,7 @@ const mapDispatchToProps = {
   goToList: nationalSocietyUsersActions.goToList
 };
 
-export const NationalSocietyUsersAddExistingPage = useLayout(
+export const NationalSocietyUsersAddExistingPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(NationalSocietyUsersAddExistingPageComponent)
 );

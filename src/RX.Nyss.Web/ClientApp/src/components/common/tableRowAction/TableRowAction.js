@@ -2,7 +2,7 @@ import styles from "./TableRowAction.module.scss";
 import React from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import ConfirmationAction from "../confirmationAction/ConfirmationAction";
-import { useAccessRestriction } from "../hasAccess/HasAccess";
+import { withAccessRestriction } from "../hasAccess/HasAccess";
 
 const TableRowActionComponent = ({ icon, onClick, title, isFetching, confirmationText }) => {
   const handleClick = (e) => {
@@ -33,4 +33,4 @@ const TableRowActionComponent = ({ icon, onClick, title, isFetching, confirmatio
   );
 }
 
-export const TableRowAction = useAccessRestriction(TableRowActionComponent)
+export const TableRowAction = withAccessRestriction(TableRowActionComponent)

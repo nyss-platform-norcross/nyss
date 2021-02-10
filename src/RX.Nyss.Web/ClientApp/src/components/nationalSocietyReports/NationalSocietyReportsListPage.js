@@ -4,7 +4,7 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as nationalSocietyReportsActions from './logic/nationalSocietyReportsActions';
-import { useLayout } from '../../utils/layout';
+import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
 import NationalSocietyReportsTable from './NationalSocietyReportsTable';
 import { ReportFilters } from '../common/filters/ReportFilters';
@@ -79,7 +79,7 @@ const mapDispatchToProps = {
   getList: nationalSocietyReportsActions.getList.invoke
 };
 
-export const NationalSocietyReportsListPage = useLayout(
+export const NationalSocietyReportsListPage = withLayout(
   Layout,
   connect(mapStateToProps, mapDispatchToProps)(NationalSocietyReportsListPageComponent)
 );
