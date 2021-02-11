@@ -84,7 +84,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Theory]
         [InlineData(ReportStatus.Rejected)]
         [InlineData(ReportStatus.Accepted)]
-        [InlineData(ReportStatus.Removed)]
         public async Task AcceptReport_WhenReportIsNotPending_ShouldReturnError(ReportStatus status)
         {
             _alertReports.First().Alert.Status = AlertStatus.Pending;
@@ -139,7 +138,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
         [Theory]
         [InlineData(ReportStatus.Rejected)]
         [InlineData(ReportStatus.Accepted)]
-        [InlineData(ReportStatus.Removed)]
         public async Task DismissReport_WhenReportIsNotPending_ShouldReturnError(ReportStatus status)
         {
             _alertReports.First().Alert.Status = AlertStatus.Pending;
