@@ -1,10 +1,10 @@
 import styles from "./AlertsAssessmentReport.module.scss";
 
 import React, { Fragment } from 'react';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelActions from '@material-ui/core/ExpansionPanelActions';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionActions from '@material-ui/core/AccordionActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Divider from '@material-ui/core/Divider';
 import { stringKeys, strings } from "../../../strings";
@@ -41,8 +41,8 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
 
   const fromOtherOrg = report.dataCollector == null;
   return (
-    <ExpansionPanel disabled={fromOtherOrg}>
-      <ExpansionPanelSummary expandIcon={!fromOtherOrg && <ExpandMoreIcon />}>
+    <Accordion disabled={fromOtherOrg}>
+      <AccordionSummary expandIcon={!fromOtherOrg && <ExpandMoreIcon />}>
         {getReportIcon(report.status)}
         <span className={styles.time}>{dayjs(report.receivedAt).format('YYYY-MM-DD HH:mm')}</span>
         <div className={styles.senderContainer}>
@@ -52,8 +52,8 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
           </span>
           <span className={styles.sender}>{report.dataCollector || report.organization}</span>
         </div>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails className={styles.form}>
+      </AccordionSummary>
+      <AccordionDetails className={styles.form}>
         <Grid container spacing={2}>
           <Grid item xs={6} xl={3}>
             <ReportFormLabel
@@ -92,11 +92,11 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
             />
           </Grid>
         </Grid>
-      </ExpansionPanelDetails>
+      </AccordionDetails>
       {!projectIsClosed && (
         <Fragment>
           <Divider />
-          <ExpansionPanelActions>
+          <AccordionActions>
             {showActions && (
               <Fragment>
                 <SubmitButton onClick={() => dismissReport(alertId, report.id)} isFetching={report.isDismissing} regular>
@@ -121,9 +121,9 @@ export const AlertsAssessmentReport = ({ alertId, escalatedAt, report, acceptRep
                 </Button>
               </Fragment>
             )}
-          </ExpansionPanelActions>
+          </AccordionActions>
         </Fragment>
       )}
-    </ExpansionPanel>
+    </Accordion>
   );
 }

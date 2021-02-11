@@ -880,7 +880,8 @@ export const stringKeys = {
       reportStatus: {
         "Rejected": "alerts.reportStatus.rejected",
         "Accepted": "alerts.reportStatus.accepted",
-        "Pending": "alerts.reportStatus.pending"
+        "Pending": "alerts.reportStatus.pending",
+        "Closed": "alerts.reportStatus.closed"
       },
       sex: {
         "Female": "alerts.sex.female",
