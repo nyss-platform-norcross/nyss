@@ -95,11 +95,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         [InlineData("10*1*2", 10, 0, 1, 0, 0)]
         [InlineData("10*2*1", 10, 0, 0, 1, 0)]
         [InlineData("10*2*2", 10, 0, 0, 0, 1)]
+        [InlineData("  10*2*2 ", 10, 0, 0, 0, 1)]
         public void ParseReport_WhenSingleReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
             int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = _reportMessageService.ParseReport(reportMessage.Trim());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.Single);
@@ -116,11 +117,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         [Theory]
         [InlineData("10#20#30#40#50", 10, 20, 30, 40, 50)]
         [InlineData("10*20*30*40*50", 10, 20, 30, 40, 50)]
+        [InlineData("  10*20*30*40*50 ", 10, 20, 30, 40, 50)]
         public void ParseReport_WhenAggregatedReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
             int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = _reportMessageService.ParseReport(reportMessage.Trim());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.Aggregate);
@@ -137,11 +139,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         [Theory]
         [InlineData("10#20#30#40#50#60#70#80", 10, 20, 30, 40, 50, 60, 70, 80)]
         [InlineData("10*20*30*40*50*60*70*80", 10, 20, 30, 40, 50, 60, 70, 80)]
+        [InlineData("10*20*30*40*50*60*70*80  ", 10, 20, 30, 40, 50, 60, 70, 80)]
         public void ParseReport_WhenDataCollectionPointReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
             int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive, int referredCount, int deathCount, int fromOtherVillagesCount)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = _reportMessageService.ParseReport(reportMessage.Trim());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.DataCollectionPoint);
