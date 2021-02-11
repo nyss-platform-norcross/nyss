@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 
         public async Task<IEnumerable<ReportsSummaryMapResponseDto>> GetProjectSummaryMap(ReportsFilter filters)
         {
-            var reports = _reportService.GetHealthRiskEventReportsQuery(filters);
+            var reports = _reportService.GetDashboardHealthRiskEventReportsQuery(filters);
 
             var reportsSummaryMap = await reports
                 .GroupBy(report => new
@@ -90,7 +90,7 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 
         public async Task<IEnumerable<ReportsSummaryHealthRiskResponseDto>> GetProjectReportHealthRisks(ReportsFilter filters, double latitude, double longitude)
         {
-            var reports = _reportService.GetHealthRiskEventReportsQuery(filters);
+            var reports = _reportService.GetDashboardHealthRiskEventReportsQuery(filters);
 
             return await reports
                 .Where(r => r.Location.X == longitude && r.Location.Y == latitude)

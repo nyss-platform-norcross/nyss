@@ -34,7 +34,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
         public async Task GetReportsGroupedByFeaturesAndDate_ShouldTakeOnlyMostActiveVillages()
         {
             var reports = _nyssContext.Reports;
-            _reportService.GetHealthRiskEventReportsQuery(Arg.Any<ReportsFilter>()).Returns(reports);
+            _reportService.GetDashboardHealthRiskEventReportsQuery(Arg.Any<ReportsFilter>()).Returns(reports);
 
             var numberOfGroupedVillagesInProjectDashboard = 3;
 
