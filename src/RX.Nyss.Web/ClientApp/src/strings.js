@@ -96,16 +96,16 @@ export const stringKeys = {
     },
     dashboard: {
       title: "nationalSociety.dashboard.title",
-      numbers: {        
-        totalReportCountTitle: "nationalsociety.dashboard.numbers.totalReportCountTitle",
+      numbers: {
+        reportCountTitle: "nationalsociety.dashboard.numbers.reportCountTitle",
         keptReportCount: "nationalsociety.dashboard.numbers.keptReportCount",
         dismissedReportCount: "nationalsociety.dashboard.numbers.dismissedReportCount",
         notCrossCheckedReportCount: "nationalsociety.dashboard.numbers.notCrossCheckedReportCount",
-        totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",      
+        totalReportCount: "nationalsociety.dashboard.numbers.totalReportCount",
         alertsSummaryTitle: "nationalsociety.dashboard.numbers.alertsSummaryTitle",
         dismissedAlerts: "nationalsociety.dashboard.numbers.dismissedAlerts",
         escalatedAlerts: "nationalsociety.dashboard.numbers.escalatedAlerts",
-        closedAlerts: "nationalsociety.dashboard.numbers.closedAlerts",  
+        closedAlerts: "nationalsociety.dashboard.numbers.closedAlerts",
         numberOfVillages: "nationalsociety.dashboard.numbers.numberOfVillages",
         numberOfDistricts: "nationalsociety.dashboard.numbers.numberOfDistricts"
       },
@@ -402,7 +402,7 @@ export const stringKeys = {
       title: "project.dashboard.title",
       printTitle: "project.dashboard.printTitle",
       numbers: {
-        reportCountTitle: "project.dashboard.numbers.reportCountTitle",      
+        reportCountTitle: "project.dashboard.numbers.reportCountTitle",
         keptReportCount: "project.dashboard.numbers.keptReportCount",
         dismissedReportCount: "project.dashboard.numbers.dismissedReportCount",
         notCrossCheckedReportCount: "project.dashboard.numbers.notCrossCheckedReportCount",
