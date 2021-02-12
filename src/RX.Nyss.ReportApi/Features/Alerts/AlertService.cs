@@ -90,11 +90,12 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             var phoneNumbersOfSupervisorsInAlert = await _nyssContext.AlertReports
                 .Where(ar => ar.Alert.Id == alert.Id)
-                .Select(ar => ar.Report.DataCollector.Supervisor.PhoneNumber)
+                .Select(ar => ar.Report.DataCollector.Supervisor)
                 .Distinct()
-                .Select(pn => new SendSmsRecipient
+                .Select(s => new SendSmsRecipient
                 {
-                    PhoneNumber = pn
+                    PhoneNumber = s.PhoneNumber,
+                    Modem = s.Modem != null ? s.Modem.ModemId : (int?)null
                 })
                 .ToListAsync();
 
@@ -108,7 +109,8 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         {
             var phoneNumbers = supervisors.Select(s => new SendSmsRecipient
             {
-                PhoneNumber = s.PhoneNumber
+                PhoneNumber = s.PhoneNumber,
+                Modem = s.Modem.ModemId
             }).ToList();
             var message = await CreateNotificationMessageForExistingAlert(alert);
 

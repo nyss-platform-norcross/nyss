@@ -16,6 +16,7 @@ namespace RX.Nyss.Web.Features.Managers.Dto
         public bool? SetAsHeadManager { get; set; }
         public int? OrganizationId { get; set; }
         public int NationalSocietyId { get; set; }
+        public int? ModemId { get; set; }
 
         public class CreateManagerValidator : AbstractValidator<CreateManagerRequestDto>
         {
@@ -30,6 +31,9 @@ namespace RX.Nyss.Web.Features.Managers.Dto
                     .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganizationToUser(model.NationalSocietyId))
                     .When(model => model.OrganizationId.HasValue)
                     .WithMessageKey(ResultKey.Organization.NoAccessToChangeOrganization);
+                RuleFor(m => m.ModemId)
+                    .GreaterThan(0)
+                    .When(m => m.ModemId.HasValue);
             }
         }
     }

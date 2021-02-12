@@ -7,6 +7,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 using RX.Nyss.Web.Features.Users.Dto;
 using RX.Nyss.Web.Services.Authorization;
@@ -18,9 +19,10 @@ namespace RX.Nyss.Web.Features.Users
     {
         Task<Result<List<GetNationalSocietyUsersResponseDto>>> List(int nationalSocietyId);
         Task<Result<NationalSocietyUsersCreateFormDataResponseDto>> GetCreateFormData(int nationalSocietyId);
-        Task<Result> AddExisting(int nationalSocietyId, string userEmail);
+        Task<Result> AddExisting(int nationalSocietyId, AddExistingUserToNationalSocietyRequestDto requestDto);
         Task<string> GetUserApplicationLanguageCode(string userIdentityName);
         Task<Result<NationalSocietyUsersEditFormDataResponseDto>> GetEditFormData(int nationalSocietyUserId, int nationalSocietyId);
+        Task<Result<List<GatewayModemResponseDto>>> GetAddExistingFormData(int nationalSocietyId);
     }
 
     public class UserService : IUserService
@@ -101,7 +103,14 @@ namespace RX.Nyss.Web.Features.Users
                             Name = u.User.Name
                         }).ToList(),
                     HasCoordinator = ns.NationalSocietyUsers.Any(u => u.User.Role == Role.Coordinator),
-                    IsHeadManager = ns.DefaultOrganization.HeadManager == currentUser
+                    IsHeadManager = ns.DefaultOrganization.HeadManager == currentUser,
+                    Modems = _nyssContext.GatewayModems
+                        .Where(gm => gm.GatewaySetting.NationalSocietyId == ns.Id)
+                        .Select(gm => new GatewayModemResponseDto
+                        {
+                            Id = gm.Id,
+                            Name = gm.Name
+                        }).ToList()
                 }).SingleAsync();
 
             return Success(formData);
@@ -127,41 +136,57 @@ namespace RX.Nyss.Web.Features.Users
                         {
                             Id = o.Id,
                             Name = o.Name
+                        }).ToList(),
+                    Modems = _nyssContext.GatewayModems
+                        .Where(gm => gm.GatewaySetting.NationalSocietyId == nationalSocietyId)
+                        .Select(gm => new GatewayModemResponseDto
+                        {
+                            Id = gm.Id,
+                            Name = gm.Name
                         }).ToList()
                 }).SingleOrDefaultAsync();
 
             return Success(user);
         }
 
-        public async Task<Result> AddExisting(int nationalSocietyId, string userEmail)
+        public async Task<Result<List<GatewayModemResponseDto>>> GetAddExistingFormData(int nationalSocietyId)
         {
-            var userData = await _nyssContext.Users.FilterAvailable()
-                .Where(u => u.EmailAddress == userEmail)
-                .Select(u => new
+             var modems = await _nyssContext.GatewayModems
+                .Where(gm => gm.GatewaySetting.NationalSocietyId == nationalSocietyId)
+                .Select(gm => new GatewayModemResponseDto
                 {
-                    u.Id,
-                    u.Role
+                    Id = gm.Id,
+                    Name = gm.Name
                 })
+                .ToListAsync();
+
+             return Success(modems);
+        }
+
+        public async Task<Result> AddExisting(int nationalSocietyId, AddExistingUserToNationalSocietyRequestDto requestDto)
+        {
+            var user = await _nyssContext.Users.FilterAvailable()
+                .Where(u => u.EmailAddress == requestDto.Email)
                 .SingleOrDefaultAsync();
 
-            if (userData == null)
+            if (user == null)
             {
                 return Error(ResultKey.User.Registration.UserNotFound);
             }
 
-            if (userData.Role != Role.TechnicalAdvisor && userData.Role != Role.DataConsumer)
+            if (user.Role != Role.TechnicalAdvisor && user.Role != Role.DataConsumer)
             {
                 return Error(ResultKey.User.Registration.NoAssignableUserWithThisEmailFound);
             }
 
-            if (userData.Role == Role.TechnicalAdvisor && !_authorizationService.IsCurrentUserInAnyRole(Role.Manager, Role.TechnicalAdvisor))
+            if (user.Role == Role.TechnicalAdvisor && !_authorizationService.IsCurrentUserInAnyRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor))
             {
                 return Error(ResultKey.User.Registration.TechnicalAdvisorsCanBeAttachedOnlyByManagers);
             }
 
             var userAlreadyIsInThisNationalSociety = await _nyssContext.UserNationalSocieties
                 .FilterAvailableUsers()
-                .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == userData.Id);
+                .AnyAsync(uns => uns.NationalSocietyId == nationalSocietyId && uns.UserId == user.Id);
 
             if (userAlreadyIsInThisNationalSociety)
             {
@@ -177,7 +202,7 @@ namespace RX.Nyss.Web.Features.Users
             var userNationalSociety = new UserNationalSociety
             {
                 NationalSocietyId = nationalSocietyId,
-                UserId = userData.Id
+                UserId = user.Id
             };
 
             var currentUser = await _authorizationService.GetCurrentUser();
@@ -185,6 +210,11 @@ namespace RX.Nyss.Web.Features.Users
                 .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                 .Select(uns => uns.Organization)
                 .SingleOrDefaultAsync();
+
+            if (requestDto.ModemId.HasValue && user.Role == Role.TechnicalAdvisor)
+            {
+                await AddModemToExistingTechnicalAdvisor((TechnicalAdvisorUser)user, requestDto.ModemId.Value, nationalSocietyId);
+            }
 
             await _nyssContext.UserNationalSocieties.AddAsync(userNationalSociety);
             await _nyssContext.SaveChangesAsync();
@@ -196,6 +226,29 @@ namespace RX.Nyss.Web.Features.Users
                 .Where(u => u.EmailAddress == userIdentityName)
                 .Select(u => u.ApplicationLanguage.LanguageCode)
                 .SingleAsync();
+
+        private async Task AddModemToExistingTechnicalAdvisor(TechnicalAdvisorUser user, int modemId, int nationalSocietyId)
+        {
+            var technicalAdvisorModem = new TechnicalAdvisorUserGatewayModem
+            {
+                GatewayModem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId),
+                TechnicalAdvisorUser = user
+            };
+
+            if (technicalAdvisorModem.GatewayModem == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+            }
+
+            if (user.TechnicalAdvisorUserGatewayModems == null)
+            {
+                user.TechnicalAdvisorUserGatewayModems = new List<TechnicalAdvisorUserGatewayModem> { technicalAdvisorModem };
+            }
+            else
+            {
+                user.TechnicalAdvisorUserGatewayModems.Add(technicalAdvisorModem);
+            }
+        }
 
         private async Task<IQueryable<UserNationalSociety>> GetFilteredUsersQuery(int nationalSocietyId)
         {

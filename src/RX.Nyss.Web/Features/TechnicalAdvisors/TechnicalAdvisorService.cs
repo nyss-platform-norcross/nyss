@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
@@ -30,7 +31,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
     public class TechnicalAdvisorService : ITechnicalAdvisorService
     {
         private readonly ILoggerAdapter _loggerAdapter;
-        private readonly INyssContext _dataContext;
+        private readonly INyssContext _nyssContext;
         private readonly IIdentityUserRegistrationService _identityUserRegistrationService;
         private readonly INationalSocietyUserService _nationalSocietyUserService;
         private readonly IVerificationEmailService _verificationEmailService;
@@ -38,11 +39,11 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
         private readonly IAuthorizationService _authorizationService;
         private readonly IOrganizationService _organizationService;
 
-        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext dataContext,
+        public TechnicalAdvisorService(IIdentityUserRegistrationService identityUserRegistrationService, INationalSocietyUserService nationalSocietyUserService, INyssContext nyssContext,
             ILoggerAdapter loggerAdapter, IVerificationEmailService verificationEmailService, IDeleteUserService deleteUserService, IAuthorizationService authorizationService, IOrganizationService organizationService)
         {
             _identityUserRegistrationService = identityUserRegistrationService;
-            _dataContext = dataContext;
+            _nyssContext = nyssContext;
             _loggerAdapter = loggerAdapter;
             _nationalSocietyUserService = nationalSocietyUserService;
             _verificationEmailService = verificationEmailService;
@@ -78,7 +79,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
         public async Task<Result<GetTechnicalAdvisorResponseDto>> Get(int nationalSocietyUserId, int nationalSocietyId)
         {
-            var technicalAdvisor = await _dataContext.UserNationalSocieties
+            var technicalAdvisor = await _nyssContext.UserNationalSocieties
                 .FilterAvailable()
                 .Where(u => u.User.Role == Role.TechnicalAdvisor)
                 .Where(u => u.UserId == nationalSocietyUserId && u.NationalSocietyId == nationalSocietyId)
@@ -91,7 +92,9 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                     OrganizationId = u.Organization.Id,
                     PhoneNumber = u.User.PhoneNumber,
                     AdditionalPhoneNumber = u.User.AdditionalPhoneNumber,
-                    Organization = u.User.Organization
+                    Organization = u.User.Organization,
+                    ModemId = ((TechnicalAdvisorUser)u.User).TechnicalAdvisorUserGatewayModems
+                        .FirstOrDefault(x => x.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId).GatewayModemId
                 })
                 .SingleOrDefaultAsync();
 
@@ -117,7 +120,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
                 if (editDto.OrganizationId.HasValue)
                 {
-                    var userLink = await _dataContext.UserNationalSocieties
+                    var userLink = await _nyssContext.UserNationalSocieties
                         .Where(un => un.UserId == technicalAdvisorId && un.NationalSociety.Id == editDto.NationalSocietyId)
                         .SingleOrDefaultAsync();
 
@@ -130,11 +133,13 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                             return validationResult;
                         }
 
-                        userLink.Organization = await _dataContext.Organizations.FindAsync(editDto.OrganizationId.Value);
+                        userLink.Organization = await _nyssContext.Organizations.FindAsync(editDto.OrganizationId.Value);
                     }
                 }
 
-                await _dataContext.SaveChangesAsync();
+                await UpdateModem(user, editDto.ModemId, editDto.NationalSocietyId);
+
+                await _nyssContext.SaveChangesAsync();
                 return Success();
             }
             catch (ResultException e)
@@ -154,7 +159,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
                 await DeleteFromNationalSociety(nationalSocietyId, technicalAdvisorId);
 
-                await _dataContext.SaveChangesAsync();
+                await _nyssContext.SaveChangesAsync();
                 transactionScope.Complete();
                 return Success();
             }
@@ -170,7 +175,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
         private async Task<TechnicalAdvisorUser> CreateTechnicalAdvisorUser(IdentityUser identityUser, int nationalSocietyId, CreateTechnicalAdvisorRequestDto createTechnicalAdvisorRequestDto)
         {
-            var nationalSociety = await _dataContext.NationalSocieties.Include(ns => ns.ContentLanguage)
+            var nationalSociety = await _nyssContext.NationalSocieties.Include(ns => ns.ContentLanguage)
                 .SingleOrDefaultAsync(ns => ns.Id == nationalSocietyId);
 
             if (nationalSociety == null)
@@ -183,7 +188,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                 throw new ResultException(ResultKey.User.Registration.CannotCreateUsersInArchivedNationalSociety);
             }
 
-            var defaultUserApplicationLanguage = await _dataContext.ApplicationLanguages
+            var defaultUserApplicationLanguage = await _nyssContext.ApplicationLanguages
                 .SingleOrDefaultAsync(al => al.LanguageCode == nationalSociety.ContentLanguage.LanguageCode);
 
             var user = new TechnicalAdvisorUser
@@ -201,7 +206,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
             if (createTechnicalAdvisorRequestDto.OrganizationId.HasValue)
             {
-                userNationalSociety.Organization = await _dataContext.Organizations
+                userNationalSociety.Organization = await _nyssContext.Organizations
                     .Where(o => o.Id == createTechnicalAdvisorRequestDto.OrganizationId.Value && o.NationalSocietyId == nationalSocietyId)
                     .SingleAsync();
             }
@@ -209,16 +214,88 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
             {
                 var currentUser = await _authorizationService.GetCurrentUser();
 
-                userNationalSociety.Organization = await _dataContext.UserNationalSocieties
+                userNationalSociety.Organization = await _nyssContext.UserNationalSocieties
                         .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == nationalSocietyId)
                         .Select(uns => uns.Organization)
                         .SingleOrDefaultAsync() ??
-                    await _dataContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
+                    await _nyssContext.Organizations.Where(o => o.NationalSocietyId == nationalSocietyId).FirstOrDefaultAsync();
             }
 
-            await _dataContext.AddAsync(userNationalSociety);
-            await _dataContext.SaveChangesAsync();
+            await AttachTechnicalAdvisorToModem(user, createTechnicalAdvisorRequestDto.ModemId, nationalSocietyId);
+
+            await _nyssContext.AddAsync(userNationalSociety);
+            await _nyssContext.SaveChangesAsync();
             return user;
+        }
+
+        private async Task AttachTechnicalAdvisorToModem(TechnicalAdvisorUser user, int? modemId, int nationalSocietyId)
+        {
+            if (modemId.HasValue)
+            {
+                var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+                if (modem == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+                }
+
+                var technicalAdvisorModem = new TechnicalAdvisorUserGatewayModem
+                {
+                    TechnicalAdvisorUser = user,
+                    GatewayModem = modem
+                };
+
+                user.TechnicalAdvisorUserGatewayModems = new List<TechnicalAdvisorUserGatewayModem> { technicalAdvisorModem };
+            }
+        }
+
+        private async Task UpdateModem(TechnicalAdvisorUser user, int? modemId, int nationalSocietyId)
+        {
+            var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+            if (modemId.HasValue && modem == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+            }
+
+            var technicalAdvisorModem = new TechnicalAdvisorUserGatewayModem
+            {
+                TechnicalAdvisorUser = user,
+                GatewayModem = modem
+            };
+            var allModemsForUser = await _nyssContext.TechnicalAdvisorUserGatewayModems
+                .Include(tam => tam.GatewayModem)
+                .ThenInclude(gm => gm.GatewaySetting)
+                .Where(tam => tam.TechnicalAdvisorUserId == user.Id)
+                .ToListAsync();
+            var existingModemForCurrentNationalSociety = allModemsForUser
+                .FirstOrDefault(tam => tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+            if (existingModemForCurrentNationalSociety != null)
+            {
+                allModemsForUser.Remove(existingModemForCurrentNationalSociety);
+            }
+
+            allModemsForUser.Add(technicalAdvisorModem);
+
+            user.TechnicalAdvisorUserGatewayModems = allModemsForUser;
+        }
+
+        private async Task RemoveModem(TechnicalAdvisorUser user, int nationalSocietyId)
+        {
+            var allModemsForUser = await _nyssContext.TechnicalAdvisorUserGatewayModems
+                .Include(tam => tam.GatewayModem)
+                .ThenInclude(gm => gm.GatewaySetting)
+                .Where(tam => tam.TechnicalAdvisorUserId == user.Id)
+                .ToListAsync();
+            var existingModemForCurrentNationalSociety = allModemsForUser
+                .FirstOrDefault(tam => tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+            if (existingModemForCurrentNationalSociety != null)
+            {
+                allModemsForUser.Remove(existingModemForCurrentNationalSociety);
+            }
+
+            user.TechnicalAdvisorUserGatewayModems = allModemsForUser;
         }
 
         private UserNationalSociety CreateUserNationalSocietyReference(NationalSociety nationalSociety, User user) =>
@@ -240,9 +317,10 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
                 throw new ResultException(ResultKey.User.Registration.UserIsNotAssignedToThisNationalSociety);
             }
 
-            _dataContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
+            _nyssContext.UserNationalSocieties.Remove(nationalSocietyReferenceToRemove);
 
             await HandleHeadManagerStatus(technicalAdvisor, nationalSocietyReferenceToRemove, allowHeadManagerDeletion);
+            await RemoveModem(technicalAdvisor, nationalSocietyId);
 
             var isUsersLastNationalSociety = userNationalSocieties.Count == 1;
             if (isUsersLastNationalSociety)
@@ -254,7 +332,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
         private async Task HandleHeadManagerStatus(TechnicalAdvisorUser technicalAdvisor, UserNationalSociety nationalSocietyReferenceToRemove, bool allowHeadManagerDeletion)
         {
-            var organization = await _dataContext.Organizations
+            var organization = await _nyssContext.Organizations
                 .Include(o => o.PendingHeadManager)
                 .Include(o => o.HeadManager)
                 .Where(o => o.NationalSocietyId == nationalSocietyReferenceToRemove.NationalSocietyId && o.Id == nationalSocietyReferenceToRemove.OrganizationId)
@@ -283,7 +361,7 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
         private async Task AnonymizeTechnicalAdvisorWithAlertReferences(int technicalAdvisorId)
         {
-            var technicalAdvisorUser = await _dataContext.Users
+            var technicalAdvisorUser = await _nyssContext.Users
                 .Where(u => u.Id == technicalAdvisorId)
                 .SingleOrDefaultAsync();
 

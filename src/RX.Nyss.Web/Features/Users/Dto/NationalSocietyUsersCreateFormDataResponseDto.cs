@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.ProjectAlertRecipients.Dto;
 
 namespace RX.Nyss.Web.Features.Users.Dto
@@ -11,6 +12,8 @@ namespace RX.Nyss.Web.Features.Users.Dto
         public List<OrganizationsDto> Organizations { get; set; }
 
         public List<HeadSupervisorResponseDto> HeadSupervisors { get; set; }
+
+        public List<GatewayModemResponseDto> Modems { get; set; }
 
         public bool HasCoordinator { get; set; }
 
@@ -26,6 +29,8 @@ namespace RX.Nyss.Web.Features.Users.Dto
         public List<ListOpenProjectsResponseDto> Projects { get; set; }
 
         public List<OrganizationsDto> Organizations { get; set; }
+
+        public List<GatewayModemResponseDto> Modems { get; set; }
     }
 
     public class OrganizationsDto

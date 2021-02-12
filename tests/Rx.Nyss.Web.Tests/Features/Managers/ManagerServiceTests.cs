@@ -117,6 +117,8 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             };
             users[1].UserNationalSocieties = new List<UserNationalSociety> { userNationalSocieties[0] };
 
+            var gatewayModems = new List<GatewayModem>();
+
             _authorizationService.GetCurrentUser().Returns(managerUser);
             _authorizationService.GetCurrentUser().Returns(managerUser);
 
@@ -125,12 +127,14 @@ namespace RX.Nyss.Web.Tests.Features.Managers
             var nationalSocietiesDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             var organizationsDbSet = organizations.AsQueryable().BuildMockDbSet();
+            var gatewayModemsDbSet = gatewayModems.AsQueryable().BuildMockDbSet();
 
             _nyssContext.ApplicationLanguages.Returns(applicationLanguagesDbSet);
             _nyssContext.Users.Returns(usersDbSet);
             _nyssContext.NationalSocieties.Returns(nationalSocietiesDbSet);
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
             _nyssContext.Organizations.Returns(organizationsDbSet);
+            _nyssContext.GatewayModems.Returns(gatewayModemsDbSet);
 
             _identityUserRegistrationServiceMock.CreateIdentityUser(Arg.Any<string>(), Arg.Any<Role>()).Returns(ci => new IdentityUser
             {

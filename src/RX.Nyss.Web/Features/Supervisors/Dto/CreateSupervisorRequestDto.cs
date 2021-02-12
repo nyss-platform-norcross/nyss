@@ -22,6 +22,7 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
         public int NationalSocietyId { get; set; }
         public string Organization { get; set; }
         public int? HeadSupervisorId { get; set; }
+        public int? ModemId { get; set; }
 
         public class CreateSupervisorValidator : AbstractValidator<CreateSupervisorRequestDto>
         {
@@ -42,6 +43,9 @@ namespace RX.Nyss.Web.Features.Supervisors.Dto
                     .MustAsync((model, _, t) => organizationService.ValidateAccessForAssigningOrganizationToUser(model.NationalSocietyId))
                     .When(model => model.OrganizationId.HasValue)
                     .WithMessageKey(ResultKey.Organization.NoAccessToChangeOrganization);
+                RuleFor(m => m.ModemId)
+                    .GreaterThan(0)
+                    .When(m => m.ModemId.HasValue);
             }
         }
     }

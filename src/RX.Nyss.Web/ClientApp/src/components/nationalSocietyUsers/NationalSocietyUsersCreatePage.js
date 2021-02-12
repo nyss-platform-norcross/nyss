@@ -44,6 +44,12 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     || (props.data && props.data.isHeadManager && !props.data.hasCoordinator && selectedRole === roles.Coordinator),
     [hasAnyRole, selectedRole, props.data]);
 
+  const canSelectModem = (selectedRole === roles.Manager
+    || selectedRole === roles.TechnicalAdvisor
+    || selectedRole === roles.HeadSupervisor
+    || selectedRole === roles.Supervisor)
+    && props.data.modems.length > 0;
+
   const availableUserRoles = useMemo(() => {
     if (!props.data) {
       return [];
@@ -97,7 +103,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       projectId: '',
       sex: '',
       organizationId: '',
-      headSupervisorId: ''
+      headSupervisorId: '',
+      modemId: ''
     };
 
     const validation = {
@@ -109,14 +116,15 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
-      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)]
+      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
+      modemId: [validators.requiredWhen(_ => canSelectModem)]
     };
 
     const newForm = createForm(fields, validation);
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.nationalSocietyId]);
+  }, [props.nationalSocietyId, canSelectModem]);
 
   useEffect(() => {
     if (!form || selectedRole) {
@@ -157,7 +165,8 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       projectId: values.projectId ? parseInt(values.projectId) : null,
       decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
       setAsHeadManager: hasAnyRole(roles.Coordinator, roles.GlobalCoordinator) ? true : null,
-      headSupervisorId: values.headSupervisorId ? parseInt(values.headSupervisorId) : null
+      headSupervisorId: values.headSupervisorId ? parseInt(values.headSupervisorId) : null,
+      modemId: !!values.modemId ? parseInt(values.modemId) : null
     });
   }, [hasAnyRole, canChangeOrganization, form, create, props.nationalSocietyId]);
 
@@ -316,18 +325,34 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
 
           {selectedRole === roles.Supervisor && props.data.headSupervisors.length > 0 && (
             <Grid item xs={12}>
-                <SelectField
-                  label={strings(stringKeys.nationalSocietyUser.form.headSupervisor)}
-                  field={form.fields.headSupervisorId}
-                  name="headSupervisorId"
-                >
-                  {props.data.headSupervisors.map(headSupervisor => (
-                    <MenuItem key={`headSupervisor_${headSupervisor.id}`} value={headSupervisor.id.toString()}>
-                      {headSupervisor.name}
-                    </MenuItem>
-                  ))}
-                </SelectField>
-              </Grid>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.headSupervisor)}
+                field={form.fields.headSupervisorId}
+                name="headSupervisorId"
+              >
+                {props.data.headSupervisors.map(headSupervisor => (
+                  <MenuItem key={`headSupervisor_${headSupervisor.id}`} value={headSupervisor.id.toString()}>
+                    {headSupervisor.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
+
+          {canSelectModem && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.modem)}
+                field={form.fields.modemId}
+                name="modemId"
+              >
+                {props.data.modems.map(modem => (
+                  <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
+                    {modem.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
           )}
         </Grid>
 

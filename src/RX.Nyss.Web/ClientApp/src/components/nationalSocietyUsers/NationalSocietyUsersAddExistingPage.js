@@ -14,22 +14,26 @@ import Box from '@material-ui/core/Box';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import Grid from '@material-ui/core/Grid';
-import * as roles from '../../authentication/roles';
 import { ValidationMessage } from '../forms/ValidationMessage';
+import SelectField from '../forms/SelectField';
+import { MenuItem } from '@material-ui/core';
 
 const NationalSocietyUsersAddExistingPageComponent = (props) => {
   const [form] = useState(() => {
     const fields = {
-      role: roles.Manager,
       email: "",
+      modemId: ""
     };
 
     const validation = {
       email: [validators.required, validators.email, validators.maxLength(100)],
+      modemId: [validators.requiredWhen(_ => canSelectModem)]
     };
 
     return createForm(fields, validation);
   });
+
+  const canSelectModem = props.modems != null && props.modems.length > 0;
 
   useCustomErrors(form, props.error);
 
@@ -44,7 +48,11 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
       return;
     };
 
-    props.addExisting(props.nationalSocietyId, form.getValues());
+    const values = form.getValues();
+    props.addExisting(props.nationalSocietyId, {
+      email: values.email,
+      modemId: !!values.modemId ? parseInt(values.modemId) : null
+    });
   };
 
   return (
@@ -68,6 +76,22 @@ const NationalSocietyUsersAddExistingPageComponent = (props) => {
             />
           </Grid>
 
+          {canSelectModem && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.modem)}
+                field={form.fields.modemId}
+                name="modemId"
+              >
+                {props.modems.map(modem => (
+                  <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
+                    {modem.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
+
         </Grid>
 
         <FormActions>
@@ -85,7 +109,8 @@ NationalSocietyUsersAddExistingPageComponent.propTypes = {
 const mapStateToProps = (state, ownProps) => ({
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isSaving: state.nationalSocietyUsers.formSaving,
-  error: state.nationalSocietyUsers.formError
+  error: state.nationalSocietyUsers.formError,
+  modems: state.nationalSocietyUsers.formModems
 });
 
 const mapDispatchToProps = {

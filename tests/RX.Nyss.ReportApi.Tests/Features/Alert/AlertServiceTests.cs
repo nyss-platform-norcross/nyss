@@ -465,7 +465,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _nyssReportApiConfigMock.BaseUrl = "http://example.com";
 
             // act
-            await _alertService.SendNotificationsForNewAlert(alert, new GatewaySetting { ApiKey = "123" });
+            await _alertService.SendNotificationsForNewAlert(alert, new GatewaySetting { ApiKey = "123", Modems = new List<GatewayModem>()});
 
             // assert
             await _queuePublisherServiceMock.Received(1).QueueAlertCheck(alert.Id);

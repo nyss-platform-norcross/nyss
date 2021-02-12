@@ -33,6 +33,12 @@ const NationalSocietyUsersEditPageComponent = (props) => {
     [props.callingUserRoles]
   );
 
+  const canSelectModem = (selectedRole === roles.Manager
+    || selectedRole === roles.TechnicalAdvisor
+    || selectedRole === roles.HeadSupervisor
+    || selectedRole === roles.Supervisor)
+    && props.modems.length > 0;
+
   const form = useMemo(() => {
     if (!props.data) {
       return null;
@@ -50,7 +56,8 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       projectId: props.data.projectId ? props.data.projectId.toString() : "",
       organizationId: props.data.organizationId ? props.data.organizationId.toString() : "",
       sex: props.data.sex ? props.data.sex : "",
-      headSupervisorId: props.data.headSupervisorId ? props.data.headSupervisorId.toString() : ""
+      headSupervisorId: props.data.headSupervisorId ? props.data.headSupervisorId.toString() : "",
+      modemId: props.data.modemId ? props.data.modemId.toString() : ""
     };
 
     const validation = {
@@ -61,13 +68,14 @@ const NationalSocietyUsersEditPageComponent = (props) => {
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
       projectId: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
-      organizationId: [validators.requiredWhen(f => f.role === roles.Coordinator || f.role === roles.GlobalCoordinator)]
+      organizationId: [validators.requiredWhen(f => f.role === roles.Coordinator || f.role === roles.GlobalCoordinator)],
+      modemId: [validators.requiredWhen(_ => canSelectModem)]
     };
 
     setRole(props.data.role);
 
     return createForm(fields, validation);
-  }, [props.data, props.nationalSocietyId]);
+  }, [props.data, props.nationalSocietyId, canSelectModem]);
 
   useCustomErrors(form, props.error);
 
@@ -86,10 +94,11 @@ const NationalSocietyUsersEditPageComponent = (props) => {
 
     props.edit(props.nationalSocietyId, {
       ...values,
-      organizationId: values.organizationId ? parseInt(values.organizationId) : null,
-      projectId: values.projectId ? parseInt(values.projectId) : null,
-      decadeOfBirth: values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
-      headSupervisorId: values.headSupervisorId ? parseInt(values.headSupervisorId) : null
+      organizationId: !!values.organizationId ? parseInt(values.organizationId) : null,
+      projectId: !!values.projectId ? parseInt(values.projectId) : null,
+      decadeOfBirth: !!values.decadeOfBirth ? parseInt(values.decadeOfBirth) : null,
+      headSupervisorId: !!values.headSupervisorId ? parseInt(values.headSupervisorId) : null,
+      modemId: !!values.modemId ? parseInt(values.modemId) : null
     });
   }, [form, props]);
 
@@ -223,6 +232,22 @@ const NationalSocietyUsersEditPageComponent = (props) => {
               </SelectField>
             </Grid>
           )}
+
+          {canSelectModem && (
+            <Grid item xs={12}>
+              <SelectField
+                label={strings(stringKeys.nationalSocietyUser.form.modem)}
+                field={form.fields.modemId}
+                name="modemId"
+              >
+                {props.modems.map(modem => (
+                  <MenuItem key={`modemId_${modem.id}`} value={modem.id.toString()}>
+                    {modem.name}
+                  </MenuItem>
+                ))}
+              </SelectField>
+            </Grid>
+          )}
         </Grid>
         <FormActions>
           <Button onClick={() => props.goToList(props.nationalSocietyId)}>{strings(stringKeys.form.cancel)}</Button>
@@ -244,7 +269,8 @@ const mapStateToProps = (state, ownProps) => ({
   isSaving: state.nationalSocietyUsers.formSaving,
   data: state.nationalSocietyUsers.formData,
   callingUserRoles: state.appData.user.roles,
-  error: state.nationalSocietyUsers.formError
+  error: state.nationalSocietyUsers.formError,
+  modems: state.nationalSocietyUsers.formModems
 });
 
 const mapDispatchToProps = {

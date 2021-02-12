@@ -15,6 +15,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
         public string Role { get; set; }
 
         public string Organization { get; set; }
+        public int? ModemId { get; set; }
 
         public IEnumerable<ProjectAlertHealthRiskDto> HealthRisks { get; set; }
 

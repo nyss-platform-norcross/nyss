@@ -8,8 +8,10 @@ namespace RX.Nyss.Data.Models
         public Sex Sex { get; set; }
         public int DecadeOfBirth { get; set; }
         public int CurrentProjectId { get; set; }
+        public int ModemId { get; set; }
         public virtual ICollection<HeadSupervisorUserProject> HeadSupervisorUserProjects { get; set; } = new List<HeadSupervisorUserProject>();
         public virtual Project CurrentProject { get; set; }
         public virtual ICollection<HeadSupervisorUserAlertRecipient> HeadSupervisorUserAlertRecipients { get; set; }
+        public virtual GatewayModem Modem { get; set; }
     }
 }

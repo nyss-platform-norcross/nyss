@@ -109,12 +109,14 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 new GatewaySetting
                 {
                     NationalSociety = _nationalSocieties[0],
-                    IotHubDeviceName = "iot"
+                    IotHubDeviceName = "iot",
+                    Modems = new List<GatewayModem>()
                 },
                 new GatewaySetting
                 {
                     NationalSociety = _nationalSocieties[1],
-                    EmailAddress = "test@example.com"
+                    EmailAddress = "test@example.com",
+                    Modems = new List<GatewayModem>()
                 }
             };
 
@@ -661,7 +663,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
 
             // Assert
             res.IsSuccess.ShouldBe(true);
-            await _smsPublisherService.Received().SendSms("iot", Arg.Any<List<string>>(), "Test");
+            await _smsPublisherService.Received().SendSms("iot", Arg.Any<List<SendSmsRecipient>>(), "Test", false);
         }
 
         [Fact]

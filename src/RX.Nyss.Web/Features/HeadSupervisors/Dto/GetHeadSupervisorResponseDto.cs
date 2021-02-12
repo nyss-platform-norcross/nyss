@@ -16,6 +16,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors.Dto
         public string Organization { get; set; }
         public int? OrganizationId { get; set; }
         public int NationalSocietyId { get; set; }
+        public int? ModemId { get; set; }
         public EditHeadSupervisorFormDataDto.ListProjectsResponseDto CurrentProject { get; set; }
         public EditHeadSupervisorFormDataDto EditSupervisorFormData { get; set; }
     }

@@ -107,7 +107,8 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
                         Id = u.User.CurrentProject.Id,
                         Name = u.User.CurrentProject.Name,
                         IsClosed = u.User.CurrentProject.State == ProjectState.Closed
-                    }
+                    },
+                    ModemId = u.User.ModemId
                 })
                 .SingleOrDefaultAsync();
 
@@ -151,16 +152,17 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
             {
                 var supervisorUserData = await GetHeadSupervisorUser(headSupervisorId);
 
-                var supervisorUser = supervisorUserData.User;
+                var headSupervisorUser = supervisorUserData.User;
 
-                supervisorUser.Name = editHeadSupervisorRequestDto.Name;
-                supervisorUser.Sex = editHeadSupervisorRequestDto.Sex;
-                supervisorUser.DecadeOfBirth = editHeadSupervisorRequestDto.DecadeOfBirth;
-                supervisorUser.PhoneNumber = editHeadSupervisorRequestDto.PhoneNumber;
-                supervisorUser.AdditionalPhoneNumber = editHeadSupervisorRequestDto.AdditionalPhoneNumber;
-                supervisorUser.Organization = editHeadSupervisorRequestDto.Organization;
+                headSupervisorUser.Name = editHeadSupervisorRequestDto.Name;
+                headSupervisorUser.Sex = editHeadSupervisorRequestDto.Sex;
+                headSupervisorUser.DecadeOfBirth = editHeadSupervisorRequestDto.DecadeOfBirth;
+                headSupervisorUser.PhoneNumber = editHeadSupervisorRequestDto.PhoneNumber;
+                headSupervisorUser.AdditionalPhoneNumber = editHeadSupervisorRequestDto.AdditionalPhoneNumber;
+                headSupervisorUser.Organization = editHeadSupervisorRequestDto.Organization;
 
-                await UpdateHeadSupervisorProjectReferences(supervisorUser, supervisorUserData.CurrentProjectReference, editHeadSupervisorRequestDto.ProjectId);
+                await UpdateHeadSupervisorProjectReferences(headSupervisorUser, supervisorUserData.CurrentProjectReference, editHeadSupervisorRequestDto.ProjectId);
+                await UpdateModem(headSupervisorUser, editHeadSupervisorRequestDto.ModemId, editHeadSupervisorRequestDto.NationalSocietyId);
 
                 if (editHeadSupervisorRequestDto.OrganizationId.HasValue)
                 {
@@ -256,6 +258,7 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
             };
 
             await AddNewHeadSupervisorToProject(user, createHeadSupervisorRequestDto.ProjectId, nationalSocietyId);
+            await AttachHeadSupervisorToModem(user, createHeadSupervisorRequestDto.ModemId, nationalSocietyId);
 
             var userNationalSociety = new UserNationalSociety
             {
@@ -283,6 +286,33 @@ namespace RX.Nyss.Web.Features.HeadSupervisors
             await _nyssContext.SaveChangesAsync();
             return user;
         }
+
+        private async Task AttachHeadSupervisorToModem(HeadSupervisorUser user, int? modemId, int nationalSocietyId)
+        {
+            if (modemId.HasValue)
+            {
+                var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+                if (modem == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+                }
+
+                user.Modem = modem;
+            }
+        }
+
+        private async Task UpdateModem(HeadSupervisorUser user, int? modemId, int nationalSocietyId)
+        {
+            var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+            if (modemId.HasValue && modem == null)
+            {
+                throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+            }
+
+            user.Modem = modem;
+        }
+
 
         private async Task AddNewHeadSupervisorToProject(HeadSupervisorUser user, int? projectId, int nationalSocietyId)
         {

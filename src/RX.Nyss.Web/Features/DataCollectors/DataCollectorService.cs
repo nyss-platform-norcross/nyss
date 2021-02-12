@@ -16,6 +16,7 @@ using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
+using RX.Nyss.Web.Features.DataCollectors.DataContracts;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
 using RX.Nyss.Web.Services;
@@ -553,8 +554,14 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto)
         {
-            var dataCollectors = await _nyssContext.DataCollectors
+            var replaceSupervisorDatas = await _nyssContext.DataCollectors
                 .Where(dc => replaceSupervisorRequestDto.DataCollectorIds.Contains(dc.Id))
+                .Select(dc => new ReplaceSupervisorData
+                {
+                    DataCollector = dc,
+                    Supervisor = dc.Supervisor,
+                    LastReport = dc.RawReports.FirstOrDefault(r => r.ModemNumber.HasValue)
+                })
                 .ToListAsync();
 
             var supervisorData = await _nyssContext.Users
@@ -566,18 +573,19 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FirstOrDefaultAsync(u => u.Supervisor.Id == replaceSupervisorRequestDto.SupervisorId);
 
             var gatewaySetting = await _nyssContext.GatewaySettings
+                .Include(gs => gs.Modems)
                 .Include(gs => gs.NationalSociety)
                 .ThenInclude(ns => ns.ContentLanguage)
                 .FirstOrDefaultAsync(gs => gs.NationalSociety == supervisorData.NationalSociety);
 
-            foreach (var dc in dataCollectors)
+            foreach (var dc in replaceSupervisorDatas)
             {
-                dc.Supervisor = supervisorData.Supervisor;
+                dc.DataCollector.Supervisor = supervisorData.Supervisor;
             }
 
             await _nyssContext.SaveChangesAsync();
 
-            await SendReplaceSupervisorSms(gatewaySetting, dataCollectors, supervisorData.Supervisor);
+            await SendReplaceSupervisorSms(gatewaySetting, replaceSupervisorDatas, supervisorData.Supervisor);
 
             return Success();
         }
@@ -670,9 +678,14 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 : null;
         }
 
-        private async Task SendReplaceSupervisorSms(GatewaySetting gatewaySetting, List<DataCollector> dataCollectors, SupervisorUser newSupervisor)
+        private async Task SendReplaceSupervisorSms(GatewaySetting gatewaySetting, List<ReplaceSupervisorData> replaceSupervisorDatas, SupervisorUser newSupervisor)
         {
-            var phoneNumbers = dataCollectors.Select(dc => dc.PhoneNumber).ToList();
+            var previousSupervisor = replaceSupervisorDatas.Select(r => r.Supervisor).Distinct().Single();
+            var recipients = replaceSupervisorDatas.Select(r => new SendSmsRecipient
+            {
+                PhoneNumber = r.DataCollector.PhoneNumber,
+                Modem = r.LastReport != null ? r.LastReport.ModemNumber : previousSupervisor.ModemId
+            }).ToList();
             var message = await _smsTextGeneratorService.GenerateReplaceSupervisorSms(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode);
 
             message = message.Replace("{{supervisorName}}", newSupervisor.Name);
@@ -680,11 +693,11 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
             if (string.IsNullOrEmpty(gatewaySetting.IotHubDeviceName))
             {
-                await _emailToSMSService.SendMessage(gatewaySetting, phoneNumbers, message);
+                await _emailToSMSService.SendMessage(gatewaySetting, recipients.Select(r => r.PhoneNumber).ToList(), message);
             }
             else
             {
-                await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, phoneNumbers, message);
+                await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, recipients, message, gatewaySetting.Modems.Any());
             }
         }
     }

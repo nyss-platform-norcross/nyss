@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using FluentValidation;
 
 namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
@@ -16,6 +17,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
         public string Organization { get; set; }
 
         public int? OrganizationId { get; set; }
+        public int? ModemId { get; set; }
 
         public List<int> Supervisors { get; set; }
 
@@ -32,6 +34,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
                 RuleFor(anr => anr.Email).MaximumLength(100).NotEmpty().When(anr => string.IsNullOrEmpty(anr.PhoneNumber));
                 RuleFor(anr => anr.Role).NotEmpty().MaximumLength(100);
                 RuleFor(anr => anr.Organization).NotEmpty().MaximumLength(100);
+                RuleFor(anr => anr.ModemId).GreaterThan(0).When(anr => anr.ModemId.HasValue);
             }
         }
     }

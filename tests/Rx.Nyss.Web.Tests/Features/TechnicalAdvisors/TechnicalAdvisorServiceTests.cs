@@ -73,6 +73,7 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
             };
 
             SetupTestNationalSocieties(organizations);
+            SetupGatewayModems();
         }
 
         private User ArrangeUsersDbSetWithOneTechnicalAdvisor()
@@ -112,9 +113,57 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
                     OrganizationId = 1
                 }
             };
+            var technicalAdvisorUserGatewayModems = new List<TechnicalAdvisorUserGatewayModem>();
 
             ArrangeUserNationalSocietiesFrom(userNationalSocieties);
+            ArrangeTechnicalAdvisorModems(technicalAdvisorUserGatewayModems);
             technicalAdvisor.UserNationalSocieties = userNationalSocieties;
+
+            return technicalAdvisor;
+        }
+
+        private TechnicalAdvisorUser ArrangeUsersDbSetWithOneTechnicalAdvisorWithGatewayModem()
+        {
+            var technicalAdvisor = (TechnicalAdvisorUser)ArrangeUsersDbSetWithOneTechnicalAdvisor();
+
+            var userNationalSocieties = new List<UserNationalSociety>
+            {
+                new UserNationalSociety
+                {
+                    User = technicalAdvisor,
+                    UserId = technicalAdvisor.Id,
+                    NationalSocietyId = 1,
+                    NationalSociety = _nyssContext.NationalSocieties.Find(1),
+                    Organization = new Organization
+                    {
+                        Id = 1,
+                        Name = "Org 1"
+                    },
+                    OrganizationId = 1
+                }
+            };
+            var technicalAdvisorUserGatewayModems = new List<TechnicalAdvisorUserGatewayModem>
+            {
+                new TechnicalAdvisorUserGatewayModem
+                {
+                    GatewayModem = new GatewayModem
+                    {
+                        GatewaySettingId = 1,
+                        GatewaySetting = new GatewaySetting
+                        {
+                            NationalSocietyId = 1
+                        }
+                    },
+                    GatewayModemId = 1,
+                    TechnicalAdvisorUser = technicalAdvisor,
+                    TechnicalAdvisorUserId = technicalAdvisor.Id
+                }
+            };
+
+            ArrangeUserNationalSocietiesFrom(userNationalSocieties);
+            ArrangeTechnicalAdvisorModems(technicalAdvisorUserGatewayModems);
+            technicalAdvisor.UserNationalSocieties = userNationalSocieties;
+            technicalAdvisor.TechnicalAdvisorUserGatewayModems = technicalAdvisorUserGatewayModems;
 
             return technicalAdvisor;
         }
@@ -165,8 +214,10 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
                     Organization = _nyssContext.Organizations.Find(2)
                 }
             };
+            var technicalAdvisorUserGatewayModems = new List<TechnicalAdvisorUserGatewayModem>();
 
             ArrangeUserNationalSocietiesFrom(userNationalSocieties);
+            ArrangeTechnicalAdvisorModems(technicalAdvisorUserGatewayModems);
             technicalAdvisor.UserNationalSocieties = userNationalSocieties;
 
             return technicalAdvisor;
@@ -196,6 +247,12 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
         {
             var userNationalSocietiesDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContext.UserNationalSocieties.Returns(userNationalSocietiesDbSet);
+        }
+
+        private void ArrangeTechnicalAdvisorModems(IEnumerable<TechnicalAdvisorUserGatewayModem> technicalAdvisorUserGatewayModems)
+        {
+            var technicalAdvisorUserGatewayModemsDbSet = technicalAdvisorUserGatewayModems.AsQueryable().BuildMockDbSet();
+            _nyssContext.TechnicalAdvisorUserGatewayModems.Returns(technicalAdvisorUserGatewayModemsDbSet);
         }
 
         private void ArrangeUsersWithOneAdministratorUser() =>
@@ -244,6 +301,13 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
 
             _nyssContext.NationalSocieties.FindAsync(1).Returns(nationalSociety1);
             _nyssContext.NationalSocieties.FindAsync(2).Returns(nationalSociety2);
+        }
+
+        private void SetupGatewayModems()
+        {
+            var gatewayModems = new List<GatewayModem>();
+            var gatewayModemsDbSet = gatewayModems.AsQueryable().BuildMockDbSet();
+            _nyssContext.GatewayModems.Returns(gatewayModemsDbSet);
         }
 
         [Fact]
@@ -567,6 +631,20 @@ namespace RX.Nyss.Web.Tests.Features.TechnicalAdvisors
 
             //assert
             nationalSociety.DefaultOrganization.PendingHeadManager.ShouldBe(null);
+        }
+
+        [Fact]
+        public async Task DeleteTechnicalAdvisor_WhenDeletingAUserWithModems_ShouldDeleteTechnicalAdvisorModem()
+        {
+            //arrange
+            var user = ArrangeUsersDbSetWithOneTechnicalAdvisorWithGatewayModem();
+
+            //act
+            var result = await _technicalAdvisorService.Delete(1, 123);
+
+            //assert
+            result.IsSuccess.ShouldBeTrue();
+            user.TechnicalAdvisorUserGatewayModems.Count.ShouldBe(0);
         }
     }
 }

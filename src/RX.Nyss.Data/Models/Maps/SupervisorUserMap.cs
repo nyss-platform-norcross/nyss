@@ -17,9 +17,12 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(u => u.DecadeOfBirth)
                 .HasColumnName("DecadeOfBirth")
                 .IsRequired();
-                
+
             builder.Property(u => u.CurrentProjectId)
                 .HasColumnName("CurrentProjectId");
+
+            builder.Property(u => u.ModemId)
+                .HasColumnName("ModemId");
 
             builder.HasOne(u => u.CurrentProject)
                 .WithMany()
@@ -29,6 +32,11 @@ namespace RX.Nyss.Data.Models.Maps
 
             builder.HasOne(u => u.HeadSupervisor)
                 .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(u => u.Modem)
+                .WithMany()
+                .HasConstraintName("FK_Users_GatewayModem_GatewayModemId")
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

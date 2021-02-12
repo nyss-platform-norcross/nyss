@@ -12,5 +12,6 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors.Dto
         public string Organization { get; set; }
         public Role Role { get; set; }
         public int OrganizationId { get; set; }
+        public int? ModemId { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
 {
@@ -7,6 +8,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertRecipients.Dto
         public IEnumerable<ProjectAlertOrganization> ProjectOrganizations { get; set; }
         public IEnumerable<ProjectAlertHealthRiskDto> HealthRisks { get; set; }
         public IEnumerable<ProjectAlertSupervisorsDto> Supervisors { get; set; }
+        public IEnumerable<GatewayModemResponseDto> Modems { get; set; }
     }
 
     public class ProjectAlertOrganization

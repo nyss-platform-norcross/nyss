@@ -36,7 +36,7 @@ export const openCreation = {
 export const openAddExisting = {
   invoke: (nationalSocietyId) => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.INVOKE, nationalSocietyId }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.REQUEST }),
-  success: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.SUCCESS }),
+  success: (modems) => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.SUCCESS, modems }),
   failure: (error) => ({ type: OPEN_NATIONAL_SOCIETY_USER_ADD_EXISTING.FAILURE, error })
 };
 
@@ -57,7 +57,7 @@ export const addExisting = {
 export const openEdition = {
   invoke: (nationalSocietyUserId, role) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.INVOKE, nationalSocietyUserId, role }),
   request: () => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.REQUEST }),
-  success: (data, organizations) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS, data, organizations }),
+  success: (data, organizations, modems) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.SUCCESS, data, organizations, modems }),
   failure: (error) => ({ type: OPEN_NATIONAL_SOCIETY_USER_EDITION.FAILURE, error })
 };
 
