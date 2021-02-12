@@ -60,7 +60,7 @@ export function reportsReducer(state = initialState.reports, action) {
       return { ...state, formFetching: true };
 
     case actions.OPEN_SEND_REPORT.SUCCESS:
-      return { ...state, formFetcing: false, sendReport: { dataCollectors: action.dataCollectors } };
+      return { ...state, formFetching: false, sendReport: { dataCollectors: action.dataCollectors, formData: action.formData } };
 
     case actions.OPEN_SEND_REPORT.FAILURE:
       return { ...state, formFetching: false, message: action.message };

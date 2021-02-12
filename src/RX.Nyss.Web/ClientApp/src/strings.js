@@ -753,7 +753,8 @@ export const stringKeys = {
       timeOfReport: "reports.sendReport.timeOfReport",
       sendReport: "reports.sendReport.sendReport",
       goToReportList: "reports.sendReport.goToReportList",
-      success: "reports.sendReport.success"
+      success: "reports.sendReport.success",
+      modem: "reports.sendReport.modem"
     }
   },
   nationalSocietyReports: {

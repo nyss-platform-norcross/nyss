@@ -110,5 +110,15 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor)]
         public async Task<Result> SendReport([FromBody]SendReportRequestDto report) =>
             await _reportSenderService.SendReport(report);
+
+        /// <summary>
+        /// Gets send report form data
+        /// </summary>
+        /// <param name="nationalSocietyId">The id of the national society</param>
+        /// <returns>Form data for sending report</returns>
+        [HttpGet("formData")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor)]
+        public async Task<Result<SendReportFormDataDto>> GetFormData(int nationalSocietyId) =>
+            await _reportSenderService.GetFormData(nationalSocietyId);
     }
 }
