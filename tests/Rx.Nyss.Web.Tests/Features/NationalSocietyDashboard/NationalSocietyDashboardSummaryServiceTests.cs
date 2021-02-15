@@ -80,7 +80,7 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
         }
 
         [Fact]
-        public async Task GetSummaryData_ReturnsCorrectReportCount()
+        public async Task GetSummaryData_ReturnsCorrectKeptReportCount()
         {
             var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
             var reports = new List<RawReport>
@@ -91,7 +91,133 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Village = new Village { District = new District() },
                     Report = new Report
                     {
+                        ReportedCaseCount = 5,
+                        Status = ReportStatus.Accepted,
+                    }
+                },
+            };
+            _reportService.GetRawReportsWithDataCollectorQuery(filters)
+                .Returns(reports.AsQueryable());
+            _reportService.GetDashboardHealthRiskEventReportsQuery(filters)
+                .Returns(reports.Select(r => r.Report)
+                    .AsQueryable());
+
+            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
+
+            summaryData.KeptReportCount.ShouldBe(5);
+        }
+
+        [Fact]
+        public async Task GetSummaryData_ReturnsCorrectDismissedReportCount()
+        {
+            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var reports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 5,
+                        Status = ReportStatus.Rejected,
+                    }
+                },
+            };
+            _reportService.GetRawReportsWithDataCollectorQuery(filters)
+                .Returns(reports.AsQueryable());
+            _reportService.GetDashboardHealthRiskEventReportsQuery(filters)
+                .Returns(reports.Select(r => r.Report)
+                    .AsQueryable());
+
+            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
+
+            summaryData.DismissedReportCount.ShouldBe(5);
+        }
+
+        [Fact]
+        public async Task GetSummaryData_ReturnsCorrectNotCrossCheckedReportCount()
+        {
+            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var reports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 5,
+                        Status = ReportStatus.New,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 1,
+                        Status = ReportStatus.Accepted,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 3,
+                        Status = ReportStatus.Pending,
+                    }
+                }
+            };
+            _reportService.GetRawReportsWithDataCollectorQuery(filters)
+                .Returns(reports.AsQueryable());
+            _reportService.GetDashboardHealthRiskEventReportsQuery(filters)
+                .Returns(reports.Select(r => r.Report)
+                    .AsQueryable());
+
+            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
+
+            summaryData.NotCrossCheckedReportCount.ShouldBe(8);
+        }
+
+        [Fact]
+        public async Task GetSummaryData_ReturnsCorrectTotalReportCount()
+        {
+            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
+            var reports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 1,
+                        Status = ReportStatus.Accepted,
+                        MarkedAsError = false,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
                         ReportedCaseCount = 2,
+                        Status = ReportStatus.Rejected,
+                        MarkedAsError = false,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 1,
                         Status = ReportStatus.New,
                         MarkedAsError = false,
                     }
@@ -102,19 +228,22 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                     Village = new Village { District = new District() },
                     Report = new Report
                     {
-                        ReportedCaseCount = 3,
-                        Status = ReportStatus.New,
+                        ReportedCaseCount = 1,
+                        Status = ReportStatus.Pending,
                         MarkedAsError = false,
                     }
-                }
+                },
             };
 
-            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
-            _reportService.GetSuccessReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
+            _reportService.GetRawReportsWithDataCollectorQuery(filters)
+                .Returns(reports.AsQueryable());
+            _reportService.GetDashboardHealthRiskEventReportsQuery(filters)
+                .Returns(reports.Select(r => r.Report)
+                    .AsQueryable());
 
             var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
-            summaryData.ReportCount.ShouldBe(5);
+            summaryData.TotalReportCount.ShouldBe(5);
         }
 
 
@@ -210,30 +339,6 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
             var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
 
             summaryData.InactiveDataCollectorCount.ShouldBe(2);
-        }
-
-        [Fact]
-        public async Task GetSummaryData_ReturnsCorrectErrorReportCount()
-        {
-            var filters = new ReportsFilter { NationalSocietyId = NationalSocietyId };
-
-            var allReportsCount = 3;
-            var validReportsCount = 2;
-            var expectedErrorReportsCount = 1;
-
-            var reports = Enumerable.Range(0, validReportsCount).Select(i => new Report());
-            var rawReports = Enumerable.Range(0, allReportsCount).Select(i => new RawReport
-            {
-                DataCollector = new DataCollector(),
-                Village = _villages.First()
-            });
-
-            _reportService.GetSuccessReportsQuery(filters).Returns(reports.AsQueryable());
-            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
-
-            var summaryData = await _nationalSocietyDashboardSummaryService.GetData(filters);
-
-            summaryData.ErrorReportCount.ShouldBe(expectedErrorReportsCount);
         }
 
         [Fact]

@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
             _reportService = Substitute.For<IReportService>();
             _reportsDashboardByDataCollectionPointService = new ReportsDashboardByDataCollectionPointService(_reportService, dateTimeProvider);
 
-            _reportService.GetHealthRiskEventReportsQuery(Arg.Any<ReportsFilter>()).Returns(reportsDbSet);
+            _reportService.GetDashboardHealthRiskEventReportsQuery(Arg.Any<ReportsFilter>()).Returns(reportsDbSet);
         }
 
         [Fact]

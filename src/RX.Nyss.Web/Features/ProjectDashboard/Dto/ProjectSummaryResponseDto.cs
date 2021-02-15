@@ -4,16 +4,15 @@ namespace RX.Nyss.Web.Features.ProjectDashboard.Dto
 {
     public class ProjectSummaryResponseDto
     {
+        public int KeptReportCount { get; set; }
+        public int DismissedReportCount { get; set; }
+        public int NotCrossCheckedReportCount { get; set; }
+        public int TotalReportCount { get; set; }
         public int ActiveDataCollectorCount { get; set; }
         public int InactiveDataCollectorCount { get; set; }
-        public int ReportCount { get; set; }
-        public AlertsSummaryResponseDto AlertsSummary { get; set; } = new AlertsSummaryResponseDto();
         public DataCollectionPointsSummaryResponse DataCollectionPointSummary { get; set; } = new DataCollectionPointsSummaryResponse();
-        public int ErrorReportCount { get; set; }
+        public AlertsSummaryResponseDto AlertsSummary { get; set; } = new AlertsSummaryResponseDto();
         public int NumberOfVillages { get; set; }
         public int NumberOfDistricts { get; set; }
-        public int DismissedReportCount { get; set; }
-        public int KeptReportCount { get; set; }
-        public int PendingReportCount { get; set; }
     }
 }

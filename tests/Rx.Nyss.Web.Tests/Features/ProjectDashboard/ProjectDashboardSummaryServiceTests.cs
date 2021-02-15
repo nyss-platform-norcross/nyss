@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
         }
 
         [Fact]
-        public async Task GetSummaryData_ReturnsCorrectReportCount()
+        public async Task GetSummaryData_ReturnsCorrectKeptReportCount()
         {
             var filters = new ReportsFilter { ProjectId = ProjectId };
             var reports = new List<RawReport>
@@ -79,10 +79,51 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                     Village = new Village { District = new District() },
                     Report = new Report
                     {
-                        ReportedCaseCount = 2,
-                        Status = ReportStatus.New,
+                        ReportedCaseCount = 5,
+                        Status = ReportStatus.Accepted,
                     }
                 },
+            };
+            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetDashboardHealthRiskEventReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
+
+            var summaryData = await _projectDashboardDataService.GetData(filters);
+
+            summaryData.KeptReportCount.ShouldBe(5);
+        }
+
+        [Fact]
+        public async Task GetSummaryData_ReturnsCorrectDismissedReportCount()
+        {
+            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var reports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 3,
+                        Status = ReportStatus.Rejected,
+                    }
+                },
+            };
+            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetDashboardHealthRiskEventReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
+
+            var summaryData = await _projectDashboardDataService.GetData(filters);
+
+            summaryData.DismissedReportCount.ShouldBe(3);
+        }
+
+
+        [Fact]
+        public async Task GetSummaryData_ReturnsCorrectNotCrossCheckedReportCount()
+        {
+            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var reports = new List<RawReport>
+            {
                 new RawReport
                 {
                     DataCollector = _dataCollectors[0],
@@ -92,15 +133,94 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
                         ReportedCaseCount = 3,
                         Status = ReportStatus.New,
                     }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 4,
+                        Status = ReportStatus.Pending,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 4,
+                        Status = ReportStatus.Accepted,
+                    }
+                }
+            };
+            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
+            _reportService.GetDashboardHealthRiskEventReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
+
+            var summaryData = await _projectDashboardDataService.GetData(filters);
+
+            summaryData.NotCrossCheckedReportCount.ShouldBe(7);
+        }
+
+        [Fact]
+        public async Task GetSummaryData_ReturnsCorrectTotalReportCount()
+        {
+            var filters = new ReportsFilter { ProjectId = ProjectId };
+            var reports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 1,
+                        Status = ReportStatus.Accepted,
+                        MarkedAsError = false,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 1,
+                        Status = ReportStatus.Rejected,
+                        MarkedAsError = false,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 1,
+                        Status = ReportStatus.New,
+                        MarkedAsError = false,
+                    }
+                },
+                new RawReport
+                {
+                    DataCollector = _dataCollectors[0],
+                    Village = new Village { District = new District() },
+                    Report = new Report
+                    {
+                        ReportedCaseCount = 1,
+                        Status = ReportStatus.Pending,
+                        MarkedAsError = false,
+                    }
                 }
             };
 
             _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(reports.AsQueryable());
-            _reportService.GetSuccessReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
+            _reportService.GetDashboardHealthRiskEventReportsQuery(filters).Returns(reports.Select(r => r.Report).AsQueryable());
 
             var summaryData = await _projectDashboardDataService.GetData(filters);
 
-            summaryData.ReportCount.ShouldBe(5);
+            summaryData.TotalReportCount.ShouldBe(4);
         }
 
 
@@ -196,30 +316,6 @@ namespace RX.Nyss.Web.Tests.Features.ProjectDashboard
             var summaryData = await _projectDashboardDataService.GetData(filters);
 
             summaryData.InactiveDataCollectorCount.ShouldBe(2);
-        }
-
-        [Fact]
-        public async Task GetSummaryData_ReturnsCorrectErrorReportCount()
-        {
-            var filters = new ReportsFilter { ProjectId = ProjectId };
-
-            var allReportsCount = 3;
-            var validReportsCount = 2;
-            var expectedErrorReportsCount = 1;
-
-            var reports = Enumerable.Range(0, validReportsCount).Select(i => new Report());
-            var rawReports = Enumerable.Range(0, allReportsCount).Select(i => new RawReport
-            {
-                DataCollector = new DataCollector(),
-                Village = new Village { District = new District() }
-            });
-
-            _reportService.GetSuccessReportsQuery(filters).Returns(reports.AsQueryable());
-            _reportService.GetRawReportsWithDataCollectorQuery(filters).Returns(rawReports.AsQueryable());
-
-            var summaryData = await _projectDashboardDataService.GetData(filters);
-
-            summaryData.ErrorReportCount.ShouldBe(expectedErrorReportsCount);
         }
 
         [Fact]

@@ -35,7 +35,7 @@ namespace RX.Nyss.Web.Features.Reports
         Task<byte[]> Export(int projectId, ReportListFilterRequestDto filter, bool useExcelFormat = false);
         Task<Result> MarkAsError(int reportId);
         IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
-        IQueryable<Report> GetHealthRiskEventReportsQuery(ReportsFilter filters);
+        IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters);
         IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters);
     }
 
@@ -383,9 +383,9 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(r => r.Report)
                 .Where(r => !r.MarkedAsError);
 
-        public IQueryable<Report> GetHealthRiskEventReportsQuery(ReportsFilter filters) =>
+        public IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters) =>
             GetSuccessReportsQuery(filters)
-                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity);
+                .Where(r => r.ProjectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity && r.Status != ReportStatus.Closed);
 
         public async Task<Result> MarkAsError(int reportId)
         {

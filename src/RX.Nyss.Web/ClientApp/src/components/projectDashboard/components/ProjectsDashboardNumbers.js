@@ -24,12 +24,12 @@ export const ProjectsDashboardNumbers = ({ isFetching, projectSummary, reportsTy
     <Grid container spacing={2} data-printable={true}>
       <Grid item sm={6} md={3} xs={12} className={styles.numberBox}>
         <Card className={styles.card}>
-          <CardHeader title={strings(stringKeys.project.dashboard.numbers.totalReportCountTitle)} />
+          <CardHeader title={strings(stringKeys.project.dashboard.numbers.reportCountTitle)} />
           <CardContent>
             {renderNumber(strings(stringKeys.project.dashboard.numbers.keptReportCount), projectSummary.keptReportCount)}
             {renderNumber(strings(stringKeys.project.dashboard.numbers.dismissedReportCount), projectSummary.dismissedReportCount)}
-            {renderNumber(strings(stringKeys.project.dashboard.numbers.totalReportCount), projectSummary.reportCount)}
-            {renderNumber(strings(stringKeys.project.dashboard.numbers.totalErrorReportCount), projectSummary.errorReportCount)}
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.notCrossCheckedReportCount), projectSummary.notCrossCheckedReportCount)}
+            {renderNumber(strings(stringKeys.project.dashboard.numbers.totalReportCount), projectSummary.totalReportCount)}
           </CardContent>
         </Card>
       </Grid>

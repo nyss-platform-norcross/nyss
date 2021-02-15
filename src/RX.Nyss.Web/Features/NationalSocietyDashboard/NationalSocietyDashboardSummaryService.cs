@@ -41,7 +41,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
 
             var nationalSocietyId = filters.NationalSocietyId.Value;
 
-            var validReports = _reportService.GetSuccessReportsQuery(filters);
+            var dashboardReports = _reportService.GetDashboardHealthRiskEventReportsQuery(filters);
             var rawReportsWithDataCollector = _reportService.GetRawReportsWithDataCollectorQuery(filters);
 
             return await _nyssContext.NationalSocieties
@@ -53,14 +53,13 @@ namespace RX.Nyss.Web.Features.NationalSocietyDashboard
                 })
                 .Select(data => new NationalSocietySummaryResponseDto
                 {
-                    ReportCount = validReports.Sum(r => r.ReportedCaseCount),
-                    DismissedReportCount = validReports.Where(r => r.Status == ReportStatus.Rejected).Sum(r => r.ReportedCaseCount),
-                    KeptReportCount = validReports.Where(r => r.Status == ReportStatus.Accepted).Sum(r => r.ReportedCaseCount),
-                    PendingReportCount = validReports.Where(r => r.Status == ReportStatus.Pending).Sum(r => r.ReportedCaseCount),
+                    KeptReportCount = dashboardReports.Where(r => r.Status == ReportStatus.Accepted).Sum(r => r.ReportedCaseCount),
+                    DismissedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.Rejected).Sum(r => r.ReportedCaseCount),
+                    NotCrossCheckedReportCount = dashboardReports.Where(r => r.Status == ReportStatus.New || r.Status == ReportStatus.Pending).Sum(r => r.ReportedCaseCount),
+                    TotalReportCount = dashboardReports.Sum(r => r.ReportedCaseCount),
                     ActiveDataCollectorCount = data.activeDataCollectorCount,
                     InactiveDataCollectorCount = data.allDataCollectorCount - data.activeDataCollectorCount,
-                    ErrorReportCount = rawReportsWithDataCollector.Count() - validReports.Count(),
-                    DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(validReports),
+                    DataCollectionPointSummary = _reportsDashboardSummaryService.DataCollectionPointsSummary(dashboardReports),
                     AlertsSummary = _reportsDashboardSummaryService.AlertsSummary(filters),
                     NumberOfDistricts = rawReportsWithDataCollector.Select(r => r.Village.District).Distinct().Count(),
                     NumberOfVillages = rawReportsWithDataCollector.Select(r => r.Village).Distinct().Count()
