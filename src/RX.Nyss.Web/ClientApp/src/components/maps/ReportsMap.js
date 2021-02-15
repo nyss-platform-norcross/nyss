@@ -29,7 +29,6 @@ const createIcon = (count) => {
 export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) => {
   const [bounds, setBounds] = useState(null);
   const [center, setCenter] = useState(null);
-  const [isMapLoading, setIsMapLoading] = useState(false);
 
   useEffect(() => {
     if (!data) {
@@ -37,13 +36,9 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
     }
 
     totalReports = data.reduce((a, d) => a + d.reportsCount, 0);
-    setIsMapLoading(true); // used to remove the component from the view and clean the marker groups
 
-    setTimeout(() => {
-      setBounds(data.length > 1 ? calculateBounds(data) : null)
-      setCenter(data.length > 1 ? null : calculateCenter(data.map(l => ({ lat: l.location.latitude, lng: l.location.longitude }))));
-      setIsMapLoading(false);
-    }, 0);
+    setBounds(data.length > 1 ? calculateBounds(data) : null)
+    setCenter(data.length > 1 ? null : calculateCenter(data.map(l => ({ lat: l.location.latitude, lng: l.location.longitude }))));
   }, [data])
 
   const handleMarkerClick = e =>
@@ -63,7 +58,7 @@ export const ReportsMap = ({ data, details, detailsFetching, onMarkerClick }) =>
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {(data && !isMapLoading) && (
+      {data && (
         <MarkerClusterGroup
           maxClusterRadius={50}
           showCoverageOnHover={false}

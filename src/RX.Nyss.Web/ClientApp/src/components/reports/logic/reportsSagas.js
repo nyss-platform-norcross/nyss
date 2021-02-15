@@ -165,8 +165,10 @@ function* openSendReport({ projectId }) {
       trainingStatus: null,
       name: null
     };
+    const nationalSocietyId = yield select(state => state.appData.siteMap.parameters.nationalSocietyId);
     const dataCollectors = yield call(http.post, `/api/dataCollector/listAll?projectId=${projectId}`, filters);
-    yield put(actions.openSendReport.success(dataCollectors.value));
+    const formData = yield call(http.get, `/api/report/formData?nationalSocietyId=${nationalSocietyId}`);
+    yield put(actions.openSendReport.success(dataCollectors.value, formData.value));
   } catch (error) {
     yield put(actions.openSendReport.failure(error.message));
   }

@@ -2,14 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Configuration;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Services.Authorization;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -19,6 +20,7 @@ namespace RX.Nyss.Web.Features.Reports
     public interface IReportSenderService
     {
         Task<Result> SendReport(SendReportRequestDto report);
+        Task<Result<SendReportFormDataDto>> GetFormData(int nationalSocietyId);
     }
 
     public class ReportSenderService : IReportSenderService
@@ -52,12 +54,17 @@ namespace RX.Nyss.Web.Features.Reports
                 .Where(dc => dc.PhoneNumber == report.Sender)
                 .Select(dc => dc.Project.NationalSociety)
                 .SingleOrDefaultAsync();
-            var apiKey = await _nyssContext.GatewaySettings
+            var gatewayData = await _nyssContext.GatewaySettings
+                .Include(gs => gs.Modems)
                 .Where(gs => gs.NationalSociety == nationalSociety)
-                .Select(gs => gs.ApiKey)
+                .Select(gs => new
+                {
+                    ApiKey = gs.ApiKey,
+                    Modem = gs.Modems.FirstOrDefault(gm => gm.Id == report.ModemId)
+                })
                 .FirstOrDefaultAsync();
 
-            if (string.IsNullOrEmpty(apiKey))
+            if (string.IsNullOrEmpty(gatewayData.ApiKey))
             {
                 return Error(ResultKey.Report.NoGatewaySettingFoundForNationalSociety);
             }
@@ -68,9 +75,10 @@ namespace RX.Nyss.Web.Features.Reports
             {
                 { "Sender", report.Sender },
                 { "Timestamp", report.Timestamp },
-                { "ApiKey", apiKey },
+                { "ApiKey", gatewayData.ApiKey },
                 { "Text", report.Text },
                 { "Source", "Nyss" },
+                { "Modemno", gatewayData.Modem?.ModemId.ToString() },
                 { "Headsupervisor", isHeadSupervisor ? "true" : null }
             };
             var content = new FormUrlEncodedContent(reportProps);
@@ -81,5 +89,43 @@ namespace RX.Nyss.Web.Features.Reports
 
             return SuccessMessage(ResultKey.Report.ReportSentSuccessfully);
         }
+
+        public async Task<Result<SendReportFormDataDto>> GetFormData(int nationalSocietyId)
+        {
+            var currentUser = await _authorizationService.GetCurrentUser();
+            var currentUserModemId = await GetCurrentUserModemId(currentUser, nationalSocietyId);
+            var gatewayModems = await _nyssContext.GatewayModems
+                .Where(gm => gm.GatewaySetting.NationalSocietyId == nationalSocietyId)
+                .Select(gm => new GatewayModemResponseDto
+                {
+                    Id = gm.Id,
+                    Name = gm.Name
+                })
+                .ToListAsync();
+
+            var formData = new SendReportFormDataDto
+            {
+                CurrentUserModemId = currentUserModemId,
+                Modems = gatewayModems
+            };
+
+            return Success(formData);
+        }
+
+        private async Task<int?> GetCurrentUserModemId(User currentUser, int nationalSocietyId) =>
+            currentUser.Role switch
+            {
+                Role.Manager => ((ManagerUser)currentUser).ModemId,
+                Role.TechnicalAdvisor => await GetTechnicalAdvisorModemId(currentUser.Id, nationalSocietyId),
+                Role.Supervisor => ((SupervisorUser)currentUser).ModemId,
+                Role.HeadSupervisor => ((HeadSupervisorUser)currentUser).ModemId,
+                _ => null
+            };
+
+        private async Task<int?> GetTechnicalAdvisorModemId(int technicalAdvisorId, int nationalSocietyId) =>
+            await _nyssContext.TechnicalAdvisorUserGatewayModems
+                .Where(tam => tam.TechnicalAdvisorUserId == technicalAdvisorId && tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId)
+                .Select(tam => tam.GatewayModemId)
+                .FirstOrDefaultAsync();
     }
 }

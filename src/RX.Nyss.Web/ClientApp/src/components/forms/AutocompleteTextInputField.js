@@ -41,6 +41,7 @@ const AutocompleteTextInput = ({ error, name, label, value, options, freeSolo, a
         // Regular option
         return option.title;
       }}
+      getOptionSelected={(option, value) => option.title === value}
       renderOption={option => option.title}
       {...controlProps}
       renderInput={(params) => (

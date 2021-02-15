@@ -6,9 +6,8 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
-import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
-import { useTheme, Grid, Button } from "@material-ui/core"
+import { useTheme, Grid, Button, MenuItem, LinearProgress } from "@material-ui/core"
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { Dialog } from "@material-ui/core";
@@ -18,33 +17,43 @@ import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { useSelector } from "react-redux";
 import { DatePicker } from "../forms/DatePicker";
 import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
+import SelectField from "../forms/SelectField";
 
 
-export const SendReportDialog = ({ close, props, sendReport }) => {
+export const SendReportDialog = ({ close, sendReport }) => {
   const [form, setForm] = useState(null);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   dayjs.extend(utc);
-
+  const isFetching = useSelector(state => state.reports.formFetching);
   const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}` })));
+  const formData = useSelector(state => state.reports.sendReport.formData);
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
   const isSending = useSelector(state => state.reports.formSaving);
 
+  const canSelectModem = !!formData && formData.modems.length > 0;
+
   useEffect(() => {
+    if (!formData) {
+      return null;
+    }
+
     const fields = {
-      dataCollector: '',
+      dataCollector: null,
+      gatewayModemId: !!formData.currentUserModemId ? formData.currentUserModemId.toString() : '',
       message: '',
       time: dayjs().format('HH:mm')
     };
 
     const validation = {
       dataCollector: [validators.required],
+      gatewayModemId: [validators.requiredWhen(_ => canSelectModem)],
       message: [validators.required],
       time: [validators.required, validators.time]
     };
 
     setForm(createForm(fields, validation));
-  }, []);
+  }, [canSelectModem, formData]);
 
   const handleDateChange = date => {
     setDate(date.format('YYYY-MM-DD'));
@@ -61,19 +70,17 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
     sendReport({
       sender: values.dataCollector.split('/')[1].trim(),
       text: values.message,
-      timestamp: dayjs(`${date} ${values.time}`).utc().format('YYYYMMDDHHmmss')
+      timestamp: dayjs(`${date} ${values.time}`).utc().format('YYYYMMDDHHmmss'),
+      modemId: !!values.gatewayModemId ? parseInt(values.gatewayModemId) : null
     });
 
     close();
   };
 
-  if (!form) {
-    return <Loading />;
-  }
-
-  return (
+  return !!form && (
     <Fragment>
       <Dialog open={true} onClose={close} onClick={e => e.stopPropagation()} fullScreen={fullScreen}>
+        {isFetching && <LinearProgress />}
         <DialogTitle id="form-dialog-title">{strings(stringKeys.reports.sendReport.sendReport)}</DialogTitle>
         <DialogContent>
           <Form onSubmit={handleSubmit}>
@@ -88,6 +95,22 @@ export const SendReportDialog = ({ close, props, sendReport }) => {
                   name="dataCollectors"
                 />
               </Grid>
+
+              {canSelectModem && (
+                <Grid item xs={12}>
+                  <SelectField
+                    label={strings(stringKeys.reports.sendReport.modem)}
+                    field={form.fields.gatewayModemId}
+                    name="gatewayModems"
+                  >
+                    {formData.modems.map(modem => (
+                      <MenuItem key={`gatewayModem_${modem.id}`} value={modem.id.toString()}>
+                        {modem.name}
+                      </MenuItem>
+                    ))}
+                  </SelectField>
+                </Grid>
+              )}
 
               <Grid item xs={6}>
                 <DatePicker
