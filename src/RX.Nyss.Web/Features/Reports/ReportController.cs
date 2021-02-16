@@ -14,11 +14,16 @@ namespace RX.Nyss.Web.Features.Reports
     {
         private readonly IReportService _reportService;
         private readonly IReportSenderService _reportSenderService;
+        private readonly IReportExportService _reportExportService;
 
-        public ReportController(IReportService reportService, IReportSenderService reportSenderService)
+        public ReportController(
+            IReportService reportService,
+            IReportSenderService reportSenderService,
+            IReportExportService reportExportService)
         {
             _reportService = reportService;
             _reportSenderService = reportSenderService;
+            _reportExportService = reportExportService;
         }
 
         /// <summary>
@@ -57,7 +62,7 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportToCsv(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
         {
-            var excelSheetBytes = await _reportService.Export(projectId, filterRequest);
+            var excelSheetBytes = await _reportExportService.Export(projectId, filterRequest);
             return File(excelSheetBytes, "text/csv");
         }
 
@@ -70,7 +75,7 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<IActionResult> ExportToExcel(int projectId, [FromBody] ReportListFilterRequestDto filterRequest)
         {
-            var excelSheetBytes = await _reportService.Export(projectId, filterRequest, useExcelFormat: true);
+            var excelSheetBytes = await _reportExportService.Export(projectId, filterRequest, useExcelFormat: true);
             return File(excelSheetBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         }
 
