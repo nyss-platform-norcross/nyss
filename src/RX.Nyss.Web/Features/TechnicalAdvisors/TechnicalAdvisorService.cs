@@ -250,34 +250,37 @@ namespace RX.Nyss.Web.Features.TechnicalAdvisors
 
         private async Task UpdateModem(TechnicalAdvisorUser user, int? modemId, int nationalSocietyId)
         {
-            var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
-
-            if (modemId.HasValue && modem == null)
+            if (modemId.HasValue)
             {
-                throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+                var modem = await _nyssContext.GatewayModems.FirstOrDefaultAsync(gm => gm.Id == modemId && gm.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+                if (modem == null)
+                {
+                    throw new ResultException(ResultKey.User.Registration.CannotAssignUserToModemInDifferentNationalSociety);
+                }
+
+                var technicalAdvisorModem = new TechnicalAdvisorUserGatewayModem
+                {
+                    TechnicalAdvisorUser = user,
+                    GatewayModem = modem
+                };
+                var allModemsForUser = await _nyssContext.TechnicalAdvisorUserGatewayModems
+                    .Include(tam => tam.GatewayModem)
+                    .ThenInclude(gm => gm.GatewaySetting)
+                    .Where(tam => tam.TechnicalAdvisorUserId == user.Id)
+                    .ToListAsync();
+                var existingModemForCurrentNationalSociety = allModemsForUser
+                    .FirstOrDefault(tam => tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId);
+
+                if (existingModemForCurrentNationalSociety != null)
+                {
+                    allModemsForUser.Remove(existingModemForCurrentNationalSociety);
+                }
+
+                allModemsForUser.Add(technicalAdvisorModem);
+
+                user.TechnicalAdvisorUserGatewayModems = allModemsForUser;
             }
-
-            var technicalAdvisorModem = new TechnicalAdvisorUserGatewayModem
-            {
-                TechnicalAdvisorUser = user,
-                GatewayModem = modem
-            };
-            var allModemsForUser = await _nyssContext.TechnicalAdvisorUserGatewayModems
-                .Include(tam => tam.GatewayModem)
-                .ThenInclude(gm => gm.GatewaySetting)
-                .Where(tam => tam.TechnicalAdvisorUserId == user.Id)
-                .ToListAsync();
-            var existingModemForCurrentNationalSociety = allModemsForUser
-                .FirstOrDefault(tam => tam.GatewayModem.GatewaySetting.NationalSocietyId == nationalSocietyId);
-
-            if (existingModemForCurrentNationalSociety != null)
-            {
-                allModemsForUser.Remove(existingModemForCurrentNationalSociety);
-            }
-
-            allModemsForUser.Add(technicalAdvisorModem);
-
-            user.TechnicalAdvisorUserGatewayModems = allModemsForUser;
         }
 
         private async Task RemoveModem(TechnicalAdvisorUser user, int nationalSocietyId)
