@@ -271,7 +271,8 @@ namespace RX.Nyss.Web.Features.Alerts
                         Id = ar.Id,
                         ReceivedAt = ar.ReceivedAt.AddHours(utcOffset),
                         Status = ar.Status.ToString(),
-                        Organization = ar.OrganizationName
+                        Organization = ar.OrganizationName,
+                        IsAnonymized = ar.IsAnonymized
                     }).ToList()
             };
 
@@ -734,6 +735,22 @@ namespace RX.Nyss.Web.Features.Alerts
                 .Where(uns => uns.UserId == currentUser.Id)
                 .Select(uns => uns.Organization.Id)
                 .ToListAsync();
+
+            if (currentUser.Role == Role.Supervisor)
+            {
+                return await _nyssContext.Alerts
+                    .IgnoreQueryFilters()
+                    .Where(a => a.Id == alertId && a.AlertReports.Any(ar => ar.Report.DataCollector.Supervisor.Id == currentUser.Id))
+                    .AnyAsync();
+            }
+
+            if (currentUser.Role == Role.HeadSupervisor)
+            {
+                return await _nyssContext.Alerts
+                    .IgnoreQueryFilters()
+                    .Where(a => a.Id == alertId && a.AlertReports.Any(ar => ar.Report.DataCollector.Supervisor.HeadSupervisor.Id == currentUser.Id))
+                    .AnyAsync();
+            }
 
             var organizationHasReportsInAlert = await _nyssContext.Alerts
                 .IgnoreQueryFilters()

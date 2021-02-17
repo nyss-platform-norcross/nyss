@@ -13,6 +13,7 @@ import { AlertsAssessmentReport } from "./components/AlertsAssessmentReport";
 import { assessmentStatus } from "./logic/alertsConstants";
 import Divider from "@material-ui/core/Divider";
 import { AlertsAssessmentActions } from "./components/AlertsAssessmentActions";
+import { useMemo } from "react";
 
 const getAssessmentStatusInformation = (status) => {
   switch (status) {
@@ -49,6 +50,9 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
     }
 
   }, [props.data, props.match]);
+
+  const hasAccessToActions = useMemo(() => !!data && data.reports.filter(r => !r.isAnonymized).length > 0,
+    [data]);
 
   if (props.isFetching || !data) {
     return <Loading />;
@@ -101,6 +105,8 @@ const AlertsAssessmentPageComponent = ({ alertId, projectId, data, ...props }) =
           alertId={alertId}
           projectId={projectId}
           alertAssessmentStatus={data.assessmentStatus}
+
+          hasAccess={hasAccessToActions}
 
           goToList={props.goToList}
 
