@@ -18,6 +18,7 @@ import { useSelector } from "react-redux";
 import { DatePicker } from "../forms/DatePicker";
 import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";
 import SelectField from "../forms/SelectField";
+import { getUtcOffset } from "../../utils/date";
 
 
 export const SendReportDialog = ({ close, sendReport }) => {
@@ -71,7 +72,8 @@ export const SendReportDialog = ({ close, sendReport }) => {
       sender: values.dataCollector.split('/')[1].trim(),
       text: values.message,
       timestamp: dayjs(`${date} ${values.time}`).utc().format('YYYYMMDDHHmmss'),
-      modemId: !!values.gatewayModemId ? parseInt(values.gatewayModemId) : null
+      modemId: !!values.gatewayModemId ? parseInt(values.gatewayModemId) : null,
+      utcOffset: getUtcOffset()
     });
 
     close();
