@@ -7,7 +7,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
 import { TableContainer } from '../common/table/TableContainer';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
@@ -89,9 +88,7 @@ export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChan
           {list.map(row => (
             <TableRow key={row.id} hover>
               <TableCell>
-                <Tooltip title={row.projectTimeZone || "UTC"}>
-                  <span>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</span>
-                </Tooltip>
+                <span>{dayjs(row.dateTime).format('YYYY-MM-DD HH:mm')}</span>
               </TableCell>
               <TableCell>
                 {row.isMarkedAsError

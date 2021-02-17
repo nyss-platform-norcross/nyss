@@ -24,7 +24,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
         public int? DeathCount { get; set; }
         public int? FromOtherVillagesCount { get; set; }
         public string ProjectName { get; set; }
-        public string ProjectTimeZone { get; set; }
         public bool IsAnonymized { get; set; }
         public string OrganizationName { get; set; }
     }
