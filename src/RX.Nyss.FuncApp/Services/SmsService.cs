@@ -41,7 +41,8 @@ namespace RX.Nyss.FuncApp.Services
                 cloudToDeviceMethod.SetPayloadJson(JsonSerializer.Serialize(new
                     {
                         To = message.PhoneNumber,
-                        Message = message.SmsMessage
+                        Message = message.SmsMessage,
+                        Unicode = "1"
                     },
                     new JsonSerializerOptions
                     {
