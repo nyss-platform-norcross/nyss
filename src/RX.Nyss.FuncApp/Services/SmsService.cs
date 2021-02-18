@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
 using Microsoft.Extensions.Logging;
@@ -7,7 +6,6 @@ using Newtonsoft.Json;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace RX.Nyss.FuncApp.Services
 {
@@ -41,11 +39,12 @@ namespace RX.Nyss.FuncApp.Services
 
                 var cloudToDeviceMethod = new CloudToDeviceMethod("send_sms", TimeSpan.FromSeconds(30));
                 cloudToDeviceMethod.SetPayloadJson(JsonConvert.SerializeObject(new SmsIoTHubMessage
-                    {
-                        To = message.PhoneNumber,
-                        Message = message.SmsMessage,
-                        ModemNumber = message.ModemNumber
-                    }));
+                {
+                    To = message.PhoneNumber,
+                    Message = message.SmsMessage,
+                    ModemNumber = message.ModemNumber,
+                    Unicode = "1"
+                }, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }));
 
                 var response = await _iotHubServiceClient.InvokeDeviceMethodAsync(message.IotHubDeviceName, cloudToDeviceMethod);
 
