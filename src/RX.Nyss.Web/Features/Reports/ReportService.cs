@@ -35,6 +35,8 @@ namespace RX.Nyss.Web.Features.Reports
         IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
         IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters);
         IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters);
+        Task<Result> AcceptReport(int reportId);
+        Task<Result> DismissReport(int reportId);
     }
 
     public class ReportService : IReportService
@@ -234,11 +236,6 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskCannotBeEdited);
             }
 
-            if (!await HasAccessToReport(reportId))
-            {
-                return Error(ResultKey.Report.NoAccess);
-            }
-
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
                 .SingleOrDefaultAsync(phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&
@@ -309,11 +306,6 @@ namespace RX.Nyss.Web.Features.Reports
                 .Include(r => r.ProjectHealthRisk.Project)
                 .FirstOrDefaultAsync(r => r.Id == reportId);
 
-            if (!await HasAccessToReport(reportId))
-            {
-                return Error(ResultKey.Report.NoAccess);
-            }
-
             if (report.ProjectHealthRisk.Project.State != ProjectState.Open)
             {
                 return Error(ResultKey.Report.ProjectIsClosed);
@@ -325,19 +317,56 @@ namespace RX.Nyss.Web.Features.Reports
             return Success();
         }
 
-        private async Task<bool> HasAccessToReport(int reportId)
+        public async Task<Result> AcceptReport(int reportId)
         {
             var currentUser = await _authorizationService.GetCurrentUser();
+            var report = await _nyssContext.RawReports
+                .Where(r => r.Id == reportId && r.Report != null)
+                .Select(r => r.Report)
+                .FirstOrDefaultAsync();
 
-            var currentUserOrganizationId = await _nyssContext.Reports
-                .Where(p => p.Id == reportId)
-                .SelectMany(p => p.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers)
-                .Where(uns => uns.User == currentUser)
-                .Select(uns => uns.OrganizationId)
-                .SingleOrDefaultAsync();
+            if (report == null)
+            {
+                return Error(ResultKey.Report.ReportNotFound);
+            }
 
-            return currentUser.Role == Role.Administrator || _nyssContext.Reports.Any(r => r.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers.Any(
-                nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId));
+            if (report.AcceptedAt.HasValue)
+            {
+                return Error(ResultKey.Report.AlreadyCrossChecked);
+            }
+
+            report.AcceptedAt = _dateTimeProvider.UtcNow;
+            report.AcceptedBy = currentUser;
+            report.Status = ReportStatus.Accepted;
+
+            await _nyssContext.SaveChangesAsync();
+            return Success();
+        }
+
+        public async Task<Result> DismissReport(int reportId)
+        {
+            var currentUser = await _authorizationService.GetCurrentUser();
+            var report = await _nyssContext.RawReports
+                .Where(r => r.Id == reportId && r.Report != null)
+                .Select(r => r.Report)
+                .FirstOrDefaultAsync();
+
+            if (report == null)
+            {
+                return Error(ResultKey.Report.ReportNotFound);
+            }
+
+            if (report.RejectedAt.HasValue)
+            {
+                return Error(ResultKey.Report.AlreadyCrossChecked);
+            }
+
+            report.RejectedAt = _dateTimeProvider.UtcNow;
+            report.RejectedBy = currentUser;
+            report.Status = ReportStatus.Rejected;
+
+            await _nyssContext.SaveChangesAsync();
+            return Success();
         }
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
