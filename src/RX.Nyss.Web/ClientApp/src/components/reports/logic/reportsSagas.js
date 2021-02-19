@@ -19,7 +19,9 @@ export const reportsSagas = () => [
   takeEvery(consts.EXPORT_TO_CSV.INVOKE, getCsvExportData),
   takeEvery(consts.MARK_AS_ERROR.INVOKE, markAsError),
   takeEvery(consts.OPEN_SEND_REPORT.INVOKE, openSendReport),
-  takeEvery(consts.SEND_REPORT.INVOKE, sendReport)
+  takeEvery(consts.SEND_REPORT.INVOKE, sendReport),
+  takeEvery(consts.ACCEPT_REPORT.INVOKE, acceptReport),
+  takeEvery(consts.DISMISS_REPORT.INVOKE, dismissReport)
 ];
 
 function* openReportsList({ projectId }) {
@@ -185,3 +187,27 @@ function* sendReport({ report }) {
     yield put(appActions.showMessage(error.message));
   }
 };
+
+function* acceptReport({ reportId }) {
+  yield put(actions.acceptReport.request());
+  try {
+    yield call(http.post, `/api/report/${reportId}/accept`);
+    yield put(actions.acceptReport.success());
+    yield put(appActions.showMessage(stringKeys.reports.list.acceptReportSuccess));
+  } catch (error) {
+    yield put(actions.acceptReport.failure());
+    yield put(appActions.showMessage(error.message));
+  }
+}
+
+function* dismissReport({ reportId }) {
+  yield put(actions.dismissReport.request());
+  try {
+    yield call(http.post, `/api/report/${reportId}/dismiss`);
+    yield put(actions.dismissReport.success());
+    yield put(appActions.showMessage(stringKeys.reports.list.dismissReportSuccess));
+  } catch (error) {
+    yield put(actions.dismissReport.failure());
+    yield put(appActions.showMessage(error.message));
+  }
+}

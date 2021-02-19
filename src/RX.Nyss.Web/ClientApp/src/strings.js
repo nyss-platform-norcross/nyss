@@ -730,7 +730,11 @@ export const stringKeys = {
       editReport: "reports.list.editReport",
       editedSuccesfully: "reports.list.editedSuccessfully",
       sendReport: "reports.list.sendReport",
-      goToAlert: "reports.list.goToAlert"
+      goToAlert: "reports.list.goToAlert",
+      acceptReport: "reports.list.acceptReport",
+      dismissReport: "reports.list.dismissReport",
+      acceptReportSuccess: "reports.list.acceptReportSuccess",
+      dismissReportSuccess: "reports.list.dismissReportSuccess"
     },
     form: {
       title: "reports.form.editionTitle",

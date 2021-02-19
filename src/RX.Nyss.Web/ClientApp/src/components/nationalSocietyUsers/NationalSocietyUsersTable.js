@@ -37,7 +37,7 @@ export const NationalSocietyUsersTable = ({ isListFetching, isRemoving, goToEdit
 
   const getRowMenu = (row) => [
     {
-      condition: canBeSetAsHeadManager(row),
+      disabled: !canBeSetAsHeadManager(row),
       title: strings(stringKeys.nationalSocietyConsents.setAsHeadManager),
       action: () => setAsHeadManager(row.organizationId, row.id)
     }

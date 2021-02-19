@@ -114,6 +114,8 @@ const ReportsListPageComponent = (props) => {
         user={props.user}
         projectIsClosed={props.projectIsClosed}
         goToAlert={props.goToAlert}
+        acceptReport={props.acceptReport}
+        dismissReport={props.dismissReport}
       />
     </Fragment>
   );
@@ -148,7 +150,9 @@ const mapDispatchToProps = {
   goToEdition: reportsActions.goToEdition,
   openSendReport: reportsActions.openSendReport.invoke,
   sendReport: reportsActions.sendReport.invoke,
-  goToAlert: reportsActions.goToAlert
+  goToAlert: reportsActions.goToAlert,
+  acceptReport: reportsActions.acceptReport.invoke,
+  dismissReport: reportsActions.dismissReport.invoke
 };
 
 export const ReportsListPage = withLayout(

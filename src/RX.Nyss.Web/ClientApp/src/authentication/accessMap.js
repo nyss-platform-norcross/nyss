@@ -78,7 +78,8 @@ export const accessMap = {
     edit: [Administrator, Manager, TechnicalAdvisor],
     markAsError: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
     sendReport: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
-    goToAlert: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor]
+    goToAlert: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
+    crossCheck: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor]
   },
   nationalSocietyReports: {
     list: [Administrator, Manager, TechnicalAdvisor],

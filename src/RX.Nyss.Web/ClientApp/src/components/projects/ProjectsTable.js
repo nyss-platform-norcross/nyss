@@ -35,7 +35,7 @@ export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSoc
   const getRowMenu = (project) => [
     {
       title: strings(stringKeys.project.list.close),
-      condition: !project.isClosed && userCanCloseProject,
+      disabled: project.isClosed || !userCanCloseProject,
       action: () => setRemoveConfirmationDialog({ isOpen: true, projectId: project.id })
     }
   ];
