@@ -12,7 +12,7 @@ import { AlertsEscalationWithoutNotificationDialog } from "./AlertsEscalationWit
 import CheckboxField from "../../forms/CheckboxField";
 import { validators, createForm } from '../../../utils/forms';
 
-export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentStatus, ...props }) => {
+export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentStatus, hasAccess, ...props }) => {
   const [escalationDialogOpened, setEscalationDialogOpened] = useState(false);
   const [escalationWithoutNotificationDialogOpened, setEscalationWithoutNotificationDialogOpened] = useState(false);
   const [closeDialogOpened, setCloseDialogOpened] = useState(false);
@@ -42,7 +42,7 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
 
         {!props.isPendingAlertState && (
           <Fragment>
-            {alertAssessmentStatus === assessmentStatus.toEscalate && (
+            {alertAssessmentStatus === assessmentStatus.toEscalate && hasAccess && (
               <Fragment>
                 <AlertsEscalationDialog
                   alertId={alertId}
@@ -77,13 +77,13 @@ export const AlertsAssessmentActions = ({ projectId, alertId, alertAssessmentSta
               </Fragment>
             )}
 
-            {(alertAssessmentStatus === assessmentStatus.toDismiss || alertAssessmentStatus === assessmentStatus.rejected) && (
+            {(alertAssessmentStatus === assessmentStatus.toDismiss || alertAssessmentStatus === assessmentStatus.rejected) && hasAccess && (
               <SubmitButton isFetching={props.isDismissing} onClick={() => props.dismissAlert(alertId)}>
                 {strings(stringKeys.alerts.assess.alert.dismiss)}
               </SubmitButton>
             )}
 
-            {alertAssessmentStatus === assessmentStatus.escalated && (
+            {alertAssessmentStatus === assessmentStatus.escalated && hasAccess && (
               <Fragment>
                 <AlertsCloseDialog
                   alertId={alertId}
