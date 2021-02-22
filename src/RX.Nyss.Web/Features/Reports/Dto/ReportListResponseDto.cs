@@ -37,7 +37,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int? DeathCount { get; set; }
         public int? FromOtherVillagesCount { get; set; }
         public bool? IsMarkedAsError { get; set; }
-        public bool UserHasAccessToReportDataCollector { get; set; }
         public int? AlertId { get; set; }
         public int? ReportId { get; set; }
         public ReportType? ReportType { get; set; }
@@ -45,5 +44,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public bool IsAnonymized { get; set; }
         public string OrganizationName { get; set; }
         public string SupervisorName { get; set; }
+        public bool IsActivityReport { get; set; }
     }
 }

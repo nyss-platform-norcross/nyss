@@ -63,11 +63,22 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
     setMarkErrorConfirmationDialog({ isOpen: false })
   }
 
+  const canMarkAsError = (row) => 
+    !projectIsClosed 
+    && !row.isAnonymized 
+    && row.isValid 
+    && !row.alertId 
+    && !row.isMarkedAsError
+    && !row.isActivityReport;
+
+  const canCrossCheck = (row) => 
+    !row.isAnonymized && !row.isActivityReport;
+
   const getRowMenu = (row) => [
     {
       title: strings(stringKeys.reports.list.markAsError),
       roles: accessMap.reports.markAsError,
-      disabled: projectIsClosed || row.isAnonymized || !row.isValid || !!row.alertId || row.isMarkedAsError || !row.userHasAccessToReportDataCollector,
+      disabled: !canMarkAsError(row),
       action: () => setMarkErrorConfirmationDialog({ isOpen: true, reportId: row.reportId, isMarkedAsError: row.isMarkedAsError })
     },
     {
@@ -79,13 +90,13 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
     {
       title: strings(stringKeys.reports.list.acceptReport),
       roles: accessMap.reports.crossCheck,
-      disabled: row.isAnonymized,
+      disabled: !canCrossCheck(row),
       action: () => acceptReport(row.id)
     },
     {
       title: strings(stringKeys.reports.list.dismissReport),
       roles: accessMap.reports.crossCheck,
-      disabled: row.isAnonymized,
+      disabled: !canCrossCheck(row),
       action: () => dismissReport(row.id)
     }
   ];

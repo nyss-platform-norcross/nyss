@@ -147,6 +147,8 @@ namespace RX.Nyss.Web.Features.Reports
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
                         .Single(),
+                    IsActivityReport = r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
+                        || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98,
                     IsValid = r.Report != null,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
@@ -158,9 +160,6 @@ namespace RX.Nyss.Web.Features.Reports
                     SupervisorName = r.DataCollector.Supervisor.Name,
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
-                    UserHasAccessToReportDataCollector = !(isSupervisor || isHeadSupervisor)
-                        || (isHeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id == currentUserId)
-                        || (isSupervisor && r.DataCollector.Supervisor.Id == currentUserId),
                     AlertId = r.Report.ReportAlerts
                         .Select(ra => ra.Alert)
                         .OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
