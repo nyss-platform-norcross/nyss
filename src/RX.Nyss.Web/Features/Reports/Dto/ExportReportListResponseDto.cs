@@ -1,5 +1,6 @@
 using System;
 using NetTopologySuite.Geometries;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Reports.Dto
 {
@@ -8,6 +9,8 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int Id { get; set; }
         public string Status { get; set; }
         public Point Location { get; set; }
+        public bool MarkedAsError { get; set; }
+        public DateTime DateTime { get; set; }
         public string HealthRiskName { get; set; }
         public bool IsValid { get; set; }
         public string Region { get; set; }
@@ -29,7 +32,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int? FromOtherVillagesCount { get; set; }
         public int EpiWeek { get; set; }
         public int EpiYear { get; set; }
-        public bool MarkedAsError { get; set; }
-        public DateTime DateTime { get; set; }
+        public AlertStatus? ReportAlertStatus { get; set; }
+        public int? ReportAlertId { get; set; }        
     }
 }
