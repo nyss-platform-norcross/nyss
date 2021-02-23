@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
@@ -311,7 +312,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                     Name = "Name",
                     ApiKey = "api-key",
                     NationalSocietyId = 1,
-                    GatewayType = GatewayType.SmsEagle
+                    GatewayType = GatewayType.SmsEagle,
+                    Modems = new List<GatewayModem>()
                 }
             };
 
@@ -415,7 +417,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                     Name = "Name",
                     ApiKey = "api-key",
                     NationalSocietyId = 1,
-                    GatewayType = GatewayType.SmsEagle
+                    GatewayType = GatewayType.SmsEagle,
+                    Modems = new List<GatewayModem>()
                 }
             };
 
@@ -445,6 +448,88 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
         }
 
         [Fact]
+        public async Task UpdateSmsGateway_WhenModemsAreUsedAndRemoved_ShouldRemoveModemReferences()
+        {
+            // Arrange
+            const int smsGatewayId = 1;
+
+            var gatewaySettings = new[]
+            {
+                new GatewaySetting
+                {
+                    Id = smsGatewayId,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle,
+                    Modems = new List<GatewayModem>
+                    {
+                        new GatewayModem
+                        {
+                            Id = 1
+                        },
+                        new GatewayModem
+                        {
+                            Id = 2
+                        }
+                    }
+                }
+            };
+
+            var users = new List<User>
+            {
+                new ManagerUser
+                {
+                    Id = 1,
+                    Modem = gatewaySettings.First().Modems.First(),
+                    Role = Role.Manager
+                },
+                new TechnicalAdvisorUser
+                {
+                    Id = 2
+                }
+            };
+
+            var technicalAdvisorModems = new List<TechnicalAdvisorUserGatewayModem>
+            {
+                new TechnicalAdvisorUserGatewayModem
+                {
+                    GatewayModem = gatewaySettings.First().Modems.First(),
+                    TechnicalAdvisorUser = (TechnicalAdvisorUser)users[1]
+                }
+            };
+            var alertRecipients = new List<AlertNotificationRecipient>();
+
+            var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
+            var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+            var technicalAdvisorModemsMockDbSet = technicalAdvisorModems.AsQueryable().BuildMockDbSet();
+            var alertRecipientsMockDbSet = alertRecipients.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
+            _nyssContextMock.Users.Returns(usersMockDbSet);
+            _nyssContextMock.TechnicalAdvisorUserGatewayModems.Returns(technicalAdvisorModemsMockDbSet);
+            _nyssContextMock.AlertNotificationRecipients.Returns(alertRecipientsMockDbSet);
+
+            var dto = new EditGatewaySettingRequestDto
+            {
+                Id = smsGatewayId,
+                Name = "Name",
+                ApiKey = "api-key"
+            };
+
+            // Act
+            var result = await _smsGatewayService.Edit(smsGatewayId, dto);
+
+            // Assert
+            _nyssContextMock.TechnicalAdvisorUserGatewayModems.Received(1).RemoveRange(Arg.Any<IEnumerable<TechnicalAdvisorUserGatewayModem>>());
+            await _nyssContextMock.Received(1).SaveChangesAsync();
+            var content1 = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
+            result.IsSuccess.ShouldBeTrue();
+            var manager = (ManagerUser)_nyssContextMock.Users.First(u => u.Id == 1);
+            manager.Modem.ShouldBeNull();
+        }
+
+        [Fact]
         public async Task DeleteSmsGateway_WhenSmsGatewayExists_ShouldReturnSuccess()
         {
             // Arrange
@@ -458,7 +543,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                     Name = "Name",
                     ApiKey = "api-key",
                     NationalSocietyId = 1,
-                    GatewayType = GatewayType.SmsEagle
+                    GatewayType = GatewayType.SmsEagle,
+                    Modems = new List<GatewayModem>()
                 }
             };
 
@@ -526,7 +612,8 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
                     Name = "Name",
                     ApiKey = "api-key",
                     NationalSocietyId = 1,
-                    GatewayType = GatewayType.SmsEagle
+                    GatewayType = GatewayType.SmsEagle,
+                    Modems = new List<GatewayModem>()
                 }
             };
 
@@ -547,6 +634,82 @@ namespace RX.Nyss.Web.Tests.Features.SmsGateway
             await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
+        }
+
+        [Fact]
+        public async Task DeleteSmsGateway_WhenModemsAreUsed_ShouldRemoveModemReferences()
+        {
+            // Arrange
+            const int smsGatewayId = 1;
+
+            var gatewaySettings = new[]
+            {
+                new GatewaySetting
+                {
+                    Id = smsGatewayId,
+                    Name = "Name",
+                    ApiKey = "api-key",
+                    NationalSocietyId = 1,
+                    GatewayType = GatewayType.SmsEagle,
+                    Modems = new List<GatewayModem>
+                    {
+                        new GatewayModem
+                        {
+                            Id = 1
+                        },
+                        new GatewayModem
+                        {
+                            Id = 2
+                        }
+                    }
+                }
+            };
+
+            var users = new List<User>
+            {
+                new ManagerUser
+                {
+                    Id = 1,
+                    Modem = gatewaySettings.First().Modems.First(),
+                    Role = Role.Manager
+                },
+                new TechnicalAdvisorUser
+                {
+                    Id = 2
+                }
+            };
+
+            var technicalAdvisorModems = new List<TechnicalAdvisorUserGatewayModem>
+            {
+                new TechnicalAdvisorUserGatewayModem
+                {
+                    GatewayModem = gatewaySettings.First().Modems.First(),
+                    TechnicalAdvisorUser = (TechnicalAdvisorUser)users[1]
+                }
+            };
+            var alertRecipients = new List<AlertNotificationRecipient>();
+
+            var gatewaySettingsMockDbSet = gatewaySettings.AsQueryable().BuildMockDbSet();
+            var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+            var technicalAdvisorModemsMockDbSet = technicalAdvisorModems.AsQueryable().BuildMockDbSet();
+            var alertRecipientsMockDbSet = alertRecipients.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.GatewaySettings.Returns(gatewaySettingsMockDbSet);
+            _nyssContextMock.Users.Returns(usersMockDbSet);
+            _nyssContextMock.TechnicalAdvisorUserGatewayModems.Returns(technicalAdvisorModemsMockDbSet);
+            _nyssContextMock.AlertNotificationRecipients.Returns(alertRecipientsMockDbSet);
+
+            // Act
+            var result = await _smsGatewayService.Delete(smsGatewayId);
+
+            // Assert
+            _nyssContextMock.GatewaySettings.Received(1).Remove(Arg.Is<GatewaySetting>(gs => gs.Id == smsGatewayId));
+            _nyssContextMock.TechnicalAdvisorUserGatewayModems.Received(1).RemoveRange(Arg.Any<IEnumerable<TechnicalAdvisorUserGatewayModem>>());
+            await _nyssContextMock.Received(1).SaveChangesAsync();
+            var content1 = Arg.Any<string>();
+            await _smsGatewayBlobProviderMock.Received(1).UpdateApiKeys(content1);
+            result.IsSuccess.ShouldBeTrue();
+            var manager = (ManagerUser)_nyssContextMock.Users.First(u => u.Id == 1);
+            manager.Modem.ShouldBeNull();
         }
 
         [Fact]
