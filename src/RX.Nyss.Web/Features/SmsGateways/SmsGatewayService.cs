@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 using RX.Nyss.Web.Features.SmsGateways.Dto;
 using RX.Nyss.Web.Services;
@@ -167,11 +168,24 @@ namespace RX.Nyss.Web.Features.SmsGateways
         {
             try
             {
-                var gatewaySettingToDelete = await _nyssContext.GatewaySettings.FindAsync(smsGatewayId);
+                var gatewaySettingToDelete = await _nyssContext.GatewaySettings
+                    .Include(gs => gs.Modems)
+                    .SingleOrDefaultAsync(gs => gs.Id == smsGatewayId);
 
                 if (gatewaySettingToDelete == null)
                 {
                     return Error(ResultKey.NationalSociety.SmsGateway.SettingDoesNotExist);
+                }
+
+                var modems = gatewaySettingToDelete.Modems.ToList();
+
+                if (modems.Any())
+                {
+                    RemoveManagerModemReferences(modems);
+                    RemoveSupervisorModemReferences(modems);
+                    RemoveHeadSupervisorModemReferences(modems);
+                    RemoveTechnicalAdvisorModemReferences(modems);
+                    RemoveAlertRecipientModemsReferences(modems);
                 }
 
                 _nyssContext.GatewaySettings.Remove(gatewaySettingToDelete);
@@ -265,8 +279,81 @@ namespace RX.Nyss.Web.Features.SmsGateways
             }
             else
             {
-                var modemsToRemove = gatewaySetting.Modems;
-                _nyssContext.GatewayModems.RemoveRange(modemsToRemove);
+                var modemsToRemove = gatewaySetting.Modems.ToList();
+
+                if (modemsToRemove.Any())
+                {
+                    RemoveAlertRecipientModemsReferences(modemsToRemove);
+                    RemoveManagerModemReferences(modemsToRemove);
+                    RemoveSupervisorModemReferences(modemsToRemove);
+                    RemoveHeadSupervisorModemReferences(modemsToRemove);
+                    RemoveTechnicalAdvisorModemReferences(modemsToRemove);
+
+                    _nyssContext.GatewayModems.RemoveRange(modemsToRemove);
+                }
+            }
+        }
+
+        private void RemoveManagerModemReferences(List<GatewayModem> gatewayModems)
+        {
+            var managersConnectedToModems = _nyssContext.Users
+                .Where(u => u.Role == Role.Manager)
+                .Select(u => (ManagerUser)u)
+                .Where(mu => gatewayModems.Contains(mu.Modem))
+                .ToList();
+
+            foreach (var manager in managersConnectedToModems)
+            {
+                manager.Modem = null;
+            }
+        }
+
+        private void RemoveSupervisorModemReferences(List<GatewayModem> gatewayModems)
+        {
+            var supervisorsConnectedToModems = _nyssContext.Users
+                .Where(u => u.Role == Role.Supervisor)
+                .Select(u => (SupervisorUser)u)
+                .Where(su => gatewayModems.Contains(su.Modem))
+                .ToList();
+
+            foreach (var supervisor in supervisorsConnectedToModems)
+            {
+                supervisor.Modem = null;
+            }
+        }
+
+        private void RemoveHeadSupervisorModemReferences(List<GatewayModem> gatewayModems)
+        {
+            var headSupervisorsConnectedToModems = _nyssContext.Users
+                .Where(u => u.Role == Role.HeadSupervisor)
+                .Select(u => (HeadSupervisorUser)u)
+                .Where(hsu => gatewayModems.Contains(hsu.Modem))
+                .ToList();
+
+            foreach (var headSupervisor in headSupervisorsConnectedToModems)
+            {
+                headSupervisor.Modem = null;
+            }
+        }
+
+        private void RemoveTechnicalAdvisorModemReferences(List<GatewayModem> gatewayModems)
+        {
+            var technicalAdvisorModemsToRemove = _nyssContext.TechnicalAdvisorUserGatewayModems
+                .Where(tam => gatewayModems.Contains(tam.GatewayModem))
+                .ToList();
+
+            _nyssContext.TechnicalAdvisorUserGatewayModems.RemoveRange(technicalAdvisorModemsToRemove);
+        }
+
+        private void RemoveAlertRecipientModemsReferences(List<GatewayModem> gatewayModems)
+        {
+            var alertRecipientsConnectedToModem = _nyssContext.AlertNotificationRecipients
+                .Where(anr => gatewayModems.Contains(anr.GatewayModem))
+                .ToList();
+
+            foreach (var alertRecipient in alertRecipientsConnectedToModem)
+            {
+                alertRecipient.GatewayModem = null;
             }
         }
     }
