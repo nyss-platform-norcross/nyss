@@ -116,7 +116,7 @@ namespace RX.Nyss.Web.Features.Reports
                         .OrderByDescending(ar => ar.AlertId)
                         .Select(ar => ar.AlertId)
                         .FirstOrDefault(),
-                    ReportAlertStatus = r.Report.Status,
+                    ReportStatus = r.Report.Status,
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -202,7 +202,7 @@ namespace RX.Nyss.Web.Features.Reports
                     DataCollectorDisplayName = report.DataCollectorDisplayName,
                     PhoneNumber = report.PhoneNumber,
                     Message = report.Message,
-                    ReportAlertStatus = report.ReportAlertStatus,
+                    ReportAlertStatus = report.ReportStatus,
                     ReportAlertId = report.ReportAlertId,
                     Location = report.Location != null
                         ? $"{report.Location.Y}/{report.Location.X}"
