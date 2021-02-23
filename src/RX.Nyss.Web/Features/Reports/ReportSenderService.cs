@@ -79,7 +79,8 @@ namespace RX.Nyss.Web.Features.Reports
                 { "Text", report.Text },
                 { "Source", "Nyss" },
                 { "Modemno", gatewayData.Modem?.ModemId.ToString() },
-                { "Headsupervisor", isHeadSupervisor ? "true" : null }
+                { "Headsupervisor", isHeadSupervisor ? "true" : null },
+                { "UtcOffset", report.UtcOffset.ToString() }
             };
             var content = new FormUrlEncodedContent(reportProps);
 

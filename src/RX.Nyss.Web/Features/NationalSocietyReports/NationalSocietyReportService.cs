@@ -12,7 +12,6 @@ using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.NationalSocieties;
 using RX.Nyss.Web.Features.NationalSocietyReports.Dto;
-using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
@@ -32,14 +31,12 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         private readonly INyssWebConfig _config;
         private readonly INyssContext _nyssContext;
         private readonly IUserService _userService;
-        private readonly IProjectService _projectService;
         private readonly INationalSocietyService _nationalSocietyService;
         private readonly IAuthorizationService _authorizationService;
 
         public NationalSocietyReportService(
             INyssContext nyssContext,
             IUserService userService,
-            IProjectService projectService,
             INationalSocietyService nationalSocietyService,
             INyssWebConfig config,
             IAuthorizationService authorizationService
@@ -47,7 +44,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
         {
             _nyssContext = nyssContext;
             _userService = userService;
-            _projectService = projectService;
             _nationalSocietyService = nationalSocietyService;
             _config = config;
             _authorizationService = authorizationService;
@@ -91,9 +87,6 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports
                     ProjectName = r.Report != null
                         ? r.Report.ProjectHealthRisk.Project.Name
                         : r.DataCollector.Project.Name,
-                    ProjectTimeZone = r.Report != null
-                        ? r.Report.ProjectHealthRisk.Project.TimeZone
-                        : r.DataCollector.Project.TimeZone,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
                     Village = r.Village.Name,

@@ -45,6 +45,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
         private const string ApiKeyParameterName = "apikey";
         private const string SourceParameterName = "source";
         private const string SentByHeadSupervisorSourceParameterName = "headsupervisor";
+        private const string UtcOffset = "utcoffset";
 
         private readonly IReportMessageService _reportMessageService;
         private readonly INyssContext _nyssContext;
@@ -84,6 +85,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var apiKey = parsedQueryString[ApiKeyParameterName];
             var source = parsedQueryString[SourceParameterName];
             var sentByHeadSupervisor = parsedQueryString[SentByHeadSupervisorSourceParameterName] == "true";
+            var utcOffset = parsedQueryString[UtcOffset].ParseToNullableInt();
 
             ErrorReportData reportErrorData = null;
 
@@ -174,7 +176,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                                 Modem = modemNumber
                             }
                         };
-                        var feedbackForReportSentThroughNyss = !string.IsNullOrEmpty(source) && source == "Nyss" ? await GetFeedbackMessageForReportSentThroughNyss(reportData, gatewaySetting, sentByHeadSupervisor) : null;
+                        var feedbackForReportSentThroughNyss = !string.IsNullOrEmpty(source) && source == "Nyss" ? await GetFeedbackMessageForReportSentThroughNyss(reportData, gatewaySetting, sentByHeadSupervisor, utcOffset) : null;
                         var feedbackMessage = !string.IsNullOrEmpty(feedbackForReportSentThroughNyss)
                             ? $"{feedbackForReportSentThroughNyss} {projectHealthRisk.FeedbackMessage}"
                             : projectHealthRisk.FeedbackMessage;
@@ -454,7 +456,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             }
         }
 
-        private async Task<string> GetFeedbackMessageForReportSentThroughNyss(ReportData reportData, GatewaySetting gatewaySetting, bool sentByHeadSupervisor)
+        private async Task<string> GetFeedbackMessageForReportSentThroughNyss(ReportData reportData, GatewaySetting gatewaySetting, bool sentByHeadSupervisor, int? utcOffset)
         {
             var languageCode = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == gatewaySetting.NationalSocietyId)
@@ -467,8 +469,12 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var languageContents = await _nyssContext.HealthRiskLanguageContents
                 .SingleAsync(hlc => hlc.HealthRisk == reportData.ProjectHealthRisk.HealthRisk && hlc.ContentLanguage.LanguageCode == languageCode);
 
+            var timestamp = utcOffset.HasValue
+                ? reportData.ReceivedAt.AddHours(utcOffset.Value).ToString("yyyy-MM-dd HH:mm")
+                : reportData.ReceivedAt.ToString("yyyy-MM-dd HH:mm");
+
             feedbackMessage = feedbackMessage.Replace("{{supervisor}}", senderName);
-            feedbackMessage = feedbackMessage.Replace("{{date/time}}", reportData.ReceivedAt.ToString("yyyy-MM-dd HH:mm"));
+            feedbackMessage = feedbackMessage.Replace("{{date/time}}", timestamp);
             feedbackMessage = feedbackMessage.Replace("{{health risk/event}}", languageContents.Name);
 
             return feedbackMessage;
