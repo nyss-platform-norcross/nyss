@@ -26,8 +26,8 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public string DataCollectorDisplayName { get; set; }
         public string PhoneNumber { get; set; }
         public string Message { get; set; }
-        public AlertStatus? ReportAlertStatus { get; set; }
-        public int? ReportAlertId { get; set; }        
+        public ReportStatus? ReportAlertStatus { get; set; }
+        public int? ReportAlertId { get; set; }
         public string Location { get; set; }
     }
 }
