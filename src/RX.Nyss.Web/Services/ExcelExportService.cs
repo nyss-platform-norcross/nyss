@@ -103,7 +103,7 @@ namespace RX.Nyss.Web.Services
                     worksheet.Cells[columnIndex, 21].Value = data.PhoneNumber;
                     worksheet.Cells[columnIndex, 22].Value = data.Message;
                     worksheet.Cells[columnIndex, 23].Value = data.ReportAlertStatus;
-                    worksheet.Cells[columnIndex, 24].Value = data.ReportAlertId;                    
+                    worksheet.Cells[columnIndex, 24].Value = data.ReportAlertId;
                     worksheet.Cells[columnIndex, 25].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
                 }
             }
@@ -122,7 +122,7 @@ namespace RX.Nyss.Web.Services
                 worksheet.Column(20).Width = 20; //DcName
                 worksheet.Column(21).Width = 20; //PhoneNr
                 worksheet.Column(22).Width = 12; //Message
-                worksheet.Column(23).Width = 11; //ReportAlertStatus
+                worksheet.Column(23).Width = 20; //ReportAlertStatus
                 worksheet.Column(25).Width = 37; //Location
             }
 
