@@ -44,11 +44,13 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
     || (props.data && props.data.isHeadManager && !props.data.hasCoordinator && selectedRole === roles.Coordinator),
     [hasAnyRole, selectedRole, props.data]);
 
-  const canSelectModem = (selectedRole === roles.Manager
-    || selectedRole === roles.TechnicalAdvisor
-    || selectedRole === roles.HeadSupervisor
-    || selectedRole === roles.Supervisor)
-    && props.data.modems.length > 0;
+  const canSelectModem = useMemo(() =>
+    (selectedRole === roles.Manager
+      || selectedRole === roles.TechnicalAdvisor
+      || selectedRole === roles.HeadSupervisor
+      || selectedRole === roles.Supervisor)
+    && props.data && props.data.modems.length > 0,
+    [props.data, selectedRole]);
 
   const availableUserRoles = useMemo(() => {
     if (!props.data) {
@@ -116,15 +118,14 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
       organization: [validators.requiredWhen(f => f.role === roles.DataConsumer), validators.maxLength(100)],
       decadeOfBirth: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
       sex: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
-      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)],
-      modemId: [validators.requiredWhen(_ => canSelectModem)]
+      projectId: [validators.requiredWhen(f => f.role === roles.Supervisor || f.role === roles.HeadSupervisor)]
     };
 
     const newForm = createForm(fields, validation);
     newForm.fields.role.subscribe(({ newValue }) => setRole(newValue));
 
     return newForm;
-  }, [props.nationalSocietyId, canSelectModem]);
+  }, [props.nationalSocietyId]);
 
   useEffect(() => {
     if (!form || selectedRole) {
@@ -139,6 +140,10 @@ const NationalSocietyUsersCreatePageComponent = (props) => {
   useEffect(() => {
     form && form.fields.organizationId.setValidators([validators.requiredWhen(_ => canChangeOrganization)]);
   }, [form, canChangeOrganization]);
+
+  useEffect(() => {
+    form && form.fields.modemId.setValidators([validators.requiredWhen(_ => canSelectModem)]);
+  }, [form, canSelectModem]);
 
   useEffect(() => {
     if (!form) {

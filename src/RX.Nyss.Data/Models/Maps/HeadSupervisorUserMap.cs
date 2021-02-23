@@ -33,6 +33,7 @@ namespace RX.Nyss.Data.Models.Maps
             builder.HasOne(u => u.Modem)
                 .WithMany()
                 .HasConstraintName("FK_Users_GatewayModem_GatewayModemId")
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

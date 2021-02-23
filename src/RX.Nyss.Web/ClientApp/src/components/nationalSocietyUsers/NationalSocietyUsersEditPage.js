@@ -33,11 +33,13 @@ const NationalSocietyUsersEditPageComponent = (props) => {
     [props.callingUserRoles]
   );
 
-  const canSelectModem = (selectedRole === roles.Manager
-    || selectedRole === roles.TechnicalAdvisor
-    || selectedRole === roles.HeadSupervisor
-    || selectedRole === roles.Supervisor)
-    && props.modems.length > 0;
+  const canSelectModem = useMemo(() =>
+    (selectedRole === roles.Manager
+      || selectedRole === roles.TechnicalAdvisor
+      || selectedRole === roles.HeadSupervisor
+      || selectedRole === roles.Supervisor)
+    && props.modems.length > 0,
+    [props.modems, selectedRole]);
 
   const form = useMemo(() => {
     if (!props.data) {
