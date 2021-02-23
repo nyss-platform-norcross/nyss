@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
@@ -60,16 +61,17 @@ namespace RX.Nyss.Web.Services
                 worksheet.Cells[1, 1 + columnLabels.IndexOf(label)].Style.Font.Bold = true;
             }
 
-            foreach (ExportReportListResponseDto data in columnData)
+            foreach (var reportListResponseDto in columnData)
             {
+                var data = (ExportReportListResponseDto)reportListResponseDto;
                 var columnIndex = columnData.IndexOf(data) + 2;
                 worksheet.Cells[columnIndex, 1].Value = data.DateTime;
                 worksheet.Cells[columnIndex, 1].Style.Numberformat.Format = "yyyy-MM-dd";
                 worksheet.Cells[columnIndex, 2].Value = data.DateTime;
                 worksheet.Cells[columnIndex, 2].Style.Numberformat.Format = "HH:mm";
-                worksheet.Cells[columnIndex, 3].Value = data.Status;
-                worksheet.Cells[columnIndex, 4].Value = data.DataCollectorDisplayName;
-                worksheet.Cells[columnIndex, 5].Value = data.PhoneNumber;
+                worksheet.Cells[columnIndex, 3].Value = data.EpiYear;
+                worksheet.Cells[columnIndex, 4].Value = data.EpiWeek;
+                worksheet.Cells[columnIndex, 5].Value = data.Status;
                 worksheet.Cells[columnIndex, 6].Value = data.Region;
                 worksheet.Cells[columnIndex, 7].Value = data.District;
                 worksheet.Cells[columnIndex, 8].Value = data.Village;
@@ -90,29 +92,38 @@ namespace RX.Nyss.Web.Services
                     worksheet.Cells[columnIndex, 20].Value = data.ReferredCount;
                     worksheet.Cells[columnIndex, 21].Value = data.DeathCount;
                     worksheet.Cells[columnIndex, 22].Value = data.FromOtherVillagesCount;
-                    worksheet.Cells[columnIndex, 23].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
-                    worksheet.Cells[columnIndex, 24].Value = data.Message;
-                    worksheet.Cells[columnIndex, 25].Value = data.EpiYear;
-                    worksheet.Cells[columnIndex, 26].Value = data.EpiWeek;
+                    worksheet.Cells[columnIndex, 23].Value = data.DataCollectorDisplayName;
+                    worksheet.Cells[columnIndex, 24].Value = data.PhoneNumber;
+                    worksheet.Cells[columnIndex, 25].Value = data.Message;
+                    worksheet.Cells[columnIndex, 26].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
                 }
                 else
                 {
-                    worksheet.Cells[columnIndex, 20].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
-                    worksheet.Cells[columnIndex, 21].Value = data.Message;
-                    worksheet.Cells[columnIndex, 22].Value = data.EpiYear;
-                    worksheet.Cells[columnIndex, 23].Value = data.EpiWeek;
+                    worksheet.Cells[columnIndex, 20].Value = data.DataCollectorDisplayName;
+                    worksheet.Cells[columnIndex, 21].Value = data.PhoneNumber;
+                    worksheet.Cells[columnIndex, 22].Value = data.Message;
+                    worksheet.Cells[columnIndex, 23].Value = data.ReportAlertStatus;
+                    worksheet.Cells[columnIndex, 24].Value = data.ReportAlertId;                    
+                    worksheet.Cells[columnIndex, 25].Value = data.Location != null ? $"{data.Location.Y}/{data.Location.X}" : "";
                 }
             }
+            worksheet.Column(1).Width = 12; //Date
+            worksheet.Column(10).Width = 20; //HealthRiskName
 
-            worksheet.Column(1).Width = 20;
-            worksheet.Column(5).Width = 20;
             if (reportListType == ReportListType.FromDcp)
             {
-                worksheet.Column(23).Width = 30;
+                worksheet.Column(23).Width = 20; //DcName
+                worksheet.Column(24).Width = 20; //PhoneNr
+                worksheet.Column(25).Width = 20; //Message
+                worksheet.Column(26).Width = 37; //Location
             }
             else
             {
-                worksheet.Column(20).Width = 30;
+                worksheet.Column(20).Width = 20; //DcName
+                worksheet.Column(21).Width = 20; //PhoneNr
+                worksheet.Column(22).Width = 12; //Message
+                worksheet.Column(23).Width = 11; //ReportAlertStatus
+                worksheet.Column(25).Width = 37; //Location
             }
 
             return package;
