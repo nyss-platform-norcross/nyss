@@ -46,7 +46,7 @@ namespace RX.Nyss.ReportApi.Features.Stats
                 .CountAsync();
             var escalatedAlerts = await _nyssContext.Alerts
                 .Where(a => !_nationalSocietiesToExclude.Contains(a.ProjectHealthRisk.Project.NationalSocietyId))
-                .Where(a => a.Status == AlertStatus.Escalated)
+                .Where(a => a.EscalatedAt.HasValue)
                 .CountAsync();
             var allProjects = await _nyssContext.Projects
                 .Where(p => !_nationalSocietiesToExclude.Contains(p.NationalSocietyId))
