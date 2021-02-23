@@ -95,12 +95,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Stats
             };
             var alerts = new List<Data.Models.Alert> { new Data.Models.Alert
             {
-                Status = AlertStatus.Escalated,
+                EscalatedAt = new DateTime(2020, 2, 22, 10, 55, 43),
                 ProjectHealthRisk = new ProjectHealthRisk
                 {
                     Project = new Project()
                 }
-            } };
+            }
+            };
 
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             var projectsMockDbSet = projects.AsQueryable().BuildMockDbSet();
