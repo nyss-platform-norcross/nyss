@@ -1,8 +1,9 @@
-﻿using RX.Nyss.Data.Concepts;
+using System;
+using RX.Nyss.Data.Concepts;
 
 namespace RX.Nyss.Web.Features.Reports.Dto
 {
-    public class ExportReportListCsvContentDto
+    public class ExportDcpReportListCsvContentDto
     {
         public string Date { get; set; }
         public string Time { get; set; }
@@ -23,11 +24,12 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int? TotalMale { get; set; }
         public int? TotalFemale { get; set; }
         public int? Total { get; set; }
+        public int? ReferredCount { get; set; }
+        public int? DeathCount { get; set; }
+        public int? FromOtherVillagesCount { get; set; }
         public string DataCollectorDisplayName { get; set; }
         public string PhoneNumber { get; set; }
         public string Message { get; set; }
-        public string ReportStatus { get; set; }
-        public int? ReportAlertId { get; set; }
         public string Location { get; set; }
     }
 }
