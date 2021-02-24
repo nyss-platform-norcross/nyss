@@ -204,6 +204,15 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string LinkedToSupervisor = "report.linkedToSupervisor";
             public const string LinkedToOrganization = "report.linkedToOrganization";
 
+            public static class Status
+            {
+                public const string New = "report.status.new";
+                public const string Pending = "report.status.pending";
+                public const string Rejected = "report.status.rejected";
+                public const string Accepted = "report.status.accepted";
+                public const string Closed = "report.status.closed";
+            }
+
             public static class Edit
             {
                 public const string EditSuccess = "report.edit.success";

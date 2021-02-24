@@ -116,7 +116,7 @@ namespace RX.Nyss.Web.Features.Reports
                         .OrderByDescending(ar => ar.AlertId)
                         .Select(ar => ar.AlertId)
                         .FirstOrDefault(),
-                    ReportStatus = r.Report.Status,
+                    ReportStatus = GetReportStatusString(stringResources, r.Report.Status)
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -211,6 +211,17 @@ namespace RX.Nyss.Web.Features.Reports
             });
             return _excelExportService.ToCsv(reportData, columnLabels);
         }
+
+        private static string GetReportStatusString(IDictionary<string, StringResourceValue> stringResources, ReportStatus status) =>
+            status switch
+            {
+                ReportStatus.New => GetStringResource(stringResources, ResultKey.Report.Status.New),
+                ReportStatus.Pending => GetStringResource(stringResources, ResultKey.Report.Status.Pending),
+                ReportStatus.Rejected => GetStringResource(stringResources, ResultKey.Report.Status.Rejected),
+                ReportStatus.Accepted => GetStringResource(stringResources, ResultKey.Report.Status.Accepted),
+                ReportStatus.Closed => GetStringResource(stringResources, ResultKey.Report.Status.Closed),
+                _ => null
+            };
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
             stringResources.Keys.Contains(key)
