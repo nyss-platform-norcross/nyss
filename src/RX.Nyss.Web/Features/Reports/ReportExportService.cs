@@ -202,7 +202,7 @@ namespace RX.Nyss.Web.Features.Reports
                     DataCollectorDisplayName = report.DataCollectorDisplayName,
                     PhoneNumber = report.PhoneNumber,
                     Message = report.Message,
-                    ReportAlertStatus = report.ReportStatus,
+                    ReportStatus = report.ReportStatus,
                     ReportAlertId = report.ReportAlertId,
                     Location = report.Location != null
                         ? $"{report.Location.Y}/{report.Location.X}"
@@ -301,7 +301,7 @@ namespace RX.Nyss.Web.Features.Reports
                 GetStringResource(stringResources, "reports.list.dataCollectorDisplayName"),
                 GetStringResource(stringResources, "reports.list.dataCollectorPhoneNumber"),
                 GetStringResource(stringResources, "reports.export.message"),
-                GetStringResource(stringResources, "reports.export.reportAlertStatus"),
+                GetStringResource(stringResources, "reports.export.reportStatus"),
                 GetStringResource(stringResources, "reports.export.reportAlertId"),
                 GetStringResource(stringResources, "reports.export.location")
             };
