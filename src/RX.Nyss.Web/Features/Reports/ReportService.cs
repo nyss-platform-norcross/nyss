@@ -17,7 +17,6 @@ using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports.Dto;
 using RX.Nyss.Web.Features.Users;
-using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Utils.DataContract;
 using RX.Nyss.Web.Utils.Extensions;
@@ -45,19 +44,22 @@ namespace RX.Nyss.Web.Features.Reports
         private readonly IUserService _userService;
         private readonly IProjectService _projectService;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IExcelExportService _excelExportService;
         private readonly IStringsResourcesService _stringsResourcesService;
         private readonly IDateTimeProvider _dateTimeProvider;
 
-        public ReportService(INyssContext nyssContext, IUserService userService, IProjectService projectService, INyssWebConfig config, IAuthorizationService authorizationService,
-            IExcelExportService excelExportService, IStringsResourcesService stringsResourcesService, IDateTimeProvider dateTimeProvider)
+        public ReportService(INyssContext nyssContext,
+            IUserService userService,
+            IProjectService projectService,
+            INyssWebConfig config,
+            IAuthorizationService authorizationService,
+            IStringsResourcesService stringsResourcesService,
+            IDateTimeProvider dateTimeProvider)
         {
             _nyssContext = nyssContext;
             _userService = userService;
             _projectService = projectService;
             _config = config;
             _authorizationService = authorizationService;
-            _excelExportService = excelExportService;
             _stringsResourcesService = stringsResourcesService;
             _dateTimeProvider = dateTimeProvider;
         }
