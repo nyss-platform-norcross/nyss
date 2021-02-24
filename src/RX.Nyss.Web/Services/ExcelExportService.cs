@@ -122,7 +122,7 @@ namespace RX.Nyss.Web.Services
                 worksheet.Column(20).Width = 20; //DcName
                 worksheet.Column(21).Width = 20; //PhoneNr
                 worksheet.Column(22).Width = 12; //Message
-                worksheet.Column(23).Width = 20; //ReportStatus
+                worksheet.Column(23).Width = 14; //ReportStatus
                 worksheet.Column(25).Width = 37; //Location
             }
 
