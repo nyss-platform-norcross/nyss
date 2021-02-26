@@ -46,6 +46,13 @@ export const alertStatusFilters = {
   closed: "Closed"
 }
 
+export const alertStatus = {
+  pending: "Pending",
+  escalated: "Escalated",
+  dismissed: "Dismissed",
+  closed: "Closed"
+}
+
 export const timeTriggeredColumn = "TimeTriggered";
 export const timeOfLastReportColumn = "TimeOfLastReport";
 export const statusColumn = "Status";

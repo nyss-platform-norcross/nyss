@@ -37,7 +37,6 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public int? DeathCount { get; set; }
         public int? FromOtherVillagesCount { get; set; }
         public bool? IsMarkedAsError { get; set; }
-        public int? AlertId { get; set; }
         public int? ReportId { get; set; }
         public ReportType? ReportType { get; set; }
         public DateTime DateTime { get; set; }
@@ -45,5 +44,14 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         public string OrganizationName { get; set; }
         public string SupervisorName { get; set; }
         public bool IsActivityReport { get; set; }
+        public ReportStatus Status { get; set; }
+        public ReportListAlert Alert { get; set; }
+    }
+
+    public class ReportListAlert
+    {
+        public int Id { get; set; }
+        public AlertStatus Status { get; set; }
+        public bool ReportWasCrossCheckedBeforeEscalation { get; set; }
     }
 }

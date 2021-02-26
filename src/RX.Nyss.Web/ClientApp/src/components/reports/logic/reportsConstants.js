@@ -13,3 +13,11 @@ export const ACCEPT_REPORT = action("ACCEPT_REPORT_IN_LIST");
 export const DISMISS_REPORT = action("DISMISS_REPORT_IN_LIST");
 
 export const DateColumnName = "date";
+
+export const reportStatus = {
+  new: 'New',
+  pending: 'Pending',
+  accepted: 'Accepted',
+  rejected: 'Rejected',
+  closed: 'Closed'
+}

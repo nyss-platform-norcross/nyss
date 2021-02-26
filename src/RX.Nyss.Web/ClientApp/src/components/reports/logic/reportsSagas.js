@@ -191,9 +191,11 @@ function* sendReport({ report }) {
 function* acceptReport({ reportId }) {
   yield put(actions.acceptReport.request());
   try {
+    const projectId = yield select(state => state.reports.listProjectId);
     yield call(http.post, `/api/report/${reportId}/accept`);
     yield put(actions.acceptReport.success());
     yield put(appActions.showMessage(stringKeys.reports.list.acceptReportSuccess));
+    yield getReports({projectId});
   } catch (error) {
     yield put(actions.acceptReport.failure());
     yield put(appActions.showMessage(error.message));
@@ -203,9 +205,11 @@ function* acceptReport({ reportId }) {
 function* dismissReport({ reportId }) {
   yield put(actions.dismissReport.request());
   try {
+    const projectId = yield select(state => state.reports.listProjectId);
     yield call(http.post, `/api/report/${reportId}/dismiss`);
     yield put(actions.dismissReport.success());
     yield put(appActions.showMessage(stringKeys.reports.list.dismissReportSuccess));
+    yield getReports({projectId});
   } catch (error) {
     yield put(actions.dismissReport.failure());
     yield put(appActions.showMessage(error.message));

@@ -160,11 +160,14 @@ namespace RX.Nyss.Web.Features.Reports
                     SupervisorName = r.DataCollector.Supervisor.Name,
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
-                    AlertId = r.Report.ReportAlerts
-                        .Select(ra => ra.Alert)
-                        .OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
-                            a.Status == AlertStatus.Escalated ? 1 : 2)
-                        .Select(a => a.Id)
+                    Alert = r.Report.ReportAlerts
+                        .OrderByDescending(ra => ra.AlertId)
+                        .Select(ra => new ReportListAlert
+                        {
+                            Id = ra.AlertId,
+                            Status = ra.Alert.Status,
+                            ReportWasCrossCheckedBeforeEscalation = ra.Report.AcceptedAt > ra.Alert.EscalatedAt
+                        })
                         .FirstOrDefault(),
                     ReportId = r.ReportId,
                     ReportType = r.Report.ReportType,
@@ -175,7 +178,8 @@ namespace RX.Nyss.Web.Features.Reports
                     CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
+                    Status = r.Report.Status
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -329,7 +333,7 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error(ResultKey.Report.ReportNotFound);
             }
 
-            if (report.AcceptedAt.HasValue)
+            if (report.Status == ReportStatus.Accepted)
             {
                 return Error(ResultKey.Report.AlreadyCrossChecked);
             }
@@ -355,7 +359,7 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error(ResultKey.Report.ReportNotFound);
             }
 
-            if (report.RejectedAt.HasValue)
+            if (report.Status == ReportStatus.Rejected)
             {
                 return Error(ResultKey.Report.AlreadyCrossChecked);
             }

@@ -20,9 +20,10 @@ import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
 import { ReportListType } from '../common/filters/logic/reportFilterConstsants';
-import { DateColumnName } from './logic/reportsConstants';
+import { DateColumnName, reportStatus } from './logic/reportsConstants';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import { Typography } from "@material-ui/core";
+import { alertStatus } from '../alerts/logic/alertsConstants';
 
 export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, goToEdition, projectId,
   list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort, projectIsClosed,
@@ -67,12 +68,18 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
     !projectIsClosed 
     && !row.isAnonymized 
     && row.isValid 
-    && !row.alertId 
+    && !row.alert
     && !row.isMarkedAsError
     && !row.isActivityReport;
 
-  const canCrossCheck = (row) => 
-    !row.isAnonymized && !row.isActivityReport;
+  const alertAllowsCrossCheckingOfReport = (alert) =>
+    alert.status === alertStatus.pending
+    || (alert.status === alertStatus.escalated && !alert.reportWasCrossCheckedBeforeEscalation);
+
+  const canCrossCheck = (report, reportStatus) => 
+    !report.isAnonymized
+    && !report.isActivityReport
+    && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)));
 
   const getRowMenu = (row) => [
     {
@@ -84,19 +91,19 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
     {
       title: strings(stringKeys.reports.list.goToAlert),
       roles: accessMap.reports.goToAlert,
-      disabled: !row.alertId,
-      action: () => goToAlert(projectId, row.alertId)
+      disabled: !row.alert,
+      action: () => goToAlert(projectId, row.alert.id)
     },
     {
       title: strings(stringKeys.reports.list.acceptReport),
       roles: accessMap.reports.crossCheck,
-      disabled: !canCrossCheck(row),
+      disabled: !canCrossCheck(row, reportStatus.accepted),
       action: () => acceptReport(row.id)
     },
     {
       title: strings(stringKeys.reports.list.dismissReport),
       roles: accessMap.reports.crossCheck,
-      disabled: !canCrossCheck(row),
+      disabled: !canCrossCheck(row, reportStatus.rejected),
       action: () => dismissReport(row.id)
     }
   ];
