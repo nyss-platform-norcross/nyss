@@ -41,13 +41,13 @@ export const NationalSocietiesTable = ({ isListFetching, isRemoving, goToEdition
   const getRowMenu = (row) => [
     {
       title: strings(stringKeys.nationalSociety.list.archive),
-      condition: !row.isArchived,
+      disabled: row.isArchived,
       roles: accessMap.nationalSocieties.archive,
       action: () => setArchiveConfirmationDialog({ isOpen: true, nationalSocietyId: row.id })
     },
     {
       title: strings(stringKeys.nationalSociety.list.reopen),
-      condition: row.isArchived,
+      disabled: !row.isArchived,
       roles: accessMap.nationalSocieties.archive,
       action: () => setReopenConfirmationDialog({ isOpen: true, nationalSocietyId: row.id })
     }

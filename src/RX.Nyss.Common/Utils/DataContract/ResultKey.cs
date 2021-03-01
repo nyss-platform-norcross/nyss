@@ -203,6 +203,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string NoGatewaySettingFoundForNationalSociety = "report.noGatewaySettingFoundForNationalSociety";
             public const string LinkedToSupervisor = "report.linkedToSupervisor";
             public const string LinkedToOrganization = "report.linkedToOrganization";
+            public const string AlreadyCrossChecked = "report.alreadyCrossChecked";
 
             public static class Status
             {

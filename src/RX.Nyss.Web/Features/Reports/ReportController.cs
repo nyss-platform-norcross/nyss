@@ -125,5 +125,23 @@ namespace RX.Nyss.Web.Features.Reports
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor)]
         public async Task<Result<SendReportFormDataDto>> GetFormData(int nationalSocietyId) =>
             await _reportSenderService.GetFormData(nationalSocietyId);
+
+        /// <summary>
+        /// Keeps the selected report.
+        /// </summary>
+        /// <param name="reportId">The ID of the report to be kept</param>
+        [HttpPost("{reportId:int}/accept")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ReportAccess)]
+        public async Task<Result> AcceptReport(int reportId) =>
+            await _reportService.AcceptReport(reportId);
+
+        /// <summary>
+        /// Dismisses the selected report.
+        /// </summary>
+        /// <param name="reportId">The ID of the report to be dismissed</param>
+        [HttpPost("{reportId:int}/dismiss")]
+        [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.ReportAccess)]
+        public async Task<Result> DismissReport(int reportId) =>
+            await _reportService.DismissReport(reportId);
     }
 }

@@ -30,13 +30,13 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
     {
       title: strings(stringKeys.dataCollector.list.takeOutOfTraining),
       action: () => setTrainingState([row.id], false),
-      condition: row.isInTrainingMode,
+      disabled: !row.isInTrainingMode,
       roles: accessMap.dataCollectors.list
     },
     {
       title: strings(stringKeys.dataCollector.list.setToInTraining),
       action: () => setTrainingState([row.id], true),
-      condition: !row.isInTrainingMode,
+      disabled: row.isInTrainingMode,
       roles: accessMap.dataCollectors.list
     }
   ];

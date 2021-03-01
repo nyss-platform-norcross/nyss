@@ -35,6 +35,8 @@ namespace RX.Nyss.Web.Features.Reports
         IQueryable<RawReport> GetRawReportsWithDataCollectorQuery(ReportsFilter filters);
         IQueryable<Report> GetDashboardHealthRiskEventReportsQuery(ReportsFilter filters);
         IQueryable<Report> GetSuccessReportsQuery(ReportsFilter filters);
+        Task<Result> AcceptReport(int reportId);
+        Task<Result> DismissReport(int reportId);
     }
 
     public class ReportService : IReportService
@@ -145,6 +147,8 @@ namespace RX.Nyss.Web.Features.Reports
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
                         .Single(),
+                    IsActivityReport = r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 99
+                        || r.Report.ProjectHealthRisk.HealthRisk.HealthRiskCode == 98,
                     IsValid = r.Report != null,
                     Region = r.Village.District.Region.Name,
                     District = r.Village.District.Name,
@@ -156,14 +160,14 @@ namespace RX.Nyss.Web.Features.Reports
                     SupervisorName = r.DataCollector.Supervisor.Name,
                     PhoneNumber = r.Sender,
                     IsMarkedAsError = r.Report.MarkedAsError,
-                    UserHasAccessToReportDataCollector = !(isSupervisor || isHeadSupervisor)
-                        || (isHeadSupervisor && r.DataCollector.Supervisor.HeadSupervisor.Id == currentUserId)
-                        || (isSupervisor && r.DataCollector.Supervisor.Id == currentUserId),
-                    AlertId = r.Report.ReportAlerts
-                        .Select(ra => ra.Alert)
-                        .OrderBy(a => a.Status == AlertStatus.Pending ? 0 :
-                            a.Status == AlertStatus.Escalated ? 1 : 2)
-                        .Select(a => a.Id)
+                    Alert = r.Report.ReportAlerts
+                        .OrderByDescending(ra => ra.AlertId)
+                        .Select(ra => new ReportListAlert
+                        {
+                            Id = ra.AlertId,
+                            Status = ra.Alert.Status,
+                            ReportWasCrossCheckedBeforeEscalation = ra.Report.AcceptedAt < ra.Alert.EscalatedAt || ra.Report.RejectedAt < ra.Alert.EscalatedAt
+                        })
                         .FirstOrDefault(),
                     ReportId = r.ReportId,
                     ReportType = r.Report.ReportType,
@@ -174,7 +178,8 @@ namespace RX.Nyss.Web.Features.Reports
                     CountFemalesAtLeastFive = r.Report.ReportedCase.CountFemalesAtLeastFive,
                     ReferredCount = r.Report.DataCollectionPointCase.ReferredCount,
                     DeathCount = r.Report.DataCollectionPointCase.DeathCount,
-                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount
+                    FromOtherVillagesCount = r.Report.DataCollectionPointCase.FromOtherVillagesCount,
+                    Status = r.Report.Status
                 })
                 //ToDo: order base on filter.OrderBy property
                 .OrderBy(r => r.DateTime, filter.SortAscending);
@@ -232,11 +237,6 @@ namespace RX.Nyss.Web.Features.Reports
                 report.ReportType != ReportType.DataCollectionPoint)
             {
                 return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskCannotBeEdited);
-            }
-
-            if (!await HasAccessToReport(reportId))
-            {
-                return Error(ResultKey.Report.NoAccess);
             }
 
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
@@ -309,11 +309,6 @@ namespace RX.Nyss.Web.Features.Reports
                 .Include(r => r.ProjectHealthRisk.Project)
                 .FirstOrDefaultAsync(r => r.Id == reportId);
 
-            if (!await HasAccessToReport(reportId))
-            {
-                return Error(ResultKey.Report.NoAccess);
-            }
-
             if (report.ProjectHealthRisk.Project.State != ProjectState.Open)
             {
                 return Error(ResultKey.Report.ProjectIsClosed);
@@ -325,19 +320,56 @@ namespace RX.Nyss.Web.Features.Reports
             return Success();
         }
 
-        private async Task<bool> HasAccessToReport(int reportId)
+        public async Task<Result> AcceptReport(int reportId)
         {
             var currentUser = await _authorizationService.GetCurrentUser();
+            var report = await _nyssContext.RawReports
+                .Where(r => r.Id == reportId && r.Report != null)
+                .Select(r => r.Report)
+                .FirstOrDefaultAsync();
 
-            var currentUserOrganizationId = await _nyssContext.Reports
-                .Where(p => p.Id == reportId)
-                .SelectMany(p => p.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers)
-                .Where(uns => uns.User == currentUser)
-                .Select(uns => uns.OrganizationId)
-                .SingleOrDefaultAsync();
+            if (report == null)
+            {
+                return Error(ResultKey.Report.ReportNotFound);
+            }
 
-            return currentUser.Role == Role.Administrator || _nyssContext.Reports.Any(r => r.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers.Any(
-                nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId));
+            if (report.Status == ReportStatus.Accepted)
+            {
+                return Error(ResultKey.Report.AlreadyCrossChecked);
+            }
+
+            report.AcceptedAt = _dateTimeProvider.UtcNow;
+            report.AcceptedBy = currentUser;
+            report.Status = ReportStatus.Accepted;
+
+            await _nyssContext.SaveChangesAsync();
+            return Success();
+        }
+
+        public async Task<Result> DismissReport(int reportId)
+        {
+            var currentUser = await _authorizationService.GetCurrentUser();
+            var report = await _nyssContext.RawReports
+                .Where(r => r.Id == reportId && r.Report != null)
+                .Select(r => r.Report)
+                .FirstOrDefaultAsync();
+
+            if (report == null)
+            {
+                return Error(ResultKey.Report.ReportNotFound);
+            }
+
+            if (report.Status == ReportStatus.Rejected)
+            {
+                return Error(ResultKey.Report.AlreadyCrossChecked);
+            }
+
+            report.RejectedAt = _dateTimeProvider.UtcNow;
+            report.RejectedBy = currentUser;
+            report.Status = ReportStatus.Rejected;
+
+            await _nyssContext.SaveChangesAsync();
+            return Success();
         }
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>

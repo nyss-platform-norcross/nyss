@@ -9,5 +9,15 @@ export const EXPORT_TO_EXCEL = action("EXPORT_TO_EXCEL");
 export const MARK_AS_ERROR = action("MARK_AS_ERROR");
 export const OPEN_SEND_REPORT = action("OPEN_SEND_REPORT");
 export const SEND_REPORT = action("SEND_REPORT");
+export const ACCEPT_REPORT = action("ACCEPT_REPORT_IN_LIST");
+export const DISMISS_REPORT = action("DISMISS_REPORT_IN_LIST");
 
 export const DateColumnName = "date";
+
+export const reportStatus = {
+  new: 'New',
+  pending: 'Pending',
+  accepted: 'Accepted',
+  rejected: 'Rejected',
+  closed: 'Closed'
+}

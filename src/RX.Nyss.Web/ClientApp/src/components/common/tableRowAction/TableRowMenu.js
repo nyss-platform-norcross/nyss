@@ -27,7 +27,6 @@ const TableRowMenuComponent = ({ id, icon, items, isFetching, alwaysShow, always
   };
 
   const filteredItems = items
-    .filter(item => item.condition === undefined || item.condition)
     .filter(item => !item.roles || user.roles.some(role => item.roles.indexOf(role) > -1));
 
   if (!filteredItems.length && !alwaysShow) {
@@ -52,6 +51,7 @@ const TableRowMenuComponent = ({ id, icon, items, isFetching, alwaysShow, always
           <MenuItem
             key={`row_${id}_menuItem_${index}`}
             title={menuItem.title}
+            disabled={!!menuItem.disabled}
             onClick={(e) => handleMenuItemClick(e, menuItem.action)}
           >
             {menuItem.title}
