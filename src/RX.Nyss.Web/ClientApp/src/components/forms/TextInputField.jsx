@@ -17,7 +17,7 @@ const TextInput = ({ error, name, label, value, controlProps, multiline, rows, a
       fullWidth={autoWidth ? false : true}
       InputLabelProps={{ shrink: true }}
       InputProps={{ ...controlProps }}
-      inputProps={{ autoFocus: autoFocus, inputMode: inputMode }}
+      inputProps={{ autoFocus: autoFocus, inputMode: inputMode, step: type==="number" ? "any" : null }}
       type={type}
     />
   );
