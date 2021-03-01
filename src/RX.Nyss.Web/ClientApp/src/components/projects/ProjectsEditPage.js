@@ -17,8 +17,6 @@ import { MultiSelect } from '../forms/MultiSelect';
 import { ProjectsHealthRiskItem } from './ProjectHealthRiskItem';
 import { getSaveFormModel } from './logic/projectsService';
 import { Loading } from '../common/loading/Loading';
-import SelectField from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
 
@@ -43,13 +41,11 @@ const ProjectsEditPageComponent = (props) => {
 
     let fields = {
       name: props.data.name,
-      allowMultipleOrganizations: props.data.allowMultipleOrganizations,
-      timeZoneId: props.data.timeZoneId
+      allowMultipleOrganizations: props.data.allowMultipleOrganizations
     };
 
     let validation = {
-      name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)]
+      name: [validators.required, validators.minLength(1), validators.maxLength(100)]
     };
 
     setForm(createForm(fields, validation));
@@ -101,20 +97,6 @@ const ProjectsEditPageComponent = (props) => {
             />
           </Grid>
 
-          <Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.project.form.timeZone)}
-              field={form.fields.timeZoneId}
-              name="timeZoneId"
-            >
-              {props.timeZones.map(timeZone => (
-                <MenuItem key={timeZone.id} value={timeZone.id}>
-                  {timeZone.displayName}
-                </MenuItem>
-              ))}
-            </SelectField>
-          </Grid>
-
           <Grid item xs={12} sm={9}>
             <CheckboxField
               label={strings(stringKeys.project.form.allowMultipleOrganizations)}
@@ -164,7 +146,6 @@ ProjectsEditPageComponent.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
   healthRisks: state.projects.formHealthRisks,
-  timeZones: state.projects.formTimeZones,
   projectId: ownProps.match.params.projectId,
   nationalSocietyId: ownProps.match.params.nationalSocietyId,
   isFetching: state.projects.formFetching,

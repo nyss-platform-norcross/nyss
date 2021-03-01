@@ -5,6 +5,7 @@ import * as appActions from "../../app/logic/appActions";
 import * as http from "../../../utils/http";
 import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesConstants";
 import { stringKeys } from "../../../strings";
+import { getUtcOffset } from "../../../utils/date";
 
 export const projectsSagas = () => [
   takeEvery(consts.OPEN_PROJECTS_LIST.INVOKE, openProjectsList),
@@ -105,7 +106,7 @@ function* closeProject({ nationalSocietyId, projectId }) {
 function* getProjects(nationalSocietyId) {
   yield put(actions.getList.request());
   try {
-    const response = yield call(http.get, `/api/project/list?nationalSocietyId=${nationalSocietyId}`);
+    const response = yield call(http.get, `/api/project/list?nationalSocietyId=${nationalSocietyId}&utcOffset=${getUtcOffset()}`);
     yield put(actions.getList.success(response.value));
   } catch (error) {
     yield put(actions.getList.failure(error.message));
