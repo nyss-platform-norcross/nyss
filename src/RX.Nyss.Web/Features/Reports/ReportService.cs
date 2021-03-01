@@ -166,7 +166,7 @@ namespace RX.Nyss.Web.Features.Reports
                         {
                             Id = ra.AlertId,
                             Status = ra.Alert.Status,
-                            ReportWasCrossCheckedBeforeEscalation = ra.Report.AcceptedAt > ra.Alert.EscalatedAt
+                            ReportWasCrossCheckedBeforeEscalation = ra.Report.AcceptedAt < ra.Alert.EscalatedAt || ra.Report.RejectedAt < ra.Alert.EscalatedAt
                         })
                         .FirstOrDefault(),
                     ReportId = r.ReportId,
