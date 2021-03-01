@@ -205,7 +205,6 @@ namespace RX.Nyss.Web.Features.Alerts
                         .Select(lc => lc.Name)
                         .Single(),
                     HealthRiskCountThreshold = a.ProjectHealthRisk.AlertRule.CountThreshold,
-                    ProjectTimeZone = a.ProjectHealthRisk.Project.TimeZone,
                     CaseDefinition = a.ProjectHealthRisk.CaseDefinition,
                     Reports = a.AlertReports.Select(ar => new
                     {
@@ -486,7 +485,6 @@ namespace RX.Nyss.Web.Features.Alerts
                             currentUserOrganization != a.ClosedBy.UserNationalSocieties.Single(uns => uns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization)
                             ? a.ClosedBy.UserNationalSocieties.Single(cbuns => cbuns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety).Organization.Name
                             : a.ClosedBy.Name,
-                    ProjectTimeZone = a.ProjectHealthRisk.Project.TimeZone,
                     HealthRisk = a.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.Id == a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.Id)
                         .Select(lc => lc.Name)

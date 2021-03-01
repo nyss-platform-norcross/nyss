@@ -9,8 +9,6 @@ namespace RX.Nyss.Web.Features.Projects.Dto
 
         public bool AllowMultipleOrganizations { get; set; }
 
-        public string TimeZoneId { get; set; }
-
         public IEnumerable<ProjectHealthRiskRequestDto> HealthRisks { get; set; }
 
         public class Validator : AbstractValidator<EditProjectRequestDto>
