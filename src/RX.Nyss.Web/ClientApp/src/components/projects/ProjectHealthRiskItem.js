@@ -78,7 +78,7 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
           </Grid>
         </Grid>
 
-        <Typography variant="h3">{strings(stringKeys.project.form.alertsSetion)}</Typography>
+        <Typography variant="h3">{strings(stringKeys.project.form.alertsSection)}</Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
             <TextInputField

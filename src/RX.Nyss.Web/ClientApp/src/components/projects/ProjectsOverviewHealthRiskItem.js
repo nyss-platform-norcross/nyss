@@ -31,7 +31,7 @@ export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
             </Typography>
           </Grid>
         </Grid>
-        <Typography variant="h3">{strings(stringKeys.project.form.alertsSetion)}</Typography>
+        <Typography variant="h3">{strings(stringKeys.project.form.alertsSection)}</Typography>
 
         {projectHealthRisk.alertRuleCountThreshold === 0 && (
           <Typography variant="body1" style={{ color: "#a0a0a0" }}>{strings(stringKeys.common.boolean.false)}</Typography>
