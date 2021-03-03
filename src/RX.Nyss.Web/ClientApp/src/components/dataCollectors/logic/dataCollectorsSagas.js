@@ -74,7 +74,7 @@ function* openDataCollectorMapOverview({ projectId }) {
     const filters = (yield select(state => state.dataCollectors.mapOverviewFilters)) ||
     {
       startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
-      endDate: endDate.format('YYYY-MM-DD'),
+      endDate: endDate.format('YYYY-MM-DD')
     };
 
     yield call(getDataCollectorMapOverview, { projectId, filters })

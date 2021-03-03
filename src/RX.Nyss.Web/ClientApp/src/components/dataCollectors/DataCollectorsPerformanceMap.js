@@ -91,10 +91,10 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
         <MarkerClusterGroup
           showCoverageOnHover={false}
           iconCreateFunction={createClusterIcon}>
-          {dataCollectorLocations.map(dc => (
+          {dataCollectorLocations.map((dc, i) => (
             <Marker
               className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
-              key={`marker_${dc.location.latitude}_${dc.location.longitude}`}
+              key={`marker_${i}`}
               position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
               icon={createIcon(dc)}
               eventHandlers={{

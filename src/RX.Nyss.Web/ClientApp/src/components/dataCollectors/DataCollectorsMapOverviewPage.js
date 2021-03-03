@@ -11,7 +11,7 @@ import { DataCollectorsPerformanceMapLegend } from './DataCollectorsPerformanceM
 
 const DataCollectorsMapOverviewPageComponent = (props) => {
   useMount(() => {
-    props.openDataCollectorsMapOverview(props.projectId, '2019-01-01', '2020-01-01');
+    props.openDataCollectorsMapOverview(props.projectId);
   });
 
   const handleFiltersChange = (value) => {
