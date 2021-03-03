@@ -431,9 +431,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             // Assert
             await _nyssContextMock.Projects.Received(1).AddAsync(
-                Arg.Is<Project>(p =>
-                    p.Name == "New Project" &&
-                    p.TimeZone == "Time Zone"));
+                Arg.Is<Project>(p => p.Name == "New Project"));
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);

@@ -614,7 +614,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Items.ElementAt(0).Date.ShouldBe(TestData.AlertCreatedAt.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(0).Date.ShouldBe(TestData.AlertCreatedAt);
             result.Value.Items.ElementAt(0).LogType.ShouldBe(AlertLogResponseDto.LogType.TriggeredAlert);
             result.Value.Items.ElementAt(0).UserName.ShouldBe(null);
         }
@@ -633,7 +633,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date);
             result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.AcceptedReport);
             result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
         }
@@ -652,7 +652,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date);
             result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.RejectedReport);
             result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
         }
@@ -671,7 +671,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date);
             result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.EscalatedAlert);
             result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
         }
@@ -690,7 +690,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date);
             result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.DismissedAlert);
             result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
         }
@@ -709,7 +709,7 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             var result = await _alertService.GetLogs(TestData.AlertId, 0);
 
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Items.ElementAt(1).Date.ShouldBe(date.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(1).Date.ShouldBe(date);
             result.Value.Items.ElementAt(1).LogType.ShouldBe(AlertLogResponseDto.LogType.ClosedAlert);
             result.Value.Items.ElementAt(1).UserName.ShouldBe(userName);
         }
@@ -732,14 +732,14 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             _alerts.First().AlertReports.First().Report.AcceptedAt = reportAcceptedAt;
             _alerts.First().AlertReports.First().Report.AcceptedBy = user;
 
-            var result = await _alertService.GetLogs(TestData.AlertId, 0);
+            var result = await _alertService.GetLogs(TestData.AlertId, 1);
 
             result.IsSuccess.ShouldBeTrue();
             result.Value.Items.Count().ShouldBe(4);
-            result.Value.Items.ElementAt(0).Date.ShouldBe(TestData.AlertCreatedAt.ApplyTimeZone(TestData.TimeZone));
-            result.Value.Items.ElementAt(1).Date.ShouldBe(reportAcceptedAt.ApplyTimeZone(TestData.TimeZone));
-            result.Value.Items.ElementAt(2).Date.ShouldBe(escalatedAt.ApplyTimeZone(TestData.TimeZone));
-            result.Value.Items.ElementAt(3).Date.ShouldBe(closedAt.ApplyTimeZone(TestData.TimeZone));
+            result.Value.Items.ElementAt(0).Date.ShouldBe(TestData.AlertCreatedAt.AddHours(1));
+            result.Value.Items.ElementAt(1).Date.ShouldBe(reportAcceptedAt.AddHours(1));
+            result.Value.Items.ElementAt(2).Date.ShouldBe(escalatedAt.AddHours(1));
+            result.Value.Items.ElementAt(3).Date.ShouldBe(closedAt.AddHours(1));
         }
 
         [Theory]
@@ -840,8 +840,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
             public const string ApiKey = "123";
             public const string GatewayEmail = "gw1@example.com";
             public static readonly DateTime AlertCreatedAt = new DateTime(2020, 1, 1);
-            public static readonly string TimeZoneName = "UTC";
-            public static readonly TimeZoneInfo TimeZone = TimeZoneInfo.FindSystemTimeZoneById(TimeZoneName);
             public static readonly GlobalCoordinatorUser DefaultUser = new GlobalCoordinatorUser { Name = "DefaultUser" };
 
             public static List<Alert> GetAlerts() =>
@@ -902,7 +900,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             },
                             Project = new Project
                             {
-                                TimeZone = TimeZoneName,
                                 AlertNotificationRecipients = new List<AlertNotificationRecipient>
                                 {
                                     new AlertNotificationRecipient
@@ -984,7 +981,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Project = new Project
                             {
                                 Id = 1,
-                                TimeZone = TimeZoneName,
                                 AlertNotificationRecipients = new List<AlertNotificationRecipient>
                                 {
                                     new AlertNotificationRecipient
@@ -1062,7 +1058,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Project = new Project
                             {
                                 Id = 1,
-                                TimeZone = TimeZoneName,
                                 AlertNotificationRecipients = new List<AlertNotificationRecipient>
                                 {
                                     new AlertNotificationRecipient
@@ -1140,7 +1135,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Project = new Project
                             {
                                 Id = 1,
-                                TimeZone = TimeZoneName,
                                 AlertNotificationRecipients = new List<AlertNotificationRecipient>
                                 {
                                     new AlertNotificationRecipient
@@ -1218,7 +1212,6 @@ namespace RX.Nyss.Web.Tests.Features.Alerts
                             Project = new Project
                             {
                                 Id = 1,
-                                TimeZone = TimeZoneName,
                                 AlertNotificationRecipients = new List<AlertNotificationRecipient>
                                 {
                                     new AlertNotificationRecipient
