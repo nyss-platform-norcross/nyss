@@ -441,60 +441,39 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         public async Task<Result<MapOverviewResponseDto>> MapOverview(int projectId, DateTime from, DateTime to)
         {
-            var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
             var endDate = to.Date.AddDays(1);
-
-            var dataCollectorsWithNoReports = dataCollectors
-                .Where(dc => dc.CreatedAt < endDate && dc.DeletedAt == null)
-                .Where(dc => !dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value
-                    && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
-                .Select(dc => new
-                {
-                    dc.Location.X,
-                    dc.Location.Y,
-                    InvalidReport = 0,
-                    ValidReport = 0,
-                    NoReport = 1
-                });
+            var dataCollectors = (await GetDataCollectorsForCurrentUserInProject(projectId))
+                .Where(dc => dc.CreatedAt < endDate && dc.Name != Anonymization.Text && dc.DeletedAt == null);
 
             var dataCollectorsWithReports = dataCollectors
-                .Where(dc => dc.CreatedAt < endDate && dc.Name != Anonymization.Text && dc.DeletedAt == null)
-                .Where(dc => dc.RawReports.Any(r => r.IsTraining.HasValue && !r.IsTraining.Value
-                    && r.ReceivedAt >= from.Date && r.ReceivedAt < endDate))
-                .Where(dc => dc.Project.Id == projectId)
                 .Select(r => new
                 {
                     r.Location.X,
                     r.Location.Y,
-                    InvalidReport = r.RawReports
+                    InvalidReports = r.RawReports
                         .Count(rr => !rr.ReportId.HasValue && rr.IsTraining.HasValue && !rr.IsTraining.Value
                             && rr.ReceivedAt >= from.Date && rr.ReceivedAt < endDate),
-                    ValidReport = r.RawReports
+                    ValidReports = r.RawReports
                         .Count(rr => rr.ReportId.HasValue && rr.IsTraining.HasValue && !rr.IsTraining.Value
-                            && rr.ReceivedAt >= from.Date && rr.ReceivedAt < endDate),
-                    NoReport = 0
+                            && rr.ReceivedAt >= from.Date && rr.ReceivedAt < endDate)
                 });
 
             var locations = await dataCollectorsWithReports
-                .Union(dataCollectorsWithNoReports)
-                .GroupBy(x => new
-                {
-                    x.X,
-                    x.Y
-                })
-                .Select(location => new MapOverviewLocationResponseDto
+                .Select(dc => new MapOverviewLocationResponseDto
                 {
                     Location = new LocationDto
                     {
-                        Latitude = location.Key.Y,
-                        Longitude = location.Key.X
+                        Latitude = dc.Y,
+                        Longitude = dc.X
                     },
-                    CountReportingCorrectly = location.Sum(x => x.ValidReport),
-                    CountReportingWithErrors = location.Sum(x => x.InvalidReport),
-                    CountNotReporting = location.Sum(x => x.NoReport)
+                    CountReportingCorrectly = dc.ValidReports,
+                    CountReportingWithErrors = dc.InvalidReports
                 })
                 .ToListAsync();
 
+            locations.ForEach(dc => dc.CountNotReporting = dc.CountReportingCorrectly == 0 && dc.CountReportingWithErrors == 0
+                ? 1
+                : 0);
 
             var result = new MapOverviewResponseDto
             {
