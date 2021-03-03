@@ -30,7 +30,7 @@ namespace RX.Nyss.Web.Services
                     IotHubDeviceName = iotHubDeviceName,
                     PhoneNumber = recipient.PhoneNumber,
                     SmsMessage = smsMessage,
-                    Modem = recipient.Modem
+                    ModemNumber = recipient.Modem
                 };
 
                 var message = new Message(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(sendSms)))
@@ -50,7 +50,7 @@ namespace RX.Nyss.Web.Services
         public string PhoneNumber { get; set; }
 
         public string SmsMessage { get; set; }
-        public int? Modem { get; set; }
+        public int? ModemNumber { get; set; }
     }
 
     public class SendSmsRecipient
