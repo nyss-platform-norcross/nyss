@@ -7,7 +7,7 @@ import { entityTypes } from "../../nationalSocieties/logic/nationalSocietiesCons
 import { stringKeys } from "../../../strings";
 import dayjs from "dayjs";
 import { downloadFile } from "../../../utils/downloadFile";
-import { formatDate } from "../../../utils/date";
+import { convertToUtc, formatDate } from "../../../utils/date";
 
 export const dataCollectorsSagas = () => [
   takeEvery(consts.OPEN_DATA_COLLECTORS_LIST.INVOKE, openDataCollectorsList),
@@ -70,11 +70,14 @@ function* openDataCollectorMapOverview({ projectId }) {
   try {
     yield openDataCollectorsModule(projectId);
 
-    const endDate = dayjs(new Date());
+    let endDate = convertToUtc(dayjs(new Date()));
+    endDate = endDate.set('hour', 0);
+    endDate = endDate.set('minute', 0);
+    endDate = endDate.set('second', 0);
     const filters = (yield select(state => state.dataCollectors.mapOverviewFilters)) ||
     {
-      startDate: endDate.add(-7, "day").format('YYYY-MM-DD'),
-      endDate: endDate.format('YYYY-MM-DD')
+      startDate: endDate.add(-7, 'day'),
+      endDate: endDate
     };
 
     yield call(getDataCollectorMapOverview, { projectId, filters })
