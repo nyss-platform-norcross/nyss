@@ -4,11 +4,6 @@
 
 .tableContainer {
   position: relative;
-
-  @media screen and (max-width: 1919px) {
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
 }
 
 .noDataInfo {
@@ -25,16 +20,13 @@
 
 .stickyTable {
   table {
-    border-collapse: separate !important;
+    border-collapse: separate;
   }
 
   th {
     z-index: 1;
-
-    @media screen and (min-width: 1280px) {
-      top: 0px !important;
-      position: sticky;
-      background: white;
-    }
+    top: -1px;
+    position: sticky;
+    background: white;
   }
 }
