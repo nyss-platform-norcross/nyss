@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -73,7 +72,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .Select(r => new ExportReportListResponseDto
                 {
                     Id = r.Id,
-                    DateTime = r.ReceivedAt,
+                    DateTime = r.ReceivedAt.AddHours(filter.UtcOffset),
                     HealthRiskName = r.Report.ProjectHealthRisk.HealthRisk.LanguageContents
                         .Where(lc => lc.ContentLanguage.LanguageCode == userApplicationLanguageCode)
                         .Select(lc => lc.Name)
@@ -123,7 +122,6 @@ namespace RX.Nyss.Web.Features.Reports
 
             var reports = await reportsQuery.ToListAsync<IReportListResponseDto>();
 
-            await UpdateTimeZoneInReports(projectId, reports);
             ReportService.AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
 
             return useExcelFormat
@@ -228,13 +226,6 @@ namespace RX.Nyss.Web.Features.Reports
                 ? stringResources[key]
                     .Value
                 : key;
-
-        private async Task UpdateTimeZoneInReports(int projectId, List<IReportListResponseDto> reports)
-        {
-            var project = await _nyssContext.Projects.FindAsync(projectId);
-            var projectTimeZone = TimeZoneInfo.FindSystemTimeZoneById(project.TimeZone);
-            reports.ForEach(x => x.DateTime = TimeZoneInfo.ConvertTimeFromUtc(x.DateTime, projectTimeZone));
-        }
 
         private byte[] GetExcelData(List<IReportListResponseDto> reports, IDictionary<string, StringResourceValue> stringResources, ReportListType reportListType)
         {

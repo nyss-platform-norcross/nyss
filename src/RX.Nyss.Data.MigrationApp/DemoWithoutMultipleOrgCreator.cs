@@ -119,7 +119,6 @@ namespace RX.Nyss.Data.MigrationApp
                     Name = "Mandawi test project",
                     NationalSociety = context.NationalSocieties.First(),
                     StartDate = DateTime.UtcNow,
-                    TimeZone = "UTC",
                     State = ProjectState.Open,
                     AllowMultipleOrganizations = false
                 });
@@ -230,7 +229,6 @@ namespace RX.Nyss.Data.MigrationApp
                     Name = "Mandawi - Projet test",
                     NationalSociety = context.NationalSocieties.First(ns => ns.Id == 2),
                     StartDate = DateTime.UtcNow,
-                    TimeZone = "UTC",
                     State = ProjectState.Open,
                     AllowMultipleOrganizations = false
                 });

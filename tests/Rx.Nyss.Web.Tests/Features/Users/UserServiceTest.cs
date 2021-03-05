@@ -304,8 +304,7 @@ namespace RX.Nyss.Web.Tests.Features.Users
                         Id = 1,
                         NationalSociety = _nyssContext.NationalSocieties.Single(ns => ns.Id == 1),
                         Name = "awd in somalia",
-                        State = ProjectState.Open,
-                        TimeZone = "CEST"
+                        State = ProjectState.Open
                     }
                 }
                 .AsQueryable().BuildMockDbSet();

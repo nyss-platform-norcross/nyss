@@ -33,11 +33,12 @@ namespace RX.Nyss.Web.Features.Projects
         /// Lists projects assigned to a specified national society.
         /// </summary>
         /// <param name="nationalSocietyId">An identifier of a national society</param>
+        /// <param name="utcOffset">The UTC offset in hours</param>
         /// <returns>A list of projects assigned to the national society</returns>
         [HttpGet("list")]
         [NeedsRole(Role.Administrator, Role.TechnicalAdvisor, Role.Manager, Role.DataConsumer, Role.Supervisor, Role.Coordinator, Role.HeadSupervisor), NeedsPolicy(Policy.NationalSocietyAccess)]
-        public Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId) =>
-            _projectService.List(nationalSocietyId);
+        public Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId, int utcOffset) =>
+            _projectService.List(nationalSocietyId, utcOffset);
 
         /// <summary>
         /// Adds a new project for a specified national society.

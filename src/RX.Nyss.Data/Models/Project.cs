@@ -10,8 +10,6 @@ namespace RX.Nyss.Data.Models
 
         public string Name { get; set; }
 
-        public string TimeZone { get; set; }
-
         public ProjectState State { get; set; }
 
         public DateTime StartDate { get; set; }

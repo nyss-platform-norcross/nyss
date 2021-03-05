@@ -196,16 +196,14 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                     Id = 1,
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
-                    ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 1).ToList(),
-                    TimeZone = "UTC"
+                    ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 1).ToList()
                 },
                 new Project
                 {
                     Id = 2,
                     NationalSocietyId = nationalSocieties[0].Id,
                     NationalSociety = nationalSocieties[0],
-                    ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 2).ToList(),
-                    TimeZone = "UTC"
+                    ProjectHealthRisks = projectHealthRisks.Where(x => x.Id == 2).ToList()
                 }
             };
 

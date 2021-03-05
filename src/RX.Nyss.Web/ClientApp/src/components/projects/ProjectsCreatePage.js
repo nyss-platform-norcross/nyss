@@ -40,13 +40,11 @@ const ProjectsCreatePageComponent = (props) => {
     const fields = {
       name: "",
       allowMultipleOrganizations: false,
-      organizationId: "",
-      timeZoneId: ""
+      organizationId: ""
     };
 
     const validation = {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      timeZoneId: [validators.required, validators.minLength(1), validators.maxLength(50)],
       organizationId: [validators.requiredWhen(f => canChangeOrganization())]
     };
 
@@ -100,20 +98,6 @@ const ProjectsCreatePageComponent = (props) => {
               field={form.fields.name}
               autoFocus
             />
-          </Grid>
-
-          <Grid item xs={12}>
-            <SelectField
-              label={strings(stringKeys.project.form.timeZone)}
-              field={form.fields.timeZoneId}
-              name="timeZoneId"
-            >
-              {props.data.timeZones.map(timeZone => (
-                <MenuItem key={timeZone.id} value={timeZone.id}>
-                  {timeZone.displayName}
-                </MenuItem>
-              ))}
-            </SelectField>
           </Grid>
 
           {canChangeOrganization() && (

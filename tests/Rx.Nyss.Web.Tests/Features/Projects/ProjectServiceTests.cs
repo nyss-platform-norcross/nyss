@@ -68,7 +68,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             _dateTimeProvider.UtcNow.Returns(currentDate);
 
             // Act
-            var result = await _projectService.List(nationalSocietyId);
+            var result = await _projectService.List(nationalSocietyId, 0);
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
@@ -131,7 +131,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = existingProjectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     State = ProjectState.Open,
                     NationalSocietyId = 2,
                     NationalSociety = nationalSociety2,
@@ -185,7 +184,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             result.IsSuccess.ShouldBeTrue();
             result.Value.Id.ShouldBe(existingProjectId);
             result.Value.Name.ShouldBe("Name");
-            result.Value.TimeZoneId.ShouldBe("Time Zone");
             result.Value.State.ShouldBe(ProjectState.Open);
             result.Value.ProjectHealthRisks.Count().ShouldBe(1);
             result.Value.ProjectHealthRisks.ElementAt(0).Id.ShouldBe(1);
@@ -269,7 +267,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = 1,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = nationalSocietyId,
                     State = ProjectState.Open
                 }
@@ -281,7 +278,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new CreateProjectRequestDto
             {
                 Name = "New Project",
-                TimeZoneId = "Time Zone",
                 HealthRisks = new[]
                 {
                     new ProjectHealthRiskRequestDto
@@ -303,7 +299,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             await _nyssContextMock.Projects.Received(1).AddAsync(
                 Arg.Is<Project>(p =>
                     p.Name == "New Project" &&
-                    p.TimeZone == "Time Zone" &&
                     p.StartDate == startDate &&
                     p.EndDate == null &&
                     p.ProjectHealthRisks.Any(phr =>
@@ -338,8 +333,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var projectRequestDto = new CreateProjectRequestDto
             {
-                Name = "New Project",
-                TimeZoneId = "Time Zone"
+                Name = "New Project"
             };
 
             // Act
@@ -382,7 +376,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new CreateProjectRequestDto
             {
                 Name = "New Project",
-                TimeZoneId = "Time Zone",
                 HealthRisks = new[] { new ProjectHealthRiskRequestDto { HealthRiskId = nonExistentHealthRiskId } }
             };
 
@@ -420,7 +413,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = 1,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = nationalSocietyId,
                     State = ProjectState.Open
                 }
@@ -432,7 +424,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new CreateProjectRequestDto
             {
                 Name = "New Project",
-                TimeZoneId = "Time Zone"
             };
 
             // Act
@@ -440,9 +431,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             // Assert
             await _nyssContextMock.Projects.Received(1).AddAsync(
-                Arg.Is<Project>(p =>
-                    p.Name == "New Project" &&
-                    p.TimeZone == "Time Zone"));
+                Arg.Is<Project>(p => p.Name == "New Project"));
             await _nyssContextMock.DidNotReceive().SaveChangesAsync();
             result.IsSuccess.ShouldBeFalse();
             result.Message.Key.ShouldBe(ResultKey.UnexpectedError);
@@ -474,7 +463,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = projectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
                     ProjectHealthRisks = new List<ProjectHealthRisk>
@@ -521,7 +509,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new EditProjectRequestDto
             {
                 Name = "Updated Project",
-                TimeZoneId = "Updated Time Zone",
                 HealthRisks = new List<ProjectHealthRiskRequestDto>
                 {
                     new ProjectHealthRiskRequestDto
@@ -580,7 +567,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = 1,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open
                 }
@@ -592,8 +578,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var projectRequestDto = new EditProjectRequestDto
             {
-                Name = "Updated Project",
-                TimeZoneId = "Updated Time Zone"
+                Name = "Updated Project"
             };
 
             // Act
@@ -631,7 +616,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = projectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
                     ProjectHealthRisks = new List<ProjectHealthRisk>
@@ -664,7 +648,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var projectRequestDto = new EditProjectRequestDto
             {
                 Name = "Updated Project",
-                TimeZoneId = "Updated Time Zone",
                 HealthRisks = new List<ProjectHealthRiskRequestDto>()
             };
 
@@ -701,7 +684,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = projectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open
                 }
@@ -713,8 +695,7 @@ namespace RX.Nyss.Web.Tests.Features.Projects
 
             var projectRequestDto = new EditProjectRequestDto
             {
-                Name = "Updated Project",
-                TimeZoneId = "Updated Time Zone"
+                Name = "Updated Project"
             };
 
             // Act
@@ -738,7 +719,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = existingProjectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
@@ -779,7 +759,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = existingProjectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Closed,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
@@ -817,7 +796,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = existingProjectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
                     ProjectHealthRisks = new[] { new ProjectHealthRisk { Alerts = new[] { new Alert { Status = alertStatus } } } },
@@ -854,7 +832,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = existingProjectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
@@ -913,7 +890,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = 1,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open,
                     ProjectHealthRisks = new List<ProjectHealthRisk>(),
@@ -947,7 +923,6 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = projectId,
                     Name = "Name",
-                    TimeZone = "Time Zone",
                     NationalSocietyId = 1,
                     State = ProjectState.Open
                 }

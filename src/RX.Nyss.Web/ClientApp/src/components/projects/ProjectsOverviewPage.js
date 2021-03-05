@@ -25,8 +25,6 @@ const ProjectsOverviewPageComponent = (props) => {
     return <Loading />;
   }
 
-  const selectedTimeZone = props.data.formData.timeZones.filter((timeZone) => timeZone.id === props.data.timeZoneId)[0];
-
   return (
     <Fragment>
 
@@ -37,13 +35,6 @@ const ProjectsOverviewPageComponent = (props) => {
           </Typography>
           <Typography variant="body1" gutterBottom>
             {props.data.name}
-          </Typography>
-
-          <Typography variant="h6">
-            {strings(stringKeys.project.form.timeZone)}
-          </Typography>
-          <Typography variant="body1" gutterBottom>
-            {selectedTimeZone.displayName}
           </Typography>
 
           <Typography variant="h6">

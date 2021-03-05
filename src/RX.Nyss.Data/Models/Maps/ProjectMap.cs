@@ -16,9 +16,6 @@ namespace RX.Nyss.Data.Models.Maps
                 .HasMaxLength(50)
                 .HasConversion<string>();
 
-            builder.Property(x => x.TimeZone)
-                .HasMaxLength(50);
-
             builder.Property(x => x.StartDate)
                 .IsRequired();
 

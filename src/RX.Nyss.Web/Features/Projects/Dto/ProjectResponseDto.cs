@@ -12,8 +12,6 @@ namespace RX.Nyss.Web.Features.Projects.Dto
 
         public bool AllowMultipleOrganizations { get; set; }
 
-        public string TimeZoneId { get; set; }
-
         public ProjectState State { get; set; }
 
         public IEnumerable<ProjectHealthRiskResponseDto> ProjectHealthRisks { get; set; }

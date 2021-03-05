@@ -22,7 +22,7 @@ namespace RX.Nyss.Web.Features.Projects
     public interface IProjectService
     {
         Task<Result<ProjectResponseDto>> Get(int projectId);
-        Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId);
+        Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId, int utcOffset);
         Task<Result<int>> Create(int nationalSocietyId, CreateProjectRequestDto dto);
         Task<Result> Edit(int projectId, EditProjectRequestDto dto);
         Task<Result> Close(int projectId);
@@ -61,7 +61,6 @@ namespace RX.Nyss.Web.Features.Projects
                     Id = p.Id,
                     NationalSocietyId = p.NationalSocietyId,
                     Name = p.Name,
-                    TimeZoneId = p.TimeZone,
                     AllowMultipleOrganizations = p.AllowMultipleOrganizations,
                     State = p.State,
                     ProjectHealthRisks = p.ProjectHealthRisks.OrderBy(phr => phr.HealthRisk.HealthRiskCode)
@@ -112,7 +111,7 @@ namespace RX.Nyss.Web.Features.Projects
                 .OrderBy(x => x.Name)
                 .ToListAsync();
 
-        public async Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId)
+        public async Task<Result<List<ProjectListItemResponseDto>>> List(int nationalSocietyId, int utcOffset)
         {
             var currentUser = await _authorizationService.GetCurrentUser();
 
@@ -151,8 +150,8 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     Id = p.Id,
                     Name = p.Name,
-                    StartDate = p.StartDate,
-                    EndDate = p.EndDate,
+                    StartDate = p.StartDate.AddHours(utcOffset),
+                    EndDate = p.EndDate.HasValue ? p.EndDate.Value.AddHours(utcOffset) : (DateTime?)null,
                     IsClosed = p.State == ProjectState.Closed,
                     TotalReportCount = p.ProjectHealthRisks
                         .SelectMany(phr => phr.Reports)
@@ -214,7 +213,6 @@ namespace RX.Nyss.Web.Features.Projects
                 {
                     Name = dto.Name,
                     AllowMultipleOrganizations = dto.AllowMultipleOrganizations,
-                    TimeZone = dto.TimeZoneId,
                     NationalSocietyId = nationalSocietyId,
                     State = ProjectState.Open,
                     StartDate = _dateTimeProvider.UtcNow,
@@ -226,7 +224,6 @@ namespace RX.Nyss.Web.Features.Projects
                         HealthRiskId = phr.HealthRiskId,
                         AlertRule = new AlertRule
                         {
-                            //ToDo: make CountThreshold nullable or change validation
                             CountThreshold = phr.AlertRuleCountThreshold ?? 0,
                             DaysThreshold = phr.AlertRuleDaysThreshold,
                             KilometersThreshold = phr.AlertRuleKilometersThreshold
@@ -288,7 +285,6 @@ namespace RX.Nyss.Web.Features.Projects
                 }
 
                 projectToUpdate.Name = dto.Name;
-                projectToUpdate.TimeZone = dto.TimeZoneId;
                 projectToUpdate.AllowMultipleOrganizations = dto.AllowMultipleOrganizations;
 
                 await UpdateHealthRisks(projectToUpdate, dto.HealthRisks.ToList());
@@ -509,20 +505,8 @@ namespace RX.Nyss.Web.Features.Projects
             return new ProjectFormDataResponseDto
             {
                 Organizations = data.Organizations,
-                HealthRisks = data.HealthRisks,
-                TimeZones = GetTimeZones()
+                HealthRisks = data.HealthRisks
             };
-        }
-
-        private IEnumerable<TimeZoneResponseDto> GetTimeZones()
-        {
-            var timeZones = TimeZoneInfo.GetSystemTimeZones()
-                .Select(tz => new TimeZoneResponseDto
-                {
-                    Id = tz.Id,
-                    DisplayName = tz.DisplayName
-                });
-            return timeZones;
         }
     }
 }
