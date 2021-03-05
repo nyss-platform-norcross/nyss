@@ -22,6 +22,7 @@ import { ValidationMessage } from '../forms/ValidationMessage';
 
 const HealthRisksEditPageComponent = (props) => {
   const [form, setForm] = useState(null);
+  const [selectedHealthRiskType, setHealthRiskType] = useState(null);
   const [reportCountThreshold, setReportCountThreshold] = useState(null);
 
   useMount(() => {
@@ -40,7 +41,10 @@ const HealthRisksEditPageComponent = (props) => {
     if (!props.data) {
       return;
     }
+
     setReportCountThreshold(props.data.alertRuleCountThreshold);
+    setHealthRiskType(props.data.healthRiskType);
+
     let fields = {
       healthRiskCode: props.data.healthRiskCode.toString(),
       healthRiskType: props.data.healthRiskType,
@@ -50,9 +54,9 @@ const HealthRisksEditPageComponent = (props) => {
     };
 
     let validation = {
-      healthRiskCode: [validators.required, validators.integer],
+      healthRiskCode: [validators.required, validators.nonNegativeNumber],
       healthRiskType: [validators.required],
-      alertRuleCountThreshold: [validators.integer],
+      alertRuleCountThreshold: [validators.nonNegativeNumber],
       alertRuleDaysThreshold: [
         validators.requiredWhen(f => f.alertRuleCountThreshold > 1),
         validators.inRange(1, 365)
@@ -81,8 +85,10 @@ const HealthRisksEditPageComponent = (props) => {
       }), { fields, validation });
 
     const newForm = createForm(finalFormData.fields, finalFormData.validation);
-    setForm(newForm);
     newForm.fields.alertRuleCountThreshold.subscribe(({ newValue }) => setReportCountThreshold(newValue));
+    newForm.fields.healthRiskType.subscribe(({ newValue }) => setHealthRiskType(newValue));
+    setForm(newForm);
+
   }, [props.data, props.contentLanguages]);
 
   const [healthRiskTypesData] = useState(healthRiskTypes.map(t => ({
@@ -165,36 +171,51 @@ const HealthRisksEditPageComponent = (props) => {
             </Fragment>
           ))}
 
-          <Grid item xs={12}>
-            <Typography variant="h3">{strings(stringKeys.healthRisk.form.alertsSection)}</Typography>
-            <Typography variant="subtitle1">{strings(stringKeys.healthRisk.form.alertRuleDescription)}</Typography>
-          </Grid>
+          {(selectedHealthRiskType === "Activity")
+            ? (
+              <Fragment>
+                <Grid item xs={12}>
+                  <Typography variant="h3">{strings(stringKeys.healthRisk.form.alertsSection)}</Typography>
+                  <Typography variant="body1"
+                              style={{ color: "#a0a0a0" }}>{strings(stringKeys.healthRisk.form.noAlertRule)}
+                  </Typography>
+                </Grid>
+              </Fragment>
+            )
+            : (
+              <Fragment>
+                <Grid item xs={12}>
+                  <Typography variant="h3">{strings(stringKeys.healthRisk.form.alertsSection)}</Typography>
+                  <Typography variant="subtitle1">{strings(stringKeys.healthRisk.form.alertRuleDescription)}</Typography>
+                </Grid>
 
-          <Grid item xs={4}>
-            <TextInputField
-              label={strings(stringKeys.healthRisk.form.alertRuleCountThreshold)}
-              name="alertRuleCountThreshold"
-              field={form.fields.alertRuleCountThreshold}
-            />
-          </Grid>
+                <Grid item xs={4}>
+                  <TextInputField
+                    label={strings(stringKeys.healthRisk.form.alertRuleCountThreshold)}
+                    name="alertRuleCountThreshold"
+                    field={form.fields.alertRuleCountThreshold}
+                  />
+                </Grid>
 
-          <Grid item xs={4}>
-            <TextInputField
-              label={strings(stringKeys.healthRisk.form.alertRuleDaysThreshold)}
-              name="alertRuleDaysThreshold"
-              field={form.fields.alertRuleDaysThreshold}
-              disabled={!reportCountThreshold || reportCountThreshold <= 1}
-            />
-          </Grid>
+                <Grid item xs={4}>
+                  <TextInputField
+                    label={strings(stringKeys.healthRisk.form.alertRuleDaysThreshold)}
+                    name="alertRuleDaysThreshold"
+                    field={form.fields.alertRuleDaysThreshold}
+                    disabled={!reportCountThreshold || reportCountThreshold <= 1}
+                  />
+                </Grid>
 
-          <Grid item xs={4}>
-            <TextInputField
-              label={strings(stringKeys.healthRisk.form.alertRuleKilometersThreshold)}
-              name="alertRuleKilometersThreshold"
-              field={form.fields.alertRuleKilometersThreshold}
-              disabled={!reportCountThreshold || reportCountThreshold <= 1}
-            />
-          </Grid>
+                <Grid item xs={4}>
+                  <TextInputField
+                    label={strings(stringKeys.healthRisk.form.alertRuleKilometersThreshold)}
+                    name="alertRuleKilometersThreshold"
+                    field={form.fields.alertRuleKilometersThreshold}
+                    disabled={!reportCountThreshold || reportCountThreshold <= 1}
+                  />
+                </Grid>
+              </Fragment>
+            )}
         </Grid>
 
         <FormActions>
