@@ -178,6 +178,7 @@ export const stringKeys = {
       healthRiskType: "healthRisk.form.healthRiskType",
       translationsSection: "healthRisk.form.translationsSection",
       alertsSection: "healthRisk.form.alertsSection",
+      noAlertRule: "healthRisk.form.noAlertRule",
       alertRuleDescription: "healthRisk.form.alertRuleDescription",
       alertRuleCountThreshold: "healthRisk.form.alertRuleCountThreshold",
       alertRuleDaysThreshold: "healthRisk.form.alertRuleDaysThreshold",

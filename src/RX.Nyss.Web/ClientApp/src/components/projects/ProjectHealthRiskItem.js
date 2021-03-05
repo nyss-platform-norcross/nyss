@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import { validators } from '../../utils/forms';
 import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
@@ -79,34 +79,46 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
         </Grid>
 
         <Typography variant="h3">{strings(stringKeys.project.form.alertsSection)}</Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={4}>
-            <TextInputField
-              label={strings(stringKeys.project.form.alertRuleCountThreshold)}
-              name={`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`}
-              field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`]}
-              inputMode={"numeric"}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextInputField
-              label={strings(stringKeys.project.form.alertRuleDaysThreshold)}
-              name={`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`}
-              field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`]}
-              disabled={!reportCountThreshold || reportCountThreshold <= 1}
-              inputMode={"numeric"}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextInputField
-              label={strings(stringKeys.project.form.alertRuleKilometersThreshold)}
-              name={`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`}
-              field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`]}
-              disabled={!reportCountThreshold || reportCountThreshold <= 1}
-              inputMode={"numeric"}
-            />
-          </Grid>
-        </Grid>
+
+        {(healthRisk.healthRiskCode === 98 || healthRisk.healthRiskCode === 99) && (
+          <Typography variant="body1"
+                      style={{ color: "#a0a0a0" }}>{strings(stringKeys.healthRisk.form.noAlertRule)}
+          </Typography>
+        )}
+
+        {(healthRisk.healthRiskCode !== 99 && healthRisk.healthRiskCode !== 98) && (
+          <Fragment>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={4}>
+                <TextInputField
+                  label={strings(stringKeys.project.form.alertRuleCountThreshold)}
+                  name={`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`}
+                  field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleCountThreshold`]}
+                  inputMode={"numeric"}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextInputField
+                  label={strings(stringKeys.project.form.alertRuleDaysThreshold)}
+                  name={`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`}
+                  field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`]}
+                  disabled={!reportCountThreshold || reportCountThreshold <= 1}
+                  inputMode={"numeric"}
+                />
+              </Grid>
+              <Grid item xs={12} sm={4}>
+                <TextInputField
+                  label={strings(stringKeys.project.form.alertRuleKilometersThreshold)}
+                  name={`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`}
+                  field={form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`]}
+                  disabled={!reportCountThreshold || reportCountThreshold <= 1}
+                  inputMode={"numeric"}
+                />
+              </Grid>
+            </Grid>
+          </Fragment>
+        )}
+
       </CardContent>
     </Card>
   );
