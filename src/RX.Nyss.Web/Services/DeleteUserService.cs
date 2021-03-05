@@ -55,7 +55,7 @@ namespace RX.Nyss.Web.Services
 
         public bool GetCanRoleDeleteRole(Role deletedUserRole, Role deletingUserRole)
         {
-            var cannotDeleteAnyone = deletedUserRole == Role.HeadSupervisor || deletingUserRole == Role.Supervisor || deletingUserRole == Role.DataConsumer;
+            var cannotDeleteAnyone = deletingUserRole == Role.HeadSupervisor || deletingUserRole == Role.Supervisor || deletingUserRole == Role.DataConsumer;
 
             if (cannotDeleteAnyone || _userRoleHierarchyDictionary[deletingUserRole] > _userRoleHierarchyDictionary[deletedUserRole])
             {
