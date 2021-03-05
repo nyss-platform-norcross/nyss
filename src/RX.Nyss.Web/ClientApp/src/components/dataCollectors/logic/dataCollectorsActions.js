@@ -38,7 +38,7 @@ export const getList = {
 };
 
 export const openMapOverview = {
-  invoke: (projectId, from, to) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId, from, to }),
+  invoke: (projectId) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.INVOKE, projectId }),
   request: () => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.REQUEST }),
   success: () => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS }),
   failure: (message) => ({ type: OPEN_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE, message })

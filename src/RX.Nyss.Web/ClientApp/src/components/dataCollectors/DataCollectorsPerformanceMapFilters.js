@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from "../../strings";
 import { DatePicker } from "../forms/DatePicker";
+import { convertToLocalDate, convertToUtc } from "../../utils/date";
 
 export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
   const [value, setValue] = useState(filters);
@@ -11,7 +12,8 @@ export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
   const handleChange = (change) => {
     const newValue = {
       ...value,
-      ...change
+      startDate: convertToUtc(change.startDate),
+      endDate: convertToUtc(change.endDate)
     }
 
     setValue(newValue);
@@ -19,10 +21,10 @@ export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
   };
 
   const handleDateFromChange = date =>
-    handleChange({ startDate: date.format('YYYY-MM-DD') });
+    handleChange({ startDate: date });
 
   const handleDateToChange = date =>
-    handleChange({ endDate: date.format('YYYY-MM-DD') });
+    handleChange({ endDate: date });
 
   return (
     <Grid container spacing={2} className={styles.filters}>
@@ -30,7 +32,7 @@ export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
         <DatePicker
           onChange={handleDateFromChange}
           label={strings(stringKeys.project.dashboard.filters.startDate)}
-          value={value.startDate}
+          value={convertToLocalDate(value.startDate)}
         />
       </Grid>
 
@@ -38,7 +40,7 @@ export const DataCollectorsPerformanceMapFilters = ({ filters, onChange }) => {
         <DatePicker
           onChange={handleDateToChange}
           label={strings(stringKeys.project.dashboard.filters.endDate)}
-          value={value.endDate}
+          value={convertToLocalDate(value.endDate)}
         />
       </Grid>
     </Grid>

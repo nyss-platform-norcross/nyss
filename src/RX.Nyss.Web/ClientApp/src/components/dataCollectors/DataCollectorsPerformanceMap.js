@@ -54,17 +54,11 @@ const getAggregatedStatus = (info) => {
 export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLocations, projectId, details, getMapDetails, detailsFetching }) => {
   const [bounds, setBounds] = useState(null);
   const [center, setCenter] = useState(null);
-  const [isMapLoading, setIsMapLoading] = useState(false);
 
   useEffect(() => {
-    setIsMapLoading(true); // used to remove the component from the view and clean the marker groups
-
-    setTimeout(() => {
-      const hasLocations = dataCollectorLocations.length > 1;
-      setBounds(hasLocations ? calculateBounds(dataCollectorLocations) : null)
-      setCenter(hasLocations ? null : { lat: centerLocation.latitude, lng: centerLocation.longitude })
-      setIsMapLoading(false);
-    }, 0)
+    const hasLocations = dataCollectorLocations.length > 1;
+    setBounds(hasLocations ? calculateBounds(dataCollectorLocations) : null)
+    setCenter(hasLocations ? null : { lat: centerLocation.latitude, lng: centerLocation.longitude })
   }, [dataCollectorLocations, centerLocation])
 
   if (!centerLocation) {
@@ -83,46 +77,44 @@ export const DataCollectorsPerformanceMap = ({ centerLocation, dataCollectorLoca
       maxZoom={19}
       className={styles.map}
     >
-      <TileLayer 
-        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors' 
+      <TileLayer
+        attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-      {!isMapLoading && (
-        <MarkerClusterGroup
-          showCoverageOnHover={false}
-          iconCreateFunction={createClusterIcon}>
-          {dataCollectorLocations.map(dc => (
-            <Marker
-              className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
-              key={`marker_${dc.location.latitude}_${dc.location.longitude}`}
-              position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
-              icon={createIcon(dc)}
-              eventHandlers={{
-                click: handleMarkerClick
-              }}
-              dataCollectorInfo={dc}
-            >
-              <Popup>
-                <div className={styles.popup}>
-                  {!detailsFetching
-                    ? (
-                      <div>
-                        {details && details.map(d => (
-                          <div key={`dataCollector_${d.id}`} className={styles.dataCollectorDetails}>
-                            <Icon>{getIconFromStatus(d.status)}</Icon>
-                            {d.displayName}
-                          </div>
-                        ))}
-                      </div>
-                    )
-                    : (<Loading inline noWait />)
-                  }
-                </div>
-              </Popup>
-            </Marker>
-          ))}
-        </MarkerClusterGroup>
-      )}
+      <MarkerClusterGroup
+        showCoverageOnHover={false}
+        iconCreateFunction={createClusterIcon}>
+        {dataCollectorLocations.map((dc, i) => (
+          <Marker
+            className={`${styles.marker} ${dc.countNotReporting || dc.countReportingWithErrors ? styles.markerInvalid : styles.markerValid}`}
+            key={`marker_${i}`}
+            position={{ lat: dc.location.latitude, lng: dc.location.longitude }}
+            icon={createIcon(dc)}
+            eventHandlers={{
+              click: handleMarkerClick
+            }}
+            dataCollectorInfo={dc}
+          >
+            <Popup>
+              <div className={styles.popup}>
+                {!detailsFetching
+                  ? (
+                    <div>
+                      {details && details.map(d => (
+                        <div key={`dataCollector_${d.id}`} className={styles.dataCollectorDetails}>
+                          <Icon>{getIconFromStatus(d.status)}</Icon>
+                          {d.displayName}
+                        </div>
+                      ))}
+                    </div>
+                  )
+                  : (<Loading inline noWait />)
+                }
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MarkerClusterGroup>
       <ScaleControl imperial={false}></ScaleControl>
     </MapContainer>
   );
