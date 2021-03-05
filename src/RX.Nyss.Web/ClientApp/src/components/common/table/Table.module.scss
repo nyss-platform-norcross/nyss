@@ -20,12 +20,12 @@
 
 .stickyTable {
   table {
-    border-collapse: separate !important;
+    border-collapse: separate;
   }
 
   th {
     z-index: 1;
-    top: -1px !important;
+    top: -1px;
     position: sticky;
     background: white;
   }
