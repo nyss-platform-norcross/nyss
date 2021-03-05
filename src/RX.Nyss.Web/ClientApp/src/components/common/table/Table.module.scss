@@ -4,11 +4,6 @@
 
 .tableContainer {
   position: relative;
-
-  @media screen and (max-width: 1919px) {
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
 }
 
 .noDataInfo {
@@ -30,11 +25,8 @@
 
   th {
     z-index: 1;
-
-    @media screen and (min-width: 1280px) {
-      top: 0px !important;
-      position: sticky;
-      background: white;
-    }
+    top: -1px !important;
+    position: sticky;
+    background: white;
   }
 }
