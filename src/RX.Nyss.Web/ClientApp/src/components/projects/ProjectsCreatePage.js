@@ -138,7 +138,7 @@ const ProjectsCreatePageComponent = (props) => {
 
           {selectedHealthRisks.length > 0 &&
             <Grid item xs={12}>
-              <Typography variant="h3">{strings(stringKeys.project.form.healthRisksSetion)}</Typography>
+              <Typography variant="h3">{strings(stringKeys.project.form.healthRisksSection)}</Typography>
             </Grid>
           }
 
