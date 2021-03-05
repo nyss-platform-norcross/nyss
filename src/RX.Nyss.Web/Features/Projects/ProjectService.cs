@@ -68,6 +68,7 @@ namespace RX.Nyss.Web.Features.Projects
                         {
                             Id = phr.Id,
                             HealthRiskId = phr.HealthRiskId,
+                            HealthRiskType = phr.HealthRisk.HealthRiskType,
                             HealthRiskCode = phr.HealthRisk.HealthRiskCode,
                             HealthRiskName = phr.HealthRisk.LanguageContents
                                 .Where(lc => lc.ContentLanguage.Id == p.NationalSociety.ContentLanguage.Id)
@@ -474,6 +475,7 @@ namespace RX.Nyss.Web.Features.Projects
                         {
                             Id = null,
                             HealthRiskId = hr.Id,
+                            HealthRiskType = hr.HealthRiskType,
                             HealthRiskCode = hr.HealthRiskCode,
                             HealthRiskName = hr.LanguageContents
                                 .Where(lc => lc.ContentLanguage.Id == contentLanguageId)

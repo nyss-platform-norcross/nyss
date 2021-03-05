@@ -1,10 +1,14 @@
-﻿namespace RX.Nyss.Web.Features.Projects.Dto
+﻿using RX.Nyss.Data.Concepts;
+
+namespace RX.Nyss.Web.Features.Projects.Dto
 {
     public class ProjectHealthRiskResponseDto
     {
         public int? Id { get; set; }
 
         public int HealthRiskId { get; set; }
+
+        public HealthRiskType HealthRiskType { get; set; }
 
         public int HealthRiskCode { get; set; }
 

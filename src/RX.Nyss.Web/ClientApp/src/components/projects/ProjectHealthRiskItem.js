@@ -47,7 +47,6 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
       form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleDaysThreshold`].update("");
       form.fields[`healthRisk.${healthRisk.healthRiskId}.alertRuleKilometersThreshold`].update("");
     }
-    return;
   }, [form, reportCountThreshold, healthRisk])
 
   if (!ready) {
@@ -80,13 +79,13 @@ export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) 
 
         <Typography variant="h3">{strings(stringKeys.project.form.alertsSection)}</Typography>
 
-        {(healthRisk.healthRiskCode === 98 || healthRisk.healthRiskCode === 99) && (
+        {healthRisk.healthRiskType === 'Activity' && (
           <Typography variant="body1"
                       style={{ color: "#a0a0a0" }}>{strings(stringKeys.healthRisk.form.noAlertRule)}
           </Typography>
         )}
 
-        {(healthRisk.healthRiskCode !== 99 && healthRisk.healthRiskCode !== 98) && (
+        {healthRisk.healthRiskType !== 'Activity' && (
           <Fragment>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
