@@ -13,6 +13,7 @@ import { ExpandMore, DateRange } from '@material-ui/icons';
 import { Switch, FormControl, LinearProgress, FormLabel, Chip, IconButton } from "@material-ui/core";
 import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
 import { convertToLocalDate, convertToUtc } from "../../../utils/date";
+import CardHeader from "@material-ui/core/CardHeader";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, isGeneratingPdf, isFilterExpanded, setIsFilterExpanded }) => {
   const [value, setValue] = useState(filters);
@@ -69,8 +70,11 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
     <Card className={styles.filters}>
       {isFetching && (<LinearProgress color="primary" />)}
       {isSmallScreen && (
-        <CardContent style={{ paddingTop: "5px", paddingBottom: "5px" }} >
+        <CardContent className={styles.collapsedFilterBar} >
           <Grid container spacing={2} alignItems="center">
+            <Grid item>
+              <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} />
+            </Grid>
             <Grid item>
               <Chip icon={<DateRange />} label={`${convertToLocalDate(value.startDate).format('YYYY-MM-DD')} - ${convertToLocalDate(value.endDate).format('YYYY-MM-DD')}`} onClick={() => setIsFilterExpanded(!isFilterExpanded)} />
             </Grid>
@@ -94,6 +98,11 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
       )}
 
       <ConditionalCollapse collapsible={isSmallScreen && !isGeneratingPdf} expanded={isFilterExpanded}>
+        {!isSmallScreen && (
+          <Grid spacing={2}>
+            <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} className={styles.filterTitle}  />
+          </Grid>
+        )}
         <CardContent data-printable={true}>
           <Grid container spacing={2}>
             <Grid item>
