@@ -110,6 +110,7 @@ export const stringKeys = {
         numberOfDistricts: "nationalsociety.dashboard.numbers.numberOfDistricts"
       },
       filters: {
+        title: "nationalsociety.dashboard.filters.title",
         startDate: "nationalsociety.dashboard.filters.startDate",
         endDate: "nationalsociety.dashboard.filters.endDate",
         timeGrouping: "nationalsociety.dashboard.filters.timeGrouping",
