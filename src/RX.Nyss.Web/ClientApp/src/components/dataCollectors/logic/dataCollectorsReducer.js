@@ -7,11 +7,11 @@ import { LOCATION_CHANGE } from "connected-react-router";
 const filterIsSet = (filters) => {
   const initialFilters = initialState.dataCollectors.filters;
   return filters.name !== initialFilters.name
-  || filters.area !== initialFilters.area
-  || filters.supervisorId !== initialFilters.supervisorId
-  || filters.sex !== initialFilters.sex
-  || filters.pageNumber !== initialFilters.pageNumber
-  || filters.trainingStatus !== initialFilters.trainingStatus;
+    || filters.area !== initialFilters.area
+    || filters.supervisorId !== initialFilters.supervisorId
+    || filters.sex !== initialFilters.sex
+    || filters.pageNumber !== initialFilters.pageNumber
+    || filters.trainingStatus !== initialFilters.trainingStatus;
 }
 
 export function dataCollectorsReducer(state = initialState.dataCollectors, action) {
@@ -41,14 +41,14 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return {
         ...state,
         listSelectedAll: action.value && state.listData.data.every(i => i.isSelected || (action.value && i.id === action.dataCollectorId)),
-        listData: {...state.listData, data : assignInArray(state.listData.data, i => i.id === action.dataCollectorId, item => ({ ...item, isSelected: action.value }))}
+        listData: { ...state.listData, data: assignInArray(state.listData.data, i => i.id === action.dataCollectorId, item => ({ ...item, isSelected: action.value })) }
       };
 
     case actions.SELECT_ALL_DATA_COLLECTOR:
-      return { 
-        ...state, 
-        listSelectedAll: action.value, 
-        listData: {...state.listData, data : assignInArray(state.listData.data, _ => true, item => ({ ...item, isSelected: action.value }))}
+      return {
+        ...state,
+        listSelectedAll: action.value,
+        listData: { ...state.listData, data: assignInArray(state.listData.data, _ => true, item => ({ ...item, isSelected: action.value })) }
       };
 
     case actions.OPEN_DATA_COLLECTOR_EDITION.INVOKE:
@@ -73,12 +73,12 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, formFetching: false, formError: action.message };
 
     case actions.GET_DATA_COLLECTORS_MAP_OVERVIEW.SUCCESS:
-      return { ...state, mapOverviewFilters: action.filters, mapOverviewCenterLocation: action.centerLocation , mapOverviewDataCollectorLocations: action.dataCollectorLocations };
+      return { ...state, mapOverviewFilters: action.filters, mapOverviewCenterLocation: action.centerLocation, mapOverviewDataCollectorLocations: action.dataCollectorLocations };
 
     case actions.GET_DATA_COLLECTORS_MAP_OVERVIEW.FAILURE:
-      return { ...state, mapOverviewCenterLocation: null , mapOverviewDataCollectorLocations: [] };
+      return { ...state, mapOverviewCenterLocation: null, mapOverviewDataCollectorLocations: [] };
 
-      case actions.GET_DATA_COLLECTORS_MAP_DETAILS.REQUEST:
+    case actions.GET_DATA_COLLECTORS_MAP_DETAILS.REQUEST:
       return { ...state, mapOverviewDetails: null, mapOverviewDetailsFetching: true };
 
     case actions.GET_DATA_COLLECTORS_MAP_DETAILS.SUCCESS:
@@ -142,6 +142,15 @@ export function dataCollectorsReducer(state = initialState.dataCollectors, actio
       return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => removeProperty(replacingState, id), state.updatingDataCollector), listStale: true };
 
     case actions.REPLACE_SUPERVISOR.FAILURE:
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => removeProperty(replacingState, id), state.updatingDataCollector) };
+
+    case actions.SET_DATA_COLLECTORS_DEPLOYED_STATE.REQUEST:
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => setProperty(replacingState, id, true), state.updatingDataCollector) };
+
+    case actions.SET_DATA_COLLECTORS_DEPLOYED_STATE.SUCCESS:
+      return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => removeProperty(replacingState, id), state.updatingDataCollector), listStale: true };
+
+    case actions.SET_DATA_COLLECTORS_DEPLOYED_STATE.FAILURE:
       return { ...state, updatingDataCollector: action.dataCollectorIds.reduce((replacingState, id) => removeProperty(replacingState, id), state.updatingDataCollector) };
 
     default:
