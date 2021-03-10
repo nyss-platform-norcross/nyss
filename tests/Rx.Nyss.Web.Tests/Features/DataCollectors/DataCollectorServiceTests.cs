@@ -684,6 +684,42 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             await _emailToSMSService.Received().SendMessage(Arg.Any<GatewaySetting>(), Arg.Any<List<string>>(), "Test");
         }
 
+        [Fact]
+        public async Task SetDeployedState_WhenSetToNotDeployed_ShouldReturnCorrectMessage()
+        {
+            // Arrange
+            var setDeployedStateDto = new SetDeployedStateRequestDto
+            {
+                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
+                Deployed = false
+            };
+
+            // Act
+            var res = await _dataCollectorService.SetDeployedState(setDeployedStateDto);
+
+            // Assert
+            res.IsSuccess.ShouldBeTrue();
+            res.Message.Key.ShouldBe(ResultKey.DataCollector.SetToNotDeployedSuccess);
+        }
+
+        [Fact]
+        public async Task SetDeployedState_WhenSetToDeployed_ShouldReturnCorrectMessage()
+        {
+            // Arrange
+            var setDeployedStateDto = new SetDeployedStateRequestDto
+            {
+                DataCollectorIds = new List<int> { DataCollectorWithoutReportsId },
+                Deployed = true
+            };
+
+            // Act
+            var res = await _dataCollectorService.SetDeployedState(setDeployedStateDto);
+
+            // Assert
+            res.IsSuccess.ShouldBeTrue();
+            res.Message.Key.ShouldBe(ResultKey.DataCollector.SetToDeployedSuccess);
+        }
+
         public ReportingStatus DataCollectorStatusFromReports(IEnumerable<RawReport> reports)
         {
             return reports.Any()
