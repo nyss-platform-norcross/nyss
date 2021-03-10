@@ -106,5 +106,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]
         public async Task<Result> ReplaceSupervisor([FromBody] ReplaceSupervisorRequestDto replaceSupervisorRequestDto) =>
             await _dataCollectorService.ReplaceSupervisor(replaceSupervisorRequestDto);
+
+        [HttpPost, Route("setDeployedState")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor, Role.Supervisor, Role.HeadSupervisor), NeedsPolicy(Policy.MultipleDataCollectorsAccess)]
+        public Task<Result> SetDeployedState([FromBody] SetDeployedStateRequestDto dto) =>
+            _dataCollectorService.SetDeployedState(dto);
     }
 }

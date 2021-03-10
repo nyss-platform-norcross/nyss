@@ -31,6 +31,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public int? ZoneId { get; set; }
 
         public int SupervisorId { get; set; }
+        public bool Deployed { get; set; }
 
         public class Validator : AbstractValidator<CreateDataCollectorRequestDto>
         {
@@ -57,6 +58,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                     RuleFor(dc => dc.Sex).IsInEnum();
                     RuleFor(dc => dc.BirthGroupDecade).GreaterThan(0).Must(x => x % 10 == 0);
                 });
+                RuleFor(dc => dc.Deployed).NotNull();
             }
         }
     }

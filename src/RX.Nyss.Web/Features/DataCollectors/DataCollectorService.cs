@@ -45,6 +45,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         Task<Result> SetTrainingState(SetDataCollectorsTrainingStateRequestDto dto);
         Task<Result> ReplaceSupervisor(ReplaceSupervisorRequestDto replaceSupervisorRequestDto);
         Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId);
+        Task<Result> SetDeployedState(SetDeployedStateRequestDto dto);
     }
 
     public class DataCollectorService : IDataCollectorService
@@ -127,6 +128,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 ZoneId = dataCollector.Zone?.Id,
                 NationalSocietyId = dataCollector.Project.NationalSociety.Id,
                 ProjectId = dataCollector.Project.Id,
+                Deployed = dataCollector.Deployed,
                 FormData = new GetDataCollectorResponseDto.FormDataDto
                 {
                     Regions = regions.Value,
@@ -236,7 +238,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Region = dc.Village.District.Region.Name,
                     Sex = dc.Sex,
                     IsInTrainingMode = dc.IsInTrainingMode,
-                    Supervisor = dc.Supervisor
+                    Supervisor = dc.Supervisor,
+                    IsDeployed = dc.Deployed
                 })
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
@@ -323,7 +326,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 Project = project,
                 Zone = zone,
                 CreatedAt = _dateTimeProvider.UtcNow,
-                IsInTrainingMode = true
+                IsInTrainingMode = true,
+                Deployed = createDto.Deployed
             };
 
             await _nyssContext.AddAsync(dataCollector);
@@ -373,6 +377,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             dataCollector.Village = village;
             dataCollector.Supervisor = supervisor;
             dataCollector.Zone = zone;
+            dataCollector.Deployed = editDto.Deployed;
 
             await _nyssContext.SaveChangesAsync();
             return SuccessMessage(ResultKey.DataCollector.EditSuccess);
@@ -567,6 +572,21 @@ namespace RX.Nyss.Web.Features.DataCollectors
             await SendReplaceSupervisorSms(gatewaySetting, replaceSupervisorDatas, supervisorData.Supervisor);
 
             return Success();
+        }
+
+        public async Task<Result> SetDeployedState(SetDeployedStateRequestDto dto)
+        {
+            var dataCollectors = await _nyssContext.DataCollectors
+                .Where(dc => dto.DataCollectorIds.Contains(dc.Id))
+                .ToListAsync();
+
+            dataCollectors.ForEach(dc => dc.Deployed = dto.Deployed);
+
+            await _nyssContext.SaveChangesAsync();
+
+            return SuccessMessage(dto.Deployed
+                ? ResultKey.DataCollector.SetToDeployedSuccess
+                : ResultKey.DataCollector.SetToNotDeployedSuccess);
         }
 
         public async Task<IQueryable<DataCollector>> GetDataCollectorsForCurrentUserInProject(int projectId)
