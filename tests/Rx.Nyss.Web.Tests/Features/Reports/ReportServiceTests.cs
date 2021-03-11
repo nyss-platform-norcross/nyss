@@ -472,5 +472,145 @@ namespace RX.Nyss.Web.Tests.Features.Reports
             result.Value.Data.Count.ShouldBe(Math.Min(11, _rowsPerPage));
             result.Value.TotalRows.ShouldBe(11);
         }
+
+        [Fact]
+        public async Task AcceptReport_WhenErrorReport_ShouldNotBeAllowed()
+        {
+            // Arrange
+            var rawReports = new List<RawReport> { new RawReport { Id = 1 } };
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+
+            // Act
+            var result = await _reportService.AcceptReport(1);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Report.ReportNotFound);
+        }
+
+        [Fact]
+        public async Task AcceptReport_WhenSuccessReport_ShouldChangeStatus()
+        {
+            // Arrange
+            var rawReports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    Id = 1,
+                    Report = new Report
+                    {
+                        Status = ReportStatus.New
+                    }
+                }
+            };
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+
+            // Act
+            var result = await _reportService.AcceptReport(1);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            var report = _nyssContextMock.RawReports.First(r => r.Id == 1);
+            report.Report.AcceptedAt.ShouldNotBeNull();
+            report.Report.Status.ShouldBe(ReportStatus.Accepted);
+        }
+
+        [Fact]
+        public async Task AcceptReport_WhenAlreadyAccepted_ShouldFail()
+        {
+            // Arrange
+            var rawReports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    Id = 1,
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Accepted
+                    }
+                }
+            };
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+
+            // Act
+            var result = await _reportService.AcceptReport(1);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Report.AlreadyCrossChecked);
+        }
+
+        [Fact]
+        public async Task DismissReport_WhenErrorReport_ShouldNotBeAllowed()
+        {
+            // Arrange
+            var rawReports = new List<RawReport> { new RawReport { Id = 1 } };
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+
+            // Act
+            var result = await _reportService.DismissReport(1);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Report.ReportNotFound);
+        }
+
+        [Fact]
+        public async Task DismissReport_WhenSuccessReport_ShouldChangeStatus()
+        {
+            // Arrange
+            var rawReports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    Id = 1,
+                    Report = new Report
+                    {
+                        Status = ReportStatus.New
+                    }
+                }
+            };
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+
+            // Act
+            var result = await _reportService.DismissReport(1);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            var report = _nyssContextMock.RawReports.First(r => r.Id == 1);
+            report.Report.RejectedAt.ShouldNotBeNull();
+            report.Report.Status.ShouldBe(ReportStatus.Rejected);
+        }
+
+        [Fact]
+        public async Task DismissReport_WhenAlreadyDismissed_ShouldFail()
+        {
+            // Arrange
+            var rawReports = new List<RawReport>
+            {
+                new RawReport
+                {
+                    Id = 1,
+                    Report = new Report
+                    {
+                        Status = ReportStatus.Rejected
+                    }
+                }
+            };
+            var rawReportsMockDbSet = rawReports.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.RawReports.Returns(rawReportsMockDbSet);
+
+            // Act
+            var result = await _reportService.DismissReport(1);
+
+            // Assert
+            result.IsSuccess.ShouldBeFalse();
+            result.Message.Key.ShouldBe(ResultKey.Report.AlreadyCrossChecked);
+        }
     }
 }
