@@ -338,6 +338,11 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error(ResultKey.Report.AlreadyCrossChecked);
             }
 
+            if (report.MarkedAsError)
+            {
+                return Error(ResultKey.Report.CannotCrossCheckErrorReport);
+            }
+
             report.AcceptedAt = _dateTimeProvider.UtcNow;
             report.AcceptedBy = currentUser;
             report.Status = ReportStatus.Accepted;
@@ -362,6 +367,11 @@ namespace RX.Nyss.Web.Features.Reports
             if (report.Status == ReportStatus.Rejected)
             {
                 return Error(ResultKey.Report.AlreadyCrossChecked);
+            }
+
+            if (report.MarkedAsError)
+            {
+                return Error(ResultKey.Report.CannotCrossCheckErrorReport);
             }
 
             report.RejectedAt = _dateTimeProvider.UtcNow;
