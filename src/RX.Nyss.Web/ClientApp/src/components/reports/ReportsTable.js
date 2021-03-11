@@ -79,6 +79,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
   const canCrossCheck = (report, reportStatus) =>
     !report.isAnonymized
     && report.isValid
+    && !report.isMarkedAsError
     && !report.isActivityReport
     && (!report.alert || (report.status !== reportStatus && alertAllowsCrossCheckingOfReport(report.alert)));
 
