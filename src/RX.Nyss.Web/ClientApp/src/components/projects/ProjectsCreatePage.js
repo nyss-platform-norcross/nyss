@@ -37,12 +37,14 @@ const ProjectsCreatePageComponent = (props) => {
     const fields = {
       name: "",
       allowMultipleOrganizations: false,
-      organizationId: ""
+      organizationId: "",
+      alertNotHandledNotificationRecipientId: ""
     };
 
     const validation = {
       name: [validators.required, validators.minLength(1), validators.maxLength(100)],
-      organizationId: [validators.requiredWhen(f => canChangeOrganization())]
+      organizationId: [validators.requiredWhen(f => canChangeOrganization())],
+      alertNotHandledNotificationRecipientId: [validators.required]
     };
 
     return createForm(fields, validation);
@@ -122,6 +124,20 @@ const ProjectsCreatePageComponent = (props) => {
               </Grid>
             </Fragment>
           )}
+
+          <Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.project.form.alertNotHandledNotificationRecipient)}
+              name="alertNotHandledNotificationRecipientId"
+              field={form.fields.alertNotHandledNotificationRecipientId}
+            >
+              {props.data.alertNotHandledRecipients.map(recipient => (
+                <MenuItem key={`alertNotHandledRecipient_${recipient.id}`} value={recipient.id.toString()}>
+                  {recipient.name}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>
 
           <Grid item xs={12}>
             <MultiSelect

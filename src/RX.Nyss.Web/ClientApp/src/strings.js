@@ -371,7 +371,8 @@ export const stringKeys = {
       addEmail: "project.form.addEmail",
       addSms: "project.form.addSms",
       create: "project.form.create",
-      update: "project.form.update"
+      update: "project.form.update",
+      alertNotHandledNotificationRecipient: "project.form.alertNotHandledNotificationRecipient"
     },
     messages: {
       create: {
