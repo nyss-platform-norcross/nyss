@@ -236,6 +236,7 @@ namespace RX.Nyss.Web.Features.Projects
                 };
 
                 await _nyssContext.Projects.AddAsync(projectToAdd);
+                await AddAlertNotHandledNotificationRecipient(projectToAdd, dto.AlertNotHandledNotificationRecipientId);
                 await _nyssContext.SaveChangesAsync();
 
                 return Success(projectToAdd.Id, ResultKey.Project.SuccessfullyAdded);
@@ -465,6 +466,12 @@ namespace RX.Nyss.Web.Features.Projects
 
         private async Task<ProjectFormDataResponseDto> GetFormDataDto(int nationalSocietyId, int contentLanguageId)
         {
+            var currentUser = await _authorizationService.GetCurrentUser();
+            var currentUserOrganizationId = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.User == currentUser)
+                .Select(uns => uns.OrganizationId)
+                .FirstOrDefaultAsync();
+
             var data = await _nyssContext.NationalSocieties
                 .Where(ns => ns.Id == nationalSocietyId)
                 .Select(ns => new
@@ -500,15 +507,43 @@ namespace RX.Nyss.Web.Features.Projects
                     {
                         Id = o.Id,
                         Name = o.Name
-                    }).ToList()
+                    }).ToList(),
+                    AlertNotHandledRecipients = ns.NationalSocietyUsers
+                        .Where(uns => (currentUser.Role == Role.Administrator || uns.OrganizationId == currentUserOrganizationId)
+                            && (uns.User.Role == Role.Manager || uns.User.Role == Role.TechnicalAdvisor))
+                        .Select(uns => new ProjectFormDataResponseDto.AlertNotHandledRecipientDto
+                        {
+                            Id = uns.UserId,
+                            Name = uns.User.Name
+                        })
+                        .ToList()
                 })
                 .SingleAsync();
 
             return new ProjectFormDataResponseDto
             {
                 Organizations = data.Organizations,
-                HealthRisks = data.HealthRisks
+                HealthRisks = data.HealthRisks,
+                AlertNotHandledRecipients = data.AlertNotHandledRecipients
             };
+        }
+
+        private async Task AddAlertNotHandledNotificationRecipient(Project project, int userId)
+        {
+            var recipient = await _nyssContext.Users
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (recipient == null)
+            {
+                throw new ResultException(ResultKey.Project.AlertNotHandledRecipientDoesNotExist);
+            }
+
+            await _nyssContext.AlertNotHandledNotificationRecipients.AddAsync(new AlertNotHandledNotificationRecipient
+            {
+                User = recipient,
+                Project = project
+            });
         }
     }
 }

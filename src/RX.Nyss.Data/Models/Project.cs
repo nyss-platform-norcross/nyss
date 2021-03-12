@@ -32,5 +32,6 @@ namespace RX.Nyss.Data.Models
 
         public virtual ICollection<ProjectOrganization> ProjectOrganizations { get; set; }
         public virtual ICollection<HeadSupervisorUserProject> HeadSupervisorUserProjects { get; set; }
+        public virtual ICollection<AlertNotHandledNotificationRecipient> AlertNotHandledNotificationRecipients { get; set; }
     }
 }

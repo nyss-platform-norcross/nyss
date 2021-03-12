@@ -79,6 +79,7 @@ namespace RX.Nyss.Data
         public DbSet<HeadSupervisorUserAlertRecipient> HeadSupervisorUserAlertRecipients { get; set; }
         public DbSet<GatewayModem> GatewayModems { get; set; }
         public DbSet<TechnicalAdvisorUserGatewayModem> TechnicalAdvisorUserGatewayModems { get; set; }
+        public DbSet<AlertNotHandledNotificationRecipient> AlertNotHandledNotificationRecipients { get; set; }
 
         public Task ExecuteSqlInterpolatedAsync(FormattableString sql) =>
             Database.ExecuteSqlInterpolatedAsync(sql);

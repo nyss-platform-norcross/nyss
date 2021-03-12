@@ -16,6 +16,8 @@ namespace RX.Nyss.Web.Features.Projects.Dto
 
         public bool AllowMultipleOrganizations { get; set; }
 
+        public int AlertNotHandledNotificationRecipientId { get; set; }
+
         public class Validator : AbstractValidator<CreateProjectRequestDto>
         {
             public Validator(IProjectAccessService projectAccessService)
@@ -34,6 +36,10 @@ namespace RX.Nyss.Web.Features.Projects.Dto
                     .Must((model, _, t) => projectAccessService.HasCurrentUserAccessToAssignOrganizationToProject())
                     .When(model => model.OrganizationId.HasValue)
                     .WithMessageKey(ResultKey.Organization.NoAccessToChangeOrganization);
+
+                RuleFor(m => m.AlertNotHandledNotificationRecipientId)
+                    .MustAsync(async (model, userId, t) => await projectAccessService.HasAccessToAlertNotHandledNotificationRecipient(userId))
+                    .WithMessageKey(ResultKey.Project.AlertNotHandledNotificationRecipientMustBeOfSameOrg);
             }
         }
     }

@@ -243,6 +243,8 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string AllowMultipleOrganizationsFlagCannotBeRemoved = "project.allowMultipleOrganizationsFlagCannotBeRemoved";
             public const string OnlyCoordinatorCanChangeMultipleOrgAccess = "project.onlyCoordinatorCanChangeMultipleOrgAccess";
             public const string NoAccessToSetOrgBasedAccessControl = "project.noAccessToSetOrgBasedAccessControl";
+            public const string AlertNotHandledNotificationRecipientMustBeOfSameOrg = "project.alertNotHandledNotificationRecipientMustBeOfSameOrg";
+            public const string AlertNotHandledRecipientDoesNotExist = "project.alertNotHandledRecipientDoesNotExist";
         }
 
         public class ProjectOrganization

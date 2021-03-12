@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20210312104906_AddAlertNotHandledNotificationRecipient")]
+    partial class AddAlertNotHandledNotificationRecipient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1776,9 +1778,6 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Deployed")
-                        .HasColumnType("bit");
-
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
@@ -3201,7 +3200,7 @@ namespace RX.Nyss.Data.Migrations
                                 .HasForeignKey("ReportId");
                         });
 
-                    b.OwnsOne("RX.Nyss.Data.Models.ReportCase", "ReportedCase", b1 =>
+                    b.OwnsOne("RX.Nyss.Data.Models.ReportCase", "KeptCase", b1 =>
                         {
                             b1.Property<int>("ReportId")
                                 .ValueGeneratedOnAdd()
@@ -3220,7 +3219,31 @@ namespace RX.Nyss.Data.Migrations
                             b1.Property<int?>("CountMalesBelowFive")
                                 .HasColumnType("int");
 
-                            b1.Property<int?>("CountUnspecifiedSexAndAge")
+                            b1.HasKey("ReportId");
+
+                            b1.ToTable("Reports");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ReportId");
+                        });
+
+                    b.OwnsOne("RX.Nyss.Data.Models.ReportCase", "ReportedCase", b1 =>
+                        {
+                            b1.Property<int>("ReportId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<int?>("CountFemalesAtLeastFive")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("CountFemalesBelowFive")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("CountMalesAtLeastFive")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("CountMalesBelowFive")
                                 .HasColumnType("int");
 
                             b1.HasKey("ReportId");
