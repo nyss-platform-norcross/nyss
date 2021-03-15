@@ -353,5 +353,14 @@ namespace RX.Nyss.Common.Utils.DataContract
         {
             public const string NoPendingConsent = "consent.noPendingConsent";
         }
+
+        public static class AlertNotHandledNotificationRecipient
+        {
+            public const string CreateSuccess = "alertNotHandledRecipient.create.success";
+            public const string EditSuccess = "alertNotHandledRecipient.edit.success";
+            public const string DeleteSuccess = "alertNotHandledRecipient.delete.success";
+            public const string UserMustBeInSameOrg = "alertNotHandledRecipient.userMustBeInSameOrg";
+            public const string NotFound = "alertNotHandledRecipient.notFound";
+        }
     }
 }
