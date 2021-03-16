@@ -27,6 +27,7 @@ import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { retrieveGpsLocation } from "../../utils/map";
 import { Card, CardContent, InputLabel } from "@material-ui/core";
 import { Supervisor } from "../../authentication/roles";
+import CheckboxField from "../forms/CheckboxField";
 
 const DataCollectorsEditPageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
@@ -79,7 +80,8 @@ const DataCollectorsEditPageComponent = (props) => {
       villageId: props.data.villageId.toString(),
       districtId: props.data.districtId.toString(),
       regionId: props.data.regionId.toString(),
-      zoneId: props.data.zoneId ? props.data.zoneId.toString() : ""
+      zoneId: props.data.zoneId ? props.data.zoneId.toString() : "",
+      deployed: props.data.deployed
     };
 
     const validation = {
@@ -158,7 +160,8 @@ const DataCollectorsEditPageComponent = (props) => {
       villageId: parseInt(values.villageId),
       districtId: parseInt(values.districtId),
       regionId: parseInt(values.regionId),
-      zoneId: values.zoneId ? parseInt(values.zoneId) : null
+      zoneId: values.zoneId ? parseInt(values.zoneId) : null,
+      deployed: values.deployed
     });
   };
 
@@ -177,6 +180,15 @@ const DataCollectorsEditPageComponent = (props) => {
       {props.error && !props.error.data && <ValidationMessage message={props.error.message} />}
 
       <Form onSubmit={handleSubmit} fullWidth>
+
+        <Grid item xs={12}>
+          <CheckboxField
+            name="deployed"
+            label={strings(stringKeys.dataCollector.form.deployed)}
+            field={form.fields.deployed}
+            color="primary"
+          />
+        </Grid>
         <Grid container spacing={2} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <TextInputField
@@ -274,7 +286,7 @@ const DataCollectorsEditPageComponent = (props) => {
                       {strings(stringKeys.dataCollector.form.retrieveLocation)}
                     </TableActionsButton>
                   </Grid>
-                  <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
+                  <Grid item xs={12} md={3} style={{ maxWidth: "190px" }}>
                     <TextInputField
                       label={strings(stringKeys.dataCollector.form.latitude)}
                       name="latitude"
@@ -283,7 +295,7 @@ const DataCollectorsEditPageComponent = (props) => {
                       inputMode={"decimal"}
                     />
                   </Grid>
-                  <Grid item xs={12} md={3} style={{maxWidth: "190px"}}>
+                  <Grid item xs={12} md={3} style={{ maxWidth: "190px" }}>
                     <TextInputField
                       label={strings(stringKeys.dataCollector.form.longitude)}
                       name="longitude"

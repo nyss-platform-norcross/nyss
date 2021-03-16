@@ -289,6 +289,8 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string SetOutOfTrainingSuccess = "dataCollector.setOutOfTraining.success";
             public const string ProjectIsClosed = "dataCollector.projectIsClosed";
             public const string NotAllowedToSelectSupervisor = "dataCollector.notAllowedToSelectSupervisor";
+            public const string SetToDeployedSuccess = "dataCollector.setToDeployed.success";
+            public const string SetToNotDeployedSuccess = "dataCollector.setToNotDeployed.success";
         }
 
         public static class Geolocation

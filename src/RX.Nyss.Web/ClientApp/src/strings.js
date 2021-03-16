@@ -609,7 +609,8 @@ export const stringKeys = {
       replaceSupervisor: "dataCollectors.form.replaceSupervisor",
       newSupervisor: "dataCollectors.form.newSupervisor",
       replaceSupervisorWarning: "dataCollectors.form.replaceSupervisorWarning",
-      selectLocation: "dataCollectors.form.selectLocation"
+      selectLocation: "dataCollectors.form.selectLocation",
+      deployed: "dataCollectors.form.deployed",
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",
@@ -626,7 +627,9 @@ export const stringKeys = {
       takeOutOfTraining: "dataCollectors.list.takeOutOfTraining",
       supervisor: "dataCollectors.list.supervisor",
       replaceSupervisor: "dataCollectors.list.replaceSupervisor",
-      supervisorReplacedSuccessfully: "dataCollectors.list.supervisorReplacedSuccessfully"
+      supervisorReplacedSuccessfully: "dataCollectors.list.supervisorReplacedSuccessfully",
+      setToDeployed: "dataCollectors.list.setToDeployed",
+      setToNotDeployed: "dataCollectors.list.setToNotDeployed"
     },
     performanceList: {
       title: "dataCollectors.performanceList.title",

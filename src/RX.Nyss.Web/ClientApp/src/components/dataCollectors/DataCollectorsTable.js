@@ -21,7 +21,7 @@ import { Checkbox } from '@material-ui/core';
 import TablePager from '../common/tablePagination/TablePager';
 
 export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, page, rowsPerPage, totalRows, projectId,
-  setTrainingState, isUpdatingDataCollector, selectDataCollector, selectAllDataCollectors, replaceSupervisor, onChangePage }) => {
+  setTrainingState, isUpdatingDataCollector, selectDataCollector, selectAllDataCollectors, replaceSupervisor, onChangePage, setDeployedState }) => {
   
   const [isSelected, setIsSelected] = useState(false);
   useEffect(() => setIsSelected(list.some(i => i.isSelected)), [list]);
@@ -37,6 +37,18 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
       title: strings(stringKeys.dataCollector.list.setToInTraining),
       action: () => setTrainingState([row.id], true),
       disabled: row.isInTrainingMode,
+      roles: accessMap.dataCollectors.list
+    },
+    {
+      title: strings(stringKeys.dataCollector.list.setToDeployed),
+      action: () => setDeployedState([row.id], true),
+      disabled: row.isDeployed,
+      roles: accessMap.dataCollectors.list
+    },
+    {
+      title: strings(stringKeys.dataCollector.list.setToNotDeployed),
+      action: () => setDeployedState([row.id], false),
+      disabled: !row.isDeployed,
       roles: accessMap.dataCollectors.list
     }
   ];
@@ -63,8 +75,18 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
         title: strings(stringKeys.dataCollector.list.replaceSupervisor),
         action: () => replaceSupervisor(getSelectedDataCollectors()),
         roles: accessMap.dataCollectors.replaceSupervisor
+      },
+      {
+        title: strings(stringKeys.dataCollector.list.setToDeployed),
+        action: () => setDeployedState(getSelectedIds(), true),
+        roles: accessMap.dataCollectors.list
+      },
+      {
+        title: strings(stringKeys.dataCollector.list.setToNotDeployed),
+        action: () => setDeployedState(getSelectedIds(), false),
+        roles: accessMap.dataCollectors.list
       }
-    ], [getSelectedIds, getSelectedDataCollectors, setTrainingState, replaceSupervisor]);
+    ], [getSelectedIds, getSelectedDataCollectors, setTrainingState, replaceSupervisor, setDeployedState]);
 
   const handleSelect = (e, id, value) => {
     e.stopPropagation();

@@ -28,6 +28,7 @@ import { Radio, FormControlLabel, Card, CardContent, InputLabel } from "@materia
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { retrieveGpsLocation } from "../../utils/map";
 import { Supervisor } from "../../authentication/roles";
+import CheckboxField from "../forms/CheckboxField";
 
 const DataCollectorsCreatePageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
@@ -77,7 +78,8 @@ const DataCollectorsCreatePageComponent = (props) => {
       villageId: "",
       districtId: "",
       regionId: "",
-      zoneId: ""
+      zoneId: "",
+      deployed: true
     };
 
     const validation = {
@@ -155,7 +157,8 @@ const DataCollectorsCreatePageComponent = (props) => {
       villageId: parseInt(values.villageId),
       districtId: parseInt(values.districtId),
       regionId: parseInt(values.regionId),
-      zoneId: values.zoneId ? parseInt(values.zoneId) : null
+      zoneId: values.zoneId ? parseInt(values.zoneId) : null,
+      deployed: values.deployed
     });
   };
 
@@ -185,6 +188,15 @@ const DataCollectorsCreatePageComponent = (props) => {
                 <FormControlLabel key={type} control={<Radio />} label={strings(stringKeys.dataCollector.constants.dataCollectorType[dataCollectorType[type]])} value={dataCollectorType[type]} />
               ))}
             </RadioGroupField>
+          </Grid>
+
+          <Grid item xs={12}>
+            <CheckboxField
+              name="deployed"
+              label={strings(stringKeys.dataCollector.form.deployed)}
+              field={form.fields.deployed}
+              color="primary"
+            />
           </Grid>
 
           <Grid item xs={12}>

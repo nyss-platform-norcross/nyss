@@ -24,6 +24,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public string Region { get; set; }
 
         public bool IsInTrainingMode { get; set; }
+        public bool IsDeployed { get; set; }
         public SupervisorUser Supervisor { get; set; }
     }
 }

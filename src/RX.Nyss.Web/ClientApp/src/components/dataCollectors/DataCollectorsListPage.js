@@ -74,6 +74,7 @@ const DataCollectorsListPageComponent = ({getDataCollectorList, projectId, ...pr
         listSelectedAll={props.listSelectedAll}
         replaceSupervisor={handleReplaceSupervisor}
         onChangePage={onChangePage}
+        setDeployedState={props.setDeployedState}
       />
 
       <ReplaceSupervisorDialog
@@ -122,7 +123,8 @@ const mapDispatchToProps = {
   setTrainingState: dataCollectorsActions.setTrainingState.invoke,
   exportToExcel: dataCollectorsActions.exportToExcel.invoke,
   exportToCsv: dataCollectorsActions.exportToCsv.invoke,
-  replaceSupervisor: dataCollectorsActions.replaceSupervisor.invoke
+  replaceSupervisor: dataCollectorsActions.replaceSupervisor.invoke,
+  setDeployedState: dataCollectorsActions.setDeployedState.invoke
 };
 
 export const DataCollectorsListPage = withLayout(

@@ -42,6 +42,9 @@ namespace RX.Nyss.Data.Models.Maps
 
             builder.Property(x => x.DeletedAt);
 
+            builder.Property(x => x.Deployed)
+                .IsRequired();
+
             builder.HasOne(x => x.Project)
                 .WithMany(x => x.DataCollectors)
                 .IsRequired()
