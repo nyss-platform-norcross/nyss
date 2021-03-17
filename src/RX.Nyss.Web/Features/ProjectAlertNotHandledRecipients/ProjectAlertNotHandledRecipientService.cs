@@ -18,6 +18,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
         Task<Result> Create(int projectId, int recipientUserId);
         Task<Result> Edit(int projectId, ProjectAlertNotHandledRecipientRequestDto dto);
         Task<Result<List<ProjectAlertNotHandledRecipientResponseDto>>> List(int projectId);
+        Task<Result<List<ProjectAlertNotHandledRecipientResponseDto>>> GetFormData(int projectId);
     }
 
     public class ProjectAlertNotHandledRecipientService : IProjectAlertNotHandledRecipientService
@@ -101,6 +102,31 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
             }).ToList();
 
             return Success(alertNotHandledRecipients);
+        }
+
+        public async Task<Result<List<ProjectAlertNotHandledRecipientResponseDto>>> GetFormData(int projectId)
+        {
+            var currentUser = await _authorizationService.GetCurrentUser();
+            var currentUserOrganizationId = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.User == currentUser)
+                .Select(uns => uns.OrganizationId)
+                .FirstOrDefaultAsync();
+
+            var recipients = await _nyssContext.Projects
+                .Where(p => p.Id == projectId)
+                .SelectMany(p => p.NationalSociety.NationalSocietyUsers
+                    .Where(nsu => (nsu.User.Role == Role.Manager || nsu.User.Role == Role.TechnicalAdvisor)
+                        && (currentUser.Role == Role.Administrator || currentUserOrganizationId == nsu.OrganizationId)))
+                .Select(nsu => new ProjectAlertNotHandledRecipientResponseDto
+                {
+                    OrganizationId = nsu.OrganizationId.Value,
+                    OrganizationName = nsu.Organization.Name,
+                    Name = nsu.User.Name,
+                    UserId = nsu.UserId
+                })
+                .ToListAsync();
+
+            return Success(recipients);
         }
     }
 }

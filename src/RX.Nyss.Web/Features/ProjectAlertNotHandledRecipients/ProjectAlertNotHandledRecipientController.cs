@@ -51,5 +51,15 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result<List<ProjectAlertNotHandledRecipientResponseDto>>> List(int projectId) =>
             await _projectAlertNotHandledRecipientService.List(projectId);
+
+        /// <summary>
+        /// Lists all users available to be set as alert not handled recipient for a project
+        /// </summary>
+        /// <param name="projectId">Id of the project</param>
+        /// <returns>List of all available users</returns>
+        [HttpGet("formData")]
+        [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
+        public async Task<Result<List<ProjectAlertNotHandledRecipientResponseDto>>> GetFormData(int projectId) =>
+            await _projectAlertNotHandledRecipientService.GetFormData(projectId);
     }
 }
