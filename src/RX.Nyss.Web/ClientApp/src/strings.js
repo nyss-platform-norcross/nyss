@@ -338,6 +338,11 @@ export const stringKeys = {
       healthRisks: "projectAlertRecipient.list.healthRisks"
     },
   },
+  projectAlertNotHandledRecipient: {
+    title: "projectAlertNotHandledRecipient.title",
+    description: "projectAlertNotHandledRecipient.description",
+    update: "projectAlertNotHandledRecipient.update"
+  },
   project: {
     title: "project.title",
     settingsRootTitle: "project.settingsRootTitle",

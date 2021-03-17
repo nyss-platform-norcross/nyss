@@ -110,6 +110,15 @@ export const initialState = {
     formData: null,
     recipient: null
   },
+  projectAlertNotHandledRecipients: {
+    projectId: null,
+    listFetching: false,
+    listStale: true,
+    listData: [],
+    users: [],
+    formDataFetching: false,
+    saving: false
+  },
   projects: {
     listFetching: false,
     isClosing: {},
