@@ -206,6 +206,7 @@ export const initialState = {
       area: null,
       name: '',
       supervisorId: null,
+      trainingStatus: 'Trained',
       pageNumber: 1,
       lastWeek: {
         reportingCorrectly: true,

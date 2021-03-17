@@ -2,11 +2,22 @@ import styles from './DataCollectorsPerformanceFilters.module.scss';
 import React, { useEffect, useReducer } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { AreaFilter } from "../common/filters/AreaFilter";
-import { Card, CardContent, Button, TextField, MenuItem } from "@material-ui/core";
+import {
+  Card,
+  CardContent,
+  Button,
+  TextField,
+  MenuItem,
+  InputLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio
+} from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { strings, stringKeys } from '../../strings';
 import useDebounce from '../../utils/debounce';
 import * as roles from '../../authentication/roles';
+import {trainingStatus} from "./logic/dataCollectorsConstants";
 
 export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
   const nationalSocietyId = useSelector(state => state.dataCollectors.filtersData.nationalSocietyId);
@@ -29,8 +40,11 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
   const handleNameChange = event =>
     setName(event.target.value);
 
-  const handleSupervisorChange = event => 
+  const handleSupervisorChange = event =>
     onChange({ type: 'updateSupervisor', supervisorId: event.target.value === 0 ? null : event.target.value });
+
+  const handleTrainingStatusChange = event =>
+    onChange({ type: 'updateTrainingStatus', trainingStatus: event.target.value });
 
   useEffect(() => {
     debouncedName.changed && onChange({ type: 'updateName', name: debouncedName.value });
@@ -92,6 +106,20 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
               </TextField>
             </Grid>
           )}
+
+          <Grid item>
+            <InputLabel>{strings(stringKeys.dataCollector.filters.trainingStatus)}</InputLabel>
+            <RadioGroup
+              value={filters.trainingStatus}
+              onChange={handleTrainingStatusChange}
+              className={styles.filterRadioGroup}>
+              {trainingStatus
+                .filter(status => status !== 'All')
+                .map(status => (
+                  <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollector.constants.trainingStatus[status])} value={status} />
+                ))}
+            </RadioGroup>
+          </Grid>
 
           {filterIsSet && (
             <Grid item className={styles.resetButton}>
