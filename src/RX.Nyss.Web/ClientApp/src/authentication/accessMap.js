@@ -67,11 +67,11 @@ export const accessMap = {
     add: [Administrator, Coordinator],
     delete: [Administrator, Coordinator]
   },
-  projectAlertRecipients: {
+  projectAlertNotifications: {
     list: [Administrator, Manager, TechnicalAdvisor],
-    add: [Administrator, Manager, TechnicalAdvisor],
-    edit: [Administrator, Manager, TechnicalAdvisor],
-    delete: [Administrator, Manager, TechnicalAdvisor]
+    addRecipient: [Administrator, Manager, TechnicalAdvisor],
+    editRecipient: [Administrator, Manager, TechnicalAdvisor],
+    deleteRecipient: [Administrator, Manager, TechnicalAdvisor]
   },
   reports: {
     list: [Administrator, Manager, TechnicalAdvisor, Supervisor, HeadSupervisor],
