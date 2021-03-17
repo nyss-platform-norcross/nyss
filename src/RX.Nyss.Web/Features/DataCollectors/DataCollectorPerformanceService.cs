@@ -42,6 +42,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterByArea(dataCollectorsFilters.Area)
                 .FilterByName(dataCollectorsFilters.Name)
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
+                .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
                 .Include(dc => dc.Village);
 
             var toDate = _dateTimeProvider.UtcNow;
