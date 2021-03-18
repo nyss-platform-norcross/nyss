@@ -10,7 +10,7 @@ import * as projectAlertNotHandledRecipientsActions from './logic/projectAlertNo
 import { Fragment } from 'react';
 import { Administrator } from '../../authentication/roles';
 import { ProjectAlertNotHandledRecipientItem } from './components/ProjectAlertNotHandledRecipientItem';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, projectId, recipients, getFormData, edit, ...props }) => {
   useMount(() => {
@@ -20,6 +20,7 @@ export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, proj
   const currentUserRoles = useSelector(state => state.appData.user.roles);
   const isAdministrator = currentUserRoles.filter(r => r === Administrator).length > 0;
   const isFetchingFormData = useSelector(state => state.projectAlertNotHandledRecipients.formDataFetching);
+  const isFetchingList = useSelector(state => state.projectAlertNotHandledRecipients.listFetching);
 
   return !!recipients && (
     <Fragment>
@@ -33,7 +34,12 @@ export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, proj
             {strings(stringKeys.projectAlertNotHandledRecipient.description)}
           </Typography>
 
-          {isFetchingFormData && <LinearProgress />}
+          {(isFetchingFormData || isFetchingList) && (
+            <span className={styles.progressSpinner}>
+              <CircularProgress />
+            </span>
+          )}
+          
           <div className={styles.recipientsContainer}>
             {recipients.map(r => (
               <ProjectAlertNotHandledRecipientItem
