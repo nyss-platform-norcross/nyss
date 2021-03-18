@@ -139,7 +139,7 @@ export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsP
           </TableRow>
         </TableHead>
         <TableBody>
-          {!isListFetching && completeness != null && (
+          {!isListFetching && completeness != null && filters.trainingStatus === 'Trained' && (
             <TableRow hover>
               <TableCell className={styles.completenessBorderBottomColor}>
                 <span className={styles.completeness}>
