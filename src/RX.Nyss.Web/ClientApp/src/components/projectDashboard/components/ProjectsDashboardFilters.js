@@ -99,7 +99,7 @@ export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRis
 
       <ConditionalCollapse collapsible={isSmallScreen && !isGeneratingPdf} expanded={isFilterExpanded}>
         {!isSmallScreen && (
-          <Grid spacing={2}>
+          <Grid container spacing={2}>
             <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} className={styles.filterTitle}  />
           </Grid>
         )}
