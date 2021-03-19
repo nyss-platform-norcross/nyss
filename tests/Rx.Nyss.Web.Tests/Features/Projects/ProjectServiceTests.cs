@@ -177,6 +177,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var nationalSocietiesMockDbSet = nationalSocieties.AsQueryable().BuildMockDbSet();
             _nyssContextMock.NationalSocieties.Returns(nationalSocietiesMockDbSet);
 
+            var userNationalSocieties = new List<UserNationalSociety>();
+            var userNationalSocietiesMockDbSet = userNationalSocieties.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.UserNationalSocieties.Returns(userNationalSocietiesMockDbSet);
+
             // Act
             var result = await _projectService.Get(existingProjectId);
 
@@ -258,6 +262,10 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
 
+            var users = new List<User> { new ManagerUser { Id = 1 } };
+            var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
+            _nyssContextMock.Users.Returns(usersMockDbSet);
+
             var startDate = new DateTime(2019, 1, 1);
             _dateTimeProvider.UtcNow.Returns(startDate);
 
@@ -289,7 +297,8 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                         CaseDefinition = "CaseDefinition",
                         FeedbackMessage = "FeedbackMessage"
                     }
-                }
+                },
+                AlertNotHandledNotificationRecipientId = 1
             };
 
             // Act

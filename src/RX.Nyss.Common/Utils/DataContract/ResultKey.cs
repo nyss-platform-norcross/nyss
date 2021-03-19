@@ -361,6 +361,7 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string DeleteSuccess = "alertNotHandledRecipient.delete.success";
             public const string UserMustBeInSameOrg = "alertNotHandledRecipient.userMustBeInSameOrg";
             public const string NotFound = "alertNotHandledRecipient.notFound";
+            public const string AlreadyExists = "alertNotHandledRecipient.alreadyExists";
         }
     }
 }

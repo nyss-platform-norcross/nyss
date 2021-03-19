@@ -36,6 +36,12 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
 
         public async Task<Result> Create(int projectId, int recipientUserId)
         {
+            var exists = await _nyssContext.AlertNotHandledNotificationRecipients.AnyAsync(a => a.ProjectId == projectId && a.UserId == recipientUserId);
+            if (exists)
+            {
+                return Error(ResultKey.AlertNotHandledNotificationRecipient.AlreadyExists);
+            }
+
             var alertNotHandledNotificationRecipient = new AlertNotHandledNotificationRecipient
             {
                 ProjectId = projectId,
