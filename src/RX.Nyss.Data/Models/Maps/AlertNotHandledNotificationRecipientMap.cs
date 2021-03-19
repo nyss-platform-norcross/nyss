@@ -24,6 +24,12 @@ namespace RX.Nyss.Data.Models.Maps
                 .HasForeignKey(x => x.ProjectId)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Organization)
+                .WithMany()
+                .HasForeignKey(x => x.OrganizationId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

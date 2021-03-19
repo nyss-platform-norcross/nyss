@@ -434,7 +434,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _testData.SimpleCasesData.GenerateData().AddToDbContext();
 
             // act
-            await _alertService.EmailHeadManagerIfAlertIsPending(1);
+            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(1);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
@@ -447,7 +447,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _testData.SimpleCasesData.GenerateData().AddToDbContext();
 
             // act
-            await _alertService.EmailHeadManagerIfAlertIsPending(1);
+            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(1);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceiveWithAnyArgs().SendEmail((null, null), null, null);
@@ -472,7 +472,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         }
 
         [Fact]
-        public async Task CheckAlert_WhenAlertIsStillPending_ShouldNotifyHeadManagers()
+        public async Task CheckAlert_WhenAlertIsStillPending_ShouldNotifyAlertNotHandledRecipients()
         {
             // arrange
             _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
@@ -487,7 +487,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _nyssReportApiConfigMock.BaseUrl = "http://example.com";
 
             // act
-            await _alertService.EmailHeadManagerIfAlertIsPending(alert.Id);
+            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(alert.Id);
 
             // assert
             await _queuePublisherServiceMock.Received(2).SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());
@@ -497,7 +497,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
         [InlineData(AlertStatus.Closed)]
         [InlineData(AlertStatus.Dismissed)]
         [InlineData(AlertStatus.Escalated)]
-        public async Task CheckAlert_WhenAlertIsNoLongerPending_ShouldNotNotifyHeadManager(AlertStatus alertStatus)
+        public async Task CheckAlert_WhenAlertIsNoLongerPending_ShouldNotNotifyAlertNotHandledRecipient(AlertStatus alertStatus)
         {
             // arrange
             _testData.WhenAnAlertAreTriggered.GenerateData().AddToDbContext();
@@ -513,7 +513,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             _nyssReportApiConfigMock.BaseUrl = "http://example.com";
 
             // act
-            await _alertService.EmailHeadManagerIfAlertIsPending(alert.Id);
+            await _alertService.EmailAlertNotHandledRecipientsIfAlertIsPending(alert.Id);
 
             // assert
             await _queuePublisherServiceMock.DidNotReceive().SendEmail(Arg.Any<(string, string)>(), Arg.Any<string>(), Arg.Any<string>());

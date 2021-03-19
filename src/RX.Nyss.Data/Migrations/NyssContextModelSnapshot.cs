@@ -91,7 +91,12 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "ProjectId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("ProjectId");
 
@@ -2842,6 +2847,12 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertNotHandledNotificationRecipient", b =>
                 {
+                    b.HasOne("RX.Nyss.Data.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
                         .WithMany("AlertNotHandledNotificationRecipients")
                         .HasForeignKey("ProjectId")

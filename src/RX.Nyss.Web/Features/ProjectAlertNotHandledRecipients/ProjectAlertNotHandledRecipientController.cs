@@ -28,7 +28,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
         [HttpPost("create")]
         [NeedsRole(Role.Administrator, Role.Manager, Role.TechnicalAdvisor), NeedsPolicy(Policy.ProjectAccess)]
         public async Task<Result> Create(int projectId, [FromBody]ProjectAlertNotHandledRecipientRequestDto dto) =>
-            await _projectAlertNotHandledRecipientService.Create(projectId, dto.UserId);
+            await _projectAlertNotHandledRecipientService.Create(projectId, dto);
 
 
         /// <summary>

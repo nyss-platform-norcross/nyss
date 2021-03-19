@@ -2,7 +2,7 @@
 
 namespace RX.Nyss.Data.Migrations
 {
-    public partial class AddAlertNotHandledNotificationRecipient : Migration
+    public partial class AddAlertNotHandledRecipient : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,11 +12,19 @@ namespace RX.Nyss.Data.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(nullable: false),
-                    ProjectId = table.Column<int>(nullable: false)
+                    ProjectId = table.Column<int>(nullable: false),
+                    OrganizationId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AlertNotHandledNotificationRecipients", x => new { x.UserId, x.ProjectId });
+                    table.ForeignKey(
+                        name: "FK_AlertNotHandledNotificationRecipients_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalSchema: "nyss",
+                        principalTable: "Organizations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AlertNotHandledNotificationRecipients_Projects_ProjectId",
                         column: x => x.ProjectId,
@@ -34,14 +42,20 @@ namespace RX.Nyss.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AlertNotHandledNotificationRecipients_OrganizationId",
+                schema: "nyss",
+                table: "AlertNotHandledNotificationRecipients",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AlertNotHandledNotificationRecipients_ProjectId",
                 schema: "nyss",
                 table: "AlertNotHandledNotificationRecipients",
                 column: "ProjectId");
 
             migrationBuilder.Sql(@"
-                INSERT INTO nyss.AlertNotHandledNotificationRecipients (UserId, ProjectId)
-                SELECT o.[HeadManagerId], p.[Id]
+                INSERT INTO nyss.AlertNotHandledNotificationRecipients (UserId, ProjectId, OrganizationId)
+                SELECT o.[HeadManagerId], p.[Id], o.[Id]
                 FROM [nyss].[ProjectOrganizations] as po
                 INNER JOIN [nyss].[Organizations] as o on o.[Id]=po.[OrganizationId]
                 INNER JOIN nyss.[Projects] as p on p.[Id]=po.[ProjectId]

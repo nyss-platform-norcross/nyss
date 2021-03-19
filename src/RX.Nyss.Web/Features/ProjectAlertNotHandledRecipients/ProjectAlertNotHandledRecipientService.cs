@@ -15,7 +15,7 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
 {
     public interface IProjectAlertNotHandledRecipientService
     {
-        Task<Result> Create(int projectId, int recipientUserId);
+        Task<Result> Create(int projectId, ProjectAlertNotHandledRecipientRequestDto dto);
         Task<Result> Edit(int projectId, ProjectAlertNotHandledRecipientRequestDto dto);
         Task<Result<List<ProjectAlertNotHandledRecipientResponseDto>>> List(int projectId);
         Task<Result<List<ProjectAlertNotHandledRecipientResponseDto>>> GetFormData(int projectId);
@@ -34,9 +34,9 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
             _loggerAdapter = loggerAdapter;
         }
 
-        public async Task<Result> Create(int projectId, int recipientUserId)
+        public async Task<Result> Create(int projectId, ProjectAlertNotHandledRecipientRequestDto dto)
         {
-            var exists = await _nyssContext.AlertNotHandledNotificationRecipients.AnyAsync(a => a.ProjectId == projectId && a.UserId == recipientUserId);
+            var exists = await _nyssContext.AlertNotHandledNotificationRecipients.AnyAsync(a => a.ProjectId == projectId && a.UserId == dto.UserId);
             if (exists)
             {
                 return Error(ResultKey.AlertNotHandledNotificationRecipient.AlreadyExists);
@@ -45,7 +45,8 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
             var alertNotHandledNotificationRecipient = new AlertNotHandledNotificationRecipient
             {
                 ProjectId = projectId,
-                UserId = recipientUserId
+                UserId = dto.UserId,
+                OrganizationId = dto.OrganizationId
             };
 
             await _nyssContext.AlertNotHandledNotificationRecipients.AddAsync(alertNotHandledNotificationRecipient);

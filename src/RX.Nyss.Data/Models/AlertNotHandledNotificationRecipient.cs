@@ -7,5 +7,8 @@ namespace RX.Nyss.Data.Models
 
         public int ProjectId { get; set; }
         public virtual Project Project { get; set; }
+
+        public int OrganizationId { get; set; }
+        public virtual Organization Organization { get; set; }
     }
 }

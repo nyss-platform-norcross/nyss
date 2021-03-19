@@ -23,7 +23,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
         Task<AlertData> ReportAdded(Report report);
         Task SendNotificationsForNewAlert(Alert alert, GatewaySetting gatewaySetting);
         Task SendNotificationsForSupervisorsAddedToExistingAlert(Alert alert, List<SupervisorUser> supervisors, GatewaySetting gatewaySetting);
-        Task EmailHeadManagerIfAlertIsPending(int alertId);
+        Task EmailAlertNotHandledRecipientsIfAlertIsPending(int alertId);
     }
 
     public class AlertService : IAlertService
@@ -95,7 +95,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 .Select(s => new SendSmsRecipient
                 {
                     PhoneNumber = s.PhoneNumber,
-                    Modem = s.Modem != null ? s.Modem.ModemId : (int?)null
+                    Modem = s.Modem != null
+                        ? s.Modem.ModemId
+                        : (int?)null
                 })
                 .ToListAsync();
 
@@ -117,7 +119,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
             await _queuePublisherService.SendSms(phoneNumbers, gatewaySetting, message);
         }
 
-        public async Task EmailHeadManagerIfAlertIsPending(int alertId)
+        public async Task EmailAlertNotHandledRecipientsIfAlertIsPending(int alertId)
         {
             var alert = await _nyssContext.Alerts.Where(a => a.Id == alertId)
                 .Select(a =>
@@ -127,27 +129,24 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                         a.Status,
                         a.CreatedAt,
                         ProjectId = a.ProjectHealthRisk.Project.Id,
-                        HeadManagers = a.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers
-                            .Where(nsu => nsu.Organization.HeadManager == nsu.User)
-                            .Where(nshm => a.AlertReports.Any(ar => nshm.Organization == ar.Report.DataCollector.Supervisor.UserNationalSocieties
-                                                                                            .Where(suns => suns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety)
-                                                                                            .Select(suns => suns.Organization)
-                                                                                            .First()))
-                            .Select(nsu => new { nsu.User.Name, nsu.User.EmailAddress, Organization = nsu.Organization.Name }),
-                        Supervisors = a.AlertReports
-                            .Select(ar => new
+                        Supervisors = a.AlertReports.Select(ar => ar.Report.DataCollector.Supervisor.UserNationalSocieties
+                            .Where(uns => uns.NationalSociety == ar.Alert.ProjectHealthRisk.Project.NationalSociety)
+                            .Select(uns => new
                             {
-                                Name = ar.Report.DataCollector.Supervisor.Name,
-                                Organization = ar.Report.DataCollector.Supervisor.UserNationalSocieties
-                                    .Where(suns => suns.NationalSociety == a.ProjectHealthRisk.Project.NationalSociety)
-                                    .Select(suns => suns.Organization.Name)
-                                    .First()
-                            }),
+                                User = uns.User,
+                                Organization = uns.Organization
+                            }).First()),
                         HealthRiskName = a.ProjectHealthRisk.HealthRisk.LanguageContents.First().Name,
                         VillageOfLastReport = a.AlertReports.OrderByDescending(ar => ar.Report.ReceivedAt)
                             .Select(ar => ar.Report.RawReport.Village.Name)
                             .FirstOrDefault(),
-                        LanguageCode = a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode.ToLower()
+                        LanguageCode = a.ProjectHealthRisk.Project.NationalSociety.ContentLanguage.LanguageCode.ToLower(),
+                        AlertNotHandledRecipients = a.ProjectHealthRisk.Project.AlertNotHandledNotificationRecipients
+                            .Select(anr => new
+                            {
+                                User = anr.User,
+                                Organization = anr.Organization
+                            })
                     })
                 .FirstOrDefaultAsync();
 
@@ -159,7 +158,7 @@ namespace RX.Nyss.ReportApi.Features.Alerts
 
             if (alert.Status == AlertStatus.Pending)
             {
-                _loggerAdapter.WarnFormat("Alert {0} has not been assessed since it was triggered {1}, sending email to head manager", alertId, alert.CreatedAt.ToString("O"));
+                _loggerAdapter.WarnFormat("Alert {0} has not been assessed since it was triggered {1}, sending email to alert not handled recipients", alertId, alert.CreatedAt.ToString("O"));
 
                 var timeSinceTriggered = (_dateTimeProvider.UtcNow - alert.CreatedAt).TotalHours;
                 var emailSubject = await GetEmailMessageContent(EmailContentKey.AlertHasNotBeenHandled.Subject, alert.LanguageCode);
@@ -169,22 +168,24 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 var relativeUrl = $"projects/{alert.ProjectId}/alerts/{alert.Id}/assess";
                 var linkToAlert = new Uri(baseUrl, relativeUrl);
 
-                foreach (var headManager in alert.HeadManagers)
+                var alertNotHandledRecipients = alert.AlertNotHandledRecipients
+                    .Where(anhr => alert.Supervisors.Any(sup => sup.Organization.Id == anhr.Organization.Id));
+
+                foreach (var recipient in alertNotHandledRecipients)
                 {
                     var supervisors = alert.Supervisors
-                        .Select(supervisor => supervisor.Organization == headManager.Organization
-                            ? supervisor.Name
-                            : supervisor.Organization)
+                        .Where(sup => sup.Organization.Id == recipient.Organization.Id)
+                        .Select(sup => sup.User.Name)
                         .Distinct();
 
-                    var headManagerEmailBody = emailBody
+                    var alertNotHandledEmailBody = emailBody
                         .Replace("{{healthRiskName}}", alert.HealthRiskName)
                         .Replace("{{lastReportVillage}}", alert.VillageOfLastReport)
                         .Replace("{{supervisors}}", string.Join(", ", supervisors))
                         .Replace("{{timeSinceAlertWasTriggeredInHours}}", timeSinceTriggered.ToString("0.##"))
                         .Replace("{{linkToAlert}}", linkToAlert.ToString());
 
-                    await _queuePublisherService.SendEmail((headManager.Name, headManager.EmailAddress), emailSubject, headManagerEmailBody);
+                    await _queuePublisherService.SendEmail((recipient.User.Name, recipient.User.EmailAddress), emailSubject, alertNotHandledEmailBody);
                 }
             }
         }

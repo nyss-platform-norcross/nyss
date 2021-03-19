@@ -12,8 +12,8 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20210312104906_AddAlertNotHandledNotificationRecipient")]
-    partial class AddAlertNotHandledNotificationRecipient
+    [Migration("20210319134917_AddAlertNotHandledRecipient")]
+    partial class AddAlertNotHandledRecipient
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -93,7 +93,12 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<int>("ProjectId")
                         .HasColumnType("int");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
                     b.HasKey("UserId", "ProjectId");
+
+                    b.HasIndex("OrganizationId");
 
                     b.HasIndex("ProjectId");
 
@@ -1778,6 +1783,9 @@ namespace RX.Nyss.Data.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("Deployed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("DisplayName")
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
@@ -2841,6 +2849,12 @@ namespace RX.Nyss.Data.Migrations
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertNotHandledNotificationRecipient", b =>
                 {
+                    b.HasOne("RX.Nyss.Data.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("RX.Nyss.Data.Models.Project", "Project")
                         .WithMany("AlertNotHandledNotificationRecipients")
                         .HasForeignKey("ProjectId")
