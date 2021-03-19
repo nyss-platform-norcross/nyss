@@ -148,11 +148,6 @@ namespace RX.Nyss.Web.Features.HealthRisks
                 return Error(ResultKey.HealthRisk.HealthRiskNumberAlreadyExists);
             }
 
-            if (CodeOrNameWasChanged(healthRiskRequestDto, healthRisk) && await HealthRiskContainsReports(id))
-            {
-                return Error(ResultKey.HealthRisk.HealthRiskContainsReports);
-            }
-
             healthRisk.HealthRiskCode = healthRiskRequestDto.HealthRiskCode;
             healthRisk.HealthRiskType = healthRiskRequestDto.HealthRiskType;
 
