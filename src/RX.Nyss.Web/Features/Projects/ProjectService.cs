@@ -236,7 +236,7 @@ namespace RX.Nyss.Web.Features.Projects
                 };
 
                 await _nyssContext.Projects.AddAsync(projectToAdd);
-                await AddAlertNotHandledNotificationRecipient(projectToAdd, dto.AlertNotHandledNotificationRecipientId);
+                await AddAlertNotHandledNotificationRecipient(projectToAdd, dto.AlertNotHandledNotificationRecipientId, organizationId);
                 await _nyssContext.SaveChangesAsync();
 
                 return Success(projectToAdd.Id, ResultKey.Project.SuccessfullyAdded);
@@ -528,10 +528,18 @@ namespace RX.Nyss.Web.Features.Projects
             };
         }
 
-        private async Task AddAlertNotHandledNotificationRecipient(Project project, int userId)
+        private async Task AddAlertNotHandledNotificationRecipient(Project project, int recipientUserId, int? organizationId)
         {
             var recipient = await _nyssContext.Users
-                .Where(u => u.Id == userId)
+                .Where(u => u.Id == recipientUserId)
+                .Select(u => new
+                {
+                    User = u,
+                    OrganizationId = u.UserNationalSocieties
+                        .Where(uns => uns.NationalSocietyId == project.NationalSocietyId)
+                        .Select(uns => uns.OrganizationId)
+                        .First()
+                })
                 .FirstOrDefaultAsync();
 
             if (recipient == null)
@@ -539,10 +547,16 @@ namespace RX.Nyss.Web.Features.Projects
                 throw new ResultException(ResultKey.Project.AlertNotHandledRecipientDoesNotExist);
             }
 
+            if (!organizationId.HasValue || organizationId.Value != recipient.OrganizationId)
+            {
+                throw new ResultException(ResultKey.Project.AlertNotHandledNotificationRecipientMustBeOfSameOrg);
+            }
+
             await _nyssContext.AlertNotHandledNotificationRecipients.AddAsync(new AlertNotHandledNotificationRecipient
             {
-                User = recipient,
-                Project = project
+                User = recipient.User,
+                Project = project,
+                OrganizationId = organizationId.Value
             });
         }
     }

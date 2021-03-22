@@ -247,7 +247,13 @@ namespace RX.Nyss.Web.Tests.Features.Projects
                 {
                     Id = nationalSocietyId,
                     Name = "National Society",
-                    Organizations = new List<Organization>(),
+                    Organizations = new List<Organization>
+                    {
+                        new Organization
+                        {
+                            Id = 1
+                        }
+                    },
                     NationalSocietyUsers = new List<UserNationalSociety>()
                 }
             };
@@ -262,7 +268,22 @@ namespace RX.Nyss.Web.Tests.Features.Projects
             var healthRisksMockDbSet = healthRisks.AsQueryable().BuildMockDbSet();
             _nyssContextMock.HealthRisks.Returns(healthRisksMockDbSet);
 
-            var users = new List<User> { new ManagerUser { Id = 1 } };
+            var users = new List<User>
+            {
+                new ManagerUser
+                {
+                    Id = 1,
+                    UserNationalSocieties = new List<UserNationalSociety>
+                    {
+                        new UserNationalSociety
+                        {
+                            NationalSocietyId = nationalSocietyId,
+                            UserId = 1,
+                            OrganizationId = 1
+                        }
+                    }
+                }
+            };
             var usersMockDbSet = users.AsQueryable().BuildMockDbSet();
             _nyssContextMock.Users.Returns(usersMockDbSet);
 

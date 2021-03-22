@@ -129,11 +129,15 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertNotHandledRecipients
         public async Task Create_WhenDoesNotExist_ShouldReturnSuccess()
         {
             // Arrange
-            var userId = 2;
             var projectId = 1;
+            var dto = new ProjectAlertNotHandledRecipientRequestDto
+            {
+                UserId = 2,
+                OrganizationId = 1
+            };
 
             // Act
-            var res = await _projectAlertNotHandledRecipientService.Create(projectId, userId);
+            var res = await _projectAlertNotHandledRecipientService.Create(projectId, dto);
 
             // Assert
             res.IsSuccess.ShouldBeTrue();
@@ -144,11 +148,15 @@ namespace RX.Nyss.Web.Tests.Features.ProjectAlertNotHandledRecipients
         public async Task Create_WhenDoesExist_ShouldFail()
         {
             // Arrange
-            var userId = 1;
             var projectId = 1;
+            var dto = new ProjectAlertNotHandledRecipientRequestDto
+            {
+                UserId = 1,
+                OrganizationId = 1
+            };
 
             // Act
-            var res = await _projectAlertNotHandledRecipientService.Create(projectId, userId);
+            var res = await _projectAlertNotHandledRecipientService.Create(projectId, dto);
 
             // Assert
             res.IsSuccess.ShouldBeFalse();
