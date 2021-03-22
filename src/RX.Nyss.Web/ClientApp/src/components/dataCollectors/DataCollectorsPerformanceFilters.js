@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 import { strings, stringKeys } from '../../strings';
 import useDebounce from '../../utils/debounce';
 import * as roles from '../../authentication/roles';
-import {trainingStatus} from "./logic/dataCollectorsConstants";
+import {trainingStatus, trainingStatusAll, trainingStatusTrained} from "./logic/dataCollectorsConstants";
 
 export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
   const nationalSocietyId = useSelector(state => state.dataCollectors.filtersData.nationalSocietyId);
@@ -51,6 +51,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
   const filterIsSet = filters && (
     filters.area !== null ||
     (filters.name !== null && filters.name !== '') ||
+    filters.trainingStatus !== trainingStatusTrained ||
     Object.values(filters).slice(3).some(f => Object.values(f).some(v => !v))
   );
 
@@ -112,7 +113,7 @@ export const DataCollectorsPerformanceFilters = ({ onChange, filters }) => {
               onChange={handleTrainingStatusChange}
               className={styles.filterRadioGroup}>
               {trainingStatus
-                .filter(status => status !== 'All')
+                .filter(status => status !== trainingStatusAll)
                 .map(status => (
                   <FormControlLabel key={`trainingStatus_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollector.constants.trainingStatus[status])} value={status} />
                 ))}
