@@ -93,7 +93,7 @@ export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, he
       )}
       <ConditionalCollapse collapsible={isSmallScreen} expanded={isFilterExpanded}>
         {!isSmallScreen && (
-          <Grid spacing={2}>
+          <Grid container spacing={2}>
             <CardHeader title={strings(stringKeys.nationalSociety.dashboard.filters.title)} className={styles.filterTitle}  />
           </Grid>
         )}

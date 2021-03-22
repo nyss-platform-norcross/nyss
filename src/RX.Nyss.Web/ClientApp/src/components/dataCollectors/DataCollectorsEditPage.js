@@ -3,6 +3,10 @@ import styles from './DataCollectorsCreateOrEditPage.module.scss';
 
 import React, { useEffect, useState, useReducer, Fragment } from 'react';
 import { connect, useSelector } from "react-redux";
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import InputLabel from '@material-ui/core/InputLabel';
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
 import * as dataCollectorsActions from './logic/dataCollectorsActions';
@@ -16,7 +20,6 @@ import Button from "@material-ui/core/Button";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import Grid from '@material-ui/core/Grid';
 import { sexValues, dataCollectorType } from './logic/dataCollectorsConstants';
 import { GeoStructureSelect } from './GeoStructureSelect';
 import SelectField from '../forms/SelectField';
@@ -25,7 +28,6 @@ import { DataCollectorMap } from './DataCollectorMap';
 import { ValidationMessage } from "../forms/ValidationMessage";
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
 import { retrieveGpsLocation } from "../../utils/map";
-import { Card, CardContent, InputLabel } from "@material-ui/core";
 import { Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
 
