@@ -211,7 +211,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskNotFound);
         }
 
-        [Fact]
+        [Fact(Skip = "No longer an enforced rule")]
         public async Task EditHealthRisk_WhenHealthRiskCodeWasChangedAndHealthRiskContainsReports_ShouldReturnError()
         {
             // Arrange
@@ -254,7 +254,7 @@ namespace RX.Nyss.Web.Tests.Features.HealthRisks
             result.Message.Key.ShouldBe(ResultKey.HealthRisk.HealthRiskContainsReports);
         }
 
-        [Fact]
+        [Fact(Skip = "No longer an enforced rule")]
         public async Task EditHealthRisk_WhenNameInAnyLanguageWasChangedAndHealthRiskContainsReports_ShouldReturnError()
         {
             // Arrange
