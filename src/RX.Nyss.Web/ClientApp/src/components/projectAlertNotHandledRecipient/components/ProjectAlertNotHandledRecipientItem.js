@@ -9,9 +9,11 @@ import Grid from "@material-ui/core/Grid";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import { stringKeys, strings } from "../../../strings";
 import { useSelector } from "react-redux";
+import { Fragment } from 'react';
 
-export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator, getFormData, projectId, edit }) => {
+export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator, getFormData, projectId, edit, create }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const users = useSelector(state => state.projectAlertNotHandledRecipients.users);
   const isSaving = useSelector(state => state.projectAlertNotHandledRecipients.saving);
@@ -22,7 +24,12 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
 
   const openEdition = () => {
     getFormData(projectId);
-    setIsEditing(true);
+
+    if (!!selectedUser.userId) {
+      setIsEditing(true);
+    } else {
+      setIsCreating(true);
+    }
   }
 
   const handleRecipientChange = (change) => {
@@ -37,46 +44,84 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
     });
   }
 
+  const onCreate = () => {
+    create(projectId, {
+      userId: selectedUser.userId,
+      organizationId: selectedUser.organizationId
+    });
+  }
+
   if (selectedUser == null) {
     return null;
   }
 
-  return !isEditing ? (
+  return (
     <Grid item className={styles.recipient} xs={12}>
-      {isAdministrator && (
-        <Typography variant="body1" className={styles.organizationField}>
-          {recipient.organizationName}
-        </Typography>
+      {!(isEditing || isCreating) && (
+        <Fragment>
+          {isAdministrator && (
+            <Typography variant="body1" className={styles.organizationField}>
+              {recipient.organizationName}
+            </Typography>
+          )}
+
+          <Typography variant="body1" className={styles.recipientName}>
+            {recipient.name}
+          </Typography>
+
+          <EditIcon onClick={openEdition} />
+        </Fragment>
       )}
 
-      <Typography variant="body1" className={styles.recipientName}>
-        {recipient.name}
-      </Typography>
+      {isEditing && (
+        <Fragment>
+          {isAdministrator && (
+            <Typography variant="body1" className={styles.organizationField}>
+              {recipient.organizationName}
+            </Typography>
+          )}
 
-      <EditIcon onClick={openEdition} />
-    </Grid>
-  ) : (
-    <Grid item className={styles.recipient} xs={12}>
-      {isAdministrator && (
-        <Typography variant="body1" className={styles.organizationField}>
-          {recipient.organizationName}
-        </Typography>
+          <Select
+            className={styles.recipientNameSelect}
+            value={selectedUser.userId}
+            onChange={handleRecipientChange}
+          >
+            {users.map(u => (
+              <MenuItem key={`recipient_user_${u.userId}`} value={u.userId}>
+                {u.name}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button onClick={() => setIsEditing(false)}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={isSaving} onClick={onEdit}>{strings(stringKeys.projectAlertNotHandledRecipient.update)}</SubmitButton>
+        </Fragment>
       )}
 
-      <Select
-        className={styles.recipientNameSelect}
-        value={selectedUser.userId}
-        onChange={handleRecipientChange}
-      >
-        {users.map(u => (
-          <MenuItem key={`recipient_user_${u.userId}`} value={u.userId}>
-            {u.name}
-          </MenuItem>
-        ))}
-      </Select>
+      {isCreating && (
+        <Fragment>
+          {isAdministrator && (
+            <Typography variant="body1" className={styles.organizationField}>
+              {recipient.organizationName}
+            </Typography>
+          )}
 
-      <Button onClick={() => setIsEditing(false)}>{strings(stringKeys.form.cancel)}</Button>
-      <SubmitButton isFetching={isSaving} onClick={onEdit}>{strings(stringKeys.projectAlertNotHandledRecipient.update)}</SubmitButton>
+          <Select
+            className={styles.recipientNameSelect}
+            value={selectedUser.userId || ''}
+            onChange={handleRecipientChange}
+          >
+            {users.map(u => (
+              <MenuItem key={`recipient_user_${u.userId}`} value={u.userId}>
+                {u.name}
+              </MenuItem>
+            ))}
+          </Select>
+
+          <Button onClick={() => setIsCreating(false)}>{strings(stringKeys.form.cancel)}</Button>
+          <SubmitButton isFetching={isSaving} onClick={onCreate}>{strings(stringKeys.projectAlertNotHandledRecipient.create)}</SubmitButton>
+        </Fragment>
+      )}
     </Grid>
   )
 }

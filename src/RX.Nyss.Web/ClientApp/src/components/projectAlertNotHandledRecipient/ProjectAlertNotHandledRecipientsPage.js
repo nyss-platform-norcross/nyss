@@ -12,7 +12,7 @@ import { Administrator } from '../../authentication/roles';
 import { ProjectAlertNotHandledRecipientItem } from './components/ProjectAlertNotHandledRecipientItem';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, projectId, recipients, getFormData, edit, ...props }) => {
+export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, projectId, recipients, getFormData, edit, create }) => {
   useMount(() => {
     openRecipients(projectId);
   });
@@ -49,6 +49,7 @@ export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, proj
                 projectId={projectId}
                 getFormData={getFormData}
                 edit={edit}
+                create={create}
               />
             ))}
           </div>
