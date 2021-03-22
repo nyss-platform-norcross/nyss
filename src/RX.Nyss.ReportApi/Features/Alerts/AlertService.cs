@@ -174,8 +174,9 @@ namespace RX.Nyss.ReportApi.Features.Alerts
                 foreach (var recipient in alertNotHandledRecipients)
                 {
                     var supervisors = alert.Supervisors
-                        .Where(sup => sup.Organization.Id == recipient.Organization.Id)
-                        .Select(sup => sup.User.Name)
+                        .Select(sup => sup.Organization.Id == recipient.Organization.Id
+                            ? sup.User.Name
+                            : sup.Organization.Name)
                         .Distinct();
 
                     var alertNotHandledEmailBody = emailBody
