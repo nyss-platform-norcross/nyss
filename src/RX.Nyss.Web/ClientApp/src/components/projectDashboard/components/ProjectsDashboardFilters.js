@@ -3,7 +3,10 @@ import React, { useState } from 'react';
 import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
-import { ExpandMore, DateRange } from '@material-ui/icons';
+import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
+import { convertToLocalDate, convertToUtc } from "../../../utils/date";
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import DateRange from '@material-ui/icons/DateRange';
 import {
   Switch,
   FormControl,
@@ -19,8 +22,6 @@ import {
   CardContent,
   CardHeader,
 } from "@material-ui/core";
-import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
-import { convertToLocalDate, convertToUtc } from "../../../utils/date";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, isGeneratingPdf, isFilterExpanded, setIsFilterExpanded }) => {
   const [value, setValue] = useState(filters);
