@@ -3,7 +3,7 @@ import mapStyles from "./DataCollectorsPerformanceMap.module.scss";
 import mapIconStyles from "../common/map/MarkerIcon.module.scss";
 
 import React from 'react';
-import Icon from "@material-ui/core/Icon";
+import { Icon } from "@material-ui/core";
 import { getIconFromStatus } from "./logic/dataCollectorsService";
 import { performanceStatus } from "./logic/dataCollectorsConstants";
 import { strings, stringKeys } from "../../strings";

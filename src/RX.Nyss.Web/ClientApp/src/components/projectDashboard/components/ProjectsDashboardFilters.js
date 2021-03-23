@@ -1,19 +1,26 @@
 import styles from "./ProjectsDashboardFilters.module.scss";
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import TextField from "@material-ui/core/TextField";
-import MenuItem from "@material-ui/core/MenuItem";
-import Card from '@material-ui/core/Card';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import CardContent from '@material-ui/core/CardContent';
 import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 import { ExpandMore, DateRange } from '@material-ui/icons';
-import { Switch, FormControl, LinearProgress, FormLabel, Chip, IconButton } from "@material-ui/core";
+import {
+  Switch,
+  FormControl,
+  LinearProgress,
+  FormLabel,
+  Chip,
+  IconButton,
+  Grid,
+  TextField,
+  MenuItem,
+  Card,
+  useMediaQuery,
+  CardContent,
+  CardHeader,
+} from "@material-ui/core";
 import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
 import { convertToLocalDate, convertToUtc } from "../../../utils/date";
-import CardHeader from "@material-ui/core/CardHeader";
 
 export const ProjectsDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching, isGeneratingPdf, isFilterExpanded, setIsFilterExpanded }) => {
   const [value, setValue] = useState(filters);

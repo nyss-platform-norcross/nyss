@@ -1,21 +1,23 @@
 import React, { useState, Fragment } from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import { createForm } from '../../../utils/forms';
 import TextInputField from '../../forms/TextInputField';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { post, get } from '../../../utils/http';
 import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
 import { updateStrings } from '../../../strings';
-import Grid from '@material-ui/core/Grid';
 import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
 import TextWithHTMLPreviewInputField from '../../forms/TextInputWithHTMLPreviewField';
-import { useTheme } from '@material-ui/core';
+import {
+  useTheme,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  useMediaQuery,
+  Grid,
+} from '@material-ui/core';
 
 export const EmailStringsEditorDialog = ({ stringKey, close }) => {
   const [form, setForm] = useState(null);

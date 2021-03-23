@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { StringsEditor } from '../common/stringsEditor/StringsEditor';
-import { TableSortLabel } from '@material-ui/core';
+import { TableSortLabel, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 
 export const TranslationsTable = ({ isListFetching, languages, translations, type }) => {
   const [sorting, setSorting] = useState({ orderBy: "key" });

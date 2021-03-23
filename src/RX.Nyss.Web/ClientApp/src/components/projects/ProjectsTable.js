@@ -1,11 +1,6 @@
 import styles from '../common/table/Table.module.scss';
 import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import dayjs from "dayjs"
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import WarningIcon from '@material-ui/icons/Warning';
@@ -16,7 +11,7 @@ import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { TableRowMenu } from '../common/tableRowAction/TableRowMenu';
 import { ConfirmationDialog } from '../common/confirmationDialog/ConfirmationDialog';
-import { Typography, Grid } from '@material-ui/core';
+import { Typography, Grid, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 
 export const ProjectsTable = ({ isListFetching, goToDashboard, list, nationalSocietyId, close, isClosing, callingUserRoles, isHeadManager }) => {
   const [closeConfirmationDialog, setRemoveConfirmationDialog] = useState({ isOpen: false, projectId: null });

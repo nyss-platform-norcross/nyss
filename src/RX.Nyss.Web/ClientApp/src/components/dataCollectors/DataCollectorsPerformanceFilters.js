@@ -1,16 +1,18 @@
 import styles from './DataCollectorsPerformanceFilters.module.scss';
 import React, { useEffect, useReducer } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Radio from '@material-ui/core/Radio';
 import { AreaFilter } from "../common/filters/AreaFilter";
+import { 
+  Card, 
+  CardContent, 
+  Button, 
+  TextField, 
+  MenuItem, 
+  Grid, 
+  Radio,
+  RadioGroup, 
+  FormControlLabel, 
+  InputLabel 
+} from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { strings, stringKeys } from '../../strings';
 import useDebounce from '../../utils/debounce';

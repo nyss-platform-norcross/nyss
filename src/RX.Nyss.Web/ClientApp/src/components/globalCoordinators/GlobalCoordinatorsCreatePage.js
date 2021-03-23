@@ -10,9 +10,8 @@ import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
-import Button from "@material-ui/core/Button";
 import { useMount } from '../../utils/lifecycle';
-import Grid from '@material-ui/core/Grid';
+import { Grid, Button } from '@material-ui/core';
 import { stringKeys, strings } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 

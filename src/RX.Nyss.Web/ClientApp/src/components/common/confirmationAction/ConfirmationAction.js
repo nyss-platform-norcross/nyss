@@ -2,9 +2,7 @@ import styles from "./ConfirmationAction.module.scss"
 
 import React, { Fragment, useState } from "react";
 import PropTypes from "prop-types";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
+import { Menu, MenuItem, ListItemIcon } from "@material-ui/core";
 
 export const ConfirmationAction = ({ children, icon, confirmationText, onClick }) => {
   const [anchorEl, setAnchorEl] = useState(null);

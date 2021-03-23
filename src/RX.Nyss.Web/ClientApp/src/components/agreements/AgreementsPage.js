@@ -4,17 +4,25 @@ import SubmitButton from '../forms/submitButton/SubmitButton';
 import { withLayout } from '../../utils/layout';
 import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
 import styles from './AgreementsPage.module.scss';
-import Icon from "@material-ui/core/Icon";
 import { strings, stringKeys } from '../../strings';
 import * as agreementsActions from './logic/agreementsActions';
 import { useMount } from '../../utils/lifecycle';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import CardMedia from '@material-ui/core/CardMedia';
-import { MenuItem, Grid, FormControl, InputLabel, Select, Snackbar, Button } from '@material-ui/core';
+import {
+  MenuItem,
+  Grid,
+  FormControl,
+  InputLabel,
+  Select,
+  Snackbar,
+  Button,
+  Paper,
+  Typography,
+  Icon,
+  Checkbox,
+  FormControlLabel,
+  CardMedia,
+} from '@material-ui/core';
 import { Loading } from '../common/loading/Loading';
 
 const AgreementsPageComponent = (props) => {

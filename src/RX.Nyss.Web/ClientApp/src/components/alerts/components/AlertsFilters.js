@@ -1,10 +1,6 @@
 import styles from "./AlertsFilters.module.scss";
 import React, { useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import TextField from "@material-ui/core/TextField";
-import MenuItem from "@material-ui/core/MenuItem";
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import { Grid, TextField, MenuItem, Card, CardContent } from '@material-ui/core';
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 import { alertStatusFilters } from "../logic/alertsConstants";

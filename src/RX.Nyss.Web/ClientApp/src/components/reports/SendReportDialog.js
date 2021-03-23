@@ -10,10 +10,7 @@ import { strings, stringKeys } from '../../strings';
 import { useTheme, Grid, Button, MenuItem, LinearProgress } from "@material-ui/core"
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { Dialog } from "@material-ui/core";
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import useMediaQuery from '@material-ui/core/useMediaQuery'
+import { Dialog, DialogContent, DialogTitle, useMediaQuery } from "@material-ui/core";
 import { useSelector } from "react-redux";
 import { DatePicker } from "../forms/DatePicker";
 import AutocompleteTextInputField from "../forms/AutocompleteTextInputField";

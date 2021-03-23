@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Popup, Marker, ScaleControl } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import { Loading } from "../common/loading/Loading";
-import Icon from "@material-ui/core/Icon";
+import { Icon } from "@material-ui/core";
 import { calculateBounds } from "../../utils/map";
 import { SignIcon } from "../common/map/MarkerIcon";
 import { getIconFromStatus } from "./logic/dataCollectorsService";

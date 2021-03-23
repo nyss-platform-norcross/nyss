@@ -11,10 +11,8 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectField from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
+import { MenuItem, Button, Grid } from "@material-ui/core";
 import { useMount } from '../../utils/lifecycle';
-import Grid from '@material-ui/core/Grid';
 import { strings, stringKeys } from '../../strings';
 import { ValidationMessage } from '../forms/ValidationMessage';
 

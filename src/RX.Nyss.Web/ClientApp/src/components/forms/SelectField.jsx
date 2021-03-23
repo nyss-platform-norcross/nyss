@@ -1,9 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import FormControl from "@material-ui/core/FormControl";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
+import { Select, FormControl, FormHelperText, InputLabel } from "@material-ui/core";
 import { createFieldComponent } from "./FieldBase";
 
 const SelectInput = ({ error, name, label, value, onChange, controlProps, customProps, children }) => {

@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as appActions from '../app/logic/appActions';
-import Button from '@material-ui/core/Button';
+import { Button } from '@material-ui/core';
 
 const StringsSwitcherComponent = ({ isDevelopment, switchStrings, showStringsKeys, goToTranslations }) => {
   if (!isDevelopment) {

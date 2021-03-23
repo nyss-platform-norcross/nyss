@@ -1,10 +1,6 @@
 import styles from "./TranslationsFilters.module.scss";
 import React, { useState } from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Grid from "@material-ui/core/Grid";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import { Card, CardContent, Grid, FormControlLabel, Checkbox } from '@material-ui/core';
 
 export const TranslationsFilters = ({ onChange }) => {
   const [needsImprovementOnly, setNeedsImprovementOnly] = useState(false);

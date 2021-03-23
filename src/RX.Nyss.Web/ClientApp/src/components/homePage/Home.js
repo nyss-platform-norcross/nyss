@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Layout } from '../layout/Layout';
 import { withLayout } from '../../utils/layout';
-import Typography from '@material-ui/core/Typography';
+import { Typography } from '@material-ui/core';
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
 

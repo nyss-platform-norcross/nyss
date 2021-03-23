@@ -9,16 +9,12 @@ import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
 import TextInputField from '../forms/TextInputField';
 import SelectInput from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
 import { smsGatewayTypes, smsEagle } from "./logic/smsGatewayTypes";
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import Grid from '@material-ui/core/Grid';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import CheckboxField from '../forms/CheckboxField';
-import Icon from "@material-ui/core/Icon";
-import { Typography } from '@material-ui/core';
+import { Typography, MenuItem, Button, Grid, Icon } from '@material-ui/core';
 
 const SmsGatewaysCreatePageComponent = (props) => {
   const [useIotHub, setUseIotHub] = useState(null);

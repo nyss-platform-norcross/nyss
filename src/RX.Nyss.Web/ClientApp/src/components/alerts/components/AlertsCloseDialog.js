@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 import { strings, stringKeys } from "../../../strings";
 import FormActions from "../../forms/formActions/FormActions";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
-import Button from "@material-ui/core/Button";
-import DialogContent from "@material-ui/core/DialogContent";
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme, Grid, FormControlLabel, Radio } from "@material-ui/core";
+import {
+  useTheme,
+  Grid,
+  FormControlLabel,
+  Radio,
+  DialogTitle,
+  Dialog,
+  Button,
+  DialogContent,
+  useMediaQuery,
+} from "@material-ui/core";
 import { escalatedOutcomes } from '../logic/alertsConstants';
 import { validators, createForm } from '../../../utils/forms';
 import Form from '../../forms/form/Form';

@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import * as projectDashboardActions from './logic/projectDashboardActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Grid from '@material-ui/core/Grid';
+import { Grid } from '@material-ui/core';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { ProjectsDashboardFilters } from "./components/ProjectsDashboardFilters";

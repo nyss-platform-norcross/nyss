@@ -2,11 +2,6 @@ import styles from '../../common/table/Table.module.scss';
 import alertTableStyles from './AlertsTable.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import { strings, stringKeys } from '../../../strings';
 import dayjs from "dayjs";
 import TablePager from '../../common/tablePagination/TablePager';
@@ -14,7 +9,7 @@ import { TableNoData } from '../../common/table/TableNoData';
 import { TableContainer } from '../../common/table/TableContainer';
 import InfoIcon from '@material-ui/icons/InfoOutlined';
 import { assessmentStatus, escalatedOutcomes, statusColumn, timeTriggeredColumn } from '../logic/alertsConstants';
-import { TableSortLabel, Tooltip } from '@material-ui/core';
+import { TableSortLabel, Tooltip, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { useSelector } from 'react-redux';
 
 export const AlertsTable = ({ isListFetching, list, projectId, goToAssessment, onChangePage, onSort, page, rowsPerPage, totalRows }) => {

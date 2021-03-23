@@ -8,7 +8,7 @@ import TranslationsTable from './TranslationsTable';
 import { useMount } from '../../utils/lifecycle';
 import { Fragment } from 'react';
 import { TranslationsFilters } from './TranslationsFilters';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import { LinearProgress } from '@material-ui/core';
 
 const SmsTranslationsListPageComponent = (props) => {
   useMount(() => {

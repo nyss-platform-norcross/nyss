@@ -7,16 +7,12 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import Button from "@material-ui/core/Button";
-import Box from '@material-ui/core/Box';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import Grid from '@material-ui/core/Grid';
 import { ValidationMessage } from '../forms/ValidationMessage';
 import SelectField from '../forms/SelectField';
-import { MenuItem } from '@material-ui/core';
+import { MenuItem, Typography, Button, Box, Grid } from '@material-ui/core';
 
 const NationalSocietyUsersAddExistingPageComponent = (props) => {
   const [form] = useState(() => {

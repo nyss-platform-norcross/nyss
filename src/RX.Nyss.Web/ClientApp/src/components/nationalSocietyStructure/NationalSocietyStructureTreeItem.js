@@ -3,7 +3,7 @@ import styles from "./NationalSocietyStructureTree.module.scss"
 import React, { Fragment, useState } from 'react';
 import { strings, stringKeys } from '../../strings';
 import TreeItem from '@material-ui/lab/TreeItem';
-import Icon from "@material-ui/core/Icon";
+import { Icon } from "@material-ui/core";
 import ConfirmationAction from "../common/confirmationAction/ConfirmationAction";
 import { InlineTextEditor } from "../common/InlineTextEditor/InlineTextEditor";
 

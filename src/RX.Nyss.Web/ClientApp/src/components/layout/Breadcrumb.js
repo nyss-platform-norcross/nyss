@@ -4,9 +4,8 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import { Breadcrumbs, Hidden } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
-import Hidden from '@material-ui/core/Hidden';
 
 const BreadcrumbComponent = ({ breadcrumb, push }) => {
   const breadcrumbVisibleItems = breadcrumb.filter(b => !b.hidden);

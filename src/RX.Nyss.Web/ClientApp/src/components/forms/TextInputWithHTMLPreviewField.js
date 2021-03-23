@@ -2,8 +2,7 @@ import styles from './TextInputWithHTMLPreviewField.module.scss';
 import React from "react";
 import PropTypes from "prop-types";
 import { createFieldComponent } from "./FieldBase";
-import TextField from '@material-ui/core/TextField';
-import { Grid } from '@material-ui/core';
+import { Grid, TextField } from '@material-ui/core';
 
 const TextInputWithHTMLPreview = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type }) => {
   return (

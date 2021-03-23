@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import * as nationalSocietyStructureActions from './logic/nationalSocietyStructureActions';
 import { withLayout } from '../../utils/layout';
 import Layout from '../layout/Layout';
-import Typography from '@material-ui/core/Typography';
+import { Typography } from '@material-ui/core';
 import { strings, stringKeys } from '../../strings';
 import { NationalSocietyStructureTree } from './NationalSocietyStructureTree';
 

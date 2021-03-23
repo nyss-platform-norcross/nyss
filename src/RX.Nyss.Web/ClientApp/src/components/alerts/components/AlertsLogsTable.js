@@ -1,12 +1,7 @@
 import React from 'react';
 import dayjs from "dayjs";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import { stringKeys, strings, stringsFormat } from "../../../strings";
-import { TableContainer } from "@material-ui/core";
+import { TableContainer, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import { logType, escalatedOutcomes } from '../logic/alertsConstants';
 
 const formatString = (row) => {

@@ -4,7 +4,7 @@ import React from 'react';
 import { connect } from "react-redux";
 import { TopMenu } from './TopMenu';
 import { UserStatus } from './UserStatus';
-import Icon from '@material-ui/core/Icon';
+import { Icon } from '@material-ui/core';
 import { toggleSideMenu } from '../app/logic/appActions';
 
 const HeaderComponent = ({ sideMenuOpen, toggleSideMenu }) => {

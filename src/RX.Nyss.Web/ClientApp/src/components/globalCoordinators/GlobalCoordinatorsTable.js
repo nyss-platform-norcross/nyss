@@ -1,11 +1,7 @@
 import styles from '../common/table/Table.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import { TableRowAction } from '../common/tableRowAction/TableRowAction';

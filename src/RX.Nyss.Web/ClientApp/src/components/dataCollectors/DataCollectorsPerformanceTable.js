@@ -2,20 +2,14 @@ import styles from './DataCollectorsPerformanceTable.module.scss';
 
 import React, { useState } from 'react';
 import PropTypes from "prop-types";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Icon from '@material-ui/core/Icon';
-import Tooltip from '@material-ui/core/Tooltip';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
 import { strings, stringKeys } from '../../strings';
 import { TableContainer } from '../common/table/TableContainer';
 import { getIconFromStatus } from './logic/dataCollectorsService';
 import { DataCollectorStatusIcon } from '../common/icon/DataCollectorStatusIcon';
 import { DataCollectorsPerformanceColumnFilters } from './DataCollectorsPerformanceColumnFilters';
 import TablePager from '../common/tablePagination/TablePager';
+import { Tooltip, Table, TableBody, TableCell, TableHead, TableRow, Icon } from '@material-ui/core';
+import InfoIcon from '@material-ui/icons/InfoOutlined';
 
 export const DataCollectorsPerformanceTable = ({ list, completeness, page, rowsPerPage, totalRows, isListFetching, filters, onChange }) => {
   const [isOpen, setIsOpen] = useState(false);
