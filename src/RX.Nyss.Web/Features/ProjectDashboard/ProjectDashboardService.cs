@@ -10,7 +10,6 @@ using RX.Nyss.Web.Features.ProjectDashboard.Dto;
 using RX.Nyss.Web.Features.Projects;
 using RX.Nyss.Web.Features.Reports;
 using RX.Nyss.Web.Services.Authorization;
-using RX.Nyss.Web.Services.Geolocation;
 using RX.Nyss.Web.Services.ReportsDashboard;
 using RX.Nyss.Web.Services.ReportsDashboard.Dto;
 using static RX.Nyss.Common.Utils.DataContract.Result;
@@ -29,7 +28,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
     public class ProjectDashboardService : IProjectDashboardService
     {
         private readonly IProjectService _projectService;
-        private readonly IReportService _reportService;
         private readonly IReportsDashboardMapService _reportsDashboardMapService;
         private readonly IReportsDashboardByFeatureService _reportsDashboardByFeatureService;
         private readonly IReportsDashboardByHealthRiskService _reportsDashboardByHealthRiskService;
@@ -41,7 +39,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
 
         public ProjectDashboardService(
             IProjectService projectService,
-            IReportService reportService,
             IReportsDashboardMapService reportsDashboardMapService,
             IReportsDashboardByFeatureService reportsDashboardByFeatureService,
             IReportsDashboardByHealthRiskService reportsDashboardByHealthRiskService,
@@ -52,7 +49,6 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
             IAuthorizationService authorizationService)
         {
             _projectService = projectService;
-            _reportService = reportService;
             _reportsDashboardMapService = reportsDashboardMapService;
             _reportsDashboardByFeatureService = reportsDashboardByFeatureService;
             _reportsDashboardByHealthRiskService = reportsDashboardByHealthRiskService;
@@ -151,7 +147,8 @@ namespace RX.Nyss.Web.Features.ProjectDashboard
                 CountFemalesAtLeastFive = reportByFeaturesAndDate.Sum(r => r.CountFemalesAtLeastFive),
                 CountFemalesBelowFive = reportByFeaturesAndDate.Sum(r => r.CountFemalesBelowFive),
                 CountMalesAtLeastFive = reportByFeaturesAndDate.Sum(r => r.CountMalesAtLeastFive),
-                CountMalesBelowFive = reportByFeaturesAndDate.Sum(r => r.CountMalesBelowFive)
+                CountMalesBelowFive = reportByFeaturesAndDate.Sum(r => r.CountMalesBelowFive),
+                CountUnspecifiedSexAndAge = reportByFeaturesAndDate.Sum(r => r.CountUnspecifiedSexAndAge)
             };
 
         private ReportsFilter MapToReportFilters(int projectId, FiltersRequestDto filtersDto) =>

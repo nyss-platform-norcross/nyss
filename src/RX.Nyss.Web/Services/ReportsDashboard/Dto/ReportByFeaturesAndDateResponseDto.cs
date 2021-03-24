@@ -11,5 +11,6 @@
         public int CountMalesAtLeastFive { get; set; }
 
         public int CountMalesBelowFive { get; set; }
+        public int CountUnspecifiedSexAndAge { get; set; }
     }
 }

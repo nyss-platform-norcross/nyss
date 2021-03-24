@@ -61,7 +61,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     r.ReportedCase.CountFemalesAtLeastFive,
                     r.ReportedCase.CountFemalesBelowFive,
                     r.ReportedCase.CountMalesAtLeastFive,
-                    r.ReportedCase.CountMalesBelowFive
+                    r.ReportedCase.CountMalesBelowFive,
+                    r.ReportedCase.CountUnspecifiedSexAndAge
                 })
                 .GroupBy(r => r.Date)
                 .Select(grouping => new
@@ -70,7 +71,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     CountFemalesAtLeastFive = (int)grouping.Sum(g => g.CountFemalesAtLeastFive),
                     CountFemalesBelowFive = (int)grouping.Sum(g => g.CountFemalesBelowFive),
                     CountMalesAtLeastFive = (int)grouping.Sum(g => g.CountMalesAtLeastFive),
-                    CountMalesBelowFive = (int)grouping.Sum(g => g.CountMalesBelowFive)
+                    CountMalesBelowFive = (int)grouping.Sum(g => g.CountMalesBelowFive),
+                    CountUnspecifiedSexAndAge = (int)grouping.Sum(g => g.CountUnspecifiedSexAndAge)
                 })
                 .ToListAsync();
 
@@ -82,7 +84,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     CountFemalesAtLeastFive = 0,
                     CountFemalesBelowFive = 0,
                     CountMalesAtLeastFive = 0,
-                    CountMalesBelowFive = 0
+                    CountMalesBelowFive = 0,
+                    CountUnspecifiedSexAndAge = 0
                 });
 
             return groupedReports
@@ -94,7 +97,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     CountFemalesAtLeastFive = x.CountFemalesAtLeastFive,
                     CountFemalesBelowFive = x.CountFemalesBelowFive,
                     CountMalesAtLeastFive = x.CountMalesAtLeastFive,
-                    CountMalesBelowFive = x.CountMalesBelowFive
+                    CountMalesBelowFive = x.CountMalesBelowFive,
+                    CountUnspecifiedSexAndAge = x.CountUnspecifiedSexAndAge
                 })
                 .ToList();
         }
@@ -109,7 +113,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     r.ReportedCase.CountFemalesAtLeastFive,
                     r.ReportedCase.CountFemalesBelowFive,
                     r.ReportedCase.CountMalesAtLeastFive,
-                    r.ReportedCase.CountMalesBelowFive
+                    r.ReportedCase.CountMalesBelowFive,
+                    r.ReportedCase.CountUnspecifiedSexAndAge
                 })
                 .GroupBy(r => new
                 {
@@ -122,7 +127,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     CountFemalesAtLeastFive = (int)grouping.Sum(g => g.CountFemalesAtLeastFive),
                     CountFemalesBelowFive = (int)grouping.Sum(g => g.CountFemalesBelowFive),
                     CountMalesAtLeastFive = (int)grouping.Sum(g => g.CountMalesAtLeastFive),
-                    CountMalesBelowFive = (int)grouping.Sum(g => g.CountMalesBelowFive)
+                    CountMalesBelowFive = (int)grouping.Sum(g => g.CountMalesBelowFive),
+                    CountUnspecifiedSexAndAge = (int)grouping.Sum(g => g.CountUnspecifiedSexAndAge)
                 })
                 .ToListAsync();
 
@@ -138,7 +144,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     CountFemalesAtLeastFive = 0,
                     CountFemalesBelowFive = 0,
                     CountMalesAtLeastFive = 0,
-                    CountMalesBelowFive = 0
+                    CountMalesBelowFive = 0,
+                    CountUnspecifiedSexAndAge = 0
                 });
 
             return groupedReports
@@ -151,7 +158,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
                     CountFemalesAtLeastFive = x.CountFemalesAtLeastFive,
                     CountFemalesBelowFive = x.CountFemalesBelowFive,
                     CountMalesAtLeastFive = x.CountMalesAtLeastFive,
-                    CountMalesBelowFive = x.CountMalesBelowFive
+                    CountMalesBelowFive = x.CountMalesBelowFive,
+                    CountUnspecifiedSexAndAge = x.CountUnspecifiedSexAndAge
                 })
                 .ToList();
         }
