@@ -6,6 +6,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Contracts
         HealthRiskNotFound,
         DataCollectorNotFound,
         Other,
-        TooLong
+        TooLong,
+        GlobalHealthRiskCodeNotFound
     }
 }
