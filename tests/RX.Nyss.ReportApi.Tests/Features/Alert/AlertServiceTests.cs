@@ -78,7 +78,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
             //arrange
             _testData.SimpleCasesData.GenerateData();
             var report = _testData.SimpleCasesData.AdditionalData.HumanDataCollectorReport;
-            report.ReportType = ReportType.Statement;
+            report.ReportType = ReportType.Event;
             report.ProjectHealthRisk.HealthRisk.HealthRiskType = HealthRiskType.Activity;
 
             //act
@@ -90,7 +90,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert
 
         [Theory]
         [InlineData(ReportType.Single)]
-        [InlineData(ReportType.Statement)]
+        [InlineData(ReportType.Event)]
         [InlineData(ReportType.Aggregate)]
         [InlineData(ReportType.DataCollectionPoint)]
         public async Task ReportAdded_WhenReportTypeIsNonHumanAndFromDataCollectionPoint_ShouldReturnNull(ReportType reportType)
