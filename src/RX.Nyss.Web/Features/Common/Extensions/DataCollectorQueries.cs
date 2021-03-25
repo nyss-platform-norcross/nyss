@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -62,6 +62,8 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 dataCollectors
             };
 
+        public static IQueryable<DataCollector> FilterByIsDeployed (this IQueryable<DataCollector> dataCollectors) =>
+            dataCollectors.Where(dc => dc.Deployed);
 
         public static IQueryable<DataCollector> FilterByDeployedMode (this IQueryable<DataCollector> dataCollectors, DeployedModeDto? deployedMode) =>
             deployedMode switch

@@ -9,5 +9,7 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
         public ReportingStatus Status { get; set; }
         public bool IsAnonymized { get; set; }
         public string OrganizationName { get; set; }
+
+        public bool Deployed { get; set; }
     }
 }
