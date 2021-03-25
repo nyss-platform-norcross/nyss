@@ -23,6 +23,11 @@ namespace RX.Nyss.Data.Migrations
                 FROM nyss.Reports AS r
                 WHERE r.ReportType='Statement'
             ");
+
+            migrationBuilder.Sql(@"
+                UPDATE r set r.ReportedCase_CountUnspecifiedSexAndAge = 0
+                FROM nyss.Reports AS r
+            ");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
