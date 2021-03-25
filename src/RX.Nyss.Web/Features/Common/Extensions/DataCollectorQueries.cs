@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
@@ -60,6 +60,15 @@ namespace RX.Nyss.Web.Features.Common.Extensions
 
                 _ =>
                 dataCollectors
+            };
+
+
+        public static IQueryable<DataCollector> FilterByDeployedMode (this IQueryable<DataCollector> dataCollectors, DeployedModeDto? deployedMode) =>
+            deployedMode switch
+            {
+                DeployedModeDto.Deployed => dataCollectors.Where(dc => dc.Deployed),
+                DeployedModeDto.NotDeployed => dataCollectors.Where(dc => !dc.Deployed),
+                _ => dataCollectors
             };
 
         public static IQueryable<DataCollector> FilterByTrainingMode(this IQueryable<DataCollector> dataCollectors, bool isInTraining) =>

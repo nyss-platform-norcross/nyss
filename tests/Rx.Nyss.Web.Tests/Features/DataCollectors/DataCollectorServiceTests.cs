@@ -566,7 +566,8 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                         NationalSociety = _nationalSocieties[0]
                     },
                     RawReports = reports,
-                    Supervisor = new SupervisorUser()
+                    Supervisor = new SupervisorUser(),
+                    Deployed = true
                 }
             };
             var dataCollectorsMockDbSet = dataCollectors.AsQueryable().BuildMockDbSet();
