@@ -1,8 +1,6 @@
 import styles from "./TableRowAction.module.scss";
 import React, { Fragment, useState } from "react";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import { Menu, CircularProgress, MenuItem } from "@material-ui/core";
 import { useSelector } from "react-redux";
 
 const TableRowMenuComponent = ({ id, icon, items, isFetching, alwaysShow, alwaysHighlighted }) => {

@@ -1,15 +1,13 @@
 import styles from "./AreaFilter.module.scss";
 
 import React, { Fragment, useRef, useState } from 'react';
-import Menu from "@material-ui/core/Menu";
 import { get } from '../../../utils/http';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import TextField from "@material-ui/core/TextField";
+import { TextField, Menu, InputAdornment } from "@material-ui/core";
 import { strings, stringKeys } from "../../../strings";
 
 const StructureTreeItem = ({ nodeId, data, label, onSelect, isSelected, children }) => {

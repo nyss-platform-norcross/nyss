@@ -1,11 +1,8 @@
 import styles from "./TablePager.module.scss";
 import React from 'react';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
-import Grid from "@material-ui/core/Grid";
+import { Grid, IconButton, MenuItem, Select } from "@material-ui/core";
 
 export const TablePager = (props) => {
   const { page, rowsPerPage, totalRows, onChangePage } = props;

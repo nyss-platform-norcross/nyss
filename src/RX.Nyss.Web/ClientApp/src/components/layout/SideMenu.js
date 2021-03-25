@@ -3,14 +3,9 @@ import styles from './SideMenu.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import { Link } from 'react-router-dom'
 import { push } from "connected-react-router";
-import Drawer from "@material-ui/core/Drawer";
-import { useTheme } from "@material-ui/core";
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme, List, ListItem, ListItemText, Drawer, useMediaQuery } from "@material-ui/core";
 import { toggleSideMenu } from '../app/logic/appActions';
 
 const SideMenuComponent = ({ sideMenu, sideMenuOpen, toggleSideMenu, push }) => {

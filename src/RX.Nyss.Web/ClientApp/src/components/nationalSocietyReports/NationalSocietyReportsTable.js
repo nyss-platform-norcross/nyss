@@ -2,11 +2,6 @@ import styles from "./NationalSocietyReportsTable.module.scss";
 
 import React, { Fragment, useState } from 'react';
 import PropTypes from "prop-types";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import { TableContainer } from '../common/table/TableContainer';
 import { Loading } from '../common/loading/Loading';
 import { strings, stringKeys } from '../../strings';
@@ -14,8 +9,15 @@ import dayjs from "dayjs";
 import TablePager from '../common/tablePagination/TablePager';
 import { ReportListType } from '../common/filters/logic/reportFilterConstsants'
 import { DateColumnName } from './logic/nationalSocietyReportsConstants'
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import { Typography } from "@material-ui/core";
+import {
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TableSortLabel,
+} from "@material-ui/core";
 
 export const NationalSocietyReportsTable = ({ isListFetching, list, page, onChangePage, rowsPerPage, totalRows, reportsType, filters, sorting, onSort }) => {
 

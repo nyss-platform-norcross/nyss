@@ -1,17 +1,19 @@
 import styles from "./DataCollectorsFilters.module.scss";
 import React, { useState, useEffect, useReducer } from 'react';
-import Grid from '@material-ui/core/Grid';
-import TextField from "@material-ui/core/TextField";
-import MenuItem from "@material-ui/core/MenuItem";
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import InputLabel from "@material-ui/core/InputLabel";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
 import { AreaFilter } from "../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../strings";
 import { sexValues, trainingStatus } from './logic/dataCollectorsConstants';
+import {
+  InputLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Grid,
+  TextField,
+  MenuItem,
+  Card,
+  CardContent,
+} from "@material-ui/core";
 import * as roles from '../../authentication/roles';
 import useDebounce from "../../utils/debounce";
 import { shallowEqual } from "react-redux";

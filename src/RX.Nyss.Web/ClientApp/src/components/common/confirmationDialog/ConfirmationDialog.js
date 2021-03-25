@@ -1,17 +1,19 @@
 import styles from "./ConfirmationDialog.module.scss";
 
 import React from 'react';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 import { strings, stringKeys } from "../../../strings";
 import FormActions from "../../forms/formActions/FormActions";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
-import Button from "@material-ui/core/Button";
-import DialogContent from "@material-ui/core/DialogContent";
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from "@material-ui/core";
-import Typography from '@material-ui/core/Typography';
 import { withAccessRestriction } from "../hasAccess/HasAccess";
+import {
+  useTheme,
+  DialogTitle,
+  Dialog,
+  Button,
+  DialogContent,
+  useMediaQuery,
+  Typography,
+} from "@material-ui/core";
 
 export const ConfirmationDialogComponent = ({ children, isOpened, isFetching, close, submit, titleText, contentText }) => {
   const theme = useTheme();

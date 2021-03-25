@@ -3,7 +3,7 @@ import styles from './TopMenu.module.scss';
 import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Typography from '@material-ui/core/Typography';
+import { Typography } from '@material-ui/core';
 import { Link } from 'react-router-dom'
 
 const TopMenuComponent = ({ topMenu }) => (

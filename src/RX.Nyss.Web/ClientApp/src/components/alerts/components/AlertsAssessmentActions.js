@@ -4,7 +4,7 @@ import React, { Fragment, useState } from 'react';
 import { stringKeys, strings } from "../../../strings";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import FormActions from "../../forms/formActions/FormActions";
-import Button from "@material-ui/core/Button";
+import { Button } from "@material-ui/core";
 import { AlertsEscalationDialog } from './AlertsEscalationDialog';
 import { assessmentStatus } from '../logic/alertsConstants';
 import { AlertsCloseDialog } from "./AlertsCloseDialog";

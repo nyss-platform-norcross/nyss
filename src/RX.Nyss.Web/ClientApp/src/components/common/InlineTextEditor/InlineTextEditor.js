@@ -2,9 +2,7 @@ import styles from "./InlineTextEditor.module.scss"
 
 import React, { useState, useRef } from 'react';
 import { strings, stringKeys } from '../../../strings';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import { Button, TextField, InputAdornment } from '@material-ui/core';
 
 export const InlineTextEditor = ({ initialValue, onSave, onClose, placeholder, autoFocus }) => {
   const [value, setValue] = useState(initialValue || "");

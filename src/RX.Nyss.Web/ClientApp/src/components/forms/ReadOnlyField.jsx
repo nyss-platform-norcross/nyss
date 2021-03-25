@@ -2,7 +2,7 @@ import styles from './ReadOnlyField.module.scss';
 
 import React from "react";
 import PropTypes from "prop-types";
-import TextField from '@material-ui/core/TextField';
+import { TextField } from '@material-ui/core';
 
 const ReadOnlyField = ({ name, label, value }) => {
   return (

@@ -1,7 +1,5 @@
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
+import { Card, CardContent, CardHeader } from '@material-ui/core';
 import Highcharts from 'highcharts'
 import HighchartsReact from 'highcharts-react-official'
 import { strings, stringKeys } from '../../../strings';

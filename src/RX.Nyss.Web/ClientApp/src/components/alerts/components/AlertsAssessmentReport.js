@@ -1,18 +1,22 @@
 import styles from "./AlertsAssessmentReport.module.scss";
 
 import React, { Fragment } from 'react';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionActions from '@material-ui/core/AccordionActions';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Divider from '@material-ui/core/Divider';
 import { stringKeys, strings } from "../../../strings";
 import dayjs from "dayjs";
-import Icon from "@material-ui/core/Icon";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import { assessmentStatus } from "../logic/alertsConstants";
-import { Button, CircularProgress, Grid } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  AccordionActions,
+  Divider,
+  Icon,
+} from "@material-ui/core";
 
 const ReportFormLabel = ({ label, value }) => (
   <div className={styles.container}>

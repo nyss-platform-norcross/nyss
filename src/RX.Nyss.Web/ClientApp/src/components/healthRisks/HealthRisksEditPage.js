@@ -7,14 +7,11 @@ import Layout from '../layout/Layout';
 import Form from '../forms/form/Form';
 import FormActions from '../forms/formActions/FormActions';
 import SubmitButton from '../forms/submitButton/SubmitButton';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
-import Button from "@material-ui/core/Button";
+import { Button, Typography, Grid, MenuItem } from "@material-ui/core";
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
-import Grid from '@material-ui/core/Grid';
 import SelectField from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
 import { healthRiskTypes } from './logic/healthRisksConstants';
 import { getSaveFormModel } from './logic/healthRisksService';
 import { strings, stringKeys, stringsFormat } from '../../strings';
@@ -181,7 +178,7 @@ const HealthRisksEditPageComponent = (props) => {
               </Grid>
             </Fragment>
           )}
-          
+
           {selectedHealthRiskType !== "Activity" && (
             <Fragment>
               <Grid item xs={12}>

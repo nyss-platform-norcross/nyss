@@ -1,6 +1,6 @@
 import styles from "./TableRowAction.module.scss";
 import React from "react";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import { CircularProgress } from "@material-ui/core";
 import ConfirmationAction from "../confirmationAction/ConfirmationAction";
 import { withAccessRestriction } from "../hasAccess/HasAccess";
 

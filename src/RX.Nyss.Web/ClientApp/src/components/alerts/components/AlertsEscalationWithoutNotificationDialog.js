@@ -1,14 +1,17 @@
 import React from 'react';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 import { strings, stringKeys } from "../../../strings";
 import FormActions from "../../forms/formActions/FormActions";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
-import Button from "@material-ui/core/Button";
-import DialogContent from "@material-ui/core/DialogContent";
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme, Grid } from "@material-ui/core";
-import Typography from '@material-ui/core/Typography';
+import {
+  useTheme,
+  Grid,
+  DialogTitle,
+  Dialog,
+  Button,
+  DialogContent,
+  useMediaQuery,
+  Typography,
+} from "@material-ui/core";
 import WarningIcon from '@material-ui/icons/Warning';
 
 export const AlertsEscalationWithoutNotificationDialog = ({ isOpened, close, alertId, isEscalating, escalateAlert }) => {

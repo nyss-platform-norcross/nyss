@@ -4,8 +4,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { push } from "connected-react-router";
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
+import { Tabs, Tab } from '@material-ui/core';
 
 const TabMenuComponent = ({ tabMenu, breadcrumb, push, currentUrl, title }) => {
   const onItemClick = (item) => {

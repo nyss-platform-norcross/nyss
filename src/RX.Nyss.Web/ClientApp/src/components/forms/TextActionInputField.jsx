@@ -1,9 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { createFieldComponent } from "./FieldBase";
-import TextField from '@material-ui/core/TextField';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import { TextField, IconButton, InputAdornment } from '@material-ui/core';
 
 const TextActionInput = ({ error, name, label, value, controlProps, customProps, icon, onButtonClick }) => {
   const button = (

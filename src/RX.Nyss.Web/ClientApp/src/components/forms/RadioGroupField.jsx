@@ -1,10 +1,8 @@
 import styles from './RadioGroupField.module.scss';
 import React from "react";
 import PropTypes from "prop-types";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import RadioGroup from "@material-ui/core/RadioGroup";
+import { RadioGroup, FormHelperText, InputLabel } from "@material-ui/core";
 import { createFieldComponent } from "./FieldBase";
-import InputLabel from '@material-ui/core/InputLabel';
 
 const RadioGroupInput = ({ error, name, label, value, horizontal, children, controlProps, customProps }) => {
   return (

@@ -1,11 +1,9 @@
 import React, { PureComponent } from 'react';
 import PropTypes from "prop-types";
-import Button from '@material-ui/core/Button';
 import { withLayout } from '../../utils/layout';
 import { connect } from "react-redux";
 import { AnonymousLayout } from '../layout/AnonymousLayout';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import { Paper, Button, Typography } from '@material-ui/core';
 import styles from './VerifyEmailPage.module.scss';
 import { strings, stringKeys } from '../../strings';
 import { createForm, validators } from '../../utils/forms';

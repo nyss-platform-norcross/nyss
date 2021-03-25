@@ -8,12 +8,10 @@ import { Loading } from '../common/loading/Loading';
 import FormActions from '../forms/formActions/FormActions';
 import Layout from '../layout/Layout';
 import * as projectsActions from './logic/projectsActions';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import { ProjectsOverviewHealthRiskItem } from "./ProjectsOverviewHealthRiskItem";
 import { accessMap } from '../../authentication/accessMap';
 import { TableActionsButton } from "../common/tableActions/TableActionsButton";
-import Chip from "@material-ui/core/Chip";
+import { Chip, Grid, Typography } from "@material-ui/core";
 import { Coordinator, Administrator } from "../../authentication/roles";
 
 const ProjectsOverviewPageComponent = (props) => {

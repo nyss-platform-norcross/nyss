@@ -2,11 +2,7 @@ import styles from './MultiSelect.module.scss';
 
 import React from "react";
 import Select from 'react-select';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import Chip from '@material-ui/core/Chip';
-import MenuItem from '@material-ui/core/MenuItem';
+import { TextField, Typography, Paper, Chip, MenuItem } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
 
 const components = {

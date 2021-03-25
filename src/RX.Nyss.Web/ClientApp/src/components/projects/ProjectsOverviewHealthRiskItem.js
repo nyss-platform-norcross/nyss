@@ -1,9 +1,7 @@
 import styles from "./ProjectsOverviewHealthRiskItem.module.scss";
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
 import React, { Fragment } from 'react';
 import { stringKeys, strings } from '../../strings';
-import { Card, CardContent } from "@material-ui/core";
+import { Card, CardContent, Grid, Typography } from "@material-ui/core";
 
 export const ProjectsOverviewHealthRiskItem = ({ projectHealthRisk }) => {
 

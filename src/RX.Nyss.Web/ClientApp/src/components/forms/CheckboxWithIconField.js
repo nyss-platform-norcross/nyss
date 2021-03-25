@@ -2,8 +2,7 @@ import styles from './CheckboxWithIconField.module.scss';
 
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
+import { Checkbox, FormControlLabel } from "@material-ui/core";
 import { createFieldComponent } from './FieldBase';
 
 const CheckboxWithIcon = ({ name, label, value, labelicon, controlProps, customProps }) => {

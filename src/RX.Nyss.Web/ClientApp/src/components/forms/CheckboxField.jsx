@@ -1,8 +1,6 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import FormHelperText from "@material-ui/core/FormHelperText";
-import Checkbox from "@material-ui/core/Checkbox";
+import { Checkbox, FormControlLabel, FormHelperText } from "@material-ui/core";
 import { createFieldComponent } from "./FieldBase";
 
 const CheckboxInput = ({ error, name, label, value, controlProps, customProps }) => {

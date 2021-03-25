@@ -1,13 +1,7 @@
 import styles from "./ProjectsDashboardReportSexAgeTable.module.scss";
 
 import React from 'react';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import { Card, CardContent, CardHeader, Table, TableBody, TableCell, TableRow } from '@material-ui/core';
 import { strings, stringKeys } from '../../../strings';
 
 export const ProjectsDashboardReportSexAgeTable = ({ data }) => {

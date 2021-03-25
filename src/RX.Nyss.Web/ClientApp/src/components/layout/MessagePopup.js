@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Snackbar from "@material-ui/core/Snackbar";
-import Icon from "@material-ui/core/Icon";
+import { Icon, Snackbar } from "@material-ui/core";
 import * as appActions from '../app/logic/appActions';
 import { areStringKeysDisplayed, extractString } from '../../strings';
 

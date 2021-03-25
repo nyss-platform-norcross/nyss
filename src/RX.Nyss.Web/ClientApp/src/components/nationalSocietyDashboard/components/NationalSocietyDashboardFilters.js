@@ -1,18 +1,24 @@
 import styles from "./NationalSocietyDashboardFilters.module.scss";
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import TextField from "@material-ui/core/TextField";
-import MenuItem from "@material-ui/core/MenuItem";
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
 import { DatePicker } from "../../forms/DatePicker";
 import { AreaFilter } from "../../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../../strings";
-import { useMediaQuery, LinearProgress, Chip, IconButton } from "@material-ui/core";
-import { DateRange, ExpandMore } from "@material-ui/icons";
+import {
+  useMediaQuery,
+  LinearProgress,
+  Chip,
+  IconButton,
+  Grid,
+  TextField,
+  MenuItem,
+  Card,
+  CardContent,
+  CardHeader,
+} from "@material-ui/core";
+import DateRange from "@material-ui/icons/DateRange";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 import { ConditionalCollapse } from "../../common/conditionalCollapse/ConditionalCollapse";
 import { convertToLocalDate, convertToUtc } from "../../../utils/date";
-import CardHeader from "@material-ui/core/CardHeader";
 
 export const NationalSocietyDashboardFilters = ({ filters, nationalSocietyId, healthRisks, organizations, onChange, isFetching }) => {
   const [value, setValue] = useState(filters);

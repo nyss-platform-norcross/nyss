@@ -6,12 +6,11 @@ import * as alertsActions from './logic/alertsActions';
 import Layout from '../layout/Layout';
 import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
-import Grid from '@material-ui/core/Grid';
+import { Grid, Divider } from '@material-ui/core';
 import { stringKeys, strings } from '../../strings';
 import DisplayField from "../forms/DisplayField";
 import { AlertsAssessmentReport } from "./components/AlertsAssessmentReport";
 import { assessmentStatus } from "./logic/alertsConstants";
-import Divider from "@material-ui/core/Divider";
 import { AlertsAssessmentActions } from "./components/AlertsAssessmentActions";
 import { useMemo } from "react";
 

@@ -1,8 +1,7 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { createFieldComponent } from "./FieldBase";
-import TextField from '@material-ui/core/TextField';
-import { Typography, Grid } from "@material-ui/core";
+import { Typography, Grid, TextField } from "@material-ui/core";
 import { strings, stringKeys } from "../../strings";
 
 const TextInputWithCharacterCount = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type }) => {

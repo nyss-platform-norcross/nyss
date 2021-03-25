@@ -1,16 +1,11 @@
 import React, { useState, Fragment } from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import { createForm } from '../../../utils/forms';
 import TextInputField from '../../forms/TextInputField';
 import { post, get } from '../../../utils/http';
 import { useMount } from '../../../utils/lifecycle';
 import { Loading } from '../loading/Loading';
 import { updateStrings } from '../../../strings';
-import Grid from '@material-ui/core/Grid';
+import { Grid, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@material-ui/core';
 import { useDispatch } from 'react-redux';
 import { stringsUpdated } from '../../app/logic/appActions';
 import CheckboxField from '../../forms/CheckboxField';
@@ -117,9 +112,9 @@ export const StringsEditorDialog = ({ stringKey, close }) => {
         </Grid>
         <br />
       </DialogContent>
-      {form && 
+      {form &&
       <DialogActions>
-        <CheckboxField 
+        <CheckboxField
           name="needsImprovement"
           label="Needs improvement"
           field={form.fields.needsImprovement}

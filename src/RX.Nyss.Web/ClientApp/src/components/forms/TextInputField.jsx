@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { createFieldComponent } from "./FieldBase";
-import TextField from '@material-ui/core/TextField';
+import { TextField } from '@material-ui/core';
 
 const TextInput = ({ error, name, label, value, controlProps, multiline, rows, autoWidth, autoFocus, disabled, type, inputMode }) => {
   return (

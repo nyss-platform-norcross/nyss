@@ -1,15 +1,19 @@
 import styles from "./ReportFilters.module.scss";
 
 import React, { useState } from 'react';
-import Grid from '@material-ui/core/Grid';
-import TextField from "@material-ui/core/TextField";
-import MenuItem from "@material-ui/core/MenuItem";
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import { FormControlLabel, Radio, RadioGroup } from '@material-ui/core';
+import {
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Grid,
+  TextField,
+  MenuItem,
+  Card,
+  CardContent,
+  FormControl,
+  InputLabel,
+  Select,
+} from '@material-ui/core';
 import { AreaFilter } from "./AreaFilter";
 import { strings, stringKeys } from "../../../strings";
 import { ReportListType } from './logic/reportFilterConstsants'

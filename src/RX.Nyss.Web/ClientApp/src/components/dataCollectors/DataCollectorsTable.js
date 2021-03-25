@@ -2,11 +2,6 @@ import styles from './DataCollectorsTable.module.scss';
 import tableStyles from '../common/table/Table.module.scss';
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from "prop-types";
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import ClearIcon from '@material-ui/icons/Clear';
 import EditIcon from '@material-ui/icons/Edit';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -17,7 +12,7 @@ import { TableContainer } from '../common/table/TableContainer';
 import { TableRowActions } from '../common/tableRowAction/TableRowActions';
 import { accessMap } from '../../authentication/accessMap';
 import { trainingStatusInTraining, trainingStatusTrained } from './logic/dataCollectorsConstants';
-import { Checkbox } from '@material-ui/core';
+import { Checkbox, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import TablePager from '../common/tablePagination/TablePager';
 
 export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemoving, goToEdition, remove, list, page, rowsPerPage, totalRows, projectId,

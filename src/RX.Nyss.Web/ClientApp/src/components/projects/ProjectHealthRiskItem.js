@@ -1,11 +1,9 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { validators } from '../../utils/forms';
-import Typography from '@material-ui/core/Typography';
 import TextInputField from '../forms/TextInputField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
-import Grid from '@material-ui/core/Grid';
-import { Card, CardContent } from '@material-ui/core';
+import { Card, CardContent, Typography, Grid } from '@material-ui/core';
 
 export const ProjectsHealthRiskItem = ({ form, healthRisk, projectHealthRisk }) => {
   const [ready, setReady] = useState(false);

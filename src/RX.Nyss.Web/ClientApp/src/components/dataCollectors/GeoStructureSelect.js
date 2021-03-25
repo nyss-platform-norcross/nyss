@@ -1,8 +1,7 @@
 import React, { useState, Fragment } from 'react';
 import SelectInput from '../forms/SelectField';
-import MenuItem from "@material-ui/core/MenuItem";
 import { strings, stringKeys } from '../../strings';
-import Grid from '@material-ui/core/Grid';
+import { Grid, MenuItem } from '@material-ui/core';
 import * as http from '../../utils/http';
 
 export const GeoStructureSelect = ({ regions, initialDistricts, initialVillages, initialZones, regionIdField, districtIdField, villageIdField, zoneIdField }) => {
