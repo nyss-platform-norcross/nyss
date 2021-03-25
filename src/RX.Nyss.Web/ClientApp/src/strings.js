@@ -660,6 +660,7 @@ export const stringKeys = {
       supervisorsAll: "dataCollectors.filters.supervisorsAll",
       sexAll: "dataCollectors.filters.sexAll",
       trainingStatus: "dataCollectors.filters.trainingStatus",
+      deployedMode: "dataCollectors.filters.deployedMode",
       resetAll: "dataCollectors.filters.resetAll",
       name: "dataCollectors.filters.name"
     },
@@ -680,6 +681,11 @@ export const stringKeys = {
         "All": "dataCollectors.trainingStatus.all",
         "InTraining": "dataCollectors.trainingStatus.inTraining",
         "Trained": "dataCollectors.trainingStatus.trained"
+      },
+      deployedMode: {
+        "All": "dataCollectors.deployedMode.all",
+        "Deployed": "dataCollectors.deployedMode.deployed",
+        "NotDeployed": "dataCollectors.deployedMode.notDeployed"
       }
     },
     mapOverview: {
