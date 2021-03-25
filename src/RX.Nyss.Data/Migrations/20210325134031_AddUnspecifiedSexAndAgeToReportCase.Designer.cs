@@ -12,7 +12,7 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    [Migration("20210323143400_AddUnspecifiedSexAndAgeToReportCase")]
+    [Migration("20210325134031_AddUnspecifiedSexAndAgeToReportCase")]
     partial class AddUnspecifiedSexAndAgeToReportCase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -3163,36 +3163,6 @@ namespace RX.Nyss.Data.Migrations
                                 .HasColumnType("int");
 
                             b1.Property<int?>("ReferredCount")
-                                .HasColumnType("int");
-
-                            b1.HasKey("ReportId");
-
-                            b1.ToTable("Reports");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ReportId");
-                        });
-
-                    b.OwnsOne("RX.Nyss.Data.Models.ReportCase", "KeptCase", b1 =>
-                        {
-                            b1.Property<int>("ReportId")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                            b1.Property<int?>("CountFemalesAtLeastFive")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CountFemalesBelowFive")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CountMalesAtLeastFive")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CountMalesBelowFive")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CountUnspecifiedSexAndAge")
                                 .HasColumnType("int");
 
                             b1.HasKey("ReportId");

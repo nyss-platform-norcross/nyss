@@ -3171,36 +3171,6 @@ namespace RX.Nyss.Data.Migrations
                                 .HasForeignKey("ReportId");
                         });
 
-                    b.OwnsOne("RX.Nyss.Data.Models.ReportCase", "KeptCase", b1 =>
-                        {
-                            b1.Property<int>("ReportId")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                            b1.Property<int?>("CountFemalesAtLeastFive")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CountFemalesBelowFive")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CountMalesAtLeastFive")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CountMalesBelowFive")
-                                .HasColumnType("int");
-
-                            b1.Property<int?>("CountUnspecifiedSexAndAge")
-                                .HasColumnType("int");
-
-                            b1.HasKey("ReportId");
-
-                            b1.ToTable("Reports");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ReportId");
-                        });
-
                     b.OwnsOne("RX.Nyss.Data.Models.ReportCase", "ReportedCase", b1 =>
                         {
                             b1.Property<int>("ReportId")

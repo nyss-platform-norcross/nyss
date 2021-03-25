@@ -68,15 +68,6 @@ namespace RX.Nyss.Data.Models.Maps
             builder.OwnsOne(x => x.ReportedCase)
                 .Property(x => x.CountUnspecifiedSexAndAge);
 
-            builder.OwnsOne(x => x.KeptCase)
-                .Property(x => x.CountFemalesBelowFive);
-            builder.OwnsOne(x => x.KeptCase)
-                .Property(x => x.CountFemalesAtLeastFive);
-            builder.OwnsOne(x => x.KeptCase)
-                .Property(x => x.CountMalesBelowFive);
-            builder.OwnsOne(x => x.KeptCase)
-                .Property(x => x.CountMalesAtLeastFive);
-
             builder.OwnsOne(x => x.DataCollectionPointCase)
                 .Property(x => x.ReferredCount);
             builder.OwnsOne(x => x.DataCollectionPointCase)

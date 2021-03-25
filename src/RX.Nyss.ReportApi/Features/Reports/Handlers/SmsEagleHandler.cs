@@ -133,13 +133,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                             PhoneNumber = sender,
                             Location = reportValidationResult.ReportData.DataCollector.Location,
                             ReportedCase = reportValidationResult.ReportData.ParsedReport.ReportedCase,
-                            KeptCase = new ReportCase
-                            {
-                                CountMalesBelowFive = null,
-                                CountMalesAtLeastFive = null,
-                                CountFemalesBelowFive = null,
-                                CountFemalesAtLeastFive = null
-                            },
                             DataCollectionPointCase = reportValidationResult.ReportData.ParsedReport.DataCollectionPointCase,
                             ProjectHealthRisk = projectHealthRisk,
                             ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
