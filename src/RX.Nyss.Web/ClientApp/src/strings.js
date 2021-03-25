@@ -904,10 +904,12 @@ export const stringKeys = {
       sex: {
         "Female": "alerts.sex.female",
         "Male": "alerts.sex.male",
+        "Unspecified": "alerts.sexAndAge.unspecified"
       },
       age: {
         "BelowFive": "alerts.age.belowFive",
         "AtLeastFive": "alerts.age.atLeastFive",
+        "Unspecified": "alerts.sexAndAge.unspecified"
       },
       logType: {
         "TriggeredAlert": "alerts.logType.TriggeredAlert",
