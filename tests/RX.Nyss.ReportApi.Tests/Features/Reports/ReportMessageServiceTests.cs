@@ -41,6 +41,12 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
                     Id = 3,
                     HealthRiskCode = 25,
                     HealthRiskType = HealthRiskType.NonHuman
+                },
+                new HealthRisk
+                {
+                    Id = 4,
+                    HealthRiskCode = 15,
+                    HealthRiskType = HealthRiskType.UnusualEvent
                 }
             };
             var healthRisksDbSet = healthRisks.AsQueryable().BuildMockDbSet();
@@ -192,6 +198,13 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
 
             // Assert
             parsedReport.ReportType.ShouldBe(reportType);
+        }
+
+        [Theory]
+        [InlineData("15#1#1")]
+        [InlineData("25#1#1")]
+        public void ParseReport_WhenParsingEventOrNonHumanPattern_ShouldThrowException(string reportMessage){
+            Should.Throw<ReportValidationException>(async () => await _reportMessageService.ParseReport(reportMessage));
         }
     }
 }

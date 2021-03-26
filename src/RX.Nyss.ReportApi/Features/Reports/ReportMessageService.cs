@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -89,6 +90,13 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
             if (healthRisk.HealthRiskType != HealthRiskType.Human)
             {
+
+                if (!String.IsNullOrEmpty(reportMatch.Groups["sex"].Value) || 
+                    !String.IsNullOrEmpty(reportMatch.Groups["ageGroup"].Value))
+                {
+                    throw new ReportValidationException($"Sex and/or age can not be reported for event or non-human health risk: {healthRiskCode}.", ReportErrorType.FormatError);
+                }
+
                 return ParseEventReport(healthRiskCode);
             }
 
