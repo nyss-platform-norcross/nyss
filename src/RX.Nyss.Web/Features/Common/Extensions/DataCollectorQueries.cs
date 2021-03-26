@@ -62,7 +62,7 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 dataCollectors
             };
 
-        public static IQueryable<DataCollector> FilterByIsDeployed (this IQueryable<DataCollector> dataCollectors) =>
+        public static IQueryable<DataCollector> FilterOnlyDeployed (this IQueryable<DataCollector> dataCollectors) =>
             dataCollectors.Where(dc => dc.Deployed);
 
         public static IQueryable<DataCollector> FilterByDeployedMode (this IQueryable<DataCollector> dataCollectors, DeployedModeDto? deployedMode) =>
