@@ -258,6 +258,7 @@ export const initialState = {
       area: null,
       sex: null,
       trainingStatus: 'All',
+      deployedMode: 'Deployed',
       name: null,
       pageNumber: 1
     }

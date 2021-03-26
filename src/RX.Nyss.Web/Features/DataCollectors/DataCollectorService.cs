@@ -220,6 +220,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
                 .FilterBySex(dataCollectorsFilters.Sex)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
+                .FilterByDeployedMode(dataCollectorsFilters.DeployedMode)
                 .FilterByName(dataCollectorsFilters.Name);
 
             var rowsPerPage = _config.PaginationRowsPerPage;
@@ -261,6 +262,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
                 .FilterBySex(dataCollectorsFilters.Sex)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
+                .FilterByDeployedMode(dataCollectorsFilters.DeployedMode)
                 .FilterByName(dataCollectorsFilters.Name);
 
             var dataCollectors = await dataCollectorsQuery
@@ -276,7 +278,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Region = dc.Village.District.Region.Name,
                     Sex = dc.Sex,
                     IsInTrainingMode = dc.IsInTrainingMode,
-                    Supervisor = dc.Supervisor
+                    Supervisor = dc.Supervisor,
+                    IsDeployed = dc.Deployed
                 })
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
@@ -448,7 +451,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
         {
             var endDate = to.Date.AddDays(1);
             var dataCollectors = (await GetDataCollectorsForCurrentUserInProject(projectId))
-                .Where(dc => dc.CreatedAt < endDate && dc.Name != Anonymization.Text && dc.DeletedAt == null);
+                .Where(dc => dc.CreatedAt < endDate && dc.Name != Anonymization.Text && dc.DeletedAt == null && dc.Deployed);
 
             var dataCollectorsWithReports = dataCollectors
                 .Select(r => new
@@ -500,7 +503,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
 
             var result = await dataCollectors
-                .Where(dc => dc.Location.X == lng && dc.Location.Y == lat && dc.DeletedAt == null)
+                .Where(dc => dc.Location.X == lng && dc.Location.Y == lat && dc.DeletedAt == null && dc.Deployed)
                 .Select(dc => new
                 {
                     DataCollector = dc,

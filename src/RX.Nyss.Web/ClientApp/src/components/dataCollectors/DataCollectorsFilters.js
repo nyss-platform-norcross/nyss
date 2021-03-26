@@ -2,7 +2,7 @@ import styles from "./DataCollectorsFilters.module.scss";
 import React, { useState, useEffect, useReducer } from 'react';
 import { AreaFilter } from "../common/filters/AreaFilter";
 import { strings, stringKeys } from "../../strings";
-import { sexValues, trainingStatus } from './logic/dataCollectorsConstants';
+import { sexValues, trainingStatus, deployedMode } from './logic/dataCollectorsConstants';
 import {
   InputLabel,
   RadioGroup,
@@ -60,6 +60,9 @@ export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange
 
   const handleTrainingStatusChange = event =>
     updateValue({ trainingStatus: event.target.value });
+
+  const handleDeployedModeChange = event =>
+    updateValue({ deployedMode: event.target.value });
 
   const handleNameChange = (event) => setName(event.target.value);
 
@@ -141,6 +144,19 @@ export const DataCollectorsFilters = ({ nationalSocietyId, supervisors, onChange
               ))}
             </RadioGroup>
           </Grid>
+
+          <Grid item>
+            <InputLabel>{strings(stringKeys.dataCollector.filters.deployedMode)}</InputLabel>
+            <RadioGroup
+              value={filter.value.deployedMode}
+              onChange={handleDeployedModeChange}
+              className={styles.filterRadioGroup}>
+              {deployedMode.map(status => (
+                <FormControlLabel key={`deployedMode_filter_${status}`} control={<Radio />} label={strings(stringKeys.dataCollector.constants.deployedMode[status])} value={status} />
+              ))}
+            </RadioGroup>
+          </Grid>
+
         </Grid>
       </CardContent>
     </Card>

@@ -37,3 +37,8 @@ export const trainingStatusAll = "All";
 export const trainingStatusInTraining = "InTraining";
 export const trainingStatusTrained = "Trained";
 export const trainingStatus = [ trainingStatusAll, trainingStatusTrained, trainingStatusInTraining];
+
+export const deployedModeAll = "All";
+export const deployedModeDeployed = "Deployed";
+export const deployedModeNotDeployed = "NotDeployed";
+export const deployedMode = [ deployedModeAll, deployedModeDeployed, deployedModeNotDeployed];
