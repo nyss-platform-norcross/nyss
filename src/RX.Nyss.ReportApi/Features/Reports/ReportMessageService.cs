@@ -77,7 +77,12 @@ namespace RX.Nyss.ReportApi.Features.Reports
         {
             var reportMatch = ReportRegex.Match(reportMessage);
             var healthRiskCodeMatch = reportMatch.Groups["healthRiskCode"].Value;
+            var sexMatch = reportMatch.Groups["sex"].Value;
+            var ageGroupMatch = reportMatch.Groups["ageGroup"].Value;
+
             var healthRiskCode = int.Parse(healthRiskCodeMatch);
+            var sex = sexMatch.ParseToNullableInt();
+            var ageGroup = ageGroupMatch.ParseToNullableInt();
 
             var healthRisk = await _nyssContext.HealthRisks
                 .Where(hr => hr.HealthRiskCode == healthRiskCode)
@@ -90,29 +95,14 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
             if (healthRisk.HealthRiskType != HealthRiskType.Human)
             {
-
-                if (!String.IsNullOrEmpty(reportMatch.Groups["sex"].Value) || 
-                    !String.IsNullOrEmpty(reportMatch.Groups["ageGroup"].Value))
-                {
-                    throw new ReportValidationException($"Sex and/or age can not be reported for event or non-human health risk: {healthRiskCode}.", ReportErrorType.FormatError);
-                }
-
-                return ParseEventReport(healthRiskCode);
+                return ParseEventReport(healthRiskCode, sex, ageGroup);
             }
 
-            return ParseSingleReport(reportMatch);
+            return ParseSingleReport(healthRiskCode, sex, ageGroup);
         }
 
-        internal static ParsedReport ParseSingleReport(Match singleReportMatch)
+        internal static ParsedReport ParseSingleReport(int healthRiskCode, int? sex, int? ageGroup)
         {
-            var healthRiskCodeMatch = singleReportMatch.Groups["healthRiskCode"].Value;
-            var sexMatch = singleReportMatch.Groups["sex"].Value;
-            var ageGroupMatch = singleReportMatch.Groups["ageGroup"].Value;
-
-            var healthRiskCode = int.Parse(healthRiskCodeMatch);
-            var sex = sexMatch.ParseToNullableInt();
-            var ageGroup = ageGroupMatch.ParseToNullableInt();
-
             var parsedReport = new ParsedReport
             {
                 HealthRiskCode = healthRiskCode,
@@ -171,11 +161,16 @@ namespace RX.Nyss.ReportApi.Features.Reports
             return parsedReport;
         }
 
-        internal static ParsedReport ParseEventReport(int eventCode)
+        internal static ParsedReport ParseEventReport(int healthRiskCode, int? sex, int? ageGroup)
         {
+            if (sex.HasValue || ageGroup.HasValue)
+            {
+                throw new ReportValidationException($"Sex and/or age can not be reported for event or non-human health risk: {healthRiskCode}.", ReportErrorType.FormatError);
+            }
+
             var parsedReport = new ParsedReport
             {
-                HealthRiskCode = eventCode,
+                HealthRiskCode = healthRiskCode,
                 ReportType = ReportType.Event
             };
 

@@ -203,7 +203,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         [Theory]
         [InlineData("15#1#1")]
         [InlineData("25#1#1")]
-        public void ParseReport_WhenParsingEventOrNonHumanPattern_ShouldThrowException(string reportMessage){
+        public void ParseReport_WhenParsingEventOrNonHumanReportPatternWithSexAndAge_ShouldThrowException(string reportMessage){
             Should.Throw<ReportValidationException>(async () => await _reportMessageService.ParseReport(reportMessage));
         }
     }
