@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using MockQueryable.NSubstitute;
 using NSubstitute;
 using RX.Nyss.Data;
@@ -28,6 +29,24 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
                     Id = 1,
                     HealthRiskCode = 99,
                     HealthRiskType = HealthRiskType.Activity
+                },
+                new HealthRisk
+                {
+                    Id = 2,
+                    HealthRiskCode = 10,
+                    HealthRiskType = HealthRiskType.Human
+                },
+                new HealthRisk
+                {
+                    Id = 3,
+                    HealthRiskCode = 25,
+                    HealthRiskType = HealthRiskType.NonHuman
+                },
+                new HealthRisk
+                {
+                    Id = 4,
+                    HealthRiskCode = 15,
+                    HealthRiskType = HealthRiskType.UnusualEvent
                 }
             };
             var healthRisksDbSet = healthRisks.AsQueryable().BuildMockDbSet();
@@ -38,23 +57,23 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void ParseReport_WhenEmptyReportSent_ShouldThrowException(string reportMessage)
+        public async Task ParseReport_WhenEmptyReportSent_ShouldThrowException(string reportMessage)
         {
             // Assert
-            Should.Throw<ReportValidationException>(() => _reportMessageService.ParseReport(reportMessage));
+            Should.Throw<ReportValidationException>(async () => await _reportMessageService.ParseReport(reportMessage));
         }
 
         [Fact]
-        public void ParseReport_WhenActivityCodeSent_ShouldParseCorrectly()
+        public async Task ParseReport_WhenActivityCodeSent_ShouldParseCorrectly()
         {
             // Arrange
             var reportMessage = "99";
 
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = await _reportMessageService.ParseReport(reportMessage);
 
             // Assert
-            parsedReport.ReportType.ShouldBe(ReportType.Statement);
+            parsedReport.ReportType.ShouldBe(ReportType.Event);
             parsedReport.HealthRiskCode.ShouldBe(99);
             parsedReport.ReportedCase.CountMalesBelowFive.ShouldBeNull();
             parsedReport.ReportedCase.CountMalesAtLeastFive.ShouldBeNull();
@@ -66,16 +85,16 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         }
 
         [Fact]
-        public void ParseReport_WhenNonHumanCodeSent_ShouldParseCorrectly()
+        public async Task ParseReport_WhenNonHumanCodeSent_ShouldParseCorrectly()
         {
             // Arrange
             var reportMessage = "25";
 
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage);
+            var parsedReport = await _reportMessageService.ParseReport(reportMessage);
 
             // Assert
-            parsedReport.ReportType.ShouldBe(ReportType.Statement);
+            parsedReport.ReportType.ShouldBe(ReportType.Event);
             parsedReport.HealthRiskCode.ShouldBe(25);
             parsedReport.ReportedCase.CountMalesBelowFive.ShouldBeNull();
             parsedReport.ReportedCase.CountMalesAtLeastFive.ShouldBeNull();
@@ -87,20 +106,21 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         }
 
         [Theory]
-        [InlineData("10#1#1", 10, 1, 0, 0, 0)]
-        [InlineData("10#1#2", 10, 0, 1, 0, 0)]
-        [InlineData("10#2#1", 10, 0, 0, 1, 0)]
-        [InlineData("10#2#2", 10, 0, 0, 0, 1)]
-        [InlineData("10*1*1", 10, 1, 0, 0, 0)]
-        [InlineData("10*1*2", 10, 0, 1, 0, 0)]
-        [InlineData("10*2*1", 10, 0, 0, 1, 0)]
-        [InlineData("10*2*2", 10, 0, 0, 0, 1)]
-        [InlineData("  10*2*2 ", 10, 0, 0, 0, 1)]
-        public void ParseReport_WhenSingleReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
-            int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive)
+        [InlineData("10#1#1", 10, 1, 0, 0, 0, 0)]
+        [InlineData("10#1#2", 10, 0, 1, 0, 0, 0)]
+        [InlineData("10#2#1", 10, 0, 0, 1, 0, 0)]
+        [InlineData("10#2#2", 10, 0, 0, 0, 1, 0)]
+        [InlineData("10*1*1", 10, 1, 0, 0, 0, 0)]
+        [InlineData("10*1*2", 10, 0, 1, 0, 0, 0)]
+        [InlineData("10*2*1", 10, 0, 0, 1, 0, 0)]
+        [InlineData("10*2*2", 10, 0, 0, 0, 1, 0)]
+        [InlineData("  10*2*2 ", 10, 0, 0, 0, 1, 0)]
+        [InlineData("10", 10, 0, 0, 0, 0, 1)]
+        public async Task ParseReport_WhenSingleReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
+            int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive, int unspecifiedSexAndAge)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage.Trim());
+            var parsedReport = await _reportMessageService.ParseReport(reportMessage.Trim());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.Single);
@@ -109,6 +129,7 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             parsedReport.ReportedCase.CountMalesAtLeastFive.ShouldBe(malesAtLeastFive);
             parsedReport.ReportedCase.CountFemalesBelowFive.ShouldBe(femalesBelowFive);
             parsedReport.ReportedCase.CountFemalesAtLeastFive.ShouldBe(femalesAtLeastFive);
+            parsedReport.ReportedCase.CountUnspecifiedSexAndAge.ShouldBe(unspecifiedSexAndAge);
             parsedReport.DataCollectionPointCase.ReferredCount.ShouldBeNull();
             parsedReport.DataCollectionPointCase.DeathCount.ShouldBeNull();
             parsedReport.DataCollectionPointCase.FromOtherVillagesCount.ShouldBeNull();
@@ -118,11 +139,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         [InlineData("10#20#30#40#50", 10, 20, 30, 40, 50)]
         [InlineData("10*20*30*40*50", 10, 20, 30, 40, 50)]
         [InlineData("  10*20*30*40*50 ", 10, 20, 30, 40, 50)]
-        public void ParseReport_WhenAggregatedReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
+        public async Task ParseReport_WhenAggregatedReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
             int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage.Trim());
+            var parsedReport = await _reportMessageService.ParseReport(reportMessage.Trim());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.Aggregate);
@@ -140,11 +161,11 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
         [InlineData("10#20#30#40#50#60#70#80", 10, 20, 30, 40, 50, 60, 70, 80)]
         [InlineData("10*20*30*40*50*60*70*80", 10, 20, 30, 40, 50, 60, 70, 80)]
         [InlineData("10*20*30*40*50*60*70*80  ", 10, 20, 30, 40, 50, 60, 70, 80)]
-        public void ParseReport_WhenDataCollectionPointReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
+        public async Task ParseReport_WhenDataCollectionPointReportSent_ShouldParseCorrectly(string reportMessage, int healthRiskCode,
             int malesBelowFive, int malesAtLeastFive, int femalesBelowFive, int femalesAtLeastFive, int referredCount, int deathCount, int fromOtherVillagesCount)
         {
             // Act
-            var parsedReport = _reportMessageService.ParseReport(reportMessage.Trim());
+            var parsedReport = await _reportMessageService.ParseReport(reportMessage.Trim());
 
             // Assert
             parsedReport.ReportType.ShouldBe(ReportType.DataCollectionPoint);
@@ -156,6 +177,34 @@ namespace RX.Nyss.ReportApi.Tests.Features.Reports
             parsedReport.DataCollectionPointCase.ReferredCount.ShouldBe(referredCount);
             parsedReport.DataCollectionPointCase.DeathCount.ShouldBe(deathCount);
             parsedReport.DataCollectionPointCase.FromOtherVillagesCount.ShouldBe(fromOtherVillagesCount);
+        }
+
+        [Theory]
+        [InlineData("4")]
+        [InlineData("11#1#2")]
+        [InlineData("11")]
+        public void ParseReport_WhenGlobalHealthRiskDoesNotExist_ShouldThrowException(string reportMessage) =>
+            Should.Throw<ReportValidationException>(async () => await _reportMessageService.ParseReport(reportMessage));
+
+        [Theory]
+        [InlineData("10", ReportType.Single)]
+        [InlineData("10#1#2", ReportType.Single)]
+        [InlineData("25", ReportType.Event)]
+        [InlineData("99", ReportType.Event)]
+        public async Task ParseReport_WhenParsingSingleReportPattern_ShouldReturnCorrectReportType(string reportMessage, ReportType reportType)
+        {
+            // Act
+            var parsedReport = await _reportMessageService.ParseReport(reportMessage);
+
+            // Assert
+            parsedReport.ReportType.ShouldBe(reportType);
+        }
+
+        [Theory]
+        [InlineData("15#1#1")]
+        [InlineData("25#1#1")]
+        public void ParseReport_WhenParsingEventOrNonHumanReportPatternWithSexAndAge_ShouldThrowException(string reportMessage){
+            Should.Throw<ReportValidationException>(async () => await _reportMessageService.ParseReport(reportMessage));
         }
     }
 }

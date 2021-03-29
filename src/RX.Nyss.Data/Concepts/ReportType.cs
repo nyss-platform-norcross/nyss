@@ -4,7 +4,7 @@
     {
         Single,
         Aggregate,
-        Statement,
+        Event,
         DataCollectionPoint
     }
 }

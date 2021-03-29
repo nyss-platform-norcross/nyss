@@ -47,8 +47,6 @@ namespace RX.Nyss.Data.Models
 
         public ReportCase ReportedCase { get; set; }
 
-        public ReportCase KeptCase { get; set; }
-
         public DataCollectionPointCase DataCollectionPointCase { get; set; }
 
         public Guid ReportGroupLabel { get; set; }

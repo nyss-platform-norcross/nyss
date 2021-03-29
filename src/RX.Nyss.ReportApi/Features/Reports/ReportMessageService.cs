@@ -1,4 +1,9 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.ReportApi.Features.Reports.Contracts;
@@ -9,7 +14,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
 {
     public interface IReportMessageService
     {
-        ParsedReport ParseReport(string reportMessage);
+        Task<ParsedReport> ParseReport(string reportMessage);
     }
 
     public class ReportMessageService : IReportMessageService
@@ -19,19 +24,16 @@ namespace RX.Nyss.ReportApi.Features.Reports
         private const int BelowFive = 1;
         private const int AtLeastFive = 2;
 
-        private const string SingleReportPattern = @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<sex>[1-2])\k<separator>(?<ageGroup>[1-2])$";
+        private const string ReportPattern = @"^(?<healthRiskCode>[1-9][0-9]*)((?<separator>[#*])(?<sex>[1-2])\k<separator>(?<ageGroup>[1-2]))?$";
 
         private const string AggregatedReportPattern =
             @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<malesBelowFive>[0-9]+)\k<separator>(?<malesAtLeastFive>[0-9]+)\k<separator>(?<femalesBelowFive>[0-9]+)\k<separator>(?<femalesAtLeastFive>[0-9]+)$";
 
-        private const string EventReportPattern = @"^(?<eventCode>[1-9][0-9]*)$";
-
         private const string DcpReportPattern =
             @"^(?<healthRiskCode>[1-9][0-9]*)(?<separator>[#*])(?<malesBelowFive>[0-9]+)\k<separator>(?<malesAtLeastFive>[0-9]+)\k<separator>(?<femalesBelowFive>[0-9]+)\k<separator>(?<femalesAtLeastFive>[0-9]+)\k<separator>(?<referredToHealthFacility>[0-9]+)\k<separator>(?<diedInOrp>[0-9]+)\k<separator>(?<cameFromOtherVillage>[0-9]+)$";
 
-        private static readonly Regex SingleReportRegex = new Regex(SingleReportPattern, RegexOptions.Compiled);
+        private static readonly Regex ReportRegex = new Regex(ReportPattern, RegexOptions.Compiled);
         private static readonly Regex AggregatedReportRegex = new Regex(AggregatedReportPattern, RegexOptions.Compiled);
-        private static readonly Regex EventReportRegex = new Regex(EventReportPattern, RegexOptions.Compiled);
         private static readonly Regex DcpReportRegex = new Regex(DcpReportPattern, RegexOptions.Compiled);
 
         private readonly INyssContext _nyssContext;
@@ -41,7 +43,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
             _nyssContext = nyssContext;
         }
 
-        public ParsedReport ParseReport(string reportMessage)
+        public async Task<ParsedReport> ParseReport(string reportMessage)
         {
             if (string.IsNullOrWhiteSpace(reportMessage))
             {
@@ -53,19 +55,14 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 throw new ReportValidationException($"A report cannot be longer than 160 characters (was {reportMessage.Length} characters)", ReportErrorType.TooLong);
             }
 
-            if (SingleReportRegex.IsMatch(reportMessage))
+            if (ReportRegex.IsMatch(reportMessage))
             {
-                return ParseSingleReport(reportMessage);
+                return await ParseSingleOrEventReport(reportMessage);
             }
 
             if (AggregatedReportRegex.IsMatch(reportMessage))
             {
                 return ParseAggregatedReport(reportMessage);
-            }
-
-            if (EventReportRegex.IsMatch(reportMessage))
-            {
-                return ParseEventReport(reportMessage);
             }
 
             if (DcpReportRegex.IsMatch(reportMessage))
@@ -76,17 +73,36 @@ namespace RX.Nyss.ReportApi.Features.Reports
             throw new ReportValidationException("A report format was not recognized.", ReportErrorType.FormatError);
         }
 
-        internal static ParsedReport ParseSingleReport(string reportMessage)
+        internal async Task<ParsedReport> ParseSingleOrEventReport(string reportMessage)
         {
-            var singleReportMatch = SingleReportRegex.Match(reportMessage);
-            var healthRiskCodeMatch = singleReportMatch.Groups["healthRiskCode"].Value;
-            var sexMatch = singleReportMatch.Groups["sex"].Value;
-            var ageGroupMatch = singleReportMatch.Groups["ageGroup"].Value;
+            var reportMatch = ReportRegex.Match(reportMessage);
+            var healthRiskCodeMatch = reportMatch.Groups["healthRiskCode"].Value;
+            var sexMatch = reportMatch.Groups["sex"].Value;
+            var ageGroupMatch = reportMatch.Groups["ageGroup"].Value;
 
             var healthRiskCode = int.Parse(healthRiskCodeMatch);
-            var sex = int.Parse(sexMatch);
-            var ageGroup = int.Parse(ageGroupMatch);
+            var sex = sexMatch.ParseToNullableInt();
+            var ageGroup = ageGroupMatch.ParseToNullableInt();
 
+            var healthRisk = await _nyssContext.HealthRisks
+                .Where(hr => hr.HealthRiskCode == healthRiskCode)
+                .FirstOrDefaultAsync();
+
+            if (healthRisk == null)
+            {
+                throw new ReportValidationException($"Health risk with code: {healthRiskCode} does not exist in the global list.", ReportErrorType.GlobalHealthRiskCodeNotFound);
+            }
+
+            if (healthRisk.HealthRiskType != HealthRiskType.Human)
+            {
+                return ParseEventReport(healthRiskCode, sex, ageGroup);
+            }
+
+            return ParseSingleReport(healthRiskCode, sex, ageGroup);
+        }
+
+        internal static ParsedReport ParseSingleReport(int healthRiskCode, int? sex, int? ageGroup)
+        {
             var parsedReport = new ParsedReport
             {
                 HealthRiskCode = healthRiskCode,
@@ -103,6 +119,9 @@ namespace RX.Nyss.ReportApi.Features.Reports
                         ? 1
                         : 0,
                     CountFemalesAtLeastFive = sex == Female && ageGroup == AtLeastFive
+                        ? 1
+                        : 0,
+                    CountUnspecifiedSexAndAge = !(sex.HasValue && ageGroup.HasValue)
                         ? 1
                         : 0
                 }
@@ -142,21 +161,22 @@ namespace RX.Nyss.ReportApi.Features.Reports
             return parsedReport;
         }
 
-        internal ParsedReport ParseEventReport(string reportMessage)
+        internal static ParsedReport ParseEventReport(int healthRiskCode, int? sex, int? ageGroup)
         {
-            var eventReportMatch = EventReportRegex.Match(reportMessage);
-            var eventCodeMatch = eventReportMatch.Groups["eventCode"].Value;
-
-            var eventCode = int.Parse(eventCodeMatch);
+            if (sex.HasValue || ageGroup.HasValue)
+            {
+                throw new ReportValidationException($"Sex and/or age can not be reported for event or non-human health risk: {healthRiskCode}.", ReportErrorType.FormatError);
+            }
 
             var parsedReport = new ParsedReport
             {
-                HealthRiskCode = eventCode,
-                ReportType = ReportType.Statement
+                HealthRiskCode = healthRiskCode,
+                ReportType = ReportType.Event
             };
 
             return parsedReport;
         }
+
 
         internal static ParsedReport ParseDcpReport(string reportMessage)
         {

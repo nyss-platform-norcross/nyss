@@ -78,7 +78,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
             var parsedQueryString = HttpUtility.ParseQueryString(queryString);
             var sender = parsedQueryString[SenderParameterName];
             var timestamp = parsedQueryString[TimestampParameterName];
-            var text = parsedQueryString[TextParameterName];
+            var text = parsedQueryString[TextParameterName].Trim();
             var incomingMessageId = parsedQueryString[IncomingMessageIdParameterName].ParseToNullableInt();
             var outgoingMessageId = parsedQueryString[OutgoingMessageIdParameterName].ParseToNullableInt();
             var modemNumber = parsedQueryString[ModemNumberParameterName].ParseToNullableInt();
@@ -133,13 +133,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                             PhoneNumber = sender,
                             Location = reportValidationResult.ReportData.DataCollector.Location,
                             ReportedCase = reportValidationResult.ReportData.ParsedReport.ReportedCase,
-                            KeptCase = new ReportCase
-                            {
-                                CountMalesBelowFive = null,
-                                CountMalesAtLeastFive = null,
-                                CountFemalesBelowFive = null,
-                                CountFemalesAtLeastFive = null
-                            },
                             DataCollectionPointCase = reportValidationResult.ReportData.ParsedReport.DataCollectionPointCase,
                             ProjectHealthRisk = projectHealthRisk,
                             ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
@@ -147,6 +140,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                                 + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountFemalesBelowFive ?? 0)
                                 + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountMalesAtLeastFive ?? 0)
                                 + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountMalesBelowFive ?? 0)
+                                + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountUnspecifiedSexAndAge ?? 0)
                                 : 1
                         };
 
@@ -278,19 +272,19 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 case DataCollectorType.Human:
                     if (parsedReport.ReportType != ReportType.Single &&
                         parsedReport.ReportType != ReportType.Aggregate &&
-                        parsedReport.ReportType != ReportType.Statement)
+                        parsedReport.ReportType != ReportType.Event)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Statement}'.");
+                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Event}'.");
                     }
 
                     break;
                 case DataCollectorType.CollectionPoint:
                     if (parsedReport.ReportType != ReportType.DataCollectionPoint &&
-                        parsedReport.ReportType != ReportType.Statement)
+                        parsedReport.ReportType != ReportType.Event)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                            $"'{ReportType.DataCollectionPoint}', '{ReportType.Statement}.");
+                            $"'{ReportType.DataCollectionPoint}', '{ReportType.Event}.");
                     }
 
                     break;
@@ -314,13 +308,13 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                     }
 
                     break;
-                case ReportType.Statement:
+                case ReportType.Event:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.NonHuman &&
                         projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.UnusualEvent &&
                         projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                     {
                         throw new ReportValidationException(
-                            $"A report of type '{ReportType.Statement}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' or '{HealthRiskType.Activity}' event only.");
+                            $"A report of type '{ReportType.Event}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' or '{HealthRiskType.Activity}' event only.");
                     }
 
                     break;
@@ -389,7 +383,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 var apiKey = parsedQueryString[ApiKeyParameterName];
                 var sender = parsedQueryString[SenderParameterName];
                 var timestamp = parsedQueryString[TimestampParameterName];
-                var text = parsedQueryString[TextParameterName];
+                var text = parsedQueryString[TextParameterName].Trim();
 
                 var receivedAt = ParseTimestamp(timestamp);
                 ValidateReceivalTime(receivedAt);
@@ -404,7 +398,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 rawReport.Village = dataCollector.Village;
                 rawReport.Zone = dataCollector.Zone;
 
-                var parsedReport = _reportMessageService.ParseReport(text.Trim());
+                var parsedReport = await _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);
 
                 return new ReportValidationResult

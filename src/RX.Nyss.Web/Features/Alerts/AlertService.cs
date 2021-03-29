@@ -48,6 +48,7 @@ namespace RX.Nyss.Web.Features.Alerts
         private const string SexMale = "Male";
         private const string AgeAtLeastFive = "AtLeastFive";
         private const string AgeBelowFive = "BelowFive";
+        private const string Unspecified = "Unspecified";
 
         private readonly INyssContext _nyssContext;
         private readonly IEmailPublisherService _emailPublisherService;
@@ -799,6 +800,11 @@ namespace RX.Nyss.Web.Features.Alerts
                 return SexMale;
             }
 
+            if (reportedCase.CountUnspecifiedSexAndAge > 0)
+            {
+                return Unspecified;
+            }
+
             throw new ResultException(ResultKey.Alert.InconsistentReportData);
         }
 
@@ -817,6 +823,11 @@ namespace RX.Nyss.Web.Features.Alerts
             if (reportedCase.CountFemalesBelowFive > 0 || reportedCase.CountMalesBelowFive > 0)
             {
                 return AgeBelowFive;
+            }
+
+            if (reportedCase.CountUnspecifiedSexAndAge > 0)
+            {
+                return Unspecified;
             }
 
             throw new ResultException(ResultKey.Alert.InconsistentReportData);
