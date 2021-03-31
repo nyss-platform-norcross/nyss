@@ -38,9 +38,6 @@ namespace RX.Nyss.Data.Models.Maps
                 .HasMaxLength(20)
                 .IsRequired();
 
-            builder.Property(x => x.Location)
-                .IsRequired();
-
             builder.Property(x => x.ReportType)
                 .HasConversion<string>()
                 .HasMaxLength(20)

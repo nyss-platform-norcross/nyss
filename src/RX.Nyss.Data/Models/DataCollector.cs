@@ -23,17 +23,11 @@ namespace RX.Nyss.Data.Models
 
         public int? BirthGroupDecade { get; set; }
 
-        public Point Location { get; set; }
-
         public bool IsInTrainingMode { get; set; }
 
         public virtual SupervisorUser Supervisor { get; set; }
 
         public virtual Project Project { get; set; }
-
-        public virtual Village Village { get; set; }
-
-        public virtual Zone Zone { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
@@ -43,5 +37,6 @@ namespace RX.Nyss.Data.Models
 
         public ICollection<RawReport> RawReports { get; set; }
         public ICollection<Report> Reports { get; set; }
+        public ICollection<DataCollectorLocation> DataCollectorLocations { get; set; }
     }
 }

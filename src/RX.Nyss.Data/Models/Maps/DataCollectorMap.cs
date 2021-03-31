@@ -28,9 +28,6 @@ namespace RX.Nyss.Data.Models.Maps
             builder.Property(x => x.AdditionalPhoneNumber)
                 .HasMaxLength(20);
 
-            builder.Property(x => x.Location)
-                .IsRequired();
-
             builder.Property(x => x.Sex)
                 .HasConversion<string>()
                 .HasMaxLength(10);
@@ -54,19 +51,15 @@ namespace RX.Nyss.Data.Models.Maps
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.Village)
-                .WithMany()
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasOne(x => x.Zone)
-                .WithMany()
-                .OnDelete(DeleteBehavior.Restrict);
-
             builder.HasMany(x => x.Reports)
                 .WithOne(x => x.DataCollector)
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.DataCollectorLocations)
+                .WithOne(x => x.DataCollector)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasIndex(x => x.PhoneNumber);
             builder.HasIndex(x => x.AdditionalPhoneNumber);
