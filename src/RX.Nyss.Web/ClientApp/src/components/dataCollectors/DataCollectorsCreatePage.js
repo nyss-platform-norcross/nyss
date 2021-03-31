@@ -1,16 +1,13 @@
 import formStyles from "../forms/form/Form.module.scss";
-import styles from './DataCollectorsCreateOrEditPage.module.scss';
-import React, { useState, Fragment, useEffect, useReducer, useMemo } from 'react';
+import React, { useState, Fragment, useMemo } from 'react';
 import { connect, useSelector } from "react-redux";
 import {
   Radio,
   FormControlLabel,
-  Card,
-  CardContent,
-  InputLabel,
   MenuItem,
   Button,
   Grid,
+  Typography,
 } from "@material-ui/core";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -25,38 +22,26 @@ import RadioGroupField from '../forms/RadioGroupField';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { sexValues, dataCollectorType } from './logic/dataCollectorsConstants';
-import { GeoStructureSelect } from './GeoStructureSelect';
-import { getBirthDecades } from './logic/dataCollectorsService';
-import { DataCollectorMap } from './DataCollectorMap';
+import { getBirthDecades, getSaveFormModel } from './logic/dataCollectorsService';
 import { Loading } from '../common/loading/Loading';
 import { ValidationMessage } from "../forms/ValidationMessage";
-import { TableActionsButton } from "../common/tableActions/TableActionsButton";
-import { retrieveGpsLocation } from "../../utils/map";
 import { Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
+import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
 
 const DataCollectorsCreatePageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
   const [birthDecades] = useState(getBirthDecades());
   const [type, setType] = useState(dataCollectorType.human);
   const [centerLocation, setCenterLocation] = useState(null);
-  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
-  const [selectedVillage, setSelectedVillage] = useReducer((state, action) => {
-    if (state.value !== action) {
-      return { ...state, changed: true, value: action }
-    } else {
-      return { ...state, changed: false }
-    }
-  }, { value: "", changed: false });
-
-  const [location, dispatch] = useReducer((state, action) => {
-    switch (action.type) {
-      case "latitude": return { ...state, lat: action.value };
-      case "longitude": return { ...state, lng: action.value };
-      case "latlng": return (action && { lat: action.lat, lng: action.lng }) || null;
-      default: return state;
-    }
-  }, null);
+  const [locations, setLocations] = useState([{
+    latitude: '',
+    longitude: '',
+    regionId: '',
+    districtId: '',
+    villageId: '',
+    zoneId: ''
+  }]);
 
   useMount(() => {
     props.openCreation(props.projectId);
@@ -67,7 +52,7 @@ const DataCollectorsCreatePageComponent = (props) => {
       return null;
     }
 
-    setCenterLocation({ lat: props.defaultLocation.latitude, lng: props.defaultLocation.longitude });
+    setCenterLocation({ latitude: props.defaultLocation.latitude, longitude: props.defaultLocation.longitude });
 
     const fields = {
       dataCollectorType: dataCollectorType.human,
@@ -78,12 +63,6 @@ const DataCollectorsCreatePageComponent = (props) => {
       birthGroupDecade: "",
       phoneNumber: "",
       additionalPhoneNumber: "",
-      latitude: "",
-      longitude: "",
-      villageId: "",
-      districtId: "",
-      regionId: "",
-      zoneId: "",
       deployed: true
     };
 
@@ -95,48 +74,23 @@ const DataCollectorsCreatePageComponent = (props) => {
       supervisorId: [validators.required],
       birthGroupDecade: [validators.requiredWhen(x => x.dataCollectorType === dataCollectorType.human)],
       phoneNumber: [validators.required, validators.phoneNumber, validators.maxLength(20)],
-      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
-      villageId: [validators.required],
-      districtId: [validators.required],
-      regionId: [validators.required],
-      longitude: [validators.required, validators.integer, validators.inRange(-180, 180)],
-      latitude: [validators.required, validators.integer, validators.inRange(-90, 90)]
+      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber]
     };
 
     const newForm = createForm(fields, validation);
     newForm.fields.dataCollectorType.subscribe(({ newValue }) => setType(newValue));
-    newForm.fields.latitude.subscribe(({ newValue }) => dispatch({ type: "latitude", value: newValue }));
-    newForm.fields.longitude.subscribe(({ newValue }) => dispatch({ type: "longitude", value: newValue }));
-    newForm.fields.villageId.subscribe(({ newValue }) => setSelectedVillage(newValue));
     return newForm;
   }, [props.defaultSupervisorId, props.defaultLocation]);
 
-  useEffect(() => {
-    if (form && form.fields && selectedVillage.changed) {
-      form.fields.latitude.update("");
-      form.fields.longitude.update("");
-    }
-  }, [form, selectedVillage])
-
-  const onLocationChange = (e) => {
-    form.fields.latitude.update(e.lat);
-    form.fields.longitude.update(e.lng);
-  }
-
-  const onRetrieveLocation = () => {
-    setIsFetchingLocation(true);
-    retrieveGpsLocation(location => {
-      if (location === null) {
-        setIsFetchingLocation(false);
-        return;
-      }
-      const lat = location.coords.latitude;
-      const lng = location.coords.longitude;
-      form.fields.latitude.update(lat);
-      form.fields.longitude.update(lng);
-      dispatch({ type: "latlng", lat: lat, lng: lng });
-      setIsFetchingLocation(false);
-    });
+  const addDataCollectorLocation = () => {
+    setLocations([...locations, {
+      latitude: '',
+      longitude: '',
+      regionId: '',
+      districtId: '',
+      villageId: '',
+      zoneId: ''
+    }]);
   }
 
   const handleSubmit = (e) => {
@@ -148,23 +102,7 @@ const DataCollectorsCreatePageComponent = (props) => {
 
     const values = form.getValues();
 
-    props.create(props.projectId, {
-      dataCollectorType: values.dataCollectorType,
-      name: values.name,
-      displayName: values.displayName,
-      sex: values.sex === "" ? null : values.sex,
-      supervisorId: parseInt(values.supervisorId),
-      birthGroupDecade: parseInt(values.birthGroupDecade),
-      additionalPhoneNumber: values.additionalPhoneNumber,
-      latitude: parseFloat(values.latitude),
-      longitude: parseFloat(values.longitude),
-      phoneNumber: values.phoneNumber,
-      villageId: parseInt(values.villageId),
-      districtId: parseInt(values.districtId),
-      regionId: parseInt(values.regionId),
-      zoneId: values.zoneId ? parseInt(values.zoneId) : null,
-      deployed: values.deployed
-    });
+    props.create(props.projectId, getSaveFormModel(values, values.dataCollectorType, locations));
   };
 
   useCustomErrors(form, props.error);
@@ -202,6 +140,10 @@ const DataCollectorsCreatePageComponent = (props) => {
               field={form.fields.deployed}
               color="primary"
             />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6">{strings(stringKeys.dataCollector.form.personalia)}</Typography>
           </Grid>
 
           <Grid item xs={12}>
@@ -267,59 +209,6 @@ const DataCollectorsCreatePageComponent = (props) => {
               inputMode={"tel"}
             />
           </Grid>)}
-
-          <GeoStructureSelect
-            regions={props.regions}
-            regionIdField={form.fields.regionId}
-            districtIdField={form.fields.districtId}
-            villageIdField={form.fields.villageId}
-            zoneIdField={form.fields.zoneId}
-          />
-        </Grid>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Card className={styles.requiredMapLocation} data-missing-location={form.fields.latitude.error !== null || form.fields.longitude.error !== null}>
-              <CardContent>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <InputLabel style={{ marginBottom: "10px" }}>{strings(stringKeys.dataCollector.form.selectLocation)}</InputLabel>
-                    <DataCollectorMap
-                      onChange={onLocationChange}
-                      location={location}
-                      centerLocation={centerLocation}
-                      zoom={6}
-                    />
-                  </Grid>
-                  <Grid item xs={12} className={styles.locationButton}>
-                    <TableActionsButton
-                      onClick={onRetrieveLocation}
-                      isFetching={isFetchingLocation}
-                    >
-                      {strings(stringKeys.dataCollector.form.retrieveLocation)}
-                    </TableActionsButton>
-                  </Grid>
-                  <Grid item xs={12} md={3} style={{ maxWidth: "190px" }}>
-                    <TextInputField
-                      label={strings(stringKeys.dataCollector.form.latitude)}
-                      name="latitude"
-                      field={form.fields.latitude}
-                      type="number"
-                      inputMode={"decimal"}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={3} style={{ maxWidth: "190px" }}>
-                    <TextInputField
-                      label={strings(stringKeys.dataCollector.form.longitude)}
-                      name="longitude"
-                      field={form.fields.longitude}
-                      type="number"
-                      inputMode={"decimal"}
-                    />
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
         </Grid>
 
         {!currentUserRoles.some(r => r === Supervisor) &&
@@ -340,12 +229,28 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>
         }
 
+        {locations.map((location, number) => (
+          <DataCollectorLocationItem
+            key={`location_${number}`}
+            form={form}
+            location={location}
+            locationNumber={number}
+            totalLocations={locations.length}
+            defaultLocation={centerLocation}
+            regions={props.regions}
+            initialDistricts={[]}
+            initialVillages={[]}
+            initialZones={[]}
+          />
+        ))}
+        <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollector.form.addLocation)}</Button>
+
         <FormActions className={formStyles.shrinked}>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.create)}</SubmitButton>
         </FormActions>
       </Form>
-    </Fragment >
+    </Fragment>
   );
 }
 

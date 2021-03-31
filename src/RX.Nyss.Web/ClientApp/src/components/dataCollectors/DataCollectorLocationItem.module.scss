@@ -1,0 +1,49 @@
+.locationButton {
+  margin-top: 30px !important;
+}
+
+.requiredMapLocation {
+  &[data-missing-location=true] {
+    border-color: #f44336;
+  }
+}
+
+.latLngInput {
+  max-width: 190px;
+  padding-right: 10px;
+}
+
+.geoStructureShrinked {
+  max-width: 400px !important;
+}
+
+.mapLabel {
+  margin-bottom: 10px;
+}
+
+.coordinateFieldsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.collapsibleContainer {
+  width: 100%;
+}
+
+.locationHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.expandFilterButton {
+  margin-left: auto !important;
+  > button {
+    transform: rotate(0deg);
+    transition: transform 150ms;
+    &[data-expanded="true"] {
+      transform: rotate(180deg);
+    }
+  }
+}

@@ -621,6 +621,9 @@ export const stringKeys = {
       replaceSupervisorWarning: "dataCollectors.form.replaceSupervisorWarning",
       selectLocation: "dataCollectors.form.selectLocation",
       deployed: "dataCollectors.form.deployed",
+      addLocation: "dataCollectors.form.addLocation",
+      personalia: "dataCollectors.form.personalia",
+      location: "dataCollectors.form.location"
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",

@@ -93,6 +93,15 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
     selectAllDataCollectors(!listSelectedAll)
   }
 
+  const renderLocation = (locations) => {
+    const firstLocation = locations[0];
+    if (locations.length > 1) {
+      return `${firstLocation.region}, ${firstLocation.district}, ${firstLocation.village} (+ ${locations.length - 1})`;
+    }
+
+    return `${firstLocation.region}, ${firstLocation.district}, ${firstLocation.village}`;
+  }
+
   return (
     <TableContainer sticky isFetching={isListFetching}>
       <Table>
@@ -127,7 +136,7 @@ export const DataCollectorsTable = ({ isListFetching, listSelectedAll, isRemovin
               <TableCell>{row.displayName}</TableCell>
               <TableCell>{row.phoneNumber}</TableCell>
               <TableCell>{row.sex}</TableCell>
-              <TableCell>{row.region}, {row.district}, {row.village}</TableCell>
+              <TableCell>{renderLocation(row.locations)}</TableCell>
               <TableCell>{row.isInTrainingMode ? strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusInTraining]) : strings(stringKeys.dataCollector.constants.trainingStatus[trainingStatusTrained])}</TableCell>
               <TableCell>{row.supervisor.name}</TableCell>
               <TableCell>
