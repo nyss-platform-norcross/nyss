@@ -125,6 +125,7 @@ const DataCollectorsCreatePageComponent = (props) => {
             <RadioGroupField
               name="dataCollectorType"
               label={strings(stringKeys.dataCollector.form.dataCollectorType)}
+              boldLabel
               field={form.fields.dataCollectorType}
               horizontal >
               {Object.keys(dataCollectorType).map(type => (

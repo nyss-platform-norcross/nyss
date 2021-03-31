@@ -120,6 +120,10 @@ const DataCollectorsEditPageComponent = (props) => {
       <Form onSubmit={handleSubmit} fullWidth>
 
         <Grid item xs={12}>
+          <Typography variant="h6">{strings(stringKeys.dataCollector.form.dataCollectorType)}</Typography>
+        </Grid>
+
+        <Grid item xs={12}>
           <CheckboxField
             name="deployed"
             label={strings(stringKeys.dataCollector.form.deployed)}
