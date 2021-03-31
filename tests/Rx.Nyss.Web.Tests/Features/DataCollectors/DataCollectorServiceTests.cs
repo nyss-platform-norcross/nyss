@@ -215,30 +215,43 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                     Id = DataCollectorWithoutReportsId,
                     PhoneNumber = DataCollectorPhoneNumber1,
                     Project = projects[0],
-                    Village = villages[0],
                     Supervisor = (SupervisorUser)users[0],
                     AdditionalPhoneNumber = "",
                     BirthGroupDecade = 1,
                     DataCollectorType = DataCollectorType.Human,
                     DisplayName = "",
-                    Location = new Point(0, 0),
                     Name = DataCollectorName1,
-                    Sex = Sex.Male
+                    Sex = Sex.Male,
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Id = 1,
+                            Village = villages[0],
+                            Location = new Point(0, 0)
+                        }
+                    }
                 },
                 new DataCollector
                 {
                     Id = DataCollectorWithReportsId,
                     PhoneNumber = DataCollectorPhoneNumber2,
                     Project = projects[0],
-                    Village = villages[0],
                     Supervisor = (SupervisorUser)users[0],
                     AdditionalPhoneNumber = "",
                     BirthGroupDecade = 1,
                     DataCollectorType = DataCollectorType.Human,
                     DisplayName = "",
-                    Location = new Point(0, 0),
                     Name = DataCollectorName2,
-                    Sex = Sex.Female
+                    Sex = Sex.Female,
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Village = villages[0],
+                            Location = new Point(0, 0)
+                        }
+                    }
                 }
             };
 
@@ -316,9 +329,15 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 PhoneNumber = "+4712344567",
                 DisplayName = displayName,
                 SupervisorId = SupervisorId,
-                VillageId = _nyssContextMock.Villages.ToList()[0].Id,
-                Latitude = 15,
-                Longitude = 45
+                Locations = new List<DataCollectorLocationRequestDto>
+                {
+                    new DataCollectorLocationRequestDto
+                    {
+                        VillageId = _nyssContextMock.Villages.ToList()[0].Id,
+                        Latitude = 15,
+                        Longitude = 45
+                    }
+                }
             };
 
             // Act
@@ -337,9 +356,15 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 Id = 3,
                 PhoneNumber = DataCollectorPhoneNumber3,
                 SupervisorId = SupervisorId,
-                VillageId = _nyssContextMock.Villages.ToList()[0].Id,
-                Latitude = 15,
-                Longitude = 45
+                Locations = new List<DataCollectorLocationRequestDto>
+                {
+                    new DataCollectorLocationRequestDto
+                    {
+                        VillageId = _nyssContextMock.Villages.ToList()[0].Id,
+                        Latitude = 15,
+                        Longitude = 45
+                    }
+                }
             };
 
             Should.ThrowAsync<Exception>(() => _dataCollectorService.Edit(dataCollector));
@@ -358,9 +383,22 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 DisplayName = displayName,
                 PhoneNumber = DataCollectorPhoneNumber1,
                 SupervisorId = SupervisorId,
-                VillageId = _nyssContextMock.Villages.ToList()[0].Id,
-                Latitude = 15,
-                Longitude = 45
+                Locations = new List<DataCollectorLocationRequestDto>
+                {
+                    new DataCollectorLocationRequestDto
+                    {
+                        VillageId = _nyssContextMock.Villages.ToList()[0].Id,
+                        Latitude = 15,
+                        Longitude = 45
+                    },
+                    new DataCollectorLocationRequestDto
+                    {
+                        Id = 1,
+                        VillageId = _nyssContextMock.Villages.ToList()[0].Id,
+                        Latitude = 15,
+                        Longitude = 45
+                    }
+                }
             };
 
             // Act
@@ -416,7 +454,7 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             // Act
             var result = await _dataCollectorService.SetTrainingState(new SetDataCollectorsTrainingStateRequestDto
             {
-                DataCollectorIds = new [] { DataCollectorWithoutReportsId },
+                DataCollectorIds = new[] { DataCollectorWithoutReportsId },
                 InTraining = true
             });
 
@@ -441,16 +479,17 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
 
             // Assert
             result.IsSuccess.ShouldBeTrue();
-            result.Value.Data.Count().ShouldBe(2);
+            result.Value.Data.Count.ShouldBe(2);
             var dataCollector = result.Value.Data.First();
             dataCollector.Id.ShouldBe(DataCollectorWithReportsId);
             dataCollector.DisplayName.ShouldBe("");
             dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber2);
-            dataCollector.Village.ShouldBe(Village);
-            dataCollector.District.ShouldBe("Layuna");
             dataCollector.Name.ShouldBe(DataCollectorName2);
             dataCollector.Sex.ShouldBe(Sex.Female);
-            dataCollector.Region.ShouldBe("Layuna");
+            var location = dataCollector.Locations.First();
+            location.Region.ShouldBe("Layuna");
+            location.District.ShouldBe("Layuna");
+            location.Village.ShouldBe(Village);
 
             var secondDataCollector = result.Value.Data.Last();
             secondDataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
@@ -478,11 +517,13 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             dataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
             dataCollector.DisplayName.ShouldBe("");
             dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
-            dataCollector.Village.ShouldBe(Village);
-            dataCollector.District.ShouldBe("Layuna");
             dataCollector.Name.ShouldBe(DataCollectorName1);
             dataCollector.Sex.ShouldBe(Sex.Male);
-            dataCollector.Region.ShouldBe("Layuna");
+
+            var location = dataCollector.Locations.First();
+            location.Region.ShouldBe("Layuna");
+            location.District.ShouldBe("Layuna");
+            location.Village.ShouldBe(Village);
         }
 
         [Fact]
@@ -506,11 +547,12 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             dataCollector.Id.ShouldBe(DataCollectorWithoutReportsId);
             dataCollector.DisplayName.ShouldBe("");
             dataCollector.PhoneNumber.ShouldBe(DataCollectorPhoneNumber1);
-            dataCollector.Village.ShouldBe(Village);
-            dataCollector.District.ShouldBe("Layuna");
             dataCollector.Name.ShouldBe(DataCollectorName1);
             dataCollector.Sex.ShouldBe(Sex.Male);
-            dataCollector.Region.ShouldBe("Layuna");
+            var location = dataCollector.Locations.First();
+            location.Region.ShouldBe("Layuna");
+            location.District.ShouldBe("Layuna");
+            location.Village.ShouldBe(Village);
         }
 
         [Fact(Skip = "EFCore Extension for BatchUpdate is not working with MockDbSet")]
@@ -556,9 +598,12 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 new DataCollector
                 {
                     PhoneNumber = phoneNumber,
-                    Village = new Village
+                    DataCollectorLocations = new List<DataCollectorLocation>
                     {
-                        Name = "Coronia"
+                        new DataCollectorLocation
+                        {
+                            Village = new Village { Name = "Coronia" }
+                        }
                     },
                     Project = new Project
                     {

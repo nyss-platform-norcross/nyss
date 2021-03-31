@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FluentValidation.TestHelper;
 using NSubstitute;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -6,7 +7,7 @@ using Xunit;
 
 namespace RX.Nyss.Web.Tests.Features.DataCollectors
 {
-    
+
     public class DataCollectorValidationTests
     {
         private CreateDataCollectorRequestDto.Validator CreateValidator { get; set; }
@@ -33,6 +34,33 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
         {
             CreateValidator.ShouldNotHaveValidationErrorFor(dc => dc.PhoneNumber, "+4712345679");
         }
+
+        [Fact]
+        public void Create_WhenCoordinatesAreOutOfBounds_ShouldHaveError()
+        {
+            CreateValidator.ShouldHaveValidationErrorFor(dc => dc.Locations, new List<DataCollectorLocationRequestDto>
+            {
+                new DataCollectorLocationRequestDto
+                {
+                    Latitude = 100,
+                    Longitude = -200
+                }
+            });
+        }
+
+        [Fact]
+        public void Edit_WhenCoordinatesAreOutOfBounds_ShouldHaveError()
+        {
+            EditValidator.ShouldHaveValidationErrorFor(dc => dc.Locations, new List<DataCollectorLocationRequestDto>
+            {
+                new DataCollectorLocationRequestDto
+                {
+                    Latitude = 100,
+                    Longitude = -200
+                }
+            });
+        }
+
 
         [Fact]
         public void Edit_WhenNameExistsForOtherDataCollector_ShouldHaveError()

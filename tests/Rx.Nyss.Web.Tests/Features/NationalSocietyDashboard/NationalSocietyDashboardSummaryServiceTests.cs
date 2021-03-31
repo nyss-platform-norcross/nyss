@@ -53,7 +53,13 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                 new DataCollector
                 {
                     Id = 1,
-                    Village = _villages.First(),
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Village = _villages.First()
+                        }
+                    },
                     Project = _projects.First()
                 }
             };
@@ -318,19 +324,37 @@ namespace RX.Nyss.Web.Tests.Features.NationalSocietyDashboard
                 {
                     Id = 2,
                     Project = _projects.First(),
-                    Village = _villages.First()
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Village = _villages.First()
+                        }
+                    },
                 },
                 new DataCollector
                 {
                     Id = 3,
                     Project = _projects.First(),
-                    Village = _villages.First()
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Village = _villages.First()
+                        }
+                    },
                 },
                 new DataCollector
                 {
                     Id = 4,
                     Project = _projects.First(),
-                    Village = _villages.First()
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Village = _villages.First()
+                        }
+                    },
                 }
             });
 
