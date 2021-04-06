@@ -70,7 +70,8 @@ namespace RX.Nyss.Web.Features.ProjectAlertNotHandledRecipients
             var alertNotHandledNotificationRecipient = new AlertNotHandledNotificationRecipient
             {
                 ProjectId = projectId,
-                UserId = dto.UserId
+                UserId = dto.UserId,
+                OrganizationId = dto.OrganizationId
             };
 
             _nyssContext.AlertNotHandledNotificationRecipients.Remove(currentAlertNotHandledRecipient);
