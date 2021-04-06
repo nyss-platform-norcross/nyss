@@ -66,6 +66,11 @@ export const ProjectsDashboardReportSexAgeChart = ({ data }) => {
       name: strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.malesBelow5, true),
       data: data.map(d => d.countMalesBelowFive),
       color: "#72d5fb"
+    },
+    {
+      name: strings(stringKeys.project.dashboard.reportsPerFeatureAndDate.unspecifiedSexAndAge, true),
+      data: data.map(d => d.countUnspecifiedSexAndAge),
+      color: "#c2b5ce"
     }
   ];
 

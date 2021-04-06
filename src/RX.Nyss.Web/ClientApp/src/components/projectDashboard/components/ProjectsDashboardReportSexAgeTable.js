@@ -15,25 +15,36 @@ export const ProjectsDashboardReportSexAgeTable = ({ data }) => {
               <TableCell className={styles.rowHeader}></TableCell>
               <TableCell className={styles.rowHeader}>{strings(stringKeys.project.dashboard.reportsPerFeature.female)}</TableCell>
               <TableCell className={styles.rowHeader}>{strings(stringKeys.project.dashboard.reportsPerFeature.male)}</TableCell>
+              <TableCell className={styles.rowHeader}>{strings(stringKeys.project.dashboard.reportsPerFeature.unspecifiedSex)}</TableCell>
               <TableCell className={styles.rowHeader}>{strings(stringKeys.project.dashboard.reportsPerFeature.total)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className={styles.columnHeader}>{strings(stringKeys.project.dashboard.reportsPerFeature.below5)}</TableCell>
               <TableCell>{data.countFemalesBelowFive}</TableCell>
               <TableCell>{data.countMalesBelowFive}</TableCell>
+              <TableCell>-</TableCell>
               <TableCell>{data.countFemalesBelowFive + data.countMalesBelowFive}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className={styles.columnHeader}>{strings(stringKeys.project.dashboard.reportsPerFeature.above5)}</TableCell>
               <TableCell>{data.countFemalesAtLeastFive}</TableCell>
               <TableCell>{data.countMalesAtLeastFive}</TableCell>
+              <TableCell>-</TableCell>
               <TableCell>{data.countFemalesAtLeastFive + data.countMalesAtLeastFive}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className={styles.columnHeader}>{strings(stringKeys.project.dashboard.reportsPerFeature.unspecifiedAge)}</TableCell>
+              <TableCell>-</TableCell>
+              <TableCell>-</TableCell>
+              <TableCell>{data.countUnspecifiedSexAndAge}</TableCell>
+              <TableCell>{data.countUnspecifiedSexAndAge}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className={styles.columnHeader}>{strings(stringKeys.project.dashboard.reportsPerFeature.total)}</TableCell>
               <TableCell>{data.countFemalesBelowFive + data.countFemalesAtLeastFive}</TableCell>
               <TableCell>{data.countMalesBelowFive + data.countMalesAtLeastFive}</TableCell>
-              <TableCell>{data.countFemalesBelowFive + data.countFemalesAtLeastFive + data.countMalesBelowFive + data.countMalesAtLeastFive}</TableCell>
+              <TableCell>{data.countUnspecifiedSexAndAge}</TableCell>
+              <TableCell>{data.countFemalesBelowFive + data.countFemalesAtLeastFive + data.countMalesBelowFive + data.countMalesAtLeastFive + data.countUnspecifiedSexAndAge}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

@@ -447,12 +447,15 @@ export const stringKeys = {
         total: "project.dashboard.reportsPerFeature.total",
         below5: "project.dashboard.reportsPerFeature.below5",
         above5: "project.dashboard.reportsPerFeature.above5",
+        unspecifiedAge: "project.dashboard.reportsPerFeature.unspecifiedAge",
+        unspecifiedSex: "project.dashboard.reportsPerFeature.unspecifiedSex"
       },
       reportsPerFeatureAndDate: {
         femalesBelow5: "project.dashboard.reportsPerFeatureAndDate.femalesBelow5",
         femalesAbove5: "project.dashboard.reportsPerFeatureAndDate.femalesAbove5",
         malesBelow5: "project.dashboard.reportsPerFeatureAndDate.malesBelow5",
         malesAbove5: "project.dashboard.reportsPerFeatureAndDate.malesAbove5",
+        unspecifiedSexAndAge: "project.dashboard.reportsPerFeatureAndDate.unspecifiedSexAndAge",
         numberOfReports: "project.dashboard.reportsPerFeatureAndDate.numberOfReports",
         title: "project.dashboard.reportsPerFeatureAndDate.title"
       },
