@@ -66,13 +66,13 @@ export const projectsSiteMap = [
   },
   {
     parentPath: "/projects/:projectId/alertNotifications",
-    path: "/projects/:projectId/alertRecipients/add",
+    path: "/projects/:projectId/alertNotifications/addRecipient",
     title: () => strings(stringKeys.projectAlertRecipient.form.creationTitle),
     access: accessMap.projectAlertNotifications.addRecipient
   },
   {
     parentPath: "/projects/:projectId/alertNotifications",
-    path: "/projects/:projectId/alertRecipients/:alertRecipientId/edit",
+    path: "/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient",
     title: () => strings(stringKeys.projectAlertRecipient.form.editionTitle),
     access: accessMap.projectAlertNotifications.editRecipient
   }
