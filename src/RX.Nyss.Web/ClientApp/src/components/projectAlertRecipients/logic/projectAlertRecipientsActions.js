@@ -5,9 +5,9 @@ import {
   REMOVE_ALERT_RECIPIENT, OPEN_ALERT_RECIPIENT_EDITION, EDIT_ALERT_RECIPIENT
 } from "./projectAlertRecipientsConstants";
 
-export const goToList = (projectId) => push(`/projects/${projectId}/alertRecipients`);
-export const goToCreation = (projectId) => push(`/projects/${projectId}/alertRecipients/add`);
-export const goToEdition = (projectId, alertRecipientId) => push(`/projects/${projectId}/alertRecipients/${alertRecipientId}/edit`);
+export const goToList = (projectId) => push(`/projects/${projectId}/alertNotifications`);
+export const goToCreation = (projectId) => push(`/projects/${projectId}/alertNotifications/addRecipient`);
+export const goToEdition = (projectId, alertRecipientId) => push(`/projects/${projectId}/alertNotifications/${alertRecipientId}/editRecipient`);
 
 export const openList = {
   invoke: (projectId) => ({ type: OPEN_ALERT_RECIPIENTS_LIST.INVOKE, projectId }),

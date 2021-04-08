@@ -2,8 +2,6 @@ import React, { Fragment } from 'react';
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as projectAlertRecipientsActions from './logic/projectAlertRecipientsActions';
-import { withLayout } from '../../utils/layout';
-import Layout from '../layout/Layout';
 import AddIcon from '@material-ui/icons/Add';
 import TableActions from '../common/tableActions/TableActions';
 import ProjectAlertRecipientsTable from './ProjectAlertRecipientsTable';
@@ -47,8 +45,7 @@ ProjectAlertRecipientsListPageComponent.propTypes = {
   list: PropTypes.array
 };
 
-const mapStateToProps = (state, ownProps) => ({
-  projectId: ownProps.match.params.projectId,
+const mapStateToProps = (state) => ({
   list: state.projectAlertRecipients.listData,
   isListFetching: state.projectAlertRecipients.listFetching,
   isRemoving: state.projectAlertRecipients.listRemoving,
@@ -63,7 +60,4 @@ const mapDispatchToProps = {
   remove: projectAlertRecipientsActions.remove.invoke
 };
 
-export const ProjectAlertRecipientsListPage = withLayout(
-  Layout,
-  connect(mapStateToProps, mapDispatchToProps)(ProjectAlertRecipientsListPageComponent)
-);
+export const ProjectAlertRecipientsListPage = connect(mapStateToProps, mapDispatchToProps)(ProjectAlertRecipientsListPageComponent);

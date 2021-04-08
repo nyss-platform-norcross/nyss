@@ -55,4 +55,25 @@ export const projectsSiteMap = [
     title: () => strings(stringKeys.project.edit),
     access: accessMap.projects.edit,
   },
+  {
+    parentPath: "/nationalsocieties/:nationalSocietyId/projects/:projectId/settings",
+    path: "/projects/:projectId/alertNotifications",
+    title: () => strings(stringKeys.projectAlertRecipient.title),
+    placeholder: placeholders.tabMenu,
+    access: accessMap.projectAlertNotifications.list,
+    placeholderIndex: 3,
+    middleStepOnly: true
+  },
+  {
+    parentPath: "/projects/:projectId/alertNotifications",
+    path: "/projects/:projectId/alertNotifications/addRecipient",
+    title: () => strings(stringKeys.projectAlertRecipient.form.creationTitle),
+    access: accessMap.projectAlertNotifications.addRecipient
+  },
+  {
+    parentPath: "/projects/:projectId/alertNotifications",
+    path: "/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient",
+    title: () => strings(stringKeys.projectAlertRecipient.form.editionTitle),
+    access: accessMap.projectAlertNotifications.editRecipient
+  }
 ];

@@ -243,6 +243,8 @@ namespace RX.Nyss.Common.Utils.DataContract
             public const string AllowMultipleOrganizationsFlagCannotBeRemoved = "project.allowMultipleOrganizationsFlagCannotBeRemoved";
             public const string OnlyCoordinatorCanChangeMultipleOrgAccess = "project.onlyCoordinatorCanChangeMultipleOrgAccess";
             public const string NoAccessToSetOrgBasedAccessControl = "project.noAccessToSetOrgBasedAccessControl";
+            public const string AlertNotHandledNotificationRecipientMustBeOfSameOrg = "project.alertNotHandledNotificationRecipientMustBeOfSameOrg";
+            public const string AlertNotHandledRecipientDoesNotExist = "project.alertNotHandledRecipientDoesNotExist";
         }
 
         public class ProjectOrganization
@@ -350,6 +352,16 @@ namespace RX.Nyss.Common.Utils.DataContract
         public static class Consent
         {
             public const string NoPendingConsent = "consent.noPendingConsent";
+        }
+
+        public static class AlertNotHandledNotificationRecipient
+        {
+            public const string CreateSuccess = "alertNotHandledRecipient.create.success";
+            public const string EditSuccess = "alertNotHandledRecipient.edit.success";
+            public const string DeleteSuccess = "alertNotHandledRecipient.delete.success";
+            public const string UserMustBeInSameOrg = "alertNotHandledRecipient.userMustBeInSameOrg";
+            public const string NotFound = "alertNotHandledRecipient.notFound";
+            public const string AlreadyExists = "alertNotHandledRecipient.alreadyExists";
         }
     }
 }

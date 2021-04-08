@@ -57,11 +57,11 @@ import { OrganizationsCreatePage } from '../organizations/OrganizationsCreatePag
 import { OrganizationsEditPage } from '../organizations/OrganizationsEditPage';
 import { ProjectOrganizationsListPage } from '../projectOrganizations/ProjectOrganizationsListPage';
 import { ProjectOrganizationsCreatePage } from '../projectOrganizations/ProjectOrganizationsCreatePage';
-import { ProjectAlertRecipientsListPage } from '../projectAlertRecipients/ProjectAlertRecipientsListPage';
-import { ProjectAlertRecipientsCreatePage } from '../projectAlertRecipients/ProjectAlertRecipientsCreatePage';
-import { ProjectAlertRecipientsEditPage } from '../projectAlertRecipients/ProjectAlertRecipientsEditPage';
 import { EmailTranslationsListPage } from '../translations/EmailTranslationsListPage';
 import { SmsTranslationsListPage } from '../translations/SmsTranslationsListPage';
+import { ProjectAlertNotificationsPage } from '../projects/ProjectAlertNotificationPage';
+import { ProjectAlertRecipientsCreatePage } from '../projectAlertRecipients/ProjectAlertRecipientsCreatePage';
+import { ProjectAlertRecipientsEditPage } from '../projectAlertRecipients/ProjectAlertRecipientsEditPage';
 
 export const App = ({ history }) => (
   <ThemeProvider theme={theme}>
@@ -127,9 +127,9 @@ export const App = ({ history }) => (
           <AuthRoute exact path='/projects/:projectId/organizations' component={ProjectOrganizationsListPage} roles={accessMap.projectOrganizations.list} />
           <AuthRoute exact path='/projects/:projectId/organizations/add' component={ProjectOrganizationsCreatePage} roles={accessMap.projectOrganizations.add} />
 
-          <AuthRoute exact path='/projects/:projectId/alertRecipients' component={ProjectAlertRecipientsListPage} roles={accessMap.projectAlertRecipients.list} />
-          <AuthRoute exact path='/projects/:projectId/alertRecipients/add' component={ProjectAlertRecipientsCreatePage} roles={accessMap.projectAlertRecipients.add} />
-          <AuthRoute exact path='/projects/:projectId/alertRecipients/:alertRecipientId/edit' component={ProjectAlertRecipientsEditPage} roles={accessMap.projectAlertRecipients.edit} />
+          <AuthRoute exact path='/projects/:projectId/alertNotifications' component={ProjectAlertNotificationsPage} roles={accessMap.projectAlertNotifications.list} />
+          <AuthRoute exact path='/projects/:projectId/alertNotifications/addRecipient' component={ProjectAlertRecipientsCreatePage} roles={accessMap.projectAlertNotifications.addRecipient} />
+          <AuthRoute exact path='/projects/:projectId/alertNotifications/:alertRecipientId/editRecipient' component={ProjectAlertRecipientsEditPage} roles={accessMap.projectAlertNotifications.editRecipient} />
 
           <AuthRoute exact path='/projects/:projectId/reports' component={ReportsListPage} roles={accessMap.reports.list} />
           <AuthRoute exact path='/projects/:projectId/reports/:reportId/edit' component={ReportsEditPage} roles={accessMap.reports.edit} />

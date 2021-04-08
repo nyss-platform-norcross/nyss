@@ -184,7 +184,20 @@ namespace RX.Nyss.ReportApi.Tests.Features.Alert.TestData
 
                 projectHealthRiskWithCountThresholdOf3.Project = new Project
                 {
-                    NationalSociety = nationalSociety
+                    NationalSociety = nationalSociety,
+                    AlertNotHandledNotificationRecipients = new List<AlertNotHandledNotificationRecipient>
+                    {
+                        new AlertNotHandledNotificationRecipient
+                        {
+                            Organization = organization1,
+                            User = headManager1,
+                        },
+                        new AlertNotHandledNotificationRecipient
+                        {
+                            Organization = organization2,
+                            User = headManager2
+                        }
+                    }
                 };
 
                 var supervisor1 = new SupervisorUser

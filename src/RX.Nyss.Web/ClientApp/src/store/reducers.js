@@ -21,6 +21,7 @@ import { translationsReducer } from "../components/translations/logic/translatio
 import { organizationsReducer } from "../components/organizations/logic/organizationsReducer";
 import { projectOrganizationsReducer } from "../components/projectOrganizations/logic/projectOrganizationsReducer";
 import { projectAlertRecipientsReducer } from "../components/projectAlertRecipients/logic/projectAlertRecipientsReducer";
+import { projectAlertNotHandledRecipientsReducer } from "../components/projectAlertNotHandledRecipient/logic/projectAlertNotHandledRecipientsReducer";
 
 export const createRootReducer = (history) => combineReducers({
   router: connectRouter(history),
@@ -44,5 +45,6 @@ export const createRootReducer = (history) => combineReducers({
   nationalSocietyReports: nationalSocietyReportsReducer,
   nationalSocietyDashboard: nationalSocietyDashboardReducer,
   alerts: alertsReducer,
-  translations: translationsReducer
+  translations: translationsReducer,
+  projectAlertNotHandledRecipients: projectAlertNotHandledRecipientsReducer
 });

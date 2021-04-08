@@ -338,6 +338,12 @@ export const stringKeys = {
       healthRisks: "projectAlertRecipient.list.healthRisks"
     },
   },
+  projectAlertNotHandledRecipient: {
+    title: "projectAlertNotHandledRecipient.title",
+    description: "projectAlertNotHandledRecipient.description",
+    create: "projectAlertNotHandledRecipient.create",
+    update: "projectAlertNotHandledRecipient.update"
+  },
   project: {
     title: "project.title",
     settingsRootTitle: "project.settingsRootTitle",
@@ -371,7 +377,8 @@ export const stringKeys = {
       addEmail: "project.form.addEmail",
       addSms: "project.form.addSms",
       create: "project.form.create",
-      update: "project.form.update"
+      update: "project.form.update",
+      alertNotHandledNotificationRecipient: "project.form.alertNotHandledNotificationRecipient"
     },
     messages: {
       create: {

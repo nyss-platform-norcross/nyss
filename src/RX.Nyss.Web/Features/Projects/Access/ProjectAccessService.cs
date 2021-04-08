@@ -13,6 +13,7 @@ namespace RX.Nyss.Web.Features.Projects.Access
     {
         Task<bool> HasCurrentUserAccessToProject(int projectId);
         bool HasCurrentUserAccessToAssignOrganizationToProject();
+        Task<bool> HasAccessToAlertNotHandledNotificationRecipient(int userId);
     }
 
     public class ProjectAccessService : IProjectAccessService
@@ -66,6 +67,24 @@ namespace RX.Nyss.Web.Features.Projects.Access
             }
 
             return await _nationalSocietyAccessService.HasCurrentUserAccessToNationalSociety(data.NationalSocietyId);
+        }
+
+        public async Task<bool> HasAccessToAlertNotHandledNotificationRecipient(int userId)
+        {
+            var currentUser = await _authorizationService.GetCurrentUser();
+
+            if (currentUser.Role == Role.Administrator)
+            {
+                return true;
+            }
+
+            var userOrganizations = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.UserId == userId || uns.User == currentUser)
+                .Select(uns => uns.OrganizationId)
+                .Distinct()
+                .ToListAsync();
+
+            return userOrganizations.Count == 1;
         }
 
         public bool HasCurrentUserAccessToAssignOrganizationToProject() =>

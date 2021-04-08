@@ -309,7 +309,7 @@ namespace RX.Nyss.Data.MigrationApp
                 }));
 
                 context.NationalSocieties.First(ns => ns.Id == 2).Organizations.First(o => o.Id == 3).HeadManager = context.Users.First(u => u.EmailAddress.Contains("marcelle"));
-                context.NationalSocieties.First(ns => ns.Id == 2).Organizations.First(o => o.Id == 4).HeadManager = context.Users.First(u => u.EmailAddress.Contains("marc"));
+                context.NationalSocieties.First(ns => ns.Id == 2).Organizations.First(o => o.Id == 4).HeadManager = context.Users.First(u => u.EmailAddress.Contains("marc_"));
 
                 context.SaveChanges();
             }

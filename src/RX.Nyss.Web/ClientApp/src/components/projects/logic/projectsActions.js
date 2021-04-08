@@ -4,7 +4,8 @@ import {
   OPEN_PROJECT_CREATION, CREATE_PROJECT,
   OPEN_PROJECT_EDITION, EDIT_PROJECT,
   CLOSE_PROJECT,
-  OPEN_PROJECT_OVERVIEW
+  OPEN_PROJECT_OVERVIEW,
+  OPEN_ALERT_NOTIFICATIONS
 } from "./projectsConstants";
 
 export const goToList = (nationalSocietyId) => push(`/nationalsocieties/${nationalSocietyId}/projects`);
