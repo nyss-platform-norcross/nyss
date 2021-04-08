@@ -78,7 +78,9 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
             value={selectedUser.userId}
             onChange={handleRecipientChange}
           >
-            {users.map(u => (
+            {users
+              .filter(u => u.organizationId === recipient.organizationId)
+              .map(u => (
               <MenuItem key={`recipient_user_${u.userId}`} value={u.userId}>
                 {u.name}
               </MenuItem>
