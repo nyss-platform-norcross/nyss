@@ -6,7 +6,7 @@ namespace RX.Nyss.Web.Features.NationalSocietyReports.Dto
     public class NationalSocietyReportListFilterRequestDto
     {
         public static readonly string DateColumnName = "date";
-        public NationalSocietyReportListType ReportsType { get; set; } = NationalSocietyReportListType.Main;
+        public ReportListType ReportsType { get; set; } = ReportListType.Main;
         public AreaDto Area { get; set; }
         public int? HealthRiskId { get; set; }
         public bool Status { get; set; }

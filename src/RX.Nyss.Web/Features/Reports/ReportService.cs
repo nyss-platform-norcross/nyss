@@ -113,9 +113,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filter.HealthRiskId)
                 .FilterByTrainingMode(filter.IsTraining)
-                .FilterByDataCollectorType(filter.ReportsType == ReportListType.FromDcp
-                    ? DataCollectorType.CollectionPoint
-                    : DataCollectorType.Human)
+                .FilterByReportType(filter.ReportsType)
                 .FilterByArea(MapToArea(filter.Area))
                 .Where(r => filter.Status
                     ? r.Report != null && !r.Report.MarkedAsError

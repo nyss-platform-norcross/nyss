@@ -8,6 +8,7 @@ using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.Reports.Dto;
+using RX.Nyss.Web.Features.Common.Dto;
 using RX.Nyss.Web.Features.Users;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
@@ -62,9 +63,7 @@ namespace RX.Nyss.Web.Features.Reports
                 .FilterByProject(projectId)
                 .FilterByHealthRisk(filter.HealthRiskId)
                 .FilterByTrainingMode(filter.IsTraining)
-                .FilterByDataCollectorType(filter.ReportsType == ReportListType.FromDcp
-                    ? DataCollectorType.CollectionPoint
-                    : DataCollectorType.Human)
+                .FilterByReportType(filter.ReportsType)
                 .FilterByArea(ReportService.MapToArea(filter.Area))
                 .Where(r => filter.Status
                     ? r.Report != null && !r.Report.MarkedAsError

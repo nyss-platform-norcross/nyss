@@ -2,7 +2,7 @@
 using System.Linq;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.Web.Features.NationalSocietyReports.Dto;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Features.Common.Extensions
 {
@@ -21,12 +21,12 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 reports
             };
 
-        public static IQueryable<RawReport> FilterByReportType(this IQueryable<RawReport> reports, NationalSocietyReportListType reportType) =>
+        public static IQueryable<RawReport> FilterByReportType(this IQueryable<RawReport> reports, ReportListType reportType) =>
             reportType switch
             {
-                NationalSocietyReportListType.Main => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
-                NationalSocietyReportListType.FromDcp => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
-                NationalSocietyReportListType.UnknownSender => reports.Where(r => r.DataCollector == null),
+                ReportListType.Main => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.Human),
+                ReportListType.FromDcp => reports.Where(r => r.DataCollector.DataCollectorType == DataCollectorType.CollectionPoint),
+                ReportListType.UnknownSender => reports.Where(r => r.DataCollector == null),
                 _ => reports
             };
 
