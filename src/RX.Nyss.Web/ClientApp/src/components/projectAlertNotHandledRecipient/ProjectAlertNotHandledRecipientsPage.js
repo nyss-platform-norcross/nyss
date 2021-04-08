@@ -1,16 +1,13 @@
 import styles from './ProjectAlertNotHandledRecipientsPage.module.scss';
 import React from 'react';
 import { strings, stringKeys } from '../../strings';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
 import { connect, useSelector } from 'react-redux';
 import { useMount } from '../../utils/lifecycle';
 import * as projectAlertNotHandledRecipientsActions from './logic/projectAlertNotHandledRecipientsActions';
 import { Fragment } from 'react';
 import { Administrator } from '../../authentication/roles';
 import { ProjectAlertNotHandledRecipientItem } from './components/ProjectAlertNotHandledRecipientItem';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { Card, CardContent, CircularProgress, Grid, Typography } from '@material-ui/core';
 
 export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, projectId, recipients, getFormData, edit, create }) => {
   useMount(() => {

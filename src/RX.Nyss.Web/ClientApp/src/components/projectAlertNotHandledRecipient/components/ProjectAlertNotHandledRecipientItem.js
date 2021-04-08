@@ -1,11 +1,7 @@
 import styles from './ProjectAlertNotHandledRecipientItem.module.scss';
-import Typography from "@material-ui/core/Typography";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from '@material-ui/icons/Edit';
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
+import { Select, MenuItem, Button, Grid, Typography } from "@material-ui/core";
 import SubmitButton from "../../forms/submitButton/SubmitButton";
 import { stringKeys, strings } from "../../../strings";
 import { useSelector } from "react-redux";
