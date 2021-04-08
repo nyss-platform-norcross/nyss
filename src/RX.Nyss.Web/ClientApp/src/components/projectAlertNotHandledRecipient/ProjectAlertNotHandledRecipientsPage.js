@@ -25,7 +25,7 @@ export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, proj
         <Card>
           <CardContent>
             <Fragment>
-              <Grid Grid container spacing={4} fixed='true' >
+              <Grid container spacing={4} fixed='true' >
                 <Grid item>
 
                   <Typography variant="h5">
@@ -44,9 +44,9 @@ export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, proj
 
                   <div className={styles.recipientsContainer}>
                     {recipients
-                      .map(r => (
+                      .map((r, index) => (
                         <ProjectAlertNotHandledRecipientItem
-                          key={`alertNotHandledRecipient_${r.organizationId}`}
+                          key={`alertNotHandledRecipient_${index}`}
                           recipient={r}
                           isAdministrator={isAdministrator}
                           projectId={projectId}

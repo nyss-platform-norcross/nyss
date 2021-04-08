@@ -7,7 +7,7 @@ import { stringKeys, strings } from "../../../strings";
 import { useSelector } from "react-redux";
 import { Fragment } from 'react';
 
-export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator, getFormData, projectId, edit, create }) => {
+export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator, getFormData, projectId, organizationId, edit, create }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -36,14 +36,14 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
   const onEdit = () => {
     edit(projectId, {
       userId: selectedUser.userId,
-      organizationId: selectedUser.organizationId
+      organizationId: recipient.organizationId,
     });
   }
 
   const onCreate = () => {
     create(projectId, {
       userId: selectedUser.userId,
-      organizationId: selectedUser.organizationId
+      organizationId: recipient.organizationId,
     });
   }
 
