@@ -55,15 +55,16 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
     <Grid item className={styles.recipient} xs={12}>
       {!(isEditing || isCreating) && (
         <Fragment>
+
+          <Typography variant="body1" className={styles.recipientName}>
+            {recipient.name}
+          </Typography>
+
           {isAdministrator && (
             <Typography variant="body1" className={styles.organizationField}>
               {recipient.organizationName}
             </Typography>
           )}
-
-          <Typography variant="body1" className={styles.recipientName}>
-            {recipient.name}
-          </Typography>
 
           <EditIcon onClick={openEdition} />
         </Fragment>
@@ -71,11 +72,6 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
 
       {isEditing && (
         <Fragment>
-          {isAdministrator && (
-            <Typography variant="body1" className={styles.organizationField}>
-              {recipient.organizationName}
-            </Typography>
-          )}
 
           <Select
             className={styles.recipientNameSelect}
@@ -89,6 +85,12 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
             ))}
           </Select>
 
+          {isAdministrator && (
+            <Typography variant="body1" className={styles.organizationField}>
+              {recipient.organizationName}
+            </Typography>
+          )}
+
           <Button onClick={() => setIsEditing(false)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={isSaving} onClick={onEdit}>{strings(stringKeys.projectAlertNotHandledRecipient.update)}</SubmitButton>
         </Fragment>
@@ -96,11 +98,6 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
 
       {isCreating && (
         <Fragment>
-          {isAdministrator && (
-            <Typography variant="body1" className={styles.organizationField}>
-              {recipient.organizationName}
-            </Typography>
-          )}
 
           <Select
             className={styles.recipientNameSelect}
@@ -113,6 +110,12 @@ export const ProjectAlertNotHandledRecipientItem = ({ recipient, isAdministrator
               </MenuItem>
             ))}
           </Select>
+
+          {isAdministrator && (
+            <Typography variant="body1" className={styles.organizationField}>
+              {recipient.organizationName}
+            </Typography>
+          )}
 
           <Button onClick={() => setIsCreating(false)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={isSaving} onClick={onCreate}>{strings(stringKeys.projectAlertNotHandledRecipient.create)}</SubmitButton>

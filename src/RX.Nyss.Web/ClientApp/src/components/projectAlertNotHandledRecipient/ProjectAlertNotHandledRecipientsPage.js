@@ -20,39 +20,50 @@ export const ProjectAlertNotHandledRecipientsComponent = ({ openRecipients, proj
   const isFetchingList = useSelector(state => state.projectAlertNotHandledRecipients.listFetching);
 
   return !!recipients && (
-    <Fragment>
-      <Grid item xs={12} lg={6}>
-        <Paper className={styles.container}>
-          <Typography variant="h5">
-            {strings(stringKeys.projectAlertNotHandledRecipient.title)}
-          </Typography>
+    <Grid container spacing={4} fixed='true' style={{ maxWidth: 800 }}>
+      <Grid item xs={12}>
+        <Card>
+          <CardContent>
+            <Fragment>
+              <Grid Grid container spacing={4} fixed='true' >
+                <Grid item>
 
-          <Typography variant="subtitle1" className={styles.description}>
-            {strings(stringKeys.projectAlertNotHandledRecipient.description)}
-          </Typography>
+                  <Typography variant="h5">
+                    {strings(stringKeys.projectAlertNotHandledRecipient.title)}
+                  </Typography>
 
-          {(isFetchingFormData || isFetchingList) && (
-            <span className={styles.progressSpinner}>
-              <CircularProgress />
-            </span>
-          )}
-          
-          <div className={styles.recipientsContainer}>
-            {recipients.map(r => (
-              <ProjectAlertNotHandledRecipientItem
-                key={`alertNotHandledRecipient_${r.userId}`}
-                recipient={r}
-                isAdministrator={isAdministrator}
-                projectId={projectId}
-                getFormData={getFormData}
-                edit={edit}
-                create={create}
-              />
-            ))}
-          </div>
-        </Paper>
+                  <Typography variant="subtitle1" className={styles.description}>
+                    {strings(stringKeys.projectAlertNotHandledRecipient.description)}
+                  </Typography>
+
+                  {(isFetchingFormData || isFetchingList) && (
+                    <span className={styles.progressSpinner}>
+                      <CircularProgress />
+                     </span>
+                  )}
+
+                  <div className={styles.recipientsContainer}>
+                    {recipients
+                      .map(r => (
+                        <ProjectAlertNotHandledRecipientItem
+                          key={`alertNotHandledRecipient_${r.organizationId}`}
+                          recipient={r}
+                          isAdministrator={isAdministrator}
+                          projectId={projectId}
+                          getFormData={getFormData}
+                          edit={edit}
+                          create={create}
+                        />
+                      ))}
+                  </div>
+
+                </Grid>
+              </Grid>
+            </Fragment>
+          </CardContent>
+        </Card>
       </Grid>
-    </Fragment>
+    </Grid>
   );
 }
 

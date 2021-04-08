@@ -1,22 +1,32 @@
 .recipient {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   padding-bottom: 10px;
   flex-wrap: wrap;
 }
 
 .recipientName {
-  margin-right: auto !important;
+  max-width: 200px;
+  min-width: 200px;
+  padding-right: 3ch;
+  font-weight: bold !important;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .recipientNameSelect {
-  margin-right: auto !important;
+  font-weight: bold !important;
+  margin-right: 3ch;
   flex: 1 0 auto;
-  min-width: 220px;
-  max-width: 220px;
+  min-width: 200px;
+  max-width: 200px;
 }
 
 .organizationField {
-  min-width: 160px;
+  margin-right: auto !important;
+  width: 310px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
