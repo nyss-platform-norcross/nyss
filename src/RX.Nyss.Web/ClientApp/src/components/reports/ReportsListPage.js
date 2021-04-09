@@ -90,7 +90,7 @@ const ReportsListPageComponent = (props) => {
           nationalSocietyId={props.nationalSocietyId}
           onChange={handleFiltersChange}
           filters={props.filters}
-          showUnknownSenderOption={false}
+          showUnknownSenderOption={true}
           showTrainingFilter={true}
         />
       </div>
