@@ -199,25 +199,21 @@ const DataCollectorsEditPageComponent = (props) => {
               inputMode={"tel"}
             />
           </Grid>)}
-        </Grid>
 
-        {!currentUserRoles.some(r => r === Supervisor) &&
-          <Grid container spacing={2} className={formStyles.shrinked}>
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.dataCollector.form.supervisor)}
-                field={form.fields.supervisorId}
-                name="supervisorId"
-              >
-                {props.data.formData.supervisors.map(supervisor => (
-                  <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
-                    {supervisor.name}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          </Grid>
-        }
+          {!currentUserRoles.some(r => r === Supervisor) && (<Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.dataCollector.form.supervisor)}
+              field={form.fields.supervisorId}
+              name="supervisorId"
+            >
+              {props.data.formData.supervisors.map(supervisor => (
+                <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
+                  {supervisor.name}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>)}
+        </Grid>
 
         {locations.map((location, number) => (
           <DataCollectorLocationItem
@@ -235,11 +231,13 @@ const DataCollectorsEditPageComponent = (props) => {
         ))}
         <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollector.form.addLocation)}</Button>
 
+
         <FormActions className={formStyles.shrinked}>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.update)}</SubmitButton>
         </FormActions>
       </Form>
+
     </Fragment>
   );
 }

@@ -210,25 +210,21 @@ const DataCollectorsCreatePageComponent = (props) => {
               inputMode={"tel"}
             />
           </Grid>)}
-        </Grid>
 
-        {!currentUserRoles.some(r => r === Supervisor) &&
-          <Grid container spacing={2} className={formStyles.shrinked}>
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.dataCollector.form.supervisor)}
-                field={form.fields.supervisorId}
-                name="supervisorId"
-              >
-                {props.supervisors.map(supervisor => (
-                  <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
-                    {supervisor.name}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          </Grid>
-        }
+          {!currentUserRoles.some(r => r === Supervisor) && (<Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.dataCollector.form.supervisor)}
+              field={form.fields.supervisorId}
+              name="supervisorId"
+            >
+              {props.supervisors.map(supervisor => (
+                <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
+                  {supervisor.name}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>)}
+        </Grid>
 
         {locations.map((location, number) => (
           <DataCollectorLocationItem
