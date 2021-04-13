@@ -35,7 +35,8 @@ namespace RX.Nyss.Web.Services.ReportsDashboard
 
         public async Task<IEnumerable<ReportsSummaryMapResponseDto>> GetProjectSummaryMap(ReportsFilter filters)
         {
-            var reports = _reportService.GetDashboardHealthRiskEventReportsQuery(filters);
+            var reports = _reportService.GetDashboardHealthRiskEventReportsQuery(filters)
+                .Where(r => r.Location != null);
 
             var reportsSummaryMap = await reports
                 .GroupBy(report => new
