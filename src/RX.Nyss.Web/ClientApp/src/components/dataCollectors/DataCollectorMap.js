@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, ScaleControl, useMapEvent } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, ScaleControl, useMapEvent, useMap } from 'react-leaflet'
 
 const MapEventHandler = ({ onMarkerClick, onChange }) => {
   useMapEvent('click', onMarkerClick);
@@ -7,8 +7,15 @@ const MapEventHandler = ({ onMarkerClick, onChange }) => {
   return null;
 }
 
-export const DataCollectorMap = ({ onChange, location, zoom, centerLocation }) => {
+const ChangeCenterLocation = ({ center, zoom }) => {
+  const map = useMap();
+  map.setView(center, zoom);
+  return null;
+}
+
+export const DataCollectorMap = ({ onChange, location, zoom, initialCenterLocation }) => {
   const [markerLocation, setMarkerLocation] = useState(null);
+  const [centerLocation, setCenterLocation] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(zoom || 13);
 
   useEffect(() => {
@@ -18,7 +25,14 @@ export const DataCollectorMap = ({ onChange, location, zoom, centerLocation }) =
     }
 
     setMarkerLocation(location);
+    setCenterLocation(location);
   }, [location]);
+
+  useEffect(() => {
+    if (initialCenterLocation) {
+      setCenterLocation(initialCenterLocation);
+    }
+  }, [initialCenterLocation]);
 
   const handleClick = (e) =>
     onChange(e.latlng);
@@ -26,9 +40,9 @@ export const DataCollectorMap = ({ onChange, location, zoom, centerLocation }) =
   const handleLocationFound = e =>
     setMarkerLocation(e.latlng);
 
-  return (!!centerLocation || !!markerLocation) && (
+  return !!centerLocation && (
     <MapContainer
-      center={centerLocation || markerLocation}
+      center={centerLocation}
       length={4}
       zoom={zoomLevel}
       scrollWheelZoom={false}
@@ -37,6 +51,8 @@ export const DataCollectorMap = ({ onChange, location, zoom, centerLocation }) =
       <MapEventHandler
         onMarkerClick={handleLocationFound}
         onChange={handleClick} />
+
+      <ChangeCenterLocation center={centerLocation} zoom={zoomLevel} />
 
       <TileLayer
         attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

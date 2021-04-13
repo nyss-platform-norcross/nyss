@@ -8,17 +8,22 @@
   }
 }
 
+.collapsibleContent {
+  padding-top: 0px !important;
+  padding-bottom: 10px !important;
+}
+
 .latLngInput {
   max-width: 190px !important;
   padding-right: 10px;
 }
 
-.geoStructureShrinked {
+.geoStructureSelectShrinked {
   max-width: 400px !important;
 }
 
 .mapLabel {
-  margin-bottom: 10px;
+  margin-bottom: 9px;
 }
 
 .coordinateFieldsContainer {
@@ -36,6 +41,11 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  
+  h6::after {
+    counter-increment: locations;
+    content: "\00a0" counter(locations);
+  }
 }
 
 .expandFilterButton {

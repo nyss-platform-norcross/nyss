@@ -1,4 +1,5 @@
 import formStyles from "../forms/form/Form.module.scss";
+import styles from "./DataCollectorsCreateOrEditPage.module.scss";
 import React, { useState, Fragment, useMemo } from 'react';
 import { connect, useSelector } from "react-redux";
 import {
@@ -42,6 +43,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     villageId: '',
     zoneId: ''
   }]);
+  const [initialDistricts, setInitialDistricts] = useState([]);
 
   useMount(() => {
     props.openCreation(props.projectId);
@@ -83,11 +85,13 @@ const DataCollectorsCreatePageComponent = (props) => {
   }, [props.defaultSupervisorId, props.defaultLocation]);
 
   const addDataCollectorLocation = () => {
+    const previousRegionId = form.fields[`location_${locations.length - 1}_regionId`].value;
+    const previousDistrictId = form.fields[`location_${locations.length - 1}_districtId`].value;
     setLocations([...locations, {
       latitude: '',
       longitude: '',
-      regionId: '',
-      districtId: '',
+      regionId: previousRegionId,
+      districtId: previousDistrictId,
       villageId: '',
       zoneId: ''
     }]);
@@ -226,21 +230,26 @@ const DataCollectorsCreatePageComponent = (props) => {
           </Grid>)}
         </Grid>
 
-        {locations.map((location, number) => (
-          <DataCollectorLocationItem
-            key={`location_${number}`}
-            form={form}
-            location={location}
-            locationNumber={number}
-            totalLocations={locations.length}
-            defaultLocation={centerLocation}
-            regions={props.regions}
-            initialDistricts={[]}
-            initialVillages={[]}
-            initialZones={[]}
-          />
-        ))}
-        <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollector.form.addLocation)}</Button>
+        <Grid container spacing={2} className={styles.locationsContainer}>
+          {locations.map((location, number) => (
+            <DataCollectorLocationItem
+              key={`location_${number}`}
+              form={form}
+              location={location}
+              locationNumber={number}
+              totalLocations={locations.length}
+              defaultLocation={centerLocation}
+              regions={props.regions}
+              initialDistricts={initialDistricts}
+              initialVillages={[]}
+              initialZones={[]}
+              isDefaultCollapsed={false}
+              setInitialDistricts={setInitialDistricts}
+            />
+          ))}
+
+          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollector.form.addLocation)}</Button>
+        </Grid>
 
         <FormActions className={formStyles.shrinked}>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
