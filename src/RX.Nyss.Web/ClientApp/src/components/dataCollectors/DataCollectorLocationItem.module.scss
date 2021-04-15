@@ -1,7 +1,3 @@
-.locationButton {
-  margin-top: 30px !important;
-}
-
 .requiredMapLocation {
   &[data-missing-location=true] {
     border-color: #f44336;
@@ -28,7 +24,7 @@
 
 .coordinateFieldsContainer {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: flex-start;
   flex-wrap: wrap;
 }
@@ -57,4 +53,9 @@
       transform: rotate(180deg);
     }
   }
+}
+
+.removeLocationButton {
+  align-self: flex-end;
+  margin-left: auto !important;
 }

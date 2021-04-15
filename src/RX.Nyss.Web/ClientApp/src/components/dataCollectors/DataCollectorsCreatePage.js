@@ -41,7 +41,8 @@ const DataCollectorsCreatePageComponent = (props) => {
     regionId: '',
     districtId: '',
     villageId: '',
-    zoneId: ''
+    zoneId: '',
+    number: 0
   }]);
   const [initialDistricts, setInitialDistricts] = useState([]);
 
@@ -85,16 +86,21 @@ const DataCollectorsCreatePageComponent = (props) => {
   }, [props.defaultSupervisorId, props.defaultLocation]);
 
   const addDataCollectorLocation = () => {
-    const previousRegionId = form.fields[`location_${locations.length - 1}_regionId`].value;
-    const previousDistrictId = form.fields[`location_${locations.length - 1}_districtId`].value;
+    const previousRegionId = locations.length > 0 ? form.fields[`location_${locations.length - 1}_regionId`].value : '';
+    const previousDistrictId = locations.length > 0 ? form.fields[`location_${locations.length - 1}_districtId`].value : '';
     setLocations([...locations, {
       latitude: '',
       longitude: '',
       regionId: previousRegionId,
       districtId: previousDistrictId,
       villageId: '',
-      zoneId: ''
+      zoneId: '',
+      number: locations.length
     }]);
+  }
+
+  const removeDataCollectorLocation = (location) => {
+    setLocations(locations.filter(l => l.number !== location.number));
   }
 
   const handleSubmit = (e) => {
@@ -231,12 +237,12 @@ const DataCollectorsCreatePageComponent = (props) => {
         </Grid>
 
         <Grid container spacing={2} className={styles.locationsContainer}>
-          {locations.map((location, number) => (
+          {locations.map(location => (
             <DataCollectorLocationItem
-              key={`location_${number}`}
+              key={`location_${location.number}`}
               form={form}
               location={location}
-              locationNumber={number}
+              locationNumber={location.number}
               totalLocations={locations.length}
               defaultLocation={centerLocation}
               regions={props.regions}
@@ -245,6 +251,7 @@ const DataCollectorsCreatePageComponent = (props) => {
               initialZones={[]}
               isDefaultCollapsed={false}
               setInitialDistricts={setInitialDistricts}
+              removeLocation={removeDataCollectorLocation}
             />
           ))}
 

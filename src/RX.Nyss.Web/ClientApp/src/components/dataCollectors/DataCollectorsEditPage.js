@@ -40,7 +40,7 @@ const DataCollectorsEditPageComponent = (props) => {
       return;
     }
 
-    setLocations(props.data.locations);
+    setLocations(props.data.locations.map((l, i) => ({ ...l, number: i })));
 
     const fields = {
       id: props.data.id,
@@ -82,8 +82,13 @@ const DataCollectorsEditPageComponent = (props) => {
         districts: previousLocation.initialFormData.districts,
         villages: [],
         zones: []
-      }
+      },
+      number: locations.length
     }]);
+  }
+
+  const removeDataCollectorLocation = (location) => {
+    setLocations(locations.filter(l => l.number !== location.number));
   }
 
   useEffect(() => {
@@ -220,12 +225,12 @@ const DataCollectorsEditPageComponent = (props) => {
         </Grid>
 
         <Grid container spacing={2} className={styles.locationsContainer}>
-          {locations.map((location, number) => (
+          {locations.map(location => (
             <DataCollectorLocationItem
-              key={`location_${number}`}
+              key={`location_${location.number}`}
               form={form}
               location={location}
-              locationNumber={number}
+              locationNumber={location.number}
               totalLocations={locations.length}
               defaultLocation={centerLocation}
               regions={props.data.formData.regions}
@@ -233,6 +238,7 @@ const DataCollectorsEditPageComponent = (props) => {
               initialVillages={location.initialFormData.villages}
               initialZones={location.initialFormData.zones}
               isDefaultCollapsed={allLocationsCollapsed}
+              removeLocation={removeDataCollectorLocation}
             />
           ))}
 

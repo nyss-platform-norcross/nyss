@@ -623,7 +623,8 @@ export const stringKeys = {
       deployed: "dataCollectors.form.deployed",
       addLocation: "dataCollectors.form.addLocation",
       personalia: "dataCollectors.form.personalia",
-      location: "dataCollectors.form.location"
+      location: "dataCollectors.form.location",
+      removeLocation: "dataCollectors.form.removeLocation"
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",

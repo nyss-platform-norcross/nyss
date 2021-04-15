@@ -1,5 +1,5 @@
 import styles from './DataCollectorLocationItem.module.scss';
-import { Card, CardContent, Grid, IconButton, InputLabel, MenuItem, Typography } from '@material-ui/core';
+import { Button, Card, CardContent, Grid, IconButton, InputLabel, MenuItem, Typography } from '@material-ui/core';
 import { useState, useReducer, useEffect } from 'react';
 import { stringKeys, strings } from '../../strings';
 import { useMount } from '../../utils/lifecycle';
@@ -10,11 +10,11 @@ import { retrieveGpsLocation } from '../../utils/map';
 import { validators } from '../../utils/forms';
 import { ConditionalCollapse } from '../common/conditionalCollapse/ConditionalCollapse';
 import ExpandMore from '@material-ui/icons/ExpandMore';
-import * as http from '../../utils/http';
 import SelectField from '../forms/SelectField';
+import { getFormDistricts, getFormVillages, getFormZones } from './logic/dataCollectorsService';
 
 
-export const DataCollectorLocationItem = ({ form, location, locationNumber, totalLocations, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, setInitialDistricts }) => {
+export const DataCollectorLocationItem = ({ form, location, locationNumber, totalLocations, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, setInitialDistricts, removeLocation }) => {
   const [ready, setReady] = useState(false);
   const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState(null);
@@ -44,7 +44,6 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
     }
   }, null);
 
-
   useMount(() => {
     dispatch({ type: 'latlng', lat: location.latitude, lng: location.longitude });
     setMapCenterLocation(!!defaultLocation ? {
@@ -54,6 +53,10 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
       lat: location.latitude,
       lng: location.longitude
     });
+
+    if (!!location.districtId && !location.villageId) {
+      getFormVillages(location.districtId, setVillages);
+    }
 
     form.addField(`location_${locationNumber}_latitude`, location.latitude, [validators.required, validators.integer, validators.inRange(-90, 90)]);
     form.addField(`location_${locationNumber}_longitude`, location.longitude, [validators.required, validators.integer, validators.inRange(-180, 180)]);
@@ -78,8 +81,8 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
     }
   });
 
-  useEffect(() => setIsExpanded(!isDefaultCollapsed && locationNumber === totalLocations - 1), 
-  [locationNumber, totalLocations, isDefaultCollapsed]);
+  useEffect(() => setIsExpanded(!isDefaultCollapsed && locationNumber === totalLocations - 1),
+    [locationNumber, totalLocations, isDefaultCollapsed]);
 
   useEffect(() => {
     if (form && form.fields && selectedVillage.changed) {
@@ -118,11 +121,10 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
     setVillages([]);
     setZones([]);
 
-    http.get(`/api/nationalSocietyStructure/district/list?regionId=${regionId}`)
-      .then(response => {
-        setDistricts(response.value);
-        setInitialDistricts(response.value);
-      });
+    getFormDistricts(regionId, (districts) => {
+      setDistricts(districts);
+      setInitialDistricts(districts);
+    });
   }
 
   const onDistrictChange = (event) => {
@@ -133,8 +135,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
     setVillages([]);
     setZones([]);
 
-    http.get(`/api/nationalSocietyStructure/village/list?districtId=${districtId}`)
-      .then(response => setVillages(response.value));
+    getFormVillages(districtId, setVillages);
   }
 
   const onVillageChange = (event) => {
@@ -143,8 +144,7 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
 
     setZones([]);
 
-    http.get(`/api/nationalSocietyStructure/zone/list?villageId=${villageId}`)
-      .then(response => setZones(response.value));
+    getFormZones(villageId, setZones);
 
     setSelectedVillage(villageId);
   }
@@ -166,142 +166,147 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
     setIsExpanded(!isExpanded);
   }
 
+  const onRemoveLocation = () => {
+    removeLocation(location);
+  }
+
   if (!ready) {
     return null;
   }
 
   return (
-      <Grid item xs={12}>
-        <Card className={styles.requiredMapLocation} data-missing-location={form.fields[`location_${locationNumber}_latitude`].error !== null || form.fields[`location_${locationNumber}_longitude`].error !== null}>
-          <CardContent className={!isExpanded ? styles.collapsibleContent : ''}>
-            <Grid item xs={12} className={styles.locationHeader}>
-              <Typography variant='h6'>{strings(stringKeys.dataCollector.form.location)}</Typography>
+    <Grid item xs={12}>
+      <Card className={styles.requiredMapLocation} data-missing-location={form.fields[`location_${locationNumber}_latitude`].error !== null || form.fields[`location_${locationNumber}_longitude`].error !== null}>
+        <CardContent className={!isExpanded ? styles.collapsibleContent : ''}>
+          <Grid item xs={12} className={styles.locationHeader}>
+            <Typography variant='h6'>{strings(stringKeys.dataCollector.form.location)}</Typography>
 
-              <Grid item className={styles.expandFilterButton}>
-                <IconButton data-expanded={isExpanded} onClick={onToggleExpand}>
-                  <ExpandMore />
-                </IconButton>
-              </Grid>
-
+            <Grid item className={styles.expandFilterButton}>
+              <IconButton data-expanded={isExpanded} onClick={onToggleExpand}>
+                <ExpandMore />
+              </IconButton>
             </Grid>
-            {!isExpanded && (
+
+          </Grid>
+          {!isExpanded && (
+            <Grid item xs={12}>
+              <Typography variant='subtitle2'>{renderCollapsedLocationData()}</Typography>
+            </Grid>
+          )}
+
+          <ConditionalCollapse collapsible expanded={isExpanded} className={styles.collapsibleContainer}>
+            <Grid container spacing={2}>
+
               <Grid item xs={12}>
-                <Typography variant='subtitle2'>{renderCollapsedLocationData()}</Typography>
+                <SelectField
+                  className={styles.geoStructureSelectShrinked}
+                  label={strings(stringKeys.dataCollector.form.region)}
+                  field={form.fields[`location_${locationNumber}_regionId`]}
+                  name='regionId'
+                  onChange={onRegionChange}
+                >
+                  {regions.map(region => (
+                    <MenuItem key={`region_${region.id}`} value={region.id.toString()}>
+                      {region.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
               </Grid>
-            )}
 
-            <ConditionalCollapse collapsible expanded={isExpanded} className={styles.collapsibleContainer}>
-              <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <SelectField
+                  className={styles.geoStructureSelectShrinked}
+                  label={strings(stringKeys.dataCollector.form.district)}
+                  field={form.fields[`location_${locationNumber}_districtId`]}
+                  name='districtId'
+                  onChange={onDistrictChange}
+                >
+                  {districts.map(district => (
+                    <MenuItem key={`district_${district.id}`} value={district.id.toString()}>
+                      {district.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
 
-                <Grid item xs={12}>
-                  <SelectField
-                    className={styles.geoStructureSelectShrinked}
-                    label={strings(stringKeys.dataCollector.form.region)}
-                    field={form.fields[`location_${locationNumber}_regionId`]}
-                    name='regionId'
-                    onChange={onRegionChange}
-                  >
-                    {regions.map(region => (
-                      <MenuItem key={`region_${region.id}`} value={region.id.toString()}>
-                        {region.name}
-                      </MenuItem>
-                    ))}
-                  </SelectField>
-                </Grid>
+              <Grid item xs={12}>
+                <SelectField
+                  className={styles.geoStructureSelectShrinked}
+                  label={strings(stringKeys.dataCollector.form.village)}
+                  field={form.fields[`location_${locationNumber}_villageId`]}
+                  name='villageId'
+                  onChange={onVillageChange}
+                >
+                  {villages.map(village => (
+                    <MenuItem key={`village_${village.id}`} value={village.id.toString()}>
+                      {village.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
 
-                <Grid item xs={12}>
-                  <SelectField
-                    className={styles.geoStructureSelectShrinked}
-                    label={strings(stringKeys.dataCollector.form.district)}
-                    field={form.fields[`location_${locationNumber}_districtId`]}
-                    name='districtId'
-                    onChange={onDistrictChange}
-                  >
-                    {districts.map(district => (
-                      <MenuItem key={`district_${district.id}`} value={district.id.toString()}>
-                        {district.name}
-                      </MenuItem>
-                    ))}
-                  </SelectField>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <SelectField
-                    className={styles.geoStructureSelectShrinked}
-                    label={strings(stringKeys.dataCollector.form.village)}
-                    field={form.fields[`location_${locationNumber}_villageId`]}
-                    name='villageId'
-                    onChange={onVillageChange}
-                  >
-                    {villages.map(village => (
-                      <MenuItem key={`village_${village.id}`} value={village.id.toString()}>
-                        {village.name}
-                      </MenuItem>
-                    ))}
-                  </SelectField>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <SelectField
-                    className={styles.geoStructureSelectShrinked}
-                    label={strings(stringKeys.dataCollector.form.zone)}
-                    field={form.fields[`location_${locationNumber}_zoneId`]}
-                    name='zoneId'
-                  >
-                    <MenuItem value=''>
-                      &nbsp;
+              <Grid item xs={12}>
+                <SelectField
+                  className={styles.geoStructureSelectShrinked}
+                  label={strings(stringKeys.dataCollector.form.zone)}
+                  field={form.fields[`location_${locationNumber}_zoneId`]}
+                  name='zoneId'
+                >
+                  <MenuItem value=''>
+                    &nbsp;
                       </MenuItem>
 
-                    {zones.map(zone => (
-                      <MenuItem key={`zone_${zone.id}`} value={zone.id.toString()}>
-                        {zone.name}
-                      </MenuItem>
-                    ))}
-                  </SelectField>
-                </Grid>
+                  {zones.map(zone => (
+                    <MenuItem key={`zone_${zone.id}`} value={zone.id.toString()}>
+                      {zone.name}
+                    </MenuItem>
+                  ))}
+                </SelectField>
+              </Grid>
 
-                <Grid item xs={12}>
-                  <InputLabel className={styles.mapLabel}>{strings(stringKeys.dataCollector.form.selectLocation)}</InputLabel>
-                  <DataCollectorMap
-                    onChange={onLocationChange}
-                    location={mapLocation}
-                    initialCenterLocation={mapCenterLocation}
-                    zoom={6}
+              <Grid item xs={12}>
+                <InputLabel className={styles.mapLabel}>{strings(stringKeys.dataCollector.form.selectLocation)}</InputLabel>
+                <DataCollectorMap
+                  onChange={onLocationChange}
+                  location={mapLocation}
+                  initialCenterLocation={mapCenterLocation}
+                  zoom={6}
+                />
+              </Grid>
+
+              <Grid item xs={12} className={styles.coordinateFieldsContainer}>
+                <Grid item xs={12} md={3} className={styles.latLngInput}>
+                  <TextInputField
+                    label={strings(stringKeys.dataCollector.form.latitude)}
+                    name='latitude'
+                    field={form.fields[`location_${locationNumber}_latitude`]}
+                    type='number'
+                    inputMode={'decimal'}
                   />
                 </Grid>
-
-                <Grid item xs={12} className={styles.coordinateFieldsContainer}>
-                  <Grid item xs={12} md={3} className={styles.latLngInput}>
-                    <TextInputField
-                      label={strings(stringKeys.dataCollector.form.latitude)}
-                      name='latitude'
-                      field={form.fields[`location_${locationNumber}_latitude`]}
-                      type='number'
-                      inputMode={'decimal'}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={3} className={styles.latLngInput}>
-                    <TextInputField
-                      label={strings(stringKeys.dataCollector.form.longitude)}
-                      name='longitude'
-                      field={form.fields[`location_${locationNumber}_longitude`]}
-                      type='number'
-                      inputMode={'decimal'}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={3} className={styles.locationButton}>
-                    <TableActionsButton
-                      onClick={onRetrieveLocation}
-                      isFetching={isFetchingLocation}
-                    >
-                      {strings(stringKeys.dataCollector.form.retrieveLocation)}
-                    </TableActionsButton>
-                  </Grid>
+                <Grid item xs={12} md={3} className={styles.latLngInput}>
+                  <TextInputField
+                    label={strings(stringKeys.dataCollector.form.longitude)}
+                    name='longitude'
+                    field={form.fields[`location_${locationNumber}_longitude`]}
+                    type='number'
+                    inputMode={'decimal'}
+                  />
                 </Grid>
+                <Grid item xs={12} md={3}>
+                  <TableActionsButton
+                    onClick={onRetrieveLocation}
+                    isFetching={isFetchingLocation}
+                  >
+                    {strings(stringKeys.dataCollector.form.retrieveLocation)}
+                  </TableActionsButton>
+                </Grid>
+                <Button className={styles.removeLocationButton} onClick={onRemoveLocation}>{strings(stringKeys.dataCollector.form.removeLocation)}</Button>
               </Grid>
-            </ConditionalCollapse>
-          </CardContent>
-        </Card>
-      </Grid>
+            </Grid>
+          </ConditionalCollapse>
+        </CardContent>
+      </Card>
+    </Grid>
   );
 }

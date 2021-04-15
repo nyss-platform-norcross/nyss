@@ -1,4 +1,5 @@
 import { performanceStatus } from "./dataCollectorsConstants";
+import * as http from '../../../utils/http';
 
 export const getBirthDecades = () => {
   const yearMax = Math.floor(new Date().getFullYear() / 10) * 10;
@@ -36,3 +37,15 @@ export const getSaveFormModel = (values, dataCollectorType, locations) =>
       zoneId: values[`location_${number}_zoneId`] ? parseInt(values[`location_${number}_zoneId`]) : null
     }))
   });
+
+export const getFormDistricts = (regionId, callback) =>
+  http.get(`/api/nationalSocietyStructure/district/list?regionId=${regionId}`)
+    .then(response => callback(response.value));
+
+export const getFormVillages = (districtId, callback) =>
+  http.get(`/api/nationalSocietyStructure/village/list?districtId=${districtId}`)
+    .then(response => callback(response.value));
+
+export const getFormZones = (villageId, callback) =>
+  http.get(`/api/nationalSocietyStructure/zone/list?villageId=${villageId}`)
+    .then(response => callback(response.value));
