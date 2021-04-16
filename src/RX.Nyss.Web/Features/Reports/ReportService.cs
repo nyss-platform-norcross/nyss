@@ -95,34 +95,6 @@ namespace RX.Nyss.Web.Features.Reports
             return result;
         }
 
-        private async Task<IQueryable<RawReport>> BuildBaseQuery(ReportListFilterRequestDto filter, int projectId) {
-            if(filter.ReportsType == ReportListType.UnknownSender) {
-                var nationalSocietyId = await _nyssContext.Projects.Where(p => p.Id == projectId)
-                                                                   .Select(p => p.NationalSocietyId)
-                                                                   .SingleOrDefaultAsync();
-                return _nyssContext.RawReports
-                    .Where(r => r.NationalSociety.Id == nationalSocietyId)
-                    .Where(r => r.IsTraining == null || r.IsTraining == false)
-                    .FilterByReportType(filter.ReportsType)
-                    .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
-                    .Where(r => filter.Status
-                        ? r.Report != null && !r.Report.MarkedAsError
-                        : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
-                    .FilterByArea(MapToArea(filter.Area));
-            } 
-            else {
-                return _nyssContext.RawReports
-                    .FilterByProject(projectId)
-                    .FilterByHealthRisk(filter.HealthRiskId)
-                    .FilterByTrainingMode(filter.IsTraining)
-                    .FilterByReportType(filter.ReportsType)
-                    .FilterByArea(MapToArea(filter.Area))
-                    .Where(r => filter.Status
-                        ? r.Report != null && !r.Report.MarkedAsError
-                        : r.Report == null || r.Report.MarkedAsError);
-            }
-        }
-
         public async Task<Result<PaginatedList<ReportListResponseDto>>> List(int projectId, int pageNumber, ReportListFilterRequestDto filter)
         {
             var currentUserName = _authorizationService.GetCurrentUserName();
@@ -137,7 +109,7 @@ namespace RX.Nyss.Web.Features.Reports
             var userApplicationLanguageCode = await _userService.GetUserApplicationLanguageCode(currentUserName);
             var stringResources = (await _stringsResourcesService.GetStringsResources(userApplicationLanguageCode)).Value;
 
-            var baseQuery = await BuildBaseQuery(filter, projectId);
+            var baseQuery = await BuildRawReportsBaseQuery(filter, projectId);
 
             var currentUserOrganization = await _nyssContext.Projects
                 .Where(p => p.Id == projectId)
@@ -206,10 +178,11 @@ namespace RX.Nyss.Web.Features.Reports
                 .Page(pageNumber, rowsPerPage)
                 .ToListAsync<IReportListResponseDto>();
 
-            if(filter.ReportsType != ReportListType.UnknownSender){
-                AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources); 
+            if(filter.ReportsType != ReportListType.UnknownSender)
+            {
+                AnonymizeCrossOrganizationReports(reports, currentUserOrganization?.Name, stringResources);
             }
-            
+
             return Success(reports.Cast<ReportListResponseDto>().AsPaginatedList(pageNumber, await baseQuery.CountAsync(), rowsPerPage));
         }
 
@@ -399,6 +372,35 @@ namespace RX.Nyss.Web.Features.Reports
 
             await _nyssContext.SaveChangesAsync();
             return Success();
+        }
+
+        private async Task<IQueryable<RawReport>> BuildRawReportsBaseQuery(ReportListFilterRequestDto filter, int projectId) {
+            if(filter.ReportsType == ReportListType.UnknownSender)
+            {
+                var nationalSocietyId = await _nyssContext.Projects
+                    .Where(p => p.Id == projectId)
+                    .Select(p => p.NationalSocietyId)
+                    .SingleOrDefaultAsync();
+
+                return _nyssContext.RawReports
+                    .Where(r => r.NationalSociety.Id == nationalSocietyId)
+                    .FilterByReportType(filter.ReportsType)
+                    .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
+                    .Where(r => filter.Status
+                        ? r.Report != null && !r.Report.MarkedAsError
+                        : r.Report == null || (r.Report != null && r.Report.MarkedAsError))
+                    .FilterByArea(MapToArea(filter.Area));
+            }
+
+            return _nyssContext.RawReports
+                .FilterByProject(projectId)
+                .FilterByHealthRisk(filter.HealthRiskId)
+                .FilterByTrainingMode(filter.IsTraining)
+                .FilterByReportType(filter.ReportsType)
+                .FilterByArea(MapToArea(filter.Area))
+                .Where(r => filter.Status
+                    ? r.Report != null && !r.Report.MarkedAsError
+                    : r.Report == null || r.Report.MarkedAsError);
         }
 
         private static string GetStringResource(IDictionary<string, StringResourceValue> stringResources, string key) =>
