@@ -6,6 +6,7 @@ using OfficeOpenXml.Style;
 using RX.Nyss.Web.Configuration;
 using RX.Nyss.Web.Features.Alerts.Dto;
 using RX.Nyss.Web.Features.Reports.Dto;
+using RX.Nyss.Web.Features.Common.Dto;
 
 namespace RX.Nyss.Web.Services
 {
