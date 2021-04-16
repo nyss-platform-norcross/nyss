@@ -385,7 +385,7 @@ namespace RX.Nyss.Web.Features.Reports
                 return _nyssContext.RawReports
                     .Where(r => r.NationalSociety.Id == nationalSocietyId)
                     .FilterByReportType(filter.ReportsType)
-                    .Where(r => filter.HealthRiskId == null || r.Report.ProjectHealthRisk.HealthRiskId == filter.HealthRiskId)
+                    .FilterByHealthRisk(filter.HealthRiskId)
                     .Where(r => filter.Status
                         ? r.Report != null && !r.Report.MarkedAsError
                         : r.Report == null || (r.Report != null && r.Report.MarkedAsError))

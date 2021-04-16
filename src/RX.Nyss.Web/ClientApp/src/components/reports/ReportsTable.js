@@ -161,8 +161,7 @@ export const ReportsTable = ({ isListFetching, isMarkingAsError, markAsError, go
                 <TableCell>
                   {row.dataCollectorDisplayName}
                   {!row.isAnonymized && row.dataCollectorDisplayName ? <br /> : ""}
-                  {!row.isAnonymized && row.phoneNumber}
-                  {filters.reportsType === ReportListType.unknownSender && row.phoneNumber}
+                  {(!row.isAnonymized || filters.reportsType === ReportListType.unknownSender) && row.phoneNumber}
                 </TableCell>
                 <TableCell>{dashIfEmpty(row.region, row.district, row.village, row.zone)}</TableCell>
                 <TableCell>{dashIfEmpty(row.healthRiskName)}</TableCell>
