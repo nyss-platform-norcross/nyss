@@ -178,7 +178,7 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                         await _queuePublisherService.SendSms(recipients, gatewaySetting, feedbackMessage);
                     }
 
-                    if (alertData.Alert != null)
+                    if (alertData != null && alertData.Alert != null)
                     {
                         if (alertData.IsExistingAlert)
                         {
