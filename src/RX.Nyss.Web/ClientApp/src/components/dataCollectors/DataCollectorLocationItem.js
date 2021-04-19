@@ -6,7 +6,6 @@ import { useMount } from '../../utils/lifecycle';
 import { TableActionsButton } from '../common/tableActions/TableActionsButton';
 import TextInputField from '../forms/TextInputField';
 import { DataCollectorMap } from './DataCollectorMap';
-import { retrieveGpsLocation } from '../../utils/map';
 import { validators } from '../../utils/forms';
 import { ConditionalCollapse } from '../common/conditionalCollapse/ConditionalCollapse';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -16,7 +15,6 @@ import { getFormDistricts, getFormVillages, getFormZones } from './logic/dataCol
 
 export const DataCollectorLocationItem = ({ form, location, locationNumber, totalLocations, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, setInitialDistricts, removeLocation }) => {
   const [ready, setReady] = useState(false);
-  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [defaultCollapsed, setDefaultCollapsed] = useState(isDefaultCollapsed);
@@ -94,21 +92,6 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
   const onLocationChange = (e) => {
     form.fields[`location_${locationNumber}_latitude`].update(e.lat);
     form.fields[`location_${locationNumber}_longitude`].update(e.lng);
-  }
-
-  const onRetrieveLocation = () => {
-    setIsFetchingLocation(true);
-    retrieveGpsLocation(location => {
-      if (location === null) {
-        setIsFetchingLocation(false);
-        return;
-      }
-      const lat = location.coords.latitude;
-      const lng = location.coords.longitude;
-      form.fields[`location_${locationNumber}_latitude`].update(lat);
-      form.fields[`location_${locationNumber}_longitude`].update(lng);
-      setIsFetchingLocation(false);
-    });
   }
 
   const onRegionChange = (event) => {
@@ -292,14 +275,6 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
                     type='number'
                     inputMode={'decimal'}
                   />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                  <TableActionsButton
-                    onClick={onRetrieveLocation}
-                    isFetching={isFetchingLocation}
-                  >
-                    {strings(stringKeys.dataCollector.form.retrieveLocation)}
-                  </TableActionsButton>
                 </Grid>
                 <Button className={styles.removeLocationButton} onClick={onRemoveLocation}>{strings(stringKeys.dataCollector.form.removeLocation)}</Button>
               </Grid>

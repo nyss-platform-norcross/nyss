@@ -624,7 +624,10 @@ export const stringKeys = {
       addLocation: "dataCollectors.form.addLocation",
       personalia: "dataCollectors.form.personalia",
       location: "dataCollectors.form.location",
-      removeLocation: "dataCollectors.form.removeLocation"
+      removeLocation: "dataCollectors.form.removeLocation",
+      locationsHeader: "dataCollectors.form.locationsHeader",
+      showYourLocation: "dataCollectors.form.showYourLocation",
+      retrievingLocation: "dataCollectors.form.retrievingLocation"
     },
     list: {
       dataCollectorType: "dataCollectors.list.dataCollectorType",

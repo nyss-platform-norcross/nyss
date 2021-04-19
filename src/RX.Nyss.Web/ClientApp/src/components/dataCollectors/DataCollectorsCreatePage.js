@@ -237,6 +237,10 @@ const DataCollectorsCreatePageComponent = (props) => {
         </Grid>
 
         <Grid container spacing={2} className={styles.locationsContainer}>
+          <Grid item xs={12}>
+            <Typography variant="h6">{strings(stringKeys.dataCollector.form.locationsHeader)}</Typography>
+          </Grid>
+
           {locations.map(location => (
             <DataCollectorLocationItem
               key={`location_${location.number}`}
