@@ -24,7 +24,7 @@ export const SendReportDialog = ({ close, sendReport }) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down('xs'))
   dayjs.extend(utc);
   const isFetching = useSelector(state => state.reports.formFetching);
-  const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}` })));
+  const dataCollectors = useSelector(state => state.reports.sendReport.dataCollectors.map(dc => ({ title: `${dc.name} / ${dc.phoneNumber}`, id: dc.id })));
   const formData = useSelector(state => state.reports.sendReport.formData);
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
   const isSending = useSelector(state => state.reports.formSaving);
@@ -65,8 +65,9 @@ export const SendReportDialog = ({ close, sendReport }) => {
     };
 
     const values = form.getValues();
+    const dataCollector = dataCollectors.filter(dc => dc.title === values.dataCollector)[0];
     sendReport({
-      sender: values.dataCollector.split('/')[1].trim(),
+      dataCollectorId: dataCollector.id,
       text: values.message,
       timestamp: dayjs(`${date} ${values.time}`).utc().format('YYYYMMDDHHmmss'),
       modemId: !!values.gatewayModemId ? parseInt(values.gatewayModemId) : null,
