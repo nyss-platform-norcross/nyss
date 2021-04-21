@@ -4,7 +4,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
 {
     public class SendReportRequestDto
     {
-        public string Sender { get; set; }
+        public int DataCollectorId { get; set; }
         public string Timestamp { get; set; }
         public string Text { get; set; }
         public int? ModemId { get; set; }
@@ -14,7 +14,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
         {
             public Validator()
             {
-                RuleFor(x => x.Sender).NotNull().NotEmpty();
+                RuleFor(x => x.DataCollectorId).GreaterThan(0);
                 RuleFor(x => x.Timestamp).NotNull().NotEmpty();
                 RuleFor(x => x.Text).NotNull().NotEmpty();
                 RuleFor(x => x.ModemId).NotEmpty().When(x => x.ModemId.HasValue);

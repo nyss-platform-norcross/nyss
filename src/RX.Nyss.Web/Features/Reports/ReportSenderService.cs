@@ -50,13 +50,17 @@ namespace RX.Nyss.Web.Features.Reports
             using var httpClient = _httpClientFactory.CreateClient();
             var isHeadSupervisor = _authorizationService.IsCurrentUserInRole(Role.HeadSupervisor);
 
-            var nationalSociety = await _nyssContext.DataCollectors
-                .Where(dc => dc.PhoneNumber == report.Sender)
-                .Select(dc => dc.Project.NationalSociety)
+            var dataCollectorData = await _nyssContext.DataCollectors
+                .Where(dc => dc.Id == report.DataCollectorId)
+                .Select(dc => new
+                {
+                    DataCollectorId = dc.Id,
+                    NationalSocietyId = dc.Project.NationalSocietyId
+                })
                 .SingleOrDefaultAsync();
             var gatewayData = await _nyssContext.GatewaySettings
                 .Include(gs => gs.Modems)
-                .Where(gs => gs.NationalSociety == nationalSociety)
+                .Where(gs => gs.NationalSocietyId == dataCollectorData.NationalSocietyId)
                 .Select(gs => new
                 {
                     ApiKey = gs.ApiKey,
@@ -64,23 +68,22 @@ namespace RX.Nyss.Web.Features.Reports
                 })
                 .FirstOrDefaultAsync();
 
-            if (string.IsNullOrEmpty(gatewayData.ApiKey))
+            if (gatewayData == null)
             {
                 return Error(ResultKey.Report.NoGatewaySettingFoundForNationalSociety);
             }
 
             var baseUri = new Uri(_config.FuncAppBaseUrl);
-            var requestUri = new Uri(baseUri, new Uri("/api/enqueueSmsEagleReport", UriKind.Relative));
+            var requestUri = new Uri(baseUri, new Uri("/api/enqueueNyssReport", UriKind.Relative));
             var reportProps = new Dictionary<string, string>
             {
-                { "Sender", report.Sender },
+                { "Datacollectorid", dataCollectorData.DataCollectorId.ToString() },
                 { "Timestamp", report.Timestamp },
-                { "ApiKey", gatewayData.ApiKey },
                 { "Text", report.Text },
-                { "Source", "Nyss" },
                 { "Modemno", gatewayData.Modem?.ModemId.ToString() },
                 { "Headsupervisor", isHeadSupervisor ? "true" : null },
-                { "UtcOffset", report.UtcOffset.ToString() }
+                { "UtcOffset", report.UtcOffset.ToString() },
+                { "Apikey", gatewayData.ApiKey }
             };
             var content = new FormUrlEncodedContent(reportProps);
 
