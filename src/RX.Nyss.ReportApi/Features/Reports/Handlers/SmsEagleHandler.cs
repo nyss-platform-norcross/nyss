@@ -238,6 +238,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 .ThenInclude(s => s.HeadSupervisor)
                 .Include(dc => dc.Project)
                 .Include(dc => dc.DataCollectorLocations)
+                .ThenInclude(dcl => dcl.Village)
+                .Include(dc => dc.DataCollectorLocations)
+                .ThenInclude(dcl => dcl.Zone)
                 .SingleOrDefaultAsync(dc => dc.PhoneNumber == phoneNumber ||
                     (dc.AdditionalPhoneNumber != null && dc.AdditionalPhoneNumber == phoneNumber));
 

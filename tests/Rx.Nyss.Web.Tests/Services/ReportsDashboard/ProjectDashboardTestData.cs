@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MockQueryable.NSubstitute;
+using NetTopologySuite.Geometries;
 using NSubstitute;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
@@ -417,6 +418,7 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                     {
                         new DataCollectorLocation
                         {
+                            Location = new Point(0, 0),
                             Village = i == numberOfDataCollectors
                                 ? Zones[i - 2].Village
                                 : Zones[i - 1].Village,
@@ -437,7 +439,8 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 {
                     Id = i,
                     DataCollector = DataCollectors[(i - 1) / 2],
-                    Status = ReportStatus.New
+                    Status = ReportStatus.New,
+                    Location = DataCollectors[(i - 1) / 2].DataCollectorLocations.First().Location
                 })
                 .ToList();
 
