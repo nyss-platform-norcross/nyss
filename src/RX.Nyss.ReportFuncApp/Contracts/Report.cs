@@ -11,6 +11,7 @@
 
     public enum ReportSource
     {
-        SmsEagle
+        SmsEagle,
+        Nyss
     }
 }

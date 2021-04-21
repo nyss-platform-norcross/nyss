@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -8,27 +8,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.Common.Utils.DataContract;
+using RX.Nyss.FuncApp.Configuration;
 using RX.Nyss.FuncApp.Contracts;
 
 namespace RX.Nyss.FuncApp
 {
-    public class ReportReceiver
+    public class NyssReportReceiver
     {
         private const string ApiKeyQueryParameterName = "apikey";
-        private readonly ILogger<ReportReceiver> _logger;
+        private readonly ILogger<NyssReportReceiver> _logger;
         private readonly IConfig _config;
 
-        public ReportReceiver(ILogger<ReportReceiver> logger, IConfig config)
+        public NyssReportReceiver(ILogger<NyssReportReceiver> logger, IConfig config)
         {
             _logger = logger;
             _config = config;
         }
 
-        [FunctionName("EnqueueSmsEagleReport")]
+        [FunctionName("EnqueueNyssReport")]
         public async Task<IActionResult> EnqueueSmsEagleReport(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "enqueueSmsEagleReport")] HttpRequestMessage httpRequest,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "enqueueNyssReport")] HttpRequestMessage httpRequest,
             [ServiceBus("%SERVICEBUS_REPORTQUEUE%", Connection = "SERVICEBUS_CONNECTIONSTRING")] IAsyncCollector<Report> reportQueue,
             [Blob("%AuthorizedApiKeysBlobPath%", FileAccess.Read)] string authorizedApiKeys)
         {
@@ -36,12 +36,12 @@ namespace RX.Nyss.FuncApp
             var contentLength = httpRequest.Content.Headers.ContentLength;
             if (contentLength == null || contentLength > maxContentLength)
             {
-                _logger.Log(LogLevel.Warning, $"Received an SMS Eagle request with length more than {maxContentLength} bytes. (length: {contentLength.ToString() ?? "N/A"})");   
+                _logger.Log(LogLevel.Warning, $"Received a Nyss request with length more than {maxContentLength} bytes. (length: {contentLength.ToString() ?? "N/A"})");
                 return new BadRequestResult();
             }
 
             var httpRequestContent = await httpRequest.Content.ReadAsStringAsync();
-            _logger.Log(LogLevel.Debug, $"Received SMS Eagle report: {httpRequestContent}.{Environment.NewLine}HTTP request: {httpRequest}");
+            _logger.Log(LogLevel.Debug, $"Received Nyss report: {httpRequestContent}.{Environment.NewLine}HTTP request: {httpRequest}");
 
             if (string.IsNullOrWhiteSpace(httpRequestContent))
             {
@@ -59,7 +59,7 @@ namespace RX.Nyss.FuncApp
             var reportMessage = new Report
             {
                 Content = httpRequestContent,
-                ReportSource = ReportSource.SmsEagle
+                ReportSource = ReportSource.Nyss
             };
 
             await reportQueue.AddAsync(reportMessage);
@@ -80,13 +80,13 @@ namespace RX.Nyss.FuncApp
 
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                _logger.Log(LogLevel.Warning, "Received a SMS Eagle report with an empty API key.");
+                _logger.Log(LogLevel.Warning, "Received a Nyss report with an empty API key.");
                 return false;
             }
 
             if (!authorizedApiKeyList.Contains(apiKey))
             {
-                _logger.Log(LogLevel.Warning, $"Received a SMS Eagle report with not authorized API key: {apiKey}.");
+                _logger.Log(LogLevel.Warning, $"Received a Nyss report with not authorized API key: {apiKey}.");
                 return false;
             }
 
