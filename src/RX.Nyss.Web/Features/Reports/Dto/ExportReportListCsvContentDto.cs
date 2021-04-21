@@ -4,6 +4,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
 {
     public class ExportReportListCsvContentDto
     {
+        public int Id { get; set; }
         public string Date { get; set; }
         public string Time { get; set; }
         public int EpiWeek { get; set; }

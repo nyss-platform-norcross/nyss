@@ -139,6 +139,7 @@ namespace RX.Nyss.Web.Features.Reports
                     var report = (ExportReportListResponseDto)r;
                     return new ExportDcpReportListCsvContentDto
                     {
+                        Id = r.Id,
                         Date = r.DateTime.ToString("yyyy-MM-dd"),
                         Time = report.DateTime.ToString("HH:mm"),
                         EpiWeek = report.EpiYear,
@@ -177,6 +178,7 @@ namespace RX.Nyss.Web.Features.Reports
                 var report = (ExportReportListResponseDto)r;
                 return new ExportReportListCsvContentDto
                 {
+                    Id = r.Id,
                     Date = r.DateTime.ToString("yyyy-MM-dd"),
                     Time = report.DateTime.ToString("HH:mm"),
                     EpiWeek = report.EpiYear,
@@ -249,6 +251,7 @@ namespace RX.Nyss.Web.Features.Reports
             {
                 return new List<string>
                 {
+                    GetStringResource(stringResources, "reports.export.id"),
                     GetStringResource(stringResources, "reports.export.date"),
                     GetStringResource(stringResources, "reports.export.time"),
                     GetStringResource(stringResources, "reports.export.epiYear"),
@@ -280,6 +283,7 @@ namespace RX.Nyss.Web.Features.Reports
 
             return new List<string>
             {
+                GetStringResource(stringResources, "reports.export.id"),
                 GetStringResource(stringResources, "reports.export.date"),
                 GetStringResource(stringResources, "reports.export.time"),
                 GetStringResource(stringResources, "reports.export.epiYear"),

@@ -5,6 +5,7 @@ namespace RX.Nyss.Web.Features.Reports.Dto
 {
     public interface IReportListResponseDto
     {
+        int Id { get; set; }
         DateTime DateTime { get; set; }
         string Region { get; set; }
         string District { get; set; }
