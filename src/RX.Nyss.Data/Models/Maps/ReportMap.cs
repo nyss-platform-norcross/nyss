@@ -35,8 +35,7 @@ namespace RX.Nyss.Data.Models.Maps
                 .HasDefaultValue(2020);
 
             builder.Property(x => x.PhoneNumber)
-                .HasMaxLength(20)
-                .IsRequired();
+                .HasMaxLength(20);
 
             builder.Property(x => x.ReportType)
                 .HasConversion<string>()
