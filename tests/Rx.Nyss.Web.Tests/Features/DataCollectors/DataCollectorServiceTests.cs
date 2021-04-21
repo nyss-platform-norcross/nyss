@@ -347,6 +347,36 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
             await _nyssContextMock.Received(1).AddAsync(Arg.Any<DataCollector>());
         }
 
+        [Theory]
+        [InlineData(DataCollectorType.Human, "Human")]
+        [InlineData(DataCollectorType.CollectionPoint, null)]
+        public async Task CreateDataCollector_WhenPhoneNumberIsEmpty_ShouldReturnSuccess(DataCollectorType type, string displayName)
+        {
+            // Arrange
+            var dataCollector = new CreateDataCollectorRequestDto
+            {
+                DataCollectorType = type,
+                PhoneNumber = null,
+                DisplayName = displayName,
+                SupervisorId = SupervisorId,
+                Locations = new List<DataCollectorLocationRequestDto>
+                {
+                    new DataCollectorLocationRequestDto
+                    {
+                        VillageId = _nyssContextMock.Villages.ToList()[0].Id,
+                        Latitude = 15,
+                        Longitude = 45
+                    }
+                }
+            };
+
+            // Act
+            await _dataCollectorService.Create(ProjectId, dataCollector);
+
+            // Assert
+            await _nyssContextMock.Received(1).AddAsync(Arg.Any<DataCollector>());
+        }
+
         [Fact]
         public void EditDataCollector_WhenDataCollectorDoesNotExist_ShouldThrowException()
         {
@@ -382,6 +412,45 @@ namespace RX.Nyss.Web.Tests.Features.DataCollectors
                 Id = DataCollectorWithoutReportsId,
                 DisplayName = displayName,
                 PhoneNumber = DataCollectorPhoneNumber1,
+                SupervisorId = SupervisorId,
+                Locations = new List<DataCollectorLocationRequestDto>
+                {
+                    new DataCollectorLocationRequestDto
+                    {
+                        VillageId = _nyssContextMock.Villages.ToList()[0].Id,
+                        Latitude = 15,
+                        Longitude = 45
+                    },
+                    new DataCollectorLocationRequestDto
+                    {
+                        Id = 1,
+                        VillageId = _nyssContextMock.Villages.ToList()[0].Id,
+                        Latitude = 15,
+                        Longitude = 45
+                    }
+                }
+            };
+
+            // Act
+            var result = await _dataCollectorService.Edit(dataCollector);
+
+            // Assert
+            result.IsSuccess.ShouldBeTrue();
+            result.Message.Key.ShouldBe(ResultKey.DataCollector.EditSuccess);
+        }
+
+        [Theory]
+        [InlineData(DataCollectorType.Human, "Human")]
+        [InlineData(DataCollectorType.CollectionPoint, null)]
+        public async Task EditDataCollector_WhenPhoneNumberIsEmpty_ShouldReturnSuccess(DataCollectorType type, string displayName)
+        {
+            // Arrange
+            var dataCollector = new EditDataCollectorRequestDto
+            {
+                DataCollectorType = type,
+                Id = DataCollectorWithoutReportsId,
+                DisplayName = displayName,
+                PhoneNumber = null,
                 SupervisorId = SupervisorId,
                 Locations = new List<DataCollectorLocationRequestDto>
                 {
