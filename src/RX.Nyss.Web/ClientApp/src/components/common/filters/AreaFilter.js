@@ -7,8 +7,10 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { TextField, Menu, InputAdornment } from "@material-ui/core";
+import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import {TextField, Menu, InputAdornment} from "@material-ui/core";
 import { strings, stringKeys } from "../../../strings";
+import {IconTreeItem} from "../icon/IconTreeItem";
 
 const StructureTreeItem = ({ nodeId, data, label, onSelect, isSelected, children }) => {
   const handleChange = (e) => {
@@ -113,10 +115,19 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
           <Fragment>
             <TreeItem
               className={!selectedItemKey ? styles.selected : null}
-              nodeId="none"
+              nodeId='none'
               onClick={handleChangeToEmpty}
               label={strings(stringKeys.filters.area.all)}>
             </TreeItem>
+
+            <IconTreeItem
+              name='UnknownLocation'
+              nodeId='unknown'
+              className={!selectedItemKey ? styles.selected : null}
+              onSelect={handleChange}
+              labelText={strings(stringKeys.filters.area.unknown)}
+              labelIcon={ErrorOutlineIcon}
+            />
 
             {regions.map(region => ({ key: `region_${region.id}`, data: region })).map(region => (
               <StructureTreeItem
@@ -133,6 +144,7 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
                     isSelected={selectedItemKey === district.key}
                     onSelect={handleChange}
                     label={district.name}>
+
                     {district.data.villages.map(village => ({ key: `village_${village.id}`, data: village })).map(village => (
                       <StructureTreeItem
                         key={village.key}
@@ -140,6 +152,7 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
                         isSelected={selectedItemKey === village.key}
                         onSelect={handleChange}
                         label={village.name}>
+
                         {village.data.zones.map(zone => ({ key: `zone_${zone.id}`, data: zone })).map(zone => (
                           <StructureTreeItem
                             key={zone.key}
