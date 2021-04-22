@@ -12,7 +12,6 @@ namespace RX.Nyss.Web.Features.Common.Dto
         {
             public Validator()
             {
-                RuleFor(a => a.Id).GreaterThan(0);
                 RuleFor(a => a.Type).IsInEnum();
             }
         }
