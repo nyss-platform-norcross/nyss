@@ -71,6 +71,9 @@ namespace RX.Nyss.Web.Features.Common.Extensions
                 AreaType.Zone =>
                 reports.Where(r => r.Zone.Id == area.AreaId),
 
+                AreaType.Unknown =>
+                    reports.Where(r => r.VillageId  == null),
+
                 _ =>
                 reports
             };
