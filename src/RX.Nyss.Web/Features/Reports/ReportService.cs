@@ -226,12 +226,6 @@ namespace RX.Nyss.Web.Features.Reports
                 return Error<ReportResponseDto>(ResultKey.Report.ReportNotFound);
             }
 
-            if (report.ReportType != ReportType.Aggregate &&
-                report.ReportType != ReportType.DataCollectionPoint)
-            {
-                return Error<ReportResponseDto>(ResultKey.Report.Edit.HealthRiskCannotBeEdited);
-            }
-
             var projectHealthRisk = await _nyssContext.ProjectHealthRisks
                 .Include(phr => phr.HealthRisk)
                 .SingleOrDefaultAsync(phr => phr.HealthRiskId == reportRequestDto.HealthRiskId &&

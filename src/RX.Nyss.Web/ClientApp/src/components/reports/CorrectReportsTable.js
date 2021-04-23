@@ -177,11 +177,11 @@ export const CorrectReportsTable = ({ isListFetching, isMarkingAsError, markAsEr
                       items={getRowMenu(row)}
                     />
                     <TableRowAction
-                      onClick={() => goToEdition(projectId, row.reportId)}
+                      onClick={() => goToEdition(projectId, row.reportId, row.reportType)}
                       icon={<EditIcon />}
                       title={strings(stringKeys.reports.list.editReport)}
                       roles={accessMap.reports.edit}
-                      condition={!row.isAnonymized && (row.reportType === 'Aggregate' || row.reportType === 'DataCollectionPoint')} />
+                      condition={!row.isAnonymized} />
                   </TableRowActions>
                 </TableCell>
               </TableRow>
