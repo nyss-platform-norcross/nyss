@@ -26,8 +26,6 @@ namespace RX.Nyss.Data.Models
 
         public bool? IsTraining { get; set; }
 
-        public int? VillageId { get; set; }
-
         public virtual Village Village { get; set; }
 
         public virtual Zone Zone { get; set; }
