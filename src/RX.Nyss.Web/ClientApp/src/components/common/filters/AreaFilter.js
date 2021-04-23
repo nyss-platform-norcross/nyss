@@ -12,7 +12,7 @@ import {TextField, Menu, InputAdornment} from "@material-ui/core";
 import { strings, stringKeys } from "../../../strings";
 import {IconTreeItem} from "../icon/IconTreeItem";
 
-const StructureTreeItem = ({ nodeId, data, label, onSelect, isSelected, children }) => {
+const StructureTreeItem = ({ data, onSelect, isSelected, children }) => {
   const handleChange = (e) => {
     e.stopPropagation();
     onSelect(data);
@@ -40,6 +40,7 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
   const [structureLoaded, setStructureLoaded] = useState(false);
   const [regions, setRegions] = useState([]);
   const triggerRef = useRef(null);
+  const [expanded, setExpanded] = useState([]);
 
   const handleDropdownClick = (e) => {
     setDropdownVisible(true);
@@ -67,8 +68,10 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
     setDropdownVisible(false);
   }
 
+  const handleNodeToggle = (event, nodeIds) =>
+    setExpanded(nodeIds);
+
   const selectedItemKey = selectedItem ? `${selectedItem.type}_${selectedItem.id}` : null;
-  const selectedItemParents = selectedItem ? selectedItem.parents : [];
 
   if (!regions) {
     return null;
@@ -110,7 +113,8 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
           className={styles.tree}
           defaultCollapseIcon={<ExpandMoreIcon />}
           defaultExpandIcon={<ChevronRightIcon />}
-          defaultExpanded={selectedItemParents}
+          expanded={expanded}
+          onNodeToggle={handleNodeToggle}
         >
           <Fragment>
             <TreeItem
@@ -121,7 +125,6 @@ export const AreaFilter = ({ nationalSocietyId, selectedItem, onChange }) => {
             </TreeItem>
 
             <IconTreeItem
-              name='UnknownLocation'
               nodeId='unknown'
               className={!selectedItemKey ? styles.selected : null}
               onSelect={handleChange}
