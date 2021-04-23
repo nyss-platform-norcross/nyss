@@ -116,27 +116,27 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
 
                         var report = new Report
                         {
-                            IsTraining = reportValidationResult.ReportData.DataCollector.IsInTrainingMode,
-                            ReportType = reportValidationResult.ReportData.ParsedReport.ReportType,
+                            IsTraining = reportData.DataCollector.IsInTrainingMode,
+                            ReportType = reportData.ParsedReport.ReportType,
                             Status = ReportStatus.New,
-                            ReceivedAt = reportValidationResult.ReportData.ReceivedAt,
+                            ReceivedAt = reportData.ReceivedAt,
                             CreatedAt = _dateTimeProvider.UtcNow,
-                            DataCollector = reportValidationResult.ReportData.DataCollector,
+                            DataCollector = reportData.DataCollector,
                             EpiWeek = epiDate.EpiWeek,
                             EpiYear = epiDate.EpiYear,
                             PhoneNumber = sender,
-                            Location = reportValidationResult.ReportData.DataCollector.DataCollectorLocations.Count == 1
-                                ? reportValidationResult.ReportData.DataCollector.DataCollectorLocations.First().Location
+                            Location = reportData.DataCollector.DataCollectorLocations.Count == 1
+                                ? reportData.DataCollector.DataCollectorLocations.First().Location
                                 : null,
-                            ReportedCase = reportValidationResult.ReportData.ParsedReport.ReportedCase,
-                            DataCollectionPointCase = reportValidationResult.ReportData.ParsedReport.DataCollectionPointCase,
+                            ReportedCase = reportData.ParsedReport.ReportedCase,
+                            DataCollectionPointCase = reportData.ParsedReport.DataCollectionPointCase,
                             ProjectHealthRisk = projectHealthRisk,
                             ReportedCaseCount = projectHealthRisk.HealthRisk.HealthRiskType == HealthRiskType.Human
-                                ? (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0)
-                                + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountFemalesBelowFive ?? 0)
-                                + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountMalesAtLeastFive ?? 0)
-                                + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountMalesBelowFive ?? 0)
-                                + (reportValidationResult.ReportData.ParsedReport.ReportedCase.CountUnspecifiedSexAndAge ?? 0)
+                                ? (reportData.ParsedReport.ReportedCase.CountFemalesAtLeastFive ?? 0)
+                                + (reportData.ParsedReport.ReportedCase.CountFemalesBelowFive ?? 0)
+                                + (reportData.ParsedReport.ReportedCase.CountMalesAtLeastFive ?? 0)
+                                + (reportData.ParsedReport.ReportedCase.CountMalesBelowFive ?? 0)
+                                + (reportData.ParsedReport.ReportedCase.CountUnspecifiedSexAndAge ?? 0)
                                 : 1
                         };
 
@@ -318,30 +318,6 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 _loggerAdapter.Warn(e.Message);
                 return new ReportValidationResult { IsSuccess = false };
             }
-        }
-
-        private async Task<string> GetFeedbackMessageForReportSentThroughNyss(ReportData reportData, GatewaySetting gatewaySetting, bool sentByHeadSupervisor, int? utcOffset)
-        {
-            var languageCode = await _nyssContext.NationalSocieties
-                .Where(ns => ns.Id == gatewaySetting.NationalSocietyId)
-                .Select(ns => ns.ContentLanguage.LanguageCode)
-                .FirstOrDefaultAsync();
-
-            var feedbackMessage = await GetFeedbackMessageContent(SmsContentKey.Reports.ReportSentFromNyss, languageCode);
-            var senderName = sentByHeadSupervisor ? reportData.DataCollector.Supervisor.HeadSupervisor.Name : reportData.DataCollector.Supervisor.Name;
-
-            var languageContents = await _nyssContext.HealthRiskLanguageContents
-                .SingleAsync(hlc => hlc.HealthRisk == reportData.ProjectHealthRisk.HealthRisk && hlc.ContentLanguage.LanguageCode == languageCode);
-
-            var timestamp = utcOffset.HasValue
-                ? reportData.ReceivedAt.AddHours(utcOffset.Value).ToString("yyyy-MM-dd HH:mm")
-                : reportData.ReceivedAt.ToString("yyyy-MM-dd HH:mm");
-
-            feedbackMessage = feedbackMessage.Replace("{{supervisor}}", senderName);
-            feedbackMessage = feedbackMessage.Replace("{{date/time}}", timestamp);
-            feedbackMessage = feedbackMessage.Replace("{{health risk/event}}", languageContents.Name);
-
-            return feedbackMessage;
         }
 
         private async Task SendFeedbackOnError(ErrorReportData errorReport, GatewaySetting gatewaySetting)
