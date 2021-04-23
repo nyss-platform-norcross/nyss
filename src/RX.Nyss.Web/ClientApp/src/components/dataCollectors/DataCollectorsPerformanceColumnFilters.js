@@ -1,7 +1,6 @@
 import styles from './DataCollectorsPerformanceColumnFilters.module.scss';
 import React, { useState, useEffect } from 'react';
-import Popover from "@material-ui/core/Popover";
-import Grid from "@material-ui/core/Grid";
+import { Grid, Popover } from "@material-ui/core";
 import Form from '../forms/form/Form';
 import CheckboxWithIcon from '../forms/CheckboxWithIconField';
 import { createForm } from '../../utils/forms';

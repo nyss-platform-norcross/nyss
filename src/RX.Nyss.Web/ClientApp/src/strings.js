@@ -936,7 +936,8 @@ export const stringKeys = {
   filters: {
     area: {
       title: "filters.area.title",
-      all: "filters.area.all"
+      all: "filters.area.all",
+      unknown: "filters.area.unknown"
     },
     report: {
       healthRisk: "filters.report.healthRisk",
@@ -944,7 +945,7 @@ export const stringKeys = {
       selectReportListType: "filters.report.selectReportListType",
       mainReportsListType: "filters.report.mainReportsListType",
       dcpReportListType: "filters.report.dcpReportListType",
-      unknownSenderReportListType: "filters.report.unknownSenderReportListType",
+      unknownSenderReportListType: "filters.report.unknownSenderReportListType",    
       status: "filters.report.status",
       success: "filters.report.success",
       error: "filters.report.error",
