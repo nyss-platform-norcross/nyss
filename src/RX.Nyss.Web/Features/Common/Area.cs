@@ -4,6 +4,6 @@
     {
         public AreaType AreaType { get; set; }
 
-        public int AreaId { get; set; }
+        public int? AreaId { get; set; }
     }
 }
