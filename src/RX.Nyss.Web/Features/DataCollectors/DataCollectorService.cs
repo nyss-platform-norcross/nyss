@@ -107,6 +107,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
                     Locations = dc.DataCollectorLocations.Select(dcl => new GetDataCollectorResponseDto.DataCollectorLocationDto
                     {
+                        Id = dcl.Id,
                         Latitude = dcl.Location.Y,
                         Longitude = dcl.Location.X,
                         RegionId = dcl.Village.District.Region.Id,
