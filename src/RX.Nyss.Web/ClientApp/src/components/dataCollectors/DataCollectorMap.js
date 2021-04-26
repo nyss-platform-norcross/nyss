@@ -5,7 +5,7 @@ import { retrieveGpsLocation } from '../../utils/map';
 import MyLocationIcon from '@material-ui/icons/MyLocation';
 import { Tooltip } from '@material-ui/core';
 import { Fragment } from 'react';
-import { stringKey, stringKeys, strings } from '../../strings';
+import { stringKeys, strings } from '../../strings';
 
 const MapEventHandler = ({ onMarkerClick, onChange }) => {
   useMapEvent('click', onMarkerClick);
@@ -19,7 +19,7 @@ const ChangeCenterLocation = ({ center, zoom }) => {
   return null;
 }
 
-const ZoomToCurrentLocation = () => {
+const ZoomToCurrentLocation = ({ updateZoomLevel }) => {
   const map = useMap();
   const [isFetcingLocation, setIsFetchingLocation] = useState(false);
 
@@ -35,6 +35,7 @@ const ZoomToCurrentLocation = () => {
       const lng = location.coords.longitude;
       map.setView({ lat: lat, lng: lng }, 11);
       setIsFetchingLocation(false);
+      updateZoomLevel(11);
     });
   }
 
@@ -118,7 +119,7 @@ export const DataCollectorMap = ({ onChange, location, zoom, initialCenterLocati
         </Marker>
       )}
       <ScaleControl imperial={false}></ScaleControl>
-      <ZoomToCurrentLocation />
+      <ZoomToCurrentLocation updateZoomLevel={setZoomLevel} />
     </MapContainer>
   )
 }

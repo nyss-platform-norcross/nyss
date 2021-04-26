@@ -1,4 +1,4 @@
-import { performanceStatus } from "./dataCollectorsConstants";
+import { dataCollectorType, performanceStatus } from "./dataCollectorsConstants";
 import * as http from '../../../utils/http';
 
 export const getBirthDecades = () => {
@@ -15,26 +15,26 @@ export const getIconFromStatus = (status) => {
   }
 }
 
-export const getSaveFormModel = (values, dataCollectorType, locations) =>
+export const getSaveFormModel = (values, type, locations) =>
   ({
     id: values.id,
-    dataCollectorType: dataCollectorType,
+    dataCollectorType: type,
     name: values.name,
     displayName: values.displayName,
-    sex: values.sex,
+    sex: type === dataCollectorType.human ? values.sex : null,
     supervisorId: parseInt(values.supervisorId),
-    birthGroupDecade: parseInt(values.birthGroupDecade),
+    birthGroupDecade: type === dataCollectorType.human ? parseInt(values.birthGroupDecade) : null,
     additionalPhoneNumber: values.additionalPhoneNumber,
     phoneNumber: values.phoneNumber,
     deployed: values.deployed,
-    locations: locations.map((location, number) => ({
+    locations: locations.map(location => ({
       id: location.id || null,
-      latitude: values[`location_${number}_latitude`],
-      longitude: values[`location_${number}_longitude`],
-      regionId: parseInt(values[`location_${number}_regionId`]),
-      districtId: parseInt(values[`location_${number}_districtId`]),
-      villageId: parseInt(values[`location_${number}_villageId`]),
-      zoneId: values[`location_${number}_zoneId`] ? parseInt(values[`location_${number}_zoneId`]) : null
+      latitude: values[`location_${location.number}_latitude`],
+      longitude: values[`location_${location.number}_longitude`],
+      regionId: parseInt(values[`location_${location.number}_regionId`]),
+      districtId: parseInt(values[`location_${location.number}_districtId`]),
+      villageId: parseInt(values[`location_${location.number}_villageId`]),
+      zoneId: values[`location_${location.number}_zoneId`] ? parseInt(values[`location_${location.number}_zoneId`]) : null
     }))
   });
 
