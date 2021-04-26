@@ -7,9 +7,10 @@ import { Tooltip } from '@material-ui/core';
 import { Fragment } from 'react';
 import { stringKeys, strings } from '../../strings';
 
-const MapEventHandler = ({ onMarkerClick, onChange }) => {
+const MapEventHandler = ({ onMarkerClick, onChange, onZoomChange }) => {
   useMapEvent('click', onMarkerClick);
   useMapEvent('click', onChange);
+  useMapEvent('zoomend', onZoomChange);
   return null;
 }
 
@@ -95,17 +96,19 @@ export const DataCollectorMap = ({ onChange, location, zoom, initialCenterLocati
   const handleLocationFound = e =>
     !clickedMyLocationButton(e) && setMarkerLocation(e.latlng);
 
+  const handleZoomChange = (e) => setZoomLevel(e.target._zoom);
+
   return !!centerLocation && (
     <MapContainer
       center={centerLocation}
       length={4}
       zoom={zoomLevel}
       scrollWheelZoom={false}
-      onzoomend={(e) => setZoomLevel(e.target._zoom)}
     >
       <MapEventHandler
         onMarkerClick={handleLocationFound}
-        onChange={handleClick} />
+        onChange={handleClick}
+        onZoomChange={handleZoomChange} />
 
       <ChangeCenterLocation center={centerLocation} zoom={zoomLevel} />
 
