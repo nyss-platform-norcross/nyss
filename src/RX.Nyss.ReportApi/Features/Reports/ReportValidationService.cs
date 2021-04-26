@@ -7,7 +7,6 @@ using RX.Nyss.Common.Utils.Logging;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Exceptions;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 
@@ -54,7 +53,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                         parsedReport.ReportType != ReportType.Event)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.Human}' can only send a report of type " +
-                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Event}'.");
+                            $"'{ReportType.Single}', '{ReportType.Aggregate}', '{ReportType.Event}'.", ReportErrorType.DataCollectorUsedCollectionPointFormat);
                     }
 
                     break;
@@ -63,7 +62,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                         parsedReport.ReportType != ReportType.Event)
                     {
                         throw new ReportValidationException($"A data collector of type '{DataCollectorType.CollectionPoint}' can only send a report of type " +
-                            $"'{ReportType.DataCollectionPoint}', '{ReportType.Event}.");
+                            $"'{ReportType.DataCollectionPoint}', '{ReportType.Event}.", ReportErrorType.CollectionPointUsedDataCollectorFormat);
                     }
 
                     break;
@@ -76,14 +75,14 @@ namespace RX.Nyss.ReportApi.Features.Reports
                 case ReportType.Single:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                        throw new ReportValidationException($"A report of type '{ReportType.Single}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.SingleReportNonHumanHealthRisk);
                     }
 
                     break;
                 case ReportType.Aggregate:
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
-                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.");
+                        throw new ReportValidationException($"A report of type '{ReportType.Aggregate}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.AggregateReportNonHumanHealthRisk);
                     }
 
                     break;
@@ -93,7 +92,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                         projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Activity)
                     {
                         throw new ReportValidationException(
-                            $"A report of type '{ReportType.Event}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' or '{HealthRiskType.Activity}' event only.");
+                            $"A report of type '{ReportType.Event}' has to be related to '{HealthRiskType.NonHuman}' or '{HealthRiskType.UnusualEvent}' or '{HealthRiskType.Activity}' event only.", ReportErrorType.EventReportHumanHealthRisk);
                     }
 
                     break;
@@ -101,8 +100,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
                     if (projectHealthRisk.HealthRisk.HealthRiskType != HealthRiskType.Human)
                     {
                         throw new ReportValidationException(
-                            $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}', '{HealthRiskType.NonHuman}', " +
-                            $"'{HealthRiskType.UnusualEvent}', '{HealthRiskType.Activity}' event only.");
+                            $"A report of type '{ReportType.DataCollectionPoint}' has to be related to '{HealthRiskType.Human}' health risk only.", ReportErrorType.CollectionPointNonHumanHealthRisk);
                     }
 
                     break;
@@ -140,7 +138,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
             }
             catch (Exception e)
             {
-                throw new ReportValidationException($"Cannot parse timestamp '{timestamp}'. Exception: {e.Message} Stack trace: {e.StackTrace}");
+                throw new ReportValidationException($"Cannot parse timestamp '{timestamp}'. Exception: {e.Message} Stack trace: {e.StackTrace}", ReportErrorType.Gateway);
             }
         }
 
@@ -150,7 +148,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
 
             if (receivedAt > _dateTimeProvider.UtcNow.AddMinutes(maxAllowedPrecedenceInMinutes))
             {
-                throw new ReportValidationException("The receival time cannot be in the future.");
+                throw new ReportValidationException("The receival time cannot be in the future.", ReportErrorType.Gateway);
             }
         }
     }

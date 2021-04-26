@@ -1,6 +1,6 @@
 using System;
+using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
-using RX.Nyss.ReportApi.Features.Reports.Contracts;
 using RX.Nyss.ReportApi.Features.Reports.Models;
 
 namespace RX.Nyss.ReportApi.Features.Reports.Handlers

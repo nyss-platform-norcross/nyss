@@ -169,7 +169,7 @@ namespace RX.Nyss.ReportApi.Features.Reports
         {
             if (sex.HasValue || ageGroup.HasValue)
             {
-                throw new ReportValidationException($"Sex and/or age can not be reported for event or non-human health risk: {healthRiskCode}.", ReportErrorType.FormatError);
+                throw new ReportValidationException($"Sex and/or age can not be reported for event or non-human health risk: {healthRiskCode}.", ReportErrorType.GenderAndAgeNonHumanHealthRisk);
             }
 
             var parsedReport = new ParsedReport
