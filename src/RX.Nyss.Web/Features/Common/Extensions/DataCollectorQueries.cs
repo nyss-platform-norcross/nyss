@@ -28,16 +28,16 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             area?.Type switch
             {
                 AreaType.Region =>
-                dataCollectors.Where(dc => dc.Village.District.Region.Id == area.Id),
+                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.District.Region.Id == area.Id)),
 
                 AreaType.District =>
-                dataCollectors.Where(dc => dc.Village.District.Id == area.Id),
+                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.District.Id == area.Id)),
 
                 AreaType.Village =>
-                dataCollectors.Where(dc => dc.Village.Id == area.Id),
+                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.Id == area.Id)),
 
                 AreaType.Zone =>
-                dataCollectors.Where(dc => dc.Zone.Id == area.Id),
+                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Zone.Id == area.Id)),
 
                 _ =>
                 dataCollectors
@@ -47,16 +47,16 @@ namespace RX.Nyss.Web.Features.Common.Extensions
             area?.AreaType switch
             {
                 AreaType.Region =>
-                dataCollectors.Where(dc => dc.Village.District.Region.Id == area.AreaId),
+                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.District.Region.Id == area.AreaId)),
 
                 AreaType.District =>
-                dataCollectors.Where(dc => dc.Village.District.Id == area.AreaId),
+                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.District.Id == area.AreaId)),
 
                 AreaType.Village =>
-                dataCollectors.Where(dc => dc.Village.Id == area.AreaId),
+                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Village.Id == area.AreaId)),
 
                 AreaType.Zone =>
-                dataCollectors.Where(dc => dc.Zone.Id == area.AreaId),
+                dataCollectors.Where(dc => dc.DataCollectorLocations.Any(dcl =>  dcl.Zone.Id == area.AreaId)),
 
                 _ =>
                 dataCollectors

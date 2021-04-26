@@ -213,7 +213,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 {
                     Id = 1,
                     Project = projects[0],
-                    Village = villages[0],
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Village = villages[0]
+                        }
+                    },
                     DataCollectorType = DataCollectorType.Human,
                     Supervisor = new SupervisorUser
                     {
@@ -224,7 +230,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 {
                     Id = 2,
                     Project = projects[1],
-                    Village = villages[0],
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Village = villages[0]
+                        }
+                    },
                     DataCollectorType = DataCollectorType.Human,
                     Supervisor = new SupervisorUser
                     {
@@ -235,7 +247,13 @@ namespace RX.Nyss.Web.Tests.Features.Reports
                 {
                     Id = 3,
                     Project = projects[1],
-                    Village = villages[0],
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Village = villages[0]
+                        }
+                    },
                     DataCollectorType = DataCollectorType.CollectionPoint,
                     Supervisor = new SupervisorUser
                     {

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FluentValidation;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data.Concepts;
@@ -22,32 +23,35 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
         public string AdditionalPhoneNumber { get; set; }
 
-        public double Latitude { get; set; }
-
-        public double Longitude { get; set; }
-
-        public int VillageId { get; set; }
-
-        public int? ZoneId { get; set; }
-
         public int SupervisorId { get; set; }
         public bool Deployed { get; set; }
+        public IEnumerable<DataCollectorLocationRequestDto> Locations { get; set; }
 
         public class Validator : AbstractValidator<CreateDataCollectorRequestDto>
         {
             public Validator(IDataCollectorValidationService dataCollectorValidationService)
             {
-                RuleFor(dc => dc.DataCollectorType).IsInEnum();
-                RuleFor(dc => dc.Name).NotEmpty().MaximumLength(100);
-                RuleFor(dc => dc.PhoneNumber).NotEmpty().MaximumLength(20);
+                RuleFor(dc => dc.DataCollectorType)
+                    .IsInEnum();
+
+                RuleFor(dc => dc.Name)
+                    .NotEmpty()
+                    .MaximumLength(100);
+
+                RuleFor(dc => dc.PhoneNumber)
+                    .NotEmpty()
+                    .MaximumLength(20);
+
                 RuleFor(dc => dc.PhoneNumber)
                     .MustAsync(async (model, phoneNumber, t) => !await dataCollectorValidationService.PhoneNumberExists(phoneNumber))
                     .WithMessageKey(ResultKey.DataCollector.PhoneNumberAlreadyExists);
-                RuleFor(dc => dc.AdditionalPhoneNumber).MaximumLength(20);
-                RuleFor(dc => dc.Latitude).InclusiveBetween(-90, 90);
-                RuleFor(dc => dc.Longitude).InclusiveBetween(-180, 180);
-                RuleFor(dc => dc.VillageId).GreaterThan(0);
-                RuleFor(dc => dc.SupervisorId).GreaterThan(0);
+
+                RuleFor(dc => dc.AdditionalPhoneNumber)
+                    .MaximumLength(20);
+
+                RuleFor(dc => dc.SupervisorId)
+                    .GreaterThan(0);
+
                 RuleFor(dc => dc.SupervisorId)
                     .MustAsync(async (model, supervisorId, t) => await dataCollectorValidationService.IsAllowedToCreateForSupervisor(supervisorId))
                     .WithMessageKey(ResultKey.DataCollector.NotAllowedToSelectSupervisor);
@@ -58,7 +62,14 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                     RuleFor(dc => dc.Sex).IsInEnum();
                     RuleFor(dc => dc.BirthGroupDecade).GreaterThan(0).Must(x => x % 10 == 0);
                 });
-                RuleFor(dc => dc.Deployed).NotNull();
+
+                RuleFor(dc => dc.Deployed)
+                    .NotNull();
+
+                RuleForEach(dc => dc.Locations)
+                    .Must(dcl => dcl.VillageId > 0
+                        && dcl.Latitude >= -90 && dcl.Latitude <= 90
+                        && dcl.Longitude >= -180 && dcl.Longitude <= 180);
             }
         }
     }

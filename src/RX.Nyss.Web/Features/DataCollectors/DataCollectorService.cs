@@ -19,6 +19,7 @@ using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.DataContracts;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
 using RX.Nyss.Web.Features.NationalSocietyStructure;
+using RX.Nyss.Web.Features.NationalSocietyStructure.Dto;
 using RX.Nyss.Web.Services;
 using RX.Nyss.Web.Services.Authorization;
 using RX.Nyss.Web.Services.Geolocation;
@@ -93,53 +94,72 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Include(dc => dc.Project)
                 .ThenInclude(p => p.NationalSociety)
                 .Include(dc => dc.Supervisor)
-                .Include(dc => dc.Zone)
-                .Include(dc => dc.Village)
-                .ThenInclude(v => v.District)
-                .ThenInclude(d => d.Region)
+                .Include(dc => dc.DataCollectorLocations)
+                .Select(dc => new GetDataCollectorResponseDto
+                {
+                    Id = dc.Id,
+                    Name = dc.Name,
+                    DisplayName = dc.DisplayName,
+                    DataCollectorType = dc.DataCollectorType,
+                    Sex = dc.Sex,
+                    BirthGroupDecade = dc.BirthGroupDecade,
+                    PhoneNumber = dc.PhoneNumber,
+                    AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
+                    Locations = dc.DataCollectorLocations.Select(dcl => new GetDataCollectorResponseDto.DataCollectorLocationDto
+                    {
+                        Id = dcl.Id,
+                        Latitude = dcl.Location.Y,
+                        Longitude = dcl.Location.X,
+                        RegionId = dcl.Village.District.Region.Id,
+                        DistrictId = dcl.Village.District.Id,
+                        VillageId = dcl.Village.Id,
+                        ZoneId = dcl.Zone.Id,
+                        InitialFormData = new GetDataCollectorResponseDto.DataCollectorLocationFormDataDto
+                        {
+                            Districts = _nyssContext.Districts
+                                .Where(d => d.Region.Id == dcl.Village.District.Region.Id)
+                                .Select(d => new DistrictResponseDto
+                                {
+                                    Id = d.Id,
+                                    Name = d.Name
+                                }),
+                            Villages = _nyssContext.Villages
+                                .Where(v => v.District.Id == dcl.Village.District.Id)
+                                .Select(v => new VillageResponseDto
+                                {
+                                    Id = v.Id,
+                                    Name = v.Name
+                                }),
+                            Zones = _nyssContext.Zones
+                                .Where(z => z.Village.Id == dcl.Village.Id)
+                                .Select(z => new ZoneResponseDto
+                                {
+                                    Id = z.Id,
+                                    Name = z.Name
+                                })
+                        }
+                    }),
+                    SupervisorId = dc.Supervisor.Id,
+                    NationalSocietyId = dc.Project.NationalSociety.Id,
+                    ProjectId = dc.Project.Id,
+                    Deployed = dc.Deployed
+                })
                 .SingleAsync(dc => dc.Id == dataCollectorId);
 
             var organizationId = await _nyssContext.UserNationalSocieties
-                .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == dataCollector.Project.NationalSocietyId)
+                .Where(uns => uns.UserId == currentUser.Id && uns.NationalSocietyId == dataCollector.NationalSocietyId)
                 .Select(uns => uns.OrganizationId)
                 .SingleOrDefaultAsync();
 
-            var regions = await _nationalSocietyStructureService.ListRegions(dataCollector.Project.NationalSociety.Id);
-            var districts = await _nationalSocietyStructureService.ListDistricts(dataCollector.Village.District.Region.Id);
-            var villages = await _nationalSocietyStructureService.ListVillages(dataCollector.Village.District.Id);
-            var zones = await _nationalSocietyStructureService.ListZones(dataCollector.Village.Id);
+            var regions = await _nationalSocietyStructureService.ListRegions(dataCollector.NationalSocietyId);
 
-            var dto = new GetDataCollectorResponseDto
+            dataCollector.FormData = new GetDataCollectorResponseDto.FormDataDto
             {
-                Id = dataCollector.Id,
-                Name = dataCollector.Name,
-                DisplayName = dataCollector.DisplayName,
-                DataCollectorType = dataCollector.DataCollectorType,
-                Sex = dataCollector.Sex,
-                BirthGroupDecade = dataCollector.BirthGroupDecade,
-                PhoneNumber = dataCollector.PhoneNumber,
-                AdditionalPhoneNumber = dataCollector.AdditionalPhoneNumber,
-                Latitude = dataCollector.Location.Y,
-                Longitude = dataCollector.Location.X,
-                SupervisorId = dataCollector.Supervisor.Id,
-                RegionId = dataCollector.Village.District.Region.Id,
-                DistrictId = dataCollector.Village.District.Id,
-                VillageId = dataCollector.Village.Id,
-                ZoneId = dataCollector.Zone?.Id,
-                NationalSocietyId = dataCollector.Project.NationalSociety.Id,
-                ProjectId = dataCollector.Project.Id,
-                Deployed = dataCollector.Deployed,
-                FormData = new GetDataCollectorResponseDto.FormDataDto
-                {
-                    Regions = regions.Value,
-                    Districts = districts.Value,
-                    Villages = villages.Value,
-                    Zones = zones.Value,
-                    Supervisors = await GetSupervisors(dataCollector.Project.Id, currentUser, organizationId)
-                }
+                Regions = regions.Value,
+                Supervisors = await GetSupervisors(dataCollector.ProjectId, currentUser, organizationId)
             };
 
-            return Success(dto);
+            return Success(dataCollector);
         }
 
         public async Task<Result<DataCollectorFormDataResponse>> GetFormData(int projectId)
@@ -234,13 +254,17 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Name = dc.Name,
                     DisplayName = dc.DisplayName,
                     PhoneNumber = dc.PhoneNumber,
-                    Village = dc.Village.Name,
-                    District = dc.Village.District.Name,
-                    Region = dc.Village.District.Region.Name,
                     Sex = dc.Sex,
                     IsInTrainingMode = dc.IsInTrainingMode,
                     Supervisor = dc.Supervisor,
-                    IsDeployed = dc.Deployed
+                    IsDeployed = dc.Deployed,
+                    Locations = dc.DataCollectorLocations
+                        .Select(dcl => new DataCollectorLocationResponseDto
+                        {
+                            Region = dcl.Village.District.Region.Name,
+                            District = dcl.Village.District.Name,
+                            Village = dcl.Village.Name
+                        })
                 })
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
@@ -273,13 +297,17 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     Name = dc.Name,
                     DisplayName = dc.DisplayName,
                     PhoneNumber = dc.PhoneNumber,
-                    Village = dc.Village.Name,
-                    District = dc.Village.District.Name,
-                    Region = dc.Village.District.Region.Name,
                     Sex = dc.Sex,
                     IsInTrainingMode = dc.IsInTrainingMode,
                     Supervisor = dc.Supervisor,
-                    IsDeployed = dc.Deployed
+                    IsDeployed = dc.Deployed,
+                    Locations = dc.DataCollectorLocations
+                        .Select(dcl => new DataCollectorLocationResponseDto
+                        {
+                            Region = dcl.Village.District.Region.Name,
+                            District = dcl.Village.District.Name,
+                            Village = dcl.Village.Name
+                        })
                 })
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
@@ -307,13 +335,6 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Select(u => (SupervisorUser)u.User)
                 .SingleAsync();
 
-            var village = await _nyssContext.Villages
-                .SingleAsync(v => v.Id == createDto.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId);
-
-            var zone = createDto.ZoneId != null
-                ? await _nyssContext.Zones.SingleAsync(z => z.Id == createDto.ZoneId.Value)
-                : null;
-
             var dataCollector = new DataCollector
             {
                 Name = createDto.Name,
@@ -323,14 +344,20 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 BirthGroupDecade = createDto.BirthGroupDecade,
                 Sex = createDto.Sex,
                 DataCollectorType = createDto.DataCollectorType,
-                Location = CreatePoint(createDto.Latitude, createDto.Longitude),
-                Village = village,
                 Supervisor = supervisor,
                 Project = project,
-                Zone = zone,
                 CreatedAt = _dateTimeProvider.UtcNow,
                 IsInTrainingMode = true,
-                Deployed = createDto.Deployed
+                Deployed = createDto.Deployed,
+                DataCollectorLocations = createDto.Locations.Select(l => new DataCollectorLocation
+                {
+                    Location = CreatePoint(l.Latitude, l.Longitude),
+                    Village = _nyssContext.Villages
+                        .Single(v => v.Id == l.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId),
+                    Zone = l.ZoneId != null
+                        ? _nyssContext.Zones.Single(z => z.Id == l.ZoneId.Value)
+                        : null
+                }).ToList()
             };
 
             await _nyssContext.AddAsync(dataCollector);
@@ -344,10 +371,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Include(dc => dc.Project)
                 .ThenInclude(x => x.NationalSociety)
                 .Include(dc => dc.Supervisor)
-                .Include(dc => dc.Village)
-                .ThenInclude(v => v.District)
-                .ThenInclude(d => d.Region)
-                .Include(dc => dc.Zone)
+                .Include(dc => dc.DataCollectorLocations)
                 .SingleAsync(dc => dc.Id == editDto.Id);
 
             if (dataCollector.Project.State != ProjectState.Open)
@@ -363,24 +387,16 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .Select(u => (SupervisorUser)u.User)
                 .SingleAsync();
 
-            var village = await _nyssContext.Villages
-                .SingleAsync(v => v.Id == editDto.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId);
-
-            var zone = editDto.ZoneId != null
-                ? await _nyssContext.Zones.SingleAsync(z => z.Id == editDto.ZoneId.Value)
-                : null;
-
             dataCollector.Name = editDto.Name;
             dataCollector.DisplayName = editDto.DisplayName;
             dataCollector.PhoneNumber = editDto.PhoneNumber;
             dataCollector.AdditionalPhoneNumber = editDto.AdditionalPhoneNumber;
             dataCollector.BirthGroupDecade = editDto.BirthGroupDecade;
-            dataCollector.Location = CreatePoint(editDto.Latitude, editDto.Longitude);
             dataCollector.Sex = editDto.Sex;
-            dataCollector.Village = village;
             dataCollector.Supervisor = supervisor;
-            dataCollector.Zone = zone;
             dataCollector.Deployed = editDto.Deployed;
+
+            dataCollector.DataCollectorLocations = await EditDataCollectorLocations(dataCollector.DataCollectorLocations, editDto.Locations, nationalSocietyId);
 
             await _nyssContext.SaveChangesAsync();
             return SuccessMessage(ResultKey.DataCollector.EditSuccess);
@@ -456,8 +472,8 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectorsWithReports = dataCollectors
                 .Select(r => new
                 {
-                    r.Location.X,
-                    r.Location.Y,
+                    r.DataCollectorLocations.First().Location.X,
+                    r.DataCollectorLocations.First().Location.Y,
                     InvalidReports = r.RawReports
                         .Count(rr => !rr.ReportId.HasValue && rr.IsTraining.HasValue && !rr.IsTraining.Value
                             && rr.ReceivedAt >= from.Date && rr.ReceivedAt < endDate),
@@ -503,7 +519,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
             var dataCollectors = await GetDataCollectorsForCurrentUserInProject(projectId);
 
             var result = await dataCollectors
-                .Where(dc => dc.Location.X == lng && dc.Location.Y == lat && dc.DeletedAt == null && dc.Deployed)
+                .Where(dc => dc.DataCollectorLocations.Any(dcl => dcl.Location.X == lng && dcl.Location.Y == lat) && dc.DeletedAt == null && dc.Deployed)
                 .Select(dc => new
                 {
                     DataCollector = dc,
@@ -701,6 +717,25 @@ namespace RX.Nyss.Web.Features.DataCollectors
             {
                 await _smsPublisherService.SendSms(gatewaySetting.IotHubDeviceName, recipients, message, gatewaySetting.Modems.Any());
             }
+        }
+
+        private async Task<List<DataCollectorLocation>> EditDataCollectorLocations(ICollection<DataCollectorLocation> dataCollectorLocations, IEnumerable<DataCollectorLocationRequestDto> dataCollectorLocationRequestDtos, int nationalSocietyId)
+        {
+            var newDataCollectorLocations = new List<DataCollectorLocation>();
+            foreach (var dto in dataCollectorLocationRequestDtos)
+            {
+                var dcl = dto.Id.HasValue
+                    ? dataCollectorLocations.First(l => l.Id == dto.Id)
+                    : new DataCollectorLocation();
+
+                dcl.Location = CreatePoint(dto.Latitude, dto.Longitude);
+                dcl.Village = await _nyssContext.Villages.SingleAsync(v => v.Id == dto.VillageId && v.District.Region.NationalSociety.Id == nationalSocietyId);
+                dcl.Zone = await _nyssContext.Zones.SingleOrDefaultAsync(z => z.Id == dto.ZoneId);
+
+                newDataCollectorLocations.Add(dcl);
+            }
+
+            return newDataCollectorLocations;
         }
     }
 }

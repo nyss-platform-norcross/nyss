@@ -131,7 +131,9 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                             EpiWeek = epiDate.EpiWeek,
                             EpiYear = epiDate.EpiYear,
                             PhoneNumber = sender,
-                            Location = reportValidationResult.ReportData.DataCollector.Location,
+                            Location = reportValidationResult.ReportData.DataCollector.DataCollectorLocations.Count == 1
+                                ? reportValidationResult.ReportData.DataCollector.DataCollectorLocations.First().Location
+                                : null,
                             ReportedCase = reportValidationResult.ReportData.ParsedReport.ReportedCase,
                             DataCollectionPointCase = reportValidationResult.ReportData.ParsedReport.DataCollectionPointCase,
                             ProjectHealthRisk = projectHealthRisk,
@@ -235,8 +237,10 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 .Include(dc => dc.Supervisor)
                 .ThenInclude(s => s.HeadSupervisor)
                 .Include(dc => dc.Project)
-                .Include(dc => dc.Village)
-                .Include(dc => dc.Zone)
+                .Include(dc => dc.DataCollectorLocations)
+                .ThenInclude(dcl => dcl.Village)
+                .Include(dc => dc.DataCollectorLocations)
+                .ThenInclude(dcl => dcl.Zone)
                 .SingleOrDefaultAsync(dc => dc.PhoneNumber == phoneNumber ||
                     (dc.AdditionalPhoneNumber != null && dc.AdditionalPhoneNumber == phoneNumber));
 
@@ -395,8 +399,8 @@ namespace RX.Nyss.ReportApi.Features.Reports.Handlers
                 var dataCollector = await ValidateDataCollector(sender, gatewaySetting.NationalSocietyId);
                 rawReport.DataCollector = dataCollector;
                 rawReport.IsTraining = dataCollector.IsInTrainingMode;
-                rawReport.Village = dataCollector.Village;
-                rawReport.Zone = dataCollector.Zone;
+                rawReport.Village = dataCollector.DataCollectorLocations.Count == 1 ? dataCollector.DataCollectorLocations.First().Village : null;
+                rawReport.Zone = dataCollector.DataCollectorLocations.Count == 1 ? dataCollector.DataCollectorLocations.First().Zone : null;
 
                 var parsedReport = await _reportMessageService.ParseReport(text);
                 var projectHealthRisk = await ValidateReport(parsedReport, dataCollector);

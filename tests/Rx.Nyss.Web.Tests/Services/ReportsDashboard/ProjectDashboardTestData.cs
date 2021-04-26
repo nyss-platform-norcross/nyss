@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using MockQueryable.NSubstitute;
+using NetTopologySuite.Geometries;
 using NSubstitute;
 using RX.Nyss.Common.Utils;
 using RX.Nyss.Data;
@@ -413,12 +414,19 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                     IsInTrainingMode = false,
                     Reports = new List<Report>(),
                     RawReports = new List<RawReport>(),
-                    Zone = i == numberOfDataCollectors
-                        ? Zones[i - 2]
-                        : Zones[i - 1],
-                    Village = i == numberOfDataCollectors
-                        ? Zones[i - 2].Village
-                        : Zones[i - 1].Village
+                    DataCollectorLocations = new List<DataCollectorLocation>
+                    {
+                        new DataCollectorLocation
+                        {
+                            Location = new Point(0, 0),
+                            Village = i == numberOfDataCollectors
+                                ? Zones[i - 2].Village
+                                : Zones[i - 1].Village,
+                            Zone = i == numberOfDataCollectors
+                                ? Zones[i - 2]
+                                : Zones[i - 1]
+                        }
+                    }
                 })
                 .ToList();
 
@@ -431,7 +439,8 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                 {
                     Id = i,
                     DataCollector = DataCollectors[(i - 1) / 2],
-                    Status = ReportStatus.New
+                    Status = ReportStatus.New,
+                    Location = DataCollectors[(i - 1) / 2].DataCollectorLocations.First().Location
                 })
                 .ToList();
 
@@ -451,8 +460,8 @@ namespace RX.Nyss.Web.Tests.Services.ReportsDashboard
                     DataCollector = r.DataCollector,
                     NationalSociety = NationalSocieties[0],
                     IsTraining = r.IsTraining,
-                    Village = r.DataCollector.Village,
-                    Zone = r.DataCollector.Zone,
+                    Village = r.DataCollector.DataCollectorLocations.First().Village,
+                    Zone = r.DataCollector.DataCollectorLocations.First().Zone,
                     Report = r
                 };
 

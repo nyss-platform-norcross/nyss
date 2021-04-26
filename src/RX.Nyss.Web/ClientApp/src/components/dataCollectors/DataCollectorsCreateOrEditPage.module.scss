@@ -1,11 +1,4 @@
-.locationButton {
-  @media screen and (min-width: 600px) {
-    display: none;
-  }
-}
-
-.requiredMapLocation {
-  &[data-missing-location=true] {
-    border-color: #f44336;
-  }
+.locationsContainer {
+  margin-top: 16px !important;
+  counter-reset: locations;
 }

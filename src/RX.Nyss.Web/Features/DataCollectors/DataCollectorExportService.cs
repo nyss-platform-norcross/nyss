@@ -7,6 +7,7 @@ using RX.Nyss.Common.Services.StringsResources;
 using RX.Nyss.Common.Utils.DataContract;
 using RX.Nyss.Data;
 using RX.Nyss.Data.Concepts;
+using RX.Nyss.Data.Models;
 using RX.Nyss.Data.Queries;
 using RX.Nyss.Web.Features.Common.Extensions;
 using RX.Nyss.Web.Features.DataCollectors.Dto;
@@ -196,7 +197,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterByTrainingMode(dataCollectorsFilter.TrainingStatus)
                 .FilterByOrganization(currentUserOrganization)
                 .Where(dc => dc.DeletedAt == null)
-                .Select(dc => new ExportDataCollectorsResponseDto
+                .SelectMany(dc => dc.DataCollectorLocations.Select(dcl => new ExportDataCollectorsResponseDto
                 {
                     DataCollectorType = dc.DataCollectorType == DataCollectorType.Human ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.human") :
                         dc.DataCollectorType == DataCollectorType.CollectionPoint ? GetStringResource(stringResources, "dataCollectors.dataCollectorType.collectionPoint") : string.Empty,
@@ -206,17 +207,17 @@ namespace RX.Nyss.Web.Features.DataCollectors
                     AdditionalPhoneNumber = dc.AdditionalPhoneNumber,
                     Sex = dc.Sex,
                     BirthGroupDecade = dc.BirthGroupDecade,
-                    Region = dc.Village.District.Region.Name,
-                    District = dc.Village.District.Name,
-                    Village = dc.Village.Name,
-                    Zone = dc.Zone.Name,
-                    Latitude = dc.Location.Y,
-                    Longitude = dc.Location.X,
+                    Region = dcl.Village.District.Region.Name,
+                    District = dcl.Village.District.Name,
+                    Village = dcl.Village.Name,
+                    Zone = dcl.Zone.Name,
+                    Latitude = dcl.Location.Y,
+                    Longitude = dcl.Location.X,
                     Supervisor = dc.Supervisor.Name,
                     TrainingStatus = dc.IsInTrainingMode
                         ? GetStringResource(stringResources, "dataCollectors.export.isInTraining")
                         : GetStringResource(stringResources, "dataCollectors.export.isNotInTraining")
-                })
+                }))
                 .OrderBy(dc => dc.Name)
                 .ThenBy(dc => dc.DisplayName)
                 .ToListAsync();

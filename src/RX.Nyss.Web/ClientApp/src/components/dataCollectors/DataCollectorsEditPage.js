@@ -1,7 +1,6 @@
 import formStyles from "../forms/form/Form.module.scss";
-import styles from './DataCollectorsCreateOrEditPage.module.scss';
-
-import React, { useEffect, useState, useReducer, Fragment } from 'react';
+import styles from "./DataCollectorsCreateOrEditPage.module.scss";
+import React, { useEffect, useState, Fragment } from 'react';
 import { connect, useSelector } from "react-redux";
 import { withLayout } from '../../utils/layout';
 import { validators, createForm, useCustomErrors } from '../../utils/forms';
@@ -15,41 +14,21 @@ import { Loading } from '../common/loading/Loading';
 import { useMount } from '../../utils/lifecycle';
 import { strings, stringKeys } from '../../strings';
 import { sexValues, dataCollectorType } from './logic/dataCollectorsConstants';
-import { GeoStructureSelect } from './GeoStructureSelect';
 import SelectField from '../forms/SelectField';
-import { getBirthDecades } from './logic/dataCollectorsService';
-import { DataCollectorMap } from './DataCollectorMap';
+import { getBirthDecades, getSaveFormModel } from './logic/dataCollectorsService';
 import { ValidationMessage } from "../forms/ValidationMessage";
-import { TableActionsButton } from "../common/tableActions/TableActionsButton";
-import { retrieveGpsLocation } from "../../utils/map";
-import { Card, CardContent, InputLabel, MenuItem, Button, Grid } from "@material-ui/core";
+import { MenuItem, Button, Grid, Typography } from "@material-ui/core";
 import { Supervisor } from "../../authentication/roles";
 import CheckboxField from "../forms/CheckboxField";
+import { DataCollectorLocationItem } from "./DataCollectorLocationItem";
 
 const DataCollectorsEditPageComponent = (props) => {
   const currentUserRoles = useSelector(state => state.appData.user.roles);
   const [birthDecades] = useState(getBirthDecades());
   const [form, setForm] = useState(null);
-  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
-  const [selectedVillage, setSelectedVillage] = useReducer((state, action) => {
-    if (action.initialValue) {
-      return { value: action.initialValue, changed: false }
-    }
-    if (state.value !== action) {
-      return { ...state, changed: true, value: action }
-    } else {
-      return { ...state, changed: false }
-    }
-  }, { value: "", changed: false });
-
-  const [location, dispatch] = useReducer((state, action) => {
-    switch (action.type) {
-      case "latitude": return { ...state, lat: action.value };
-      case "longitude": return { ...state, lng: action.value };
-      case "latlng": return { lat: action.lat, lng: action.lng };
-      default: return state;
-    }
-  }, null);
+  const [locations, setLocations] = useState(null);
+  const [centerLocation, setCenterLocation] = useState(null);
+  const [allLocationsCollapsed, setAllLocationsCollapsed] = useState(true);
 
   useMount(() => {
     props.openEdition(props.dataCollectorId);
@@ -61,7 +40,7 @@ const DataCollectorsEditPageComponent = (props) => {
       return;
     }
 
-    dispatch({ type: "latlng", lat: props.data.latitude, lng: props.data.longitude });
+    setLocations(props.data.locations.map((l, i) => ({ ...l, number: i })));
 
     const fields = {
       id: props.data.id,
@@ -72,12 +51,6 @@ const DataCollectorsEditPageComponent = (props) => {
       birthGroupDecade: props.data.dataCollectorType === dataCollectorType.human ? props.data.birthGroupDecade.toString() : null,
       phoneNumber: props.data.phoneNumber,
       additionalPhoneNumber: props.data.additionalPhoneNumber,
-      latitude: props.data.latitude,
-      longitude: props.data.longitude,
-      villageId: props.data.villageId.toString(),
-      districtId: props.data.districtId.toString(),
-      regionId: props.data.regionId.toString(),
-      zoneId: props.data.zoneId ? props.data.zoneId.toString() : "",
       deployed: props.data.deployed
     };
 
@@ -88,50 +61,44 @@ const DataCollectorsEditPageComponent = (props) => {
       supervisorId: [validators.required],
       birthGroupDecade: [validators.requiredWhen(x => props.data.dataCollectorType === dataCollectorType.human)],
       phoneNumber: [validators.required, validators.phoneNumber, validators.maxLength(20)],
-      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber],
-      villageId: [validators.required],
-      districtId: [validators.required],
-      regionId: [validators.required],
-      longitude: [validators.required, validators.integer, validators.inRange(-180, 180)],
-      latitude: [validators.required, validators.integer, validators.inRange(-90, 90)]
+      additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber]
     };
 
     const newForm = createForm(fields, validation);
-    newForm.fields.latitude.subscribe(({ newValue }) => dispatch({ type: "latitude", value: newValue }));
-    newForm.fields.longitude.subscribe(({ newValue }) => dispatch({ type: "longitude", value: newValue }));
-
-    newForm.fields.villageId.subscribe(({ newValue }) => setSelectedVillage(newValue));
-    setSelectedVillage({ initialValue: props.data.villageId.toString() });
     setForm(newForm);
   }, [props.data, props.match]);
 
+  const addDataCollectorLocation = () => {
+    const previousLocation = locations[locations.length - 1];
+    setAllLocationsCollapsed(false);
+    setLocations([...locations, {
+      latitude: '',
+      longitude: '',
+      regionId: previousLocation.regionId,
+      districtId: previousLocation.districtId,
+      villageId: '',
+      zoneId: '',
+      initialFormData: {
+        districts: previousLocation.initialFormData.districts,
+        villages: [],
+        zones: []
+      },
+      number: previousLocation.number + 1
+    }]);
+  }
+
+  const removeDataCollectorLocation = (location) => {
+    setLocations(locations.filter(l => l.number !== location.number));
+  }
+
   useEffect(() => {
-    if (form && form.fields && selectedVillage.changed) {
-      form.fields.latitude.update("");
-      form.fields.longitude.update("");
+    if (locations && locations.length > 0) {
+      setCenterLocation({
+        latitude: locations[0].latitude,
+        longitude: locations[0].longitude
+      });
     }
-  }, [form, selectedVillage])
-
-  const onLocationChange = (e) => {
-    form.fields.latitude.update(e.lat);
-    form.fields.longitude.update(e.lng);
-  }
-
-  const onRetrieveLocation = () => {
-    setIsFetchingLocation(true);
-    retrieveGpsLocation(location => {
-      if (location === null) {
-        setIsFetchingLocation(false);
-        return;
-      }
-      const lat = location.coords.latitude;
-      const lng = location.coords.longitude;
-      form.fields.latitude.update(lat);
-      form.fields.longitude.update(lng);
-      dispatch({ type: "latlng", lat: lat, lng: lng });
-      setIsFetchingLocation(false);
-    });
-  }
+  }, [locations]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -142,24 +109,7 @@ const DataCollectorsEditPageComponent = (props) => {
 
     const values = form.getValues();
 
-    props.edit(props.projectId, {
-      id: values.id,
-      dataCollectorType: props.data.dataCollectorType,
-      name: values.name,
-      displayName: values.displayName,
-      sex: values.sex,
-      supervisorId: parseInt(values.supervisorId),
-      birthGroupDecade: parseInt(values.birthGroupDecade),
-      additionalPhoneNumber: values.additionalPhoneNumber,
-      latitude: parseFloat(values.latitude),
-      longitude: parseFloat(values.longitude),
-      phoneNumber: values.phoneNumber,
-      villageId: parseInt(values.villageId),
-      districtId: parseInt(values.districtId),
-      regionId: parseInt(values.regionId),
-      zoneId: values.zoneId ? parseInt(values.zoneId) : null,
-      deployed: values.deployed
-    });
+    props.edit(props.projectId, getSaveFormModel(values, props.data.dataCollectorType, locations));
   };
 
   useCustomErrors(form, props.error);
@@ -179,6 +129,10 @@ const DataCollectorsEditPageComponent = (props) => {
       <Form onSubmit={handleSubmit} fullWidth>
 
         <Grid item xs={12}>
+          <Typography variant="h6">{strings(stringKeys.dataCollector.form.dataCollectorType)}</Typography>
+        </Grid>
+
+        <Grid item xs={12}>
           <CheckboxField
             name="deployed"
             label={strings(stringKeys.dataCollector.form.deployed)}
@@ -186,6 +140,12 @@ const DataCollectorsEditPageComponent = (props) => {
             color="primary"
           />
         </Grid>
+
+
+        <Grid item xs={12}>
+          <Typography variant="h6">{strings(stringKeys.dataCollector.form.personalia)}</Typography>
+        </Grid>
+
         <Grid container spacing={2} className={formStyles.shrinked}>
           <Grid item xs={12}>
             <TextInputField
@@ -249,86 +209,49 @@ const DataCollectorsEditPageComponent = (props) => {
             />
           </Grid>)}
 
-          <GeoStructureSelect
-            regions={props.data.formData.regions}
-            regionIdField={form.fields.regionId}
-            districtIdField={form.fields.districtId}
-            villageIdField={form.fields.villageId}
-            zoneIdField={form.fields.zoneId}
-            initialDistricts={props.data.formData.districts}
-            initialVillages={props.data.formData.villages}
-            initialZones={props.data.formData.zones}
-          />
-
+          {!currentUserRoles.some(r => r === Supervisor) && (<Grid item xs={12}>
+            <SelectField
+              label={strings(stringKeys.dataCollector.form.supervisor)}
+              field={form.fields.supervisorId}
+              name="supervisorId"
+            >
+              {props.data.formData.supervisors.map(supervisor => (
+                <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
+                  {supervisor.name}
+                </MenuItem>
+              ))}
+            </SelectField>
+          </Grid>)}
         </Grid>
 
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Card className={styles.requiredMapLocation} data-missing-location={form.fields.latitude.error !== null || form.fields.longitude.error !== null}>
-              <CardContent>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <InputLabel style={{ marginBottom: "10px" }}>{strings(stringKeys.dataCollector.form.selectLocation)}</InputLabel>
-                    <DataCollectorMap
-                      onChange={onLocationChange}
-                      location={location}
-                      zoom={6}
-                    />
-                  </Grid>
-                  <Grid item className={styles.locationButton}>
-                    <TableActionsButton
-                      onClick={onRetrieveLocation}
-                      isFetching={isFetchingLocation}
-                    >
-                      {strings(stringKeys.dataCollector.form.retrieveLocation)}
-                    </TableActionsButton>
-                  </Grid>
-                  <Grid item xs={12} md={3} style={{ maxWidth: "190px" }}>
-                    <TextInputField
-                      label={strings(stringKeys.dataCollector.form.latitude)}
-                      name="latitude"
-                      field={form.fields.latitude}
-                      type="number"
-                      inputMode={"decimal"}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={3} style={{ maxWidth: "190px" }}>
-                    <TextInputField
-                      label={strings(stringKeys.dataCollector.form.longitude)}
-                      name="longitude"
-                      field={form.fields.longitude}
-                      type="number"
-                      inputMode={"decimal"}
-                    />
-                  </Grid>
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+        <Grid container spacing={2} className={styles.locationsContainer}>
+          {locations.map((location, i) => (
+            <DataCollectorLocationItem
+              key={`location_${location.number}`}
+              form={form}
+              location={location}
+              locationNumber={location.number}
+              isLastLocation={i === locations.length - 1}
+              defaultLocation={centerLocation}
+              regions={props.data.formData.regions}
+              initialDistricts={location.initialFormData.districts}
+              initialVillages={location.initialFormData.villages}
+              initialZones={location.initialFormData.zones}
+              isDefaultCollapsed={allLocationsCollapsed}
+              removeLocation={removeDataCollectorLocation}
+            />
+          ))}
+
+          <Button color='primary' onClick={addDataCollectorLocation}>{strings(stringKeys.dataCollector.form.addLocation)}</Button>
         </Grid>
 
-        {!currentUserRoles.some(r => r === Supervisor) &&
-          <Grid container spacing={2} className={formStyles.shrinked}>
-            <Grid item xs={12}>
-              <SelectField
-                label={strings(stringKeys.dataCollector.form.supervisor)}
-                field={form.fields.supervisorId}
-                name="supervisorId"
-              >
-                {props.data.formData.supervisors.map(supervisor => (
-                  <MenuItem key={`supervisor_${supervisor.id}`} value={supervisor.id.toString()}>
-                    {supervisor.name}
-                  </MenuItem>
-                ))}
-              </SelectField>
-            </Grid>
-          </Grid>
-        }
+
         <FormActions className={formStyles.shrinked}>
           <Button onClick={() => props.goToList(props.projectId)}>{strings(stringKeys.form.cancel)}</Button>
           <SubmitButton isFetching={props.isSaving}>{strings(stringKeys.dataCollector.form.update)}</SubmitButton>
         </FormActions>
       </Form>
+
     </Fragment>
   );
 }

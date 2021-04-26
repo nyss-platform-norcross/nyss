@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using RX.Nyss.Data.Concepts;
 using RX.Nyss.Data.Models;
 
@@ -17,14 +18,16 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
 
         public string PhoneNumber { get; set; }
 
-        public string Village { get; set; }
-
-        public string District { get; set; }
-
-        public string Region { get; set; }
-
         public bool IsInTrainingMode { get; set; }
         public bool IsDeployed { get; set; }
         public SupervisorUser Supervisor { get; set; }
+        public IEnumerable<DataCollectorLocationResponseDto> Locations { get; set; }
+    }
+
+    public class DataCollectorLocationResponseDto
+    {
+        public string Region { get; set; }
+        public string District { get; set; }
+        public string Village { get; set; }
     }
 }

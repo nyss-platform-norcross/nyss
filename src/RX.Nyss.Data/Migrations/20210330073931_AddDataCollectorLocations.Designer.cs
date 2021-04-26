@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using RX.Nyss.Data;
@@ -11,9 +12,10 @@ using RX.Nyss.Data.Concepts;
 namespace RX.Nyss.Data.Migrations
 {
     [DbContext(typeof(NyssContext))]
-    partial class NyssContextModelSnapshot : ModelSnapshot
+    [Migration("20210330073931_AddDataCollectorLocations")]
+    partial class AddDataCollectorLocations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,26 +83,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("Alerts");
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.AlertNotHandledNotificationRecipient", b =>
-                {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserId", "ProjectId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("ProjectId");
-
-                    b.ToTable("AlertNotHandledNotificationRecipients");
                 });
 
             modelBuilder.Entity("RX.Nyss.Data.Models.AlertNotificationRecipient", b =>
@@ -2857,27 +2839,6 @@ namespace RX.Nyss.Data.Migrations
                     b.HasOne("RX.Nyss.Data.Models.ProjectHealthRisk", "ProjectHealthRisk")
                         .WithMany("Alerts")
                         .HasForeignKey("ProjectHealthRiskId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("RX.Nyss.Data.Models.AlertNotHandledNotificationRecipient", b =>
-                {
-                    b.HasOne("RX.Nyss.Data.Models.Organization", "Organization")
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.Project", "Project")
-                        .WithMany("AlertNotHandledNotificationRecipients")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RX.Nyss.Data.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

@@ -44,7 +44,7 @@ namespace RX.Nyss.Web.Features.DataCollectors
                 .FilterByName(dataCollectorsFilters.Name)
                 .FilterBySupervisor(dataCollectorsFilters.SupervisorId)
                 .FilterByTrainingMode(dataCollectorsFilters.TrainingStatus)
-                .Include(dc => dc.Village);
+                .Include(dc => dc.DataCollectorLocations);
 
             var toDate = _dateTimeProvider.UtcNow;
             var fromDate = toDate.AddMonths(-2);
@@ -78,13 +78,13 @@ namespace RX.Nyss.Web.Features.DataCollectors
             return Success(dataCollectorPerformanceDto);
         }
 
-        private async Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IIncludableQueryable<DataCollector, Village> dataCollectors, DateTime fromDate, DateTime toDate) =>
+        private async Task<List<DataCollectorWithRawReportData>> GetDataCollectorsWithReportData(IIncludableQueryable<DataCollector, IEnumerable<DataCollectorLocation>> dataCollectors, DateTime fromDate, DateTime toDate) =>
             await dataCollectors
                 .Select(dc => new DataCollectorWithRawReportData
                 {
                     Name = dc.Name,
                     PhoneNumber = dc.PhoneNumber,
-                    VillageName = dc.Village.Name,
+                    VillageName = dc.DataCollectorLocations.First().Village.Name,
                     ReportsInTimeRange = dc.RawReports.Where(r => r.IsTraining.HasValue && !r.IsTraining.Value
                             && r.ReceivedAt >= fromDate.Date && r.ReceivedAt < toDate.Date.AddDays(1))
                         .Select(r => new RawReportData
