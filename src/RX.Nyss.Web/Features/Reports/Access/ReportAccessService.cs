@@ -51,12 +51,22 @@ namespace RX.Nyss.Web.Features.Reports.Access
                 return false;
             }
 
+            var reportOrganizationId = await _nyssContext.UserNationalSocieties
+                .Where(uns => uns.UserId == reportData.Supervisor.Id)
+                .Select(uns => uns.OrganizationId)
+                .SingleOrDefaultAsync();
+
             var currentUserOrganizationId = await _nyssContext.RawReports
                 .Where(p => p.Id == reportId)
                 .SelectMany(p => p.Report.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers)
                 .Where(uns => uns.User == currentUser)
                 .Select(uns => uns.OrganizationId)
                 .SingleOrDefaultAsync();
+
+            if (reportOrganizationId != currentUserOrganizationId)
+            {
+                return false;
+            }
 
             return _nyssContext.Reports.Any(r => r.ProjectHealthRisk.Project.NationalSociety.NationalSocietyUsers.Any(
                 nsu => nsu.UserId == r.DataCollector.Supervisor.Id && nsu.OrganizationId == currentUserOrganizationId));
