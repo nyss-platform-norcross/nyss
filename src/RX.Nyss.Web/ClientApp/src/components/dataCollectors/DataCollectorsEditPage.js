@@ -83,7 +83,7 @@ const DataCollectorsEditPageComponent = (props) => {
         villages: [],
         zones: []
       },
-      number: locations.length
+      number: previousLocation.number + 1
     }]);
   }
 
@@ -225,13 +225,13 @@ const DataCollectorsEditPageComponent = (props) => {
         </Grid>
 
         <Grid container spacing={2} className={styles.locationsContainer}>
-          {locations.map(location => (
+          {locations.map((location, i) => (
             <DataCollectorLocationItem
               key={`location_${location.number}`}
               form={form}
               location={location}
               locationNumber={location.number}
-              totalLocations={locations.length}
+              isLastLocation={i === locations.length - 1}
               defaultLocation={centerLocation}
               regions={props.data.formData.regions}
               initialDistricts={location.initialFormData.districts}

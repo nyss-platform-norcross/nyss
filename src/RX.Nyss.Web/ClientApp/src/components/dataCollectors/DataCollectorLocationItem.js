@@ -13,7 +13,7 @@ import SelectField from '../forms/SelectField';
 import { getFormDistricts, getFormVillages, getFormZones } from './logic/dataCollectorsService';
 
 
-export const DataCollectorLocationItem = ({ form, location, locationNumber, totalLocations, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, setInitialDistricts, removeLocation }) => {
+export const DataCollectorLocationItem = ({ form, location, locationNumber, isLastLocation, regions, initialDistricts, initialVillages, initialZones, defaultLocation, isDefaultCollapsed, setInitialDistricts, removeLocation }) => {
   const [ready, setReady] = useState(false);
   const [mapCenterLocation, setMapCenterLocation] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -79,8 +79,8 @@ export const DataCollectorLocationItem = ({ form, location, locationNumber, tota
     }
   });
 
-  useEffect(() => setIsExpanded(!isDefaultCollapsed && locationNumber === totalLocations - 1),
-    [locationNumber, totalLocations, isDefaultCollapsed]);
+  useEffect(() => setIsExpanded(!isDefaultCollapsed && isLastLocation),
+    [isLastLocation, isDefaultCollapsed]);
 
   useEffect(() => {
     if (form && form.fields && selectedVillage.changed) {

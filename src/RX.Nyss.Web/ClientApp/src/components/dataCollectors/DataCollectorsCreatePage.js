@@ -86,8 +86,10 @@ const DataCollectorsCreatePageComponent = (props) => {
   }, [props.defaultSupervisorId, props.defaultLocation]);
 
   const addDataCollectorLocation = () => {
-    const previousRegionId = locations.length > 0 ? form.fields[`location_${locations.length - 1}_regionId`].value : '';
-    const previousDistrictId = locations.length > 0 ? form.fields[`location_${locations.length - 1}_districtId`].value : '';
+    const previousLocation = locations[locations.length - 1];
+    const previousRegionId = form.fields[`location_${previousLocation.number}_regionId`].value || '';
+    const previousDistrictId = form.fields[`location_${previousLocation.number}_districtId`].value || '';
+
     setLocations([...locations, {
       latitude: '',
       longitude: '',
@@ -95,7 +97,7 @@ const DataCollectorsCreatePageComponent = (props) => {
       districtId: previousDistrictId,
       villageId: '',
       zoneId: '',
-      number: locations.length
+      number: previousLocation.number + 1
     }]);
   }
 
@@ -111,7 +113,7 @@ const DataCollectorsCreatePageComponent = (props) => {
     };
 
     const values = form.getValues();
-
+    
     props.create(props.projectId, getSaveFormModel(values, values.dataCollectorType, locations));
   };
 
@@ -241,13 +243,13 @@ const DataCollectorsCreatePageComponent = (props) => {
             <Typography variant="h6">{strings(stringKeys.dataCollector.form.locationsHeader)}</Typography>
           </Grid>
 
-          {locations.map(location => (
+          {locations.map((location, i) => (
             <DataCollectorLocationItem
               key={`location_${location.number}`}
               form={form}
               location={location}
               locationNumber={location.number}
-              totalLocations={locations.length}
+              isLastLocation={i === locations.length - 1}
               defaultLocation={centerLocation}
               regions={props.regions}
               initialDistricts={initialDistricts}
