@@ -698,11 +698,10 @@ namespace RX.Nyss.Web.Features.DataCollectors
 
         private async Task SendReplaceSupervisorSms(GatewaySetting gatewaySetting, List<ReplaceSupervisorData> replaceSupervisorDatas, SupervisorUser newSupervisor)
         {
-            var previousSupervisor = replaceSupervisorDatas.Select(r => r.Supervisor).Distinct().Single();
             var recipients = replaceSupervisorDatas.Select(r => new SendSmsRecipient
             {
                 PhoneNumber = r.DataCollector.PhoneNumber,
-                Modem = r.LastReport != null ? r.LastReport.ModemNumber : previousSupervisor.ModemId
+                Modem = r.LastReport != null ? r.LastReport.ModemNumber : r.Supervisor.ModemId
             }).ToList();
             var message = await _smsTextGeneratorService.GenerateReplaceSupervisorSms(gatewaySetting.NationalSociety.ContentLanguage.LanguageCode);
 
