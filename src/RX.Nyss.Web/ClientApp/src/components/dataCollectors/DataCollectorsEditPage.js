@@ -60,7 +60,7 @@ const DataCollectorsEditPageComponent = (props) => {
       sex: [validators.requiredWhen(x => props.data.dataCollectorType === dataCollectorType.human)],
       supervisorId: [validators.required],
       birthGroupDecade: [validators.requiredWhen(x => props.data.dataCollectorType === dataCollectorType.human)],
-      phoneNumber: [validators.required, validators.phoneNumber, validators.maxLength(20)],
+      phoneNumber: [validators.phoneNumber, validators.maxLength(20)],
       additionalPhoneNumber: [validators.maxLength(20), validators.phoneNumber]
     };
 

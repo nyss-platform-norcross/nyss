@@ -22,8 +22,7 @@ namespace RX.Nyss.Data.Models.Maps
                 .HasMaxLength(100);
 
             builder.Property(x => x.PhoneNumber)
-                .HasMaxLength(20)
-                .IsRequired();
+                .HasMaxLength(20);
 
             builder.Property(x => x.AdditionalPhoneNumber)
                 .HasMaxLength(20);

@@ -39,7 +39,6 @@ namespace RX.Nyss.Web.Features.DataCollectors.Dto
                     .MaximumLength(100);
 
                 RuleFor(dc => dc.PhoneNumber)
-                    .NotEmpty()
                     .MaximumLength(20);
 
                 RuleFor(dc => dc.PhoneNumber)
